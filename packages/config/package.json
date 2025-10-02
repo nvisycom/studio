@@ -38,7 +38,7 @@
 		"ci": "biome ci ."
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.2.3",
+		"@biomejs/biome": "^2.2.3",
 		"@types/node": "^24.6.2",
 		"@vitest/coverage-v8": "^3.2.4",
 		"tsup": "^8.5.0",

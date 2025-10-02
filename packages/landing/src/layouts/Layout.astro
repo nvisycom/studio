@@ -1,22 +1,80 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
-</html>
+---
+import {
+    BUILD_VERSION,
+    DEFAULT_DESCRIPTION,
+    DEFAULT_TITLE,
+    CREATED_AT,
+    UPDATED_AT,
+    PLATFORM_AUTHOR,
+    KEYWORDS
+} from "@nvisy/config";
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
+import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
+import MinLayout from "@/layouts/MinLayout.astro";
+import type { Props as MinLayoutProps } from "@/layouts/MinLayout.astro"
+// import Cookies from "@/components/Cookies.vue";
+
+export interface Props extends MinLayoutProps {
+	hideHeader?: boolean | undefined;
+	hideFooter?: boolean | undefined;
+}
+
+const {
+    title = DEFAULT_TITLE,
+	description = DEFAULT_DESCRIPTION,
+	version = BUILD_VERSION,
+	withDefaultTitle = false,
+	image = "/og-image.jpg",
+	isArticle = false,
+	publishedTime = CREATED_AT,
+	modifiedTime = UPDATED_AT,
+	author = PLATFORM_AUTHOR,
+	keywords = KEYWORDS,
+
+	hideHeader = false,
+	hideFooter = false,
+} = Astro.props;
+---
+<MinLayout
+	title={title}
+	description={description}
+	version={version}
+	withDefaultTitle={withDefaultTitle}
+	image={image}
+	isArticle={isArticle}
+	publishedTime={publishedTime}
+	modifiedTime={modifiedTime}
+	author={author}
+	keywords={keywords}
+>
+	<!-- Page Content -->
+	<div slot="content" class="flex flex-col min-h-screen">
+		<!-- Header -->
+		{!hideHeader && (
+			<div role="banner" class="flex-shrink-0">
+				<Header/>
+			</div>
+		)}
+
+		<!-- Main Content -->
+		<main
+			id="main-content"
+			role="main"
+			class="flex-1 w-full"
+			tabindex="-1"
+		>
+			<slot/>
+		</main>
+
+		<!-- Footer -->
+		{!hideFooter && (
+			<div role="contentinfo" class="flex-shrink-0">
+				<Footer />
+			</div>
+		)}
+
+		<!-- Cookie Popup -->
+		<!-- <Cookies /> -->
+	</div>
+</MinLayout>

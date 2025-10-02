@@ -1,0 +1,10 @@
+{
+	"icon": "aws",
+	"isBrand": true,
+	"version": "v3.0",
+	"status": "Completed",
+	"title": "AWS S3",
+	"category": "Cloud Storage",
+	"description": "Enterprise-grade redaction for documents stored in Amazon S3 buckets with full encryption.",
+	"availability": "Available"
+}

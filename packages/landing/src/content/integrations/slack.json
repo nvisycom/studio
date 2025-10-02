@@ -1,0 +1,10 @@
+{
+	"icon": "slack",
+	"isBrand": true,
+	"version": "v1.9",
+	"status": "Completed",
+	"title": "Slack",
+	"category": "Collaboration",
+	"description": "Automatically redact sensitive data in Slack file uploads and shared documents.",
+	"availability": "Available"
+}

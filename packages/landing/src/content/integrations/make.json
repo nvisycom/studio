@@ -1,0 +1,10 @@
+{
+	"icon": "rocket",
+	"isBrand": false,
+	"version": "v1.2",
+	"status": "Completed",
+	"title": "Make",
+	"category": "Automation",
+	"description": "Visual automation platform with drag-and-drop redaction workflows and real-time processing.",
+	"availability": "Available"
+}
