@@ -1,2 +1,1 @@
-# com
-nvisy.com
+# nvisy.com
