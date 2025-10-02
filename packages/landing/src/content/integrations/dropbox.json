@@ -1,0 +1,10 @@
+{
+	"icon": "dropbox",
+	"isBrand": true,
+	"version": "v1.8",
+	"status": "Completed",
+	"title": "Dropbox",
+	"category": "Cloud Storage",
+	"description": "Secure document processing for all your Dropbox files with automated redaction workflows.",
+	"availability": "Available"
+}

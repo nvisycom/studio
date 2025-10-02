@@ -1,0 +1,10 @@
+{
+	"icon": "notion",
+	"isBrand": true,
+	"version": "v1.4",
+	"status": "In Progress",
+	"title": "Notion",
+	"category": "Collaboration",
+	"description": "Protect sensitive content in Notion pages and databases with intelligent redaction workflows.",
+	"availability": "Available"
+}

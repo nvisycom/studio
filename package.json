@@ -1,0 +1,7 @@
+{
+  "name": "@nvisy/com",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ]
+}
