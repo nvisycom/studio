@@ -1,0 +1,80 @@
+---
+import { Layout } from "@/layouts";
+import { IntegrationsGrid, DeveloperTools } from "@/sections/integrations";
+import { CTA, Hero } from "@/sections";
+import { getCollection } from "astro:content";
+
+// Get all integrations
+const integrations = await getCollection("integrations");
+
+// Separate regular integrations from developer tools
+const regularIntegrations = integrations.filter(
+	(integration) => integration.data.category !== "Developer",
+);
+const developerIntegrations = integrations.filter(
+	(integration) => integration.data.category === "Developer",
+);
+---
+
+<Layout
+  title="Integrations"
+  description="Seamlessly integrate Nvisy's AI-powered document redaction with your existing workflow. Connect with cloud storage, development tools, and enterprise systems."
+>
+  <div class="bg-white dark:bg-black min-h-screen">
+    <!-- Hero Section -->
+    <Hero
+      title="Powerful Integrations"
+      description="Connect seamlessly with your existing tools and workflows. Our comprehensive integration ecosystem ensures secure document redaction fits naturally into your processes."
+      background="gradient"
+      fontSize="xl"
+      padding="lg"
+      buttons={[
+        {
+          text: "Request Integration",
+          href: "/contact",
+          variant: "primary"
+        },
+        {
+          text: "View All Integrations",
+          href: "#integrations",
+          variant: "secondary"
+        }
+      ]}
+    />
+
+    <!-- Main Content -->
+    <div class="bg-white dark:bg-black">
+      <IntegrationsGrid integrations={regularIntegrations} client:load />
+
+      <!-- Developer Tools -->
+      <DeveloperTools integrations={developerIntegrations} client:load />
+
+      <!-- Custom Integration CTA -->
+      <CTA
+        title="Need a Custom Integration?"
+        description="Don't see your tool listed? Our team can build custom integrations to fit your specific workflow requirements. Get in touch to discuss your needs."
+        background="none"
+        padding="md"
+        buttons={[
+          {
+            text: "Contact Sales",
+            href: "/contact",
+            variant: "primary"
+          },
+          {
+            text: "View Documentation",
+            href: "#",
+            variant: "secondary"
+          }
+        ]}
+      />
+    </div>
+  </div>
+
+  <!-- Smooth scrolling -->
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</Layout>

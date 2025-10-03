@@ -1,0 +1,74 @@
+---
+import { Check, Lock, Zap } from "lucide-vue-next";
+
+export interface Props {
+	title?: string;
+	description?: string;
+	features?: Array<{
+		title: string;
+		description: string;
+		icon: string;
+	}>;
+}
+
+const {
+	title = "Built for Enterprise Scale",
+	description = "Advanced AI technology meets enterprise security requirements. Process thousands of documents with unprecedented accuracy.",
+	features = [
+		{
+			title: "AI-Powered Accuracy",
+			description:
+				"Advanced machine learning algorithms identify and redact sensitive information with 99.9% accuracy across multiple document types.",
+			icon: "check",
+		},
+		{
+			title: "Enterprise Security",
+			description:
+				"SOC 2 Type II certified with end-to-end encryption. Your documents never leave your secure environment.",
+			icon: "lock",
+		},
+		{
+			title: "Lightning Fast",
+			description:
+				"Process hundreds of pages in seconds. Batch processing capabilities for enterprise-scale document workflows.",
+			icon: "zap",
+		},
+	],
+} = Astro.props;
+
+const iconComponents: Record<string, any> = {
+	check: Check,
+	lock: Lock,
+	zap: Zap,
+};
+---
+
+<section class="py-20 px-4 bg-white dark:bg-black">
+  <div class="container mx-auto max-w-6xl">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        {title}
+      </h2>
+      <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+        {description}
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8">
+      {features.map((feature) => {
+        const IconComponent = iconComponents[feature.icon] || Check;
+        return (
+          <div class="text-center p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg hover:border-gray-200 dark:hover:border-gray-600 transition-all duration-200">
+            <div class="w-12 h-12 bg-black dark:bg-white rounded-lg flex items-center justify-center mx-auto mb-6">
+              <IconComponent class="w-6 h-6 text-white dark:text-black" />
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">{feature.title}</h3>
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+              {feature.description}
+            </p>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</section>

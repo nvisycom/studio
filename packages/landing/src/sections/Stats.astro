@@ -1,0 +1,58 @@
+---
+export interface Props {
+	title?: string;
+	backgroundColor?: "white" | "gray";
+	stats?: Array<{
+		value: string;
+		label: string;
+		description?: string;
+	}>;
+}
+
+const {
+	title,
+	backgroundColor = "gray",
+	stats = [
+		{
+			value: "99.9%",
+			label: "Accuracy Rate",
+			description: "AI-powered precision",
+		},
+		{
+			value: "10M+",
+			label: "Documents Processed",
+			description: "Enterprise scale",
+		},
+		{
+			value: "500+",
+			label: "Enterprise Clients",
+			description: "Trusted worldwide",
+		},
+	],
+} = Astro.props;
+
+const bgClass = backgroundColor === "gray" ? "bg-gray-50" : "bg-white";
+---
+
+<section class={`py-16 ${bgClass} dark:bg-black px-4`}>
+  <div class="container mx-auto max-w-4xl">
+    {title && (
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          {title}
+        </h2>
+      </div>
+    )}
+    <div class="grid md:grid-cols-3 gap-8 text-center">
+      {stats.map((stat) => (
+        <div class="space-y-2">
+          <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">{stat.value}</div>
+          <div class="text-gray-600 dark:text-gray-400 font-medium">{stat.label}</div>
+          {stat.description && (
+            <div class="text-gray-500 dark:text-gray-400 text-sm">{stat.description}</div>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

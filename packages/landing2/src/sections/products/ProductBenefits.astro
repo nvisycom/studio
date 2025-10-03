@@ -1,0 +1,107 @@
+---
+import {
+	CheckIcon,
+	ZapIcon,
+	LockIcon,
+	SettingsIcon,
+	CloudIcon,
+} from "lucide-vue-next";
+
+export interface Benefit {
+	title: string;
+	description: string;
+	icon?: string;
+}
+
+export interface Props {
+	title: string;
+	description: string;
+	benefits: Benefit[];
+	visualContent?: {
+		title: string;
+		description: string;
+		steps: Array<{
+			text: string;
+		}>;
+	};
+}
+
+const { title, description, benefits, visualContent } = Astro.props;
+
+const getIconComponent = (iconName?: string) => {
+	switch (iconName) {
+		case "zap":
+			return ZapIcon;
+		case "lock":
+			return LockIcon;
+		case "settings":
+			return SettingsIcon;
+		case "cloud":
+			return CloudIcon;
+		default:
+			return CheckIcon;
+	}
+};
+---
+
+<div class="bg-gray-50 dark:bg-gray-900 py-20">
+  <div class="container mx-auto px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+          {title}
+        </h2>
+        <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          {description}
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <!-- Benefits List -->
+        <div class="space-y-8">
+          {benefits.map((benefit) => {
+            const IconComponent = getIconComponent(benefit.icon);
+            return (
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <IconComponent class="w-6 h-6 text-gray-600 dark:text-gray-400" />
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{benefit.title}</h3>
+                  <p class="text-gray-600 dark:text-gray-300">{benefit.description}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <!-- Visual Section -->
+        {visualContent && (
+          <div class="relative">
+            <div class="bg-gray-100 dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700">
+              <div class="text-center">
+                <div class="w-24 h-24 bg-gray-900 dark:bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <CloudIcon class="w-12 h-12 text-white dark:text-gray-900" />
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{visualContent.title}</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">
+                  {visualContent.description}
+                </p>
+                <div class="space-y-3">
+                  {visualContent.steps.map((step) => (
+                    <div class="flex items-center gap-3 text-left">
+                      <div class="w-6 h-6 bg-gray-900 dark:bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <CheckIcon class="w-4 h-4 text-white dark:text-gray-900" />
+                      </div>
+                      <span class="text-gray-700 dark:text-gray-300">{step.text}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</div>

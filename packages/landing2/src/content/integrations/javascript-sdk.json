@@ -1,0 +1,10 @@
+{
+	"icon": "js",
+	"isBrand": true,
+	"version": "v1.0",
+	"status": "Planned",
+	"title": "JavaScript SDK",
+	"category": "Developer",
+	"description": "Modern JavaScript SDK for web and Node.js applications.",
+	"availability": "Coming Soon"
+}

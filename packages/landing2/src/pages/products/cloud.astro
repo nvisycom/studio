@@ -1,0 +1,226 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { CTA, Features, Testimonials } from "@/components/sections";
+import {
+	ProductHero,
+	ProductBenefits,
+	ProductComparison,
+	ProductPricing,
+} from "@/components/pages/products";
+---
+
+<Layout title="Nvisy Cloud - AI-Powered Document Redaction" description="Deploy Nvisy's AI-powered document redaction in the cloud. Global scale, managed infrastructure, and enterprise security with zero maintenance.">
+  <div class="bg-white dark:bg-black min-h-screen">
+    <!-- Hero Section -->
+    <ProductHero
+      title="Nvisy Cloud"
+      description="Enterprise-grade document redaction delivered as a fully managed cloud service. Global scale, zero maintenance, maximum security."
+      primaryCta={{
+        text: "Start Free Trial",
+        href: "/pricing"
+      }}
+      secondaryCta={{
+        text: "Schedule Demo",
+        href: "/contact"
+      }}
+      stats={[
+        {
+          value: "99.99%",
+          label: "Uptime SLA"
+        },
+        {
+          value: "Global",
+          label: "Multi-Region"
+        },
+        {
+          value: "5 min",
+          label: "Setup Time"
+        }
+      ]}
+    />
+
+    <!-- Features Section -->
+    <Features
+      title="Built for Enterprise Scale"
+      description="Advanced AI technology meets enterprise security requirements. Process thousands of documents with unprecedented accuracy and speed."
+      features={[
+        {
+          title: "Instant Scalability",
+          description: "Scale from single documents to millions automatically. No capacity planning, no infrastructure management, no limits on growth.",
+          icon: "zap"
+        },
+        {
+          title: "Global Availability",
+          description: "Deploy across multiple regions worldwide. Low latency processing with data residency compliance for international organizations.",
+          icon: "globe"
+        },
+        {
+          title: "Zero Maintenance",
+          description: "Focus on your business while we handle infrastructure, updates, security patches, and monitoring. Always up-to-date.",
+          icon: "cog"
+        },
+        {
+          title: "Enterprise Security",
+          description: "Bank-level security with end-to-end encryption, zero-knowledge architecture, and comprehensive compliance certifications.",
+          icon: "lock"
+        },
+        {
+          title: "Developer First",
+          description: "RESTful APIs, comprehensive SDKs, and interactive documentation. Get started in minutes with our developer-friendly platform.",
+          icon: "code"
+        },
+        {
+          title: "Seamless Integration",
+          description: "Connect with your existing tools and workflows. Pre-built integrations with popular platforms and custom webhook support.",
+          icon: "link"
+        }
+      ]}
+    />
+
+    <!-- Benefits Section -->
+    <ProductBenefits
+      title="Why Choose Nvisy Cloud"
+      description="Experience the benefits of a fully managed, globally distributed document redaction platform built for modern enterprises."
+      benefits={[
+        {
+          title: "Faster Time to Market",
+          description: "Deploy in minutes, not months. No infrastructure setup, no complex configurations.",
+          icon: "zap"
+        },
+        {
+          title: "Cost Effective",
+          description: "Pay only for what you use. No upfront costs, no maintenance fees, no infrastructure investments."
+        },
+        {
+          title: "Enterprise Security",
+          description: "Bank-level security with comprehensive compliance certifications and audit trails.",
+          icon: "lock"
+        },
+        {
+          title: "Always Up to Date",
+          description: "Automatic updates with the latest AI models, security patches, and features.",
+          icon: "settings"
+        }
+      ]}
+      visualContent={{
+        title: "Ready in 5 Minutes",
+        description: "Get started instantly with our cloud platform. No setup, no configuration, no waiting.",
+        steps: [
+          { text: "Sign up with email" },
+          { text: "Upload your first document" },
+          { text: "Get redacted results instantly" }
+        ]
+      }}
+    />
+
+    <!-- Customers/Testimonials Section -->
+    <Testimonials
+      title="Trusted by Enterprise Leaders"
+      description="See what our customers say about transforming their document security workflows with Nvisy Cloud."
+      backgroundColor="white"
+      testimonials={[
+        {
+          quote: "Nvisy Cloud reduced our document review time by 80% while maintaining 100% compliance. The AI accuracy is remarkable and the cloud deployment was seamless.",
+          author: "Sarah Chen",
+          title: "Chief Compliance Officer",
+          company: "TechCorp Financial",
+          rating: 5,
+        },
+        {
+          quote: "The global scalability is exactly what we needed for our international operations. Processing documents in multiple regions with consistent results.",
+          author: "Michael Rodriguez",
+          title: "General Counsel",
+          company: "Global Legal Services",
+          rating: 5,
+        },
+        {
+          quote: "Zero maintenance means our IT team can focus on strategic initiatives. The platform just works, scales automatically, and stays secure.",
+          author: "Dr. Amanda Foster",
+          title: "CTO",
+          company: "Healthcare Innovation Corp",
+          rating: 5,
+        }
+      ]}
+    />
+
+    <!-- Comparisons Section -->
+    <ProductComparison
+      title="How Nvisy Cloud Compares"
+      description="See how Nvisy Cloud stacks up against other document redaction solutions in the market."
+      mainProduct={{
+        name: "Nvisy Cloud",
+        description: "AI-Powered Cloud Platform",
+        features: [
+          { name: "99.9% AI accuracy", status: "check" },
+          { name: "5-minute setup", status: "check" },
+          { name: "Global scalability", status: "check" },
+          { name: "Zero maintenance", status: "check" },
+          { name: "SOC 2 Type II", status: "check" }
+        ]
+      }}
+      competitors={[
+        {
+          name: "Traditional Tools",
+          description: "Manual/Legacy Solutions",
+          features: [
+            { name: "Manual, error-prone", status: "x" },
+            { name: "Weeks to deploy", status: "x" },
+            { name: "Limited scalability", status: "x" },
+            { name: "High maintenance", status: "x" },
+            { name: "Limited compliance", status: "x" }
+          ]
+        },
+        {
+          name: "Other Cloud Tools",
+          description: "Generic Solutions",
+          features: [
+            { name: "Basic accuracy", status: "warning" },
+            { name: "Cloud deployment", status: "check" },
+            { name: "Limited scalability", status: "warning" },
+            { name: "Some maintenance", status: "warning" },
+            { name: "Basic compliance", status: "warning" }
+          ]
+        }
+      ]}
+    />
+
+    <!-- Simple Pricing Preview -->
+    <ProductPricing
+      title="Simple, Transparent Pricing"
+      description="Start free and scale as you grow. No hidden fees, no long-term contracts."
+      tiers={[
+        {
+          name: "100 pages/month",
+          price: "Free",
+          description: "Perfect for getting started"
+        },
+        {
+          name: "per additional page",
+          price: "$0.10",
+          description: "Pay as you scale"
+        },
+        {
+          name: "enterprise pricing",
+          price: "Custom",
+          description: "Volume discounts available"
+        }
+      ]}
+      ctas={[
+        {
+          text: "View Full Pricing",
+          href: "/pricing",
+          variant: "primary"
+        },
+        {
+          text: "Start Free Trial",
+          href: "/pricing",
+          variant: "secondary"
+        }
+      ]}
+      compact={true}
+    />
+
+    <!-- CTA Section -->
+    <CTA />
+  </div>
+</Layout>

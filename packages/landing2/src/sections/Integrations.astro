@@ -1,0 +1,139 @@
+---
+export interface Props {
+	title?: string;
+	description?: string;
+	backgroundColor?: "white" | "gray";
+	integrations?: Array<{
+		name: string;
+		description?: string;
+		logo?: string;
+		alt?: string;
+		category?: string;
+		icon?: string;
+	}>;
+}
+
+const {
+	title = "Seamless Integrations",
+	description = "Connect with your existing tools and workflows. Our platform integrates with popular enterprise software to streamline your document processing pipeline.",
+	backgroundColor = "white",
+	integrations = [
+		{
+			name: "Microsoft Office 365",
+			description: "Direct integration with Word, Excel, and PowerPoint",
+			category: "Office Suite",
+			icon: "📄",
+		},
+		{
+			name: "Google Workspace",
+			description: "Works with Google Docs, Sheets, and Drive",
+			category: "Cloud Office",
+			icon: "🌐",
+		},
+		{
+			name: "Salesforce",
+			description: "Redact sensitive data in CRM documents",
+			category: "CRM",
+			icon: "💼",
+		},
+		{
+			name: "Box",
+			description: "Secure cloud storage integration",
+			category: "Storage",
+			icon: "📦",
+		},
+		{
+			name: "SharePoint",
+			description: "Enterprise document management",
+			category: "Collaboration",
+			icon: "🔗",
+		},
+		{
+			name: "Slack",
+			description: "Real-time notifications and workflow updates",
+			category: "Communication",
+			icon: "💬",
+		},
+		{
+			name: "Zapier",
+			description: "Connect with 5,000+ apps and automate workflows",
+			category: "Automation",
+			icon: "⚡",
+		},
+		{
+			name: "REST API",
+			description: "Custom integrations with our developer-friendly API",
+			category: "Developer",
+			icon: "🔧",
+		},
+	],
+} = Astro.props;
+
+const bgClass = backgroundColor === "gray" ? "bg-gray-50" : "bg-white";
+---
+
+<section class={`py-20 ${bgClass} dark:bg-black px-4`}>
+  <div class="container mx-auto max-w-6xl">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        {title}
+      </h2>
+      <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+        {description}
+      </p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+      {integrations.map((integration) => (
+        <div class="group p-6 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm transition-all duration-200 bg-white dark:bg-gray-800">
+          <div class="text-center">
+            {integration.logo ? (
+              <img
+                src={integration.logo}
+                alt={integration.alt || integration.name}
+                class="w-12 h-12 mx-auto mb-4 object-contain"
+              />
+            ) : integration.icon ? (
+              <div class="w-12 h-12 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:from-gray-100 group-hover:to-gray-200 dark:group-hover:from-gray-600 dark:group-hover:to-gray-500 transition-all duration-200 transform group-hover:scale-110">
+                <span class="text-2xl">
+                  {integration.icon}
+                </span>
+              </div>
+            ) : (
+              <div class="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 transition-colors duration-200">
+                <span class="text-gray-600 dark:text-gray-300 font-semibold text-xs text-center leading-tight">
+                  {integration.name.split(' ').map(word => word.charAt(0)).join('').slice(0, 3)}
+                </span>
+              </div>
+            )}
+            <h3 class="font-semibold text-gray-900 dark:text-white text-sm mb-2 leading-tight">
+              {integration.name}
+            </h3>
+            {integration.description && (
+              <p class="text-gray-600 dark:text-gray-300 text-xs leading-relaxed mb-2">
+                {integration.description}
+              </p>
+            )}
+            {integration.category && (
+              <span class="inline-block px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs rounded-full">
+                {integration.category}
+              </span>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="text-center mt-12">
+      <p class="text-gray-600 dark:text-gray-400 mb-6">
+        Don't see your tool? Our API makes custom integrations simple.
+      </p>
+      <a
+        href="/integrations"
+        class="inline-flex items-center justify-center border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-6 py-2 text-sm font-medium transition-all duration-200 rounded-md no-underline"
+      >
+        View All Integrations
+      </a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,67 @@
+---
+import { ExternalLink } from "lucide-vue-next";
+
+// Company news data - this could be passed as props in a real implementation
+const companyNews = [
+	{
+		title: "CEO Sarah Chen Named to Forbes 30 Under 30",
+		date: "2024-01-10",
+		source: "Forbes",
+		url: "#",
+	},
+	{
+		title: "Nvisy Featured in TechCrunch's 'AI Startups to Watch'",
+		date: "2023-12-28",
+		source: "TechCrunch",
+		url: "#",
+	},
+	{
+		title: "Industry Recognition: 'Best AI Security Solution 2023'",
+		date: "2023-12-15",
+		source: "CyberSecurity Awards",
+		url: "#",
+	},
+	{
+		title: "Nvisy Wins 'Innovation Award' at Enterprise Security Summit",
+		date: "2023-11-22",
+		source: "SecurityWeek",
+		url: "#",
+	},
+	{
+		title: "Document Redaction Market Leader: Nvisy's Rise",
+		date: "2023-10-18",
+		source: "Business Insider",
+		url: "#",
+	},
+];
+---
+
+<div class="max-w-7xl mx-auto">
+  <!-- In the News -->
+  <div>
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+      In the News
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {companyNews.map(news => (
+        <div class="bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-neutral-700 p-6 hover:shadow-lg hover:border-gray-300 dark:hover:border-neutral-600 transition-all duration-300">
+          <h3 class="font-semibold text-gray-900 dark:text-white mb-3 text-lg leading-snug">
+            {news.title}
+          </h3>
+          <div class="flex items-center justify-between text-sm text-gray-500 dark:text-neutral-400 mb-4">
+            <span class="font-medium">{news.source}</span>
+            <span>{new Date(news.date).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric'
+            })}</span>
+          </div>
+          <a href={news.url} class="inline-flex items-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
+            View Article
+            <ExternalLink class="w-4 h-4 ml-1" client:load />
+          </a>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>

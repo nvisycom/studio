@@ -1,0 +1,38 @@
+[
+	{
+		"question": "Do you provide API access?",
+		"answer": "Yes! API access is available on our Pro and Enterprise plans. Our comprehensive API allows you to integrate our redaction capabilities directly into your applications. Full documentation and code examples are available in our developer portal.",
+		"order": 1,
+		"featured": false
+	},
+	{
+		"question": "What file types are supported?",
+		"answer": "We support a wide range of document formats including PDF, DOCX, DOC, TXT, RTF, images (JPG, PNG, TIFF), and scanned documents. Our OCR technology can extract and redact text from images and scanned documents automatically.",
+		"order": 2,
+		"featured": true
+	},
+	{
+		"question": "Can I redact multiple documents at once?",
+		"answer": "Yes! Our platform supports batch processing, allowing you to upload and redact multiple documents simultaneously. You can apply the same redaction rules across all documents or customize settings for each file. This feature is available on all plans.",
+		"order": 3,
+		"featured": false
+	},
+	{
+		"question": "Do you offer custom integrations?",
+		"answer": "Custom integrations are available for Enterprise customers. Our team can work with you to integrate our redaction engine with your existing systems, workflows, and tools. We support REST APIs, webhooks, and can build custom connectors as needed.",
+		"order": 4,
+		"featured": false
+	},
+	{
+		"question": "How does the redaction limit work?",
+		"answer": "Each redaction counts as one unit from your monthly allowance. Unused redactions don't roll over to the next month, but you can always upgrade for higher limits.",
+		"order": 5,
+		"featured": false
+	},
+	{
+		"question": "What happens if I exceed my redaction limits?",
+		"answer": "We'll notify you when you're approaching your limits and help you upgrade to a plan that better fits your needs. We never cut off access unexpectedly.",
+		"order": 6,
+		"featured": false
+	}
+]

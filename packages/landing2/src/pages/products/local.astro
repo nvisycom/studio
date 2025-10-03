@@ -1,0 +1,258 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { CTA, Features, Testimonials } from "@/components/sections";
+import {
+	ProductHero,
+	ProductBenefits,
+	ProductComparison,
+	DeploymentOptions,
+	SystemRequirements,
+	ProductPricing,
+} from "@/components/pages/products";
+---
+
+<Layout title="Nvisy Local - On-Premises Document Redaction" description="Deploy Nvisy's AI-powered document redaction on your own infrastructure. Complete control, maximum security, and compliance for air-gapped environments.">
+  <div class="bg-white dark:bg-black min-h-screen">
+    <!-- Hero Section -->
+    <ProductHero
+      title="Nvisy Local"
+      description="Enterprise-grade document redaction deployed entirely on your infrastructure. Maximum security, complete data sovereignty, full customization."
+      primaryCta={{
+        text: "Request Deployment Demo",
+        href: "/contact"
+      }}
+      secondaryCta={{
+        text: "Download Specifications",
+        href: "/contact"
+      }}
+      stats={[
+        {
+          value: "100%",
+          label: "On-Premises"
+        },
+        {
+          value: "Air-Gap",
+          label: "Ready"
+        },
+        {
+          value: "Zero",
+          label: "Data Leaves Your Network"
+        }
+      ]}
+    />
+
+    <!-- Features Section -->
+    <Features
+      title="Enterprise-Grade On-Premises Platform"
+      description="All the power of Nvisy's AI-powered document redaction, deployed entirely within your secure infrastructure with complete data sovereignty."
+      features={[
+        {
+          title: "Complete Data Sovereignty",
+          description: "Your documents never leave your infrastructure. Perfect for classified data, regulated industries, and strict data residency requirements.",
+          icon: "lock"
+        },
+        {
+          title: "Seamless Integration",
+          description: "Integrate directly with your existing systems, databases, and workflows. Custom connectors and APIs for enterprise applications.",
+          icon: "link"
+        },
+        {
+          title: "Optimized Performance",
+          description: "Leverage your hardware fully with optimized processing engines. GPU acceleration and distributed processing for maximum throughput.",
+          icon: "zap"
+        },
+        {
+          title: "Full Customization",
+          description: "Customize redaction models, policies, and workflows to match your exact requirements. Train custom models on your data.",
+          icon: "cog"
+        },
+        {
+          title: "White-Glove Support",
+          description: "Comprehensive deployment, training, and ongoing support from our expert team. 24/7 enterprise support included.",
+          icon: "check"
+        },
+        {
+          title: "Compliance Ready",
+          description: "Pre-configured for major compliance frameworks. Built-in audit trails, reporting, and documentation for regulatory requirements.",
+          icon: "check"
+        }
+      ]}
+    />
+
+    <!-- Deployment Options -->
+    <DeploymentOptions
+      title="Deployment Options"
+      description="Choose the deployment model that best fits your infrastructure and security requirements"
+      options={[
+        {
+          name: "Single Server",
+          description: "Perfect for smaller organizations or proof-of-concept deployments. All components on one server with simple management.",
+          features: [
+            "Up to 10,000 documents/month",
+            "Single point of management",
+            "Minimal hardware requirements"
+          ]
+        },
+        {
+          name: "Clustered",
+          description: "High availability deployment with load balancing and redundancy. Ideal for mission-critical operations.",
+          features: [
+            "Up to 1M documents/month",
+            "High availability",
+            "Auto failover"
+          ],
+          recommended: true
+        },
+        {
+          name: "Distributed",
+          description: "Enterprise-scale deployment across multiple data centers. Ultimate performance and geographic distribution.",
+          features: [
+            "Unlimited documents",
+            "Multi-datacenter",
+            "Global distribution"
+          ]
+        }
+      ]}
+    />
+
+    <!-- System Requirements -->
+    <SystemRequirements
+      title="System Requirements"
+      description="Minimum and recommended specifications for optimal performance"
+      requirementSets={[
+        {
+          title: "Minimum Requirements",
+          specs: [
+            { label: "CPU", value: "8 cores, 2.4GHz" },
+            { label: "Memory", value: "32 GB RAM" },
+            { label: "Storage", value: "500 GB SSD" },
+            { label: "Network", value: "1 Gbps" },
+            { label: "OS", value: "Linux, Windows Server" }
+          ]
+        },
+        {
+          title: "Recommended",
+          specs: [
+            { label: "CPU", value: "16+ cores, 3.0GHz" },
+            { label: "Memory", value: "64+ GB RAM" },
+            { label: "Storage", value: "2+ TB NVMe SSD" },
+            { label: "Network", value: "10+ Gbps" },
+            { label: "GPU", value: "NVIDIA RTX/Tesla (Optional)" }
+          ],
+          highlighted: true
+        }
+      ]}
+    />
+
+    <!-- Customers/Testimonials Section -->
+    <Testimonials
+      title="Trusted by Government & Enterprise"
+      description="See what our customers say about deploying Nvisy Local in their most secure environments."
+      backgroundColor="gray"
+      testimonials={[
+        {
+          quote: "Nvisy Local gives us the security posture we need for classified documents while maintaining the AI accuracy we require. Zero data ever leaves our network.",
+          author: "Colonel James Mitchell",
+          title: "Information Systems Director",
+          company: "U.S. Department of Defense",
+          rating: 5,
+        },
+        {
+          quote: "The on-premises deployment was seamless. Our compliance team loves having complete audit trails and the ability to customize redaction policies for our industry.",
+          author: "Dr. Elena Rodriguez",
+          title: "Chief Security Officer",
+          company: "Federal Health Agency",
+          rating: 5,
+        },
+        {
+          quote: "Custom model training on our proprietary documents has given us redaction accuracy that exceeds 99.8%. The performance on our GPU cluster is exceptional.",
+          author: "Robert Chen",
+          title: "Senior Systems Architect",
+          company: "Defense Contractor Solutions",
+          rating: 5,
+        }
+      ]}
+    />
+
+    <!-- Comparisons Section -->
+    <ProductComparison
+      title="Why Choose Nvisy Local"
+      description="See how Nvisy Local compares to other on-premises document redaction solutions."
+      mainProduct={{
+        name: "Nvisy Local",
+        description: "AI-Powered On-Premises",
+        features: [
+          { name: "99.9% AI accuracy", status: "check" },
+          { name: "Air-gap ready", status: "check" },
+          { name: "Custom model training", status: "check" },
+          { name: "GPU acceleration", status: "check" },
+          { name: "FedRAMP ready", status: "check" }
+        ]
+      }}
+      competitors={[
+        {
+          name: "Legacy Solutions",
+          description: "Traditional On-Premises",
+          features: [
+            { name: "Manual, error-prone", status: "x" },
+            { name: "On-premises", status: "check" },
+            { name: "No customization", status: "x" },
+            { name: "CPU-only processing", status: "x" },
+            { name: "Limited compliance", status: "x" }
+          ]
+        },
+        {
+          name: "Cloud-First Tools",
+          description: "External Dependencies",
+          features: [
+            { name: "Good AI accuracy", status: "warning" },
+            { name: "Not air-gap compatible", status: "x" },
+            { name: "Limited customization", status: "x" },
+            { name: "Cloud-based processing", status: "warning" },
+            { name: "Data sovereignty issues", status: "x" }
+          ]
+        }
+      ]}
+    />
+
+    <!-- Enterprise Pricing -->
+    <ProductPricing
+      title="Enterprise Deployment Pricing"
+      description="Custom pricing based on your infrastructure requirements and deployment model."
+      backgroundColor="gray"
+      tiers={[
+        {
+          name: "One-time license",
+          price: "Custom",
+          description: "Perpetual licensing available"
+        },
+        {
+          name: "24/7 enterprise",
+          price: "Support",
+          description: "Dedicated support team"
+        },
+        {
+          name: "White-glove onboarding",
+          price: "Training",
+          description: "Complete deployment assistance"
+        }
+      ]}
+      ctas={[
+        {
+          text: "Request Quote",
+          href: "/contact",
+          variant: "primary"
+        },
+        {
+          text: "Schedule Consultation",
+          href: "/contact",
+          variant: "secondary"
+        }
+      ]}
+      compact={true}
+    />
+
+    <!-- CTA Section -->
+    <CTA />
+  </div>
+</Layout>

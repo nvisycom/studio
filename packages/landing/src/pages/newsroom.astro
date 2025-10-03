@@ -1,0 +1,110 @@
+---
+import { Layout } from "@/layouts";
+import {
+	NewsroomHero,
+	PressReleases,
+	InTheNews,
+	MediaResources,
+} from "@/sections/newsroom";
+import { CTA } from "@/sections";
+---
+
+<Layout title="Newsroom" description="Latest news, press releases, and media resources from Nvisy. Stay updated on our journey to transform document security.">
+  <div class="bg-white dark:bg-black min-h-screen">
+    <!-- Hero Section -->
+    <NewsroomHero />
+
+    <!-- As Featured In Animation -->
+    <div class="py-12 border-b border-gray-200 dark:border-neutral-800">
+      <div class="container mx-auto px-4">
+        <div class="text-center">
+          <div class="overflow-hidden">
+            <div class="inline-flex animate-spin-slow items-center text-sm text-gray-500 dark:text-neutral-400 whitespace-nowrap">
+              <span class="mx-8">as featured in</span>
+              <span class="mx-8">•</span>
+              <span class="mx-8">TechCrunch</span>
+              <span class="mx-8">•</span>
+              <span class="mx-8">Forbes</span>
+              <span class="mx-8">•</span>
+              <span class="mx-8">VentureBeat</span>
+              <span class="mx-8">•</span>
+              <span class="mx-8">Wired</span>
+              <span class="mx-8">•</span>
+              <span class="mx-8">Business Insider</span>
+              <span class="mx-8">•</span>
+              <span class="mx-8">SecurityWeek</span>
+              <span class="mx-8">•</span>
+              <span class="mx-8">as featured in</span>
+              <span class="mx-8">•</span>
+              <span class="mx-8">TechCrunch</span>
+              <span class="mx-8">•</span>
+              <span class="mx-8">Forbes</span>
+              <span class="mx-8">•</span>
+              <span class="mx-8">VentureBeat</span>
+              <span class="mx-8">•</span>
+              <span class="mx-8">Wired</span>
+              <span class="mx-8">•</span>
+              <span class="mx-8">Business Insider</span>
+              <span class="mx-8">•</span>
+              <span class="mx-8">SecurityWeek</span>
+              <span class="mx-8">•</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-12">
+      <!-- Press Releases Section -->
+      <section class="mb-20">
+        <PressReleases />
+      </section>
+
+      <!-- In the News Section -->
+      <section class="mb-20">
+        <InTheNews />
+      </section>
+
+      <!-- Media Resources Section -->
+      <section class="mb-12">
+        <MediaResources />
+      </section>
+    </div>
+
+    <!-- CTA Section -->
+    <CTA
+      title="Press Inquiries"
+      description="For media inquiries, interview requests, or additional information, please don't hesitate to reach out to our press team."
+      background="none"
+      padding="lg"
+      buttons={[
+        {
+          text: "Email Press Team",
+          href: "mailto:press@nvisy.com",
+          variant: "primary"
+        },
+        {
+          text: "General Contact",
+          href: "/contact",
+          variant: "secondary"
+        }
+      ]}
+    />
+  </div>
+</Layout>
+
+<style>
+  @keyframes spin-slow {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 20s linear infinite;
+  }
+</style>

@@ -1,0 +1,87 @@
+{
+	"name": "Nvisy, Enterprise Document Redaction",
+	"short_name": "Nvisy",
+	"description": "Enterprise-grade document redaction powered by advanced AI. Protect sensitive information while maintaining document integrity.",
+	"start_url": "/",
+	"scope": "/",
+	"display": "standalone",
+	"orientation": "portrait-primary",
+	"theme_color": "#000000",
+	"background_color": "#ffffff",
+	"lang": "en",
+	"dir": "ltr",
+	"categories": ["business", "productivity", "privacy", "security"],
+	"icons": [
+		{
+			"src": "/favicon-16x16.png",
+			"sizes": "16x16",
+			"type": "image/png"
+		},
+		{
+			"src": "/favicon-32x32.png",
+			"sizes": "32x32",
+			"type": "image/png"
+		},
+		{
+			"src": "/apple-touch-icon.png",
+			"sizes": "180x180",
+			"type": "image/png"
+		},
+		{
+			"src": "/favicon.svg",
+			"sizes": "any",
+			"type": "image/svg+xml",
+			"purpose": "any maskable"
+		}
+	],
+	"screenshots": [
+		{
+			"src": "/screenshots/desktop-home.png",
+			"sizes": "1280x720",
+			"type": "image/png",
+			"form_factor": "wide",
+			"label": "Nvisy Dashboard"
+		},
+		{
+			"src": "/screenshots/mobile-home.png",
+			"sizes": "390x844",
+			"type": "image/png",
+			"form_factor": "narrow",
+			"label": "Nvisy Mobile View"
+		}
+	],
+	"shortcuts": [
+		{
+			"name": "Upload Document",
+			"short_name": "Upload",
+			"description": "Quick upload for document redaction",
+			"url": "/upload",
+			"icons": [
+				{
+					"src": "/icons/upload-96x96.png",
+					"sizes": "96x96"
+				}
+			]
+		},
+		{
+			"name": "Dashboard",
+			"short_name": "Dashboard",
+			"description": "View your redaction projects",
+			"url": "/dashboard",
+			"icons": [
+				{
+					"src": "/icons/dashboard-96x96.png",
+					"sizes": "96x96"
+				}
+			]
+		}
+	],
+	"related_applications": [],
+	"prefer_related_applications": false,
+	"edge_side_panel": {
+		"preferred_width": 400
+	},
+	"launch_handler": {
+		"client_mode": "navigate-existing"
+	}
+}

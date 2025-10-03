@@ -1,0 +1,224 @@
+---
+import { Layout } from "@/layouts";
+import { CTA, Features, Hero } from "@/sections";
+---
+
+<Layout title="Startup Solutions" description="Document redaction solutions built for startups. Quick setup, affordable pricing, and built to scale with your growing business.">
+  <div class="bg-white dark:bg-black min-h-screen">
+    <!-- Hero Section -->
+    <Hero
+      title="Document Security That Scales"
+      description="Protect sensitive data from day one without breaking the bank. Built for fast-moving startups who need enterprise-grade security at startup-friendly prices."
+      background="gradient"
+      fontSize="xl"
+      padding="xl"
+      buttons={[
+        {
+          text: "Start Free Trial",
+          href: "/pricing",
+          variant: "primary",
+          icon: "arrow"
+        },
+        {
+          text: "Talk to Founders",
+          href: "/contact",
+          variant: "secondary"
+        }
+      ]}
+      stats={[
+        {
+          value: "5 min",
+          label: "Setup Time"
+        },
+        {
+          value: "$0",
+          label: "To Get Started"
+        },
+        {
+          value: "100%",
+          label: "API Coverage"
+        }
+      ]}
+    />
+
+    <!-- Why Startups Choose Section -->
+    <Features
+      title="Built for Startup Speed"
+      description="Everything you need to implement secure document redaction quickly, affordably, and with the flexibility to scale as you grow."
+      features={[
+        {
+          title: "Launch in Minutes",
+          description: "Get up and running with document redaction in under 5 minutes. No complex setup, no lengthy procurement processes.",
+          icon: "zap"
+        },
+        {
+          title: "Developer Friendly",
+          description: "RESTful APIs, SDKs in every language, and comprehensive documentation. Built by developers, for developers.",
+          icon: "code"
+        },
+        {
+          title: "Pay-as-you-Scale",
+          description: "Start free and only pay for what you use as you grow. No upfront costs, no long-term contracts.",
+          icon: "dollar-sign"
+        },
+        {
+          title: "Built to Scale",
+          description: "From prototype to IPO, our infrastructure scales automatically with your growth without any configuration.",
+          icon: "trending-up"
+        },
+        {
+          title: "Community Powered",
+          description: "Join a vibrant community of startup founders and developers building with document redaction APIs.",
+          icon: "users"
+        },
+        {
+          title: "Secure by Default",
+          description: "Enterprise-grade security built in from the start. Be ready for compliance audits as you scale.",
+          icon: "lock"
+        }
+      ]}
+    />
+
+    <!-- Getting Started Process -->
+    <div class="bg-gray-50 dark:bg-gray-900 py-20">
+      <div class="container mx-auto px-4">
+        <div class="max-w-5xl mx-auto">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+              From Idea to Production in Minutes
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              Our streamlined onboarding gets you from zero to redacting documents
+              faster than any other solution on the market.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center">
+              <div class="w-16 h-16 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
+                <span class="text-white dark:text-black font-bold text-xl">1</span>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Sign Up</h3>
+              <p class="text-gray-600 dark:text-gray-300 text-sm">
+                Create your account with just your email. No credit card required for the free tier.
+              </p>
+            </div>
+
+            <div class="text-center">
+              <div class="w-16 h-16 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
+                <span class="text-white dark:text-black font-bold text-xl">2</span>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Integrate</h3>
+              <p class="text-gray-600 dark:text-gray-300 text-sm">
+                Add our SDK to your app or make direct API calls. Full documentation and examples included.
+              </p>
+            </div>
+
+            <div class="text-center">
+              <div class="w-16 h-16 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
+                <span class="text-white dark:text-black font-bold text-xl">3</span>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Scale</h3>
+              <p class="text-gray-600 dark:text-gray-300 text-sm">
+                Start processing documents immediately. Scale automatically as your usage grows.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Stories -->
+    <div class="container mx-auto px-4 py-20">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+            Trusted by Growing Startups
+          </h2>
+          <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Proven results that help startups move faster and build trust with customers.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+          <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
+            <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">90%</div>
+            <div class="text-gray-600 dark:text-gray-400 mb-4 font-medium">Faster Time to Market</div>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">
+              Startups using Nvisy get compliant document handling up 90% faster than building in-house.
+            </p>
+          </div>
+
+          <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
+            <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">$50K+</div>
+            <div class="text-gray-600 dark:text-gray-400 mb-4 font-medium">Development Cost Saved</div>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">
+              Average savings compared to hiring a team to build document redaction from scratch.
+            </p>
+          </div>
+
+          <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
+            <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">99.9%</div>
+            <div class="text-gray-600 dark:text-gray-400 mb-4 font-medium">Uptime Guarantee</div>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">
+              Enterprise-grade reliability from day one without the enterprise complexity.
+            </p>
+          </div>
+
+          <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
+            <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">24/7</div>
+            <div class="text-gray-600 dark:text-gray-400 mb-4 font-medium">Community Support</div>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">
+              Active community and responsive support team to help you succeed.
+            </p>
+          </div>
+        </div>
+
+        <!-- Startup Specific Benefits -->
+        <div class="bg-gray-50 dark:bg-gray-900 rounded-2xl p-8">
+          <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">Why Startups Choose Nvisy</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+              <div>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-1">Ship Features, Not Infrastructure</h4>
+                <p class="text-sm text-gray-600 dark:text-gray-300">Focus on your core product while we handle document security.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+              </svg>
+              <div>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-1">Bootstrap-Friendly Pricing</h4>
+                <p class="text-sm text-gray-600 dark:text-gray-300">Start free, scale affordably without breaking your runway.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+              </svg>
+              <div>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-1">Investor-Ready Security</h4>
+                <p class="text-sm text-gray-600 dark:text-gray-300">Impress investors with enterprise-grade data protection.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
+              </svg>
+              <div>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-1">Scales With Your Growth</h4>
+                <p class="text-sm text-gray-600 dark:text-gray-300">From prototype to IPO without changing providers.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <CTA />
+  </div>
+</Layout>

@@ -1,0 +1,261 @@
+---
+import {Layout} from "@/layouts";
+import { CTA, Hero } from "@/sections";
+
+const teamMembers = [
+	{
+		name: "Sarah Johnson",
+		role: "CEO & Co-Founder",
+		bio: "Former VP of Product at Fortune 500 company. Passionate about building enterprise tools that drive real business outcomes.",
+		image: "SJ",
+	},
+	{
+		name: "Michael Chen",
+		role: "CTO & Co-Founder",
+		bio: "15+ years building scalable systems for enterprise customers. Expert in AI/ML and document processing technologies.",
+		image: "MC",
+	},
+	{
+		name: "Emma Rodriguez",
+		role: "Head of Engineering",
+		bio: "Former principal engineer at major tech companies. Leads our technical vision and platform architecture.",
+		image: "ER",
+	},
+	{
+		name: "David Kim",
+		role: "VP of Product",
+		bio: "Product leader with deep expertise in enterprise software and regulatory compliance requirements.",
+		image: "DK",
+	},
+];
+
+const companyStats = [
+	{ label: "Founded", value: "2023" },
+	{ label: "Enterprise Customers", value: "500+" },
+	{ label: "Documents Processed", value: "10M+" },
+	{ label: "Global Presence", value: "15 Countries" },
+];
+
+const values = [
+	{
+		title: "Security First",
+		description:
+			"Every decision prioritizes the security and privacy of customer data above all else.",
+	},
+	{
+		title: "Enterprise Focus",
+		description:
+			"Built for the scale, reliability, and compliance requirements of enterprise organizations.",
+	},
+	{
+		title: "Continuous Innovation",
+		description:
+			"Constantly advancing our AI capabilities to stay ahead of emerging threats and use cases.",
+	},
+	{
+		title: "Customer Success",
+		description:
+			"Our success is measured by the tangible business value we deliver to our customers.",
+	},
+];
+---
+
+<Layout
+  title="About"
+  description="Learn about Nvisy's mission to revolutionize document redaction and data protection for enterprise organizations worldwide."
+>
+  <div class="bg-white dark:bg-black min-h-screen">
+    <!-- Hero Section -->
+    <Hero
+      title="Protecting Enterprise Data Through AI"
+      description="We're building the most advanced document redaction platform to help enterprises protect sensitive information while maintaining operational efficiency."
+      background="dark"
+      fontSize="xl"
+      padding="xl"
+      buttons={[]}
+    />
+    <div class="border-b border-gray-200 dark:border-neutral-800"></div>
+
+    <!-- Company Stats -->
+    <div class="bg-gray-50 dark:bg-neutral-900 py-16">
+      <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {companyStats.map(stat => (
+              <div class="text-center">
+                <div class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                  {stat.value}
+                </div>
+                <div class="text-gray-600 dark:text-neutral-400 font-medium">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mission & Story -->
+    <div class="container mx-auto px-4 py-20">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+            Our Mission
+          </h2>
+          <p class="text-lg text-gray-600 dark:text-neutral-300 leading-relaxed">
+            To provide enterprise organizations with the most secure, accurate, and efficient document redaction platform,
+            enabling them to protect sensitive data while maintaining business velocity.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
+          <div>
+            <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+              The Challenge
+            </h3>
+            <p class="text-gray-600 dark:text-neutral-400 leading-relaxed mb-4">
+              Enterprise organizations process millions of documents containing sensitive information. Traditional redaction methods are manual, error-prone, and don't scale with business needs.
+            </p>
+            <p class="text-gray-600 dark:text-neutral-400 leading-relaxed">
+              Compliance requirements are becoming more stringent, while the volume and complexity of documents continue to grow exponentially.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+              Our Solution
+            </h3>
+            <p class="text-gray-600 dark:text-neutral-400 leading-relaxed mb-4">
+              We've built an AI-powered platform that automatically identifies and redacts sensitive information with enterprise-grade accuracy and security.
+            </p>
+            <p class="text-gray-600 dark:text-neutral-400 leading-relaxed">
+              Our solution integrates seamlessly into existing workflows while providing the transparency, auditability, and control that enterprises require.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Values -->
+    <div class="bg-gray-50 dark:bg-neutral-900 py-20">
+      <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+              Our Values
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-3xl mx-auto">
+              These principles guide every decision we make, from product development to customer relationships.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {values.map(value => (
+              <div class="bg-white dark:bg-black border border-gray-200 dark:border-neutral-700 rounded-lg p-8">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                  {value.title}
+                </h3>
+                <p class="text-gray-600 dark:text-neutral-400 leading-relaxed">
+                  {value.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team -->
+    <div class="container mx-auto px-4 py-20">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+            Leadership Team
+          </h2>
+          <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-3xl mx-auto">
+            Our team combines deep expertise in AI, enterprise software, and regulatory compliance to deliver world-class solutions.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+          {teamMembers.map(member => (
+            <div class="border border-gray-200 dark:border-neutral-700 rounded-lg p-8">
+              <div class="flex items-center mb-4">
+                <div class="w-16 h-16 bg-gray-200 dark:bg-neutral-700 rounded-full flex items-center justify-center text-gray-700 dark:text-neutral-300 font-semibold text-lg mr-4">
+                  {member.image}
+                </div>
+                <div>
+                  <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                    {member.name}
+                  </h3>
+                  <p class="text-gray-600 dark:text-neutral-400">
+                    {member.role}
+                  </p>
+                </div>
+              </div>
+              <p class="text-gray-600 dark:text-neutral-400 leading-relaxed">
+                {member.bio}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <CTA
+      title="Join Our Mission"
+      description="We're looking for talented individuals who are passionate about building enterprise-grade solutions that make a real impact on data security and privacy."
+      background="solid"
+      padding="lg"
+      buttons={[
+        {
+          text: "View Open Positions",
+          href: "/careers",
+          variant: "primary"
+        },
+        {
+          text: "Get in Touch",
+          href: "/contact",
+          variant: "secondary"
+        }
+      ]}
+    />
+
+    <!-- Contact Information -->
+    <div class="border-t border-gray-200 dark:border-neutral-800 py-16">
+      <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div>
+              <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                Headquarters
+              </h3>
+              <p class="text-gray-600 dark:text-neutral-400 leading-relaxed">
+                San Francisco, California<br>
+                United States
+              </p>
+            </div>
+
+            <div>
+              <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                Contact
+              </h3>
+              <div class="space-y-2">
+                <p class="text-gray-600 dark:text-neutral-400">
+                  General: <a href="mailto:hello@nvisy.com" class="text-gray-900 dark:text-white hover:underline">hello@nvisy.com</a>
+                </p>
+                <p class="text-gray-600 dark:text-neutral-400">
+                  Sales: <a href="mailto:sales@nvisy.com" class="text-gray-900 dark:text-white hover:underline">sales@nvisy.com</a>
+                </p>
+                <p class="text-gray-600 dark:text-neutral-400">
+                  Support: <a href="mailto:support@nvisy.com" class="text-gray-900 dark:text-white hover:underline">support@nvisy.com</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>

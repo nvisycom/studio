@@ -1,0 +1,10 @@
+{
+	"icon": "google-drive",
+	"isBrand": true,
+	"version": "v2.1",
+	"status": "Completed",
+	"title": "Google Drive",
+	"category": "Cloud Storage",
+	"description": "Automatically redact sensitive information in Google Drive documents with real-time sync.",
+	"availability": "Available"
+}

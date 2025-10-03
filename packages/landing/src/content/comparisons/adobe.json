@@ -1,0 +1,121 @@
+{
+	"slug": "adobe",
+	"title": "Nvisy vs Adobe Redaction",
+	"competitor": {
+		"name": "Adobe Acrobat Redaction",
+		"description": "Traditional PDF redaction tools within Adobe Acrobat",
+		"logo": "/images/competitors/adobe-logo.png",
+		"website": "https://adobe.com",
+		"founded": "1982",
+		"headquarters": "San Jose, CA"
+	},
+	"overview": {
+		"nvisy": {
+			"strengths": [
+				"AI-powered automation",
+				"Batch processing capabilities",
+				"Modern API-first architecture",
+				"Lower total cost of ownership",
+				"Cloud and on-premise options"
+			],
+			"weaknesses": [
+				"Focused specifically on redaction",
+				"Requires integration for full workflow"
+			]
+		},
+		"competitor": {
+			"strengths": [
+				"Integrated with Adobe ecosystem",
+				"Manual control over redactions",
+				"Established brand trust",
+				"Rich PDF editing features"
+			],
+			"weaknesses": [
+				"Manual, time-consuming process",
+				"No batch processing",
+				"High subscription costs",
+				"Limited automation",
+				"Desktop-only solution"
+			]
+		}
+	},
+	"features": [
+		{ "name": "Automated Redaction", "nvisy": true, "competitor": false },
+		{ "name": "Manual Redaction", "nvisy": true, "competitor": true },
+		{ "name": "Batch Processing", "nvisy": true, "competitor": false },
+		{ "name": "API Integration", "nvisy": true, "competitor": false },
+		{ "name": "Cloud Processing", "nvisy": true, "competitor": false },
+		{ "name": "Multi-format Support", "nvisy": true, "competitor": false },
+		{ "name": "PDF Editing", "nvisy": false, "competitor": true },
+		{ "name": "OCR Recognition", "nvisy": true, "competitor": true },
+		{ "name": "Custom Rules Engine", "nvisy": true, "competitor": false },
+		{ "name": "Workflow Integration", "nvisy": true, "competitor": false }
+	],
+	"pricing": {
+		"nvisy": {
+			"starter": {
+				"price": 29,
+				"features": [
+					"1,000 redactions/month",
+					"Automated processing",
+					"API access"
+				]
+			},
+			"pro": {
+				"price": 99,
+				"features": [
+					"10,000 redactions/month",
+					"Batch processing",
+					"Priority support"
+				]
+			},
+			"enterprise": {
+				"price": "Custom",
+				"features": [
+					"Unlimited processing",
+					"On-premise deployment",
+					"Custom integration"
+				]
+			}
+		},
+		"competitor": {
+			"starter": {
+				"price": 23,
+				"features": [
+					"Adobe Acrobat Pro",
+					"Manual redaction only",
+					"Desktop software"
+				]
+			},
+			"pro": {
+				"price": 23,
+				"features": ["Same as starter", "No additional redaction features"]
+			},
+			"enterprise": {
+				"price": "Custom",
+				"features": [
+					"Volume licensing",
+					"Still manual process",
+					"No automation"
+				]
+			}
+		}
+	},
+	"useCases": [
+		{
+			"title": "High-Volume Document Processing",
+			"nvisy": "Automated batch processing handles thousands of documents with minimal human intervention",
+			"competitor": "Manual redaction makes high-volume processing extremely time-consuming and error-prone"
+		},
+		{
+			"title": "Legal Document Review",
+			"nvisy": "AI identifies sensitive information across various document types with consistent accuracy",
+			"competitor": "Requires manual review of each document, increasing time and potential for human error"
+		},
+		{
+			"title": "Regulatory Compliance",
+			"nvisy": "Automated compliance with GDPR, HIPAA, and other regulations through intelligent pattern recognition",
+			"competitor": "Manual process increases risk of compliance violations due to human oversight"
+		}
+	]
+}

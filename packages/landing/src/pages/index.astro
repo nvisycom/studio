@@ -1,6 +1,56 @@
 ---
-import Layout from '@/layouts/Layout.astro';
+import Layout from "@/layouts/Layout.astro";
+import { Hero } from "@/sections";
+import TrustIndicators from "@/sections/TrustIndicators.astro";
+import Features from "@/sections/Features.astro";
+import Testimonials from "@/sections/Testimonials.astro";
+import Stats from "@/sections/Stats.astro";
+import Workflow from "@/sections/Workflow.astro";
+import UseCases from "@/sections/UseCases.astro";
+import Integrations from "@/sections/Integrations.astro";
+import CTA from "@/sections/CTA.astro";
 ---
 <Layout>
-    Hello
+  <!-- Hero Section -->
+  <Hero />
+
+  <!-- Trust Indicators -->
+  <TrustIndicators />
+
+  <!-- Features Section -->
+  <Features />
+
+  <!-- Testimonials Section -->
+  <Testimonials backgroundColor="gray" />
+
+  <!-- Stats Section -->
+  <Stats />
+
+  <!-- How It Works -->
+  <Workflow backgroundColor="white" />
+
+  <!-- Use Cases Section -->
+  <UseCases />
+
+  <!-- Integrations Section -->
+  <Integrations backgroundColor="gray" />
+
+  <!-- Call-to-Action Section -->
+  <CTA
+    title="Ready to Secure Your Documents?"
+    description="Join hundreds of enterprises already protecting sensitive information with our AI-powered redaction platform."
+    background="gradient"
+    buttons={[
+      {
+        text: "Start Free Trial",
+        href: "/dashboard",
+        variant: "primary"
+      },
+      {
+        text: "Contact Sales",
+        href: "/contact",
+        variant: "secondary"
+      }
+    ]}
+  />
 </Layout>

@@ -1,0 +1,105 @@
+---
+import { ArrowRightIcon } from "lucide-vue-next";
+
+export interface PricingTier {
+	name: string;
+	price: string;
+	description: string;
+	features?: string[];
+}
+
+export interface PricingCTA {
+	text: string;
+	href: string;
+	variant?: "primary" | "secondary";
+}
+
+export interface Props {
+	title: string;
+	description: string;
+	tiers: PricingTier[];
+	ctas: PricingCTA[];
+	backgroundColor?: "white" | "gray";
+	compact?: boolean;
+}
+
+const {
+	title,
+	description,
+	tiers,
+	ctas,
+	backgroundColor = "white",
+	compact = false,
+} = Astro.props;
+
+const bgClass =
+	backgroundColor === "gray"
+		? "bg-gray-50 dark:bg-gray-900"
+		: "bg-white dark:bg-black";
+---
+
+<div class={`${bgClass} py-20`}>
+  <div class="container mx-auto px-4">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+        {title}
+      </h2>
+      <p class="text-lg text-gray-600 dark:text-gray-300 mb-12">
+        {description}
+      </p>
+
+      <div class={`rounded-2xl p-8 border border-gray-200 dark:border-gray-700 mb-12 ${
+        backgroundColor === 'gray'
+          ? 'bg-white dark:bg-gray-800'
+          : 'bg-gray-50 dark:bg-gray-900'
+      }`}>
+        <div class={`grid gap-8 ${
+          tiers.length === 3
+            ? 'grid-cols-1 md:grid-cols-3'
+            : 'grid-cols-1 md:grid-cols-2'
+        }`}>
+          {tiers.map((tier) => (
+            <div class="text-center">
+              <div class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                {tier.price}
+              </div>
+              <div class="text-gray-600 dark:text-gray-300 mb-2">
+                {tier.name}
+              </div>
+              {!compact && (
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                  {tier.description}
+                </div>
+              )}
+              {tier.features && !compact && (
+                <div class="mt-4">
+                  <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                    {tier.features.map((feature) => (
+                      <li>• {feature}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        {ctas.map((cta) => (
+          <a
+            href={cta.href}
+            class={`inline-flex items-center justify-center font-medium py-3 px-8 rounded-lg transition-colors ${
+              cta.variant === 'primary'
+                ? 'bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100'
+                : 'border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900'
+            }`}
+          >
+            {cta.text}
+            <ArrowRightIcon class="w-5 h-5 ml-2" />
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>

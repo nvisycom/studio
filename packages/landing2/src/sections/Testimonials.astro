@@ -1,0 +1,182 @@
+---
+
+
+export interface Props {
+	title?: string;
+	description?: string;
+	backgroundColor?: "white" | "gray";
+	testimonials?: Array<{
+		quote: string;
+		author: string;
+		title: string;
+		company: string;
+		avatar?: string;
+		companyLogo?: string;
+		rating?: number;
+	}>;
+}
+
+const {
+	title = "Trusted by Enterprise Leaders",
+	description = "See what our customers say about transforming their document security workflows.",
+	backgroundColor = "white",
+	testimonials = [
+		{
+			quote:
+				"Nvisy reduced our document review time by 80% while maintaining 100% compliance. The AI accuracy is remarkable - it catches sensitive data our team missed.",
+			author: "Sarah Chen",
+			title: "Chief Compliance Officer",
+			company: "TechCorp Financial",
+			rating: 5,
+		},
+		{
+			quote:
+				"Finally, a redaction solution that understands enterprise security. The end-to-end encryption and audit trails give us complete confidence in handling sensitive client data.",
+			author: "Michael Rodriguez",
+			title: "General Counsel",
+			company: "Meridian Legal Group",
+			rating: 5,
+		},
+		{
+			quote:
+				"The workflow integration is seamless. Our legal team processes 500+ documents daily now without breaking stride. Game-changing for our practice.",
+			author: "Dr. Amanda Foster",
+			title: "Privacy Officer",
+			company: "Healthcare Alliance",
+			rating: 5,
+		},
+		{
+			quote:
+				"ROI was immediate. What used to take our team 3 days now takes 30 minutes. The accuracy rate exceeds our manual processes, and compliance audits are effortless.",
+			author: "James Thompson",
+			title: "Head of Risk Management",
+			company: "Global Banking Corp",
+			rating: 5,
+		},
+		{
+			quote:
+				"Nvisy's API integration with our existing systems was flawless. The developer experience is top-notch, and the enterprise support team is incredibly responsive.",
+			author: "Lisa Park",
+			title: "CTO",
+			company: "DataSecure Solutions",
+			rating: 5,
+		},
+		{
+			quote:
+				"We've processed over 100,000 documents with zero security incidents. The AI learns our redaction patterns and gets smarter every day. Absolutely essential tool.",
+			author: "Robert Martinez",
+			title: "Information Security Director",
+			company: "Federal Contractors Inc",
+			rating: 5,
+		},
+	],
+} = Astro.props;
+
+const bgClass =
+	backgroundColor === "gray"
+		? "bg-gray-50 dark:bg-black"
+		: "bg-white dark:bg-black";
+---
+
+<section class={`py-20 ${bgClass} px-4`}>
+  <div class="container mx-auto max-w-6xl">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        {title}
+      </h2>
+      <p class="text-lg text-gray-600 dark:text-neutral-400 max-w-2xl mx-auto">
+        {description}
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {testimonials.map((testimonial) => (
+        <div class="bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+          <!-- Quote Icon -->
+          <div class="mb-4">
+            <svg class="w-8 h-8 text-gray-400 dark:text-neutral-500" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"/>
+            </svg>
+          </div>
+
+          <!-- Quote -->
+          <blockquote class="text-gray-700 dark:text-neutral-300 mb-6 leading-relaxed">
+            "{testimonial.quote}"
+          </blockquote>
+
+          <!-- Rating -->
+          {testimonial.rating && (
+            <div class="flex items-center mb-4">
+              {Array.from({ length: testimonial.rating }).map((_, i) => (
+                <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 24 24">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              ))}
+            </div>
+          )}
+
+          <!-- Author Info -->
+          <div class="border-t border-gray-100 dark:border-neutral-700 pt-4">
+            <div class="flex items-start space-x-3">
+              {testimonial.avatar ? (
+                <img
+                  src={testimonial.avatar}
+                  alt={testimonial.author}
+                  class="w-10 h-10 rounded-full object-cover"
+                />
+              ) : (
+                <div class="w-10 h-10 bg-gray-200 dark:bg-neutral-600 rounded-full flex items-center justify-center">
+                  <span class="text-gray-600 dark:text-neutral-300 font-semibold text-sm">
+                    {testimonial.author.split(' ').map(name => name.charAt(0)).join('')}
+                  </span>
+                </div>
+              )}
+              <div class="flex-1 min-w-0">
+                <h4 class="font-semibold text-gray-900 dark:text-white text-sm">
+                  {testimonial.author}
+                </h4>
+                <p class="text-gray-600 dark:text-neutral-400 text-sm">
+                  {testimonial.title}
+                </p>
+                <p class="text-gray-500 dark:text-neutral-500 text-sm font-medium">
+                  {testimonial.company}
+                </p>
+              </div>
+              {testimonial.companyLogo && (
+                <img
+                  src={testimonial.companyLogo}
+                  alt={testimonial.company}
+                  class="w-8 h-8 object-contain opacity-60"
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Trust Indicators -->
+    <div class="text-center mt-16">
+      <div class="inline-flex items-center space-x-8 text-gray-500 dark:text-neutral-400 text-sm">
+        <div class="flex items-center space-x-2">
+          <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+          <span>4.9/5 Average Rating</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span>SOC 2 Type II Certified</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+          <span>500+ Enterprise Clients</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,10 @@
+{
+	"icon": "link",
+	"isBrand": false,
+	"version": "v2.0",
+	"status": "Completed",
+	"title": "Webhooks",
+	"category": "Developer",
+	"description": "Real-time notifications and event-driven workflows for your applications.",
+	"availability": "Available"
+}
