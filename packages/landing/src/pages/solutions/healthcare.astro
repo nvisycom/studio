@@ -1,0 +1,353 @@
+---
+import { Layout } from "@/layouts";
+import { CTA } from "@/sections";
+import {
+	ChevronRight,
+	ShieldCheck,
+	Eye,
+	FileText,
+	BarChart3,
+	FlaskConical,
+	File,
+	Building2,
+	Microscope,
+	Shield,
+	Check,
+} from "lucide-vue-next";
+---
+
+<Layout title="Healthcare Solutions" description="HIPAA-compliant document redaction solutions for healthcare organizations. Protect PHI while maintaining clinical workflow efficiency.">
+  <div class="bg-white dark:bg-black min-h-screen">
+    <!-- Hero Section -->
+    <div class="relative bg-gradient-to-br from-red-50 via-white to-rose-50 dark:from-gray-900 dark:via-black dark:to-red-900/20">
+      <div class="container mx-auto px-4 py-16 md:py-24">
+        <div class="max-w-4xl mx-auto text-center">
+
+
+          <h1 class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+            HIPAA-Compliant Document Protection
+          </h1>
+
+          <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-300 leading-relaxed mb-12 max-w-3xl mx-auto">
+            Safeguard patient health information with AI-powered redaction designed for healthcare workflows.
+            Maintain compliance while improving clinical documentation efficiency.
+          </p>
+
+          <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+            <a href="/contact" class="inline-flex items-center justify-center bg-gray-900 dark:bg-white text-white dark:text-black font-medium py-4 px-8 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-100 transition-colors text-lg">
+              Request HIPAA Demo
+              <ChevronRight class="w-5 h-5 ml-2" />
+            </a>
+            <a href="/pricing" class="inline-flex items-center justify-center border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium py-4 px-8 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors text-lg">
+              View Healthcare Pricing
+            </a>
+          </div>
+
+          <!-- Healthcare Stats -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
+            <div class="text-center">
+              <div class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">HIPAA</div>
+              <div class="text-gray-600 dark:text-gray-400">Compliant</div>
+            </div>
+            <div class="text-center">
+              <div class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">99.8%</div>
+              <div class="text-gray-600 dark:text-gray-400">PHI Detection Rate</div>
+            </div>
+            <div class="text-center">
+              <div class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">500+</div>
+              <div class="text-gray-600 dark:text-gray-400">Healthcare Providers</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Features for Healthcare -->
+    <div class="container mx-auto px-4 py-20">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+            Built for Healthcare Compliance
+          </h2>
+          <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Comprehensive document redaction solutions designed specifically for healthcare
+            organizations with stringent privacy and compliance requirements.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- HIPAA Compliance -->
+          <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8">
+            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6">
+              <ShieldCheck class="w-8 h-8 text-white" />
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">HIPAA Compliance</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-4">
+              Built from the ground up to meet HIPAA Privacy and Security Rules.
+              Comprehensive safeguards for protected health information.
+            </p>
+            <ul class="space-y-2 text-sm">
+              <li class="flex items-start gap-2">
+                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300">Business Associate Agreement</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300">Administrative safeguards</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300">Technical safeguards</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- PHI Detection -->
+          <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8">
+            <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6">
+              <Eye class="w-8 h-8 text-white" />
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Advanced PHI Detection</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-4">
+              AI-powered detection of all 18 types of protected health information
+              with healthcare-specific training data and models.
+            </p>
+            <ul class="space-y-2 text-sm">
+              <li class="flex items-start gap-2">
+                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300">Patient identifiers</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300">Medical record numbers</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300">Dates and biometric data</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Clinical Workflow Integration -->
+          <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8">
+            <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6">
+              <FileText class="w-8 h-8 text-white" />
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Clinical Workflow Integration</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-4">
+              Seamlessly integrate with existing EHR systems and clinical workflows
+              without disrupting patient care delivery.
+            </p>
+            <ul class="space-y-2 text-sm">
+              <li class="flex items-start gap-2">
+                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300">EHR system integration</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300">FHIR API support</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300">HL7 message processing</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Audit & Reporting -->
+          <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8">
+            <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl flex items-center justify-center mb-6">
+              <BarChart3 class="w-8 h-8 text-white" />
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Comprehensive Audit Trail</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-4">
+              Complete audit logging and reporting capabilities to support
+              compliance audits and breach investigations.
+            </p>
+            <ul class="space-y-2 text-sm">
+              <li class="flex items-start gap-2">
+                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300">Tamper-evident logging</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300">Compliance reporting</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300">Access monitoring</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Research & Analytics -->
+          <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8">
+            <div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mb-6">
+              <FlaskConical class="w-8 h-8 text-white" />
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Research Support</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-4">
+              Support clinical research and population health analytics
+              while maintaining patient privacy and regulatory compliance.
+            </p>
+            <ul class="space-y-2 text-sm">
+              <li class="flex items-start gap-2">
+                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300">De-identification for research</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300">Statistical disclosure control</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300">IRB compliance support</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Multi-Format Support -->
+          <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8">
+            <div class="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-800 rounded-2xl flex items-center justify-center mb-6">
+              <File class="w-8 h-8 text-white" />
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Medical Document Support</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-4">
+              Process all types of medical documents including structured
+              and unstructured data across multiple formats and sources.
+            </p>
+            <ul class="space-y-2 text-sm">
+              <li class="flex items-start gap-2">
+                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300">Clinical notes & discharge summaries</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300">Lab results & imaging reports</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300">Insurance claims & forms</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Use Cases Section -->
+    <div class="bg-gray-50 dark:bg-gray-900 py-20">
+      <div class="container mx-auto px-4">
+        <div class="max-w-7xl mx-auto">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+              Healthcare Use Cases
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              From hospitals to research institutions, see how healthcare organizations
+              use Nvisy to protect patient data while enabling critical workflows.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Hospitals & Health Systems -->
+            <div class="bg-white dark:bg-black rounded-2xl border border-gray-200 dark:border-gray-700 p-8">
+              <div class="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center mb-6">
+                <Building2 class="w-6 h-6 text-red-600 dark:text-red-400" />
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Hospitals & Health Systems</h3>
+              <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-4">
+                Streamline patient record sharing, research collaboration, and regulatory reporting
+                while maintaining the highest standards of patient privacy.
+              </p>
+              <ul class="space-y-2 text-xs text-gray-600 dark:text-gray-400">
+                <li>• Medical record de-identification</li>
+                <li>• Research data preparation</li>
+                <li>• Quality reporting compliance</li>
+              </ul>
+            </div>
+
+            <!-- Research Institutions -->
+            <div class="bg-white dark:bg-black rounded-2xl border border-gray-200 dark:border-gray-700 p-8">
+              <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mb-6">
+                <Microscope class="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Research Institutions</h3>
+              <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-4">
+                Enable groundbreaking medical research while protecting participant privacy
+                and meeting IRB requirements for data de-identification.
+              </p>
+              <ul class="space-y-2 text-xs text-gray-600 dark:text-gray-400">
+                <li>• Clinical trial data protection</li>
+                <li>• Multi-site research collaboration</li>
+                <li>• Publication preparation</li>
+              </ul>
+            </div>
+
+            <!-- Insurance & Payers -->
+            <div class="bg-white dark:bg-black rounded-2xl border border-gray-200 dark:border-gray-700 p-8">
+              <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mb-6">
+                <Shield class="w-6 h-6 text-green-600 dark:text-green-400" />
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Insurance & Payers</h3>
+              <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-4">
+                Process claims, conduct medical reviews, and perform population health
+                analytics while maintaining member privacy and regulatory compliance.
+              </p>
+              <ul class="space-y-2 text-xs text-gray-600 dark:text-gray-400">
+                <li>• Claims processing automation</li>
+                <li>• Medical review workflows</li>
+                <li>• Member data analytics</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Benefits Section -->
+    <div class="container mx-auto px-4 py-20">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8">
+          Trusted by Healthcare Leaders
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div>
+            <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">99.8%</div>
+            <div class="text-gray-600 dark:text-gray-400 mb-4">PHI Detection Accuracy</div>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">
+              Industry-leading accuracy in detecting and protecting all 18 types of protected health information.
+            </p>
+          </div>
+
+          <div>
+            <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">75%</div>
+            <div class="text-gray-600 dark:text-gray-400 mb-4">Faster Processing</div>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">
+              Reduce manual review time for medical records and clinical documentation.
+            </p>
+          </div>
+
+          <div>
+            <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">100%</div>
+            <div class="text-gray-600 dark:text-gray-400 mb-4">HIPAA Compliant</div>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">
+              Built from the ground up to meet all HIPAA Privacy and Security Rule requirements.
+            </p>
+          </div>
+
+          <div>
+            <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">24/7</div>
+            <div class="text-gray-600 dark:text-gray-400 mb-4">Healthcare Support</div>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">
+              Dedicated support team with healthcare industry expertise and compliance knowledge.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <CTA />
+  </div>
+</Layout>

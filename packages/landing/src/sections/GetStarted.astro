@@ -1,0 +1,90 @@
+---
+export interface Props {
+	title?: string;
+	description?: string;
+	disclaimer?: string;
+	backgroundColor?: "black" | "white" | "gray";
+	primaryCta?: {
+		text: string;
+		href: string;
+	};
+	secondaryCta?: {
+		text: string;
+		href: string;
+	};
+}
+
+const {
+	title = "Ready to Secure Your Documents?",
+	description = "Join hundreds of enterprises already protecting sensitive information with our AI-powered redaction platform.",
+	disclaimer = "No credit card required • 14-day free trial • Enterprise support",
+	backgroundColor = "black",
+	primaryCta = {
+		text: "Start Free Trial",
+		href: "/dashboard",
+	},
+	secondaryCta = {
+		text: "Contact Sales",
+		href: "/contact",
+	},
+} = Astro.props;
+
+// Dynamic classes based on background color
+const bgClasses = {
+	black: "bg-black text-white",
+	white: "bg-white text-gray-900",
+	gray: "bg-gray-50 text-gray-900",
+};
+
+const textClasses = {
+	black: "text-gray-300",
+	white: "text-gray-600",
+	gray: "text-gray-600",
+};
+
+const disclaimerClasses = {
+	black: "text-gray-400",
+	white: "text-gray-500",
+	gray: "text-gray-500",
+};
+
+const primaryButtonClasses = {
+	black: "bg-white hover:bg-gray-100 text-black",
+	white: "bg-black hover:bg-gray-800 text-white",
+	gray: "bg-black hover:bg-gray-800 text-white",
+};
+
+const secondaryButtonClasses = {
+	black: "border-gray-600 text-white hover:bg-gray-900",
+	white: "border-gray-300 text-gray-700 hover:bg-gray-50",
+	gray: "border-gray-300 text-gray-700 hover:bg-gray-50",
+};
+---
+
+<section class={`py-20 ${bgClasses[backgroundColor]} dark:bg-black px-4`}>
+  <div class="container mx-auto max-w-4xl text-center">
+    <h2 class="text-3xl md:text-4xl font-bold dark:text-white mb-6">
+      {title}
+    </h2>
+    <p class={`text-xl ${textClasses[backgroundColor]} dark:text-gray-300 mb-8 max-w-2xl mx-auto`}>
+      {description}
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+      <a
+        href={primaryCta.href}
+        class={`inline-flex items-center justify-center ${primaryButtonClasses[backgroundColor]} dark:bg-white dark:hover:bg-gray-200 dark:text-black px-8 py-3 text-base font-medium transition-all duration-200 min-w-[180px] rounded-md no-underline`}
+      >
+        {primaryCta.text}
+      </a>
+      <a
+        href={secondaryCta.href}
+        class={`inline-flex items-center justify-center border ${secondaryButtonClasses[backgroundColor]} dark:border-gray-600 dark:text-white dark:hover:bg-gray-800 px-8 py-3 text-base font-medium transition-all duration-200 min-w-[180px] rounded-md no-underline`}
+      >
+        {secondaryCta.text}
+      </a>
+    </div>
+    <p class={`${disclaimerClasses[backgroundColor]} dark:text-gray-300 text-sm mt-6`}>
+      {disclaimer}
+    </p>
+  </div>
+</section>

@@ -1,0 +1,274 @@
+---
+import { Layout } from "@/layouts";
+import { Hero } from "@/sections";
+import { CTA } from "@/sections";
+---
+
+<Layout
+  title="Security"
+  description="Enterprise-grade security and compliance for document redaction. SOC 2 compliant, end-to-end encryption, and zero-trust architecture to protect your sensitive data."
+>
+  <div class="bg-white dark:bg-black min-h-screen">
+    <!-- Hero Section -->
+    <Hero
+      title="Enterprise-Grade Security"
+      description="Trust Nvisy with your most sensitive documents. Our security-first approach ensures your data is protected with industry-leading encryption, compliance frameworks, and zero-trust architecture."
+      background="gradient"
+      fontSize="xl"
+      padding="xl"
+      buttons={[
+        {
+          text: "Security Assessment",
+          href: "/contact",
+          variant: "primary"
+        },
+        {
+          text: "View Security Details",
+          href: "#security-features",
+          variant: "secondary"
+        }
+      ]}
+    />
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-16" id="security-features">
+      <div class="max-w-6xl mx-auto">
+
+        <!-- Security Overview -->
+        <div class="mb-20">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Built Security-First
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-3xl mx-auto">
+              Every aspect of Nvisy is designed with security as the foundation. From data processing to storage and transmission, your documents are protected at every step.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="border border-gray-200 dark:border-neutral-700 rounded-lg p-8 hover:border-gray-300 dark:hover:border-neutral-600 transition-colors">
+              <div class="mb-6">
+                <svg class="w-8 h-8 text-gray-700 dark:text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">End-to-End Encryption</h3>
+              <p class="text-gray-600 dark:text-neutral-400 mb-4 leading-relaxed">
+                AES-256 encryption for data at rest and TLS 1.3 for data in transit. Your documents are encrypted before they leave your environment.
+              </p>
+              <span class="text-gray-700 dark:text-neutral-300 text-sm font-medium">✓ Implemented</span>
+            </div>
+
+            <div class="border border-gray-200 dark:border-neutral-700 rounded-lg p-8 hover:border-gray-300 dark:hover:border-neutral-600 transition-colors">
+              <div class="mb-6">
+                <svg class="w-8 h-8 text-gray-700 dark:text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Zero-Trust Architecture</h3>
+              <p class="text-gray-600 dark:text-neutral-400 mb-4 leading-relaxed">
+                Never trust, always verify. Every request is authenticated and authorized using multi-factor authentication and role-based access controls.
+              </p>
+              <span class="text-gray-700 dark:text-neutral-300 text-sm font-medium">✓ Implemented</span>
+            </div>
+
+            <div class="border border-gray-200 dark:border-neutral-700 rounded-lg p-8 hover:border-gray-300 dark:hover:border-neutral-600 transition-colors">
+              <div class="mb-6">
+                <svg class="w-8 h-8 text-gray-700 dark:text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Private Processing</h3>
+              <p class="text-gray-600 dark:text-neutral-400 mb-4 leading-relaxed">
+                Documents are processed in isolated, ephemeral environments. No data is retained after processing is complete.
+              </p>
+              <span class="text-gray-700 dark:text-neutral-300 text-sm font-medium">✓ Implemented</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compliance & Certifications -->
+        <div class="mb-20">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Compliance & Certifications
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-3xl mx-auto">
+              Meet the most stringent regulatory requirements with our comprehensive compliance framework and third-party audited security controls.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="border border-gray-200 dark:border-neutral-700 rounded-lg p-8 text-center hover:border-gray-300 dark:hover:border-neutral-600 transition-colors">
+              <div class="mb-6">
+                <div class="w-12 h-12 border-2 border-gray-300 dark:border-neutral-600 rounded-lg flex items-center justify-center mx-auto">
+                  <span class="text-gray-700 dark:text-neutral-300 font-semibold text-sm">SOC 2</span>
+                </div>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">SOC 2 Type II</h3>
+              <p class="text-gray-600 dark:text-neutral-400 text-sm">
+                Independently audited security controls
+              </p>
+            </div>
+
+            <div class="border border-gray-200 dark:border-neutral-700 rounded-lg p-8 text-center hover:border-gray-300 dark:hover:border-neutral-600 transition-colors">
+              <div class="mb-6">
+                <div class="w-12 h-12 border-2 border-gray-300 dark:border-neutral-600 rounded-lg flex items-center justify-center mx-auto">
+                  <span class="text-gray-700 dark:text-neutral-300 font-semibold text-sm">GDPR</span>
+                </div>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">GDPR Compliant</h3>
+              <p class="text-gray-600 dark:text-neutral-400 text-sm">
+                European data protection standards
+              </p>
+            </div>
+
+            <div class="border border-gray-200 dark:border-neutral-700 rounded-lg p-8 text-center hover:border-gray-300 dark:hover:border-neutral-600 transition-colors">
+              <div class="mb-6">
+                <div class="w-12 h-12 border-2 border-gray-300 dark:border-neutral-600 rounded-lg flex items-center justify-center mx-auto">
+                  <span class="text-gray-700 dark:text-neutral-300 font-semibold text-sm">HIPAA</span>
+                </div>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">HIPAA Ready</h3>
+              <p class="text-gray-600 dark:text-neutral-400 text-sm">
+                Healthcare data protection
+              </p>
+            </div>
+
+            <div class="border border-gray-200 dark:border-neutral-700 rounded-lg p-8 text-center hover:border-gray-300 dark:hover:border-neutral-600 transition-colors">
+              <div class="mb-6">
+                <div class="w-12 h-12 border-2 border-gray-300 dark:border-neutral-600 rounded-lg flex items-center justify-center mx-auto">
+                  <span class="text-gray-700 dark:text-neutral-300 font-semibold text-sm">ISO</span>
+                </div>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">ISO 27001</h3>
+              <p class="text-gray-600 dark:text-neutral-400 text-sm">
+                Information security management
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Infrastructure Security -->
+        <div class="mb-20">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Infrastructure Security
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-3xl mx-auto">
+              Built on enterprise-grade cloud infrastructure with multiple layers of security controls and monitoring.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div class="border border-gray-200 dark:border-neutral-700 rounded-lg p-8">
+              <div class="mb-6">
+                <svg class="w-8 h-8 text-gray-700 dark:text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
+                </svg>
+              </div>
+              <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Cloud Security</h3>
+              <p class="text-gray-600 dark:text-neutral-400 mb-6 leading-relaxed">
+                Hosted on AWS with enterprise-grade security controls, including VPC isolation, WAF protection, and DDoS mitigation.
+              </p>
+              <ul class="text-sm text-gray-500 dark:text-neutral-500 space-y-2">
+                <li>• Multi-region redundancy</li>
+                <li>• Automated security patching</li>
+                <li>• 24/7 monitoring and alerting</li>
+                <li>• Infrastructure as code</li>
+              </ul>
+            </div>
+
+            <div class="border border-gray-200 dark:border-neutral-700 rounded-lg p-8">
+              <div class="mb-6">
+                <svg class="w-8 h-8 text-gray-700 dark:text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+                </svg>
+              </div>
+              <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Access Controls</h3>
+              <p class="text-gray-600 dark:text-neutral-400 mb-6 leading-relaxed">
+                Comprehensive identity and access management with multi-factor authentication, role-based permissions, and audit logging.
+              </p>
+              <ul class="text-sm text-gray-500 dark:text-neutral-500 space-y-2">
+                <li>• Single sign-on (SSO) integration</li>
+                <li>• Multi-factor authentication</li>
+                <li>• Role-based access control</li>
+                <li>• Complete audit trails</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Data Privacy -->
+        <div class="mb-20">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Data Privacy & Protection
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-3xl mx-auto">
+              Your data privacy is paramount. We employ strict data handling practices to ensure your sensitive information remains confidential and secure.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center">
+              <div class="mb-6">
+                <svg class="w-8 h-8 text-gray-700 dark:text-neutral-300 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Data Minimization</h3>
+              <p class="text-gray-600 dark:text-neutral-400 leading-relaxed">
+                We only process data necessary for redaction. No additional personal information is collected or stored.
+              </p>
+            </div>
+
+            <div class="text-center">
+              <div class="mb-6">
+                <svg class="w-8 h-8 text-gray-700 dark:text-neutral-300 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Automatic Deletion</h3>
+              <p class="text-gray-600 dark:text-neutral-400 leading-relaxed">
+                Documents are automatically deleted from our systems after processing, with configurable retention periods.
+              </p>
+            </div>
+
+            <div class="text-center">
+              <div class="mb-6">
+                <svg class="w-8 h-8 text-gray-700 dark:text-neutral-300 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m0 0a2 2 0 012 2m-2-2a2 2 0 00-2 2m2-2V5a2 2 0 00-2-2m-2 4V3a2 2 0 012-2h2a2 2 0 012 2v4m-6 0V9"/>
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">No Training Data</h3>
+              <p class="text-gray-600 dark:text-neutral-400 leading-relaxed">
+                Your documents are never used to train our AI models. All processing is done with pre-trained, static models.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <CTA
+          title="Security Questions?"
+          description="Our security team is available to discuss our security practices, compliance certifications, and answer any questions about protecting your data."
+          background="none"
+          padding="lg"
+          buttons={[
+            {
+              text: "Contact Security Team",
+              href: "/contact",
+              variant: "primary"
+            },
+            {
+              text: "Request Security Assessment",
+              href: "/contact",
+              variant: "secondary"
+            }
+          ]}
+        />
+
+      </div>
+    </div>
+  </div>
+</Layout>

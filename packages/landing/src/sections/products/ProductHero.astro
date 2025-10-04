@@ -1,0 +1,62 @@
+---
+import { ArrowRightIcon } from "lucide-vue-next";
+
+export interface Props {
+	title: string;
+	description: string;
+	primaryCta: {
+		text: string;
+		href: string;
+	};
+	secondaryCta: {
+		text: string;
+		href: string;
+	};
+	stats: Array<{
+		value: string;
+		label: string;
+	}>;
+}
+
+const { title, description, primaryCta, secondaryCta, stats } = Astro.props;
+---
+
+<div class="relative bg-white dark:bg-black">
+  <div class="container mx-auto px-4 py-20 md:py-32">
+    <div class="max-w-5xl mx-auto text-center">
+      <h1 class="text-5xl md:text-7xl font-bold text-gray-900 dark:text-white mb-8 tracking-tight">
+        {title}
+      </h1>
+
+      <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-300 leading-relaxed mb-12 max-w-4xl mx-auto">
+        {description}
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center mb-20">
+        <a
+          href={primaryCta.href}
+          class="inline-flex items-center justify-center bg-black dark:bg-white text-white dark:text-black font-medium py-4 px-8 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors text-lg"
+        >
+          {primaryCta.text}
+          <ArrowRightIcon class="w-5 h-5 ml-2" />
+        </a>
+        <a
+          href={secondaryCta.href}
+          class="inline-flex items-center justify-center border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium py-4 px-8 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors text-lg"
+        >
+          {secondaryCta.text}
+        </a>
+      </div>
+
+      <!-- Key Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto">
+        {stats.map((stat) => (
+          <div class="text-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg">
+            <div class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">{stat.value}</div>
+            <div class="text-gray-600 dark:text-gray-400">{stat.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>

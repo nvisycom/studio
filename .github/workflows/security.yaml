@@ -21,6 +21,7 @@ on:
 
 jobs:
   audit:
+    name: Audit
     runs-on: ubuntu-latest
 
     steps:
@@ -39,7 +40,8 @@ jobs:
       - name: Check for outdated dependencies
         run: npm outdated || true
 
-  license-check:
+  license:
+    name: License Check
     runs-on: ubuntu-latest
 
     steps:

@@ -1,0 +1,259 @@
+---
+import { Layout } from "@/layouts";
+import { CTA, Testimonials } from "@/sections";
+import { ShieldCheck, Users, Eye, Check } from "lucide-vue-next";
+---
+
+<Layout title="Government - Use Cases" description="Discover how government agencies use our platform for secure, compliant, and citizen-focused digital services.">
+  <div class="bg-white">
+    <!-- Hero Section -->
+    <div class="relative bg-gradient-to-br from-indigo-900 via-blue-800 to-purple-900">
+      <div class="container mx-auto px-4 py-20 md:py-28">
+        <div class="text-center max-w-4xl mx-auto">
+          <div class="inline-flex items-center bg-indigo-800/30 text-indigo-200 px-4 py-2 rounded-full text-sm font-medium mb-6 backdrop-blur-sm">
+            <span class="w-2 h-2 bg-indigo-300 rounded-full mr-2 animate-pulse"></span>
+            Government & Public Sector
+          </div>
+          <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">
+            Digital Government Solutions
+          </h1>
+          <p class="text-xl md:text-2xl text-indigo-100 leading-relaxed mb-12 max-w-3xl mx-auto">
+            Modernize public services with secure, accessible, and citizen-centered digital platforms
+            that improve efficiency and enhance the citizen experience.
+          </p>
+
+          <!-- Key Stats -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
+            <div class="text-center">
+              <div class="text-3xl md:text-4xl font-bold text-white mb-2">500+</div>
+              <div class="text-indigo-200">Government Agencies</div>
+            </div>
+            <div class="text-center">
+              <div class="text-3xl md:text-4xl font-bold text-white mb-2">FedRAMP</div>
+              <div class="text-indigo-200">Authorized</div>
+            </div>
+            <div class="text-center">
+              <div class="text-3xl md:text-4xl font-bold text-white mb-2">WCAG 2.1</div>
+              <div class="text-indigo-200">AA Compliant</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Features -->
+    <div class="container mx-auto px-4 py-20">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
+          Government-Grade Platform
+        </h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Built to meet the unique requirements of public sector organizations with security,
+          accessibility, and transparency at the core.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        <!-- Security & Compliance -->
+        <div class="group bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+          <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <ShieldCheck class="w-8 h-8 text-white" />
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-4">Security & Compliance</h3>
+          <p class="text-gray-600 mb-6 leading-relaxed">
+            Meet federal security requirements with FedRAMP authorization, FISMA compliance, and comprehensive cybersecurity controls.
+          </p>
+          <ul class="space-y-3">
+            <li class="flex items-start gap-3">
+              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+              <span class="text-gray-700 text-sm">FedRAMP authorized</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+              <span class="text-gray-700 text-sm">FISMA compliance</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+              <span class="text-gray-700 text-sm">Zero-trust architecture</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Accessibility -->
+        <div class="group bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+          <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <Users class="w-8 h-8 text-white" />
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-4">Accessibility First</h3>
+          <p class="text-gray-600 mb-6 leading-relaxed">
+            Ensure equal access for all citizens with WCAG 2.1 AA compliance and Section 508 adherence built into every interface.
+          </p>
+          <ul class="space-y-3">
+            <li class="flex items-start gap-3">
+              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+              <span class="text-gray-700 text-sm">WCAG 2.1 AA compliant</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+              <span class="text-gray-700 text-sm">Section 508 adherence</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+              <span class="text-gray-700 text-sm">Multi-language support</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Transparency -->
+        <div class="group bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+          <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <Eye class="w-8 h-8 text-white" />
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-4">Transparency & Audit</h3>
+          <p class="text-gray-600 mb-6 leading-relaxed">
+            Maintain public trust with comprehensive audit trails, open data initiatives, and transparent operations.
+          </p>
+          <ul class="space-y-3">
+            <li class="flex items-start gap-3">
+              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+              <span class="text-gray-700 text-sm">Complete audit trails</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+              <span class="text-gray-700 text-sm">Open data APIs</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+              <span class="text-gray-700 text-sm">Public dashboards</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Government Use Cases -->
+    <div class="bg-gray-50 py-20">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
+            Government Applications
+          </h2>
+          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+            From citizen services to internal operations, see how government agencies modernize with our platform.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <!-- Citizen Services -->
+          <div class="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-shadow">
+            <div class="text-4xl mb-4">👥</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Citizen Services</h3>
+            <p class="text-gray-600 text-sm leading-relaxed mb-4">
+              Digital-first citizen services with online portals, mobile apps, and self-service capabilities.
+            </p>
+            <ul class="text-xs text-gray-500 space-y-1">
+              <li>• Online permit applications</li>
+              <li>• Benefits enrollment</li>
+              <li>• Service request tracking</li>
+            </ul>
+          </div>
+
+          <!-- Digital Identity -->
+          <div class="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-shadow">
+            <div class="text-4xl mb-4">🆔</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Digital Identity</h3>
+            <p class="text-gray-600 text-sm leading-relaxed mb-4">
+              Secure digital identity management with SSO, multi-factor authentication, and privacy protection.
+            </p>
+            <ul class="text-xs text-gray-500 space-y-1">
+              <li>• Secure authentication</li>
+              <li>• Identity verification</li>
+              <li>• Privacy by design</li>
+            </ul>
+          </div>
+
+          <!-- Case Management -->
+          <div class="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-shadow">
+            <div class="text-4xl mb-4">📋</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Case Management</h3>
+            <p class="text-gray-600 text-sm leading-relaxed mb-4">
+              Streamline case workflows for social services, healthcare, and regulatory processes.
+            </p>
+            <ul class="text-xs text-gray-500 space-y-1">
+              <li>• Workflow automation</li>
+              <li>• Document management</li>
+              <li>• Compliance tracking</li>
+            </ul>
+          </div>
+
+          <!-- Emergency Management -->
+          <div class="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-shadow">
+            <div class="text-4xl mb-4">🚨</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Emergency Management</h3>
+            <p class="text-gray-600 text-sm leading-relaxed mb-4">
+              Crisis response coordination with real-time communication, resource tracking, and public alerts.
+            </p>
+            <ul class="text-xs text-gray-500 space-y-1">
+              <li>• Incident management</li>
+              <li>• Resource coordination</li>
+              <li>• Public notifications</li>
+            </ul>
+          </div>
+
+          <!-- Data Analytics -->
+          <div class="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-shadow">
+            <div class="text-4xl mb-4">📊</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Data Analytics</h3>
+            <p class="text-gray-600 text-sm leading-relaxed mb-4">
+              Evidence-based decision making with data visualization, performance metrics, and predictive analytics.
+            </p>
+            <ul class="text-xs text-gray-500 space-y-1">
+              <li>• Performance dashboards</li>
+              <li>• Predictive modeling</li>
+              <li>• Open data publishing</li>
+            </ul>
+          </div>
+
+          <!-- Regulatory Compliance -->
+          <div class="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-shadow">
+            <div class="text-4xl mb-4">⚖️</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Regulatory Compliance</h3>
+            <p class="text-gray-600 text-sm leading-relaxed mb-4">
+              Automated compliance monitoring, reporting, and enforcement for regulatory agencies.
+            </p>
+            <ul class="text-xs text-gray-500 space-y-1">
+              <li>• Automated inspections</li>
+              <li>• Violation tracking</li>
+              <li>• Compliance reporting</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <Testimonials
+      title="Trusted by Government Leaders"
+      description="See how forward-thinking agencies are transforming public services with our secure, accessible platform."
+      backgroundColor="gray"
+      category="government"
+      featured={true}
+    />
+
+    <CTA
+      title="Modernize government services"
+      description="Join forward-thinking agencies that are transforming public services with our secure, accessible platform."
+      background="gradient"
+      buttons={[
+        {
+          text: "Request Demo",
+          variant: "primary"
+        },
+        {
+          text: "Learn More",
+          variant: "secondary",
+          icon: "external"
+        }
+      ]}
+    />
+  </div>
+</Layout>

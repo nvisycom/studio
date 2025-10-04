@@ -1,0 +1,20 @@
+[
+	{
+		"quote": "Finally, a redaction solution that understands enterprise security. The end-to-end encryption and audit trails give us complete confidence in handling sensitive client data.",
+		"author": "Michael Rodriguez",
+		"title": "General Counsel",
+		"company": "Meridian Legal Group",
+		"rating": 5,
+		"order": 1,
+		"featured": true
+	},
+	{
+		"quote": "The workflow integration is seamless. Our legal team processes 500+ documents daily now without breaking stride. Game-changing for our practice.",
+		"author": "Dr. Amanda Foster",
+		"title": "Privacy Officer",
+		"company": "Healthcare Alliance",
+		"rating": 5,
+		"order": 2,
+		"featured": true
+	}
+]

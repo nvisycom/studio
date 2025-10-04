@@ -1,0 +1,239 @@
+---
+import { getCollection, getEntry } from "astro:content";
+
+export interface FAQItem {
+	question: string;
+	answer: string;
+}
+
+export interface Props {
+	title?: string;
+	description?: string;
+	backgroundColor?: "white" | "gray";
+	faqs?: FAQItem[];
+	maxWidth?: "3xl" | "4xl" | "5xl";
+	category?: string;
+	featured?: boolean;
+}
+
+const {
+	title = "Frequently Asked Questions",
+	description = "Everything you need to know about our platform and services.",
+	backgroundColor = "white",
+	maxWidth = "4xl",
+	category,
+	featured,
+	faqs: propFaqs,
+} = Astro.props;
+
+// Fetch FAQs from content if no faqs prop is provided
+let faqs: FAQItem[] = propFaqs || [];
+
+if (!propFaqs) {
+	if (category) {
+		// Fetch specific category JSON file
+		const categoryFaqs = await getEntry("faqs", category);
+		if (categoryFaqs) {
+			let faqList = categoryFaqs.data;
+
+			// Filter by featured if specified
+			if (featured !== undefined) {
+				faqList = faqList.filter((faq) => faq.featured === featured);
+			}
+
+			faqs = faqList
+				.sort((a, b) => a.order - b.order)
+				.map((faq) => ({
+					question: faq.question,
+					answer: faq.answer,
+				}));
+		}
+	} else {
+		// Fetch all FAQ categories and combine them
+		const allFaqEntries = await getCollection("faqs");
+		let allFaqsList = allFaqEntries.flatMap((entry) => entry.data);
+
+		// Filter by featured if specified
+		if (featured !== undefined) {
+			allFaqsList = allFaqsList.filter((faq) => faq.featured === featured);
+		}
+
+		faqs = allFaqsList
+			.sort((a, b) => a.order - b.order)
+			.map((faq) => ({
+				question: faq.question,
+				answer: faq.answer,
+			}));
+	}
+}
+
+// Fallback to default FAQs if none found
+if (faqs.length === 0) {
+	faqs = [
+		{
+			question: "How do I get started?",
+			answer:
+				"Getting started is easy! Simply sign up for an account, follow our onboarding guide, and you'll be up and running in minutes. Our getting started tutorial will walk you through the essential features and help you set up your first project.",
+		},
+		{
+			question: "What support options are available?",
+			answer:
+				"We offer multiple support channels including 24/7 email support, live chat during business hours, comprehensive documentation, video tutorials, and a community forum where you can connect with other users.",
+		},
+		{
+			question: "Can I upgrade or downgrade my plan anytime?",
+			answer:
+				"Yes, you can change your plan at any time. Upgrades take effect immediately, while downgrades take effect at the next billing cycle. We'll prorate any charges accordingly.",
+		},
+		{
+			question: "Is my data secure?",
+			answer:
+				"Absolutely. We use industry-standard encryption, maintain SOC 2 Type II compliance, and follow best practices for data security. Your data is encrypted at rest and in transit, and we never share it with third parties.",
+		},
+		{
+			question: "Do you offer a free trial?",
+			answer:
+				"Yes! We offer a 14-day free trial for all paid plans. No credit card required to get started. You'll have access to all features during the trial period.",
+		},
+		{
+			question: "How does billing work?",
+			answer:
+				"We bill monthly or annually based on your preference. Annual plans come with a discount. You can update your billing information, view invoices, and manage your subscription from your account dashboard.",
+		},
+	];
+}
+
+const bgClass =
+	backgroundColor === "gray"
+		? "bg-gray-50 dark:bg-gray-900"
+		: "bg-white dark:bg-black";
+const maxWidthClass = `max-w-${maxWidth}`;
+---
+
+<section class={`py-20 ${bgClass}`}>
+  <div class="container mx-auto px-4">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+        {title}
+      </h2>
+      <p class="text-xl text-gray-600 dark:text-neutral-400 max-w-2xl mx-auto">
+        {description}
+      </p>
+    </div>
+
+    <div class={`${maxWidthClass} mx-auto`}>
+      <div id="faq-accordion" data-faqs={JSON.stringify(faqs)}>
+        <!-- Accordion will be rendered by Vue component -->
+      </div>
+    </div>
+
+    <!-- Fallback for no-JS users -->
+    <noscript>
+      <div class={`${maxWidthClass} mx-auto space-y-6`}>
+        {faqs.map((faq) => (
+          <div class="bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-xl p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              {faq.question}
+            </h3>
+            <p class="text-gray-600 dark:text-neutral-400 leading-relaxed">
+              {faq.answer}
+            </p>
+          </div>
+        ))}
+      </div>
+    </noscript>
+  </div>
+</section>
+
+<script>
+  // Initialize FAQ accordion after DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    const accordionElements = document.querySelectorAll('#faq-accordion');
+
+    accordionElements.forEach((element) => {
+      const faqsData = JSON.parse(element.getAttribute('data-faqs') || '[]');
+
+      // Create accordion HTML
+      const accordionHTML = faqsData.map((faq: any, index: number) => `
+        <div class="bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+          <button
+            class="accordion-trigger w-full px-6 py-6 text-left flex items-center justify-between text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
+            data-index="${index}"
+            aria-expanded="false"
+            aria-controls="accordion-content-${index}"
+          >
+            <span>${faq.question}</span>
+            <svg class="accordion-icon h-5 w-5 shrink-0 text-gray-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div
+            id="accordion-content-${index}"
+            class="accordion-content overflow-hidden max-h-0 transition-all duration-300 ease-in-out"
+            aria-labelledby="accordion-trigger-${index}"
+          >
+            <div class="px-6 pb-6 text-gray-600 dark:text-neutral-400 leading-relaxed">
+              ${faq.answer}
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      element.innerHTML = `<div class="space-y-4">${accordionHTML}</div>`;
+
+      // Add event listeners
+      const triggers = element.querySelectorAll('.accordion-trigger');
+      triggers.forEach((trigger) => {
+        trigger.addEventListener('click', () => {
+          const index = (trigger as HTMLElement).dataset.index;
+          const content = element.querySelector(`#accordion-content-${index}`) as HTMLElement;
+          const icon = trigger.querySelector('.accordion-icon') as HTMLElement;
+          const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+
+          // Close all other items (single accordion mode)
+          triggers.forEach((otherTrigger, otherIndex) => {
+            if (otherTrigger !== trigger) {
+              const otherContent = element.querySelector(`#accordion-content-${otherIndex}`) as HTMLElement;
+              const otherIcon = otherTrigger.querySelector('.accordion-icon') as HTMLElement;
+              otherTrigger.setAttribute('aria-expanded', 'false');
+              if (otherContent) otherContent.style.maxHeight = '0px';
+              if (otherIcon) otherIcon.style.transform = 'rotate(0deg)';
+            }
+          });
+
+          // Toggle current item
+          if (isExpanded) {
+            trigger.setAttribute('aria-expanded', 'false');
+            if (content) content.style.maxHeight = '0px';
+            if (icon) icon.style.transform = 'rotate(0deg)';
+          } else {
+            trigger.setAttribute('aria-expanded', 'true');
+            if (content) content.style.maxHeight = content.scrollHeight + 'px';
+            if (icon) icon.style.transform = 'rotate(180deg)';
+          }
+        });
+      });
+    });
+  });
+</script>
+
+<style>
+  /* Custom accordion styles */
+  .accordion-content {
+    transition: max-height 0.3s ease-in-out;
+  }
+
+  .accordion-trigger:hover {
+    text-decoration: none;
+  }
+
+  .accordion-icon {
+    transition: transform 0.2s ease-in-out;
+  }
+
+  /* Focus styles */
+  .accordion-trigger:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+</style>

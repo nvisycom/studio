@@ -1,0 +1,35 @@
+[
+	{
+		"id": "cloud-platform",
+		"title": "Cloud Platform",
+		"description": "Scalable cloud deployment with API access and team collaboration features.",
+		"quarter": "Q4 2024",
+		"status": "in-progress",
+		"category": "core-platform",
+		"priority": "high",
+		"progress": 60,
+		"githubIssue": "https://github.com/nvisy/nvisy/issues/25"
+	},
+	{
+		"id": "api-gateway",
+		"title": "API Gateway",
+		"description": "RESTful APIs for integrating OCR and privacy features into existing applications.",
+		"quarter": "Q4 2024",
+		"status": "in-progress",
+		"category": "developer-tools",
+		"priority": "high",
+		"progress": 40,
+		"githubIssue": "https://github.com/nvisy/nvisy/issues/33"
+	},
+	{
+		"id": "enterprise-sso",
+		"title": "Enterprise SSO",
+		"description": "Single sign-on integration with enterprise identity providers and role management.",
+		"quarter": "Q1 2025",
+		"status": "in-progress",
+		"category": "enterprise",
+		"priority": "medium",
+		"progress": 20,
+		"githubIssue": "https://github.com/nvisy/nvisy/issues/41"
+	}
+]

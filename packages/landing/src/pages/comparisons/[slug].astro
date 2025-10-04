@@ -1,0 +1,404 @@
+---
+import { Layout } from "@/layouts";
+import { CTA } from "@/sections";
+import { getCollection } from "astro:content";
+import {
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbList,
+	BreadcrumbPage,
+	BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+
+export async function getStaticPaths() {
+	const comparisons = await getCollection("comparisons");
+
+	return comparisons.map((comparison) => ({
+		params: { slug: comparison.id },
+		props: { comparison: comparison.data },
+	}));
+}
+
+const { comparison } = Astro.props;
+---
+
+<Layout
+  title={`${comparison.title} | Detailed Comparison`}
+  description={`Comprehensive comparison between Nvisy and ${comparison.competitor.name}. Compare features, pricing, and use cases to make the right choice for your document redaction needs.`}
+>
+  <div class="bg-white dark:bg-black min-h-screen">
+    <!-- Breadcrumb Navigation -->
+    <div class="border-b border-black/10 dark:border-white/10 bg-white dark:bg-neutral-900">
+      <div class="container mx-auto px-4 py-4">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">
+                Home
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/comparisons">
+                Comparisons
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>
+                {comparison.competitor.name}
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="relative bg-white dark:from-black dark:via-black dark:to-black py-16">
+      <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+          <!-- Comparison Header -->
+          <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-black dark:text-white mb-6">
+              {comparison.title}
+            </h1>
+            <p class="text-lg text-black/70 dark:text-white/70 max-w-3xl mx-auto">
+              A comprehensive comparison to help you choose the right document redaction solution
+              for your organization's needs.
+            </p>
+          </div>
+
+          <!-- Company Comparison Cards -->
+          <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <!-- Nvisy Card -->
+            <div class="bg-white dark:bg-neutral-800 rounded-2xl p-8 border-2 border-blue-200 dark:border-blue-700">
+              <div class="flex items-center gap-4 mb-6">
+                <div class="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center">
+                  <span class="text-white font-bold text-2xl">N</span>
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-black dark:text-white">Nvisy</h3>
+                  <p class="text-black/70 dark:text-white/70">Privacy-first document redaction</p>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                <div>
+                  <h4 class="font-semibold text-black dark:text-white mb-2">Strengths</h4>
+                  <ul class="space-y-1">
+                    {comparison.overview.nvisy.strengths.map((strength) => (
+                      <li class="flex items-center gap-2 text-sm text-black/80 dark:text-white/80">
+                        <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        {strength}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Competitor Card -->
+            <div class="bg-white dark:bg-neutral-800 rounded-2xl p-8 border border-black/10 dark:border-white/10">
+              <div class="flex items-center gap-4 mb-6">
+                <img
+                  src={comparison.competitor.logo}
+                  alt={`${comparison.competitor.name} logo`}
+                  class="w-16 h-16 object-contain"
+                />
+                <div>
+                  <h3 class="text-xl font-bold text-black dark:text-white">{comparison.competitor.name}</h3>
+                  <p class="text-black/70 dark:text-white/70">{comparison.competitor.description}</p>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                <div>
+                  <h4 class="font-semibold text-black dark:text-white mb-2">Strengths</h4>
+                  <ul class="space-y-1">
+                    {comparison.overview.competitor.strengths.map((strength) => (
+                      <li class="flex items-center gap-2 text-sm text-black/80 dark:text-white/80">
+                        <svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        {strength}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature Comparison Table -->
+    <div class="container mx-auto px-4 py-16">
+      <div class="max-w-6xl mx-auto">
+        <h2 class="text-3xl font-bold text-black dark:text-white mb-8 text-center">
+          Feature Comparison
+        </h2>
+
+        <div class="overflow-x-auto">
+          <table class="w-full bg-white dark:bg-neutral-800 rounded-xl border border-black/10 dark:border-white/10">
+            <thead>
+              <tr class="bg-white dark:bg-neutral-700 border-b border-black/10 dark:border-white/10">
+                <th class="text-left py-4 px-6 font-semibold text-black dark:text-white">Feature</th>
+                <th class="text-center py-4 px-6 font-semibold text-blue-600 dark:text-blue-400">Nvisy</th>
+                <th class="text-center py-4 px-6 font-semibold text-black/60 dark:text-white/60">{comparison.competitor.name}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-black/10 dark:divide-white/10">
+              {comparison.features.map((feature, index) => (
+                <tr class={index % 2 === 0 ? "bg-white dark:bg-neutral-800" : "bg-black/5 dark:bg-white/5"}>
+                  <td class="py-4 px-6 text-black dark:text-white font-medium">{feature.name}</td>
+                  <td class="text-center py-4 px-6">
+                    {typeof feature.nvisy === 'boolean' ? (
+                      feature.nvisy ? (
+                        <svg class="w-6 h-6 text-green-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                      ) : (
+                        <svg class="w-6 h-6 text-red-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                      )
+                    ) : (
+                      <span class="font-semibold text-green-600 dark:text-green-400">{feature.nvisy}</span>
+                    )}
+                  </td>
+                  <td class="text-center py-4 px-6">
+                    {typeof feature.competitor === 'boolean' ? (
+                      feature.competitor ? (
+                        <svg class="w-6 h-6 text-green-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                      ) : (
+                        <svg class="w-6 h-6 text-red-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                      )
+                    ) : (
+                      <span class="font-semibold text-black/60 dark:text-white/60">{feature.competitor}</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pricing Comparison -->
+    <div class="bg-white dark:bg-neutral-900 py-16">
+      <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+          <h2 class="text-3xl font-bold text-black dark:text-white mb-8 text-center">
+            Pricing Comparison
+          </h2>
+
+          <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Nvisy Pricing -->
+            <div>
+              <h3 class="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-6 text-center">Nvisy Pricing</h3>
+              <div class="space-y-6">
+                <div class="bg-white dark:bg-neutral-800 rounded-xl p-6 border border-black/10 dark:border-white/10">
+                  <div class="flex justify-between items-center mb-4">
+                    <h4 class="font-bold text-black dark:text-white">Starter</h4>
+                    <div class="text-2xl font-bold text-black dark:text-white">
+                      {typeof comparison.pricing.nvisy.starter.price === 'number' ? `$${comparison.pricing.nvisy.starter.price}` : comparison.pricing.nvisy.starter.price}/mo
+                    </div>
+                  </div>
+                  <ul class="space-y-2">
+                    {comparison.pricing.nvisy.starter.features.map((feature) => (
+                      <li class="flex items-center gap-2 text-sm text-black/80 dark:text-white/80">
+                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div class="bg-blue-50 dark:bg-blue-950/30 rounded-xl p-6 border-2 border-blue-200 dark:border-blue-700">
+                  <div class="flex justify-between items-center mb-4">
+                    <h4 class="font-bold text-black dark:text-white">Pro</h4>
+                    <div class="text-2xl font-bold text-black dark:text-white">
+                      {typeof comparison.pricing.nvisy.pro.price === 'number' ? `$${comparison.pricing.nvisy.pro.price}` : comparison.pricing.nvisy.pro.price}/mo
+                    </div>
+                  </div>
+                  <ul class="space-y-2">
+                    {comparison.pricing.nvisy.pro.features.map((feature) => (
+                      <li class="flex items-center gap-2 text-sm text-black/80 dark:text-white/80">
+                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div class="bg-white dark:bg-neutral-800 rounded-xl p-6 border border-black/10 dark:border-white/10">
+                  <div class="flex justify-between items-center mb-4">
+                    <h4 class="font-bold text-black dark:text-white">Enterprise</h4>
+                    <div class="text-2xl font-bold text-black dark:text-white">{comparison.pricing.nvisy.enterprise.price}</div>
+                  </div>
+                  <ul class="space-y-2">
+                    {comparison.pricing.nvisy.enterprise.features.map((feature) => (
+                      <li class="flex items-center gap-2 text-sm text-black/80 dark:text-white/80">
+                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Competitor Pricing -->
+            <div>
+              <h3 class="text-2xl font-bold text-black/60 dark:text-white/60 mb-6 text-center">{comparison.competitor.name} Pricing</h3>
+              <div class="space-y-6">
+                <div class="bg-white dark:bg-neutral-800 rounded-xl p-6 border border-black/10 dark:border-white/10">
+                  <div class="flex justify-between items-center mb-4">
+                    <h4 class="font-bold text-black dark:text-white">Starter</h4>
+                    <div class="text-2xl font-bold text-black dark:text-white">
+                      {typeof comparison.pricing.competitor.starter.price === 'number' ? `$${comparison.pricing.competitor.starter.price}` : comparison.pricing.competitor.starter.price}/mo
+                    </div>
+                  </div>
+                  <ul class="space-y-2">
+                    {comparison.pricing.competitor.starter.features.map((feature) => (
+                      <li class="flex items-center gap-2 text-sm text-black/80 dark:text-white/80">
+                        <svg class="w-4 h-4 text-black/40 dark:text-white/40" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div class="bg-white dark:bg-neutral-800 rounded-xl p-6 border border-black/10 dark:border-white/10">
+                  <div class="flex justify-between items-center mb-4">
+                    <h4 class="font-bold text-black dark:text-white">Pro</h4>
+                    <div class="text-2xl font-bold text-black dark:text-white">
+                      {typeof comparison.pricing.competitor.pro.price === 'number' ? `$${comparison.pricing.competitor.pro.price}` : comparison.pricing.competitor.pro.price}/mo
+                    </div>
+                  </div>
+                  <ul class="space-y-2">
+                    {comparison.pricing.competitor.pro.features.map((feature) => (
+                      <li class="flex items-center gap-2 text-sm text-black/80 dark:text-white/80">
+                        <svg class="w-4 h-4 text-black/40 dark:text-white/40" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div class="bg-white dark:bg-neutral-800 rounded-xl p-6 border border-black/10 dark:border-white/10">
+                  <div class="flex justify-between items-center mb-4">
+                    <h4 class="font-bold text-black dark:text-white">Enterprise</h4>
+                    <div class="text-2xl font-bold text-black dark:text-white">{comparison.pricing.competitor.enterprise.price}</div>
+                  </div>
+                  <ul class="space-y-2">
+                    {comparison.pricing.competitor.enterprise.features.map((feature) => (
+                      <li class="flex items-center gap-2 text-sm text-black/80 dark:text-white/80">
+                        <svg class="w-4 h-4 text-black/40 dark:text-white/40" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Use Cases Comparison -->
+    <div class="container mx-auto px-4 py-16">
+      <div class="max-w-6xl mx-auto">
+        <h2 class="text-3xl font-bold text-black dark:text-white mb-8 text-center">
+          Use Case Analysis
+        </h2>
+
+        <div class="space-y-8">
+          {comparison.useCases.map((useCase) => (
+            <div class="bg-white dark:bg-neutral-800 rounded-2xl border border-black/10 dark:border-white/10 overflow-hidden">
+              <div class="bg-white dark:bg-neutral-700 px-8 py-4 border-b border-black/10 dark:border-white/10">
+                <h3 class="text-xl font-bold text-black dark:text-white">{useCase.title}</h3>
+              </div>
+              <div class="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-black/10 dark:divide-white/10">
+                <div class="p-8">
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                      <span class="text-white font-bold text-sm">N</span>
+                    </div>
+                    <h4 class="font-semibold text-black dark:text-white">Nvisy Advantage</h4>
+                  </div>
+                  <p class="text-black/80 dark:text-white/80 leading-relaxed">{useCase.nvisy}</p>
+                </div>
+                <div class="p-8">
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="w-8 h-8 bg-black/40 dark:bg-white/40 rounded-lg flex items-center justify-center">
+                      <span class="text-white dark:text-black font-bold text-sm">C</span>
+                    </div>
+                    <h4 class="font-semibold text-black dark:text-white">{comparison.competitor.name}</h4>
+                  </div>
+                  <p class="text-black/80 dark:text-white/80 leading-relaxed">{useCase.competitor}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- Decision Helper -->
+    <CTA
+      title="Ready to Make Your Decision?"
+      description="See how Nvisy can transform your document redaction workflow with a free trial."
+      background="gradient"
+      fontSize="lg"
+      padding="lg"
+      buttons={[
+        {
+          text: "Start Free Trial",
+          href: "/signup",
+          variant: "primary"
+        },
+        {
+          text: "Schedule Demo",
+          href: "/contact",
+          variant: "secondary"
+        }
+      ]}
+    >
+      <div slot="footer" class="mt-8 pt-8 border-t border-black/10 dark:border-white/10">
+        <a
+          href="/comparisons"
+          class="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium group"
+        >
+          <svg class="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg>
+          View All Comparisons
+        </a>
+      </div>
+    </CTA>
+  </div>
+</Layout>

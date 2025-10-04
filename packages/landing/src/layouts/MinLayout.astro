@@ -1,17 +1,15 @@
 ---
 import {
-	BUILD_VERSION,
-	DEFAULT_DESCRIPTION,
 	DEFAULT_TITLE,
-	CREATED_AT,
-	UPDATED_AT,
-	PLATFORM_AUTHOR,
-	KEYWORDS
+	DEFAULT_DESCRIPTION,
+	BUILD_VERSION,
 } from "@nvisy/config";
 
-import "@/styles/blocks.css";
+import "@/styles/index.css";
 import "@/styles/fonts.css";
-import "@/styles/global.css";
+import "@/styles/block.css";
+
+import Umami from "@/layouts/Umami.astro";
 
 export interface Props {
 	title?: string | undefined;
@@ -19,11 +17,11 @@ export interface Props {
 	version?: string | undefined;
 	withDefaultTitle?: boolean | undefined;
 	image?: string | undefined;
-	isArticle?: boolean | undefined;
+	article?: boolean | undefined;
 	publishedTime?: string | undefined;
 	modifiedTime?: string | undefined;
 	author?: string | undefined;
-	keywords?: string[] | undefined;
+	keywords?: string | undefined;
 }
 
 const {
@@ -32,23 +30,22 @@ const {
 	version = BUILD_VERSION,
 	withDefaultTitle = false,
 	image = "/og-image.jpg",
-	isArticle = false,
-	publishedTime = CREATED_AT,
-	modifiedTime = UPDATED_AT,
-	author = PLATFORM_AUTHOR,
-	keywords = KEYWORDS,
+	article = false,
+	publishedTime,
+	modifiedTime,
+	author = "Nvisy Team",
+	keywords,
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 const pageTitle = withDefaultTitle ? `${title} | ${DEFAULT_TITLE}` : title;
 const fullImageUrl = new URL(image, Astro.site).toString();
 const siteName = DEFAULT_TITLE;
-const mergedKeywords = keywords.length > 0 ? keywords.join(", ") : "";
 
 // Generate structured data
 const structuredData = {
 	"@context": "https://schema.org",
-	"@type": isArticle ? "Article" : "WebPage",
+	"@type": article ? "Article" : "WebPage",
 	headline: pageTitle,
 	description: description,
 	url: canonical,
@@ -100,7 +97,7 @@ const structuredData = {
 
     <meta name="generator" content={Astro.generator}/>
     <meta name="version" content={version}/>
-    {keywords && <meta name="keywords" content={mergedKeywords}/>}
+    {keywords && <meta name="keywords" content={keywords}/>}
 
     <!-- Canonical URL -->
     <link rel="canonical" href={canonical}/>
@@ -111,16 +108,16 @@ const structuredData = {
     <meta name="description" content={description}/>
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content={isArticle ? "article" : "website"}/>
+    <meta property="og:type" content={article ? "article" : "website"}/>
     <meta property="og:url" content={canonical}/>
     <meta property="og:title" content={pageTitle}/>
     <meta property="og:description" content={description}/>
     <meta property="og:image" content={fullImageUrl}/>
     <meta property="og:site_name" content={siteName}/>
     <meta property="og:locale" content="en_US"/>
-    {isArticle && publishedTime && <meta property="article:published_time" content={publishedTime}/>}
-    {isArticle && modifiedTime && <meta property="article:modified_time" content={modifiedTime}/>}
-    {isArticle && author && <meta property="article:author" content={author}/>}
+    {article && publishedTime && <meta property="article:published_time" content={publishedTime}/>}
+    {article && modifiedTime && <meta property="article:modified_time" content={modifiedTime}/>}
+    {article && author && <meta property="article:author" content={author}/>}
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image"/>
@@ -135,9 +132,18 @@ const structuredData = {
     <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)}></script>
 
     <!-- Analytics -->
+    <Umami />
     <slot name="analytics"/>
 </head>
 <body class="transition-all duration-75 bg-white dark:bg-black antialiased">
+    <!-- Skip to main content for accessibility -->
+    <a
+        href="#main-content"
+        class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-black text-white px-4 py-2 rounded-md z-50 transition-all"
+    >
+        Skip to main content
+    </a>
+
     <slot name="content"/>
 
     <!-- Service Worker Registration -->

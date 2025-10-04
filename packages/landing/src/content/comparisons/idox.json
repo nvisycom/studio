@@ -1,0 +1,110 @@
+{
+	"slug": "idox",
+	"title": "Nvisy vs iDox.ai",
+	"competitor": {
+		"name": "iDox.ai",
+		"description": "AI-powered document processing platform",
+		"logo": "/images/competitors/idox-logo.png",
+		"website": "https://idox.ai",
+		"founded": "2020",
+		"headquarters": "Austin, TX"
+	},
+	"overview": {
+		"nvisy": {
+			"strengths": [
+				"Purpose-built for redaction",
+				"Superior privacy compliance",
+				"More transparent pricing",
+				"Better redaction accuracy",
+				"On-premise deployment option"
+			],
+			"weaknesses": ["Focused on redaction only", "Smaller feature set overall"]
+		},
+		"competitor": {
+			"strengths": [
+				"Broader AI document processing",
+				"Multiple document workflows",
+				"Advanced analytics",
+				"Document classification"
+			],
+			"weaknesses": [
+				"Redaction is secondary feature",
+				"More complex pricing",
+				"Cloud-only deployment",
+				"Overkill for simple redaction needs",
+				"Less specialized accuracy"
+			]
+		}
+	},
+	"features": [
+		{ "name": "Document Redaction", "nvisy": true, "competitor": true },
+		{ "name": "Redaction Accuracy", "nvisy": "99.9%", "competitor": "95%" },
+		{ "name": "On-Premise Deployment", "nvisy": true, "competitor": false },
+		{ "name": "Document Classification", "nvisy": false, "competitor": true },
+		{ "name": "Advanced Analytics", "nvisy": false, "competitor": true },
+		{ "name": "Custom AI Models", "nvisy": true, "competitor": true },
+		{ "name": "Transparent Pricing", "nvisy": true, "competitor": false },
+		{ "name": "Privacy-First Design", "nvisy": true, "competitor": false },
+		{ "name": "Multi-language Support", "nvisy": true, "competitor": true },
+		{ "name": "Workflow Automation", "nvisy": true, "competitor": true }
+	],
+	"pricing": {
+		"nvisy": {
+			"starter": {
+				"price": 29,
+				"features": [
+					"1,000 redactions/month",
+					"Standard accuracy",
+					"Cloud deployment"
+				]
+			},
+			"pro": {
+				"price": 99,
+				"features": ["10,000 redactions/month", "High accuracy", "API access"]
+			},
+			"enterprise": {
+				"price": "Custom",
+				"features": [
+					"Unlimited redactions",
+					"On-premise option",
+					"Custom models"
+				]
+			}
+		},
+		"competitor": {
+			"starter": {
+				"price": 199,
+				"features": ["5,000 documents/month", "Basic AI features", "Cloud only"]
+			},
+			"pro": {
+				"price": 499,
+				"features": [
+					"25,000 documents/month",
+					"Advanced AI",
+					"Analytics dashboard"
+				]
+			},
+			"enterprise": {
+				"price": "Custom",
+				"features": ["Custom volume", "Full platform access", "Cloud only"]
+			}
+		}
+	},
+	"useCases": [
+		{
+			"title": "Focused Redaction Needs",
+			"nvisy": "Purpose-built solution delivers superior accuracy and efficiency for redaction-specific workflows",
+			"competitor": "Broader platform may be overkill and more expensive for organizations only needing redaction"
+		},
+		{
+			"title": "Privacy-Critical Industries",
+			"nvisy": "Privacy-first architecture with on-premise options ensures maximum data control and compliance",
+			"competitor": "Cloud-only deployment may not meet strict privacy requirements in regulated industries"
+		},
+		{
+			"title": "Cost-Sensitive Organizations",
+			"nvisy": "Transparent, affordable pricing focused on redaction volume makes budgeting predictable",
+			"competitor": "Complex pricing model and broader feature set results in higher costs for redaction-only needs"
+		}
+	]
+}

@@ -1,0 +1,307 @@
+---
+import { Layout } from "@/layouts";
+import { Testimonials, CTA } from "@/sections";
+import {
+	Heart,
+	DollarSign,
+	Scale,
+	Building,
+	ShieldCheck,
+	ChevronRight,
+	Check,
+	Zap,
+	Building2,
+} from "lucide-vue-next";
+---
+
+<Layout title="Solutions" description="Document redaction solutions tailored for your industry and organization size. Secure, compliant, and built for scale.">
+  <div class="bg-white dark:bg-black min-h-screen">
+    <!-- Hero Section -->
+    <div class="relative bg-gradient-to-br from-slate-50 via-white to-gray-50 dark:from-gray-900 dark:via-black dark:to-slate-800">
+      <div class="container mx-auto px-4 py-20 md:py-28">
+        <div class="text-center max-w-4xl mx-auto">
+          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+            Solutions Built for Your Needs
+          </h1>
+          <p class="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed mb-12 max-w-3xl mx-auto">
+            From healthcare to finance, startups to enterprise - discover how AI-powered
+            document redaction protects sensitive information across industries and scales with your organization.
+          </p>
+
+          <!-- Stats -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
+            <div class="text-center">
+              <div class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">99.9%</div>
+              <div class="text-gray-600 dark:text-gray-400">Accuracy Rate</div>
+            </div>
+            <div class="text-center">
+              <div class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">50+</div>
+              <div class="text-gray-600 dark:text-gray-400">Industries Served</div>
+            </div>
+            <div class="text-center">
+              <div class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">SOC 2</div>
+              <div class="text-gray-600 dark:text-gray-400">Compliant</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- By Industry Section -->
+    <div class="container mx-auto px-4 py-20">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+            Solutions by Industry
+          </h2>
+          <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Industry-specific redaction solutions designed to meet regulatory requirements
+            and protect sensitive data in your field.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Healthcare -->
+          <div class="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+            <div class="w-16 h-16 bg-gray-900 dark:bg-white rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <Heart class="w-8 h-8 text-white dark:text-black" />
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Healthcare</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+              HIPAA-compliant redaction for medical records, patient data, and clinical documentation.
+              Protect PHI while maintaining document utility.
+            </p>
+            <ul class="space-y-3 mb-6">
+              <li class="flex items-start gap-3">
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300 text-sm">HIPAA compliance</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300 text-sm">PHI detection</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300 text-sm">Medical record processing</span>
+              </li>
+            </ul>
+            <a href="/solutions/healthcare" class="inline-flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
+              Learn more
+              <ChevronRight class="w-4 h-4 ml-2" />
+            </a>
+          </div>
+
+          <!-- Financial Services -->
+          <div class="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+            <div class="w-16 h-16 bg-gray-900 dark:bg-white rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <DollarSign class="w-8 h-8 text-white dark:text-black" />
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Financial Services</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+              Secure financial data processing with compliance for SOX, PCI-DSS, and GDPR.
+              Protect customer PII and sensitive financial information.
+            </p>
+            <ul class="space-y-3 mb-6">
+              <li class="flex items-start gap-3">
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300 text-sm">PCI-DSS compliance</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300 text-sm">PII protection</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300 text-sm">Transaction data security</span>
+              </li>
+            </ul>
+            <a href="/solutions/financial" class="inline-flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
+              Learn more
+              <ChevronRight class="w-4 h-4 ml-2" />
+            </a>
+          </div>
+
+          <!-- Legal -->
+          <div class="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+            <div class="w-16 h-16 bg-gray-900 dark:bg-white rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <Scale class="w-8 h-8 text-white dark:text-black" />
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Legal</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+              Protect attorney-client privilege and sensitive legal information.
+              Streamline discovery processes and maintain confidentiality.
+            </p>
+            <ul class="space-y-3 mb-6">
+              <li class="flex items-start gap-3">
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300 text-sm">Privilege protection</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300 text-sm">Discovery automation</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300 text-sm">Case file security</span>
+              </li>
+            </ul>
+            <a href="/solutions/legal" class="inline-flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
+              Learn more
+              <ChevronRight class="w-4 h-4 ml-2" />
+            </a>
+          </div>
+
+          <!-- Government -->
+          <div class="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+            <div class="w-16 h-16 bg-gray-900 dark:bg-white rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <Building class="w-8 h-8 text-white dark:text-black" />
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Government</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+              FedRAMP-ready solutions for federal agencies. Protect classified and sensitive
+              government data with the highest security standards.
+            </p>
+            <ul class="space-y-3 mb-6">
+              <li class="flex items-start gap-3">
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300 text-sm">FedRAMP compliance</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300 text-sm">FISMA standards</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300 text-sm">Classified data handling</span>
+              </li>
+            </ul>
+            <a href="/solutions/government" class="inline-flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
+              Learn more
+              <ChevronRight class="w-4 h-4 ml-2" />
+            </a>
+          </div>
+
+          <!-- Insurance -->
+          <div class="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+            <div class="w-16 h-16 bg-gray-900 dark:bg-white rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <ShieldCheck class="w-8 h-8 text-white dark:text-black" />
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Insurance</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+              Protect policyholder information and claims data. Streamline underwriting
+              and claims processing while maintaining regulatory compliance.
+            </p>
+            <ul class="space-y-3 mb-6">
+              <li class="flex items-start gap-3">
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300 text-sm">Claims processing</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300 text-sm">Underwriting automation</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
+                <span class="text-gray-700 dark:text-gray-300 text-sm">Policyholder data protection</span>
+              </li>
+            </ul>
+            <a href="/solutions/insurance" class="inline-flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
+              Learn more
+              <ChevronRight class="w-4 h-4 ml-2" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- By Company Size Section -->
+    <div class="bg-gray-50 dark:bg-gray-900 py-20">
+      <div class="container mx-auto px-4">
+        <div class="max-w-7xl mx-auto">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+              Solutions by Company Size
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              Whether you're a fast-moving startup or a large enterprise, we have solutions
+              that scale with your organization's needs and growth.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <!-- Enterprise -->
+            <div class="group bg-white dark:bg-black rounded-2xl border border-gray-200 dark:border-gray-700 p-10 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+              <div class="w-20 h-20 bg-gray-900 dark:bg-white rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                <Building2 class="w-10 h-10 text-white dark:text-black" />
+              </div>
+              <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Enterprise</h3>
+              <p class="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed text-lg">
+                Comprehensive document redaction solutions built for large organizations.
+                Advanced security, compliance, and dedicated support for enterprise-scale deployments.
+              </p>
+              <ul class="space-y-4 mb-8">
+                <li class="flex items-start gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-gray-300">SOC 2 Type II compliance</span>
+                </li>
+                <li class="flex items-start gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-gray-300">SSO and directory integration</span>
+                </li>
+                <li class="flex items-start gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-gray-300">24/7 dedicated support</span>
+                </li>
+                <li class="flex items-start gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-gray-300">Custom deployment options</span>
+                </li>
+              </ul>
+              <a href="/solutions/enterprise" class="inline-flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium text-lg transition-colors">
+                Learn more about Enterprise
+                <ChevronRight class="w-5 h-5 ml-2" />
+              </a>
+            </div>
+
+            <!-- Startup -->
+            <div class="group bg-white dark:bg-black rounded-2xl border border-gray-200 dark:border-gray-700 p-10 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+              <div class="w-20 h-20 bg-gray-900 dark:bg-white rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                <Zap class="w-10 h-10 text-white dark:text-black" />
+              </div>
+              <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Startup</h3>
+              <p class="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed text-lg">
+                Get started quickly with document redaction that grows with you.
+                Affordable, secure, and built for fast-moving teams who need to protect sensitive data from day one.
+              </p>
+              <ul class="space-y-4 mb-8">
+                <li class="flex items-start gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-gray-300">Quick setup and onboarding</span>
+                </li>
+                <li class="flex items-start gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-gray-300">Pay-as-you-scale pricing</span>
+                </li>
+                <li class="flex items-start gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-gray-300">API-first integration</span>
+                </li>
+                <li class="flex items-start gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-gray-300">Community support</span>
+                </li>
+              </ul>
+              <a href="/solutions/startup" class="inline-flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium text-lg transition-colors">
+                Learn more about Startup
+                <ChevronRight class="w-5 h-5 ml-2" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <Testimonials />
+    <CTA />
+  </div>
+</Layout>

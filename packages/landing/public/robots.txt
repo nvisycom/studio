@@ -1,13 +1,12 @@
 # Notice: The use of robots or other automated means to access Nvisy
 # without the express permission of Nvisy is strictly prohibited.
-# See https://www.axiston.com/legal/terms-of-service/
 
 User-Agent: NvisyBot
-Allow: *
+Allow: /*
 
 User-Agent: *
-Disallow: redirect/
-Allow: *
+Disallow: /redirect/
+Allow: /*
 
 Sitemap: https://nvisy.com/sitemap-index.xml
 
