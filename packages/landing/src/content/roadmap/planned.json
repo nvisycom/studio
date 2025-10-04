@@ -1,62 +1,62 @@
 [
 	{
-		"id": "ai-powered-insights",
-		"title": "AI-Powered Insights",
-		"description": "Machine learning models to automatically classify and handle sensitive data patterns.",
-		"quarter": "Q2 2025",
+		"id": "hybrid-sync",
+		"title": "Hybrid Sync",
+		"description": "Enable local installations to share redacted files and track changes via secure cloud sync.",
+		"quarter": "Q2 2026",
 		"status": "planned",
-		"category": "ai-ml",
+		"category": "infrastructure",
 		"priority": "high",
-		"githubIssue": "https://github.com/nvisy/nvisy/issues/52"
-	},
-	{
-		"id": "mobile-sdks",
-		"title": "Mobile SDKs",
-		"description": "Native iOS and Android SDKs for mobile app integration with on-device processing.",
-		"quarter": "Q3 2025",
-		"status": "planned",
-		"category": "developer-tools",
-		"priority": "medium",
-		"githubIssue": "https://github.com/nvisy/nvisy/issues/67"
+		"githubIssue": "https://github.com/nvisy/nvisy/issues/115"
 	},
 	{
 		"id": "multi-language-support",
 		"title": "Multi-Language Support",
-		"description": "OCR and redaction support for 50+ languages with locale-specific privacy rules.",
-		"quarter": "Q4 2025",
+		"description": "Privacy and redaction support for 50+ languages with locale-specific compliance rules.",
+		"quarter": "Q2 2026",
 		"status": "planned",
 		"category": "core-platform",
 		"priority": "high",
-		"githubIssue": "https://github.com/nvisy/nvisy/issues/78"
+		"githubIssue": "https://github.com/nvisy/nvisy/issues/116"
 	},
 	{
-		"id": "edge-computing",
-		"title": "Edge Computing",
-		"description": "Deploy processing capabilities to edge locations for ultra-low latency applications.",
+		"id": "multimodal-support",
+		"title": "Multimodal Support",
+		"description": "Extend privacy protection and anonymization to videos, audio, and images.",
+		"quarter": "Q3 2026",
+		"status": "planned",
+		"category": "core-platform",
+		"priority": "high",
+		"githubIssue": "https://github.com/nvisy/nvisy/issues/117"
+	},
+	{
+		"id": "hipaa-compliance",
+		"title": "HIPAA Compliance",
+		"description": "Full HIPAA compliance certification with healthcare-specific privacy features and audit trails.",
 		"quarter": "2026",
 		"status": "planned",
-		"category": "infrastructure",
+		"category": "compliance",
+		"priority": "high",
+		"githubIssue": "https://github.com/nvisy/nvisy/issues/118"
+	},
+	{
+		"id": "enterprise-sso",
+		"title": "Enterprise SSO",
+		"description": "Single sign-on integration with enterprise identity providers and advanced role management.",
+		"quarter": "2026",
+		"status": "planned",
+		"category": "enterprise",
 		"priority": "medium",
-		"githubIssue": "https://github.com/nvisy/nvisy/issues/89"
+		"githubIssue": "https://github.com/nvisy/nvisy/issues/119"
 	},
 	{
-		"id": "blockchain-integration",
-		"title": "Blockchain Integration",
-		"description": "Immutable audit trails and zero-knowledge proofs for enhanced privacy verification.",
+		"id": "ai-powered-insights",
+		"title": "AI-Powered Insights",
+		"description": "Machine learning models to automatically classify and handle sensitive data patterns.",
 		"quarter": "2026",
 		"status": "planned",
-		"category": "security",
-		"priority": "low",
-		"githubIssue": "https://github.com/nvisy/nvisy/issues/94"
-	},
-	{
-		"id": "visual-dashboard",
-		"title": "Visual Dashboard",
-		"description": "Comprehensive analytics and monitoring dashboard for data processing workflows.",
-		"quarter": "2026",
-		"status": "planned",
-		"category": "analytics",
+		"category": "ai-ml",
 		"priority": "medium",
-		"githubIssue": "https://github.com/nvisy/nvisy/issues/101"
+		"githubIssue": "https://github.com/nvisy/nvisy/issues/120"
 	}
 ]

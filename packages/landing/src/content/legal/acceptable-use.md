@@ -3,7 +3,7 @@ title: "Acceptable Use"
 description: "Guidelines for proper and acceptable use of our platform and services."
 createdAt: 2021-07-08T12:00:00-04:00
 updatedAt: 2024-01-18T16:20:00-05:00
-version: "1.8"
+version: "1.0"
 ---
 
 ### Heading

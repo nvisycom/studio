@@ -151,7 +151,6 @@ const integrationSchema = z.object({
 	title: z.string(),
 	category: z.string(),
 	description: z.string(),
-	availability: z.string(),
 });
 
 export type IntegrationItem = z.infer<typeof integrationSchema>;

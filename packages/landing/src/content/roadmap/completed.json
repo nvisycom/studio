@@ -1,32 +1,22 @@
 [
 	{
-		"id": "ocr-engine-v1",
-		"title": "OCR Engine v1.0",
-		"description": "Core optical character recognition with privacy-first design and on-device processing.",
-		"quarter": "Q1 2024",
+		"id": "nvisy-core",
+		"title": "Core Platform",
+		"description": "Next-generation privacy-first core library with enhanced performance and security.",
+		"quarter": "Q3 2025",
 		"status": "completed",
 		"category": "core-platform",
 		"priority": "high",
-		"githubIssue": "https://github.com/nvisy/nvisy/issues/1"
+		"githubIssue": "https://github.com/nvisy/nvisy/issues/110"
 	},
 	{
-		"id": "terminal-cli",
-		"title": "Terminal CLI",
-		"description": "Command-line interface for developers to integrate OCR and redaction into workflows.",
-		"quarter": "Q2 2024",
+		"id": "nvisy-runtime",
+		"title": "Runtime Engine",
+		"description": "Advanced processing engine with improved accuracy and speed for document analysis.",
+		"quarter": "Q4 2025",
 		"status": "completed",
-		"category": "developer-tools",
+		"category": "core-platform",
 		"priority": "high",
-		"githubIssue": "https://github.com/nvisy/nvisy/issues/12"
-	},
-	{
-		"id": "privacy-core",
-		"title": "Privacy Core",
-		"description": "Open-source privacy libraries for data redaction and compliance automation.",
-		"quarter": "Q2 2024",
-		"status": "completed",
-		"category": "open-source",
-		"priority": "high",
-		"githubIssue": "https://github.com/nvisy/nvisy/issues/18"
+		"githubIssue": "https://github.com/nvisy/nvisy/issues/111"
 	}
 ]

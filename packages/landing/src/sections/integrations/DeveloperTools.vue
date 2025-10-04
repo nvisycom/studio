@@ -79,9 +79,9 @@ import {
 	Code2,
 	Link,
 	FileText,
-	CheckCircle,
 	Clock,
 	Calendar,
+	CircleCheck,
 } from "lucide-vue-next";
 
 interface Props {
@@ -106,7 +106,7 @@ const getIcon = (iconName: string) => {
 // Status icon mapping
 const getStatusIcon = (status: string) => {
 	const statusIconMap: Record<string, any> = {
-		Completed: CheckCircle,
+		Completed: CircleCheck,
 		"In Progress": Clock,
 		Planned: Calendar,
 	};

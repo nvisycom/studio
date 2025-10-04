@@ -1,10 +1,9 @@
 {
 	"icon": "notion",
 	"isBrand": true,
-	"version": "v1.4",
-	"status": "In Progress",
+	"version": "v1.0",
+	"status": "Planned",
 	"title": "Notion",
 	"category": "Collaboration",
-	"description": "Protect sensitive content in Notion pages and databases with intelligent redaction workflows.",
-	"availability": "Available"
+	"description": "Comprehensive workspace integration with automated redaction for Notion pages, databases, and shared content across team workspaces."
 }

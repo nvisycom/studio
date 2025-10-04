@@ -1,41 +1,56 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import { Hero } from "@/sections";
-import TrustIndicators from "@/sections/TrustIndicators.astro";
-import Features from "@/sections/Features.astro";
-import Testimonials from "@/sections/Testimonials.astro";
-import Stats from "@/sections/Stats.astro";
-import Workflow from "@/sections/Workflow.astro";
-import UseCases from "@/sections/UseCases.astro";
-import Integrations from "@/sections/Integrations.astro";
-import CTA from "@/sections/CTA.astro";
+import {
+	Hero,
+	Workflow,
+	Features,
+	Integrations,
+	UseCases,
+	Testimonials,
+	TrustIndicators,
+	CTA,
+	Stats,
+} from "@/sections";
 ---
+
 <Layout>
-  <!-- Hero Section -->
+  <!-- Hero Section - Clear Value Proposition -->
   <Hero />
 
-  <!-- Trust Indicators -->
+  <!-- Trust Indicators - Build Credibility Early -->
   <TrustIndicators />
 
-  <!-- Features Section -->
-  <Features />
+  <!-- Stats Section - Quantifiable Value & Social Proof -->
+  <div class="bg-white dark:bg-black">
+    <Stats />
+  </div>
 
-  <!-- Testimonials Section -->
-  <Testimonials backgroundColor="gray" />
+  <!-- Features Section - Core Capabilities -->
+  <div class="bg-gray-50 dark:bg-neutral-950">
+    <Features />
+  </div>
 
-  <!-- Stats Section -->
-  <Stats />
+  <!-- Workflow - Remove Friction & Objections -->
+  <div class="bg-white dark:bg-black">
+    <Workflow backgroundColor="white" />
+  </div>
 
-  <!-- How It Works -->
-  <Workflow backgroundColor="white" />
+  <!-- Use Cases Section - Industry Applications -->
+  <div class="bg-white dark:bg-black border-t border-gray-200 dark:border-neutral-800">
+    <UseCases />
+  </div>
 
-  <!-- Use Cases Section -->
-  <UseCases />
+  <!-- Testimonials Section - Customer Validation -->
+  <div class="bg-gray-50 dark:bg-neutral-950">
+    <Testimonials backgroundColor="gray" />
+  </div>
 
-  <!-- Integrations Section -->
-  <Integrations backgroundColor="gray" />
+  <!-- Integrations Section - Ecosystem Fit -->
+  <div class="bg-white dark:bg-black">
+    <Integrations backgroundColor="white" />
+  </div>
 
-  <!-- Call-to-Action Section -->
+  <!-- Call-to-Action Section - Clear Next Steps -->
   <CTA
     title="Ready to Secure Your Documents?"
     description="Join hundreds of enterprises already protecting sensitive information with our AI-powered redaction platform."

@@ -1,10 +1,9 @@
 {
 	"icon": "rocket",
 	"isBrand": false,
-	"version": "v1.2",
-	"status": "Completed",
+	"version": "v1.0",
+	"status": "Planned",
 	"title": "Make",
 	"category": "Automation",
-	"description": "Visual automation platform with drag-and-drop redaction workflows and real-time processing.",
-	"availability": "Available"
+	"description": "Visual workflow automation platform with drag-and-drop interface for creating complex document redaction pipelines and real-time processing workflows."
 }

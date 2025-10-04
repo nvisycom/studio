@@ -3,7 +3,7 @@ title: "Terms of Service"
 description: "Review the terms and conditions governing your use of our platform and services."
 createdAt: 2021-07-08T12:00:00-04:00
 updatedAt: 2024-01-20T14:45:00-05:00
-version: "3.2"
+version: "1.0"
 ---
 
 ### Heading

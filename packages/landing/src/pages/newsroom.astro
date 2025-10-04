@@ -1,110 +1,120 @@
 ---
 import { Layout } from "@/layouts";
-import {
-	NewsroomHero,
-	PressReleases,
-	InTheNews,
-	MediaResources,
-} from "@/sections/newsroom";
 import { CTA } from "@/sections";
+
+// Actual updates/blog posts - real content only
+const updates = [
+	{
+		id: "launch",
+		title: "We're Building Something Cool",
+		excerpt:
+			"After months of late nights and countless iterations, we're excited to share what we've been working on. Nvisy aims to make document redaction simple and secure.",
+		date: "2024-01-15",
+		category: "Product",
+	},
+	{
+		id: "beta",
+		title: "Looking for Beta Testers",
+		excerpt:
+			"We're looking for early users to test our platform and provide feedback. If you deal with sensitive documents regularly, we'd love to hear from you.",
+		date: "2024-01-08",
+		category: "Community",
+	},
+];
 ---
 
-<Layout title="Newsroom" description="Latest news, press releases, and media resources from Nvisy. Stay updated on our journey to transform document security.">
+<Layout title="Newsroom" description="Updates and news from Nvisy. Follow our journey as we build better document security tools.">
   <div class="bg-white dark:bg-black min-h-screen">
     <!-- Hero Section -->
-    <NewsroomHero />
-
-    <!-- As Featured In Animation -->
-    <div class="py-12 border-b border-gray-200 dark:border-neutral-800">
-      <div class="container mx-auto px-4">
-        <div class="text-center">
-          <div class="overflow-hidden">
-            <div class="inline-flex animate-spin-slow items-center text-sm text-gray-500 dark:text-neutral-400 whitespace-nowrap">
-              <span class="mx-8">as featured in</span>
-              <span class="mx-8">•</span>
-              <span class="mx-8">TechCrunch</span>
-              <span class="mx-8">•</span>
-              <span class="mx-8">Forbes</span>
-              <span class="mx-8">•</span>
-              <span class="mx-8">VentureBeat</span>
-              <span class="mx-8">•</span>
-              <span class="mx-8">Wired</span>
-              <span class="mx-8">•</span>
-              <span class="mx-8">Business Insider</span>
-              <span class="mx-8">•</span>
-              <span class="mx-8">SecurityWeek</span>
-              <span class="mx-8">•</span>
-              <span class="mx-8">as featured in</span>
-              <span class="mx-8">•</span>
-              <span class="mx-8">TechCrunch</span>
-              <span class="mx-8">•</span>
-              <span class="mx-8">Forbes</span>
-              <span class="mx-8">•</span>
-              <span class="mx-8">VentureBeat</span>
-              <span class="mx-8">•</span>
-              <span class="mx-8">Wired</span>
-              <span class="mx-8">•</span>
-              <span class="mx-8">Business Insider</span>
-              <span class="mx-8">•</span>
-              <span class="mx-8">SecurityWeek</span>
-              <span class="mx-8">•</span>
-            </div>
-          </div>
+    <div class="relative bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-neutral-900 dark:via-neutral-900 dark:to-neutral-800">
+      <div class="container mx-auto px-4 py-16 md:py-20">
+        <div class="text-center max-w-3xl mx-auto">
+          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+            News & Updates
+          </h1>
+          <p class="text-lg md:text-xl text-gray-600 dark:text-neutral-300 leading-relaxed">
+            We're a small team working hard to build better document security tools.
+            Here's what we're up to.
+          </p>
         </div>
       </div>
     </div>
 
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-12">
-      <!-- Press Releases Section -->
+      <!-- Updates Section -->
       <section class="mb-20">
-        <PressReleases />
+        <div class="max-w-4xl mx-auto">
+          <div class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              Latest Updates
+            </h2>
+            <p class="text-gray-600 dark:text-neutral-400">
+              Stay in the loop with our progress, new features, and announcements.
+            </p>
+          </div>
+
+          <div class="space-y-8">
+            {updates.map(update => (
+              <article class="bg-white dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-neutral-800 p-6 hover:border-gray-300 dark:hover:border-neutral-700 transition-all duration-300">
+                <div class="flex items-center gap-4 mb-4">
+                  <span class="text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-full">
+                    {update.category}
+                  </span>
+                  <span class="text-sm text-gray-500 dark:text-neutral-500">
+                    {new Date(update.date).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </span>
+                </div>
+
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                  {update.title}
+                </h3>
+
+                <p class="text-gray-600 dark:text-neutral-300 leading-relaxed">
+                  {update.excerpt}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
       </section>
 
-      <!-- In the News Section -->
+      <!-- About Section -->
       <section class="mb-20">
-        <InTheNews />
-      </section>
-
-      <!-- Media Resources Section -->
-      <section class="mb-12">
-        <MediaResources />
+        <div class="max-w-4xl mx-auto bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-neutral-900 dark:to-neutral-800 rounded-2xl p-8 md:p-12 border border-gray-200 dark:border-neutral-800">
+          <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            Who We Are
+          </h2>
+          <p class="text-lg text-gray-600 dark:text-neutral-300 leading-relaxed mb-4">
+            We're a small team of three people passionate about making document security accessible
+            and easy to use. No venture funding, no corporate backing—just a focused team building
+            something we believe in.
+          </p>
+          <p class="text-lg text-gray-600 dark:text-neutral-300 leading-relaxed">
+            We're bootstrapped, which means we're building this for real users with real needs,
+            not chasing vanity metrics or exit strategies.
+          </p>
+        </div>
       </section>
     </div>
 
     <!-- CTA Section -->
     <CTA
-      title="Press Inquiries"
-      description="For media inquiries, interview requests, or additional information, please don't hesitate to reach out to our press team."
+      title="Get in Touch"
+      description="Have questions? Want to learn more? Just want to say hi? We'd love to hear from you."
       background="none"
       padding="lg"
       buttons={[
         {
-          text: "Email Press Team",
-          href: "mailto:press@nvisy.com",
-          variant: "primary"
-        },
-        {
-          text: "General Contact",
+          text: "Contact Us",
           href: "/contact",
-          variant: "secondary"
+          variant: "primary"
         }
       ]}
     />
   </div>
 </Layout>
-
-<style>
-  @keyframes spin-slow {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-50%);
-    }
-  }
-
-  .animate-spin-slow {
-    animation: spin-slow 20s linear infinite;
-  }
-</style>

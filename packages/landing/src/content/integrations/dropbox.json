@@ -1,10 +1,9 @@
 {
 	"icon": "dropbox",
 	"isBrand": true,
-	"version": "v1.8",
-	"status": "Completed",
+	"version": "v1.0",
+	"status": "Planned",
 	"title": "Dropbox",
 	"category": "Cloud Storage",
-	"description": "Secure document processing for all your Dropbox files with automated redaction workflows.",
-	"availability": "Available"
+	"description": "Enterprise-grade document redaction for Dropbox Business with automated workflows and secure file processing across shared folders."
 }
