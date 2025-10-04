@@ -21,7 +21,7 @@ const { footerSections } = Astro.props;
 
 <!-- Dynamic Footer Sections -->
 {footerSections.map((section) => (
-  <div key={section.title}>
+  <div>
     <h3
       class="font-semibold text-gray-900 dark:text-white text-sm mb-4 tracking-wider uppercase"
     >
@@ -29,7 +29,7 @@ const { footerSections } = Astro.props;
     </h3>
     <ul class="space-y-3">
       {section.links.map((link) => (
-        <li key={link.name}>
+        <li>
           <a
             href={link.href}
             target={link.isExternal ? "_blank" : undefined}

@@ -5,10 +5,12 @@ import { Primitive } from "reka-ui";
 import { cn } from "@/lib/utils";
 
 const props = withDefaults(
-	defineProps<PrimitiveProps & { class?: HTMLAttributes["class"] }>(),
-	{
-		as: "a",
-	},
+  defineProps<
+    PrimitiveProps & { class?: HTMLAttributes["class"]; href?: string }
+  >(),
+  {
+    as: "a",
+  }
 );
 </script>
 
@@ -17,6 +19,7 @@ const props = withDefaults(
     data-slot="breadcrumb-link"
     :as="as"
     :as-child="asChild"
+    :href="href"
     :class="cn('hover:text-foreground transition-colors', props.class)"
   >
     <slot />

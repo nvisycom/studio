@@ -3,7 +3,7 @@ import { Layout } from "@/layouts";
 import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
 import { CTA, Hero } from "@/sections";
-import { Github, Mail } from "lucide-vue-next";
+import GithubIcon from "@/assets/icons/github.svg";
 
 let completedItems: CollectionEntry<"roadmap">[] = [];
 let inProgressItems: CollectionEntry<"roadmap">[] = [];
@@ -80,7 +80,7 @@ const planned = plannedItems[0]?.data || [];
                       class="inline-flex items-center text-xs text-gray-500 dark:text-neutral-500 hover:text-gray-700 dark:hover:text-neutral-300 transition-colors"
                     >
                         <span class="mr-2">
-                            <Github class="h-5 w-5" />
+                            <GithubIcon class="h-5 w-5" />
                         </span>
                       Issue
                     </a>
@@ -122,7 +122,7 @@ const planned = plannedItems[0]?.data || [];
                       class="inline-flex items-center text-xs text-gray-500 dark:text-neutral-500 hover:text-gray-700 dark:hover:text-neutral-300 transition-colors"
                     >
                         <span class="mr-2">
-                            <Github class="h-5 w-5" />
+                            <GithubIcon class="h-5 w-5" />
                         </span>
                         Issue
                     </a>
@@ -169,7 +169,7 @@ const planned = plannedItems[0]?.data || [];
                       class="inline-flex items-center text-xs text-gray-500 dark:text-neutral-500 hover:text-gray-700 dark:hover:text-neutral-300 transition-colors"
                     >
                         <span class="mr-2">
-                            <Github class="h-5 w-5" />
+                            <GithubIcon class="h-5 w-5" />
                         </span>
                       Issue
                     </a>

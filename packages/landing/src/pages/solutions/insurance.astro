@@ -1,6 +1,7 @@
 ---
 import { Layout } from "@/layouts";
 import { Testimonials, CTA } from "@/sections";
+import { Lightbulb, FileText, Shield, Check } from "lucide-vue-next";
 ---
 
 <Layout title="Insurance - Use Cases" description="Discover how insurance companies use our platform for digital transformation, claims automation, and customer experience excellence.">
@@ -56,9 +57,7 @@ import { Testimonials, CTA } from "@/sections";
         <!-- Automated Underwriting -->
         <div class="group bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
           <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-            </svg>
+            <Lightbulb class="w-8 h-8 text-white" />
           </div>
           <h3 class="text-2xl font-bold text-gray-900 mb-4">Automated Underwriting</h3>
           <p class="text-gray-600 mb-6 leading-relaxed">
@@ -66,21 +65,15 @@ import { Testimonials, CTA } from "@/sections";
           </p>
           <ul class="space-y-3">
             <li class="flex items-start gap-3">
-              <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
+              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
               <span class="text-gray-700 text-sm">AI risk scoring</span>
             </li>
             <li class="flex items-start gap-3">
-              <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
+              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
               <span class="text-gray-700 text-sm">Real-time decisioning</span>
             </li>
             <li class="flex items-start gap-3">
-              <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
+              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
               <span class="text-gray-700 text-sm">Regulatory compliance</span>
             </li>
           </ul>
@@ -89,9 +82,7 @@ import { Testimonials, CTA } from "@/sections";
         <!-- Claims Processing -->
         <div class="group bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
           <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
+            <FileText class="w-8 h-8 text-white" />
           </div>
           <h3 class="text-2xl font-bold text-gray-900 mb-4">Smart Claims Processing</h3>
           <p class="text-gray-600 mb-6 leading-relaxed">
@@ -99,21 +90,15 @@ import { Testimonials, CTA } from "@/sections";
           </p>
           <ul class="space-y-3">
             <li class="flex items-start gap-3">
-              <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
+              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
               <span class="text-gray-700 text-sm">Automated adjudication</span>
             </li>
             <li class="flex items-start gap-3">
-              <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
+              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
               <span class="text-gray-700 text-sm">Fraud detection</span>
             </li>
             <li class="flex items-start gap-3">
-              <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
+              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
               <span class="text-gray-700 text-sm">Instant payments</span>
             </li>
           </ul>
@@ -122,9 +107,7 @@ import { Testimonials, CTA } from "@/sections";
         <!-- Customer Experience -->
         <div class="group bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
           <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-            </svg>
+            <Shield class="w-8 h-8 text-white" />
           </div>
           <h3 class="text-2xl font-bold text-gray-900 mb-4">Customer Experience</h3>
           <p class="text-gray-600 mb-6 leading-relaxed">
@@ -132,21 +115,15 @@ import { Testimonials, CTA } from "@/sections";
           </p>
           <ul class="space-y-3">
             <li class="flex items-start gap-3">
-              <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
+              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
               <span class="text-gray-700 text-sm">Self-service portals</span>
             </li>
             <li class="flex items-start gap-3">
-              <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
+              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
               <span class="text-gray-700 text-sm">Mobile applications</span>
             </li>
             <li class="flex items-start gap-3">
-              <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
+              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
               <span class="text-gray-700 text-sm">24/7 digital support</span>
             </li>
           </ul>
@@ -258,29 +235,8 @@ import { Testimonials, CTA } from "@/sections";
       title="Trusted by Insurance Leaders"
       description="See how leading insurance companies are driving growth and efficiency with our comprehensive digital platform."
       backgroundColor="gray"
-      testimonials={[
-        {
-          quote: "We reduced our claims processing time from weeks to hours and improved customer satisfaction by 85%. The AI-powered underwriting helped us increase profitability while maintaining competitive pricing.",
-          author: "James Wilson",
-          title: "Chief Digital Officer",
-          company: "National Insurance Group",
-          rating: 5
-        },
-        {
-          quote: "The fraud detection system has saved us millions. It catches patterns our human analysts missed and processes claims 10x faster than our previous solution.",
-          author: "Sarah Chen",
-          title: "Head of Claims",
-          company: "Progressive Auto Insurance",
-          rating: 5
-        },
-        {
-          quote: "Customer onboarding that used to take weeks now happens in minutes. Our digital-first approach has attracted a whole new generation of customers.",
-          author: "Michael Rodriguez",
-          title: "VP of Digital Experience",
-          company: "Modern Life Insurance",
-          rating: 5
-        }
-      ]}
+      category="insurance"
+      featured={true}
     />
 
     <CTA

@@ -3,7 +3,6 @@ import Layout from "@/layouts/Layout.astro";
 import { CTA, Features, Testimonials } from "@/sections";
 import {
 	ProductHero,
-	ProductBenefits,
 	ProductComparison,
 	DeploymentOptions,
 	SystemRequirements,
@@ -149,29 +148,8 @@ import {
       title="Trusted by Government & Enterprise"
       description="See what our customers say about deploying Nvisy Local in their most secure environments."
       backgroundColor="gray"
-      testimonials={[
-        {
-          quote: "Nvisy Local gives us the security posture we need for classified documents while maintaining the AI accuracy we require. Zero data ever leaves our network.",
-          author: "Colonel James Mitchell",
-          title: "Information Systems Director",
-          company: "U.S. Department of Defense",
-          rating: 5,
-        },
-        {
-          quote: "The on-premises deployment was seamless. Our compliance team loves having complete audit trails and the ability to customize redaction policies for our industry.",
-          author: "Dr. Elena Rodriguez",
-          title: "Chief Security Officer",
-          company: "Federal Health Agency",
-          rating: 5,
-        },
-        {
-          quote: "Custom model training on our proprietary documents has given us redaction accuracy that exceeds 99.8%. The performance on our GPU cluster is exceptional.",
-          author: "Robert Chen",
-          title: "Senior Systems Architect",
-          company: "Defense Contractor Solutions",
-          rating: 5,
-        }
-      ]}
+      category="local"
+      featured={true}
     />
 
     <!-- Comparisons Section -->

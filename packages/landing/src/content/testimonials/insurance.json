@@ -1,0 +1,29 @@
+[
+	{
+		"quote": "We reduced our claims processing time from weeks to hours and improved customer satisfaction by 85%. The AI-powered underwriting helped us increase profitability while maintaining competitive pricing.",
+		"author": "James Wilson",
+		"title": "Chief Digital Officer",
+		"company": "National Insurance Group",
+		"rating": 5,
+		"order": 1,
+		"featured": true
+	},
+	{
+		"quote": "The fraud detection system has saved us millions. It catches patterns our human analysts missed and processes claims 10x faster than our previous solution.",
+		"author": "Sarah Chen",
+		"title": "Head of Claims",
+		"company": "Progressive Auto Insurance",
+		"rating": 5,
+		"order": 2,
+		"featured": true
+	},
+	{
+		"quote": "Customer onboarding that used to take weeks now happens in minutes. Our digital-first approach has attracted a whole new generation of customers.",
+		"author": "Michael Rodriguez",
+		"title": "VP of Digital Experience",
+		"company": "Modern Life Insurance",
+		"rating": 5,
+		"order": 3,
+		"featured": true
+	}
+]

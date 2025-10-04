@@ -1,6 +1,7 @@
 ---
 import { Layout } from "@/layouts";
-import { Testimonials, CTA, Features } from "@/sections";
+import { Testimonials, CTA } from "@/sections";
+import { Heart, DollarSign, Scale, Building, ShieldCheck, ChevronRight, Check, Zap, Building2 } from "lucide-vue-next";
 ---
 
 <Layout title="Solutions" description="Document redaction solutions tailored for your industry and organization size. Secure, compliant, and built for scale.">
@@ -53,9 +54,7 @@ import { Testimonials, CTA, Features } from "@/sections";
           <!-- Healthcare -->
           <div class="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
             <div class="w-16 h-16 bg-gray-900 dark:bg-white rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <svg class="w-8 h-8 text-white dark:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-              </svg>
+              <Heart class="w-8 h-8 text-white dark:text-black" />
             </div>
             <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Healthcare</h3>
             <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
@@ -64,38 +63,28 @@ import { Testimonials, CTA, Features } from "@/sections";
             </p>
             <ul class="space-y-3 mb-6">
               <li class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
                 <span class="text-gray-700 dark:text-gray-300 text-sm">HIPAA compliance</span>
               </li>
               <li class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
                 <span class="text-gray-700 dark:text-gray-300 text-sm">PHI detection</span>
               </li>
               <li class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
                 <span class="text-gray-700 dark:text-gray-300 text-sm">Medical record processing</span>
               </li>
             </ul>
             <a href="/solutions/healthcare" class="inline-flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
               Learn more
-              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-              </svg>
+              <ChevronRight class="w-4 h-4 ml-2" />
             </a>
           </div>
 
           <!-- Financial Services -->
           <div class="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
             <div class="w-16 h-16 bg-gray-900 dark:bg-white rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <svg class="w-8 h-8 text-white dark:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
-              </svg>
+              <DollarSign class="w-8 h-8 text-white dark:text-black" />
             </div>
             <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Financial Services</h3>
             <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
@@ -104,38 +93,28 @@ import { Testimonials, CTA, Features } from "@/sections";
             </p>
             <ul class="space-y-3 mb-6">
               <li class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
                 <span class="text-gray-700 dark:text-gray-300 text-sm">PCI-DSS compliance</span>
               </li>
               <li class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
                 <span class="text-gray-700 dark:text-gray-300 text-sm">PII protection</span>
               </li>
               <li class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
                 <span class="text-gray-700 dark:text-gray-300 text-sm">Transaction data security</span>
               </li>
             </ul>
             <a href="/solutions/financial" class="inline-flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
               Learn more
-              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-              </svg>
+              <ChevronRight class="w-4 h-4 ml-2" />
             </a>
           </div>
 
           <!-- Legal -->
           <div class="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
             <div class="w-16 h-16 bg-gray-900 dark:bg-white rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <svg class="w-8 h-8 text-white dark:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
-              </svg>
+              <Scale class="w-8 h-8 text-white dark:text-black" />
             </div>
             <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Legal</h3>
             <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
@@ -144,38 +123,28 @@ import { Testimonials, CTA, Features } from "@/sections";
             </p>
             <ul class="space-y-3 mb-6">
               <li class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
                 <span class="text-gray-700 dark:text-gray-300 text-sm">Privilege protection</span>
               </li>
               <li class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
                 <span class="text-gray-700 dark:text-gray-300 text-sm">Discovery automation</span>
               </li>
               <li class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
                 <span class="text-gray-700 dark:text-gray-300 text-sm">Case file security</span>
               </li>
             </ul>
             <a href="/solutions/legal" class="inline-flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
               Learn more
-              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-              </svg>
+              <ChevronRight class="w-4 h-4 ml-2" />
             </a>
           </div>
 
           <!-- Government -->
           <div class="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
             <div class="w-16 h-16 bg-gray-900 dark:bg-white rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <svg class="w-8 h-8 text-white dark:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-              </svg>
+              <Building class="w-8 h-8 text-white dark:text-black" />
             </div>
             <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Government</h3>
             <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
@@ -184,38 +153,28 @@ import { Testimonials, CTA, Features } from "@/sections";
             </p>
             <ul class="space-y-3 mb-6">
               <li class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
                 <span class="text-gray-700 dark:text-gray-300 text-sm">FedRAMP compliance</span>
               </li>
               <li class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
                 <span class="text-gray-700 dark:text-gray-300 text-sm">FISMA standards</span>
               </li>
               <li class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
                 <span class="text-gray-700 dark:text-gray-300 text-sm">Classified data handling</span>
               </li>
             </ul>
             <a href="/solutions/government" class="inline-flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
               Learn more
-              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-              </svg>
+              <ChevronRight class="w-4 h-4 ml-2" />
             </a>
           </div>
 
           <!-- Insurance -->
           <div class="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
             <div class="w-16 h-16 bg-gray-900 dark:bg-white rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <svg class="w-8 h-8 text-white dark:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-              </svg>
+              <ShieldCheck class="w-8 h-8 text-white dark:text-black" />
             </div>
             <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Insurance</h3>
             <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
@@ -224,29 +183,21 @@ import { Testimonials, CTA, Features } from "@/sections";
             </p>
             <ul class="space-y-3 mb-6">
               <li class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
                 <span class="text-gray-700 dark:text-gray-300 text-sm">Claims processing</span>
               </li>
               <li class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
                 <span class="text-gray-700 dark:text-gray-300 text-sm">Underwriting automation</span>
               </li>
               <li class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
+                <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
                 <span class="text-gray-700 dark:text-gray-300 text-sm">Policyholder data protection</span>
               </li>
             </ul>
             <a href="/solutions/insurance" class="inline-flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
               Learn more
-              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-              </svg>
+              <ChevronRight class="w-4 h-4 ml-2" />
             </a>
           </div>
         </div>
@@ -271,9 +222,7 @@ import { Testimonials, CTA, Features } from "@/sections";
             <!-- Enterprise -->
             <div class="group bg-white dark:bg-black rounded-2xl border border-gray-200 dark:border-gray-700 p-10 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
               <div class="w-20 h-20 bg-gray-900 dark:bg-white rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                <svg class="w-10 h-10 text-white dark:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                </svg>
+                <Building2 class="w-10 h-10 text-white dark:text-black" />
               </div>
               <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Enterprise</h3>
               <p class="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed text-lg">
@@ -282,44 +231,32 @@ import { Testimonials, CTA, Features } from "@/sections";
               </p>
               <ul class="space-y-4 mb-8">
                 <li class="flex items-start gap-3">
-                  <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                  </svg>
+                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" />
                   <span class="text-gray-700 dark:text-gray-300">SOC 2 Type II compliance</span>
                 </li>
                 <li class="flex items-start gap-3">
-                  <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                  </svg>
+                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" />
                   <span class="text-gray-700 dark:text-gray-300">SSO and directory integration</span>
                 </li>
                 <li class="flex items-start gap-3">
-                  <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                  </svg>
+                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" />
                   <span class="text-gray-700 dark:text-gray-300">24/7 dedicated support</span>
                 </li>
                 <li class="flex items-start gap-3">
-                  <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                  </svg>
+                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" />
                   <span class="text-gray-700 dark:text-gray-300">Custom deployment options</span>
                 </li>
               </ul>
               <a href="/solutions/enterprise" class="inline-flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium text-lg transition-colors">
                 Learn more about Enterprise
-                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
+                <ChevronRight class="w-5 h-5 ml-2" />
               </a>
             </div>
 
             <!-- Startup -->
             <div class="group bg-white dark:bg-black rounded-2xl border border-gray-200 dark:border-gray-700 p-10 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
               <div class="w-20 h-20 bg-gray-900 dark:bg-white rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                <svg class="w-10 h-10 text-white dark:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                </svg>
+                <Zap class="w-10 h-10 text-white dark:text-black" />
               </div>
               <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Startup</h3>
               <p class="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed text-lg">
@@ -328,35 +265,25 @@ import { Testimonials, CTA, Features } from "@/sections";
               </p>
               <ul class="space-y-4 mb-8">
                 <li class="flex items-start gap-3">
-                  <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                  </svg>
+                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" />
                   <span class="text-gray-700 dark:text-gray-300">Quick setup and onboarding</span>
                 </li>
                 <li class="flex items-start gap-3">
-                  <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                  </svg>
+                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" />
                   <span class="text-gray-700 dark:text-gray-300">Pay-as-you-scale pricing</span>
                 </li>
                 <li class="flex items-start gap-3">
-                  <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                  </svg>
+                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" />
                   <span class="text-gray-700 dark:text-gray-300">API-first integration</span>
                 </li>
                 <li class="flex items-start gap-3">
-                  <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                  </svg>
+                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 mt-1 flex-shrink-0" />
                   <span class="text-gray-700 dark:text-gray-300">Community support</span>
                 </li>
               </ul>
               <a href="/solutions/startup" class="inline-flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium text-lg transition-colors">
                 Learn more about Startup
-                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
+                <ChevronRight class="w-5 h-5 ml-2" />
               </a>
             </div>
           </div>

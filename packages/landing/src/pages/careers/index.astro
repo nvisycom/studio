@@ -4,13 +4,12 @@ import { getCollection, type CollectionEntry } from "astro:content";
 import { ChevronRight, Mail } from "lucide-vue-next";
 import { CTA, Hero } from "@/sections";
 
-// Get all published job postings
-const jobEntries = await getCollection("jobs");
+
 
 // Get all published job postings
-let legalEntries: CollectionEntry<"jobs">[] = [];
+let jobEntries: CollectionEntry<"jobs">[] = [];
 try {
-	legalEntries = await getCollection("jobs");
+	jobEntries = await getCollection("jobs");
 } catch (error: unknown) {
 	console.error("Error fetching jobs collection:", error);
 }

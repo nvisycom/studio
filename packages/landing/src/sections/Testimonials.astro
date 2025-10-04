@@ -8,6 +8,7 @@ export interface Props {
 	backgroundColor?: "white" | "gray";
 	category?: string;
 	featured?: boolean;
+	testimonials?: TestimonialItem[];
 }
 
 const {
@@ -16,6 +17,7 @@ const {
 	backgroundColor = "white",
 	category,
 	featured,
+	testimonials: propsTestimonials,
 } = Astro.props;
 
 async function getTestimonials(category?: string): Promise<TestimonialItem[]> {
@@ -28,7 +30,7 @@ async function getTestimonials(category?: string): Promise<TestimonialItem[]> {
 	}
 }
 
-const testimonials: TestimonialItem[] = (await getTestimonials(category))
+const testimonials: TestimonialItem[] = propsTestimonials || (await getTestimonials(category))
 	.filter((testimonial) => testimonial.featured === featured)
 	.sort((a, b) => a.order - b.order);
 
@@ -67,7 +69,7 @@ const bgClass =
           <!-- Rating -->
           {testimonial.rating && (
             <div class="flex items-center mb-4">
-              {Array.from({ length: testimonial.rating }).map((_, i) => (
+              {Array.from({ length: testimonial.rating }).map(() => (
                 <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 24 24">
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                 </svg>
