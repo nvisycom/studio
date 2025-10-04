@@ -43,8 +43,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
-        run: npm run lint --workspaces --if-present
+      - name: Lint and format check
+        run: npm run ci --workspaces --if-present
+
+      - name: Type check
+        run: npm run test:types --workspaces --if-present
 
       - name: Build all packages
         run: npm run build --workspaces --if-present
