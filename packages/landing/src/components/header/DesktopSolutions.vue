@@ -5,7 +5,7 @@ import {
 	NavigationMenuLink,
 	NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { solutions } from "./navigation-data";
+import { solutions } from "./desktop-nav-data";
 </script>
 
 <template>

@@ -6,7 +6,7 @@ import {
 	NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { ExternalLink } from "lucide-vue-next";
-import { products } from "./navigation-data";
+import { products } from "./desktop-nav-data";
 </script>
 
 <template>

@@ -31,6 +31,7 @@ jobs:
         uses: ludeeus/action-shellcheck@master
 
   integration:
+    name: Integration
     runs-on: ubuntu-latest
 
     steps:

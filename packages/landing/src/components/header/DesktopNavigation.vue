@@ -6,14 +6,14 @@ import {
 	NavigationMenuList,
 	navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import ProductsDropdown from "./ProductsDropdown.vue";
-import SolutionsDropdown from "./SolutionsDropdown.vue";
-import ResourcesDropdown from "./ResourcesDropdown.vue";
+import ProductsDropdown from "./DesktopProducts.vue";
+import SolutionsDropdown from "./DesktopSolutions.vue";
+import ResourcesDropdown from "./DesktopResources.vue";
 </script>
 
 <template>
   <NavigationMenu
-    class="relative z-10 hidden md:flex max-w-max flex-1 items-center justify-center"
+    class="relative z-10 hidden lg:flex max-w-max flex-1 items-center justify-center"
   >
     <NavigationMenuList
       class="group flex flex-1 list-none items-center justify-center space-x-1"

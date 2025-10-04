@@ -19,6 +19,7 @@ on:
 
 jobs:
   lighthouse:
+    name: Lighthouse
     runs-on: ubuntu-latest
 
     steps:
