@@ -53,39 +53,8 @@ export const products: ProductSection = {
 		},
 	],
 	features: [],
-	customers: [
-		{
-			title: "TechCorp: 95% Processing Time Reduction",
-			href: "/customers/techcorp-data-protection",
-			excerpt:
-				"How a Fortune 500 financial firm automated compliance workflows",
-		},
-		{
-			title: "HealthPlus: 100% HIPAA Compliance",
-			href: "/customers/healthplus-hipaa-compliance",
-			excerpt: "Protecting 50M+ patient records with on-premise deployment",
-		},
-	],
-	comparisons: [
-		{
-			title: "Nvisy Cloud vs Redactable.com",
-			href: "/comparisons/redactable",
-			description: "Compare with Redactable's solution",
-			icon: Shield,
-		},
-		{
-			title: "Nvisy Cloud vs Adobe Redaction",
-			href: "/comparisons/adobe",
-			description: "Compare with Adobe's document services",
-			icon: Code,
-		},
-		{
-			title: "Nvisy Cloud vs iDox.ai",
-			href: "/comparisons/idox",
-			description: "Compare with Idox's AI platform",
-			icon: Terminal,
-		},
-	],
+	customers: [],
+	comparisons: [],
 };
 
 export const solutions: SolutionSection = {
@@ -157,6 +126,18 @@ export const resources: ResourceSection = {
 			href: "/careers",
 			description: "Join our remote team",
 			icon: Building2,
+		},
+		{
+			title: "Customers",
+			href: "/customers",
+			description: "Customer success stories",
+			icon: Building,
+		},
+		{
+			title: "Comparisons",
+			href: "/comparisons",
+			description: "Compare Nvisy with alternatives",
+			icon: ShieldCheck,
 		},
 	],
 	support: [

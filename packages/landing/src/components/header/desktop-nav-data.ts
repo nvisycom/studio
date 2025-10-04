@@ -22,6 +22,7 @@ import {
 	Star,
 	HelpCircle,
 	Shield,
+	Mail,
 } from "lucide-vue-next";
 
 export const products: ProductSection = {
@@ -231,7 +232,7 @@ export const resources: ResourceSection = {
 			title: "Contact",
 			href: "/contact",
 			description: "Get in touch with our team",
-			icon: HelpCircle,
+			icon: Mail,
 		},
 	],
 	blog: [

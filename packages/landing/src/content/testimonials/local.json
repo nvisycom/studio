@@ -4,7 +4,6 @@
 		"author": "Colonel James Mitchell",
 		"title": "Information Systems Director",
 		"company": "U.S. Department of Defense",
-		"rating": 5,
 		"order": 1,
 		"featured": true
 	},
@@ -13,7 +12,6 @@
 		"author": "Dr. Elena Rodriguez",
 		"title": "Chief Security Officer",
 		"company": "Federal Health Agency",
-		"rating": 5,
 		"order": 2,
 		"featured": true
 	},
@@ -22,7 +20,6 @@
 		"author": "Robert Chen",
 		"title": "Senior Systems Architect",
 		"company": "Defense Contractor Solutions",
-		"rating": 5,
 		"order": 3,
 		"featured": true
 	}

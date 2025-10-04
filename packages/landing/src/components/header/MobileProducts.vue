@@ -14,11 +14,11 @@ const toggle = () => {
   <div class="px-2">
     <button
       @click="toggle"
-      class="flex items-center justify-between w-full text-gray-600 dark:text-neutral-300 hover:text-gray-900 dark:hover:text-white font-medium text-sm transition-all duration-300 py-1"
+      class="flex items-center justify-between w-full text-gray-900 dark:text-white font-medium text-base uppercase tracking-wide transition-all duration-300 py-2"
     >
       <span>Products</span>
       <ChevronDown
-        class="w-4 h-4 transition-transform duration-200"
+        class="w-5 h-5 transition-transform duration-200"
         :class="{ 'rotate-180': isOpen }"
       />
     </button>
@@ -44,18 +44,6 @@ const toggle = () => {
             {{ product.title }}
             <ExternalLink class="w-3 h-3" />
           </span>
-        </a>
-        <a
-          href="/customers"
-          class="text-gray-600 dark:text-neutral-300 hover:text-gray-900 dark:hover:text-white transition-colors text-sm"
-        >
-          Customers
-        </a>
-        <a
-          href="/comparisons"
-          class="text-gray-600 dark:text-neutral-300 hover:text-gray-900 dark:hover:text-white transition-colors text-sm"
-        >
-          Comparisons
         </a>
       </div>
     </div>

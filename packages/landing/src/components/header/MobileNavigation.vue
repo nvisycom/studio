@@ -35,7 +35,7 @@ const { mobileMenuOpen, toggleMobileMenu } = useMobileMenu();
 
       <a
         href="/pricing"
-        class="text-gray-600 dark:text-neutral-300 hover:text-gray-900 dark:hover:text-white font-medium text-sm transition-all duration-300 px-2 py-1 hover:bg-gray-100/50 dark:hover:bg-neutral-800/50 rounded-md"
+        class="text-gray-900 dark:text-white font-medium text-base uppercase tracking-wide transition-all duration-300 px-2 py-2"
       >
         Pricing
       </a>
