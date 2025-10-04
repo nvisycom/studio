@@ -39,7 +39,7 @@ jobs:
       - name: Check for outdated dependencies
         run: npm outdated || true
 
-  license-check:
+  license:
     runs-on: ubuntu-latest
 
     steps:

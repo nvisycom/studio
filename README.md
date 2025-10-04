@@ -1,14 +1,13 @@
-# @nvisy/com
+# nvisy.com
 
-![Build](https://img.shields.io/github/actions/workflow/status/nvisy/com/build.yaml?style=flat&logo=github&label=build&color=black)
-![Security](https://img.shields.io/github/actions/workflow/status/nvisy/com/security.yaml?style=flat&logo=github&label=security&color=black)
-![Integration](https://img.shields.io/github/actions/workflow/status/nvisy/com/integration.yaml?style=flat&logo=github&label=integration&color=black)
-![Performance](https://img.shields.io/github/actions/workflow/status/nvisy/com/performance.yaml?style=flat&logo=github&label=performance&color=black)
-![License](https://img.shields.io/badge/license-MIT-black?style=flat)
+[![Node](https://img.shields.io/badge/node-%3E%3D20-black?style=flat&logo=node.js&logoColor=white&labelColor=black)](https://nodejs.org/)
+[![Astro](https://img.shields.io/badge/astro-5.0-black?style=flat&logo=astro&logoColor=white&labelColor=black)](https://astro.build/)
+[![Vue](https://img.shields.io/badge/vue-3.5-black?style=flat&logo=vue.js&logoColor=white&labelColor=black)](https://vuejs.org/)
+[![License](https://img.shields.io/badge/license-MIT-black?style=flat&labelColor=black)](LICENSE)
 
 ## Overview
 
-A monorepo workspace for @nvisy/com packages. This repository uses npm workspaces to manage multiple packages with shared dependencies and build processes.
+Modern monorepo for Nvisy's web properties, built with Astro and Vue. This workspace manages shared configurations and landing pages with optimized build processes and type-safe development workflows.
 
 ## Prerequisites
 

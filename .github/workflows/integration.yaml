@@ -30,7 +30,7 @@ jobs:
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@master
 
-  integration-test:
+  integration:
     runs-on: ubuntu-latest
 
     steps:
