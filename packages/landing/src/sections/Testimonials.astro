@@ -42,7 +42,7 @@ const allTestimonials: TestimonialItem[] =
 
 const bgClass =
 	backgroundColor === "gray"
-		? "bg-gray-50 dark:bg-black"
+		? "bg-gray-50 dark:bg-neutral-950"
 		: "bg-white dark:bg-black";
 ---
 
@@ -59,7 +59,7 @@ const bgClass =
 
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
       {allTestimonials.map((testimonial) => (
-        <div class="bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+        <div class="bg-white dark:bg-black border border-gray-200 dark:border-neutral-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
           <!-- Quote Icon -->
           <div class="mb-4">
             <Quote class="w-8 h-8 text-gray-400 dark:text-neutral-500" />

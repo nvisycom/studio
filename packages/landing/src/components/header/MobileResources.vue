@@ -57,9 +57,14 @@ const toggle = () => {
           v-for="support in resources.support"
           :key="support.title"
           :href="support.href"
+          :target="support.isExternal ? '_blank' : undefined"
+          :rel="support.isExternal ? 'noopener noreferrer' : undefined"
           class="text-gray-600 dark:text-neutral-300 hover:text-gray-900 dark:hover:text-white transition-colors text-sm"
         >
-          {{ support.title }}
+          <span class="flex items-center gap-1">
+            {{ support.title }}
+            <ExternalLink v-if="support.isExternal" class="w-3 h-3" />
+          </span>
         </a>
       </div>
     </div>

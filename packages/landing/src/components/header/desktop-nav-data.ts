@@ -79,22 +79,10 @@ export const products: ProductSection = {
 	],
 	comparisons: [
 		{
-			title: "Nvisy Cloud vs Redactable.com",
-			href: "/comparisons/redactable",
-			description: "Compare with Redactable's solution",
-			icon: Shield,
-		},
-		{
 			title: "Nvisy Cloud vs Adobe Redaction",
 			href: "/comparisons/adobe",
 			description: "Compare with Adobe's document services",
 			icon: Code,
-		},
-		{
-			title: "Nvisy Cloud vs iDox.ai",
-			href: "/comparisons/idox",
-			description: "Compare with Idox's AI platform",
-			icon: Terminal,
 		},
 	],
 };
@@ -171,13 +159,6 @@ export const solutions: SolutionSection = {
 export const resources: ResourceSection = {
 	developers: [
 		{
-			title: "Docs",
-			href: "https://docs.nvisy.com",
-			description: "Guides & API docs",
-			icon: BookOpen,
-			isExternal: true,
-		},
-		{
 			title: "Reference",
 			href: "https://docs.nvisy.com/api-reference",
 			description: "Complete API documentation",
@@ -205,16 +186,17 @@ export const resources: ResourceSection = {
 	],
 	support: [
 		{
-			title: "Help Center",
-			href: "/support",
-			description: "Get help & support",
-			icon: HelpCircle,
+			title: "Docs",
+			href: "https://docs.nvisy.com",
+			description: "Guides & API docs",
+			icon: BookOpen,
+			isExternal: true,
 		},
 		{
-			title: "Security",
-			href: "/security",
-			description: "Security & compliance info",
-			icon: Shield,
+			title: "Contact",
+			href: "/contact",
+			description: "Get in touch with our team",
+			icon: HelpCircle,
 		},
 		{
 			title: "Legal",
@@ -227,12 +209,6 @@ export const resources: ResourceSection = {
 			href: "/newsroom",
 			description: "News & press releases",
 			icon: Megaphone,
-		},
-		{
-			title: "Contact",
-			href: "/contact",
-			description: "Get in touch with our team",
-			icon: Mail,
 		},
 	],
 	blog: [

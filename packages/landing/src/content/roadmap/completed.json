@@ -7,7 +7,7 @@
 		"status": "completed",
 		"category": "core-platform",
 		"priority": "high",
-		"githubIssue": "https://github.com/nvisy/nvisy/issues/110"
+		"githubIssue": "https://github.com/nvisycom/core/issues/3"
 	},
 	{
 		"id": "nvisy-runtime",
@@ -17,6 +17,6 @@
 		"status": "completed",
 		"category": "core-platform",
 		"priority": "high",
-		"githubIssue": "https://github.com/nvisy/nvisy/issues/111"
+		"githubIssue": "https://github.com/nvisycom/run/issues/2"
 	}
 ]

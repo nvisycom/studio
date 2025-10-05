@@ -98,12 +98,6 @@ export const solutions: SolutionSection = {
 export const resources: ResourceSection = {
 	developers: [
 		{
-			title: "Documentation",
-			href: "https://docs.nvisy.com",
-			description: "Guides & tutorials",
-			icon: BookOpen,
-		},
-		{
 			title: "API Reference",
 			href: "https://docs.nvisy.com/api",
 			description: "API documentation",
@@ -142,16 +136,17 @@ export const resources: ResourceSection = {
 	],
 	support: [
 		{
-			title: "Help Center",
-			href: "/support",
-			description: "Get help & support",
-			icon: HelpCircle,
+			title: "Documentation",
+			href: "https://docs.nvisy.com",
+			description: "Guides & tutorials",
+			icon: BookOpen,
+			isExternal: true,
 		},
 		{
-			title: "Security",
-			href: "/security",
-			description: "Security & compliance info",
-			icon: Shield,
+			title: "Contact",
+			href: "/contact",
+			description: "Get in touch with our team",
+			icon: HelpCircle,
 		},
 		{
 			title: "Legal",

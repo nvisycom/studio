@@ -6,9 +6,9 @@ export { default as Hero } from "./Hero.astro";
 export { default as Workflow } from "./Workflow.astro";
 export { default as Integrations } from "./Integrations.astro";
 export { default as PressCarousel } from "./PressCarousel.astro";
+export { default as Security } from "./Security.astro";
 export { default as Stats } from "./Stats.astro";
 export { default as Testimonials } from "./Testimonials.astro";
-export { default as TrustIndicators } from "./TrustIndicators.astro";
 export { default as UseCases } from "./UseCases.astro";
 
 // Types
