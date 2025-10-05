@@ -1,6 +1,6 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, CTA } from "@/sections";
+import { Hero } from "@/sections";
 import { calculateReadingTime } from "@/lib/content";
 import { getCollection } from "astro:content";
 import { File } from "lucide-vue-next";
@@ -137,24 +137,6 @@ const blogEntries = (await getCollection("blog"))
       </div>
     </div>
 
-    <!-- CTA Section -->
-    <CTA
-      title="Stay Updated with Our Latest Insights"
-      description="Get the latest updates on document security, AI advancements, and industry best practices delivered straight to your inbox."
-      background="solid"
-      padding="lg"
-      buttons={[
-        {
-          text: "Subscribe to Newsletter",
-          href: "/contact",
-          variant: "primary"
-        },
-        {
-          text: "Follow Us",
-          href: "/newsroom",
-          variant: "secondary"
-        }
-      ]}
-    />
+
   </div>
 </Layout>

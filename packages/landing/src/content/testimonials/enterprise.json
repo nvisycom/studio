@@ -4,7 +4,6 @@
 		"author": "Lisa Park",
 		"title": "CTO",
 		"company": "DataSecure Solutions",
-		"rating": 5,
 		"order": 1,
 		"featured": true
 	},
@@ -13,7 +12,6 @@
 		"author": "Robert Martinez",
 		"title": "Information Security Director",
 		"company": "Federal Contractors Inc",
-		"rating": 5,
 		"order": 2,
 		"featured": true
 	}

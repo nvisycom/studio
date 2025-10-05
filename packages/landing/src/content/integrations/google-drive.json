@@ -1,10 +1,9 @@
 {
 	"icon": "google-drive",
 	"isBrand": true,
-	"version": "v2.1",
-	"status": "Completed",
+	"version": "v1.0",
+	"status": "Planned",
 	"title": "Google Drive",
 	"category": "Cloud Storage",
-	"description": "Automatically redact sensitive information in Google Drive documents with real-time sync.",
-	"availability": "Available"
+	"description": "Seamless integration with Google Drive for automated document redaction with real-time synchronization and collaborative workspace protection."
 }

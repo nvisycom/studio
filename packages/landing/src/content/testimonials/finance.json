@@ -4,7 +4,6 @@
 		"author": "Sarah Chen",
 		"title": "Chief Compliance Officer",
 		"company": "TechCorp Financial",
-		"rating": 5,
 		"order": 1,
 		"featured": true
 	},
@@ -13,7 +12,6 @@
 		"author": "James Thompson",
 		"title": "Head of Risk Management",
 		"company": "Global Banking Corp",
-		"rating": 5,
 		"order": 2,
 		"featured": true
 	}

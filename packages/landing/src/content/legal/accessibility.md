@@ -3,7 +3,7 @@ title: "Accessibility"
 description: "Our commitment to making our platform accessible to all users, including those with disabilities."
 createdAt: 2021-07-08T12:00:00-04:00
 updatedAt: 2024-01-22T11:15:00-05:00
-version: "1.4"
+version: "1.0"
 ---
 
 ### Heading

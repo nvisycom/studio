@@ -22,6 +22,7 @@ import {
 	Star,
 	HelpCircle,
 	Shield,
+	Mail,
 } from "lucide-vue-next";
 
 export const products: ProductSection = {
@@ -45,12 +46,14 @@ export const products: ProductSection = {
 			href: "https://github.com/nvisycom/run",
 			description: "Secure OCR runtime with redaction",
 			icon: Code,
+			isExternal: true,
 		},
 		{
 			title: "Nvisy Terminal",
 			href: "https://github.com/nvisycom/core",
 			description: "Command-line redaction tool",
 			icon: Terminal,
+			isExternal: true,
 		},
 	],
 	features: [
@@ -76,22 +79,10 @@ export const products: ProductSection = {
 	],
 	comparisons: [
 		{
-			title: "Nvisy Cloud vs Redactable.com",
-			href: "/comparisons/redactable",
-			description: "Compare with Redactable's solution",
-			icon: Shield,
-		},
-		{
 			title: "Nvisy Cloud vs Adobe Redaction",
 			href: "/comparisons/adobe",
 			description: "Compare with Adobe's document services",
 			icon: Code,
-		},
-		{
-			title: "Nvisy Cloud vs iDox.ai",
-			href: "/comparisons/idox",
-			description: "Compare with Idox's AI platform",
-			icon: Terminal,
 		},
 	],
 };
@@ -99,34 +90,34 @@ export const products: ProductSection = {
 export const solutions: SolutionSection = {
 	integrations: [
 		{
-			title: "Salesforce",
-			href: "/integrations/salesforce",
-			icon: Cloud,
-		},
-		{
-			title: "Microsoft 365",
-			href: "/integrations/microsoft-365",
-			icon: Building2,
-		},
-		{
-			title: "Google Workspace",
-			href: "/integrations/google-workspace",
-			icon: Cloud,
-		},
-		{
 			title: "Slack",
-			href: "/integrations/slack",
+			href: "/integrations",
 			icon: Plug,
 		},
 		{
-			title: "Dropbox",
-			href: "/integrations/dropbox",
+			title: "Google Drive",
+			href: "/integrations",
 			icon: Cloud,
 		},
 		{
-			title: "Box",
-			href: "/integrations/box",
-			icon: Building,
+			title: "Dropbox",
+			href: "/integrations",
+			icon: Cloud,
+		},
+		{
+			title: "Notion",
+			href: "/integrations",
+			icon: BookOpen,
+		},
+		{
+			title: "Zapier",
+			href: "/integrations",
+			icon: Plug,
+		},
+		{
+			title: "Make",
+			href: "/integrations",
+			icon: Rocket,
 		},
 	],
 	usecase: [
@@ -168,10 +159,11 @@ export const solutions: SolutionSection = {
 export const resources: ResourceSection = {
 	developers: [
 		{
-			title: "Docs",
-			href: "https://docs.nvisy.com",
-			description: "Guides & API docs",
-			icon: BookOpen,
+			title: "Reference",
+			href: "https://docs.nvisy.com/api-reference",
+			description: "Complete API documentation",
+			icon: Code,
+			isExternal: true,
 		},
 		{
 			title: "Integrations",
@@ -194,16 +186,17 @@ export const resources: ResourceSection = {
 	],
 	support: [
 		{
-			title: "Help Center",
-			href: "/support",
-			description: "Get help & support",
-			icon: HelpCircle,
+			title: "Docs",
+			href: "https://docs.nvisy.com",
+			description: "Guides & API docs",
+			icon: BookOpen,
+			isExternal: true,
 		},
 		{
-			title: "Security",
-			href: "/security",
-			description: "Security & compliance info",
-			icon: Shield,
+			title: "Contact",
+			href: "/contact",
+			description: "Get in touch with our team",
+			icon: HelpCircle,
 		},
 		{
 			title: "Legal",

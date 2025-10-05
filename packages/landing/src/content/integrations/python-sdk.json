@@ -5,6 +5,5 @@
 	"status": "Planned",
 	"title": "Python SDK",
 	"category": "Developer",
-	"description": "Native Python library for seamless integration with your applications.",
-	"availability": "Coming Soon"
+	"description": "Native Python library with async support and comprehensive error handling for seamless document redaction integration in Python applications."
 }

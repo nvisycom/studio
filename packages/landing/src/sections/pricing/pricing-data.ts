@@ -1,52 +1,80 @@
-import type { PricingPlan, PricingConfig } from "./types";
+export interface PricingPlan {
+	id: PlanType;
+	name: string;
+	description: string;
+	features: string[];
+	buttonText: string;
+	buttonVariant: "primary" | "secondary" | "outline";
+	hasSlider?: boolean;
+	minRedactions?: number;
+	maxRedactions?: number;
+	basePrice?: number;
+	baseRedactions?: number;
+	pricePerDocument?: number;
+	popular?: boolean;
+	badge?: string;
+}
+
+export interface PricingConfig {
+	yearlyDiscount: number;
+	defaultBasicRedactions: number;
+	defaultProfessionalRedactions: number;
+	basicSliderStep: number;
+	professionalSliderStep: number;
+}
+
+// Plan types
+export type PlanType = "basic" | "professional" | "enterprise";
 
 export const plans: PricingPlan[] = [
 	{
-		id: "starter",
-		name: "Starter",
+		id: "basic",
+		name: "Basic",
 		description: "Perfect for individuals and small projects",
 		features: [
-			"Up to 3 projects",
-			"Basic analytics",
+			"Unlimited projects",
+			"Team collaboration",
+			"API access & webhooks",
 			"Community support",
 			"5GB storage",
 		],
 		buttonText: "Get Started Free",
 		buttonVariant: "outline",
 		hasSlider: true,
-		minRedactions: 50,
-		maxRedactions: 500,
+		minRedactions: 10,
+		maxRedactions: 50,
 		basePrice: 0,
-		baseRedactions: 100,
-		additionalCostPer500: 50,
+		baseRedactions: 10,
+		pricePerDocument: 1.0,
 	},
 	{
-		id: "pro",
-		name: "Pro",
+		id: "professional",
+		name: "Professional",
 		description: "Best for growing businesses and teams",
 		features: [
-			"Unlimited projects",
-			"Advanced analytics",
+			"Everything in Basic",
+			"AI Insights",
+			"Integrations",
 			"Priority support",
-			"100GB storage",
-			"Team collaboration",
-			"API access",
+			"20GB storage",
 		],
 		buttonText: "Start Pro Trial",
 		buttonVariant: "primary",
 		hasSlider: true,
-		minRedactions: 500,
-		maxRedactions: 5000,
-		basePrice: 29,
-		baseRedactions: 1000,
-		additionalCostPer500: 5,
+		minRedactions: 50,
+		maxRedactions: 500,
+		basePrice: 49,
+		baseRedactions: 50,
+		pricePerDocument: 0.6,
+		popular: true,
+		badge: "Most Popular",
 	},
 	{
 		id: "enterprise",
 		name: "Enterprise",
 		description: "Tailored solutions for large organizations",
 		features: [
-			"Everything in Pro",
+			"Everything in Professional",
 			"Unlimited storage",
 			"24/7 dedicated support",
 			"Custom integrations",
@@ -60,8 +88,8 @@ export const plans: PricingPlan[] = [
 
 export const pricingConfig: PricingConfig = {
 	yearlyDiscount: 0.2, // 20% discount
-	defaultStarterRedactions: 100,
-	defaultProRedactions: 1000,
-	starterSliderStep: 50,
-	proSliderStep: 500,
+	defaultBasicRedactions: 10,
+	defaultProfessionalRedactions: 50,
+	basicSliderStep: 10,
+	professionalSliderStep: 50,
 };

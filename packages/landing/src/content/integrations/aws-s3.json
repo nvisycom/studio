@@ -1,10 +1,9 @@
 {
 	"icon": "aws",
 	"isBrand": true,
-	"version": "v3.0",
-	"status": "Completed",
+	"version": "v1.0",
+	"status": "In Progress",
 	"title": "AWS S3",
 	"category": "Cloud Storage",
-	"description": "Enterprise-grade redaction for documents stored in Amazon S3 buckets with full encryption.",
-	"availability": "Available"
+	"description": "Direct integration with Amazon S3 for secure document redaction with server-side encryption and IAM role-based access control."
 }

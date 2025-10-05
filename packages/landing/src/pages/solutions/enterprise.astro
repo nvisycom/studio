@@ -1,101 +1,66 @@
 ---
-import Layout from "@/layouts/Layout.astro";
-import { CTA, Features } from "@/sections";
-import { ChevronRight, Check } from "lucide-vue-next";
+import { Layout } from "@/layouts";
+import { Hero, Features, CTA, CompanyStats } from "@/sections";
+import { Check } from "lucide-vue-next";
 ---
 
-<Layout title="Enterprise Solutions" description="Enterprise-grade document redaction solutions with advanced security, compliance, and dedicated support for large organizations.">
+<Layout title="Enterprise Solutions" description="Document redaction solutions for larger organizations. Security-focused features and dedicated support for teams that need reliable data protection.">
   <div class="bg-white dark:bg-black min-h-screen">
 
     <!-- Hero Section -->
-    <div class="relative bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-black dark:to-gray-800">
-      <div class="container mx-auto px-4 py-20 md:py-28">
-        <div class="max-w-4xl mx-auto text-center">
-          <h1 class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-            Enterprise Document Security
-          </h1>
-
-          <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-300 leading-relaxed mb-12 max-w-3xl mx-auto">
-            Protect sensitive information across your organization with enterprise-grade document redaction.
-            Advanced security, compliance, and dedicated support built for scale.
-          </p>
-
-          <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <a href="/contact" class="inline-flex items-center justify-center bg-gray-900 dark:bg-white text-white dark:text-black font-medium py-4 px-8 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-100 transition-colors text-lg">
-              Request Demo
-              <ChevronRight class="w-5 h-5 ml-2" />
-            </a>
-            <a href="/pricing" class="inline-flex items-center justify-center border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium py-4 px-8 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors text-lg">
-              View Pricing
-            </a>
-          </div>
-
-          <!-- Enterprise Stats -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
-            <div class="text-center">
-              <div class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">99.99%</div>
-              <div class="text-gray-600 dark:text-gray-400">Uptime SLA</div>
-            </div>
-            <div class="text-center">
-              <div class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">SOC 2</div>
-              <div class="text-gray-600 dark:text-gray-400">Type II Certified</div>
-            </div>
-            <div class="text-center">
-              <div class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">24/7</div>
-              <div class="text-gray-600 dark:text-gray-400">Dedicated Support</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Key Features -->
-    <Features
-      title="Built for Enterprise Requirements"
-      description="Everything your organization needs to implement document redaction at scale, with the security and compliance standards that enterprise demands."
-      features={[
+    <Hero
+      title="Enterprise Document Security"
+      description="Protect sensitive information across your organization with our growing document redaction platform. Security-focused features and dedicated support built for larger teams."
+      background="gradient"
+      fontSize="xl"
+      padding="xl"
+      buttons={[
         {
-          title: "Advanced Security",
-          description: "Zero-trust architecture with end-to-end encryption, role-based access controls, and comprehensive audit logging for maximum data protection.",
-          icon: "lock"
+          text: "Request Demo",
+          href: "/contact",
+          variant: "primary"
         },
         {
-          title: "Compliance & Governance",
-          description: "Meet regulatory requirements with built-in compliance frameworks and automated governance controls for GDPR, HIPAA, and more.",
-          icon: "shield"
+          text: "View Pricing",
+          href: "/pricing",
+          variant: "secondary"
+        }
+      ]}
+      stats={[
+        {
+          value: "Growing",
+          label: "Platform"
         },
         {
-          title: "Enterprise Integration",
-          description: "Seamlessly integrate with existing enterprise systems and workflows through robust APIs, SSO, and directory integration.",
-          icon: "link"
+          value: "Security",
+          label: "Focused"
         },
         {
-          title: "Scalable Performance",
-          description: "Handle enterprise-scale document processing with automatic scaling, load balancing, and high-availability architecture.",
-          icon: "zap"
-        },
-        {
-          title: "Dedicated Support",
-          description: "Get the support your enterprise needs with dedicated account management, priority assistance, and professional services.",
-          icon: "users"
-        },
-        {
-          title: "Custom Deployment",
-          description: "Deploy on your terms with flexible options including cloud, hybrid, or on-premises installations to meet specific requirements.",
-          icon: "server"
+          value: "Dedicated",
+          label: "Support"
         }
       ]}
     />
 
+    <!-- Company Stats -->
+    <CompanyStats backgroundColor="white" />
+
+    <!-- Key Features -->
+    <Features
+      title="Built for Enterprise Requirements"
+      description="Everything your organization needs to implement document redaction at scale, with the security standards and support that enterprise teams require."
+      category="enterprise"
+    />
+
     <!-- Implementation Process -->
-    <div class="bg-gray-50 dark:bg-gray-900 py-20">
+    <div class="bg-neutral-50 dark:bg-neutral-950 py-20">
       <div class="container mx-auto px-4">
         <div class="max-w-5xl mx-auto">
           <div class="text-center mb-16">
             <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
               Enterprise Implementation Process
             </h2>
-            <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-2xl mx-auto">
               Our proven implementation methodology ensures successful deployment
               with minimal disruption to your existing workflows.
             </p>
@@ -103,41 +68,41 @@ import { ChevronRight, Check } from "lucide-vue-next";
 
           <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div class="text-center">
-              <div class="w-16 h-16 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
+              <div class="w-16 h-16 bg-black dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
                 <span class="text-white dark:text-black font-bold text-xl">1</span>
               </div>
               <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Assessment</h3>
-              <p class="text-gray-600 dark:text-gray-300 text-sm">
+              <p class="text-gray-600 dark:text-neutral-300 text-sm">
                 Comprehensive security and requirements assessment with your team.
               </p>
             </div>
 
             <div class="text-center">
-              <div class="w-16 h-16 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
+              <div class="w-16 h-16 bg-black dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
                 <span class="text-white dark:text-black font-bold text-xl">2</span>
               </div>
               <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Planning</h3>
-              <p class="text-gray-600 dark:text-gray-300 text-sm">
+              <p class="text-gray-600 dark:text-neutral-300 text-sm">
                 Custom deployment plan and architecture design for your environment.
               </p>
             </div>
 
             <div class="text-center">
-              <div class="w-16 h-16 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
+              <div class="w-16 h-16 bg-black dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
                 <span class="text-white dark:text-black font-bold text-xl">3</span>
               </div>
               <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Deployment</h3>
-              <p class="text-gray-600 dark:text-gray-300 text-sm">
+              <p class="text-gray-600 dark:text-neutral-300 text-sm">
                 Staged rollout with testing, validation, and team training.
               </p>
             </div>
 
             <div class="text-center">
-              <div class="w-16 h-16 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
+              <div class="w-16 h-16 bg-black dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
                 <span class="text-white dark:text-black font-bold text-xl">4</span>
               </div>
               <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Support</h3>
-              <p class="text-gray-600 dark:text-gray-300 text-sm">
+              <p class="text-gray-600 dark:text-neutral-300 text-sm">
                 Ongoing optimization, monitoring, and dedicated support.
               </p>
             </div>
@@ -150,45 +115,45 @@ import { ChevronRight, Check } from "lucide-vue-next";
     <div class="container mx-auto px-4 py-20">
       <div class="max-w-6xl mx-auto">
         <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-            Why Enterprise Leaders Choose Nvisy
+          <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
+            Why Organizations Choose Nvisy
           </h2>
-          <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Proven results that drive business value and operational efficiency
-            at enterprise scale.
+          <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
+            Proven results that help drive business value and operational efficiency
+            for growing organizations.
           </p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
-            <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">95%</div>
-            <div class="text-gray-600 dark:text-gray-400 mb-4 font-medium">Faster Processing</div>
-            <p class="text-gray-600 dark:text-gray-300 text-sm">
-              Automate manual redaction processes and reduce document review time by up to 95%.
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
+            <div class="text-4xl font-bold text-neutral-900 dark:text-white mb-2">90%+</div>
+            <div class="text-neutral-600 dark:text-neutral-400 mb-4 font-medium">Faster Processing</div>
+            <p class="text-neutral-600 dark:text-neutral-300 text-sm">
+              Automate manual redaction processes and significantly reduce document review time.
             </p>
           </div>
 
-          <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
-            <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">99.9%</div>
-            <div class="text-gray-600 dark:text-gray-400 mb-4 font-medium">Accuracy Rate</div>
-            <p class="text-gray-600 dark:text-gray-300 text-sm">
-              Industry-leading AI ensures consistent, reliable redaction across all document types.
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
+            <div class="text-4xl font-bold text-neutral-900 dark:text-white mb-2">Reliable</div>
+            <div class="text-neutral-600 dark:text-neutral-400 mb-4 font-medium">Detection</div>
+            <p class="text-neutral-600 dark:text-neutral-300 text-sm">
+              Consistent, reliable redaction across all document types with continuous improvements.
             </p>
           </div>
 
-          <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
-            <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">80%</div>
-            <div class="text-gray-600 dark:text-gray-400 mb-4 font-medium">Cost Reduction</div>
-            <p class="text-gray-600 dark:text-gray-300 text-sm">
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
+            <div class="text-4xl font-bold text-neutral-900 dark:text-white mb-2">Significant</div>
+            <div class="text-neutral-600 dark:text-neutral-400 mb-4 font-medium">Cost Savings</div>
+            <p class="text-neutral-600 dark:text-neutral-300 text-sm">
               Reduce operational costs through automation and improved efficiency.
             </p>
           </div>
 
-          <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
-            <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">24/7</div>
-            <div class="text-gray-600 dark:text-gray-400 mb-4 font-medium">Enterprise Support</div>
-            <p class="text-gray-600 dark:text-gray-300 text-sm">
-              Dedicated support team ensures maximum uptime and quick issue resolution.
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
+            <div class="text-4xl font-bold text-neutral-900 dark:text-white mb-2">Dedicated</div>
+            <div class="text-neutral-600 dark:text-neutral-400 mb-4 font-medium">Support Team</div>
+            <p class="text-neutral-600 dark:text-neutral-300 text-sm">
+              Dedicated support team focused on your success and quick issue resolution.
             </p>
           </div>
         </div>
@@ -196,82 +161,82 @@ import { ChevronRight, Check } from "lucide-vue-next";
     </div>
 
     <!-- Security & Compliance -->
-    <div class="bg-gray-50 dark:bg-gray-900 py-20">
+    <div class="bg-neutral-50 dark:bg-neutral-950 py-20">
       <div class="container mx-auto px-4">
         <div class="max-w-6xl mx-auto">
           <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+            <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
               Enterprise-Grade Security
             </h2>
-            <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Built to meet the most stringent security and compliance requirements
-              of large organizations.
+            <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
+              Built to meet stringent security requirements with a focus on data protection
+              and compliance readiness for large organizations.
             </p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-gray-700 p-8">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Security Controls</h3>
+            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
+              <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Security Controls</h3>
               <ul class="space-y-3">
                 <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-gray-300 text-sm">AES-256 encryption</span>
+                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">End-to-end encryption</span>
                 </li>
                 <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-gray-300 text-sm">Multi-factor authentication</span>
+                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Multi-factor authentication</span>
                 </li>
                 <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-gray-300 text-sm">Zero-trust architecture</span>
+                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Security-first architecture</span>
                 </li>
                 <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-gray-300 text-sm">Comprehensive audit trails</span>
+                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Comprehensive audit trails</span>
                 </li>
               </ul>
             </div>
 
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-gray-700 p-8">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Compliance Standards</h3>
+            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
+              <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Compliance Ready</h3>
               <ul class="space-y-3">
                 <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-gray-300 text-sm">SOC 2 Type II certified</span>
+                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">GDPR considerations</span>
                 </li>
                 <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-gray-300 text-sm">ISO 27001 compliant</span>
+                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">HIPAA-focused features</span>
                 </li>
                 <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-gray-300 text-sm">GDPR & CCPA ready</span>
+                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Data residency controls</span>
                 </li>
                 <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-gray-300 text-sm">Data residency controls</span>
+                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Audit trail capabilities</span>
                 </li>
               </ul>
             </div>
 
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-gray-700 p-8">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Enterprise Features</h3>
+            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
+              <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Enterprise Features</h3>
               <ul class="space-y-3">
                 <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-gray-300 text-sm">SSO & LDAP integration</span>
+                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">SSO integration support</span>
                 </li>
                 <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-gray-300 text-sm">Role-based access control</span>
+                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Role-based access control</span>
                 </li>
                 <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-gray-300 text-sm">Custom deployment options</span>
+                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Flexible deployment options</span>
                 </li>
                 <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-gray-300 text-sm">Dedicated account management</span>
+                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Dedicated account management</span>
                 </li>
               </ul>
             </div>
@@ -280,6 +245,22 @@ import { ChevronRight, Check } from "lucide-vue-next";
       </div>
     </div>
 
-    <CTA />
+    <CTA
+      title="Ready for Enterprise-Grade Document Security?"
+      description="Let's discuss how our document redaction platform can meet your organization's specific needs and security requirements."
+      buttons={[
+        {
+          text: "Schedule Demo",
+          href: "/contact",
+          variant: "primary"
+        },
+        {
+          text: "View Pricing",
+          href: "/pricing",
+          variant: "secondary"
+        }
+      ]}
+      background="solid"
+    />
   </div>
 </Layout>

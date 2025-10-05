@@ -4,7 +4,6 @@
 		"author": "Michael Rodriguez",
 		"title": "General Counsel",
 		"company": "Meridian Legal Group",
-		"rating": 5,
 		"order": 1,
 		"featured": true
 	},
@@ -13,7 +12,6 @@
 		"author": "Dr. Amanda Foster",
 		"title": "Privacy Officer",
 		"company": "Healthcare Alliance",
-		"rating": 5,
 		"order": 2,
 		"featured": true
 	}

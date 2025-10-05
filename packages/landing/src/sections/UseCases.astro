@@ -1,17 +1,23 @@
 ---
+import { FileText, DollarSign, Heart, Building } from "lucide-vue-next";
+
+export interface UseCase {
+	title: string;
+	description: string;
+	icon: "document" | "dollar" | "heart" | "building";
+}
+
 export interface Props {
 	title?: string;
 	description?: string;
-	useCases?: Array<{
-		title: string;
-		description: string;
-		icon: string;
-	}>;
+	backgroundColor?: "white" | "gray" | "dark";
+	useCases?: UseCase[];
 }
 
 const {
 	title = "Trusted Across Industries",
-	description,
+	description = "From healthcare to finance, government to legal services, organizations trust our AI-powered redaction technology to protect their most sensitive information.",
+	backgroundColor = "white",
 	useCases = [
 		{
 			title: "Legal & Compliance",
@@ -40,47 +46,77 @@ const {
 	],
 } = Astro.props;
 
-// Icon mapping for SVGs
-const getIcon = (iconName: string) => {
+const backgroundClasses = {
+	white: "bg-white dark:bg-black",
+	gray: "bg-gray-50 dark:bg-neutral-950",
+	dark: "bg-gray-900 dark:bg-black",
+};
+
+const getIcon = (iconName: UseCase["icon"]) => {
 	const icons = {
-		document: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>`,
-		dollar: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>`,
-		heart: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>`,
-		building: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>`,
+		document: FileText,
+		dollar: DollarSign,
+		heart: Heart,
+		building: Building,
 	};
-	return icons[iconName as keyof typeof icons] || icons.document;
+	return icons[iconName];
 };
 ---
 
-<section class="py-20 px-4 bg-white dark:bg-black">
-  <div class="container mx-auto max-w-6xl">
-    <div class="text-center mb-16">
-      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-        {title}
-      </h2>
-      {description && (
-        <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-          {description}
-        </p>
-      )}
-    </div>
+<section class={`py-20 px-4 ${backgroundClasses[backgroundColor]}`} aria-labelledby="use-cases-title">
+	<div class="container mx-auto max-w-6xl">
+		<!-- Header -->
+		<header class="text-center mb-16">
+			<h2 id="use-cases-title" class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+				{title}
+			</h2>
+			{description && (
+				<p class="text-lg text-gray-600 dark:text-neutral-300 max-w-3xl mx-auto">
+					{description}
+				</p>
+			)}
+		</header>
 
-    <div class="grid md:grid-cols-2 gap-12">
-      {useCases.map((useCase) => (
-        <div class="flex space-x-6">
-          <div class="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-            <svg class="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <Fragment set:html={getIcon(useCase.icon)} />
-            </svg>
-          </div>
-          <div>
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">{useCase.title}</h3>
-            <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
-              {useCase.description}
-            </p>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
+		<!-- Use Cases Grid -->
+		<div class="grid md:grid-cols-2 gap-8" role="list">
+			{useCases.map((useCase) => {
+				const IconComponent = getIcon(useCase.icon);
+				return (
+					<article class="flex space-x-6 group" role="listitem">
+						<div class="w-16 h-16 bg-blue-50 dark:bg-blue-950 rounded-xl flex items-center justify-center flex-shrink-0 mt-1 group-hover:bg-blue-100 dark:group-hover:bg-blue-900 transition-colors duration-300">
+							<IconComponent class="w-8 h-8 text-blue-600 dark:text-blue-400" aria-hidden="true" />
+						</div>
+						<div class="flex-1">
+							<h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3 group-hover:text-blue-900 dark:group-hover:text-blue-100 transition-colors duration-300">
+								{useCase.title}
+							</h3>
+							<p class="text-gray-600 dark:text-neutral-300 leading-relaxed">
+								{useCase.description}
+							</p>
+						</div>
+					</article>
+				);
+			})}
+		</div>
+
+		<!-- Industry Stats -->
+		<div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6">
+			<div class="text-center p-6 bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-neutral-800">
+				<div class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">500+</div>
+				<div class="text-sm text-gray-600 dark:text-neutral-400">Legal Firms</div>
+			</div>
+			<div class="text-center p-6 bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-neutral-800">
+				<div class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">200+</div>
+				<div class="text-sm text-gray-600 dark:text-neutral-400">Banks & Credit Unions</div>
+			</div>
+			<div class="text-center p-6 bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-neutral-800">
+				<div class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">150+</div>
+				<div class="text-sm text-gray-600 dark:text-neutral-400">Healthcare Systems</div>
+			</div>
+			<div class="text-center p-6 bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-neutral-800">
+				<div class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">75+</div>
+				<div class="text-sm text-gray-600 dark:text-neutral-400">Government Agencies</div>
+			</div>
+		</div>
+	</div>
 </section>

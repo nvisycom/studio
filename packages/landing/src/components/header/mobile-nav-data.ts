@@ -16,7 +16,6 @@ import {
 	Rocket,
 	BookOpen,
 	HelpCircle,
-	Shield,
 	Scale,
 	Megaphone,
 	Plug,
@@ -53,39 +52,8 @@ export const products: ProductSection = {
 		},
 	],
 	features: [],
-	customers: [
-		{
-			title: "TechCorp: 95% Processing Time Reduction",
-			href: "/customers/techcorp-data-protection",
-			excerpt:
-				"How a Fortune 500 financial firm automated compliance workflows",
-		},
-		{
-			title: "HealthPlus: 100% HIPAA Compliance",
-			href: "/customers/healthplus-hipaa-compliance",
-			excerpt: "Protecting 50M+ patient records with on-premise deployment",
-		},
-	],
-	comparisons: [
-		{
-			title: "Nvisy Cloud vs Redactable.com",
-			href: "/comparisons/redactable",
-			description: "Compare with Redactable's solution",
-			icon: Shield,
-		},
-		{
-			title: "Nvisy Cloud vs Adobe Redaction",
-			href: "/comparisons/adobe",
-			description: "Compare with Adobe's document services",
-			icon: Code,
-		},
-		{
-			title: "Nvisy Cloud vs iDox.ai",
-			href: "/comparisons/idox",
-			description: "Compare with Idox's AI platform",
-			icon: Terminal,
-		},
-	],
+	customers: [],
+	comparisons: [],
 };
 
 export const solutions: SolutionSection = {
@@ -129,12 +97,6 @@ export const solutions: SolutionSection = {
 export const resources: ResourceSection = {
 	developers: [
 		{
-			title: "Documentation",
-			href: "https://docs.nvisy.com",
-			description: "Guides & tutorials",
-			icon: BookOpen,
-		},
-		{
 			title: "API Reference",
 			href: "https://docs.nvisy.com/api",
 			description: "API documentation",
@@ -158,19 +120,32 @@ export const resources: ResourceSection = {
 			description: "Join our remote team",
 			icon: Building2,
 		},
+		{
+			title: "Customers",
+			href: "/customers",
+			description: "Customer success stories",
+			icon: Building,
+		},
+		{
+			title: "Comparisons",
+			href: "/comparisons",
+			description: "Compare Nvisy with alternatives",
+			icon: ShieldCheck,
+		},
 	],
 	support: [
 		{
-			title: "Help Center",
-			href: "/support",
-			description: "Get help & support",
-			icon: HelpCircle,
+			title: "Documentation",
+			href: "https://docs.nvisy.com",
+			description: "Guides & tutorials",
+			icon: BookOpen,
+			isExternal: true,
 		},
 		{
-			title: "Security",
-			href: "/security",
-			description: "Security & compliance info",
-			icon: Shield,
+			title: "Contact",
+			href: "/contact",
+			description: "Get in touch with our team",
+			icon: HelpCircle,
 		},
 		{
 			title: "Legal",

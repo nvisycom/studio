@@ -1,35 +1,35 @@
 [
 	{
-		"id": "cloud-platform",
-		"title": "Cloud Platform",
-		"description": "Scalable cloud deployment with API access and team collaboration features.",
-		"quarter": "Q4 2024",
-		"status": "in-progress",
-		"category": "core-platform",
-		"priority": "high",
-		"progress": 60,
-		"githubIssue": "https://github.com/nvisy/nvisy/issues/25"
-	},
-	{
-		"id": "api-gateway",
-		"title": "API Gateway",
-		"description": "RESTful APIs for integrating OCR and privacy features into existing applications.",
-		"quarter": "Q4 2024",
+		"id": "runtime-cli",
+		"title": "Runtime CLI",
+		"description": "Modernized command-line interface with enhanced developer experience and automation capabilities.",
+		"quarter": "Q4 2025",
 		"status": "in-progress",
 		"category": "developer-tools",
 		"priority": "high",
-		"progress": 40,
-		"githubIssue": "https://github.com/nvisy/nvisy/issues/33"
+		"progress": 85,
+		"githubIssue": "https://github.com/nvisy/nvisy/issues/112"
 	},
 	{
-		"id": "enterprise-sso",
-		"title": "Enterprise SSO",
-		"description": "Single sign-on integration with enterprise identity providers and role management.",
-		"quarter": "Q1 2025",
+		"id": "cloud-platform",
+		"title": "Cloud Platform",
+		"description": "Scalable cloud deployment with RESTful API access, analytics dashboard, and team collaboration features.",
+		"quarter": "Q1 2026",
 		"status": "in-progress",
-		"category": "enterprise",
-		"priority": "medium",
-		"progress": 20,
-		"githubIssue": "https://github.com/nvisy/nvisy/issues/41"
+		"category": "core-platform",
+		"priority": "high",
+		"progress": 65,
+		"githubIssue": "https://github.com/nvisy/nvisy/issues/113"
+	},
+	{
+		"id": "local-platform",
+		"title": "Local Platform",
+		"description": "Self-hosted deployment option with full feature parity for on-premises installations.",
+		"quarter": "Q2 2026",
+		"status": "in-progress",
+		"category": "core-platform",
+		"priority": "high",
+		"progress": 30,
+		"githubIssue": "https://github.com/nvisy/nvisy/issues/114"
 	}
 ]

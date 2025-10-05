@@ -1,10 +1,9 @@
 {
 	"icon": "building",
 	"isBrand": false,
-	"version": "v3.2",
-	"status": "Completed",
+	"version": "v1.0",
+	"status": "Planned",
 	"title": "Relativity",
 	"category": "Legal Tech",
-	"description": "Advanced e-discovery redaction with automated privilege protection and compliance workflows for legal professionals.",
-	"availability": "Available"
+	"description": "Enterprise e-discovery platform integration with automated document redaction, privilege review, and compliance workflows for legal teams and litigation support."
 }

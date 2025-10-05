@@ -35,11 +35,9 @@ import { ExternalLink } from "lucide-vue-next";
                   v-for="developer in resources.developers"
                   :key="developer.title"
                   :href="developer.href"
-                  :target="developer.title === 'Docs' ? '_blank' : undefined"
+                  :target="developer.isExternal ? '_blank' : undefined"
                   :rel="
-                    developer.title === 'Docs'
-                      ? 'noopener noreferrer'
-                      : undefined
+                    developer.isExternal ? 'noopener noreferrer' : undefined
                   "
                   class="block select-none rounded-md leading-none no-underline outline-none transition-colors hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white focus:bg-gray-50 dark:focus:bg-neutral-800 focus:text-gray-900 dark:focus:text-white"
                 >
@@ -55,7 +53,7 @@ import { ExternalLink } from "lucide-vue-next";
                       >
                         {{ developer.title }}
                         <ExternalLink
-                          v-if="developer.title === 'Docs'"
+                          v-if="developer.isExternal"
                           class="w-3 h-3 text-gray-400 dark:text-neutral-500"
                         />
                       </div>
@@ -77,6 +75,8 @@ import { ExternalLink } from "lucide-vue-next";
                   v-for="support in resources.support"
                   :key="support.title"
                   :href="support.href"
+                  :target="support.isExternal ? '_blank' : undefined"
+                  :rel="support.isExternal ? 'noopener noreferrer' : undefined"
                   class="block select-none rounded-md leading-none no-underline outline-none transition-colors hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white focus:bg-gray-50 dark:focus:bg-neutral-800 focus:text-gray-900 dark:focus:text-white"
                 >
                   <div class="flex items-center">
@@ -86,8 +86,14 @@ import { ExternalLink } from "lucide-vue-next";
                       <component :is="support.icon" class="w-5 h-5" />
                     </span>
                     <div class="flex-1">
-                      <div class="text-sm font-medium leading-none">
+                      <div
+                        class="text-sm font-medium leading-none flex items-center gap-1.5"
+                      >
                         {{ support.title }}
+                        <ExternalLink
+                          v-if="support.isExternal"
+                          class="w-3 h-3 text-gray-400 dark:text-neutral-500"
+                        />
                       </div>
                     </div>
                   </div>

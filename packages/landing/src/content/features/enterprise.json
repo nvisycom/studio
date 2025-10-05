@@ -1,0 +1,44 @@
+[
+	{
+		"title": "Advanced Security",
+		"description": "Security-first architecture with encryption, access controls, and comprehensive audit logging for maximum data protection.",
+		"icon": "lock",
+		"order": 1,
+		"featured": true
+	},
+	{
+		"title": "Compliance Ready",
+		"description": "Built with compliance frameworks in mind to help meet regulatory requirements like GDPR, HIPAA, and industry standards.",
+		"icon": "shield",
+		"order": 2,
+		"featured": true
+	},
+	{
+		"title": "Enterprise Integration",
+		"description": "Integrate with existing enterprise systems through robust APIs, SSO support, and directory integration capabilities.",
+		"icon": "link",
+		"order": 3,
+		"featured": true
+	},
+	{
+		"title": "Scalable Performance",
+		"description": "Handle enterprise-scale document processing with automatic scaling and high-availability architecture designed for growth.",
+		"icon": "zap",
+		"order": 4,
+		"featured": true
+	},
+	{
+		"title": "Dedicated Support",
+		"description": "Get the support your enterprise needs with dedicated account management, priority assistance, and professional services.",
+		"icon": "users",
+		"order": 5,
+		"featured": true
+	},
+	{
+		"title": "Flexible Deployment",
+		"description": "Deploy on your terms with flexible options including cloud, hybrid, or on-premises installations to meet specific requirements.",
+		"icon": "server",
+		"order": 6,
+		"featured": true
+	}
+]

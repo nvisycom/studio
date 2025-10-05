@@ -9,12 +9,6 @@ Thumbs.db
 .fleet/
 .zed/
 
-# Rust
-debug/
-target/
-**/*.rs.bk
-*.pdb
-
 # Javascript
 .vite/
 .astro/
@@ -26,10 +20,6 @@ node_modules/
 *.pem
 *.backup
 coverage/
-
-# Intermediate output
-packages/nvisy-client/specification/
-packages/nvisy-client/src/schema.d.ts
 
 # Output
 dist/

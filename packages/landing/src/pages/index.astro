@@ -1,56 +1,92 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import { Hero } from "@/sections";
-import TrustIndicators from "@/sections/TrustIndicators.astro";
-import Features from "@/sections/Features.astro";
-import Testimonials from "@/sections/Testimonials.astro";
-import Stats from "@/sections/Stats.astro";
-import Workflow from "@/sections/Workflow.astro";
-import UseCases from "@/sections/UseCases.astro";
-import Integrations from "@/sections/Integrations.astro";
-import CTA from "@/sections/CTA.astro";
+import {
+	Hero,
+	Workflow,
+	Features,
+	Integrations,
+	UseCases,
+	Testimonials,
+	CTA,
+	CompanyStats,
+	Stats,
+	Security,
+} from "@/sections";
+
+// SEO and metadata
+const pageTitle = "Document Redaction Platform";
+const pageDescription =
+	"Secure your sensitive documents with AI-powered redaction. Enterprise-grade security, 99.9% accuracy, SOC 2 compliant. Start your free trial today.";
+const pageKeywords =
+	"document redaction, AI security, enterprise compliance, data protection, GDPR, HIPAA, document processing";
 ---
-<Layout>
-  <!-- Hero Section -->
-  <Hero />
 
-  <!-- Trust Indicators -->
-  <TrustIndicators />
+<Layout
+	title={pageTitle}
+	description={pageDescription}
+	keywords={pageKeywords}
+>
+	<main>
+		<!-- Hero Section - Clear Value Proposition -->
+		<section aria-labelledby="hero-section">
+			<Hero />
+		</section>
 
-  <!-- Features Section -->
-  <Features />
+		<!-- Company Stats Section -->
+		<section class="bg-white dark:bg-black" aria-labelledby="company-stats-section">
+			<CompanyStats backgroundColor="white" />
+		</section>
 
-  <!-- Testimonials Section -->
-  <Testimonials backgroundColor="gray" />
+		<!-- Features Section - Core Capabilities -->
+		<section class="bg-gray-50 dark:bg-neutral-950" aria-labelledby="features-section">
+			<Features />
+		</section>
 
-  <!-- Stats Section -->
-  <Stats />
+		<!-- Workflow Section - Remove Friction & Objections -->
+		<section class="bg-white dark:bg-black" aria-labelledby="workflow-section">
+			<Workflow backgroundColor="white" />
+		</section>
 
-  <!-- How It Works -->
-  <Workflow backgroundColor="white" />
+		<!-- Testimonials Section - Customer Validation -->
+		<section class="bg-gray-50 dark:bg-neutral-950" aria-labelledby="testimonials-section">
+			<Testimonials backgroundColor="gray" />
+		</section>
 
-  <!-- Use Cases Section -->
-  <UseCases />
+		<!-- Use Cases Section - Industry Applications -->
+		<section
+			class="bg-white dark:bg-black border-t border-gray-200 dark:border-neutral-800"
+			aria-labelledby="use-cases-section"
+		>
+			<UseCases />
+		</section>
 
-  <!-- Integrations Section -->
-  <Integrations backgroundColor="gray" />
+		<!-- Integrations Section - Ecosystem Fit -->
+		<section class="bg-white dark:bg-black" aria-labelledby="integrations-section">
+			<Integrations backgroundColor="white" />
+		</section>
 
-  <!-- Call-to-Action Section -->
-  <CTA
-    title="Ready to Secure Your Documents?"
-    description="Join hundreds of enterprises already protecting sensitive information with our AI-powered redaction platform."
-    background="gradient"
-    buttons={[
-      {
-        text: "Start Free Trial",
-        href: "/dashboard",
-        variant: "primary"
-      },
-      {
-        text: "Contact Sales",
-        href: "/contact",
-        variant: "secondary"
-      }
-    ]}
-  />
+		<!-- Security Section - Trust & Compliance -->
+		<Security backgroundColor="gray" />
+
+		<!-- Call-to-Action Section - Clear Next Steps -->
+		<section aria-labelledby="cta-section">
+			<CTA
+				title="Ready to Secure Your Documents?"
+				description="Join hundreds of enterprises already protecting sensitive information with our AI-powered redaction platform."
+				background="gradient"
+				buttons={[
+					{
+						text: "Start Free Trial",
+						href: "/dashboard",
+						variant: "primary"
+					},
+					{
+						text: "Contact Sales",
+						href: "/contact",
+						variant: "secondary"
+					}
+				]}
+			/>
+		</section>
+	</main>
 </Layout>

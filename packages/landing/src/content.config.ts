@@ -151,7 +151,6 @@ const integrationSchema = z.object({
 	title: z.string(),
 	category: z.string(),
 	description: z.string(),
-	availability: z.string(),
 });
 
 export type IntegrationItem = z.infer<typeof integrationSchema>;
@@ -213,6 +212,20 @@ const testimonials = defineCollection({
 	schema: z.array(testimonialSchema),
 });
 
+const featureSchema = z.object({
+	title: z.string(),
+	description: z.string(),
+	icon: z.string(),
+	order: z.number(),
+	featured: z.boolean().default(false),
+});
+
+export type FeatureItem = z.infer<typeof featureSchema>;
+const features = defineCollection({
+	type: "data",
+	schema: z.array(featureSchema),
+});
+
 export const collections = {
 	blog,
 	legal,
@@ -223,4 +236,5 @@ export const collections = {
 	faqs,
 	customers,
 	testimonials,
+	features,
 };

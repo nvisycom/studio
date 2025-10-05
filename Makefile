@@ -28,6 +28,7 @@ clean: # Cleans build artifacts and dependencies.
 	@rm -rf packages/*/node_modules
 	@rm -rf packages/*/dist
 	@rm -rf output
+	$(call log,Cleaned build artifacts.)
 
 .PHONY: check
 check: # Runs code quality checks.

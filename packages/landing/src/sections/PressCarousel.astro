@@ -1,0 +1,105 @@
+---
+interface PressItem {
+	name: string;
+	logo?: string;
+	url?: string;
+	quote?: string;
+	date?: string;
+}
+
+interface Props {
+	items?: PressItem[];
+	title?: string;
+	subtitle?: string;
+}
+
+const { items = [], title = "As Seen In", subtitle } = Astro.props;
+
+// Default items if none provided
+const defaultItems: PressItem[] = [
+	{ name: "TechCrunch", url: "#" },
+	{ name: "ProductHunt", url: "#" },
+	{ name: "Hacker News", url: "#" },
+];
+
+const displayItems = items.length > 0 ? items : defaultItems;
+---
+
+<div class="w-full overflow-hidden py-12 border-y border-gray-200 dark:border-neutral-800">
+  <div class="container mx-auto px-4">
+    {(title || subtitle) && (
+      <div class="text-center mb-8">
+        {title && (
+          <h2 class="text-sm font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-2">
+            {title}
+          </h2>
+        )}
+        {subtitle && (
+          <p class="text-gray-600 dark:text-neutral-300 text-sm">
+            {subtitle}
+          </p>
+        )}
+      </div>
+    )}
+
+    <div class="relative">
+      <div class="overflow-hidden">
+        <div class="flex gap-12 animate-scroll">
+          {displayItems.concat(displayItems).map((item) => (
+            <div class="flex-shrink-0 flex items-center justify-center">
+              {item.url ? (
+                <a
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-gray-400 dark:text-neutral-600 hover:text-gray-600 dark:hover:text-neutral-400 transition-colors text-lg font-semibold whitespace-nowrap"
+                >
+                  {item.logo ? (
+                    <img
+                      src={item.logo}
+                      alt={item.name}
+                      class="h-8 w-auto opacity-60 hover:opacity-100 transition-opacity"
+                    />
+                  ) : (
+                    item.name
+                  )}
+                </a>
+              ) : (
+                <span class="text-gray-400 dark:text-neutral-600 text-lg font-semibold whitespace-nowrap">
+                  {item.logo ? (
+                    <img
+                      src={item.logo}
+                      alt={item.name}
+                      class="h-8 w-auto opacity-60"
+                    />
+                  ) : (
+                    item.name
+                  )}
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-scroll {
+    animation: scroll 30s linear infinite;
+  }
+
+  .animate-scroll:hover {
+    animation-play-state: paused;
+  }
+</style>

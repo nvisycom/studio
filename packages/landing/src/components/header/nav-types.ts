@@ -5,6 +5,7 @@ export interface NavigationItem {
 	href: string;
 	description?: string;
 	icon: Component;
+	isExternal?: boolean;
 }
 
 export interface CustomerStory {

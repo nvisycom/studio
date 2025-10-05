@@ -1,10 +1,9 @@
 {
 	"icon": "microsoft",
 	"isBrand": true,
-	"version": "v2.3",
-	"status": "Completed",
+	"version": "v1.0",
+	"status": "Planned",
 	"title": "Microsoft Teams",
 	"category": "Collaboration",
-	"description": "Secure document sharing in Teams with enterprise-grade redaction and compliance monitoring.",
-	"availability": "Available"
+	"description": "Enterprise collaboration platform integration with automated document redaction and secure file sharing across Teams channels and meetings."
 }

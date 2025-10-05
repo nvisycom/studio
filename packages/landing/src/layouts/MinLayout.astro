@@ -28,7 +28,7 @@ const {
 	title = DEFAULT_TITLE,
 	description = DEFAULT_DESCRIPTION,
 	version = BUILD_VERSION,
-	withDefaultTitle = false,
+	withDefaultTitle = true,
 	image = "/og-image.jpg",
 	article = false,
 	publishedTime,
@@ -38,7 +38,7 @@ const {
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
-const pageTitle = withDefaultTitle ? `${title} | ${DEFAULT_TITLE}` : title;
+const pageTitle = withDefaultTitle ? `${title} · ${DEFAULT_TITLE}` : title;
 const fullImageUrl = new URL(image, Astro.site).toString();
 const siteName = DEFAULT_TITLE;
 

@@ -1,0 +1,44 @@
+[
+	{
+		"title": "Financial Data Detection",
+		"description": "Automatically identify and redact credit card numbers, account numbers, SSNs, and other sensitive financial identifiers across documents.",
+		"icon": "shield-check",
+		"order": 1,
+		"featured": true
+	},
+	{
+		"title": "PCI-DSS Considerations",
+		"description": "Built with PCI-DSS requirements in mind, including secure data handling, audit trails, and access controls for payment card data.",
+		"icon": "lock",
+		"order": 2,
+		"featured": true
+	},
+	{
+		"title": "Transaction Processing",
+		"description": "Process high volumes of financial documents including statements, reports, and transaction records while maintaining data integrity.",
+		"icon": "zap",
+		"order": 3,
+		"featured": true
+	},
+	{
+		"title": "Risk Management Support",
+		"description": "Help support risk management processes with comprehensive logging and reporting capabilities for compliance monitoring.",
+		"icon": "bar-chart-3",
+		"order": 4,
+		"featured": true
+	},
+	{
+		"title": "Audit Trails",
+		"description": "Comprehensive logging of all redaction activities to support regulatory audits and compliance documentation requirements.",
+		"icon": "clipboard-check",
+		"order": 5,
+		"featured": true
+	},
+	{
+		"title": "Banking Integration",
+		"description": "Integrate securely with existing banking systems and financial workflows through encrypted APIs and secure data transmission.",
+		"icon": "link",
+		"order": 6,
+		"featured": true
+	}
+]

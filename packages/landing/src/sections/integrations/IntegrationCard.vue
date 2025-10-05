@@ -67,7 +67,7 @@ import {
 	Code2,
 	Link,
 	// Status icons
-	CheckCircle,
+	CircleCheck,
 	Clock,
 	Calendar,
 	// Version icon
@@ -114,7 +114,7 @@ const getIcon = (iconName: string) => {
 // Status icon mapping
 const getStatusIcon = (status: string) => {
 	const statusIconMap: Record<string, any> = {
-		Completed: CheckCircle,
+		Completed: CircleCheck,
 		"In Progress": Clock,
 		Planned: Calendar,
 	};

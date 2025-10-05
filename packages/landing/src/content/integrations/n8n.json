@@ -1,10 +1,9 @@
 {
 	"icon": "gears",
 	"isBrand": false,
-	"version": "v2.0",
+	"version": "v1.0",
 	"status": "In Progress",
 	"title": "n8n",
 	"category": "Automation",
-	"description": "Open-source workflow automation with advanced document redaction capabilities and custom nodes.",
-	"availability": "Available"
+	"description": "Open-source workflow automation platform with custom redaction nodes and advanced document processing capabilities for enterprise workflows."
 }

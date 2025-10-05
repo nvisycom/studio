@@ -1,10 +1,9 @@
 {
 	"icon": "slack",
 	"isBrand": true,
-	"version": "v1.9",
-	"status": "Completed",
+	"version": "v1.0",
+	"status": "Planned",
 	"title": "Slack",
 	"category": "Collaboration",
-	"description": "Automatically redact sensitive data in Slack file uploads and shared documents.",
-	"availability": "Available"
+	"description": "Secure file sharing integration with automatic redaction of sensitive data in Slack uploads and shared documents across team channels."
 }

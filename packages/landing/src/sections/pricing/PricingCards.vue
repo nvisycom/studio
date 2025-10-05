@@ -4,8 +4,8 @@ import { plans } from "./pricing-data";
 import { usePricing } from "./usePricing";
 
 const {
-	starterPrice,
-	proPrice,
+	basicPrice,
+	professionalPrice,
 	formatNumber,
 	getRedactionCount,
 	setRedactionCount,
@@ -36,7 +36,7 @@ const {
             </template>
             <template v-else>
               <span class="text-4xl font-bold text-gray-900 dark:text-white">
-                ${{ plan.id === "starter" ? starterPrice : proPrice }}
+                ${{ plan.id === "basic" ? basicPrice : professionalPrice }}
               </span>
               <span class="text-gray-500 dark:text-neutral-400 ml-2"
                 >/month</span

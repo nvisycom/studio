@@ -1,12 +1,14 @@
 import { ref, computed } from "vue";
 import { plans, pricingConfig } from "./pricing-data";
-import type { PlanType } from "./types";
+import type { PlanType } from "./pricing-data";
+
+// Shared reactive state (singleton pattern to ensure all components use the same state)
+const isYearly = ref(false);
+const basicRedactions = ref(pricingConfig.defaultBasicRedactions);
+const professionalRedactions = ref(pricingConfig.defaultProfessionalRedactions);
 
 export function usePricing() {
-	// Reactive state
-	const isYearly = ref(false);
-	const starterRedactions = ref(pricingConfig.defaultStarterRedactions);
-	const proRedactions = ref(pricingConfig.defaultProRedactions);
+	// Use shared state instead of creating new instances
 
 	// Utility functions
 	const formatNumber = (num: number): string => {
@@ -18,58 +20,39 @@ export function usePricing() {
 
 	const calculatePrice = (planId: PlanType, redactions: number): number => {
 		const plan = plans.find((p) => p.id === planId);
-		if (!plan || plan.basePrice === undefined) return 0;
+		if (!plan || !plan.pricePerDocument) return 0;
 
-		if (planId === "starter") {
-			const basePrice = plan.basePrice || 0;
-			const baseRedactions = plan.baseRedactions || 100;
+		const basePrice = plan.basePrice || 0;
+		const baseRedactions = plan.baseRedactions || 0;
+		const pricePerDocument = plan.pricePerDocument || 0;
 
-			// If redactions are within the base amount, it's free
-			if (redactions <= baseRedactions) {
-				return 0;
-			}
+		// Base price + additional documents (beyond baseRedactions) charged per document
+		const chargeableDocuments = Math.max(0, redactions - baseRedactions);
+		const totalPrice = basePrice + chargeableDocuments * pricePerDocument;
 
-			// Calculate additional cost for extra redactions
-			// For starter, charge $5 per additional 50 redactions
-			const additionalRedactions = redactions - baseRedactions;
-			const additionalCost = Math.ceil(additionalRedactions / 50) * 5;
+		// Apply yearly discount if applicable
+		const finalPrice = isYearly.value
+			? totalPrice * (1 - pricingConfig.yearlyDiscount)
+			: totalPrice;
 
-			const totalPrice = basePrice + additionalCost;
-			const finalPrice = isYearly.value
-				? Math.round(totalPrice * (1 - pricingConfig.yearlyDiscount))
-				: totalPrice;
-			return finalPrice;
-		}
-
-		if (planId === "pro") {
-			const basePrice = plan.basePrice || 29;
-			const baseRedactions = plan.baseRedactions || 1000;
-			const additionalCost =
-				Math.max(0, Math.ceil((redactions - baseRedactions) / 500)) *
-				(plan.additionalCostPer500 || 5);
-			const totalPrice = basePrice + additionalCost;
-			const finalPrice = isYearly.value
-				? Math.round(totalPrice * (1 - pricingConfig.yearlyDiscount))
-				: totalPrice;
-			return finalPrice;
-		}
-
-		return plan.basePrice || 0;
+		return Math.floor(finalPrice); // Round down to whole number
 	};
 
 	// Computed properties
-	const starterPrice = computed(() =>
-		calculatePrice("starter", starterRedactions.value),
+	const basicPrice = computed(() =>
+		calculatePrice("basic", basicRedactions.value),
 	);
 
-	const proPrice = computed(() => calculatePrice("pro", proRedactions.value));
+	const professionalPrice = computed(() =>
+		calculatePrice("professional", professionalRedactions.value),
+	);
 
 	// Helper functions
 	const getRedactionCount = (planId: PlanType): number => {
-		if (planId === "starter") {
-			return starterRedactions.value;
-		} else if (planId === "pro") {
-			return proRedactions.value;
+		if (planId === "basic") {
+			return basicRedactions.value;
+		} else if (planId === "professional") {
+			return professionalRedactions.value;
 		}
 
 		return 0;
@@ -78,24 +61,25 @@ export function usePricing() {
 	const setRedactionCount = (planId: PlanType, value: number) => {
 		console.log("Setting redaction count for", planId, "to", value);
 
-		if (planId === "starter") {
-			starterRedactions.value = value;
-		} else if (planId === "pro") {
-			proRedactions.value = value;
+		if (planId === "basic") {
+			basicRedactions.value = value;
+		} else if (planId === "professional") {
+			professionalRedactions.value = value;
 		}
 	};
 
 	const getSliderStep = (planId: string): number => {
-		if (planId === "starter") {
-			return pricingConfig.starterSliderStep;
-		} else if (planId === "pro") {
-			return pricingConfig.proSliderStep;
+		if (planId === "basic") {
+			return pricingConfig.basicSliderStep;
+		} else if (planId === "professional") {
+			return pricingConfig.professionalSliderStep;
 		}
 
 		return 1;
 	};
 
 	const toggleBilling = () => {
+		console.log("Toggling billing from", isYearly.value, "to", !isYearly.value);
 		isYearly.value = !isYearly.value;
 	};
 
@@ -107,12 +91,12 @@ export function usePricing() {
 	return {
 		// State
 		isYearly,
-		starterRedactions,
-		proRedactions,
+		basicRedactions,
+		professionalRedactions,
 
 		// Computed
-		starterPrice,
-		proPrice,
+		basicPrice,
+		professionalPrice,
 
 		// Functions
 		formatNumber,

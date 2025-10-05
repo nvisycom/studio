@@ -3,7 +3,7 @@ title: "Privacy Policy"
 description: "Learn how we collect, use, and protect your personal information and privacy rights."
 createdAt: 2021-07-08T12:00:00-04:00
 updatedAt: 2024-01-15T10:30:00-05:00
-version: "2.1"
+version: "1.0"
 ---
 
 ### Heading

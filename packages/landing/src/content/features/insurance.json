@@ -1,0 +1,44 @@
+[
+	{
+		"title": "Policyholder Data Protection",
+		"description": "Automatically identify and redact personal information, policy numbers, and sensitive policyholder data across all insurance documents.",
+		"icon": "shield-check",
+		"order": 1,
+		"featured": true
+	},
+	{
+		"title": "Claims Processing Support",
+		"description": "Help streamline claims processing by redacting sensitive information while preserving necessary data for adjudication and analysis.",
+		"icon": "file-text",
+		"order": 2,
+		"featured": true
+	},
+	{
+		"title": "Underwriting Assistance",
+		"description": "Support underwriting processes by preparing anonymized documents for risk assessment and analysis while protecting applicant privacy.",
+		"icon": "bar-chart-3",
+		"order": 3,
+		"featured": true
+	},
+	{
+		"title": "Regulatory Compliance",
+		"description": "Built-in features to help support insurance regulatory requirements and data protection standards across jurisdictions.",
+		"icon": "clipboard-check",
+		"order": 4,
+		"featured": true
+	},
+	{
+		"title": "Audit Trail Capabilities",
+		"description": "Comprehensive logging of all redaction activities to support compliance audits and regulatory oversight requirements.",
+		"icon": "eye",
+		"order": 5,
+		"featured": true
+	},
+	{
+		"title": "Secure Integration",
+		"description": "Integrate securely with existing insurance systems through encrypted APIs and secure data transmission protocols.",
+		"icon": "lock",
+		"order": 6,
+		"featured": true
+	}
+]

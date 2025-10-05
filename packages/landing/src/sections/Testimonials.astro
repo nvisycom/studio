@@ -9,6 +9,7 @@ export interface Props {
 	backgroundColor?: "white" | "gray";
 	category?: string;
 	featured?: boolean;
+	limit?: number;
 	testimonials?: TestimonialItem[];
 }
 
@@ -17,8 +18,9 @@ const {
 	description = "See what our customers say about transforming their document security workflows.",
 	backgroundColor = "white",
 	category,
-	featured,
-	testimonials: propsTestimonials,
+	featured = true,
+	limit = 6,
+	testimonials,
 } = Astro.props;
 
 async function getTestimonials(category?: string): Promise<TestimonialItem[]> {
@@ -31,15 +33,16 @@ async function getTestimonials(category?: string): Promise<TestimonialItem[]> {
 	}
 }
 
-const testimonials: TestimonialItem[] =
-	propsTestimonials ||
+const allTestimonials: TestimonialItem[] =
+	testimonials ||
 	(await getTestimonials(category))
 		.filter((testimonial) => testimonial.featured === featured)
-		.sort((a, b) => a.order - b.order);
+		.sort((lhs, rhs) => lhs.order - rhs.order)
+		.slice(0, limit);
 
 const bgClass =
 	backgroundColor === "gray"
-		? "bg-gray-50 dark:bg-black"
+		? "bg-gray-50 dark:bg-neutral-950"
 		: "bg-white dark:bg-black";
 ---
 
@@ -55,8 +58,8 @@ const bgClass =
     </div>
 
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {testimonials.map((testimonial) => (
-        <div class="bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+      {allTestimonials.map((testimonial) => (
+        <div class="bg-white dark:bg-black border border-gray-200 dark:border-neutral-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
           <!-- Quote Icon -->
           <div class="mb-4">
             <Quote class="w-8 h-8 text-gray-400 dark:text-neutral-500" />
@@ -66,15 +69,6 @@ const bgClass =
           <blockquote class="text-gray-700 dark:text-neutral-300 mb-6 leading-relaxed">
             "{testimonial.quote}"
           </blockquote>
-
-          <!-- Rating -->
-          {testimonial.rating && (
-            <div class="flex items-center mb-4">
-              {Array.from({ length: testimonial.rating }).map(() => (
-                <Star class="w-4 h-4 text-yellow-400 fill-current" />
-              ))}
-            </div>
-          )}
 
           <!-- Author Info -->
           <div class="border-t border-gray-100 dark:border-neutral-700 pt-4">
@@ -120,16 +114,16 @@ const bgClass =
     <div class="text-center mt-16">
       <div class="inline-flex items-center space-x-8 text-gray-500 dark:text-neutral-400 text-sm">
         <div class="flex items-center space-x-2">
-          <Star class="w-4 h-4 text-green-500 fill-current" />
-          <span>4.9/5 Average Rating</span>
-        </div>
-        <div class="flex items-center space-x-2">
-          <CheckCircle2 class="w-4 h-4 text-blue-500" />
+          <CheckCircle2 class="w-4 h-4 text-green-500" />
           <span>SOC 2 Type II Certified</span>
         </div>
         <div class="flex items-center space-x-2">
-          <Users class="w-4 h-4 text-purple-500" />
+          <Users class="w-4 h-4 text-blue-500" />
           <span>500+ Enterprise Clients</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <CheckCircle2 class="w-4 h-4 text-purple-500" />
+          <span>GDPR & HIPAA Compliant</span>
         </div>
       </div>
     </div>
