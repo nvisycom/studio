@@ -17,41 +17,41 @@ export interface Props {
 const { title, description, options } = Astro.props;
 ---
 
-<div class="bg-gray-50 dark:bg-gray-900 py-20">
+<div class="bg-neutral-50 dark:bg-neutral-950 py-20">
   <div class="container mx-auto px-4">
     <div class="max-w-7xl mx-auto">
       <div class="text-center mb-16">
-        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+        <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
           {title}
         </h2>
-        <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+        <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
           {description}
         </p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         {options.map((option) => (
-          <div class={`bg-white dark:bg-gray-800 rounded-2xl p-8 text-center ${
+          <div class={`bg-white dark:bg-black rounded-2xl p-8 text-center ${
             option.recommended
-              ? 'border-2 border-gray-900 dark:border-white'
-              : 'border border-gray-200 dark:border-gray-700'
+              ? 'border-2 border-neutral-900 dark:border-white'
+              : 'border border-neutral-200 dark:border-neutral-700'
           }`}>
             <div class={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 ${
               option.recommended
-                ? 'bg-gray-900 dark:bg-white'
-                : 'bg-gray-100 dark:bg-gray-700'
+                ? 'bg-neutral-900 dark:bg-white'
+                : 'bg-neutral-100 dark:bg-neutral-800'
             }`}>
               <ServerIcon class={`w-8 h-8 ${
                 option.recommended
-                  ? 'text-white dark:text-gray-900'
-                  : 'text-gray-600 dark:text-gray-400'
+                  ? 'text-white dark:text-neutral-900'
+                  : 'text-neutral-600 dark:text-neutral-400'
               }`} />
             </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">{option.name}</h3>
-            <p class="text-gray-600 dark:text-gray-300 mb-6">
+            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">{option.name}</h3>
+            <p class="text-neutral-600 dark:text-neutral-300 mb-6">
               {option.description}
             </p>
-            <div class="text-sm text-gray-500 dark:text-gray-400 space-y-2">
+            <div class="text-sm text-neutral-500 dark:text-neutral-400 space-y-2">
               {option.features.map((feature) => (
                 <div>• {feature}</div>
               ))}

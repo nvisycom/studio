@@ -38,7 +38,7 @@ const {
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
-const pageTitle = withDefaultTitle ? `${title} | ${DEFAULT_TITLE}` : title;
+const pageTitle = withDefaultTitle ? `${title} · ${DEFAULT_TITLE}` : title;
 const fullImageUrl = new URL(image, Astro.site).toString();
 const siteName = DEFAULT_TITLE;
 

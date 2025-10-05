@@ -1,259 +1,384 @@
 ---
 import { Layout } from "@/layouts";
-import { Testimonials, CTA } from "@/sections";
-import { Lightbulb, FileText, Shield, Check } from "lucide-vue-next";
+import { Hero, Features, CTA, CompanyStats } from "@/sections";
+import {
+	Shield,
+	ShieldCheck,
+	FileText,
+	BarChart3,
+	Users,
+	Clipboard,
+	Check,
+	Building2,
+	AlertTriangle,
+	DollarSign,
+} from "lucide-vue-next";
 ---
 
-<Layout title="Insurance - Use Cases" description="Discover how insurance companies use our platform for digital transformation, claims automation, and customer experience excellence.">
-  <div class="bg-white">
+<Layout title="Insurance Solutions" description="Document redaction solutions for insurance companies. Help protect policyholder information and claims data while supporting underwriting and regulatory workflows.">
+  <div class="bg-white dark:bg-black min-h-screen">
     <!-- Hero Section -->
-    <div class="relative bg-gradient-to-br from-emerald-900 via-teal-800 to-cyan-900">
-      <div class="container mx-auto px-4 py-20 md:py-28">
-        <div class="text-center max-w-4xl mx-auto">
-          <div class="inline-flex items-center bg-emerald-800/30 text-emerald-200 px-4 py-2 rounded-full text-sm font-medium mb-6 backdrop-blur-sm">
-            <span class="w-2 h-2 bg-emerald-300 rounded-full mr-2 animate-pulse"></span>
-            Insurance & Risk Management
-          </div>
-          <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">
-            Insurance Digital Transformation
-          </h1>
-          <p class="text-xl md:text-2xl text-emerald-100 leading-relaxed mb-12 max-w-3xl mx-auto">
-            Modernize your insurance operations with AI-powered underwriting, automated claims processing,
-            and seamless customer experiences that drive growth and efficiency.
-          </p>
-
-          <!-- Key Stats -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
-            <div class="text-center">
-              <div class="text-3xl md:text-4xl font-bold text-white mb-2">90%</div>
-              <div class="text-emerald-200">Claims Automation</div>
-            </div>
-            <div class="text-center">
-              <div class="text-3xl md:text-4xl font-bold text-white mb-2">60%</div>
-              <div class="text-emerald-200">Faster Processing</div>
-            </div>
-            <div class="text-center">
-              <div class="text-3xl md:text-4xl font-bold text-white mb-2">ISO 27001</div>
-              <div class="text-emerald-200">Certified</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Key Features -->
-    <div class="container mx-auto px-4 py-20">
-      <div class="text-center mb-16">
-        <h2 class="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
-          Insurance-Optimized Platform
-        </h2>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-          Built specifically for insurance operations with advanced automation, risk assessment,
-          and regulatory compliance capabilities.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-        <!-- Automated Underwriting -->
-        <div class="group bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-          <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <Lightbulb class="w-8 h-8 text-white" />
-          </div>
-          <h3 class="text-2xl font-bold text-gray-900 mb-4">Automated Underwriting</h3>
-          <p class="text-gray-600 mb-6 leading-relaxed">
-            AI-powered risk assessment and automated decision-making for faster, more accurate underwriting processes.
-          </p>
-          <ul class="space-y-3">
-            <li class="flex items-start gap-3">
-              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span class="text-gray-700 text-sm">AI risk scoring</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span class="text-gray-700 text-sm">Real-time decisioning</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span class="text-gray-700 text-sm">Regulatory compliance</span>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Claims Processing -->
-        <div class="group bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-          <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <FileText class="w-8 h-8 text-white" />
-          </div>
-          <h3 class="text-2xl font-bold text-gray-900 mb-4">Smart Claims Processing</h3>
-          <p class="text-gray-600 mb-6 leading-relaxed">
-            Streamline claims management with automated workflows, fraud detection, and instant settlements.
-          </p>
-          <ul class="space-y-3">
-            <li class="flex items-start gap-3">
-              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span class="text-gray-700 text-sm">Automated adjudication</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span class="text-gray-700 text-sm">Fraud detection</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span class="text-gray-700 text-sm">Instant payments</span>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Customer Experience -->
-        <div class="group bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-          <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <Shield class="w-8 h-8 text-white" />
-          </div>
-          <h3 class="text-2xl font-bold text-gray-900 mb-4">Customer Experience</h3>
-          <p class="text-gray-600 mb-6 leading-relaxed">
-            Deliver exceptional customer journeys with self-service portals, mobile apps, and omnichannel support.
-          </p>
-          <ul class="space-y-3">
-            <li class="flex items-start gap-3">
-              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span class="text-gray-700 text-sm">Self-service portals</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span class="text-gray-700 text-sm">Mobile applications</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <Check class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span class="text-gray-700 text-sm">24/7 digital support</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- Insurance Use Cases -->
-    <div class="bg-gray-50 py-20">
-      <div class="container mx-auto px-4">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
-            Insurance Solutions
-          </h2>
-          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-            From life insurance to property & casualty, see how insurers transform their operations with our platform.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          <!-- Life Insurance -->
-          <div class="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-shadow">
-            <div class="text-4xl mb-4">🛡️</div>
-            <h3 class="text-xl font-bold text-gray-900 mb-3">Life Insurance</h3>
-            <p class="text-gray-600 text-sm leading-relaxed mb-4">
-              Digital life insurance platforms with instant quotes, simplified underwriting, and policy management.
-            </p>
-            <ul class="text-xs text-gray-500 space-y-1">
-              <li>• Instant quote engines</li>
-              <li>• Medical underwriting</li>
-              <li>• Policy administration</li>
-            </ul>
-          </div>
-
-          <!-- Property & Casualty -->
-          <div class="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-shadow">
-            <div class="text-4xl mb-4">🏠</div>
-            <h3 class="text-xl font-bold text-gray-900 mb-3">Property & Casualty</h3>
-            <p class="text-gray-600 text-sm leading-relaxed mb-4">
-              P&C insurance solutions with risk assessment, claims automation, and real-time pricing.
-            </p>
-            <ul class="text-xs text-gray-500 space-y-1">
-              <li>• Risk modeling</li>
-              <li>• Claims processing</li>
-              <li>• Dynamic pricing</li>
-            </ul>
-          </div>
-
-          <!-- Health Insurance -->
-          <div class="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-shadow">
-            <div class="text-4xl mb-4">🏥</div>
-            <h3 class="text-xl font-bold text-gray-900 mb-3">Health Insurance</h3>
-            <p class="text-gray-600 text-sm leading-relaxed mb-4">
-              Health insurance platforms with member portals, provider networks, and claims management.
-            </p>
-            <ul class="text-xs text-gray-500 space-y-1">
-              <li>• Member portals</li>
-              <li>• Provider networks</li>
-              <li>• Benefits management</li>
-            </ul>
-          </div>
-
-          <!-- Commercial Insurance -->
-          <div class="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-shadow">
-            <div class="text-4xl mb-4">🏢</div>
-            <h3 class="text-xl font-bold text-gray-900 mb-3">Commercial Insurance</h3>
-            <p class="text-gray-600 text-sm leading-relaxed mb-4">
-              Enterprise insurance solutions for commercial risks, cyber liability, and business protection.
-            </p>
-            <ul class="text-xs text-gray-500 space-y-1">
-              <li>• Commercial underwriting</li>
-              <li>• Cyber insurance</li>
-              <li>• Risk management</li>
-            </ul>
-          </div>
-
-          <!-- Auto Insurance -->
-          <div class="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-shadow">
-            <div class="text-4xl mb-4">🚗</div>
-            <h3 class="text-xl font-bold text-gray-900 mb-3">Auto Insurance</h3>
-            <p class="text-gray-600 text-sm leading-relaxed mb-4">
-              Usage-based insurance with telematics, instant quotes, and mobile-first experiences.
-            </p>
-            <ul class="text-xs text-gray-500 space-y-1">
-              <li>• Telematics integration</li>
-              <li>• Usage-based pricing</li>
-              <li>• Mobile claims</li>
-            </ul>
-          </div>
-
-          <!-- InsurTech -->
-          <div class="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-shadow">
-            <div class="text-4xl mb-4">⚡</div>
-            <h3 class="text-xl font-bold text-gray-900 mb-3">InsurTech Innovation</h3>
-            <p class="text-gray-600 text-sm leading-relaxed mb-4">
-              Next-generation insurance products with AI, IoT integration, and parametric coverage.
-            </p>
-            <ul class="text-xs text-gray-500 space-y-1">
-              <li>• AI-powered products</li>
-              <li>• IoT integration</li>
-              <li>• Parametric insurance</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <Testimonials
-      title="Trusted by Insurance Leaders"
-      description="See how leading insurance companies are driving growth and efficiency with our comprehensive digital platform."
-      backgroundColor="gray"
-      category="insurance"
-      featured={true}
-    />
-
-    <CTA
-      title="Revolutionize insurance operations"
-      description="Join leading insurance companies that are driving growth and efficiency with our comprehensive digital platform."
+    <Hero
+      title="Insurance Document Protection"
+      description="Protect policyholder information and sensitive claims data with AI-powered redaction designed for insurance workflows. Help maintain privacy standards while supporting operational efficiency."
       background="gradient"
+      fontSize="xl"
+      padding="xl"
       buttons={[
         {
-          text: "Book Demo",
+          text: "Request Demo",
+          href: "/contact",
           variant: "primary"
         },
         {
-          text: "Explore Solutions",
-          variant: "secondary",
-          icon: "external"
+          text: "View Pricing",
+          href: "/pricing",
+          variant: "secondary"
         }
       ]}
+      stats={[
+        {
+          value: "Privacy",
+          label: "Focused"
+        },
+        {
+          value: "Claims",
+          label: "Support"
+        },
+        {
+          value: "Secure",
+          label: "Processing"
+        }
+      ]}
+    />
+
+    <!-- Company Stats -->
+    <CompanyStats backgroundColor="white" />
+
+    <!-- Insurance-Specific Features -->
+    <Features
+      title="Built for Insurance Workflows"
+      description="Document redaction features designed specifically to help insurance companies protect sensitive information while maintaining operational efficiency and supporting regulatory requirements."
+      category="insurance"
+    />
+
+    <!-- Insurance Use Cases -->
+    <div class="bg-gray-50 dark:bg-neutral-950 py-20">
+      <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+              Common Insurance Use Cases
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-2xl mx-auto">
+              See how insurance companies use Nvisy to protect sensitive information
+              across various operational and regulatory workflows.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Claims Documentation -->
+            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
+              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
+                <FileText class="w-8 h-8 text-white dark:text-black" />
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Claims Documentation</h3>
+              <p class="text-gray-600 dark:text-neutral-300 mb-4">
+                Process claims files and documentation while protecting policyholder personal information and sensitive claim details.
+              </p>
+              <ul class="space-y-2 text-sm">
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Claim forms and applications</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Medical records and reports</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Adjuster notes and assessments</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Policy Underwriting -->
+            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
+              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
+                <BarChart3 class="w-8 h-8 text-white dark:text-black" />
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Policy Underwriting</h3>
+              <p class="text-gray-600 dark:text-neutral-300 mb-4">
+                Support underwriting processes by preparing anonymized applications and supporting documents for risk assessment.
+              </p>
+              <ul class="space-y-2 text-sm">
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Insurance applications</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Risk assessment documents</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Actuarial analysis reports</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Fraud Investigation -->
+            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
+              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
+                <AlertTriangle class="w-8 h-8 text-white dark:text-black" />
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Fraud Investigation</h3>
+              <p class="text-gray-600 dark:text-neutral-300 mb-4">
+                Support fraud investigation activities by preparing redacted case files and documentation while protecting privacy.
+              </p>
+              <ul class="space-y-2 text-sm">
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Investigation reports</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Evidence documentation</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Case file summaries</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Regulatory Reporting -->
+            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
+              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
+                <Clipboard class="w-8 h-8 text-white dark:text-black" />
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Regulatory Reporting</h3>
+              <p class="text-gray-600 dark:text-neutral-300 mb-4">
+                Prepare regulatory reports and compliance documentation by redacting sensitive information while preserving analytical value.
+              </p>
+              <ul class="space-y-2 text-sm">
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Regulatory filings</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Compliance audits</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Market conduct examinations</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Customer Communications -->
+            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
+              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
+                <Users class="w-8 h-8 text-white dark:text-black" />
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Customer Communications</h3>
+              <p class="text-gray-600 dark:text-neutral-300 mb-4">
+                Prepare customer communications and service documentation while protecting personal information and policy details.
+              </p>
+              <ul class="space-y-2 text-sm">
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Policy documents</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Correspondence records</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Service interaction logs</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Third-Party Sharing -->
+            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
+              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
+                <Building2 class="w-8 h-8 text-white dark:text-black" />
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Third-Party Data Sharing</h3>
+              <p class="text-gray-600 dark:text-neutral-300 mb-4">
+                Safely share insurance data with reinsurers, vendors, and partners by redacting sensitive policyholder information.
+              </p>
+              <ul class="space-y-2 text-sm">
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Reinsurer reports</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Vendor data sharing</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Partner analytics</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Implementation Benefits -->
+    <div class="container mx-auto px-4 py-20">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+            Insurance Implementation Benefits
+          </h2>
+          <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-2xl mx-auto">
+            Real benefits that insurance companies experience when implementing
+            our document redaction platform for sensitive data protection.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Shield class="w-8 h-8 text-white dark:text-black" />
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Enhanced Privacy Protection</h3>
+            <p class="text-gray-600 dark:text-neutral-300">
+              Consistent, automated protection of policyholder personal information across all insurance documents and workflows.
+            </p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <DollarSign class="w-8 h-8 text-white dark:text-black" />
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Operational Efficiency</h3>
+            <p class="text-gray-600 dark:text-neutral-300">
+              Significantly reduce manual document review time while maintaining accuracy in sensitive data identification and protection.
+            </p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <ShieldCheck class="w-8 h-8 text-white dark:text-black" />
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Compliance Support</h3>
+            <p class="text-gray-600 dark:text-neutral-300">
+              Built-in features that help support insurance regulatory compliance requirements and data protection standards.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Security Features -->
+    <div class="bg-gray-50 dark:bg-neutral-950 py-20">
+      <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+              Insurance-Grade Security
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-2xl mx-auto">
+              Built with insurance industry security requirements in mind, including data protection
+              and compliance readiness for sensitive policyholder information.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Data Protection</h3>
+              <ul class="space-y-3">
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">End-to-end encryption</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Secure data handling</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Data retention controls</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Secure transmission</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Access Controls</h3>
+              <ul class="space-y-3">
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Role-based permissions</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Authentication controls</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Session management</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">API security</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Compliance Features</h3>
+              <ul class="space-y-3">
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Audit trail logging</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Activity monitoring</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Compliance reporting</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Data lineage tracking</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <CTA
+      title="Ready to Protect Policyholder Data?"
+      description="Join insurance companies using Nvisy to safely redact and anonymize sensitive documents while maintaining operational efficiency and compliance standards."
+      buttons={[
+        {
+          text: "Schedule Insurance Demo",
+          href: "/contact",
+          variant: "primary"
+        },
+        {
+          text: "View Insurance Pricing",
+          href: "/pricing",
+          variant: "secondary"
+        }
+      ]}
+      background="solid"
     />
   </div>
 </Layout>

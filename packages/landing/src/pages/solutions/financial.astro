@@ -1,303 +1,228 @@
 ---
 import { Layout } from "@/layouts";
-import { CTA } from "@/sections";
+import { Hero, Features, CTA, CompanyStats } from "@/sections";
 import {
-	ChevronRight,
 	Scale,
 	ShieldCheck,
-	Link2,
 	BarChart3,
 	Wallet,
-	File,
 	Building2,
 	TrendingUp,
 	Shield,
 	Check,
+	DollarSign,
 } from "lucide-vue-next";
 ---
 
-<Layout title="Financial Services Solutions" description="PCI-DSS compliant document redaction solutions for financial institutions. Protect customer PII and sensitive financial data while maintaining operational efficiency.">
+<Layout title="Financial Services Solutions" description="Document redaction solutions for financial institutions. PCI-DSS focused features to help protect customer PII and sensitive financial data while maintaining operational efficiency.">
   <div class="bg-white dark:bg-black min-h-screen">
     <!-- Hero Section -->
-    <div class="relative bg-gradient-to-br from-green-50 via-white to-emerald-50 dark:from-gray-900 dark:via-black dark:to-green-900/20">
-      <div class="container mx-auto px-4 py-16 md:py-24">
-        <div class="max-w-4xl mx-auto text-center">
+    <Hero
+      title="Financial Document Protection"
+      description="Protect customer PII and sensitive financial data with AI-powered redaction designed for banking, insurance, and financial services workflows. PCI-DSS focused features to help maintain compliance."
+      background="gradient"
+      fontSize="xl"
+      padding="xl"
+      buttons={[
+        {
+          text: "Request Demo",
+          href: "/contact",
+          variant: "primary"
+        },
+        {
+          text: "View Pricing",
+          href: "/pricing",
+          variant: "secondary"
+        }
+      ]}
+      stats={[
+        {
+          value: "PCI-DSS",
+          label: "Focused"
+        },
+        {
+          value: "PII",
+          label: "Detection"
+        },
+        {
+          value: "Secure",
+          label: "Processing"
+        }
+      ]}
+    />
 
+    <!-- Company Stats -->
+    <CompanyStats backgroundColor="white" />
 
-          <h1 class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-            Secure Financial Document Processing
-          </h1>
+    <!-- Financial-Specific Features -->
+    <Features
+      title="Built for Financial Workflows"
+      description="Document redaction features designed specifically to help financial institutions protect sensitive data while maintaining operational efficiency and supporting compliance requirements."
+      category="financial"
+    />
 
-          <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-300 leading-relaxed mb-12 max-w-3xl mx-auto">
-            Protect customer PII and sensitive financial data with AI-powered redaction designed for banking, insurance, and financial services workflows.
-            Maintain compliance while accelerating digital transformation.
-          </p>
-
-          <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <a href="/contact" class="inline-flex items-center justify-center bg-gray-900 dark:bg-white text-white dark:text-black font-medium py-4 px-8 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-100 transition-colors text-lg">
-              Request Finance Demo
-              <ChevronRight class="w-5 h-5 ml-2" />
-            </a>
-            <a href="/pricing" class="inline-flex items-center justify-center border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium py-4 px-8 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors text-lg">
-              View Financial Pricing
-            </a>
-          </div>
-
-          <!-- Financial Stats -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
-            <div class="text-center">
-              <div class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">PCI-DSS</div>
-              <div class="text-gray-600 dark:text-gray-400">Certified</div>
-            </div>
-            <div class="text-center">
-              <div class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">99.7%</div>
-              <div class="text-gray-600 dark:text-gray-400">PII Detection Rate</div>
-            </div>
-            <div class="text-center">
-              <div class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">200+</div>
-              <div class="text-gray-600 dark:text-gray-400">Financial Institutions</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Key Features for Financial Services -->
-    <div class="container mx-auto px-4 py-20">
-      <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-            Built for Financial Compliance
-          </h2>
-          <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Comprehensive document redaction solutions designed specifically for financial
-            institutions with strict regulatory requirements and risk management needs.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <!-- Regulatory Compliance -->
-          <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8">
-            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6">
-              <Scale class="w-8 h-8 text-white" />
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Multi-Regulation Compliance</h3>
-            <p class="text-gray-600 dark:text-gray-300 mb-4">
-              Meet requirements across PCI-DSS, SOX, GDPR, CCPA, and other financial
-              regulations with built-in compliance frameworks.
-            </p>
-            <ul class="space-y-2 text-sm">
-              <li class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span class="text-gray-700 dark:text-gray-300">PCI-DSS Level 1 compliance</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span class="text-gray-700 dark:text-gray-300">SOX documentation controls</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span class="text-gray-700 dark:text-gray-300">GDPR & CCPA ready</span>
-              </li>
-            </ul>
-          </div>
-
-          <!-- PII & Financial Data Protection -->
-          <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8">
-            <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6">
-              <ShieldCheck class="w-8 h-8 text-white" />
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Advanced PII Detection</h3>
-            <p class="text-gray-600 dark:text-gray-300 mb-4">
-              Comprehensive detection and protection of personal identifiable information,
-              payment card data, and sensitive financial identifiers.
-            </p>
-            <ul class="space-y-2 text-sm">
-              <li class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span class="text-gray-700 dark:text-gray-300">Credit card & payment data</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span class="text-gray-700 dark:text-gray-300">Account numbers & SSNs</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span class="text-gray-700 dark:text-gray-300">Financial identifiers</span>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Banking System Integration -->
-          <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8">
-            <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6">
-              <Link2 class="w-8 h-8 text-white" />
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Core Banking Integration</h3>
-            <p class="text-gray-600 dark:text-gray-300 mb-4">
-              Seamlessly integrate with existing core banking systems, trading platforms,
-              and financial workflows through robust APIs and industry connectors.
-            </p>
-            <ul class="space-y-2 text-sm">
-              <li class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span class="text-gray-700 dark:text-gray-300">Core banking platforms</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span class="text-gray-700 dark:text-gray-300">Trading & wealth management</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span class="text-gray-700 dark:text-gray-300">Document management systems</span>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Risk Management -->
-          <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8">
-            <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl flex items-center justify-center mb-6">
-              <BarChart3 class="w-8 h-8 text-white" />
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Risk Management & Analytics</h3>
-            <p class="text-gray-600 dark:text-gray-300 mb-4">
-              Advanced analytics and reporting capabilities to support risk management,
-              regulatory reporting, and compliance monitoring requirements.
-            </p>
-            <ul class="space-y-2 text-sm">
-              <li class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span class="text-gray-700 dark:text-gray-300">Risk exposure analytics</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span class="text-gray-700 dark:text-gray-300">Compliance reporting</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span class="text-gray-700 dark:text-gray-300">Audit trail management</span>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Transaction Processing -->
-          <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8">
-            <div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mb-6">
-              <Wallet class="w-8 h-8 text-white" />
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Transaction Processing</h3>
-            <p class="text-gray-600 dark:text-gray-300 mb-4">
-              High-speed processing of transaction documents, statements, and reports
-              with real-time redaction and secure data handling.
-            </p>
-            <ul class="space-y-2 text-sm">
-              <li class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span class="text-gray-700 dark:text-gray-300">Real-time transaction screening</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span class="text-gray-700 dark:text-gray-300">Statement generation</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span class="text-gray-700 dark:text-gray-300">Batch processing capabilities</span>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Document Types -->
-          <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8">
-            <div class="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-800 rounded-2xl flex items-center justify-center mb-6">
-              <File class="w-8 h-8 text-white" />
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Financial Document Support</h3>
-            <p class="text-gray-600 dark:text-gray-300 mb-4">
-              Comprehensive support for all types of financial documents including
-              regulatory filings, customer communications, and internal reports.
-            </p>
-            <ul class="space-y-2 text-sm">
-              <li class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span class="text-gray-700 dark:text-gray-300">Account statements & reports</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span class="text-gray-700 dark:text-gray-300">Loan applications & contracts</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span class="text-gray-700 dark:text-gray-300">Regulatory filings & correspondence</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Use Cases Section -->
-    <div class="bg-gray-50 dark:bg-gray-900 py-20">
+    <!-- Financial Use Cases -->
+    <div class="bg-gray-50 dark:bg-neutral-950 py-20">
       <div class="container mx-auto px-4">
-        <div class="max-w-7xl mx-auto">
+        <div class="max-w-6xl mx-auto">
           <div class="text-center mb-16">
             <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              Financial Services Use Cases
+              Common Financial Use Cases
             </h2>
-            <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              From retail banking to investment management, see how financial institutions
-              use Nvisy to protect customer data while enabling digital transformation.
+            <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-2xl mx-auto">
+              See how financial institutions use Nvisy to protect sensitive financial information
+              across various operational and regulatory workflows.
             </p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Banks & Credit Unions -->
-            <div class="bg-white dark:bg-black rounded-2xl border border-gray-200 dark:border-gray-700 p-8">
-              <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mb-6">
-                <Building2 class="w-6 h-6 text-green-600 dark:text-green-400" />
+            <!-- Customer Statements -->
+            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
+              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
+                <Wallet class="w-8 h-8 text-white dark:text-black" />
               </div>
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Banks & Credit Unions</h3>
-              <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-4">
-                Streamline customer onboarding, loan processing, and regulatory compliance
-                while protecting sensitive customer financial information.
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Customer Statements</h3>
+              <p class="text-gray-600 dark:text-neutral-300 mb-4">
+                Redact sensitive customer information from account statements and transaction records for analysis or third-party sharing.
               </p>
-              <ul class="space-y-2 text-xs text-gray-600 dark:text-gray-400">
-                <li>• Customer account opening</li>
-                <li>• Loan documentation processing</li>
-                <li>• Regulatory compliance reporting</li>
+              <ul class="space-y-2 text-sm">
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Account numbers</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Customer addresses</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Transaction details</span>
+                </li>
               </ul>
             </div>
 
-            <!-- Investment Management -->
-            <div class="bg-white dark:bg-black rounded-2xl border border-gray-200 dark:border-gray-700 p-8">
-              <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mb-6">
-                <TrendingUp class="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <!-- Credit Applications -->
+            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
+              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
+                <Scale class="w-8 h-8 text-white dark:text-black" />
               </div>
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Investment Management</h3>
-              <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-4">
-                Protect investor information and trading data while enabling portfolio
-                management, research sharing, and client communications.
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Credit Applications</h3>
+              <p class="text-gray-600 dark:text-neutral-300 mb-4">
+                Process loan applications and credit documents while protecting applicant personal and financial information.
               </p>
-              <ul class="space-y-2 text-xs text-gray-600 dark:text-gray-400">
-                <li>• Portfolio management reports</li>
-                <li>• Investment research sharing</li>
-                <li>• Client communication automation</li>
+              <ul class="space-y-2 text-sm">
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">SSNs and tax IDs</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Income information</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Employment details</span>
+                </li>
               </ul>
             </div>
 
-            <!-- Insurance Companies -->
-            <div class="bg-white dark:bg-black rounded-2xl border border-gray-200 dark:border-gray-700 p-8">
-              <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mb-6">
-                <Shield class="w-6 h-6 text-purple-600 dark:text-purple-400" />
+            <!-- Fraud Investigation -->
+            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
+              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
+                <Shield class="w-8 h-8 text-white dark:text-black" />
               </div>
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Insurance Companies</h3>
-              <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-4">
-                Streamline claims processing, underwriting, and policy management
-                while protecting policyholder data and maintaining regulatory compliance.
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Fraud Investigation</h3>
+              <p class="text-gray-600 dark:text-neutral-300 mb-4">
+                Support fraud investigations by preparing redacted documents for analysis while protecting customer privacy.
               </p>
-              <ul class="space-y-2 text-xs text-gray-600 dark:text-gray-400">
-                <li>• Claims processing automation</li>
-                <li>• Underwriting document review</li>
-                <li>• Policy management workflows</li>
+              <ul class="space-y-2 text-sm">
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Transaction patterns</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Investigation reports</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Case documentation</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Compliance Reporting -->
+            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
+              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
+                <BarChart3 class="w-8 h-8 text-white dark:text-black" />
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Compliance Reporting</h3>
+              <p class="text-gray-600 dark:text-neutral-300 mb-4">
+                Prepare regulatory reports and compliance documentation by redacting customer identifiers while preserving analytical value.
+              </p>
+              <ul class="space-y-2 text-sm">
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Regulatory filings</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Risk assessments</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Audit preparations</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Insurance Claims -->
+            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
+              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
+                <ShieldCheck class="w-8 h-8 text-white dark:text-black" />
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Insurance Claims</h3>
+              <p class="text-gray-600 dark:text-neutral-300 mb-4">
+                Process insurance claims and underwriting documents while protecting policyholder personal information.
+              </p>
+              <ul class="space-y-2 text-sm">
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Claim forms</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Policy documents</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Underwriting files</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Third-Party Data Sharing -->
+            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
+              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
+                <Building2 class="w-8 h-8 text-white dark:text-black" />
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Third-Party Sharing</h3>
+              <p class="text-gray-600 dark:text-neutral-300 mb-4">
+                Safely share financial data with partners, vendors, and service providers by redacting sensitive customer information.
+              </p>
+              <ul class="space-y-2 text-sm">
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Vendor reports</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Partner data sharing</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
+                  <span class="text-gray-700 dark:text-neutral-300">Service provider access</span>
+                </li>
               </ul>
             </div>
           </div>
@@ -305,49 +230,154 @@ import {
       </div>
     </div>
 
-    <!-- Benefits Section -->
+    <!-- Implementation Benefits -->
     <div class="container mx-auto px-4 py-20">
-      <div class="max-w-4xl mx-auto text-center">
-        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8">
-          Trusted by Financial Leaders
-        </h2>
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+            Financial Services Benefits
+          </h2>
+          <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-2xl mx-auto">
+            Real benefits that financial institutions experience when implementing
+            our document redaction platform for sensitive data protection.
+          </p>
+        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-          <div>
-            <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">99.7%</div>
-            <div class="text-gray-600 dark:text-gray-400 mb-4">PII Detection Accuracy</div>
-            <p class="text-gray-600 dark:text-gray-300 text-sm">
-              Industry-leading accuracy in detecting and protecting personal identifiable information and financial data.
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <DollarSign class="w-8 h-8 text-white dark:text-black" />
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Enhanced Data Protection</h3>
+            <p class="text-gray-600 dark:text-neutral-300">
+              Consistent, automated protection of customer PII and financial data across all document types and workflows.
             </p>
           </div>
 
-          <div>
-            <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">85%</div>
-            <div class="text-gray-600 dark:text-gray-400 mb-4">Faster Processing</div>
-            <p class="text-gray-600 dark:text-gray-300 text-sm">
-              Reduce manual review time for financial documents and customer communications.
+          <div class="text-center">
+            <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <TrendingUp class="w-8 h-8 text-white dark:text-black" />
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Operational Efficiency</h3>
+            <p class="text-gray-600 dark:text-neutral-300">
+              Significantly reduce manual document review time while maintaining accuracy in sensitive data identification.
             </p>
           </div>
 
-          <div>
-            <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">100%</div>
-            <div class="text-gray-600 dark:text-gray-400 mb-4">Regulatory Compliant</div>
-            <p class="text-gray-600 dark:text-gray-300 text-sm">
-              Built to meet PCI-DSS, SOX, GDPR, and other financial regulatory requirements.
-            </p>
-          </div>
-
-          <div>
-            <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">24/7</div>
-            <div class="text-gray-600 dark:text-gray-400 mb-4">Financial Support</div>
-            <p class="text-gray-600 dark:text-gray-300 text-sm">
-              Dedicated support team with deep financial services expertise and compliance knowledge.
+          <div class="text-center">
+            <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Shield class="w-8 h-8 text-white dark:text-black" />
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Compliance Support</h3>
+            <p class="text-gray-600 dark:text-neutral-300">
+              Built-in features that help support PCI-DSS, GDPR, and other regulatory compliance requirements.
             </p>
           </div>
         </div>
       </div>
     </div>
 
-    <CTA />
+    <!-- Security Features -->
+    <div class="bg-gray-50 dark:bg-neutral-950 py-20">
+      <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+              Financial-Grade Security
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-2xl mx-auto">
+              Built with financial services security requirements in mind, including data protection
+              and compliance readiness for sensitive financial information.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Data Protection</h3>
+              <ul class="space-y-3">
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">End-to-end encryption</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Secure data transmission</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Data residency controls</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Secure key management</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Access Controls</h3>
+              <ul class="space-y-3">
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Role-based permissions</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Multi-factor authentication</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Session management</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">API key security</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Compliance Features</h3>
+              <ul class="space-y-3">
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Comprehensive audit logs</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Data lineage tracking</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Retention policies</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
+                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Compliance reporting</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <CTA
+      title="Ready to Protect Financial Data?"
+      description="Join financial institutions using Nvisy to safely redact and anonymize sensitive financial documents while supporting compliance requirements."
+      buttons={[
+        {
+          text: "Schedule Financial Demo",
+          href: "/contact",
+          variant: "primary"
+        },
+        {
+          text: "View Financial Pricing",
+          href: "/pricing",
+          variant: "secondary"
+        }
+      ]}
+      background="solid"
+    />
   </div>
 </Layout>

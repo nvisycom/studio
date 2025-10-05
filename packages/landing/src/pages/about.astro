@@ -1,6 +1,9 @@
 ---
 import { Layout } from "@/layouts";
-import { CTA, Hero } from "@/sections";
+import { CompanyStats } from "@/sections";
+
+import { calculateReadingTime } from "@/lib/content";
+import { getCollection } from "astro:content";
 
 const teamMembers = [
 	{
@@ -29,13 +32,6 @@ const teamMembers = [
 	},
 ];
 
-const companyStats = [
-	{ label: "Founded", value: "2023" },
-	{ label: "Enterprise Customers", value: "500+" },
-	{ label: "Documents Processed", value: "10M+" },
-	{ label: "Global Presence", value: "15 Countries" },
-];
-
 const values = [
 	{
 		title: "Security First",
@@ -58,62 +54,50 @@ const values = [
 			"Our success is measured by the tangible business value we deliver to our customers.",
 	},
 ];
+
+// Get blog entries from content/blog
+const blogEntries = (await getCollection("blog"))
+	.map((entry) => {
+		const calculatedReadingTime = calculateReadingTime(entry.body);
+		return {
+			...entry,
+			data: {
+				...entry.data,
+				readingTime: entry.data.readingTime || calculatedReadingTime,
+			},
+		};
+	})
+	.sort(
+		(rhs, lhs) =>
+			new Date(lhs.data.publishedAt).getTime() -
+			new Date(rhs.data.publishedAt).getTime(),
+	)
+	.slice(0, 3); // Only show first 3 posts
 ---
 
 <Layout
-  title="About"
+  title="About Us"
   description="Learn about Nvisy's mission to revolutionize document redaction and data protection for enterprise organizations worldwide."
 >
   <div class="bg-white dark:bg-black min-h-screen">
-    <!-- Hero Section -->
-    <Hero
-      title="Protecting Enterprise Data Through AI"
-      description="We're building the most advanced document redaction platform to help enterprises protect sensitive information while maintaining operational efficiency."
-      background="dark"
-      fontSize="xl"
-      padding="xl"
-      buttons={[]}
-    />
-    <div class="border-b border-gray-200 dark:border-neutral-800"></div>
-
-    <!-- Company Stats -->
-    <div class="bg-gray-50 dark:bg-neutral-900 py-16">
-      <div class="container mx-auto px-4">
-        <div class="max-w-4xl mx-auto">
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {companyStats.map(stat => (
-              <div class="text-center">
-                <div class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                  {stat.value}
-                </div>
-                <div class="text-gray-600 dark:text-neutral-400 font-medium">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Mission & Story -->
-    <div class="container mx-auto px-4 py-20">
+    <div class="container mx-auto px-4 py-20 pb-12">
       <div class="max-w-4xl mx-auto">
         <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
             Our Mission
-          </h2>
-          <p class="text-lg text-gray-600 dark:text-neutral-300 leading-relaxed">
+          </h1>
+          <p class="text-xl text-gray-600 dark:text-neutral-300 leading-relaxed">
             To provide enterprise organizations with the most secure, accurate, and efficient document redaction platform,
             enabling them to protect sensitive data while maintaining business velocity.
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
           <div>
-            <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+            <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
               The Challenge
-            </h3>
+            </h2>
             <p class="text-gray-600 dark:text-neutral-400 leading-relaxed mb-4">
               Enterprise organizations process millions of documents containing sensitive information. Traditional redaction methods are manual, error-prone, and don't scale with business needs.
             </p>
@@ -123,9 +107,9 @@ const values = [
           </div>
 
           <div>
-            <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+            <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
               Our Solution
-            </h3>
+            </h2>
             <p class="text-gray-600 dark:text-neutral-400 leading-relaxed mb-4">
               We've built an AI-powered platform that automatically identifies and redacts sensitive information with enterprise-grade accuracy and security.
             </p>
@@ -152,7 +136,7 @@ const values = [
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             {values.map(value => (
-              <div class="bg-white dark:bg-black border border-gray-200 dark:border-neutral-700 rounded-lg p-8">
+              <div class="bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-neutral-700 p-8">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">
                   {value.title}
                 </h3>
@@ -166,7 +150,7 @@ const values = [
       </div>
     </div>
 
-    <!-- Team -->
+    <!-- Leadership Team -->
     <div class="container mx-auto px-4 py-20">
       <div class="max-w-6xl mx-auto">
         <div class="text-center mb-16">
@@ -178,84 +162,94 @@ const values = [
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {teamMembers.map(member => (
-            <div class="border border-gray-200 dark:border-neutral-700 rounded-lg p-8">
-              <div class="flex items-center mb-4">
-                <div class="w-16 h-16 bg-gray-200 dark:bg-neutral-700 rounded-full flex items-center justify-center text-gray-700 dark:text-neutral-300 font-semibold text-lg mr-4">
-                  {member.image}
+        <div class="flex justify-center mb-8">
+          <div class="w-48 h-48 bg-gray-200 dark:bg-neutral-700 rounded-full flex items-center justify-center">
+            <span class="text-4xl text-gray-500 dark:text-neutral-400">Team Photo</span>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <p class="text-lg text-gray-600 dark:text-neutral-300">
+            {teamMembers.map((member, index) => member.name).join(', ')}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Company Stats -->
+    <CompanyStats backgroundColor="white" />
+
+    <!-- We Are Hiring Section -->
+    <div class="bg-gray-50 dark:bg-black py-32">
+      <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+          <div class="text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+              We Are Hiring
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-3xl mx-auto mb-8">
+              Join our team and help build the future of enterprise document security.
+              We're looking for talented professionals to drive innovation in compliance and automation.
+            </p>
+            <a href="/careers" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all outline-none bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 px-6">
+              View Open Positions
+              <svg class="size-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- From Our Blog Section -->
+    <div class="container mx-auto px-4 py-32">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-8">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+            From Our Blog
+          </h2>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {blogEntries.map(post => (
+            <article class="group transition-all duration-300 hover:-translate-y-1">
+              <a href={`/blog/${post.slug}`} class="block">
+                <div class="overflow-hidden">
+                  <!-- Image placeholder -->
+                  <div class="aspect-[16/9] bg-gradient-to-br from-gray-100 to-gray-200 dark:from-neutral-800 dark:to-neutral-700 flex items-center justify-center rounded-lg">
+                    <div class="text-gray-400 dark:text-neutral-500 text-2xl">
+                      {post.data.category === 'Engineering' && '⚡'}
+                      {post.data.category === 'Development' && '💻'}
+                      {post.data.category === 'Design' && '🎨'}
+                      {post.data.category === 'Architecture' && '🏗️'}
+                      {post.data.category === 'Content' && '📝'}
+                      {!post.data.category && '📄'}
+                    </div>
+                  </div>
+
+                  <!-- Content -->
+                  <div class="pt-3">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-gray-700 dark:group-hover:text-neutral-200 transition-colors">
+                      {post.data.title}
+                    </h3>
+
+                    <div class="text-sm text-gray-500 dark:text-neutral-400">
+                      {new Date(post.data.publishedAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                    {member.name}
-                  </h3>
-                  <p class="text-gray-600 dark:text-neutral-400">
-                    {member.role}
-                  </p>
-                </div>
-              </div>
-              <p class="text-gray-600 dark:text-neutral-400 leading-relaxed">
-                {member.bio}
-              </p>
-            </div>
+              </a>
+            </article>
           ))}
         </div>
       </div>
     </div>
 
-    <CTA
-      title="Join Our Mission"
-      description="We're looking for talented individuals who are passionate about building enterprise-grade solutions that make a real impact on data security and privacy."
-      background="solid"
-      padding="lg"
-      buttons={[
-        {
-          text: "View Open Positions",
-          href: "/careers",
-          variant: "primary"
-        },
-        {
-          text: "Get in Touch",
-          href: "/contact",
-          variant: "secondary"
-        }
-      ]}
-    />
 
-    <!-- Contact Information -->
-    <div class="border-t border-gray-200 dark:border-neutral-800 py-16">
-      <div class="container mx-auto px-4">
-        <div class="max-w-4xl mx-auto">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div>
-              <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-                Headquarters
-              </h3>
-              <p class="text-gray-600 dark:text-neutral-400 leading-relaxed">
-                San Francisco, California<br>
-                United States
-              </p>
-            </div>
-
-            <div>
-              <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-                Contact
-              </h3>
-              <div class="space-y-2">
-                <p class="text-gray-600 dark:text-neutral-400">
-                  General: <a href="mailto:hello@nvisy.com" class="text-gray-900 dark:text-white hover:underline">hello@nvisy.com</a>
-                </p>
-                <p class="text-gray-600 dark:text-neutral-400">
-                  Sales: <a href="mailto:sales@nvisy.com" class="text-gray-900 dark:text-white hover:underline">sales@nvisy.com</a>
-                </p>
-                <p class="text-gray-600 dark:text-neutral-400">
-                  Support: <a href="mailto:support@nvisy.com" class="text-gray-900 dark:text-white hover:underline">support@nvisy.com</a>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </Layout>

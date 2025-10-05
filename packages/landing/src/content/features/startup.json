@@ -1,0 +1,44 @@
+[
+	{
+		"title": "Launch in Minutes",
+		"description": "Get up and running with document redaction in under 5 minutes. No complex setup, no lengthy procurement processes.",
+		"icon": "zap",
+		"order": 1,
+		"featured": true
+	},
+	{
+		"title": "Developer Friendly",
+		"description": "RESTful APIs, comprehensive documentation, and SDKs that make integration straightforward for any development team.",
+		"icon": "code",
+		"order": 2,
+		"featured": true
+	},
+	{
+		"title": "Pay-as-you-Scale",
+		"description": "Start free and only pay for what you use as you grow. No upfront costs, no long-term contracts.",
+		"icon": "dollar-sign",
+		"order": 3,
+		"featured": true
+	},
+	{
+		"title": "Built to Scale",
+		"description": "From prototype to production, our infrastructure scales automatically with your growth without any configuration.",
+		"icon": "trending-up",
+		"order": 4,
+		"featured": true
+	},
+	{
+		"title": "Community Powered",
+		"description": "Join a growing community of startup founders and developers building with document redaction APIs.",
+		"icon": "users",
+		"order": 5,
+		"featured": true
+	},
+	{
+		"title": "Security First",
+		"description": "Built with security best practices from the ground up. Be ready for compliance requirements as you scale.",
+		"icon": "lock",
+		"order": 6,
+		"featured": true
+	}
+]

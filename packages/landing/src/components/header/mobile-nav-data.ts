@@ -16,7 +16,6 @@ import {
 	Rocket,
 	BookOpen,
 	HelpCircle,
-	Shield,
 	Scale,
 	Megaphone,
 	Plug,
