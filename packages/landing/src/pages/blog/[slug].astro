@@ -9,8 +9,8 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { calculateReadingTime } from "@/lib/content";
 import { ChevronLeft, ChevronRight } from "lucide-vue-next";
+import { calculateReadingTime } from "@/lib/content";
 
 import BlueskyIcon from "@/assets/icons/bluesky.svg";
 import LinkedinIcon from "@/assets/icons/linkedin.svg";
@@ -30,18 +30,10 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-
-// Calculate reading time if not provided
-const calculatedReadingTime = calculateReadingTime(entry.body);
-const entryWithReadingTime = {
-	...entry,
-	data: {
-		...entry.data,
-		readingTime: entry.data.readingTime || calculatedReadingTime,
-	},
-};
-
 const { Content } = await entry.render();
+
+// Calculate reading time dynamically
+const readingTime = calculateReadingTime(entry.body);
 
 // Get all blog entries for navigation
 const allPosts = (await getCollection("blog")).sort(
@@ -100,12 +92,8 @@ const relatedPosts = allPosts
                   day: 'numeric'
                 })}
               </time>
-              {entryWithReadingTime.data.readingTime && (
-                <>
-                  <span class="text-gray-300 dark:text-neutral-600">•</span>
-                  <span class="text-gray-500 dark:text-neutral-400 text-sm">{entryWithReadingTime.data.readingTime} min read</span>
-                </>
-              )}
+              <span class="text-gray-300 dark:text-neutral-600">•</span>
+              <span class="text-gray-500 dark:text-neutral-400 text-sm">{readingTime} min read</span>
             </div>
           </div>
 

@@ -4,7 +4,6 @@ import { CompanyStats } from "@/sections";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-vue-next";
 
-import { calculateReadingTime } from "@/lib/content";
 import { getCollection } from "astro:content";
 
 const teamMembers = [
@@ -59,16 +58,6 @@ const values = [
 
 // Get blog entries from content/blog
 const blogEntries = (await getCollection("blog"))
-	.map((entry) => {
-		const calculatedReadingTime = calculateReadingTime(entry.body);
-		return {
-			...entry,
-			data: {
-				...entry.data,
-				readingTime: entry.data.readingTime || calculatedReadingTime,
-			},
-		};
-	})
 	.sort(
 		(rhs, lhs) =>
 			new Date(lhs.data.publishedAt).getTime() -

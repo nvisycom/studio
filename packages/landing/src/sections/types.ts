@@ -2,10 +2,10 @@
 export interface BaseProps {
 	title?: string;
 	description?: string;
-	backgroundColor?: "white" | "gray" | "dark";
+	backgroundColor?: BackgroundVariant;
 	maxWidth?: "3xl" | "4xl" | "5xl" | "6xl" | "7xl";
 	centered?: boolean;
-	size?: "sm" | "md" | "lg";
+	size?: SizeVariant;
 }
 
 // Utility types
