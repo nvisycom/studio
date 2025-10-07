@@ -1,6 +1,8 @@
 ---
 import { Layout } from "@/layouts";
 import { CompanyStats } from "@/sections";
+import { Button } from "@/components/ui/button";
+import { ChevronRight } from "lucide-vue-next";
 
 import { calculateReadingTime } from "@/lib/content";
 import { getCollection } from "astro:content";
@@ -170,7 +172,7 @@ const blogEntries = (await getCollection("blog"))
 
         <div class="text-center">
           <p class="text-lg text-gray-600 dark:text-neutral-300">
-            {teamMembers.map((member, index) => member.name).join(', ')}
+            {teamMembers.map((member) => member.name).join(', ')}
           </p>
         </div>
       </div>
@@ -191,12 +193,12 @@ const blogEntries = (await getCollection("blog"))
               Join our team and help build the future of enterprise document security.
               We're looking for talented professionals to drive innovation in compliance and automation.
             </p>
-            <a href="/careers" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all outline-none bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 px-6">
-              View Open Positions
-              <svg class="size-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </a>
+            <Button variant="default" size="lg">
+                <a href="/careers" class="inline-flex items-center gap-2">
+                    View Open Positions
+                  <ChevronRight class="w-4 h-4" />
+                </a>
+            </Button>
           </div>
         </div>
       </div>

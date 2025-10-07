@@ -20,12 +20,8 @@ Modern monorepo for Nvisy's web properties, built with Astro and Vue. This works
 ```
 .
 ├── .github/
-│   └── workflows/          # GitHub Actions CI/CD workflows
-│       ├── build.yaml      # Build and test pipeline
-│       ├── integration.yaml # Integration tests
-│       ├── performance.yaml # Performance testing
-│       └── security.yaml   # Security audits
-├── packages/               # Workspace packages
+│   └── workflows/         # GitHub Actions CI/CD workflows
+├── packages/              # Workspace packages
 │   ├── config/            # Configuration package
 │   └── landing/           # Landing page package
 ├── Makefile               # Build automation

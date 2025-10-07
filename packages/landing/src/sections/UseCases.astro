@@ -16,31 +16,31 @@ export interface Props {
 
 const {
 	title = "Trusted Across Industries",
-	description = "From healthcare to finance, government to legal services, organizations trust our AI-powered redaction technology to protect their most sensitive information.",
+	description = "Organizations around the world use our AI-powered redaction technology to protect sensitive information across legal, financial, healthcare, and government sectors.",
 	backgroundColor = "white",
 	useCases = [
 		{
 			title: "Legal & Compliance",
 			description:
-				"Redact client information, case details, and privileged communications while maintaining legal document integrity for court proceedings.",
+				"Redact client information, case details, and privileged communications while maintaining legal document integrity.",
 			icon: "document",
 		},
 		{
 			title: "Financial Services",
 			description:
-				"Protect SSNs, account numbers, and financial data in loan documents, compliance reports, and customer communications.",
+				"Protect account numbers, financial data, and personal information in documents and customer communications.",
 			icon: "dollar",
 		},
 		{
 			title: "Healthcare",
 			description:
-				"HIPAA-compliant redaction of patient records, medical histories, and research data for secure information sharing.",
+				"Privacy-compliant redaction of patient records, medical histories, and research data for secure information sharing.",
 			icon: "heart",
 		},
 		{
 			title: "Government",
 			description:
-				"Redact classified information, personal identifiers, and sensitive data for Freedom of Information Act requests and public disclosures.",
+				"Redact classified information and personal identifiers for public disclosures and information requests.",
 			icon: "building",
 		},
 	],
@@ -64,59 +64,41 @@ const getIcon = (iconName: UseCase["icon"]) => {
 ---
 
 <section class={`py-20 px-4 ${backgroundClasses[backgroundColor]}`} aria-labelledby="use-cases-title">
-	<div class="container mx-auto max-w-6xl">
+	<div class="container mx-auto max-w-4xl">
 		<!-- Header -->
 		<header class="text-center mb-16">
-			<h2 id="use-cases-title" class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+			<h2 id="use-cases-title" class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
 				{title}
 			</h2>
 			{description && (
-				<p class="text-lg text-gray-600 dark:text-neutral-300 max-w-3xl mx-auto">
+				<p class="text-gray-700 dark:text-neutral-300 max-w-3xl mx-auto leading-relaxed">
 					{description}
 				</p>
 			)}
 		</header>
 
 		<!-- Use Cases Grid -->
-		<div class="grid md:grid-cols-2 gap-8" role="list">
+		<div class="grid md:grid-cols-2 gap-6">
 			{useCases.map((useCase) => {
 				const IconComponent = getIcon(useCase.icon);
 				return (
-					<article class="flex space-x-6 group" role="listitem">
-						<div class="w-16 h-16 bg-blue-50 dark:bg-blue-950 rounded-xl flex items-center justify-center flex-shrink-0 mt-1 group-hover:bg-blue-100 dark:group-hover:bg-blue-900 transition-colors duration-300">
-							<IconComponent class="w-8 h-8 text-blue-600 dark:text-blue-400" aria-hidden="true" />
-						</div>
-						<div class="flex-1">
-							<h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3 group-hover:text-blue-900 dark:group-hover:text-blue-100 transition-colors duration-300">
-								{useCase.title}
-							</h3>
-							<p class="text-gray-600 dark:text-neutral-300 leading-relaxed">
-								{useCase.description}
-							</p>
+					<article class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 transition-all duration-300 hover:shadow-lg p-8">
+						<div class="flex items-start gap-6">
+							<div class="w-12 h-12 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center flex-shrink-0 text-gray-900 dark:text-white">
+								<IconComponent class="w-6 h-6" aria-hidden="true" />
+							</div>
+							<div class="flex-1">
+								<h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+									{useCase.title}
+								</h3>
+								<p class="text-gray-700 dark:text-neutral-300 leading-relaxed">
+									{useCase.description}
+								</p>
+							</div>
 						</div>
 					</article>
 				);
 			})}
-		</div>
-
-		<!-- Industry Stats -->
-		<div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6">
-			<div class="text-center p-6 bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-neutral-800">
-				<div class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">500+</div>
-				<div class="text-sm text-gray-600 dark:text-neutral-400">Legal Firms</div>
-			</div>
-			<div class="text-center p-6 bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-neutral-800">
-				<div class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">200+</div>
-				<div class="text-sm text-gray-600 dark:text-neutral-400">Banks & Credit Unions</div>
-			</div>
-			<div class="text-center p-6 bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-neutral-800">
-				<div class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">150+</div>
-				<div class="text-sm text-gray-600 dark:text-neutral-400">Healthcare Systems</div>
-			</div>
-			<div class="text-center p-6 bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-neutral-800">
-				<div class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">75+</div>
-				<div class="text-sm text-gray-600 dark:text-neutral-400">Government Agencies</div>
-			</div>
 		</div>
 	</div>
 </section>

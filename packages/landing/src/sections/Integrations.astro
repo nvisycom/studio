@@ -13,8 +13,11 @@ import {
 	Code2,
 	Link,
 	FileText,
+	ChevronRight,
 } from "lucide-vue-next";
 import { getCollection } from "astro:content";
+import type { FunctionalComponent } from "vue";
+import { Button } from "@/components/ui/button";
 
 export interface Props {
 	title?: string;
@@ -24,7 +27,7 @@ export interface Props {
 
 const {
 	title = "Seamless Integrations",
-	description = "Connect with your existing enterprise tools and workflows. Our platform integrates with popular business software to streamline your document processing pipeline.",
+	description = "Connect with your existing tools and workflows. Our platform integrates with popular business software to streamline your document processing pipeline.",
 	backgroundColor = "white",
 } = Astro.props;
 
@@ -41,7 +44,7 @@ const featuredIntegrations = allIntegrations
 
 // Icon mapping from FontAwesome to Lucide
 const getIcon = (iconName: string) => {
-	const iconMap: Record<string, any> = {
+	const iconMap: Record<string, FunctionalComponent> = {
 		"google-drive": Cloud,
 		dropbox: Cloud,
 		aws: Cloud,
@@ -112,12 +115,12 @@ const bgClass =
     </div>
 
     <div class="text-center mt-12">
-      <a
-        href="/integrations"
-        class="inline-flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors"
-      >
-        View all integrations →
-      </a>
+      <Button variant="default" size="default">
+          <a href="/integrations" class="inline-flex items-center gap-2">
+            View all integrations
+            <ChevronRight class="w-4 h-4" />
+          </a>
+      </Button>
     </div>
   </div>
 </section>
