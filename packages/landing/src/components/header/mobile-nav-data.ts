@@ -16,8 +16,6 @@ import {
 	Rocket,
 	BookOpen,
 	HelpCircle,
-	Scale,
-	Megaphone,
 	Plug,
 	MapIcon,
 } from "lucide-vue-next";

@@ -21,8 +21,6 @@ import {
 	Map as MapIcon,
 	Star,
 	HelpCircle,
-	Shield,
-	Mail,
 } from "lucide-vue-next";
 
 export const products: ProductSection = {

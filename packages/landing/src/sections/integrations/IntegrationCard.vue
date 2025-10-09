@@ -81,7 +81,6 @@ interface Props {
 	title: string;
 	category: string;
 	description: string;
-	availability: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {

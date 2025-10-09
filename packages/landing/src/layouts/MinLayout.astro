@@ -5,9 +5,9 @@ import {
 	BUILD_VERSION,
 } from "@nvisy/config";
 
-import "@/styles/index.css";
+import "@/styles/blocks.css";
 import "@/styles/fonts.css";
-import "@/styles/block.css";
+import "@/styles/tailwind.css";
 
 import Umami from "@/layouts/Umami.astro";
 
@@ -136,14 +136,6 @@ const structuredData = {
     <slot name="analytics"/>
 </head>
 <body class="transition-all duration-75 bg-white dark:bg-black antialiased">
-    <!-- Skip to main content for accessibility -->
-    <a
-        href="#main-content"
-        class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-black text-white px-4 py-2 rounded-md z-50 transition-all"
-    >
-        Skip to main content
-    </a>
-
     <slot name="content"/>
 
     <!-- Service Worker Registration -->

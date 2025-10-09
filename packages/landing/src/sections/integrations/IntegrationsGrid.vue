@@ -13,7 +13,6 @@
             :title="integration.data.title"
             :category="integration.data.category"
             :description="integration.data.description"
-            :availability="integration.data.availability"
           />
         </div>
       </div>

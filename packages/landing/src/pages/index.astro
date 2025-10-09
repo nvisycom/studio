@@ -11,10 +11,13 @@ import {
 	CompanyStats,
 	Stats,
 	Security,
+	PressCarousel,
+	FAQ,
 } from "@/sections";
 
 // SEO and metadata
-const pageTitle = "Document Redaction Platform";
+const pageTitle =
+	"AI-Powered Document Redaction | Enterprise Security Platform";
 const pageDescription =
 	"Secure your sensitive documents with AI-powered redaction. Enterprise-grade security, 99.9% accuracy, SOC 2 compliant. Start your free trial today.";
 const pageKeywords =
@@ -26,53 +29,101 @@ const pageKeywords =
 	description={pageDescription}
 	keywords={pageKeywords}
 >
-	<main>
-		<!-- Hero Section - Clear Value Proposition -->
-		<section aria-labelledby="hero-section">
-			<Hero />
+	<main class="overflow-hidden">
+		<!-- Hero Section - Immediate Impact -->
+		<Hero />
+
+		<!-- Social Proof - Press & Recognition -->
+		<PressCarousel
+			title="Trusted by Industry Leaders"
+			subtitle="Featured in leading technology publications"
+		/>
+
+		<!-- Impact Metrics - Quick Wins -->
+		<section class="bg-white dark:bg-black">
+			<Stats
+				title="Proven Results at Scale"
+				backgroundColor="white"
+				stats={[
+					{
+						value: "99.9%",
+						label: "Redaction Accuracy",
+						description: "AI-powered precision"
+					},
+					{
+						value: "10M+",
+						label: "Documents Secured",
+						description: "Every month"
+					},
+					{
+						value: "500+",
+						label: "Enterprise Clients",
+						description: "Across 50+ countries"
+					},
+					{
+						value: "<1min",
+						label: "Average Processing",
+						description: "Lightning fast"
+					}
+				]}
+			/>
 		</section>
 
-		<!-- Company Stats Section -->
-		<section class="bg-white dark:bg-black" aria-labelledby="company-stats-section">
-			<CompanyStats backgroundColor="white" />
-		</section>
-
-		<!-- Features Section - Core Capabilities -->
-		<section class="bg-gray-50 dark:bg-neutral-950" aria-labelledby="features-section">
+		<!-- Features Section - Core Value Props -->
+		<section class="bg-gradient-to-b from-white to-gray-50 dark:from-black dark:to-neutral-950">
 			<Features category="general" featured={true} />
 		</section>
 
-		<!-- Workflow Section - Remove Friction & Objections -->
-		<section class="bg-white dark:bg-black" aria-labelledby="workflow-section">
-			<Workflow backgroundColor="white" />
+		<!-- Workflow Section - How It Works -->
+		<section class="bg-white dark:bg-black relative">
+			<div class="absolute inset-0 bg-gradient-to-b from-gray-50 to-white dark:from-neutral-950 dark:to-black opacity-50"></div>
+			<div class="relative">
+				<Workflow backgroundColor="white" />
+			</div>
 		</section>
 
-		<!-- Testimonials Section - Customer Validation -->
-		<section class="bg-gray-50 dark:bg-neutral-950" aria-labelledby="testimonials-section">
-			<Testimonials backgroundColor="gray" />
-		</section>
-
-		<!-- Use Cases Section - Industry Applications -->
-		<section
-			class="bg-white dark:bg-black border-t border-gray-200 dark:border-neutral-800"
-			aria-labelledby="use-cases-section"
-		>
+		<!-- Use Cases Section - Real-World Applications -->
+		<section class="bg-gray-50 dark:bg-neutral-950">
 			<UseCases />
 		</section>
 
-		<!-- Integrations Section - Ecosystem Fit -->
-		<section class="bg-white dark:bg-black" aria-labelledby="integrations-section">
+		<!-- Testimonials Section - Customer Stories -->
+		<section class="bg-white dark:bg-black">
+			<Testimonials backgroundColor="white" />
+		</section>
+
+		<!-- Company Stats - Build Trust -->
+		<section class="bg-gradient-to-b from-white to-gray-50 dark:from-black dark:to-neutral-950">
+			<CompanyStats backgroundColor="white" />
+		</section>
+
+		<!-- Security & Compliance - Remove Concerns -->
+		<section class="bg-gray-50 dark:bg-neutral-950">
+			<Security backgroundColor="gray" />
+		</section>
+
+		<!-- Integrations Section - Easy Integration -->
+		<section class="bg-white dark:bg-black">
 			<Integrations backgroundColor="white" />
 		</section>
 
-		<!-- Security Section - Trust & Compliance -->
-		<Security backgroundColor="gray" />
+		<!-- FAQ Section - Answer Objections -->
+		<section class="bg-gray-50 dark:bg-neutral-950">
+			<FAQ
+				title="Common Questions"
+				description="Everything you need to know to get started with confidence"
+				backgroundColor="gray"
+				category="general"
+				featured={true}
+			/>
+		</section>
 
-		<!-- Call-to-Action Section - Clear Next Steps -->
-		<section aria-labelledby="cta-section">
+		<!-- Final CTA - Strong Close -->
+		<section class="relative">
+			<div class="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 opacity-5 dark:opacity-10"></div>
 			<CTA
-				title="Ready to Secure Your Documents?"
-				description="Join hundreds of enterprises already protecting sensitive information with our AI-powered redaction platform."
+				title="Start Securing Your Documents Today"
+				description="Join 500+ enterprises protecting sensitive information with AI-powered redaction. No credit card required."
 				background="gradient"
 				buttons={[
 					{
@@ -81,7 +132,7 @@ const pageKeywords =
 						variant: "primary"
 					},
 					{
-						text: "Contact Sales",
+						text: "Schedule Demo",
 						href: "/contact",
 						variant: "secondary"
 					}

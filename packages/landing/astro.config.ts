@@ -20,6 +20,15 @@ export default defineConfig({
 	srcDir: "./src",
 	integrations: [mdx(), sitemap(), vue()],
 
+	i18n: {
+		locales: ["en", "de", "fr"],
+		defaultLocale: "en",
+		fallback: {
+			de: "en",
+			fr: "en",
+		},
+	},
+
 	markdown: {
 		shikiConfig: {
 			theme: "github-light-default",
