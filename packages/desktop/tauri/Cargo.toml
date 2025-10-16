@@ -1,11 +1,18 @@
+# https://doc.rust-lang.org/cargo/reference/manifest.html
+
 [package]
 name = "nvisy"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-edition = "2021"
+version = { workspace = true }
+rust-version = { workspace = true }
+edition = { workspace = true }
+license = { workspace = true }
+publish = { workspace = true }
+readme = "./README.md"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+authors = { workspace = true }
+repository = { workspace = true }
+homepage = { workspace = true }
+documentation = { workspace = true }
 
 [lib]
 # The `_lib` suffix may seem redundant but it is necessary
@@ -14,12 +21,12 @@ edition = "2021"
 name = "nvisy_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
-[build-dependencies]
-tauri-build = { version = "2", features = [] }
-
 [dependencies]
-tauri = { version = "2", features = [] }
-tauri-plugin-opener = "2"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
+tauri = { workspace = true, features = [] }
+tauri-plugin-opener = { workspace = true, features = [] }
 
+serde = { workspace = true, features = [] }
+serde_json = { workspace = true, features = [] }
+
+[build-dependencies]
+tauri-build = { workspace = true, features = [] }
