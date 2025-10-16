@@ -1,0 +1,39 @@
+{
+	"name": "@nvisy/desktop",
+	"version": "0.1.0",
+	"type": "module",
+	"private": true,
+	"description": "Nvisy desktop application.",
+	"author": "Nvisy Software Team",
+	"license": "MIT",
+	"scripts": {
+		"build": "nuxt build",
+		"dev": "nuxt dev",
+		"generate": "nuxt generate",
+		"preview": "nuxt preview",
+		"postinstall": "nuxt prepare",
+		"lint": "biome lint .",
+		"lint:fix": "biome lint --write .",
+		"format": "biome format --write .",
+		"format:check": "biome format .",
+		"check": "biome check .",
+		"check:fix": "biome check --write .",
+		"tauri": "tauri --config ./tauri/tauri.conf.json",
+		"tauri:dev": "tauri dev --config ./tauri/tauri.conf.json",
+		"tauri:build": "tauri build --config ./tauri/tauri.conf.json"
+	},
+	"dependencies": {
+		"nuxt": "^4.1",
+		"vue": "^3.5",
+		"vue-router": "^4.5",
+		"@tauri-apps/api": "^2",
+		"@tauri-apps/plugin-opener": "^2"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.2.6",
+		"@tauri-apps/cli": "^2"
+	},
+	"engines": {
+		"node": ">=23"
+	}
+}
