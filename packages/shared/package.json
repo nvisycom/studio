@@ -25,6 +25,142 @@
 			"types": "./dist/utils/index.d.ts",
 			"import": "./dist/utils/index.js"
 		},
+		"./ui/accordion": {
+			"types": "./dist/ui/accordion.d.ts",
+			"import": "./dist/ui/accordion.js"
+		},
+		"./ui/alert": {
+			"types": "./dist/ui/alert.d.ts",
+			"import": "./dist/ui/alert.js"
+		},
+		"./ui/alert-dialog": {
+			"types": "./dist/ui/alert-dialog.d.ts",
+			"import": "./dist/ui/alert-dialog.js"
+		},
+		"./ui/aspect-ratio": {
+			"types": "./dist/ui/aspect-ratio.d.ts",
+			"import": "./dist/ui/aspect-ratio.js"
+		},
+		"./ui/avatar": {
+			"types": "./dist/ui/avatar.d.ts",
+			"import": "./dist/ui/avatar.js"
+		},
+		"./ui/badge": {
+			"types": "./dist/ui/badge.d.ts",
+			"import": "./dist/ui/badge.js"
+		},
+		"./ui/breadcrumb": {
+			"types": "./dist/ui/breadcrumb.d.ts",
+			"import": "./dist/ui/breadcrumb.js"
+		},
+		"./ui/button": {
+			"types": "./dist/ui/button.d.ts",
+			"import": "./dist/ui/button.js"
+		},
+		"./ui/button-group": {
+			"types": "./dist/ui/button-group.d.ts",
+			"import": "./dist/ui/button-group.js"
+		},
+		"./ui/calendar": {
+			"types": "./dist/ui/calendar.d.ts",
+			"import": "./dist/ui/calendar.js"
+		},
+		"./ui/card": {
+			"types": "./dist/ui/card.d.ts",
+			"import": "./dist/ui/card.js"
+		},
+		"./ui/checkbox": {
+			"types": "./dist/ui/checkbox.d.ts",
+			"import": "./dist/ui/checkbox.js"
+		},
+		"./ui/collapsible": {
+			"types": "./dist/ui/collapsible.d.ts",
+			"import": "./dist/ui/collapsible.js"
+		},
+		"./ui/command": {
+			"types": "./dist/ui/command.d.ts",
+			"import": "./dist/ui/command.js"
+		},
+		"./ui/dialog": {
+			"types": "./dist/ui/dialog.d.ts",
+			"import": "./dist/ui/dialog.js"
+		},
+		"./ui/dropdown-menu": {
+			"types": "./dist/ui/dropdown-menu.d.ts",
+			"import": "./dist/ui/dropdown-menu.js"
+		},
+		"./ui/empty": {
+			"types": "./dist/ui/empty.d.ts",
+			"import": "./dist/ui/empty.js"
+		},
+		"./ui/input": {
+			"types": "./dist/ui/input.d.ts",
+			"import": "./dist/ui/input.js"
+		},
+		"./ui/input-group": {
+			"types": "./dist/ui/input-group.d.ts",
+			"import": "./dist/ui/input-group.js"
+		},
+		"./ui/kbd": {
+			"types": "./dist/ui/kbd.d.ts",
+			"import": "./dist/ui/kbd.js"
+		},
+		"./ui/label": {
+			"types": "./dist/ui/label.d.ts",
+			"import": "./dist/ui/label.js"
+		},
+		"./ui/progress": {
+			"types": "./dist/ui/progress.d.ts",
+			"import": "./dist/ui/progress.js"
+		},
+		"./ui/radio-group": {
+			"types": "./dist/ui/radio-group.d.ts",
+			"import": "./dist/ui/radio-group.js"
+		},
+		"./ui/select": {
+			"types": "./dist/ui/select.d.ts",
+			"import": "./dist/ui/select.js"
+		},
+		"./ui/separator": {
+			"types": "./dist/ui/separator.d.ts",
+			"import": "./dist/ui/separator.js"
+		},
+		"./ui/sheet": {
+			"types": "./dist/ui/sheet.d.ts",
+			"import": "./dist/ui/sheet.js"
+		},
+		"./ui/sidebar": {
+			"types": "./dist/ui/sidebar.d.ts",
+			"import": "./dist/ui/sidebar.js"
+		},
+		"./ui/skeleton": {
+			"types": "./dist/ui/skeleton.d.ts",
+			"import": "./dist/ui/skeleton.js"
+		},
+		"./ui/slider": {
+			"types": "./dist/ui/slider.d.ts",
+			"import": "./dist/ui/slider.js"
+		},
+		"./ui/sonner": {
+			"types": "./dist/ui/sonner.d.ts",
+			"import": "./dist/ui/sonner.js"
+		},
+		"./ui/table": {
+			"types": "./dist/ui/table.d.ts",
+			"import": "./dist/ui/table.js"
+		},
+		"./ui/tabs": {
+			"types": "./dist/ui/tabs.d.ts",
+			"import": "./dist/ui/tabs.js"
+		},
+		"./ui/textarea": {
+			"types": "./dist/ui/textarea.d.ts",
+			"import": "./dist/ui/textarea.js"
+		},
+		"./ui/tooltip": {
+			"types": "./dist/ui/tooltip.d.ts",
+			"import": "./dist/ui/tooltip.js"
+		},
 		"./styles.css": "./dist/styles.css"
 	},
 	"files": [
@@ -34,7 +170,7 @@
 	"scripts": {
 		"dev": "vite",
 		"preview": "vite preview",
-		"build": "vue-tsc -b && vite build",
+		"build": "vite build",
 		"type-check": "vue-tsc --noEmit",
 		"format": "biome format --write .",
 		"format:check": "biome format .",

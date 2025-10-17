@@ -14,13 +14,18 @@ target/
 gen/
 
 # Javascript
-.vite/
-vite-env.d.ts
-.nuxt/
 playwright-report/
 test-results/
 node_modules/
 *.tsbuildinfo
+
+# Javascript: Vite
+.vite/
+vite-env.d.ts
+
+# Javascript: Nuxt
+.nuxt/
+.output/
 
 # Generated
 *.backup
@@ -28,6 +33,7 @@ coverage/
 openapi/
 
 # Output
+
 dist/
 build/
 output/

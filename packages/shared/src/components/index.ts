@@ -2,6 +2,7 @@
 export { default as OpenStatus } from "./OpenStatus.vue";
 
 // UI Components
+export * from "./ui/accordion";
 export * from "./ui/button";
 export * from "./ui/card";
 export * from "./ui/input";

@@ -7,7 +7,15 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"includes": ["**", "!node_modules", "!dist", "!docs", "!coverage"]
+		"includes": [
+			"**",
+			"!node_modules",
+			"!dist",
+			"!docs",
+			"!coverage",
+			"!.nuxt",
+			"!.output"
+		]
 	},
 	"formatter": {
 		"enabled": true,
