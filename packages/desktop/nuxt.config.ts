@@ -14,6 +14,8 @@ export default defineNuxtConfig({
 		"@nuxtjs/i18n",
 		"@nuxtjs/color-mode",
 		"@nuxtjs/device",
+		"@pinia/nuxt",
+		"@pinia/colada-nuxt",
 	],
 
 	devServer: {

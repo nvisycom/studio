@@ -1,15 +1,17 @@
 <template>
-  <div class="min-h-screen flex flex-col">
-    <!-- Header -->
-    <AppHeader />
+  <div class="h-screen flex flex-col bg-background overflow-hidden">
+    <!-- Fixed Header -->
+    <AppHeader class="flex-shrink-0" />
 
-    <!-- Main Content -->
-    <main class="flex-1">
-      <slot />
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+      <div class="flex-1 overflow-auto">
+        <slot />
+      </div>
     </main>
 
-    <!-- Footer -->
-    <AppFooter />
+    <!-- Fixed Footer -->
+    <AppFooter class="flex-shrink-0" />
   </div>
 </template>
 

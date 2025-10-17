@@ -1,172 +1,241 @@
 <template>
-  <div>
-    <!-- Hero Section -->
-    <section class="relative py-12 md:py-24 lg:py-32">
-      <div class="container px-4 md:px-6">
-        <div class="flex flex-col items-center space-y-4 text-center">
-          <div class="space-y-2">
-            <h1 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
-              Welcome to Nvisy
-            </h1>
-            <p class="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-              A modern desktop application built with Vue, Nuxt, and Tauri for seamless cross-platform experiences.
-            </p>
-          </div>
-          <div class="flex gap-4">
-            <Button size="lg">
-              Get Started
-            </Button>
-            <Button variant="outline" size="lg">
-              Learn More
-            </Button>
-          </div>
-        </div>
+  <div class="h-full flex flex-col p-4 space-y-4">
+    <!-- Welcome Section -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-xl font-semibold">Welcome back</h1>
+        <p class="text-sm text-muted-foreground">Continue working on your project</p>
       </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="py-12 md:py-24 lg:py-32 bg-muted/50">
-      <div class="container px-4 md:px-6">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-            Key Features
-          </h2>
-          <p class="mx-auto max-w-[700px] text-muted-foreground md:text-xl mt-4">
-            Everything you need to build amazing desktop applications
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <!-- Feature 1 -->
-          <Card>
-            <CardHeader>
-              <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <CardTitle>Fast Performance</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p class="text-muted-foreground">
-                Built with Tauri for native performance and minimal resource usage.
-              </p>
-            </CardContent>
-          </Card>
-
-          <!-- Feature 2 -->
-          <Card>
-            <CardHeader>
-              <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                </svg>
-              </div>
-              <CardTitle>Cross Platform</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p class="text-muted-foreground">
-                Deploy to Windows, macOS, and Linux from a single codebase.
-              </p>
-            </CardContent>
-          </Card>
-
-          <!-- Feature 3 -->
-          <Card>
-            <CardHeader>
-              <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
-                </svg>
-              </div>
-              <CardTitle>Modern UI</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p class="text-muted-foreground">
-                Beautiful, accessible components with dark mode support built-in.
-              </p>
-            </CardContent>
-          </Card>
-
-          <!-- Feature 4 -->
-          <Card>
-            <CardHeader>
-              <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <CardTitle>Secure</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p class="text-muted-foreground">
-                Built-in security with Tauri's secure architecture and sandboxing.
-              </p>
-            </CardContent>
-          </Card>
-
-          <!-- Feature 5 -->
-          <Card>
-            <CardHeader>
-              <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <CardTitle>Customizable</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p class="text-muted-foreground">
-                Flexible theming system and component library for your unique needs.
-              </p>
-            </CardContent>
-          </Card>
-
-          <!-- Feature 6 -->
-          <Card>
-            <CardHeader>
-              <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
-                </svg>
-              </div>
-              <CardTitle>Developer Friendly</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p class="text-muted-foreground">
-                Hot reload, TypeScript support, and excellent developer experience.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+      <div class="flex items-center space-x-2">
+        <Button variant="outline" size="sm">
+          <Plus class="w-4 h-4 mr-2" />
+          New File
+        </Button>
+        <Button size="sm">
+          <Play class="w-4 h-4 mr-2" />
+          Run Project
+        </Button>
       </div>
-    </section>
+    </div>
 
-    <!-- CTA Section -->
-    <section class="py-12 md:py-24 lg:py-32">
-      <div class="container px-4 md:px-6">
-        <div class="flex flex-col items-center space-y-4 text-center">
-          <div class="space-y-2">
-            <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-              Ready to Get Started?
-            </h2>
-            <p class="mx-auto max-w-[600px] text-muted-foreground md:text-xl">
-              Start building your next desktop application today with Nvisy's modern stack.
-            </p>
-          </div>
-          <div class="flex gap-4">
-            <Button size="lg">
-              Open Dashboard
+    <!-- Main Content Grid -->
+    <div class="flex-1 grid grid-cols-12 gap-4 min-h-0">
+      <!-- Left Panel - Quick Actions -->
+      <div class="col-span-3 space-y-4">
+        <!-- Recent Files -->
+        <Card>
+          <CardHeader class="pb-3">
+            <CardTitle class="text-sm flex items-center">
+              <FileText class="w-4 h-4 mr-2" />
+              Recent Files
+            </CardTitle>
+          </CardHeader>
+          <CardContent class="space-y-2">
+            <div
+              v-for="file in recentFiles"
+              :key="file.id"
+              class="flex items-center p-2 rounded-md hover:bg-accent cursor-pointer transition-colors"
+            >
+              <component :is="getFileIcon(file.type)" class="w-4 h-4 mr-3 text-muted-foreground" />
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium truncate">{{ file.name }}</p>
+                <p class="text-xs text-muted-foreground">{{ file.path }}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <!-- Quick Actions -->
+        <Card>
+          <CardHeader class="pb-3">
+            <CardTitle class="text-sm">Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent class="space-y-2">
+            <Button variant="ghost" class="w-full justify-start h-8" size="sm">
+              <FolderPlus class="w-4 h-4 mr-2" />
+              Create Folder
             </Button>
-            <Button variant="outline" size="lg">
-              View Settings
+            <Button variant="ghost" class="w-full justify-start h-8" size="sm">
+              <GitBranch class="w-4 h-4 mr-2" />
+              New Branch
             </Button>
-          </div>
-        </div>
+            <Button variant="ghost" class="w-full justify-start h-8" size="sm">
+              <Terminal class="w-4 h-4 mr-2" />
+              Open Terminal
+            </Button>
+            <Button variant="ghost" class="w-full justify-start h-8" size="sm">
+              <Search class="w-4 h-4 mr-2" />
+              Search Files
+            </Button>
+          </CardContent>
+        </Card>
       </div>
-    </section>
+
+      <!-- Center Panel - Main Workspace -->
+      <div class="col-span-6 space-y-4">
+        <!-- Project Overview -->
+        <Card>
+          <CardHeader>
+            <CardTitle class="text-base flex items-center justify-between">
+              <div class="flex items-center">
+                <FolderOpen class="w-5 h-5 mr-2" />
+                Project Overview
+              </div>
+              <Button variant="ghost" size="sm">
+                <ExternalLink class="w-4 h-4" />
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-muted-foreground">Files</span>
+                  <span class="text-sm font-medium">{{ projectStats.files }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-muted-foreground">Folders</span>
+                  <span class="text-sm font-medium">{{ projectStats.folders }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-muted-foreground">Size</span>
+                  <span class="text-sm font-medium">{{ projectStats.size }}</span>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-muted-foreground">Last Modified</span>
+                  <span class="text-sm font-medium">{{ projectStats.lastModified }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-muted-foreground">Git Branch</span>
+                  <span class="text-sm font-medium">{{ projectStats.branch }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-muted-foreground">Status</span>
+                  <div class="flex items-center">
+                    <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    <span class="text-sm font-medium">Clean</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <!-- File Explorer Preview -->
+        <Card class="flex-1">
+          <CardHeader class="pb-3">
+            <CardTitle class="text-base flex items-center justify-between">
+              <div class="flex items-center">
+                <Folder class="w-5 h-5 mr-2" />
+                File Explorer
+              </div>
+              <div class="flex items-center space-x-1">
+                <Button variant="ghost" size="sm">
+                  <RefreshCw class="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" size="sm">
+                  <MoreHorizontal class="w-4 h-4" />
+                </Button>
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div class="space-y-1 max-h-64 overflow-y-auto">
+              <div
+                v-for="item in fileTree"
+                :key="item.id"
+                class="flex items-center p-1.5 rounded hover:bg-accent cursor-pointer transition-colors"
+                :style="{ paddingLeft: `${item.level * 16 + 6}px` }"
+              >
+                <component :is="item.type === 'folder' ? Folder : getFileIcon(item.extension)"
+                  class="w-4 h-4 mr-2 text-muted-foreground"
+                />
+                <span class="text-sm">{{ item.name }}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <!-- Right Panel - Activity & Tools -->
+      <div class="col-span-3 space-y-4">
+        <!-- Activity Log -->
+        <Card>
+          <CardHeader class="pb-3">
+            <CardTitle class="text-sm flex items-center">
+              <Activity class="w-4 h-4 mr-2" />
+              Recent Activity
+            </CardTitle>
+          </CardHeader>
+          <CardContent class="space-y-3">
+            <div
+              v-for="activity in recentActivity"
+              :key="activity.id"
+              class="flex items-start space-x-2"
+            >
+              <div class="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+              <div class="space-y-1 min-w-0">
+                <p class="text-xs font-medium">{{ activity.action }}</p>
+                <p class="text-xs text-muted-foreground">{{ activity.timestamp }}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <!-- Tools -->
+        <Card>
+          <CardHeader class="pb-3">
+            <CardTitle class="text-sm">Development Tools</CardTitle>
+          </CardHeader>
+          <CardContent class="space-y-2">
+            <div class="grid grid-cols-2 gap-2">
+              <Button variant="outline" size="sm" class="h-16 flex-col">
+                <Database class="w-5 h-5 mb-1" />
+                <span class="text-xs">Database</span>
+              </Button>
+              <Button variant="outline" size="sm" class="h-16 flex-col">
+                <Code class="w-5 h-5 mb-1" />
+                <span class="text-xs">Editor</span>
+              </Button>
+              <Button variant="outline" size="sm" class="h-16 flex-col">
+                <Globe class="w-5 h-5 mb-1" />
+                <span class="text-xs">Preview</span>
+              </Button>
+              <Button variant="outline" size="sm" class="h-16 flex-col">
+                <Package class="w-5 h-5 mb-1" />
+                <span class="text-xs">Build</span>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <!-- System Info -->
+        <Card>
+          <CardHeader class="pb-3">
+            <CardTitle class="text-sm flex items-center">
+              <Monitor class="w-4 h-4 mr-2" />
+              System
+            </CardTitle>
+          </CardHeader>
+          <CardContent class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-muted-foreground">CPU</span>
+              <span class="text-xs">45%</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-muted-foreground">Memory</span>
+              <span class="text-xs">2.1 GB</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-muted-foreground">Disk</span>
+              <span class="text-xs">128 GB</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -178,23 +247,93 @@ import {
 	CardTitle,
 	CardContent,
 } from "@nvisy/shared/ui/card";
+import {
+	Plus,
+	Play,
+	FileText,
+	File,
+	Image,
+	Code,
+	FolderOpen,
+	Folder,
+	FolderPlus,
+	GitBranch,
+	Terminal,
+	Search,
+	ExternalLink,
+	RefreshCw,
+	MoreHorizontal,
+	Activity,
+	Database,
+	Globe,
+	Package,
+	Monitor,
+} from "lucide-vue-next";
+
+// Sample data
+const recentFiles = ref([
+	{ id: 1, name: "main.js", path: "/src/main.js", type: "js" },
+	{ id: 2, name: "App.vue", path: "/src/App.vue", type: "vue" },
+	{ id: 3, name: "styles.css", path: "/src/styles.css", type: "css" },
+	{ id: 4, name: "README.md", path: "/README.md", type: "md" },
+]);
+
+const projectStats = ref({
+	files: 47,
+	folders: 12,
+	size: "2.3 MB",
+	lastModified: "2 hours ago",
+	branch: "main",
+	status: "clean",
+});
+
+const fileTree = ref([
+	{ id: 1, name: "src", type: "folder", level: 0 },
+	{ id: 2, name: "components", type: "folder", level: 1 },
+	{ id: 3, name: "App.vue", type: "file", extension: "vue", level: 2 },
+	{ id: 4, name: "main.js", type: "file", extension: "js", level: 1 },
+	{ id: 5, name: "assets", type: "folder", level: 1 },
+	{ id: 6, name: "logo.png", type: "file", extension: "png", level: 2 },
+	{ id: 7, name: "public", type: "folder", level: 0 },
+	{ id: 8, name: "index.html", type: "file", extension: "html", level: 1 },
+	{ id: 9, name: "package.json", type: "file", extension: "json", level: 0 },
+]);
+
+const recentActivity = ref([
+	{ id: 1, action: "Modified main.js", timestamp: "2 minutes ago" },
+	{ id: 2, action: "Created new component", timestamp: "15 minutes ago" },
+	{ id: 3, action: "Committed changes", timestamp: "1 hour ago" },
+	{ id: 4, action: "Pulled latest changes", timestamp: "3 hours ago" },
+]);
+
+// Helper function to get appropriate icon for file types
+const getFileIcon = (type: string) => {
+	switch (type) {
+		case "js":
+		case "ts":
+		case "vue":
+		case "jsx":
+		case "tsx":
+			return Code;
+		case "png":
+		case "jpg":
+		case "jpeg":
+		case "gif":
+		case "svg":
+			return Image;
+		default:
+			return File;
+	}
+};
 
 // Set page meta
 definePageMeta({
-	title: "Home - Nvisy",
-	description:
-		"A modern desktop application built with Vue, Nuxt, and Tauri for seamless cross-platform experiences.",
+	title: "Dashboard - Nvisy",
+	description: "Desktop application dashboard",
 });
 
 // Set page head
 useHead({
-	title: "Home - Nvisy",
-	meta: [
-		{
-			name: "description",
-			content:
-				"A modern desktop application built with Vue, Nuxt, and Tauri for seamless cross-platform experiences.",
-		},
-	],
+	title: "Dashboard - Nvisy",
 });
 </script>

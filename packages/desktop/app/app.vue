@@ -19,10 +19,11 @@ useHead({
 <style>
 /* Global app styles */
 html {
-  scroll-behavior: smooth;
+  overflow: hidden;
 }
 
 body {
   @apply antialiased;
+  overflow: hidden;
 }
 </style>
