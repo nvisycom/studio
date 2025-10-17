@@ -23,11 +23,19 @@
 		"tauri:build": "tauri build --config ./tauri/tauri.conf.json"
 	},
 	"dependencies": {
-		"nuxt": "^4.1",
-		"vue": "^3.5",
-		"vue-router": "^4.5",
+		"@nuxt/devtools": "^2.6.5",
+		"@nuxt/image": "^1.11.0",
+		"@nuxtjs/color-mode": "^3.5.2",
+		"@nuxtjs/device": "^3.2.4",
+		"@nuxtjs/i18n": "^10.1.1",
+		"@tailwindcss/vite": "^4.1.14",
 		"@tauri-apps/api": "^2",
-		"@tauri-apps/plugin-opener": "^2"
+		"@tauri-apps/plugin-opener": "^2",
+		"nuxt": "^4.1",
+		"tailwindcss": "^4.1.14",
+		"vite": "^7.1.10",
+		"vue": "^3.5",
+		"vue-router": "^4.5"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.2.6",

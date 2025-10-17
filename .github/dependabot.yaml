@@ -17,6 +17,20 @@ updates:
     rebase-strategy: "auto"
     versioning-strategy: "increase"
 
+  # Enable version updates for cargo
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      timezone: "Europe/Berlin"
+      day: "monday"
+      time: "04:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "chore"
+    commit-message:
+      prefix: "chore(actions)"
+
   # Version updates for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"

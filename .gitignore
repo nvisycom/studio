@@ -24,8 +24,6 @@ node_modules/
 *.backup
 coverage/
 openapi/
-src/generated/
-docs/
 
 # Output
 dist/
