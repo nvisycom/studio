@@ -15,10 +15,12 @@ gen/
 
 # Javascript
 .vite/
+vite-env.d.ts
 .nuxt/
 playwright-report/
 test-results/
 node_modules/
+*.tsbuildinfo
 
 # Generated
 *.backup
