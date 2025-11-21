@@ -9,18 +9,42 @@ import "@/styles/blocks.css";
 import "@/styles/fonts.css";
 import "@/styles/tailwind.css";
 
-import Umami from "@/layouts/Umami.astro";
-
+/**
+ * Props interface for the MinLayout component
+ *
+ * This is the minimal layout that provides the HTML document structure,
+ * meta tags, SEO optimization, and basic page scaffolding without
+ * header/footer components.
+ */
 export interface Props {
+	/** Page title (will be combined with site title if withDefaultTitle is true) */
 	title?: string | undefined;
+
+	/** Meta description for SEO and social media sharing */
 	description?: string | undefined;
+
+	/** Build version to display in meta tags */
 	version?: string | undefined;
+
+	/** Whether to append the default site title to the page title */
 	withDefaultTitle?: boolean | undefined;
+
+	/** Open Graph image URL for social media sharing */
 	image?: string | undefined;
+
+	/** Whether this page represents an article (affects structured data and meta tags) */
 	article?: boolean | undefined;
+
+	/** Article published timestamp in ISO 8601 format (for article structured data) */
 	publishedTime?: string | undefined;
+
+	/** Article modified timestamp in ISO 8601 format (for article structured data) */
 	modifiedTime?: string | undefined;
+
+	/** Article author name (for article structured data) */
 	author?: string | undefined;
+
+	/** SEO keywords as comma-separated string */
 	keywords?: string | undefined;
 }
 
@@ -132,11 +156,21 @@ const structuredData = {
     <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)}></script>
 
     <!-- Analytics -->
-    <Umami />
     <slot name="analytics"/>
 </head>
 <body class="transition-all duration-75 bg-white dark:bg-black antialiased">
+    <!-- Skip to main content for accessibility -->
+    <a
+        href="#main-content"
+        class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-black text-white px-4 py-2 rounded-md z-50 transition-all"
+    >
+        Skip to main content
+    </a>
+
     <slot name="content"/>
+
+    <!-- Compliance Components -->
+    <slot name="compliance"/>
 
     <!-- Service Worker Registration -->
     <script is:inline>

@@ -4,6 +4,6 @@
 	"version": "v1.0",
 	"status": "Planned",
 	"title": "Microsoft Teams",
-	"category": "Collaboration",
-	"description": "Enterprise collaboration platform integration with automated document redaction and secure file sharing across Teams channels and meetings."
+	"category": "Notification",
+	"description": "Get instant notifications about document redaction status, workflow updates, and compliance alerts delivered to your Microsoft Teams channels."
 }

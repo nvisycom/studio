@@ -8,20 +8,50 @@ import {
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import MinLayout from "@/layouts/MinLayout.astro";
-import Cookies from "@/components/Cookies.vue";
+import { Umami } from "@/layouts/analytics";
+import { Cookies } from "@/layouts/compliance";
 
+/**
+ * Props interface for the main Layout component
+ *
+ * This layout provides a complete page structure with header, footer,
+ * and cookie compliance components wrapped around the main content.
+ */
 export interface Props {
+	/** Page title (will be combined with site title if withDefaultTitle is true) */
 	title?: string | undefined;
+
+	/** Meta description for SEO */
 	description?: string | undefined;
+
+	/** Build version to display */
 	version?: string | undefined;
+
+	/** Whether to append the default site title to the page title */
 	withDefaultTitle?: boolean | undefined;
+
+	/** Open Graph image URL for social media sharing */
 	image?: string | undefined;
+
+	/** Whether this page represents an article (affects structured data) */
 	article?: boolean | undefined;
+
+	/** Article published timestamp (ISO 8601 format) */
 	publishedTime?: string | undefined;
+
+	/** Article modified timestamp (ISO 8601 format) */
 	modifiedTime?: string | undefined;
+
+	/** Article author name */
 	author?: string | undefined;
+
+	/** SEO keywords (comma-separated) */
 	keywords?: string | undefined;
+
+	/** Whether to hide the site header */
 	hideHeader?: boolean | undefined;
+
+	/** Whether to hide the site footer */
 	hideFooter?: boolean | undefined;
 }
 
@@ -52,6 +82,9 @@ const {
 	author={author}
 	keywords={keywords}
 >
+	<!-- Analytics Slot -->
+	<Umami slot="analytics" />
+
 	<!-- Page Content -->
 	<div slot="content" class="flex flex-col min-h-screen">
 		<!-- Header -->
@@ -78,7 +111,7 @@ const {
 			</footer>
 		)}
 
-		<!-- Cookie Popup -->
-		<Cookies />
+		<!-- Compliance Slot -->
+		<Cookies slot="compliance" />
 	</div>
 </MinLayout>

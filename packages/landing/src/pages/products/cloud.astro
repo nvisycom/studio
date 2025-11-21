@@ -1,174 +1,317 @@
 ---
-import Layout from "@/layouts/Layout.astro";
-import { CTA, Features, Testimonials } from "@/sections";
+import { Layout } from "@/layouts";
+import { Hero, CTA } from "@/sections";
 import {
-	ProductHero,
-	ProductBenefits,
-	ProductComparison,
-	ProductPricing,
-} from "@/sections/products";
+	Cloud,
+	Check,
+	Zap,
+	Shield,
+	Globe,
+	DollarSign,
+	RefreshCw,
+	Activity,
+	ArrowRight,
+	Star,
+} from "lucide-vue-next";
 ---
 
-<Layout title="Nvisy Cloud - AI-Powered Document Redaction" description="Deploy Nvisy's AI-powered document redaction in the cloud. Global scale, managed infrastructure, and enterprise security with zero maintenance.">
+<Layout
+  title="Nvisy Cloud - AI-Powered Document Redaction"
+  description="Deploy Nvisy's AI-powered document redaction in the cloud. Global scale, managed infrastructure, and enterprise security with zero maintenance."
+>
   <div class="bg-white dark:bg-black min-h-screen">
     <!-- Hero Section -->
-    <ProductHero
-      title="Nvisy Cloud"
-      description="Enterprise-grade document redaction delivered as a fully managed cloud service. Global scale, zero maintenance, maximum security."
-      primaryCta={{
-        text: "Start Free Trial",
-        href: "/pricing"
-      }}
-      secondaryCta={{
-        text: "Schedule Demo",
-        href: "/contact"
-      }}
-      stats={[
-        {
-          value: "99.99%",
-          label: "Uptime SLA"
-        },
-        {
-          value: "Global",
-          label: "Multi-Region"
-        },
-        {
-          value: "5 min",
-          label: "Setup Time"
-        }
-      ]}
-    />
+    <div class="border-b border-neutral-200 dark:border-neutral-800">
+      <Hero
+        title="Nvisy Cloud"
+        description="Enterprise-grade document redaction delivered as a fully managed cloud service. Deploy in minutes, scale instantly, maintain nothing. Get the power of AI-driven redaction without the infrastructure complexity."
+        background="gradient"
+        fontSize="xl"
+        padding="lg"
+        buttons={[
+          {
+            text: "Start Free Trial",
+            href: "/pricing",
+            variant: "primary"
+          },
+          {
+            text: "Schedule Demo",
+            href: "/contact",
+            variant: "secondary"
+          }
+        ]}
+      />
+    </div>
 
-    <!-- Features Section -->
-    <Features
-      title="Built for Enterprise Scale"
-      description="Advanced AI technology meets enterprise security requirements. Process thousands of documents with unprecedented accuracy and speed."
-      category="cloud"
-    />
+    <!-- Stats Section -->
+    <div class="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black">
+      <div class="container mx-auto px-4 py-8 md:py-12">
+        <div class="max-w-4xl mx-auto">
+          <div class="grid grid-cols-3 gap-4 md:gap-8">
+            <div class="text-center">
+              <div class="text-2xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-1 md:mb-2">99.99%</div>
+              <div class="text-xs md:text-sm text-neutral-500 dark:text-neutral-400">Uptime SLA</div>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-1 md:mb-2">Global</div>
+              <div class="text-xs md:text-sm text-neutral-500 dark:text-neutral-400">Multi-Region</div>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-1 md:mb-2">5 min</div>
+              <div class="text-xs md:text-sm text-neutral-500 dark:text-neutral-400">Setup Time</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <!-- Benefits Section -->
-    <ProductBenefits
-      title="Why Choose Nvisy Cloud"
-      description="Experience the benefits of a fully managed, globally distributed document redaction platform built for modern enterprises."
-      benefits={[
-        {
-          title: "Faster Time to Market",
-          description: "Deploy in minutes, not months. No infrastructure setup, no complex configurations.",
-          icon: "zap"
-        },
-        {
-          title: "Cost Effective",
-          description: "Pay only for what you use. No upfront costs, no maintenance fees, no infrastructure investments."
-        },
-        {
-          title: "Enterprise Security",
-          description: "Bank-level security with comprehensive compliance certifications and audit trails.",
-          icon: "lock"
-        },
-        {
-          title: "Always Up to Date",
-          description: "Automatic updates with the latest AI models, security patches, and features.",
-          icon: "settings"
-        }
-      ]}
-      visualContent={{
-        title: "Ready in 5 Minutes",
-        description: "Get started instantly with our cloud platform. No setup, no configuration, no waiting.",
-        steps: [
-          { text: "Sign up with email" },
-          { text: "Upload your first document" },
-          { text: "Get redacted results instantly" }
-        ]
-      }}
-    />
+    <!-- Why Choose Nvisy Cloud -->
+    <div class="container mx-auto px-4 py-12 md:py-20">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-12 md:mb-16">
+          <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white mb-3 md:mb-4">
+            Why Choose Nvisy Cloud
+          </h2>
+          <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto px-4">
+            A fully managed, globally distributed document redaction platform built for modern enterprises.
+          </p>
+        </div>
 
-    <!-- Customers/Testimonials Section -->
-    <Testimonials
-      title="Trusted by Enterprise Leaders"
-      description="See what our customers say about transforming their document security workflows with Nvisy Cloud."
-      backgroundColor="white"
-      category="cloud"
-      featured={true}
-    />
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          <!-- Instant Deployment -->
+          <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
+              <Zap class="w-6 h-6 md:w-7 md:h-7 text-white" />
+            </div>
+            <h3 class="text-lg md:text-xl font-bold text-neutral-900 dark:text-white mb-2 md:mb-3">Instant Deployment</h3>
+            <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
+              Deploy in minutes with no infrastructure setup or complex configurations. Start redacting documents within 5 minutes of signing up.
+            </p>
+          </div>
 
-    <!-- Comparisons Section -->
-    <ProductComparison
-      title="How Nvisy Cloud Compares"
-      description="See how Nvisy Cloud stacks up against other document redaction solutions in the market."
-      mainProduct={{
-        name: "Nvisy Cloud",
-        description: "AI-Powered Cloud Platform",
-        features: [
-          { name: "99.9% AI accuracy", status: "check" },
-          { name: "5-minute setup", status: "check" },
-          { name: "Global scalability", status: "check" },
-          { name: "Zero maintenance", status: "check" },
-          { name: "SOC 2 Type II", status: "check" }
-        ]
-      }}
-      competitors={[
-        {
-          name: "Traditional Tools",
-          description: "Manual/Legacy Solutions",
-          features: [
-            { name: "Manual, error-prone", status: "x" },
-            { name: "Weeks to deploy", status: "x" },
-            { name: "Limited scalability", status: "x" },
-            { name: "High maintenance", status: "x" },
-            { name: "Limited compliance", status: "x" }
-          ]
-        },
-        {
-          name: "Other Cloud Tools",
-          description: "Generic Solutions",
-          features: [
-            { name: "Basic accuracy", status: "warning" },
-            { name: "Cloud deployment", status: "check" },
-            { name: "Limited scalability", status: "warning" },
-            { name: "Some maintenance", status: "warning" },
-            { name: "Basic compliance", status: "warning" }
-          ]
-        }
-      ]}
-    />
+          <!-- Cost Effective -->
+          <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
+              <DollarSign class="w-6 h-6 md:w-7 md:h-7 text-white" />
+            </div>
+            <h3 class="text-lg md:text-xl font-bold text-neutral-900 dark:text-white mb-2 md:mb-3">Cost Effective</h3>
+            <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
+              Pay only for what you use with transparent per-page pricing. No upfront costs, no maintenance fees, no infrastructure investments.
+            </p>
+          </div>
 
-    <!-- Simple Pricing Preview -->
-    <ProductPricing
-      title="Simple, Transparent Pricing"
-      description="Start free and scale as you grow. No hidden fees, no long-term contracts."
-      tiers={[
+          <!-- Enterprise Security -->
+          <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
+              <Shield class="w-6 h-6 md:w-7 md:h-7 text-white" />
+            </div>
+            <h3 class="text-lg md:text-xl font-bold text-neutral-900 dark:text-white mb-2 md:mb-3">Enterprise Security</h3>
+            <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
+              Bank-level security with SOC 2 Type II, GDPR, HIPAA, and CCPA compliance. Comprehensive audit trails and encryption at rest and in transit.
+            </p>
+          </div>
+
+          <!-- Always Up to Date -->
+          <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
+              <RefreshCw class="w-6 h-6 md:w-7 md:h-7 text-white" />
+            </div>
+            <h3 class="text-lg md:text-xl font-bold text-neutral-900 dark:text-white mb-2 md:mb-3">Always Up to Date</h3>
+            <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
+              Automatic updates with the latest AI models, security patches, and features. Zero downtime deployments ensure continuous availability.
+            </p>
+          </div>
+
+          <!-- Global Scale -->
+          <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
+              <Globe class="w-6 h-6 md:w-7 md:h-7 text-white" />
+            </div>
+            <h3 class="text-lg md:text-xl font-bold text-neutral-900 dark:text-white mb-2 md:mb-3">Global Scale</h3>
+            <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
+              Multi-region deployment with automatic failover and load balancing. Process thousands of documents simultaneously with consistent performance.
+            </p>
+          </div>
+
+          <!-- Enterprise Reliability -->
+          <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
+              <Activity class="w-6 h-6 md:w-7 md:h-7 text-white" />
+            </div>
+            <h3 class="text-lg md:text-xl font-bold text-neutral-900 dark:text-white mb-2 md:mb-3">Enterprise Reliability</h3>
+            <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
+              99.99% uptime SLA with guaranteed availability. Globally distributed infrastructure ensures your redaction workflows never stop.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Start Guide -->
+    <div class="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30">
+      <div class="container mx-auto px-4 py-12 md:py-20">
+        <div class="max-w-4xl mx-auto">
+          <div class="text-center mb-8 md:mb-12">
+            <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white mb-3 md:mb-4">
+              Get Started in Minutes
+            </h2>
+            <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300">
+              No setup, no configuration, no waiting. Start protecting your documents immediately.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            <!-- Step 1 -->
+            <div class="bg-white dark:bg-black rounded-xl p-6 md:p-8 border border-neutral-200 dark:border-neutral-700">
+              <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center font-bold text-lg md:text-xl mb-4">
+                1
+              </div>
+              <h3 class="font-bold text-neutral-900 dark:text-white mb-2 text-base md:text-lg">Sign up</h3>
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                Create your account in seconds. No credit card required.
+              </p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="bg-white dark:bg-black rounded-xl p-6 md:p-8 border border-neutral-200 dark:border-neutral-700">
+              <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center font-bold text-lg md:text-xl mb-4">
+                2
+              </div>
+              <h3 class="font-bold text-neutral-900 dark:text-white mb-2 text-base md:text-lg">Upload documents</h3>
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                Drag and drop or select files to upload.
+              </p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="bg-white dark:bg-black rounded-xl p-6 md:p-8 border border-neutral-200 dark:border-neutral-700">
+              <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center font-bold text-lg md:text-xl mb-4">
+                3
+              </div>
+              <h3 class="font-bold text-neutral-900 dark:text-white mb-2 text-base md:text-lg">Get results</h3>
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                AI-powered redaction in seconds, not hours.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Features -->
+    <div class="container mx-auto px-4 py-12 md:py-20">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-12 md:mb-16">
+          <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white mb-3 md:mb-4">
+            Enterprise-Grade Platform
+          </h2>
+          <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto px-4">
+            Advanced AI technology meets enterprise security requirements. Process thousands of documents with precision and speed.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          <div class="flex items-start gap-3">
+            <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 class="font-semibold text-neutral-900 dark:text-white mb-1">99.9% AI Accuracy</h3>
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                Industry-leading accuracy with continuously improving AI models trained on millions of documents.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-3">
+            <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 class="font-semibold text-neutral-900 dark:text-white mb-1">Auto-Scaling Infrastructure</h3>
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                Automatically scales to handle traffic spikes without manual intervention or downtime.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-3">
+            <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 class="font-semibold text-neutral-900 dark:text-white mb-1">Multi-Region Deployment</h3>
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                Data centers across the globe ensure low latency and high availability for all users.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-3">
+            <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 class="font-semibold text-neutral-900 dark:text-white mb-1">SOC 2 Type II Certified</h3>
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                Independently audited security controls meeting the highest industry standards.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-3">
+            <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 class="font-semibold text-neutral-900 dark:text-white mb-1">Comprehensive API</h3>
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                RESTful API with SDKs for JavaScript, Python, and more. Integrate seamlessly into your workflows.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-3">
+            <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 class="font-semibold text-neutral-900 dark:text-white mb-1">Real-Time Processing</h3>
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                Process documents in real-time with sub-second response times for most operations.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pricing CTA -->
+    <div class="bg-neutral-50 dark:bg-neutral-950">
+      <div class="container mx-auto px-4 py-12 md:py-20">
+        <div class="max-w-3xl mx-auto text-center">
+          <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white mb-3 md:mb-4">
+            Simple, Transparent Pricing
+          </h2>
+          <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 mb-8 md:mb-10">
+            Start free with 100 pages per month. No credit card required. Scale as you grow with pay-as-you-go pricing.
+          </p>
+          <a
+            href="/pricing"
+            class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium py-3 px-6 md:px-8 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 text-sm md:text-base"
+          >
+            View Pricing Details
+            <ArrowRight class="w-4 h-4" />
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Section -->
+    <CTA
+      title="Ready to Get Started?"
+      description="Deploy AI-powered document redaction in minutes. Start with 100 free pages per month."
+      buttons={[
         {
-          name: "100 pages/month",
-          price: "Free",
-          description: "Perfect for getting started"
-        },
-        {
-          name: "per additional page",
-          price: "$0.10",
-          description: "Pay as you scale"
-        },
-        {
-          name: "enterprise pricing",
-          price: "Custom",
-          description: "Volume discounts available"
-        }
-      ]}
-      ctas={[
-        {
-          text: "View Full Pricing",
+          text: "Start Free Trial",
           href: "/pricing",
           variant: "primary"
         },
         {
-          text: "Start Free Trial",
-          href: "/pricing",
+          text: "Schedule Demo",
+          href: "/contact",
           variant: "secondary"
         }
       ]}
-      compact={true}
+      background="solid"
     />
-
-    <!-- CTA Section -->
-    <CTA />
   </div>
 </Layout>

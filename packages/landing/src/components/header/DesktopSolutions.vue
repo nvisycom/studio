@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import {
-	NavigationMenuContent,
-	NavigationMenuItem,
-	NavigationMenuLink,
-	NavigationMenuTrigger,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { ChevronRight } from "lucide-vue-next";
 import { solutions } from "./desktop-nav-data";
 </script>
 
 <template>
   <NavigationMenuItem>
     <NavigationMenuTrigger
-      class="group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium text-gray-600 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white focus:bg-gray-50 dark:focus:bg-neutral-800 focus:text-gray-900 dark:focus:text-white disabled:pointer-events-none disabled:opacity-50 data-[state=open]:bg-gray-50 dark:data-[state=open]:bg-neutral-800 data-[state=open]:text-gray-900 dark:data-[state=open]:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-300 dark:focus-visible:ring-neutral-600 transition-all duration-200"
+      class="group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-base font-medium text-gray-600 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white focus:bg-gray-50 dark:focus:bg-neutral-800 focus:text-gray-900 dark:focus:text-white disabled:pointer-events-none disabled:opacity-50 data-[state=open]:bg-gray-50 dark:data-[state=open]:bg-neutral-800 data-[state=open]:text-gray-900 dark:data-[state=open]:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-300 dark:focus-visible:ring-neutral-600 transition-all duration-200"
     >
       Solutions
     </NavigationMenuTrigger>
@@ -91,21 +92,9 @@ import { solutions } from "./desktop-nav-data";
             href="/integrations"
             class="inline-flex items-center font-semibold text-gray-500 dark:text-neutral-400 mb-2 text-xs tracking-wide transition-colors hover:text-gray-900 dark:hover:text-white focus:text-gray-900 dark:focus:text-white"
           >
-            <span class="flex">
+            <span class="flex items-center">
               Integrations
-              <svg
-                class="h-4 w-4 ml-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
+              <ChevronRight class="h-4 w-4 ml-1" />
             </span>
           </NavigationMenuLink>
 

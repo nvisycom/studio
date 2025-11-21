@@ -1,18 +1,30 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 
+/**
+ * Cookie consent preferences structure
+ */
 interface CookieConsent {
+	/** Always true - necessary cookies are required for basic functionality */
 	necessary: boolean;
+	/** Whether analytics cookies are allowed (e.g., Google Analytics, Umami) */
 	analytics: boolean;
+	/** Whether marketing/advertising cookies are allowed */
 	marketing: boolean;
+	/** Unix timestamp when consent was given */
 	timestamp: number;
 }
 
 const isVisible = ref(false);
-const COOKIE_CONSENT_KEY = "cookie-consent";
-const CONSENT_DURATION = 365 * 24 * 60 * 60 * 1000; // 1 year
+/** Local storage key for storing cookie consent preferences */
+const COOKIE_CONSENT_KEY = "cookie-consent" as const;
+/** Duration in milliseconds for how long consent is valid (1 year) */
+const CONSENT_DURATION = 365 * 24 * 60 * 60 * 1000;
 
-// Check if consent was already given
+/**
+ * Check if valid cookie consent was previously given
+ * @returns Cookie consent object if valid, null if no consent or expired
+ */
 function checkExistingConsent(): CookieConsent | null {
 	try {
 		const stored = localStorage.getItem(COOKIE_CONSENT_KEY);
@@ -36,8 +48,11 @@ function checkExistingConsent(): CookieConsent | null {
 	}
 }
 
-// Save consent to localStorage
-function saveConsent(consent: Omit<CookieConsent, "timestamp">) {
+/**
+ * Save user's cookie consent preferences to localStorage
+ * @param consent - Consent preferences without timestamp
+ */
+function saveConsent(consent: Omit<CookieConsent, "timestamp">): void {
 	try {
 		const consentWithTimestamp: CookieConsent = {
 			...consent,
@@ -53,13 +68,17 @@ function saveConsent(consent: Omit<CookieConsent, "timestamp">) {
 	}
 }
 
-// Hide popup
-function hidePopup() {
+/**
+ * Hide the cookie consent popup
+ */
+function hidePopup(): void {
 	isVisible.value = false;
 }
 
-// Handle accept all
-function handleAcceptAll() {
+/**
+ * Handle user clicking "Accept All" - grants consent for all cookie types
+ */
+function handleAcceptAll(): void {
 	const consent = {
 		necessary: true,
 		analytics: true,
@@ -80,8 +99,10 @@ function handleAcceptAll() {
 	console.log("Cookie consent: All accepted");
 }
 
-// Handle necessary only
-function handleNecessaryOnly() {
+/**
+ * Handle user clicking "Essential Only" - only allows necessary cookies
+ */
+function handleNecessaryOnly(): void {
 	const consent = {
 		necessary: true,
 		analytics: false,
@@ -102,8 +123,10 @@ function handleNecessaryOnly() {
 	console.log("Cookie consent: Necessary only");
 }
 
-// Handle decline
-function handleDecline() {
+/**
+ * Handle user clicking "Decline" - rejects optional cookies
+ */
+function handleDecline(): void {
 	const consent = {
 		necessary: true, // Necessary cookies are always required
 		analytics: false,
@@ -124,8 +147,10 @@ function handleDecline() {
 	console.log("Cookie consent: Declined");
 }
 
-// Initialize on mount
-onMounted(() => {
+/**
+ * Initialize cookie consent check when component mounts
+ */
+onMounted((): void => {
 	const existingConsent = checkExistingConsent();
 
 	if (!existingConsent) {

@@ -7,17 +7,11 @@ export interface HeroButton {
 	icon?: string;
 }
 
-export interface HeroStat {
-	value: string;
-	label: string;
-}
-
 export interface Props {
 	title?: string;
 	subtitle?: string;
 	description?: string;
 	buttons?: HeroButton[];
-	stats?: HeroStat[];
 	centered?: boolean;
 	fontSize?: "sm" | "md" | "lg" | "xl" | "xxl";
 	background?: "solid" | "gradient" | "none";
@@ -52,7 +46,6 @@ const {
 			variant: "secondary",
 		},
 	],
-	stats = [],
 } = Astro.props;
 
 // Helper function to split title and highlight text
@@ -80,6 +73,7 @@ const titleParts = getTitleParts();
 	${padding === "lg" ? "py-20 px-10" : ""}
 	${padding === "xl" ? "py-24 px-12" : ""}
 	min-h-[20vh] flex items-center
+	border-b border-gray-200 dark:border-neutral-800
 `}>
 	<div class="container mx-auto px-4 w-full">
 		<div class={`grid ${heroImage ? 'lg:grid-cols-2 gap-12 items-center' : 'grid-cols-1'}`}>
@@ -223,25 +217,6 @@ const titleParts = getTitleParts();
 					</div>
 				)}
 
-				{stats.length > 0 && (
-					<div class={`
-						grid gap-6 md:gap-8 max-w-4xl
-						${stats.length > 2 ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'}
-						${centered ? "mx-auto" : ""}
-					`}>
-						{stats.map((stat) => (
-							<div class="text-center p-4 md:p-6 rounded-lg border border-gray-200 dark:border-gray-700">
-								<div class="text-2xl md:text-3xl lg:text-4xl font-bold mb-2 text-gray-900 dark:text-white">
-									{stat.value}
-								</div>
-								<div class="text-sm md:text-base text-gray-600 dark:text-gray-400">
-									{stat.label}
-								</div>
-							</div>
-						))}
-					</div>
-				)}
-
 				<slot name="stats" />
 				<slot name="content" />
 			</div>
@@ -261,6 +236,7 @@ const titleParts = getTitleParts();
 			)}
 
 			<slot name="media" />
+			<slot name="stats" />
 		</div>
 
 		<slot name="footer" />

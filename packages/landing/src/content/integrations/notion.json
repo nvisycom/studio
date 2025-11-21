@@ -1,9 +1,0 @@
-{
-	"icon": "notion",
-	"isBrand": true,
-	"version": "v1.0",
-	"status": "Planned",
-	"title": "Notion",
-	"category": "Collaboration",
-	"description": "Comprehensive workspace integration with automated redaction for Notion pages, databases, and shared content across team workspaces."
-}

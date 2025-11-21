@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 const name = ref("");
 const email = ref("");
@@ -15,21 +16,25 @@ const inquiryType = ref("");
 const message = ref("");
 
 const handleSubmit = (e: Event) => {
-	e.preventDefault();
-	// Handle form submission
-	console.log({
-		name: name.value,
-		email: email.value,
-		inquiryType: inquiryType.value,
-		message: message.value,
-	});
+  e.preventDefault();
+  // Handle form submission
+  console.log({
+    name: name.value,
+    email: email.value,
+    inquiryType: inquiryType.value,
+    message: message.value,
+  });
 };
 </script>
 
 <template>
-  <div class="bg-white dark:bg-neutral-950 border border-gray-200 dark:border-neutral-800 rounded-2xl shadow-sm p-8 md:p-12">
-    <div class="mb-10 text-center">
-      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3">
+  <div
+    class="bg-white dark:bg-neutral-950 border border-gray-200 dark:border-neutral-800 rounded-2xl shadow-sm p-8 md:p-12"
+  >
+    <div class="mb-10">
+      <h2
+        class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3"
+      >
         Send us a Message
       </h2>
       <p class="text-lg text-gray-600 dark:text-neutral-400">
@@ -39,7 +44,10 @@ const handleSubmit = (e: Event) => {
 
     <form class="space-y-6" @submit="handleSubmit">
       <div>
-        <label for="name" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+        <label
+          for="name"
+          class="block text-sm font-medium text-gray-900 dark:text-white mb-2"
+        >
           Name *
         </label>
         <input
@@ -54,7 +62,10 @@ const handleSubmit = (e: Event) => {
       </div>
 
       <div>
-        <label for="email" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+        <label
+          for="email"
+          class="block text-sm font-medium text-gray-900 dark:text-white mb-2"
+        >
           Email *
         </label>
         <input
@@ -69,7 +80,10 @@ const handleSubmit = (e: Event) => {
       </div>
 
       <div>
-        <label for="inquiry-type" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+        <label
+          for="inquiry-type"
+          class="block text-sm font-medium text-gray-900 dark:text-white mb-2"
+        >
           Inquiry Type *
         </label>
         <Select v-model="inquiryType" required>
@@ -78,39 +92,30 @@ const handleSubmit = (e: Event) => {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectItem value="sales">
-                Sales Inquiry
-              </SelectItem>
-              <SelectItem value="demo">
-                Request Demo
-              </SelectItem>
-              <SelectItem value="support">
-                Technical Support
-              </SelectItem>
-              <SelectItem value="partnership">
-                Partnership
-              </SelectItem>
-              <SelectItem value="general">
-                General Question
-              </SelectItem>
+              <SelectItem value="sales"> Sales Inquiry </SelectItem>
+              <SelectItem value="demo"> Request Demo </SelectItem>
+              <SelectItem value="support"> Technical Support </SelectItem>
+              <SelectItem value="partnership"> Partnership </SelectItem>
+              <SelectItem value="general"> General Question </SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
       </div>
 
       <div>
-        <label for="message" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+        <label
+          for="message"
+          class="block text-sm font-medium text-gray-900 dark:text-white mb-2"
+        >
           Message *
         </label>
-        <textarea
-          name="message"
+        <Textarea
           id="message"
           v-model="message"
-          rows="6"
-          required
-          class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-black text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-neutral-500 focus:border-transparent transition-all resize-none"
           placeholder="Tell us more about your needs..."
-        ></textarea>
+          class="min-h-[150px]"
+          required
+        />
       </div>
 
       <button

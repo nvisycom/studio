@@ -1,0 +1,9 @@
+{
+	"icon": "brain",
+	"isBrand": false,
+	"version": "v1.0",
+	"status": "Planned",
+	"title": "OpenAI",
+	"category": "Contextual Redaction",
+	"description": "Leverage OpenAI's language models for intelligent, context-aware redaction that understands document structure and semantic meaning for precise data protection."
+}

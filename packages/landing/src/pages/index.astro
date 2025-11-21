@@ -8,7 +8,6 @@ import {
 	UseCases,
 	Testimonials,
 	CTA,
-	CompanyStats,
 	Stats,
 	Security,
 	PressCarousel,
@@ -34,13 +33,15 @@ const pageKeywords =
 		<Hero />
 
 		<!-- Social Proof - Press & Recognition -->
-		<PressCarousel
-			title="Trusted by Industry Leaders"
-			subtitle="Featured in leading technology publications"
-		/>
+		<section class="py-12 md:py-16">
+			<PressCarousel
+				title="Trusted by Industry Leaders"
+				subtitle="Featured in leading technology publications"
+			/>
+		</section>
 
 		<!-- Impact Metrics - Quick Wins -->
-		<section class="bg-white dark:bg-black">
+		<section class="bg-white dark:bg-black py-16 md:py-24">
 			<Stats
 				title="Proven Results at Scale"
 				backgroundColor="white"
@@ -70,45 +71,37 @@ const pageKeywords =
 		</section>
 
 		<!-- Features Section - Core Value Props -->
-		<section class="bg-gradient-to-b from-white to-gray-50 dark:from-black dark:to-neutral-950">
+		<section class="bg-gradient-to-b from-white to-neutral-50 dark:from-black dark:to-neutral-950 py-16 md:py-24">
 			<Features category="general" featured={true} />
 		</section>
 
 		<!-- Workflow Section - How It Works -->
-		<section class="bg-white dark:bg-black relative">
-			<div class="absolute inset-0 bg-gradient-to-b from-gray-50 to-white dark:from-neutral-950 dark:to-black opacity-50"></div>
-			<div class="relative">
-				<Workflow backgroundColor="white" />
-			</div>
+		<section class="bg-white dark:bg-black py-16 md:py-24">
+			<Workflow backgroundColor="white" />
+		</section>
+
+		<!-- Security & Compliance - Build Trust Early -->
+		<section class="bg-neutral-50 dark:bg-neutral-950 py-16 md:py-24">
+			<Security backgroundColor="gray" />
 		</section>
 
 		<!-- Use Cases Section - Real-World Applications -->
-		<section class="bg-gray-50 dark:bg-neutral-950">
+		<section class="bg-white dark:bg-black py-16 md:py-24">
 			<UseCases />
 		</section>
 
 		<!-- Testimonials Section - Customer Stories -->
-		<section class="bg-white dark:bg-black">
+		<section class="bg-neutral-50 dark:bg-neutral-950 py-16 md:py-24">
 			<Testimonials backgroundColor="white" />
 		</section>
 
-		<!-- Company Stats - Build Trust -->
-		<section class="bg-gradient-to-b from-white to-gray-50 dark:from-black dark:to-neutral-950">
-			<CompanyStats backgroundColor="white" />
-		</section>
-
-		<!-- Security & Compliance - Remove Concerns -->
-		<section class="bg-gray-50 dark:bg-neutral-950">
-			<Security backgroundColor="gray" />
-		</section>
-
 		<!-- Integrations Section - Easy Integration -->
-		<section class="bg-white dark:bg-black">
+		<section class="bg-white dark:bg-black py-16 md:py-24">
 			<Integrations backgroundColor="white" />
 		</section>
 
 		<!-- FAQ Section - Answer Objections -->
-		<section class="bg-gray-50 dark:bg-neutral-950">
+		<section class="bg-neutral-50 dark:bg-neutral-950 py-16 md:py-24">
 			<FAQ
 				title="Common Questions"
 				description="Everything you need to know to get started with confidence"
@@ -119,8 +112,7 @@ const pageKeywords =
 		</section>
 
 		<!-- Final CTA - Strong Close -->
-		<section class="relative">
-			<div class="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 opacity-5 dark:opacity-10"></div>
+		<section class="py-16 md:py-24">
 			<CTA
 				title="Start Securing Your Documents Today"
 				description="Join 500+ enterprises protecting sensitive information with AI-powered redaction. No credit card required."
