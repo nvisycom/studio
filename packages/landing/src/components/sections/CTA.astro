@@ -1,0 +1,119 @@
+---
+import { Github, Mail, ExternalLink } from "lucide-vue-next";
+import type { ButtonProps } from "@/components/types";
+import { getButtonClasses } from "@/utils/buttonStyles";
+import { getBackgroundClass } from "@/utils/backgroundStyles";
+
+export interface Props {
+	title?: string;
+	description?: string;
+	buttons?: ButtonProps[];
+	centered?: boolean;
+	background?: "solid" | "gradient" | "none";
+	maxWidth?: "sm" | "md" | "lg" | "xl" | "full";
+}
+
+const {
+	title = "Ready to get started?",
+	description = "Join thousands of companies already using our platform to build better products faster.",
+	centered = true,
+	background = "gradient",
+	maxWidth = "xl",
+	buttons = [
+		{
+			text: "Start Free Trial",
+			variant: "primary",
+		},
+		{
+			text: "Book a Demo",
+			variant: "secondary",
+		},
+	],
+} = Astro.props;
+
+const maxWidthClasses = {
+	sm: "max-w-2xl",
+	md: "max-w-4xl",
+	lg: "max-w-5xl",
+	xl: "max-w-6xl",
+	full: "max-w-none",
+};
+---
+
+<section class={`
+	border-t border-gray-200 dark:border-neutral-800
+	${getBackgroundClass(background)}
+	py-20 px-10
+`}>
+	<div class="container mx-auto px-4">
+		<div class={`
+			${centered ? "mx-auto text-center" : ""}
+			${maxWidthClasses[maxWidth]}
+		`}>
+			{title && (
+				<h2 class="text-4xl md:text-5xl font-bold leading-tight mb-4 md:mb-6 text-gray-900 dark:text-white">
+					{title}
+				</h2>
+			)}
+
+			<slot name="title" />
+
+			{description && (
+				<p class={`
+					text-lg md:text-xl mb-6 md:mb-8 leading-relaxed text-gray-600 dark:text-gray-400
+					${centered ? "max-w-3xl mx-auto" : "max-w-3xl"}
+				`}>
+					{description}
+				</p>
+			)}
+
+			<slot name="description" />
+			<slot name="content" />
+
+			{(buttons.length > 0 || Astro.slots.has('buttons')) && (
+				<div class={`
+					flex flex-col sm:flex-row gap-4
+					${centered ? "justify-center" : "justify-start"}
+				`}>
+					{buttons.map((button) => (
+						button.href ? (
+							<a
+								href={button.href}
+								class={getButtonClasses(button.variant || "primary")}
+								aria-label={button.text}
+							>
+								{button.icon && (
+									<span class="flex-shrink-0">
+										{button.icon === "github" && <Github class="w-5 h-5" />}
+										{button.icon === "mail" && <Mail class="w-5 h-5" />}
+										{button.icon === "external" && <ExternalLink class="w-5 h-5" />}
+									</span>
+								)}
+								{button.text}
+							</a>
+						) : (
+							<button
+								class={getButtonClasses(button.variant || "primary")}
+								onclick={button.onClick}
+								aria-label={button.text}
+							>
+								{button.icon && (
+									<span class="flex-shrink-0">
+										{button.icon === "github" && <Github class="w-5 h-5" />}
+										{button.icon === "mail" && <Mail class="w-5 h-5" />}
+										{button.icon === "external" && <ExternalLink class="w-5 h-5" />}
+									</span>
+								)}
+								{button.text}
+							</button>
+						)
+					))}
+
+					<slot name="buttons" />
+				</div>
+			)}
+
+			<slot name="footer" />
+		</div>
+	</div>
+</section>

@@ -1,8 +1,9 @@
 ---
-import { WorkflowStepper } from "./workflow";
+import { WorkflowStepper } from "../features/workflow";
+import type { BackgroundVariant } from "@/components/types";
 
 export interface Props {
-	backgroundColor?: "white" | "gray";
+	backgroundColor?: BackgroundVariant;
 	title?: string;
 	description?: string;
 }

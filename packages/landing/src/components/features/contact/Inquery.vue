@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -16,14 +16,14 @@ const inquiryType = ref("");
 const message = ref("");
 
 const handleSubmit = (e: Event) => {
-  e.preventDefault();
-  // Handle form submission
-  console.log({
-    name: name.value,
-    email: email.value,
-    inquiryType: inquiryType.value,
-    message: message.value,
-  });
+	e.preventDefault();
+	// Handle form submission
+	console.log({
+		name: name.value,
+		email: email.value,
+		inquiryType: inquiryType.value,
+		message: message.value,
+	});
 };
 </script>
 
