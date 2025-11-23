@@ -1,23 +1,23 @@
 import type {
 	ProductSection,
-	SolutionSection,
 	ResourceSection,
+	SolutionSection,
 } from "./nav-types";
 import {
-	Server,
+	BookOpen,
+	Building,
+	Building2,
 	Cloud,
 	Code,
-	Terminal,
-	Building2,
-	Landmark,
 	HeartPulse,
-	ShieldCheck,
-	Building,
-	Rocket,
-	BookOpen,
 	HelpCircle,
-	Plug,
+	Landmark,
 	MapIcon,
+	Plug,
+	Rocket,
+	Server,
+	ShieldCheck,
+	Terminal,
 } from "lucide-vue-next";
 
 export const products: ProductSection = {

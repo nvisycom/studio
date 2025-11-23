@@ -1,26 +1,27 @@
 import type {
 	ProductSection,
-	SolutionSection,
 	ResourceSection,
+	SolutionSection,
 } from "./nav-types";
 import {
-	Server,
+	BookOpen,
+	Braces,
+	Building,
+	Building2,
 	Cloud,
 	Code,
-	Terminal,
-	Building2,
-	Landmark,
 	HeartPulse,
-	ShieldCheck,
-	Building,
-	Rocket,
-	BookOpen,
-	Scale,
-	Plug,
-	Map as MapIcon,
 	HelpCircle,
+	Info,
+	Landmark,
+	Map as MapIcon,
 	Package,
-	Braces,
+	Plug,
+	Rocket,
+	Scale,
+	Server,
+	ShieldCheck,
+	Terminal,
 } from "lucide-vue-next";
 
 export const products: ProductSection = {
@@ -182,6 +183,12 @@ export const resources: ResourceSection = {
 			href: "/contact",
 			description: "Get in touch with our team",
 			icon: HelpCircle,
+		},
+		{
+			title: "About",
+			href: "/about",
+			description: "Learn more about Nvisy",
+			icon: Info,
 		},
 		{
 			title: "Legal",

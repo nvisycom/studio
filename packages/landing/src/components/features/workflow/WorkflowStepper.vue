@@ -1,51 +1,52 @@
 <script setup lang="ts">
 import {
-	Stepper,
-	StepperDescription,
-	StepperIndicator,
-	StepperItem,
-	StepperSeparator,
-	StepperTitle,
-	StepperTrigger,
+  Stepper,
+  StepperDescription,
+  StepperIndicator,
+  StepperItem,
+  StepperSeparator,
+  StepperTitle,
+  StepperTrigger,
 } from "@/components/ui/stepper";
+import { CheckCircle2, Clock, Maximize } from "lucide-vue-next";
 
 export interface Step {
-	number: number;
-	title: string;
-	description: string;
+  number: number;
+  title: string;
+  description: string;
 }
 
 interface Props {
-	steps?: Step[];
+  steps?: Step[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	steps: () => [
-		{
-			number: 1,
-			title: "Upload Documents",
-			description:
-				"Securely upload your documents in any format - PDF, Word, Excel, PowerPoint, and more. Batch upload supported for enterprise workflows.",
-		},
-		{
-			number: 2,
-			title: "AI Analysis",
-			description:
-				"Our advanced AI scans your documents to identify sensitive information like PII, PHI, financial data, and custom patterns you define.",
-		},
-		{
-			number: 3,
-			title: "Review & Approve",
-			description:
-				"Preview all identified sensitive content with confidence scores. Accept, reject, or modify redactions with our intuitive review interface.",
-		},
-		{
-			number: 4,
-			title: "Download Secure Files",
-			description:
-				"Get your redacted documents with full audit trails. Original formatting preserved, sensitive data permanently removed.",
-		},
-	],
+  steps: () => [
+    {
+      number: 1,
+      title: "Upload Documents",
+      description:
+        "Securely upload your documents in any format - PDF, Word, Excel, PowerPoint, and more. Batch upload supported for enterprise workflows.",
+    },
+    {
+      number: 2,
+      title: "AI Analysis",
+      description:
+        "Our advanced AI scans your documents to identify sensitive information like PII, PHI, financial data, and custom patterns you define.",
+    },
+    {
+      number: 3,
+      title: "Review & Approve",
+      description:
+        "Preview all identified sensitive content with confidence scores. Accept, reject, or modify redactions with our intuitive review interface.",
+    },
+    {
+      number: 4,
+      title: "Download Secure Files",
+      description:
+        "Get your redacted documents with full audit trails. Original formatting preserved, sensitive data permanently removed.",
+    },
+  ],
 });
 </script>
 
@@ -99,17 +100,7 @@ const props = withDefaults(defineProps<Props>(), {
       <div
         class="w-12 h-12 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4"
       >
-        <svg
-          class="w-6 h-6 text-gray-900 dark:text-white"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-            clip-rule="evenodd"
-          />
-        </svg>
+        <CheckCircle2 class="w-6 h-6 text-gray-900 dark:text-white" />
       </div>
       <h4 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
         99.9%
@@ -123,17 +114,7 @@ const props = withDefaults(defineProps<Props>(), {
       <div
         class="w-12 h-12 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4"
       >
-        <svg
-          class="w-6 h-6 text-gray-900 dark:text-white"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-            clip-rule="evenodd"
-          />
-        </svg>
+        <Clock class="w-6 h-6 text-gray-900 dark:text-white" />
       </div>
       <h4 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
         &lt;60s
@@ -149,17 +130,7 @@ const props = withDefaults(defineProps<Props>(), {
       <div
         class="w-12 h-12 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4"
       >
-        <svg
-          class="w-6 h-6 text-gray-900 dark:text-white"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 01-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z"
-            clip-rule="evenodd"
-          />
-        </svg>
+        <Maximize class="w-6 h-6 text-gray-900 dark:text-white" />
       </div>
       <h4 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">50+</h4>
       <p class="text-sm text-gray-600 dark:text-neutral-400">File Formats</p>

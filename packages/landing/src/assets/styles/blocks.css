@@ -34,8 +34,6 @@ article .prose h1 {
 
 article .prose h2 {
 	font-size: 1.875rem; /* 30px */
-	border-bottom: 1px solid #e5e7eb;
-	padding-bottom: 0.5rem;
 }
 
 article .prose h3 {
@@ -152,38 +150,33 @@ article .prose img {
 }
 
 /* Dark mode support */
-@media (prefers-color-scheme: dark) {
-	article .prose h2 {
-		border-bottom-color: #374151;
-	}
+.dark article .prose a {
+	color: #60a5fa !important;
+	text-decoration: underline !important;
+}
 
-	article .prose a {
-		color: #60a5fa;
-	}
+.dark article .prose a:hover {
+	color: #93c5fd !important;
+}
 
-	article .prose a:hover {
-		color: #93c5fd;
-	}
+.dark article .prose blockquote {
+	border-left-color: #374151;
+	color: #9ca3af;
+}
 
-	article .prose blockquote {
-		border-left-color: #374151;
-		color: #9ca3af;
-	}
+.dark article .prose th,
+.dark article .prose td {
+	border-color: #374151;
+}
 
-	article .prose th,
-	article .prose td {
-		border-color: #374151;
-	}
+.dark article .prose th {
+	background-color: #1f2937;
+}
 
-	article .prose th {
-		background-color: #1f2937;
-	}
+.dark article .prose tr:nth-child(even) {
+	background-color: #1f2937;
+}
 
-	article .prose tr:nth-child(even) {
-		background-color: #1f2937;
-	}
-
-	article .prose hr {
-		border-top-color: #374151;
-	}
+.dark article .prose hr {
+	border-top-color: #374151;
 }

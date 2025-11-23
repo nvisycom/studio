@@ -37,9 +37,7 @@ const readingTime = calculateReadingTime(entry.body);
 
 // Get all blog entries for navigation
 const allPosts = (await getCollection("blog")).sort(
-	(a, b) =>
-		new Date(b.data.publishedAt).getTime() -
-		new Date(a.data.publishedAt).getTime(),
+	(a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
 );
 
 // Find current post index for navigation

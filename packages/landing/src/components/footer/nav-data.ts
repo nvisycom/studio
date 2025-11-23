@@ -6,7 +6,6 @@ export const footerSections: FooterSection[] = [
 		links: [
 			{ name: "Nvisy Cloud", href: "/products/cloud" },
 			{ name: "Nvisy Server", href: "/products/local" },
-			{ name: "Integrations", href: "/integrations" },
 			{
 				name: "Documentation",
 				href: "https://docs.nvisy.com",
@@ -17,6 +16,7 @@ export const footerSections: FooterSection[] = [
 				href: "https://docs.nvisy.com/api",
 				isExternal: true,
 			},
+			{ name: "Integrations", href: "/integrations" },
 		],
 	},
 	{
@@ -43,7 +43,7 @@ export const footerSections: FooterSection[] = [
 			{ name: "Privacy Policy", href: "/legal/privacy-policy" },
 			{ name: "Terms of Service", href: "/legal/terms-of-service" },
 			{ name: "Acceptable Use", href: "/legal/acceptable-use" },
-			{ name: "Accessibility", href: "/legal/accessibility" },
+			{ name: "Cookie Policy", href: "/legal/cookie-policy" },
 			{ name: "Subprocessors", href: "/legal/subprocessors" },
 		],
 	},

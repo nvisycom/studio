@@ -6,8 +6,9 @@
 
 ## Overview
 
-Landing page package for nvisy.com, built with Astro and Vue.
-Features modern component architecture with Tailwind CSS, MDX support, and optimized build outputs.
+Landing page package for nvisy.com, built with Astro and Vue. Features modern
+component architecture with Tailwind CSS, MDX support, and optimized build
+outputs.
 
 ## Tech Stack
 

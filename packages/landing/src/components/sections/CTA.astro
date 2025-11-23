@@ -1,8 +1,8 @@
 ---
 import { Github, Mail, ExternalLink } from "lucide-vue-next";
 import type { ButtonProps } from "@/components/types";
-import { getButtonClasses } from "@/utils/buttonStyles";
-import { getBackgroundClass } from "@/utils/backgroundStyles";
+import { getButtonClasses } from "@/lib/buttonStyles";
+import { getBackgroundClass } from "@/lib/backgroundStyles";
 
 export interface Props {
 	title?: string;
@@ -81,6 +81,7 @@ const maxWidthClasses = {
 								href={button.href}
 								class={getButtonClasses(button.variant || "primary")}
 								aria-label={button.text}
+								{...(button.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
 							>
 								{button.icon && (
 									<span class="flex-shrink-0">

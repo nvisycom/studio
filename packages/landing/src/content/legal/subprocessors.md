@@ -2,28 +2,25 @@
 title: "Subprocessors"
 description: "List of third-party subprocessors we work with to provide and improve our services."
 createdAt: 2021-07-08T12:00:00-04:00
-updatedAt: 2024-01-25T09:30:00-05:00
+updatedAt: 2025-11-22T09:30:00-05:00
 version: "1.0"
 ---
 
-### Heading
+We use the following third-party subprocessors to help us provide and improve
+our services:
 
-Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
-Ipsum has been the industry's standard dummy text ever since the 1500s, when an
-unknown printer took a galley of type and scrambled it to make a type specimen
-book. It has survived not only five centuries, but also the leap into electronic
-typesetting, remaining essentially unchanged. It was popularised in the 1960s
-with the release of Letraset sheets containing Lorem Ipsum passages, and more
-recently with desktop publishing software like Aldus PageMaker including
-versions of Lorem Ipsum.
+- [Render Services, Inc.](https://render.com/) (USA): Cloud hosting and
+  deployment platform
+- [Synadia Communications, Inc.](https://www.synadia.com/) (USA): NATS messaging
+  infrastructure
+- [RunPod, Inc.](https://www.runpod.io) (USA): GPU cloud computing
+- [OpenRouter](https://openrouter.ai) (USA): AI model routing and API services
+- [OpenStatus](https://www.openstatus.dev/) (Germany): Service monitoring and
+  status pages
+- [Stripe, Inc.](https://stripe.com/) (USA): Payment processing
+- [Resend, Inc.](https://resend.com) (USA): Transactional email delivery
+- [Cloudflare, Inc.](https://www.cloudflare.com/) (USA): CDN, DNS, and security
+  services
 
-### Heading
-
-Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
-Ipsum has been the industry's standard dummy text ever since the 1500s, when an
-unknown printer took a galley of type and scrambled it to make a type specimen
-book. It has survived not only five centuries, but also the leap into electronic
-typesetting, remaining essentially unchanged. It was popularised in the 1960s
-with the release of Letraset sheets containing Lorem Ipsum passages, and more
-recently with desktop publishing software like Aldus PageMaker including
-versions of Lorem Ipsum.
+All subprocessors are carefully selected to ensure they meet our security and
+privacy standards. This list is updated as we add or remove service providers.

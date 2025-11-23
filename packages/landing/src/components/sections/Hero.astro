@@ -1,7 +1,8 @@
 ---
 import type { ButtonProps } from "@/components/types";
-import { getButtonClasses } from "@/utils/buttonStyles";
-import { getBackgroundClass } from "@/utils/backgroundStyles";
+import { getButtonClasses } from "@/lib/buttonStyles";
+import { getBackgroundClass } from "@/lib/backgroundStyles";
+import { Play, ArrowRight, ExternalLink } from "lucide-vue-next";
 
 export interface Props {
 	title?: string;
@@ -119,24 +120,13 @@ const maxWidthClasses = {
 									href={button.href}
 									class={getButtonClasses(button.variant || "primary")}
 									aria-label={button.text}
+									{...(button.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
 								>
 									{button.icon && (
 										<span class="flex-shrink-0">
-											{button.icon === "play" && (
-												<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1M9 10v4a2 2 0 002 2h2a2 2 0 002-2v-4m-6 4a2 2 0 002 2h2a2 2 0 002-2M9 10V9a2 2 0 012-2h2a2 2 0 012 2v1m-6 0a2 2 0 002 2h2a2 2 0 002-2"/>
-												</svg>
-											)}
-											{button.icon === "arrow" && (
-												<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-												</svg>
-											)}
-											{button.icon === "external" && (
-												<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-												</svg>
-											)}
+											{button.icon === "play" && <Play class="w-5 h-5" />}
+											{button.icon === "arrow" && <ArrowRight class="w-5 h-5" />}
+											{button.icon === "external" && <ExternalLink class="w-5 h-5" />}
 										</span>
 									)}
 									{button.text}
@@ -149,21 +139,9 @@ const maxWidthClasses = {
 								>
 									{button.icon && (
 										<span class="flex-shrink-0">
-											{button.icon === "play" && (
-												<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1M9 10v4a2 2 0 002 2h2a2 2 0 002-2v-4m-6 4a2 2 0 002 2h2a2 2 0 002-2M9 10V9a2 2 0 012-2h2a2 2 0 012 2v1m-6 0a2 2 0 002 2h2a2 2 0 002-2"/>
-												</svg>
-											)}
-											{button.icon === "arrow" && (
-												<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-												</svg>
-											)}
-											{button.icon === "external" && (
-												<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-												</svg>
-											)}
+											{button.icon === "play" && <Play class="w-5 h-5" />}
+											{button.icon === "arrow" && <ArrowRight class="w-5 h-5" />}
+											{button.icon === "external" && <ExternalLink class="w-5 h-5" />}
 										</span>
 									)}
 									{button.text}

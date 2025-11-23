@@ -7,14 +7,13 @@ import { File } from "lucide-vue-next";
 
 // Get all blog entries and sort by publishedAt (newest first)
 const blogEntries = (await getCollection("blog"))
-	.map((entry) => ({
-		...entry,
-		readingTime: calculateReadingTime(entry.body),
-	}))
-	.sort(
-		(rhs, lhs) =>
-			lhs.data.publishedAt.getTime() - rhs.data.publishedAt.getTime(),
-	);
+	.map((entry) => {
+		return {
+			...entry,
+			readingTime: calculateReadingTime(entry.body),
+		};
+	})
+	.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
 ---
 
 <Layout title="Blog" description="Insights, stories, and updates from our team">
@@ -24,8 +23,6 @@ const blogEntries = (await getCollection("blog"))
       title="Stories & Insights"
       description="Discover the latest from our team. Engineering insights, product updates, and thought leadership from the people building the future."
       background="gradient"
-      fontSize="lg"
-      padding="lg"
       buttons={[]}
     />
 

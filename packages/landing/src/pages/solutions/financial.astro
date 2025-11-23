@@ -2,16 +2,12 @@
 import { Layout } from "@/layouts";
 import { Hero, CTA, CompanyStats } from "@/components";
 import {
-	DollarSign,
 	Shield,
 	Check,
 	Building,
-	Lock,
 	FileText,
-	Users,
 	Zap,
 	Globe,
-	Code,
 	AlertCircle,
 	BarChart3,
 } from "lucide-vue-next";
@@ -28,8 +24,6 @@ import {
       title="Financial Document Security"
       description="Protect customer PII and sensitive financial data with compliant document redaction. Built for banks, credit unions, fintech companies, and financial institutions that need reliable data protection while meeting regulatory requirements."
       background="gradient"
-      fontSize="xl"
-      padding="xl"
       buttons={[
         {
           text: "Schedule Demo",
@@ -40,20 +34,6 @@ import {
           text: "View Documentation",
           href: "https://docs.nvisy.com",
           variant: "secondary"
-        }
-      ]}
-      stats={[
-        {
-          value: "GDPR/CCPA",
-          label: "Compliant"
-        },
-        {
-          value: "PCI-DSS",
-          label: "Considerations"
-        },
-        {
-          value: "SOC II",
-          label: "In Progress"
         }
       ]}
     />

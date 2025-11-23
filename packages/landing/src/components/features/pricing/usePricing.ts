@@ -1,4 +1,4 @@
-import { ref, computed } from "vue";
+import { computed, ref } from "vue";
 import { plans, pricingConfig } from "./pricing-data";
 import type { PlanType } from "./pricing-data";
 
