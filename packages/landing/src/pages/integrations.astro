@@ -1,16 +1,14 @@
 ---
-import { Layout } from "@/layouts";
-import { CTA, Hero, IntegrationsGrid, DeveloperTools } from "@/components";
 import { getCollection } from "astro:content";
 
 // Get all integrations
 const integrations = await getCollection("integrations");
 
 // Separate regular integrations from developer tools
-const regularIntegrations = integrations.filter(
+const _regularIntegrations = integrations.filter(
 	(integration) => integration.data.category !== "Developer",
 );
-const developerIntegrations = integrations.filter(
+const _developerIntegrations = integrations.filter(
 	(integration) => integration.data.category === "Developer",
 );
 ---

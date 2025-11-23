@@ -32,13 +32,13 @@ const defaultStats: StatItem[] = [
 
 const statsData = stats || defaultStats;
 
-const bgClass = inline
+const _bgClass = inline
 	? ""
 	: backgroundColor === "gray"
 		? "bg-gray-50 dark:bg-neutral-950"
 		: "bg-white dark:bg-black";
 
-const paddingClass = inline
+const _paddingClass = inline
 	? ""
 	: padding === "sm"
 		? "pt-4 pb-16"
@@ -48,7 +48,7 @@ const paddingClass = inline
 				? "pt-8 pb-28"
 				: "pt-8 pb-32";
 
-const maxWidthClass =
+const _maxWidthClass =
 	maxWidth === "sm"
 		? "max-w-2xl"
 		: maxWidth === "md"
@@ -59,7 +59,7 @@ const maxWidthClass =
 					? "max-w-6xl"
 					: "max-w-none";
 
-const gridCols =
+const _gridCols =
 	statsData.length <= 2
 		? "grid-cols-1 sm:grid-cols-2"
 		: statsData.length === 3

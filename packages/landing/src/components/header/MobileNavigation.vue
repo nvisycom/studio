@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { Menu, X } from "lucide-vue-next";
-import MobileProducts from "./MobileProducts.vue";
-import MobileSolutions from "./MobileSolutions.vue";
-import MobileResources from "./MobileResources.vue";
 import { useMobileMenu } from "./useMobileMenu.ts";
 
 defineProps<{

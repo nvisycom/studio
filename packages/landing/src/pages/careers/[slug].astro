@@ -1,15 +1,5 @@
 ---
-import { Layout } from "@/layouts";
-import { getCollection, type CollectionEntry } from "astro:content";
-import { CTA } from "@/components";
-import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbLink,
-	BreadcrumbList,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import { type CollectionEntry, getCollection } from "astro:content";
 
 export async function getStaticPaths() {
 	try {
@@ -35,7 +25,7 @@ const { entry } = Astro.props;
 const { Content } = await entry.render();
 
 // Get all jobs for related positions
-const allJobs = (await getCollection("jobs"))
+const _allJobs = (await getCollection("jobs"))
 	.filter((job) => job.data.published !== false && job.slug !== entry.slug)
 	.slice(0, 2);
 

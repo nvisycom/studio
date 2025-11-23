@@ -21,7 +21,6 @@
 </template>
 
 <script setup lang="ts">
-import IntegrationCard from "./IntegrationCard.vue";
 import type { CollectionEntry } from "astro:content";
 
 interface Props {

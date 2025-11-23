@@ -1,24 +1,24 @@
 ---
 import { getCollection, getEntry } from "astro:content";
 import {
-	Check,
-	Lock,
-	Zap,
-	Shield,
-	ShieldCheck,
-	Link,
-	Users,
-	Server,
-	Code,
-	ClipboardCheck,
-	TrendingUp,
 	BarChart3,
+	Check,
+	ClipboardCheck,
+	Code,
+	Cog,
+	DollarSign,
 	Eye,
 	FileText,
-	Layers,
-	DollarSign,
-	Cog,
 	Globe,
+	Layers,
+	Link,
+	Lock,
+	Server,
+	Shield,
+	ShieldCheck,
+	TrendingUp,
+	Users,
+	Zap,
 } from "lucide-vue-next";
 import type { FunctionalComponent } from "vue";
 
@@ -45,7 +45,7 @@ const {
 } = Astro.props;
 
 // Fetch features from content if no features prop is provided
-let features: FeatureItem[] = propFeatures || [];
+let _features: FeatureItem[] = propFeatures || [];
 
 if (!propFeatures) {
 	if (category) {
@@ -61,7 +61,7 @@ if (!propFeatures) {
 				);
 			}
 
-			features = featureList
+			_features = featureList
 				.sort((a, b) => a.order - b.order)
 				.map((feature) => ({
 					title: feature.title,
@@ -81,7 +81,7 @@ if (!propFeatures) {
 			);
 		}
 
-		features = allFeaturesList
+		_features = allFeaturesList
 			.sort((a, b) => a.order - b.order)
 			.map((feature) => ({
 				title: feature.title,
@@ -91,7 +91,7 @@ if (!propFeatures) {
 	}
 }
 
-const iconComponents: Record<string, FunctionalComponent> = {
+const _iconComponents: Record<string, FunctionalComponent> = {
 	check: Check,
 	lock: Lock,
 	zap: Zap,

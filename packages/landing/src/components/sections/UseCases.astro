@@ -1,5 +1,5 @@
 ---
-import { FileText, DollarSign, Heart, Building } from "lucide-vue-next";
+import { Building, DollarSign, FileText, Heart } from "lucide-vue-next";
 
 export interface UseCase {
 	title: string;
@@ -46,13 +46,13 @@ const {
 	],
 } = Astro.props;
 
-const backgroundClasses = {
+const _backgroundClasses = {
 	white: "bg-white dark:bg-black",
 	gray: "bg-gray-50 dark:bg-neutral-950",
 	dark: "bg-gray-900 dark:bg-black",
 };
 
-const getIcon = (iconName: UseCase["icon"]) => {
+const _getIcon = (iconName: UseCase["icon"]) => {
 	const icons = {
 		document: FileText,
 		dollar: DollarSign,

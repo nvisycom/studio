@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { ChevronDown } from "lucide-vue-next";
 import { ref } from "vue";
-import { solutions } from "./mobile-nav-data";
 
 const isOpen = ref(false);
 
-const toggle = () => {
+const _toggle = () => {
 	isOpen.value = !isOpen.value;
 };
 </script>

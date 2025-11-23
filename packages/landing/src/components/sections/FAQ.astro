@@ -1,6 +1,5 @@
 ---
 import { getCollection, getEntry } from "astro:content";
-import { FAQAccordion } from "../features/faq";
 
 export interface FAQItem {
 	question: string;
@@ -28,7 +27,7 @@ const {
 } = Astro.props;
 
 // Fetch FAQs from content if no faqs prop is provided
-let faqs: FAQItem[] = propFaqs || [];
+let _faqs: FAQItem[] = propFaqs || [];
 
 if (!propFaqs) {
 	if (category) {
@@ -42,7 +41,7 @@ if (!propFaqs) {
 				faqList = faqList.filter((faq) => faq.featured === featured);
 			}
 
-			faqs = faqList
+			_faqs = faqList
 				.sort((a, b) => a.order - b.order)
 				.map((faq) => ({
 					question: faq.question,
@@ -59,7 +58,7 @@ if (!propFaqs) {
 			allFaqsList = allFaqsList.filter((faq) => faq.featured === featured);
 		}
 
-		faqs = allFaqsList
+		_faqs = allFaqsList
 			.sort((a, b) => a.order - b.order)
 			.map((faq) => ({
 				question: faq.question,
@@ -68,11 +67,11 @@ if (!propFaqs) {
 	}
 }
 
-const bgClass =
+const _bgClass =
 	backgroundColor === "gray"
 		? "bg-gray-50 dark:bg-neutral-950"
 		: "bg-white dark:bg-black";
-const maxWidthClass = `max-w-${maxWidth}`;
+const _maxWidthClass = `max-w-${maxWidth}`;
 ---
 
 <section class={`py-12 md:py-20 ${bgClass}`}>

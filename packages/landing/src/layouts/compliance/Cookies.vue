@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { onMounted, ref } from "vue";
 
 /**
  * Cookie consent preferences structure
@@ -78,7 +78,7 @@ function hidePopup(): void {
 /**
  * Handle user clicking "Accept All" - grants consent for all cookie types
  */
-function handleAcceptAll(): void {
+function _handleAcceptAll(): void {
 	const consent = {
 		necessary: true,
 		analytics: true,
@@ -102,7 +102,7 @@ function handleAcceptAll(): void {
 /**
  * Handle user clicking "Essential Only" - only allows necessary cookies
  */
-function handleNecessaryOnly(): void {
+function _handleNecessaryOnly(): void {
 	const consent = {
 		necessary: true,
 		analytics: false,
@@ -126,7 +126,7 @@ function handleNecessaryOnly(): void {
 /**
  * Handle user clicking "Decline" - rejects optional cookies
  */
-function handleDecline(): void {
+function _handleDecline(): void {
 	const consent = {
 		necessary: true, // Necessary cookies are always required
 		analytics: false,

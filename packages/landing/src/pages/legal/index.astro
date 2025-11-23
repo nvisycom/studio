@@ -1,8 +1,5 @@
 ---
-import { Layout } from "@/layouts";
-import { getCollection, type CollectionEntry } from "astro:content";
-import { CTA, Hero, LegalCard } from "@/components";
-import { File } from "lucide-vue-next";
+import { type CollectionEntry, getCollection } from "astro:content";
 
 // Get all legal documents
 let legalEntries: CollectionEntry<"legal">[] = [];

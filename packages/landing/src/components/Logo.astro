@@ -1,7 +1,4 @@
 ---
-import { Image } from "astro:assets";
-import logo from "@/assets/brand/nvisy.png";
-
 export interface Props {
 	/** Whether the logo should be a clickable link to home page */
 	asLink?: boolean;
@@ -26,7 +23,7 @@ const sizeClasses = {
 	lg: "w-16 h-16",
 };
 
-const logoClass = `${sizeClasses[size]} ${className}`;
+const _logoClass = `${sizeClasses[size]} ${className}`;
 ---
 
 {asLink ? (

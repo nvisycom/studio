@@ -51,27 +51,27 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import {
-	// Main icons
-	Cloud,
-	Zap,
-	Settings,
-	Rocket,
-	MessageSquare,
 	Building,
-	FileText,
-	Shield,
-	Server,
-	Code,
-	Code2,
-	Link,
+	Calendar,
 	// Status icons
 	CircleCheck,
 	Clock,
-	Calendar,
+	// Main icons
+	Cloud,
+	Code,
+	Code2,
+	FileText,
+	Link,
+	MessageSquare,
+	Rocket,
+	Server,
+	Settings,
+	Shield,
+	Zap,
 	// Version icon
 } from "lucide-vue-next";
+import { computed } from "vue";
 
 interface Props {
 	icon: string;

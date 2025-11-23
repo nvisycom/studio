@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { usePricing } from "./usePricing";
 import { pricingConfig } from "./pricing-data";
+import { usePricing } from "./usePricing";
 
 const { isYearly, toggleBilling } = usePricing();
 

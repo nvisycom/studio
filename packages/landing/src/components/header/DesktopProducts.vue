@@ -1,12 +1,5 @@
 <script setup lang="ts">
-import {
-	NavigationMenuContent,
-	NavigationMenuItem,
-	NavigationMenuLink,
-	NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
-import { ExternalLink } from "lucide-vue-next";
-import { products } from "./desktop-nav-data";
+
 </script>
 
 <template>

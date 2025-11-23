@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import type { ComboboxInputEmits, ComboboxInputProps } from "reka-ui";
-import type { HTMLAttributes } from "vue";
 import { reactiveOmit } from "@vueuse/core";
-import { SearchIcon } from "lucide-vue-next";
-import { ComboboxInput, useForwardPropsEmits } from "reka-ui";
-import { cn } from "@/lib/utils";
+import type { ComboboxInputEmits, ComboboxInputProps } from "reka-ui";
+import { useForwardPropsEmits } from "reka-ui";
+import type { HTMLAttributes } from "vue";
 
 defineOptions({
 	inheritAttrs: false,
@@ -20,7 +18,7 @@ const emits = defineEmits<ComboboxInputEmits>();
 
 const delegatedProps = reactiveOmit(props, "class");
 
-const forwarded = useForwardPropsEmits(delegatedProps, emits);
+const _forwarded = useForwardPropsEmits(delegatedProps, emits);
 </script>
 
 <template>

@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/content";
-import LinkedInIcon from "@/assets/icons/linkedin.svg?raw";
-import GitHubIcon from "@/assets/icons/github.svg?raw";
 
 interface Props {
 	name: string;
@@ -13,7 +10,7 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-const initials = getInitials(props.name);
+const _initials = getInitials(props.name);
 
 // Generate unique gradient for each team member
 const gradients = [
@@ -28,7 +25,7 @@ const gradients = [
 const gradientIndex =
 	props.name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) %
 	gradients.length;
-const gradient = gradients[gradientIndex];
+const _gradient = gradients[gradientIndex];
 </script>
 
 <template>

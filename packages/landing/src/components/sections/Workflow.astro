@@ -1,5 +1,4 @@
 ---
-import { WorkflowStepper } from "../features/workflow";
 import type { BackgroundVariant } from "@/components/types";
 
 export interface Props {
@@ -14,7 +13,7 @@ const {
 	description = "Our AI-powered redaction process is designed for simplicity and accuracy. Get from sensitive documents to secure, compliant files in just a few clicks.",
 } = Astro.props;
 
-const bgClass =
+const _bgClass =
 	backgroundColor === "gray"
 		? "bg-gray-50 dark:bg-neutral-950"
 		: "bg-white dark:bg-black";

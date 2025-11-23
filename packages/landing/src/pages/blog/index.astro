@@ -1,12 +1,9 @@
 ---
-import { Layout } from "@/layouts";
-import { Hero } from "@/components";
-import { calculateReadingTime } from "@/lib/content";
 import { getCollection } from "astro:content";
-import { File } from "lucide-vue-next";
+import { calculateReadingTime } from "@/lib/content";
 
 // Get all blog entries and sort by publishedAt (newest first)
-const blogEntries = (await getCollection("blog"))
+const _blogEntries = (await getCollection("blog"))
 	.map((entry) => {
 		return {
 			...entry,

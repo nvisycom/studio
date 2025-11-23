@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 
 interface Props {
 	slug: string;
@@ -32,12 +32,12 @@ const currentTime = ref<Date>(new Date());
 const timeIntervalId = ref<number | null>(null);
 
 // Status configuration computed property
-const statusConfig = computed(() => {
+const _statusConfig = computed(() => {
 	return getStatusConfig(currentStatus.value);
 });
 
 // Update timestamp computed property
-const updateTimestamp = computed(() => {
+const _updateTimestamp = computed(() => {
 	if (!lastUpdated.value) {
 		return "";
 	}
@@ -107,7 +107,7 @@ async function updateStatus() {
 
 		if (response.ok) {
 			const data = await response.json();
-			if (data && data.status) {
+			if (data?.status) {
 				currentStatus.value = data.status;
 				lastUpdated.value = new Date();
 			} else {

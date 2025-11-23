@@ -1,5 +1,5 @@
 ---
-import { ShieldCheck, Lock, Box, Award, Shield } from "lucide-vue-next";
+import { Award, Box, Lock, Shield, ShieldCheck } from "lucide-vue-next";
 
 export interface SecurityFeature {
 	title: string;
@@ -69,13 +69,13 @@ const {
 	],
 } = Astro.props;
 
-const backgroundClasses = {
+const _backgroundClasses = {
 	white: "bg-white dark:bg-black",
 	gray: "bg-gray-50 dark:bg-neutral-950",
 	dark: "bg-gray-900 dark:bg-black",
 };
 
-const getIcon = (iconName: string) => {
+const _getIcon = (iconName: string) => {
 	const icons = {
 		"shield-check": ShieldCheck,
 		lock: Lock,

@@ -1,22 +1,20 @@
 ---
+import { getCollection } from "astro:content";
 import {
-	Cloud,
 	Building,
-	MessageSquare,
-	Zap,
-	Server,
-	Shield,
-	Rocket,
-	Settings,
+	Cloud,
 	Code,
 	Code2,
-	Link,
 	FileText,
-	ChevronRight,
+	Link,
+	MessageSquare,
+	Rocket,
+	Server,
+	Settings,
+	Shield,
+	Zap,
 } from "lucide-vue-next";
-import { getCollection } from "astro:content";
 import type { FunctionalComponent } from "vue";
-import { Button } from "@/components/ui/button";
 
 export interface Props {
 	title?: string;
@@ -32,7 +30,7 @@ const {
 
 // Get all integrations and filter for completed or v1+
 const allIntegrations = await getCollection("integrations");
-const featuredIntegrations = allIntegrations
+const _featuredIntegrations = allIntegrations
 	.filter(
 		(integration) =>
 			integration.data.status === "Completed" ||
@@ -42,7 +40,7 @@ const featuredIntegrations = allIntegrations
 	.slice(0, 6);
 
 // Icon mapping from FontAwesome to Lucide
-const getIcon = (iconName: string) => {
+const _getIcon = (iconName: string) => {
 	const iconMap: Record<string, FunctionalComponent> = {
 		"google-drive": Cloud,
 		dropbox: Cloud,
@@ -64,7 +62,7 @@ const getIcon = (iconName: string) => {
 	return iconMap[iconName] || FileText;
 };
 
-const bgClass =
+const _bgClass =
 	backgroundColor === "gray"
 		? "bg-gray-50 dark:bg-neutral-950"
 		: "bg-white dark:bg-black";

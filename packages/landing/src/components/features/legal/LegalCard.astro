@@ -1,6 +1,5 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { ChevronRight, Clock, File } from "lucide-vue-next";
 
 interface Props {
 	entry: CollectionEntry<"legal">;
@@ -8,7 +7,7 @@ interface Props {
 
 const { entry } = Astro.props;
 
-const formatDate = (date: Date): string => {
+const _formatDate = (date: Date): string => {
 	return new Date(date).toLocaleDateString("en-US", {
 		month: "short",
 		day: "numeric",
