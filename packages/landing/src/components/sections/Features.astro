@@ -19,6 +19,7 @@ import {
 	DollarSign,
 	Cog,
 	Globe,
+	Award,
 } from "lucide-vue-next";
 import type { FunctionalComponent } from "vue";
 
@@ -110,6 +111,11 @@ const iconComponents: Record<string, FunctionalComponent> = {
 	"dollar-sign": DollarSign,
 	cog: Cog,
 	globe: Globe,
+	award: Award,
+};
+
+const getIcon = (iconName: string) => {
+	return iconComponents[iconName] || Check;
 };
 ---
 
@@ -126,7 +132,7 @@ const iconComponents: Record<string, FunctionalComponent> = {
 
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
       {features.map((feature) => {
-        const IconComponent = iconComponents[feature.icon] || Check;
+        const IconComponent = getIcon(feature.icon);
         return (
           <div class="text-center p-6 md:p-8 border border-neutral-100 dark:border-neutral-800 bg-white dark:bg-black rounded-lg hover:border-neutral-200 dark:hover:border-neutral-700 transition-all duration-200">
             <div class="w-10 h-10 md:w-12 md:h-12 bg-black dark:bg-white rounded-lg flex items-center justify-center mx-auto mb-4 md:mb-6">

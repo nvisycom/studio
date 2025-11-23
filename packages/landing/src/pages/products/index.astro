@@ -7,9 +7,9 @@ import {
 	Check,
 	Monitor,
 	Code2,
-	Github,
 	ExternalLink,
 } from "lucide-vue-next";
+import GithubIcon from "@/assets/icons/github.svg?raw";
 ---
 
 <Layout
@@ -225,7 +225,7 @@ import {
                 href="https://github.com/nvisycom/server"
                 class="flex-1 inline-flex items-center justify-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-black font-medium py-3 px-6 rounded-xl hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all duration-200 text-sm md:text-base"
               >
-                <Github class="w-4 h-4" />
+                <Fragment set:html={GithubIcon} />
                 GitHub
               </a>
               <a
@@ -334,7 +334,7 @@ import {
                 href="https://github.com/nvisycom/sdk-ts"
                 class="flex-1 inline-flex items-center justify-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-black font-medium py-2 px-4 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors text-sm"
               >
-                <Github class="w-4 h-4" />
+                <Fragment set:html={GithubIcon} />
                 GitHub
               </a>
               <a
@@ -385,7 +385,7 @@ import {
                 href="https://github.com/nvisycom/sdk-py"
                 class="flex-1 inline-flex items-center justify-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-black font-medium py-2 px-4 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors text-sm"
               >
-                <Github class="w-4 h-4" />
+                <Fragment set:html={GithubIcon} />
                 GitHub
               </a>
               <a

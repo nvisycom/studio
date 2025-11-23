@@ -1,10 +1,11 @@
 ---
-import { FileText, DollarSign, Heart, Building } from "lucide-vue-next";
+import { FileText, DollarSign, Heart, Building, Briefcase, Rocket, ChevronRight } from "lucide-vue-next";
 
 export interface UseCase {
 	title: string;
 	description: string;
-	icon: "document" | "dollar" | "heart" | "building";
+	icon: "document" | "dollar" | "heart" | "building" | "briefcase" | "rocket";
+	href: string;
 }
 
 export interface Props {
@@ -15,33 +16,51 @@ export interface Props {
 }
 
 const {
-	title = "Trusted Across Industries",
-	description = "Organizations around the world use our AI-powered redaction technology to protect sensitive information across legal, financial, healthcare, and government sectors.",
+	title = "Built for Every Industry",
+	description = "From legal firms to healthcare providers, organizations worldwide rely on Nvisy to protect their most sensitive documents.",
 	backgroundColor = "white",
 	useCases = [
 		{
-			title: "Legal & Compliance",
+			title: "Healthcare",
 			description:
-				"Redact client information, case details, and privileged communications while maintaining legal document integrity.",
-			icon: "document",
+				"HIPAA-compliant redaction for patient records, medical histories, and research data.",
+			icon: "heart",
+			href: "/solutions/healthcare",
 		},
 		{
 			title: "Financial Services",
 			description:
-				"Protect account numbers, financial data, and personal information in documents and customer communications.",
+				"Secure financial data, account numbers, and PII in customer communications.",
 			icon: "dollar",
+			href: "/solutions/financial",
 		},
 		{
-			title: "Healthcare",
+			title: "Insurance",
 			description:
-				"Privacy-compliant redaction of patient records, medical histories, and research data for secure information sharing.",
-			icon: "heart",
+				"Protect policyholder information and claims data while maintaining compliance.",
+			icon: "briefcase",
+			href: "/solutions/insurance",
 		},
 		{
 			title: "Government",
 			description:
-				"Redact classified information and personal identifiers for public disclosures and information requests.",
+				"Redact classified information for FOIA requests and public disclosures.",
 			icon: "building",
+			href: "/solutions/government",
+		},
+		{
+			title: "Enterprise",
+			description:
+				"Scale document security across your entire organization with enterprise tools.",
+			icon: "building",
+			href: "/solutions/enterprise",
+		},
+		{
+			title: "Startups",
+			description:
+				"Developer-friendly APIs and startup pricing to build privacy into your product.",
+			icon: "rocket",
+			href: "/solutions/startup",
 		},
 	],
 } = Astro.props;
@@ -58,6 +77,8 @@ const getIcon = (iconName: UseCase["icon"]) => {
 		dollar: DollarSign,
 		heart: Heart,
 		building: Building,
+		briefcase: Briefcase,
+		rocket: Rocket,
 	};
 	return icons[iconName];
 };
@@ -78,25 +99,31 @@ const getIcon = (iconName: UseCase["icon"]) => {
 		</header>
 
 		<!-- Use Cases Grid -->
-		<div class="grid sm:grid-cols-2 gap-4 md:gap-6">
+		<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
 			{useCases.map((useCase) => {
 				const IconComponent = getIcon(useCase.icon);
 				return (
-					<article class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 transition-all duration-300 hover:shadow-lg p-6 md:p-8">
-						<div class="flex items-start gap-4 md:gap-6">
+					<a
+						href={useCase.href}
+						class="group bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 transition-all duration-300 hover:shadow-lg p-6 md:p-8 no-underline relative block"
+					>
+						<div class="absolute top-4 right-4 text-gray-400 dark:text-neutral-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
+							<ChevronRight class="w-5 h-5" aria-hidden="true" />
+						</div>
+						<div class="flex items-start gap-4 mb-4">
 							<div class="w-10 h-10 md:w-12 md:h-12 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center flex-shrink-0 text-gray-900 dark:text-white">
 								<IconComponent class="w-5 h-5 md:w-6 md:h-6" aria-hidden="true" />
 							</div>
-							<div class="flex-1">
-								<h3 class="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-2 md:mb-3">
-									{useCase.title}
-								</h3>
-								<p class="text-sm md:text-base text-gray-700 dark:text-neutral-300 leading-relaxed">
-									{useCase.description}
-								</p>
-							</div>
 						</div>
-					</article>
+						<div>
+							<h3 class="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-2 md:mb-3">
+								{useCase.title}
+							</h3>
+							<p class="text-sm md:text-base text-gray-700 dark:text-neutral-300 leading-relaxed">
+								{useCase.description}
+							</p>
+						</div>
+					</a>
 				);
 			})}
 		</div>

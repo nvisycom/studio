@@ -1,7 +1,7 @@
 ---
 import { getCollection, getEntry } from "astro:content";
-import type { TestimonialItem } from "@/content.config.ts";
-import { Quote, Star, CheckCircle2, Users } from "lucide-vue-next";
+import type { TestimonialItem } from "@/content/config";
+import { Quote, CheckCircle2, Users } from "lucide-vue-next";
 
 export interface Props {
 	title?: string;
@@ -10,7 +10,6 @@ export interface Props {
 	category?: string;
 	featured?: boolean;
 	limit?: number;
-	testimonials?: TestimonialItem[];
 }
 
 const {
@@ -20,7 +19,6 @@ const {
 	category,
 	featured = true,
 	limit = 6,
-	testimonials,
 } = Astro.props;
 
 async function getTestimonials(category?: string): Promise<TestimonialItem[]> {
@@ -33,12 +31,10 @@ async function getTestimonials(category?: string): Promise<TestimonialItem[]> {
 	}
 }
 
-const allTestimonials: TestimonialItem[] =
-	testimonials ||
-	(await getTestimonials(category))
-		.filter((testimonial) => testimonial.featured === featured)
-		.sort((lhs, rhs) => lhs.order - rhs.order)
-		.slice(0, limit);
+const allTestimonials: TestimonialItem[] = (await getTestimonials(category))
+	.filter((testimonial) => testimonial.featured === featured)
+	.sort((lhs, rhs) => lhs.order - rhs.order)
+	.slice(0, limit);
 
 const bgClass =
 	backgroundColor === "gray"
@@ -82,7 +78,7 @@ const bgClass =
               ) : (
                 <div class="w-10 h-10 bg-gray-200 dark:bg-neutral-600 rounded-full flex items-center justify-center">
                   <span class="text-gray-600 dark:text-neutral-300 font-semibold text-sm">
-                    {testimonial.author.split(' ').map(name => name.charAt(0)).join('')}
+                    {testimonial.author.split(' ').map((name: string) => name.charAt(0)).join('')}
                   </span>
                 </div>
               )}

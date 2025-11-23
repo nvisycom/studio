@@ -1,5 +1,6 @@
 ---
-import { Github, Mail, ExternalLink } from "lucide-vue-next";
+import { Mail, ExternalLink } from "lucide-vue-next";
+import GithubIcon from "@/assets/icons/github.svg";
 import type { ButtonProps } from "@/components/types";
 import { getButtonClasses } from "@/lib/buttonStyles";
 import { getBackgroundClass } from "@/lib/backgroundStyles";
@@ -85,7 +86,7 @@ const maxWidthClasses = {
 							>
 								{button.icon && (
 									<span class="flex-shrink-0">
-										{button.icon === "github" && <Github class="w-5 h-5" />}
+										{button.icon === "github" && <Fragment set:html={GithubIcon} />}
 										{button.icon === "mail" && <Mail class="w-5 h-5" />}
 										{button.icon === "external" && <ExternalLink class="w-5 h-5" />}
 									</span>
@@ -100,7 +101,7 @@ const maxWidthClasses = {
 							>
 								{button.icon && (
 									<span class="flex-shrink-0">
-										{button.icon === "github" && <Github class="w-5 h-5" />}
+										{button.icon === "github" && <Fragment set:html={GithubIcon} />}
 										{button.icon === "mail" && <Mail class="w-5 h-5" />}
 										{button.icon === "external" && <ExternalLink class="w-5 h-5" />}
 									</span>

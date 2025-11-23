@@ -6,7 +6,6 @@ import {
 	Zap,
 	DollarSign,
 	Shield,
-	Github,
 	Book,
 	Check,
 	Globe,
@@ -14,6 +13,7 @@ import {
 	Heart,
 	Lock,
 } from "lucide-vue-next";
+import GithubIcon from "@/assets/icons/github.svg?raw";
 ---
 
 <Layout
@@ -108,7 +108,7 @@ import {
 
           <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
             <div class="w-12 h-12 bg-neutral-100 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-6">
-              <Github class="w-6 h-6 text-neutral-700 dark:text-neutral-300" />
+              <Fragment set:html={GithubIcon} />
             </div>
             <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Open Source Core</h3>
             <p class="text-neutral-600 dark:text-neutral-300 mb-4">
