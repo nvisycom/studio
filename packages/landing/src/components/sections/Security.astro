@@ -88,34 +88,34 @@ const getIcon = (iconName: string) => {
 ---
 
 <section class={backgroundClasses[backgroundColor]} aria-labelledby="security-title">
-	<div class="container mx-auto px-4 py-20">
+	<div class="container mx-auto px-4 py-12 md:py-20">
 		<div class="max-w-6xl mx-auto">
 			<!-- Header -->
-			<header class="text-center mb-16">
-				<h2 id="security-title" class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+			<header class="text-center mb-12 md:mb-16">
+				<h2 id="security-title" class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3 md:mb-4">
 					{title}
 				</h2>
-				<p class="text-lg text-gray-600 dark:text-neutral-300 max-w-3xl mx-auto">
+				<p class="text-base md:text-lg text-gray-600 dark:text-neutral-300 max-w-3xl mx-auto px-4">
 					{description}
 				</p>
 			</header>
 
 			<!-- Security Features -->
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12" role="list">
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-8 md:mb-12" role="list">
 				{features.map((feature) => {
 					const IconComponent = getIcon(feature.icon);
 					return (
 						<article
-							class="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl p-8 hover:border-gray-300 dark:hover:border-neutral-700 transition-colors"
+							class="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl p-6 md:p-8 hover:border-gray-300 dark:hover:border-neutral-700 transition-colors"
 							role="listitem"
 						>
-							<div class="mb-6" aria-hidden="true">
-								<IconComponent class="w-8 h-8 text-blue-600 dark:text-blue-400" />
+							<div class="mb-4 md:mb-6" aria-hidden="true">
+								<IconComponent class="w-7 h-7 md:w-8 md:h-8 text-blue-600 dark:text-blue-400" />
 							</div>
-							<h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+							<h3 class="text-lg md:text-xl font-semibold text-gray-900 dark:text-white mb-2 md:mb-3">
 								{feature.title}
 							</h3>
-							<p class="text-gray-600 dark:text-neutral-400 leading-relaxed">
+							<p class="text-sm md:text-base text-gray-600 dark:text-neutral-400 leading-relaxed">
 								{feature.description}
 							</p>
 						</article>
@@ -124,18 +124,18 @@ const getIcon = (iconName: string) => {
 			</div>
 
 			<!-- Compliance Badges -->
-			<div class="grid grid-cols-2 md:grid-cols-4 gap-6" role="list" aria-label="Compliance certifications">
+			<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6" role="list" aria-label="Compliance certifications">
 				{badges.map((badge) => {
 					const IconComponent = getIcon(badge.icon);
 					return (
 						<article
-							class="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl p-6 text-center hover:border-gray-300 dark:hover:border-neutral-700 transition-colors"
+							class="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl p-4 md:p-6 text-center hover:border-gray-300 dark:hover:border-neutral-700 transition-colors"
 							role="listitem"
 						>
-							<div class="mb-4 flex justify-center" aria-hidden="true">
-								<IconComponent class="w-10 h-10 text-gray-700 dark:text-neutral-300" />
+							<div class="mb-3 md:mb-4 flex justify-center" aria-hidden="true">
+								<IconComponent class="w-8 h-8 md:w-10 md:h-10 text-gray-700 dark:text-neutral-300" />
 							</div>
-							<h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+							<h4 class="text-xs md:text-sm font-semibold text-gray-900 dark:text-white mb-1">
 								{badge.title}
 							</h4>
 							<p class="text-xs text-gray-600 dark:text-neutral-400">

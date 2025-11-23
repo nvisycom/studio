@@ -16,11 +16,11 @@ import {
 
 // SEO and metadata
 const pageTitle =
-	"AI-Powered Document Redaction | Enterprise Security Platform";
+	"AI-Powered Document Redaction | Nvisy - Protect Sensitive Information";
 const pageDescription =
-	"Secure your sensitive documents with AI-powered redaction. Enterprise-grade security, 99.9% accuracy, SOC 2 compliant. Start your free trial today.";
+	"Redact sensitive information from documents automatically with AI. 99.9% accuracy, SOC 2 compliant, trusted by 500+ enterprises. Start free today.";
 const pageKeywords =
-	"document redaction, AI security, enterprise compliance, data protection, GDPR, HIPAA, document processing";
+	"document redaction, AI redaction, automated redaction, PII removal, data privacy, GDPR compliance, HIPAA compliance, sensitive data protection";
 ---
 
 <Layout
@@ -30,106 +30,128 @@ const pageKeywords =
 >
 	<main class="overflow-hidden">
 		<!-- Hero Section - Immediate Impact -->
-		<Hero />
+		<Hero
+			title="Redact Sensitive Information in Seconds"
+			titleHighlight="Redact"
+			description="Automatically identify and remove PII, PHI, and confidential data from any document. AI-powered precision that saves hours of manual work while ensuring compliance."
+			buttons={[
+				{
+					text: "Start Free Trial",
+					href: "/pricing",
+					variant: "primary"
+				},
+				{
+					text: "See How It Works",
+					href: "#workflow",
+					variant: "secondary"
+				}
+			]}
+		/>
 
 		<!-- Social Proof - Press & Recognition -->
-		<section class="py-12 md:py-16">
-			<PressCarousel
-				title="Trusted by Industry Leaders"
-				subtitle="Featured in leading technology publications"
-			/>
-		</section>
+		<PressCarousel
+			title="Trusted by Industry Leaders"
+			subtitle="Featured in leading technology publications"
+		/>
 
 		<!-- Impact Metrics - Quick Wins -->
-		<section class="bg-white dark:bg-black py-16 md:py-24">
-			<Stats
-				title="Proven Results at Scale"
-				backgroundColor="white"
-				stats={[
-					{
-						value: "99.9%",
-						label: "Redaction Accuracy",
-						description: "AI-powered precision"
-					},
-					{
-						value: "10M+",
-						label: "Documents Secured",
-						description: "Every month"
-					},
-					{
-						value: "500+",
-						label: "Enterprise Clients",
-						description: "Across 50+ countries"
-					},
-					{
-						value: "<1min",
-						label: "Average Processing",
-						description: "Lightning fast"
-					}
-				]}
-			/>
-		</section>
-
-		<!-- Features Section - Core Value Props -->
-		<section class="bg-gradient-to-b from-white to-neutral-50 dark:from-black dark:to-neutral-950 py-16 md:py-24">
-			<Features category="general" featured={true} />
-		</section>
+		<Stats
+			title="Trusted by Enterprises Worldwide"
+			backgroundColor="gray"
+			stats={[
+				{
+					value: "99.9%",
+					label: "Accuracy Rate",
+					description: "AI-powered precision"
+				},
+				{
+					value: "10M+",
+					label: "Pages Redacted",
+					description: "Every month"
+				},
+				{
+					value: "500+",
+					label: "Companies",
+					description: "Across 50+ countries"
+				},
+				{
+					value: "<60s",
+					label: "Avg. Time",
+					description: "Per document"
+				}
+			]}
+		/>
 
 		<!-- Workflow Section - How It Works -->
-		<section class="bg-white dark:bg-black py-16 md:py-24">
-			<Workflow backgroundColor="white" />
-		</section>
+		<div id="workflow">
+			<Workflow
+				backgroundColor="white"
+				title="How It Works"
+				description="Four simple steps from upload to secure, compliant documents. Our AI does the heavy lifting while you stay in control."
+			/>
+		</div>
+
+		<!-- Features Section - Core Value Props -->
+		<Features
+			category="general"
+			featured={true}
+			title="Enterprise-Grade Document Security"
+			description="Everything you need to protect sensitive information at scale. Advanced AI meets strict compliance requirements."
+		/>
 
 		<!-- Security & Compliance - Build Trust Early -->
-		<section class="bg-neutral-50 dark:bg-neutral-950 py-16 md:py-24">
-			<Security backgroundColor="gray" />
-		</section>
+		<Security
+			backgroundColor="white"
+			title="Security & Compliance Built In"
+			description="Enterprise-grade security with the compliance certifications your organization needs. Your data never leaves your control."
+		/>
 
 		<!-- Use Cases Section - Real-World Applications -->
-		<section class="bg-white dark:bg-black py-16 md:py-24">
-			<UseCases />
-		</section>
+		<UseCases
+			title="Built for Every Industry"
+			description="From legal firms to healthcare providers, organizations worldwide rely on Nvisy to protect their most sensitive documents."
+		/>
 
 		<!-- Testimonials Section - Customer Stories -->
-		<section class="bg-neutral-50 dark:bg-neutral-950 py-16 md:py-24">
-			<Testimonials backgroundColor="white" />
-		</section>
+		<Testimonials
+			backgroundColor="white"
+			title="Loved by Teams Worldwide"
+			description="Join hundreds of companies that trust Nvisy to protect their sensitive information."
+		/>
 
 		<!-- Integrations Section - Easy Integration -->
-		<section class="bg-white dark:bg-black py-16 md:py-24">
-			<Integrations backgroundColor="white" />
-		</section>
+		<Integrations
+			backgroundColor="gray"
+			title="Works with Your Workflow"
+			description="Seamlessly integrate with the tools you already use. Connect via API or use our integrations with popular platforms."
+		/>
 
 		<!-- FAQ Section - Answer Objections -->
-		<section class="bg-neutral-50 dark:bg-neutral-950 py-16 md:py-24">
-			<FAQ
-				title="Common Questions"
-				description="Everything you need to know to get started with confidence"
-				backgroundColor="gray"
-				category="general"
-				featured={true}
-			/>
-		</section>
+		<FAQ
+			title="Common Questions"
+			description="Everything you need to know about protecting your documents with Nvisy"
+			backgroundColor="white"
+			category="general"
+			featured={true}
+		/>
 
 		<!-- Final CTA - Strong Close -->
-		<section class="py-16 md:py-24">
-			<CTA
-				title="Start Securing Your Documents Today"
-				description="Join 500+ enterprises protecting sensitive information with AI-powered redaction. No credit card required."
-				background="gradient"
-				buttons={[
-					{
-						text: "Start Free Trial",
-						href: "/dashboard",
-						variant: "primary"
-					},
-					{
-						text: "Schedule Demo",
-						href: "/contact",
-						variant: "secondary"
-					}
-				]}
-			/>
-		</section>
+		<CTA
+			title="Ready to Protect Your Documents?"
+			description="Join 500+ companies already using Nvisy. Start with 100 free pages, no credit card required."
+			background="gradient"
+			buttons={[
+				{
+					text: "Start Free Trial",
+					href: "/pricing",
+					variant: "primary"
+				},
+				{
+					text: "Talk to Sales",
+					href: "/contact",
+					variant: "secondary"
+				}
+			]}
+		/>
 	</main>
 </Layout>

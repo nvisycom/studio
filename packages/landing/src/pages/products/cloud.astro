@@ -1,6 +1,7 @@
 ---
 import { Layout } from "@/layouts";
 import { Hero, CTA } from "@/components";
+import WorkflowStepper from "@/components/features/workflow/WorkflowStepper.vue";
 import {
 	Check,
 	Zap,
@@ -9,12 +10,11 @@ import {
 	DollarSign,
 	RefreshCw,
 	Activity,
-	ArrowRight,
 } from "lucide-vue-next";
 ---
 
 <Layout
-  title="Nvisy Cloud - AI-Powered Document Redaction"
+  title="Nvisy Cloud"
   description="Deploy Nvisy's AI-powered document redaction in the cloud. Global scale, managed infrastructure, and enterprise security with zero maintenance."
 >
   <div class="bg-white dark:bg-black min-h-screen">
@@ -37,28 +37,6 @@ import {
           }
         ]}
       />
-    </div>
-
-    <!-- Stats Section -->
-    <div class="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black">
-      <div class="container mx-auto px-4 py-8 md:py-12">
-        <div class="max-w-4xl mx-auto">
-          <div class="grid grid-cols-3 gap-4 md:gap-8">
-            <div class="text-center">
-              <div class="text-2xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-1 md:mb-2">99.99%</div>
-              <div class="text-xs md:text-sm text-neutral-500 dark:text-neutral-400">Uptime SLA</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-1 md:mb-2">Global</div>
-              <div class="text-xs md:text-sm text-neutral-500 dark:text-neutral-400">Multi-Region</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-1 md:mb-2">5 min</div>
-              <div class="text-xs md:text-sm text-neutral-500 dark:text-neutral-400">Setup Time</div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Why Choose Nvisy Cloud -->
@@ -143,53 +121,20 @@ import {
       </div>
     </div>
 
-    <!-- Quick Start Guide -->
-    <div class="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30">
+    <!-- Workflow Section -->
+    <div class="bg-white dark:bg-black">
       <div class="container mx-auto px-4 py-12 md:py-20">
-        <div class="max-w-4xl mx-auto">
-          <div class="text-center mb-8 md:mb-12">
+        <div class="max-w-6xl mx-auto">
+          <div class="text-center mb-12 md:mb-16">
             <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white mb-3 md:mb-4">
-              Get Started in Minutes
+              How It Works
             </h2>
-            <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300">
-              No setup, no configuration, no waiting. Start protecting your documents immediately.
+            <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
+              Simple, secure workflow from upload to download. AI-powered redaction in four easy steps.
             </p>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-            <!-- Step 1 -->
-            <div class="bg-white dark:bg-black rounded-xl p-6 md:p-8 border border-neutral-200 dark:border-neutral-700">
-              <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center font-bold text-lg md:text-xl mb-4">
-                1
-              </div>
-              <h3 class="font-bold text-neutral-900 dark:text-white mb-2 text-base md:text-lg">Sign up</h3>
-              <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                Create your account in seconds. No credit card required.
-              </p>
-            </div>
-
-            <!-- Step 2 -->
-            <div class="bg-white dark:bg-black rounded-xl p-6 md:p-8 border border-neutral-200 dark:border-neutral-700">
-              <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center font-bold text-lg md:text-xl mb-4">
-                2
-              </div>
-              <h3 class="font-bold text-neutral-900 dark:text-white mb-2 text-base md:text-lg">Upload documents</h3>
-              <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                Drag and drop or select files to upload.
-              </p>
-            </div>
-
-            <!-- Step 3 -->
-            <div class="bg-white dark:bg-black rounded-xl p-6 md:p-8 border border-neutral-200 dark:border-neutral-700">
-              <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center font-bold text-lg md:text-xl mb-4">
-                3
-              </div>
-              <h3 class="font-bold text-neutral-900 dark:text-white mb-2 text-base md:text-lg">Get results</h3>
-              <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                AI-powered redaction in seconds, not hours.
-              </p>
-            </div>
-          </div>
+          <WorkflowStepper client:load />
         </div>
       </div>
     </div>
@@ -199,7 +144,7 @@ import {
       <div class="max-w-6xl mx-auto">
         <div class="text-center mb-12 md:mb-16">
           <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white mb-3 md:mb-4">
-            Enterprise-Grade Platform
+            Key Features
           </h2>
           <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto px-4">
             Advanced AI technology meets enterprise security requirements. Process thousands of documents with precision and speed.
@@ -266,27 +211,6 @@ import {
               </p>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Pricing CTA -->
-    <div class="bg-neutral-50 dark:bg-neutral-950">
-      <div class="container mx-auto px-4 py-12 md:py-20">
-        <div class="max-w-3xl mx-auto text-center">
-          <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white mb-3 md:mb-4">
-            Simple, Transparent Pricing
-          </h2>
-          <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 mb-8 md:mb-10">
-            Start free with 100 pages per month. No credit card required. Scale as you grow with pay-as-you-go pricing.
-          </p>
-          <a
-            href="/pricing"
-            class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium py-3 px-6 md:px-8 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 text-sm md:text-base"
-          >
-            View Pricing Details
-            <ArrowRight class="w-4 h-4" />
-          </a>
         </div>
       </div>
     </div>

@@ -63,35 +63,35 @@ const getIcon = (iconName: UseCase["icon"]) => {
 };
 ---
 
-<section class={`py-20 px-4 ${backgroundClasses[backgroundColor]}`} aria-labelledby="use-cases-title">
+<section class={`py-12 md:py-20 px-4 ${backgroundClasses[backgroundColor]}`} aria-labelledby="use-cases-title">
 	<div class="container mx-auto max-w-4xl">
 		<!-- Header -->
-		<header class="text-center mb-16">
-			<h2 id="use-cases-title" class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+		<header class="text-center mb-12 md:mb-16">
+			<h2 id="use-cases-title" class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3 md:mb-4">
 				{title}
 			</h2>
 			{description && (
-				<p class="text-gray-700 dark:text-neutral-300 max-w-3xl mx-auto leading-relaxed">
+				<p class="text-base md:text-lg text-gray-700 dark:text-neutral-300 max-w-3xl mx-auto leading-relaxed px-4">
 					{description}
 				</p>
 			)}
 		</header>
 
 		<!-- Use Cases Grid -->
-		<div class="grid md:grid-cols-2 gap-6">
+		<div class="grid sm:grid-cols-2 gap-4 md:gap-6">
 			{useCases.map((useCase) => {
 				const IconComponent = getIcon(useCase.icon);
 				return (
-					<article class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 transition-all duration-300 hover:shadow-lg p-8">
-						<div class="flex items-start gap-6">
-							<div class="w-12 h-12 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center flex-shrink-0 text-gray-900 dark:text-white">
-								<IconComponent class="w-6 h-6" aria-hidden="true" />
+					<article class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 transition-all duration-300 hover:shadow-lg p-6 md:p-8">
+						<div class="flex items-start gap-4 md:gap-6">
+							<div class="w-10 h-10 md:w-12 md:h-12 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center flex-shrink-0 text-gray-900 dark:text-white">
+								<IconComponent class="w-5 h-5 md:w-6 md:h-6" aria-hidden="true" />
 							</div>
 							<div class="flex-1">
-								<h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+								<h3 class="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-2 md:mb-3">
 									{useCase.title}
 								</h3>
-								<p class="text-gray-700 dark:text-neutral-300 leading-relaxed">
+								<p class="text-sm md:text-base text-gray-700 dark:text-neutral-300 leading-relaxed">
 									{useCase.description}
 								</p>
 							</div>

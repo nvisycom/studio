@@ -132,7 +132,7 @@ const props = withDefaults(defineProps<Props>(), {
       >
         <Maximize class="w-6 h-6 text-gray-900 dark:text-white" />
       </div>
-      <h4 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">50+</h4>
+      <h4 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">12+</h4>
       <p class="text-sm text-gray-600 dark:text-neutral-400">File Formats</p>
     </div>
   </div>

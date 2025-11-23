@@ -70,32 +70,32 @@ const bgClass =
 		: "bg-white dark:bg-black";
 ---
 
-<section class={`py-20 ${bgClass} px-4`}>
+<section class={`py-12 md:py-20 ${bgClass} px-4`}>
   <div class="container mx-auto max-w-6xl">
-    <div class="text-center mb-16">
-      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+    <div class="text-center mb-12 md:mb-16">
+      <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4 md:mb-6">
         {title}
       </h2>
-      <p class="text-xl text-gray-600 dark:text-neutral-400 max-w-3xl mx-auto leading-relaxed">
+      <p class="text-base md:text-lg lg:text-xl text-gray-600 dark:text-neutral-400 max-w-3xl mx-auto leading-relaxed px-4">
         {description}
       </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
       {featuredIntegrations.map((integration) => {
         const Icon = getIcon(integration.data.icon);
         return (
           <a
             href="/integrations"
-            class="group bg-white dark:bg-black border border-gray-200 dark:border-neutral-800 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 dark:hover:border-neutral-700 transition-all duration-300 block no-underline"
+            class="group bg-white dark:bg-black border border-gray-200 dark:border-neutral-800 rounded-xl p-4 md:p-6 hover:shadow-lg hover:border-gray-300 dark:hover:border-neutral-700 transition-all duration-300 block no-underline"
           >
-            <div class="flex items-center mb-4">
-              <div class="w-12 h-12 bg-gray-100 dark:bg-neutral-900 rounded-lg flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-neutral-800 transition-colors mr-4">
-                <Icon class="w-6 h-6 text-gray-900 dark:text-white" />
+            <div class="flex items-center mb-3 md:mb-4">
+              <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-100 dark:bg-neutral-900 rounded-lg flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-neutral-800 transition-colors mr-3 md:mr-4">
+                <Icon class="w-5 h-5 md:w-6 md:h-6 text-gray-900 dark:text-white" />
               </div>
               <div class="flex-1 text-center">
                 <div class="flex items-center justify-center gap-2 flex-wrap">
-                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-black dark:group-hover:text-white">
+                  <h3 class="text-base md:text-lg font-semibold text-gray-900 dark:text-white group-hover:text-black dark:group-hover:text-white">
                     {integration.data.title}
                   </h3>
                   <span class="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-neutral-800 px-2 py-1 rounded-full">
@@ -105,7 +105,7 @@ const bgClass =
               </div>
             </div>
 
-            <p class="text-gray-600 dark:text-neutral-400 text-sm leading-relaxed text-center">
+            <p class="text-gray-600 dark:text-neutral-400 text-xs md:text-sm leading-relaxed text-center">
               {integration.data.description}
             </p>
           </a>
