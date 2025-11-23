@@ -5,12 +5,12 @@ import { usePricing } from "./usePricing";
 import { Check } from "lucide-vue-next";
 
 const {
-  basicPrice,
-  professionalPrice,
-  formatNumber,
-  getRedactionCount,
-  setRedactionCount,
-  getSliderStep,
+	basicPrice,
+	professionalPrice,
+	formatNumber,
+	getRedactionCount,
+	setRedactionCount,
+	getSliderStep,
 } = usePricing();
 </script>
 
