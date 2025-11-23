@@ -18,7 +18,7 @@
 		"format": "biome format --write .",
 		"lint": "biome lint .",
 		"check": "biome check .",
-		"ci": "biome ci --diagnostic-level=error --skip-parse-errors ."
+		"ci": "biome ci ."
 	},
 	"dependencies": {
 		"@astrojs/check": "^0.9.5",

@@ -1,10 +1,11 @@
 import { fileURLToPath, URL } from "node:url";
+import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import vue from "@astrojs/vue";
-import tailwindcss from "@tailwindcss/vite";
-import { defineConfig } from "astro/config";
+
 import vueDevTools from "vite-plugin-vue-devtools";
+import tailwindcss from "@tailwindcss/vite";
 
 const srcImport = new URL("./src", import.meta.url);
 const srcPath = fileURLToPath(srcImport);

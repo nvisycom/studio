@@ -1,5 +1,8 @@
 ---
+import { Github, Mail, ExternalLink } from "lucide-vue-next";
 import type { ButtonProps } from "@/components/types";
+import { getButtonClasses } from "@/lib/buttonStyles";
+import { getBackgroundClass } from "@/lib/backgroundStyles";
 
 export interface Props {
 	title?: string;
@@ -28,7 +31,7 @@ const {
 	],
 } = Astro.props;
 
-const _maxWidthClasses = {
+const maxWidthClasses = {
 	sm: "max-w-2xl",
 	md: "max-w-4xl",
 	lg: "max-w-5xl",

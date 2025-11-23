@@ -1,5 +1,8 @@
 ---
 import type { ButtonProps } from "@/components/types";
+import { getButtonClasses } from "@/lib/buttonStyles";
+import { getBackgroundClass } from "@/lib/backgroundStyles";
+import { Play, ArrowRight, ExternalLink } from "lucide-vue-next";
 
 export interface Props {
 	title?: string;
@@ -51,9 +54,9 @@ const getTitleParts = () => {
 	};
 };
 
-const _titleParts = getTitleParts();
+const titleParts = getTitleParts();
 
-const _maxWidthClasses = {
+const maxWidthClasses = {
 	sm: "max-w-2xl",
 	md: "max-w-4xl",
 	lg: "max-w-5xl",

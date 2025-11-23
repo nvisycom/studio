@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.3.7/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.2.5/schema.json",
 	"vcs": {
 		"enabled": false,
 		"clientKind": "git",
@@ -12,28 +12,17 @@
 		"enabled": true,
 		"indentStyle": "tab"
 	},
-	"assist": { "actions": { "source": { "organizeImports": "off" } } },
+	"assist": { "actions": { "source": { "organizeImports": "on" } } },
 	"linter": {
 		"enabled": true,
-		"includes": [
-			"src/**",
-			"!.astro/**",
-			"!dist/**",
-			"!**/tailwind.css",
-			"!**/blocks.css"
-		],
+		"includes": ["src/**", "!.astro/**", "!dist/**"],
 		"rules": {
 			"recommended": true,
 			"style": {
 				"recommended": true
 			},
 			"suspicious": {
-				"noUnknownAtRules": "off",
-				"noExplicitAny": "warn"
-			},
-			"correctness": {
-				"noUnusedVariables": "warn",
-				"noUnusedImports": "warn"
+				"noUnknownAtRules": "off"
 			}
 		}
 	},
@@ -41,33 +30,5 @@
 		"formatter": {
 			"quoteStyle": "double"
 		}
-	},
-	"css": {
-		"parser": {
-			"cssModules": false,
-			"allowWrongLineComments": true
-		},
-		"formatter": {
-			"enabled": false
-		},
-		"linter": {
-			"enabled": false
-		}
-	},
-	"overrides": [
-		{
-			"includes": ["**/tailwind.css", "**/blocks.css"],
-			"css": {
-				"parser": {
-					"allowWrongLineComments": true
-				}
-			},
-			"formatter": {
-				"enabled": false
-			},
-			"linter": {
-				"enabled": false
-			}
-		}
-	]
+	}
 }

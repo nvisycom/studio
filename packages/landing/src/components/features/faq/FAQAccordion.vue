@@ -1,4 +1,11 @@
 <script setup lang="ts">
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from "@/components/ui/accordion";
+
 export interface FAQItem {
 	question: string;
 	answer: string;
@@ -8,7 +15,7 @@ export interface Props {
 	faqs: FAQItem[];
 }
 
-const _props = defineProps<Props>();
+const props = defineProps<Props>();
 </script>
 
 <template>

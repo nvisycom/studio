@@ -1,41 +1,52 @@
 <script setup lang="ts">
+import {
+  Stepper,
+  StepperDescription,
+  StepperIndicator,
+  StepperItem,
+  StepperSeparator,
+  StepperTitle,
+  StepperTrigger,
+} from "@/components/ui/stepper";
+import { CheckCircle2, Clock, Maximize } from "lucide-vue-next";
+
 export interface Step {
-	number: number;
-	title: string;
-	description: string;
+  number: number;
+  title: string;
+  description: string;
 }
 
 interface Props {
-	steps?: Step[];
+  steps?: Step[];
 }
 
-const _props = withDefaults(defineProps<Props>(), {
-	steps: () => [
-		{
-			number: 1,
-			title: "Upload Documents",
-			description:
-				"Securely upload your documents in any format - PDF, Word, Excel, PowerPoint, and more. Batch upload supported for enterprise workflows.",
-		},
-		{
-			number: 2,
-			title: "AI Analysis",
-			description:
-				"Our advanced AI scans your documents to identify sensitive information like PII, PHI, financial data, and custom patterns you define.",
-		},
-		{
-			number: 3,
-			title: "Review & Approve",
-			description:
-				"Preview all identified sensitive content with confidence scores. Accept, reject, or modify redactions with our intuitive review interface.",
-		},
-		{
-			number: 4,
-			title: "Download Secure Files",
-			description:
-				"Get your redacted documents with full audit trails. Original formatting preserved, sensitive data permanently removed.",
-		},
-	],
+const props = withDefaults(defineProps<Props>(), {
+  steps: () => [
+    {
+      number: 1,
+      title: "Upload Documents",
+      description:
+        "Securely upload your documents in any format - PDF, Word, Excel, PowerPoint, and more. Batch upload supported for enterprise workflows.",
+    },
+    {
+      number: 2,
+      title: "AI Analysis",
+      description:
+        "Our advanced AI scans your documents to identify sensitive information like PII, PHI, financial data, and custom patterns you define.",
+    },
+    {
+      number: 3,
+      title: "Review & Approve",
+      description:
+        "Preview all identified sensitive content with confidence scores. Accept, reject, or modify redactions with our intuitive review interface.",
+    },
+    {
+      number: 4,
+      title: "Download Secure Files",
+      description:
+        "Get your redacted documents with full audit trails. Original formatting preserved, sensitive data permanently removed.",
+    },
+  ],
 });
 </script>
 

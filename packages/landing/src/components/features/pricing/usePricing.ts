@@ -1,6 +1,6 @@
 import { computed, ref } from "vue";
-import type { PlanType } from "./pricing-data";
 import { plans, pricingConfig } from "./pricing-data";
+import type { PlanType } from "./pricing-data";
 
 // Shared reactive state (singleton pattern to ensure all components use the same state)
 const isYearly = ref(false);
@@ -13,7 +13,7 @@ export function usePricing() {
 	// Utility functions
 	const formatNumber = (num: number): string => {
 		if (num >= 1000) {
-			return `${(num / 1000).toFixed(num % 1000 === 0 ? 0 : 1)}k`;
+			return (num / 1000).toFixed(num % 1000 === 0 ? 0 : 1) + "k";
 		}
 		return num.toString();
 	};

@@ -1,12 +1,21 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 const name = ref("");
 const email = ref("");
 const inquiryType = ref("");
 const message = ref("");
 
-const _handleSubmit = (e: Event) => {
+const handleSubmit = (e: Event) => {
 	e.preventDefault();
 	// Handle form submission
 	console.log({

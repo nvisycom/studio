@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { Slider } from "@/components/ui/slider";
-import { Check } from "lucide-vue-next";
 import { plans } from "./pricing-data";
 import { usePricing } from "./usePricing";
+import { Check } from "lucide-vue-next";
 
 const {
-	basicPrice,
-	professionalPrice,
-	formatNumber,
-	getRedactionCount,
-	setRedactionCount,
-	getSliderStep,
+  basicPrice,
+  professionalPrice,
+  formatNumber,
+  getRedactionCount,
+  setRedactionCount,
+  getSliderStep,
 } = usePricing();
 </script>
 

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { reactiveOmit } from "@vueuse/core";
 import type { ComboboxContentEmits, ComboboxContentProps } from "reka-ui";
-import { useForwardPropsEmits } from "reka-ui";
 import type { HTMLAttributes } from "vue";
+import { reactiveOmit } from "@vueuse/core";
+import { ComboboxContent, ComboboxPortal, useForwardPropsEmits } from "reka-ui";
+import { cn } from "@/lib/utils";
 
 const props = withDefaults(
 	defineProps<ComboboxContentProps & { class?: HTMLAttributes["class"] }>(),
@@ -15,7 +16,7 @@ const props = withDefaults(
 const emits = defineEmits<ComboboxContentEmits>();
 
 const delegatedProps = reactiveOmit(props, "class");
-const _forwarded = useForwardPropsEmits(delegatedProps, emits);
+const forwarded = useForwardPropsEmits(delegatedProps, emits);
 </script>
 
 <template>

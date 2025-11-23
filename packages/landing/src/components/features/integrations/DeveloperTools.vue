@@ -74,14 +74,14 @@
 <script setup lang="ts">
 import type { CollectionEntry } from "astro:content";
 import {
-	Calendar,
-	CircleCheck,
-	Clock,
+	Server,
 	Code,
 	Code2,
-	FileText,
 	Link,
-	Server,
+	FileText,
+	Clock,
+	Calendar,
+	CircleCheck,
 } from "lucide-vue-next";
 
 interface Props {
@@ -92,7 +92,7 @@ const props = defineProps<Props>();
 const { integrations } = props;
 
 // Icon mapping from FontAwesome to Lucide
-const _getIcon = (iconName: string) => {
+const getIcon = (iconName: string) => {
 	const iconMap: Record<string, any> = {
 		server: Server,
 		python: Code,
@@ -104,7 +104,7 @@ const _getIcon = (iconName: string) => {
 };
 
 // Status icon mapping
-const _getStatusIcon = (status: string) => {
+const getStatusIcon = (status: string) => {
 	const statusIconMap: Record<string, any> = {
 		Completed: CircleCheck,
 		"In Progress": Clock,
@@ -115,7 +115,7 @@ const _getStatusIcon = (status: string) => {
 };
 
 // Status text color classes - less prominent
-const _getStatusTextClasses = (status: string) => {
+const getStatusTextClasses = (status: string) => {
 	switch (status.toLowerCase()) {
 		case "completed":
 			return "text-gray-600 dark:text-gray-400";

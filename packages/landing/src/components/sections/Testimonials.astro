@@ -1,6 +1,7 @@
 ---
 import { getCollection, getEntry } from "astro:content";
 import type { TestimonialItem } from "@/content.config.ts";
+import { Quote, Star, CheckCircle2, Users } from "lucide-vue-next";
 
 export interface Props {
 	title?: string;
@@ -32,14 +33,14 @@ async function getTestimonials(category?: string): Promise<TestimonialItem[]> {
 	}
 }
 
-const _allTestimonials: TestimonialItem[] =
+const allTestimonials: TestimonialItem[] =
 	testimonials ||
 	(await getTestimonials(category))
 		.filter((testimonial) => testimonial.featured === featured)
 		.sort((lhs, rhs) => lhs.order - rhs.order)
 		.slice(0, limit);
 
-const _bgClass =
+const bgClass =
 	backgroundColor === "gray"
 		? "bg-gray-50 dark:bg-neutral-950"
 		: "bg-white dark:bg-black";

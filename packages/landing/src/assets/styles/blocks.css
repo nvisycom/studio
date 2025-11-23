@@ -1,7 +1,7 @@
 pre {
 	border-radius: 0.5rem;
 	border-width: 1px;
-	background-color: transparent;
+	background-color: transparent !important;
 	padding: 1em;
 	margin-left: 1em;
 	margin-right: 4em;
@@ -151,12 +151,12 @@ article .prose img {
 
 /* Dark mode support */
 .dark article .prose a {
-	color: #60a5fa;
-	text-decoration: underline;
+	color: #60a5fa !important;
+	text-decoration: underline !important;
 }
 
 .dark article .prose a:hover {
-	color: #93c5fd;
+	color: #93c5fd !important;
 }
 
 .dark article .prose blockquote {

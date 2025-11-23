@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { reactiveOmit } from "@vueuse/core";
 import type { ComboboxGroupProps } from "reka-ui";
 import type { HTMLAttributes } from "vue";
+import { reactiveOmit } from "@vueuse/core";
+import { ComboboxGroup, ComboboxLabel } from "reka-ui";
+import { cn } from "@/lib/utils";
 
 const props = defineProps<
 	ComboboxGroupProps & {
@@ -10,7 +12,7 @@ const props = defineProps<
 	}
 >();
 
-const _delegatedProps = reactiveOmit(props, "class");
+const delegatedProps = reactiveOmit(props, "class");
 </script>
 
 <template>

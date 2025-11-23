@@ -1,5 +1,14 @@
 <script setup lang="ts">
-
+import {
+	NavigationMenu,
+	NavigationMenuItem,
+	NavigationMenuLink,
+	NavigationMenuList,
+	navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+import ProductsDropdown from "./DesktopProducts.vue";
+import SolutionsDropdown from "./DesktopSolutions.vue";
+import ResourcesDropdown from "./DesktopResources.vue";
 </script>
 
 <template>

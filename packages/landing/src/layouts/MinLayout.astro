@@ -1,8 +1,8 @@
 ---
 import {
-	BUILD_VERSION,
-	DEFAULT_DESCRIPTION,
 	DEFAULT_TITLE,
+	DEFAULT_DESCRIPTION,
+	BUILD_VERSION,
 } from "@nvisy/config";
 
 import "@/assets/styles/blocks.css";
@@ -67,7 +67,7 @@ const fullImageUrl = new URL(image, Astro.site).toString();
 const siteName = DEFAULT_TITLE;
 
 // Generate structured data
-const _structuredData = {
+const structuredData = {
 	"@context": "https://schema.org",
 	"@type": article ? "Article" : "WebPage",
 	headline: pageTitle,

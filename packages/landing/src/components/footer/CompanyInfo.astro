@@ -1,7 +1,9 @@
 ---
 import { COMPANY_NAME } from "@nvisy/config";
-import BlueskyIcon from "@/assets/icons/bluesky.svg";
+import Logo from "@/components/Logo.astro";
+import OpenStatus from "./OpenStatus.vue";
 import GithubIcon from "@/assets/icons/github.svg";
+import BlueskyIcon from "@/assets/icons/bluesky.svg";
 import LinkedinIcon from "@/assets/icons/linkedin.svg";
 
 export interface Props {
@@ -10,7 +12,7 @@ export interface Props {
 
 const { companyName = COMPANY_NAME } = Astro.props;
 
-const _socialLinks = [
+const socialLinks = [
 	{
 		name: "GitHub",
 		href: "https://github.com/nvisycom",

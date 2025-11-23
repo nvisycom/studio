@@ -1,5 +1,8 @@
 ---
-import { type CollectionEntry, getCollection } from "astro:content";
+import { Layout } from "@/layouts";
+import { getCollection, type CollectionEntry } from "astro:content";
+import { ChevronRight, Mail, Briefcase } from "lucide-vue-next";
+import { CTA, Hero } from "@/components";
 
 // Get all published job postings
 let jobEntries: CollectionEntry<"jobs">[] = [];
@@ -10,7 +13,7 @@ try {
 }
 
 // Filter and transform the data
-const _openPositions = jobEntries
+const openPositions = jobEntries
 	.filter((job) => job.data.published !== false)
 	.map((job) => ({
 		id: job.slug,

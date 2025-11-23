@@ -1,8 +1,12 @@
 ---
-import { getCollection } from "astro:content";
-import { Building2, Shield, Target, Zap } from "lucide-vue-next";
+import { Layout } from "@/layouts";
+import { CompanyStats, CTA } from "@/components";
+import { Shield, Building2, Zap, Target } from "lucide-vue-next";
+import TeamMember from "@/components/features/about/TeamMember.vue";
 
-const _teamMembers = [
+import { getCollection } from "astro:content";
+
+const teamMembers = [
 	{
 		name: "Alex Rivera",
 		role: "CEO & Co-Founder",
@@ -22,7 +26,7 @@ const _teamMembers = [
 	},
 ];
 
-const _values = [
+const values = [
 	{
 		title: "Security First",
 		description:
@@ -50,7 +54,7 @@ const _values = [
 ];
 
 // Get blog entries from content/blog
-const _blogEntries = (await getCollection("blog"))
+const blogEntries = (await getCollection("blog"))
 	.sort(
 		(rhs, lhs) =>
 			new Date(lhs.data.publishedAt).getTime() -
@@ -59,7 +63,7 @@ const _blogEntries = (await getCollection("blog"))
 	.slice(0, 3); // Only show first 3 posts
 
 // Custom stats without team members
-const _customStats = [
+const customStats = [
 	{ label: "Founded", value: "2025" },
 	{ label: "Enterprise Customers", value: "10+" },
 	{ label: "Documents Processed", value: "1M+" },

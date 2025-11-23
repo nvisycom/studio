@@ -1,5 +1,16 @@
 ---
-import { type CollectionEntry, getCollection } from "astro:content";
+import { CTA } from "@/components";
+import { Layout } from "@/layouts";
+import { getCollection, type CollectionEntry } from "astro:content";
+import {
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbList,
+	BreadcrumbPage,
+	BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Clock, FileText } from "lucide-vue-next";
 
 export async function getStaticPaths() {
 	try {
