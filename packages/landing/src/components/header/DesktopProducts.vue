@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {
-	NavigationMenuContent,
-	NavigationMenuItem,
-	NavigationMenuLink,
-	NavigationMenuTrigger,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { ExternalLink } from "lucide-vue-next";
 import { products } from "./desktop-nav-data";
@@ -12,7 +12,7 @@ import { products } from "./desktop-nav-data";
 <template>
   <NavigationMenuItem>
     <NavigationMenuTrigger
-      class="group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-base font-medium text-gray-600 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white focus:bg-gray-50 dark:focus:bg-neutral-800 focus:text-gray-900 dark:focus:text-white disabled:pointer-events-none disabled:opacity-50 data-[state=open]:bg-gray-50 dark:data-[state=open]:bg-neutral-800 data-[state=open]:text-gray-900 dark:data-[state=open]:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-300 dark:focus-visible:ring-neutral-600 transition-all duration-200"
+      class="group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-base font-light text-gray-600 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white focus:bg-gray-50 dark:focus:bg-neutral-800 focus:text-gray-900 dark:focus:text-white disabled:pointer-events-none disabled:opacity-50 data-[state=open]:bg-gray-50 dark:data-[state=open]:bg-neutral-800 data-[state=open]:text-gray-900 dark:data-[state=open]:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-300 dark:focus-visible:ring-neutral-600 transition-all duration-200"
     >
       Products
     </NavigationMenuTrigger>
@@ -24,7 +24,7 @@ import { products } from "./desktop-nav-data";
           <!-- Left Column: Platforms -->
           <div class="p-6 border-r border-gray-100 dark:border-neutral-700">
             <h3
-              class="font-semibold text-gray-500 dark:text-neutral-400 mb-3 text-xs tracking-wide"
+              class="font-light text-gray-500 dark:text-neutral-400 mb-3 text-xs tracking-wide"
             >
               Platforms
             </h3>
@@ -41,11 +41,11 @@ import { products } from "./desktop-nav-data";
                   <component :is="product.icon" class="w-6 h-6" />
                 </span>
                 <div>
-                  <div class="text-sm font-medium leading-none">
+                  <div class="text-sm font-light leading-none">
                     {{ product.title }}
                   </div>
                   <p
-                    class="line-clamp-2 text-xs leading-snug text-gray-500 dark:text-neutral-400 mt-0.5"
+                    class="line-clamp-2 text-xs font-light leading-snug text-gray-500 dark:text-neutral-400 mt-0.5"
                   >
                     {{ product.description }}
                   </p>
@@ -57,7 +57,7 @@ import { products } from "./desktop-nav-data";
           <!-- Right Column: SDKs & Tools -->
           <div class="p-6">
             <h3
-              class="font-semibold text-gray-500 dark:text-neutral-400 mb-3 text-xs tracking-wide"
+              class="font-light text-gray-500 dark:text-neutral-400 mb-3 text-xs tracking-wide"
             >
               SDKs & Tools
             </h3>
@@ -77,7 +77,7 @@ import { products } from "./desktop-nav-data";
                 </span>
                 <div class="flex-1">
                   <div
-                    class="text-sm font-medium leading-none flex items-center gap-1"
+                    class="text-sm font-light leading-none flex items-center gap-1"
                   >
                     {{ product.title }}
                     <ExternalLink
@@ -85,7 +85,7 @@ import { products } from "./desktop-nav-data";
                     />
                   </div>
                   <p
-                    class="line-clamp-2 text-xs leading-snug text-gray-500 dark:text-neutral-400 mt-0.5"
+                    class="line-clamp-2 text-xs font-light leading-snug text-gray-500 dark:text-neutral-400 mt-0.5"
                   >
                     {{ product.description }}
                   </p>

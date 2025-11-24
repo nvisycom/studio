@@ -2,16 +2,15 @@
 import Layout from "@/layouts/Layout.astro";
 import {
 	Hero,
-	Workflow,
+	Review,
 	Features,
-	Integrations,
 	UseCases,
 	Testimonials,
 	CTA,
-	Stats,
-	PressCarousel,
+	Clients,
 	FAQ,
 } from "@/components";
+import Connect from "@/components/sections/Connect.astro";
 
 // SEO and metadata
 const pageTitle =
@@ -47,45 +46,18 @@ const pageKeywords =
 			]}
 		/>
 
-		<!-- Social Proof - Press & Recognition -->
-		<PressCarousel
+		<!-- Social Proof - Clients -->
+		<Clients
 			title="Trusted by Industry Leaders"
-			subtitle="Featured in leading technology publications"
+			subtitle="Join hundreds of companies protecting their sensitive data"
+			backgroundColor="white"
 		/>
 
-		<!-- Impact Metrics - Quick Wins -->
-		<Stats
-			title="Trusted by Enterprises Worldwide"
-			backgroundColor="gray"
-			stats={[
-				{
-					value: "99.9%",
-					label: "Accuracy Rate",
-					description: "AI-powered precision"
-				},
-				{
-					value: "10M+",
-					label: "Pages Redacted",
-					description: "Every month"
-				},
-				{
-					value: "500+",
-					label: "Companies",
-					description: "Across 50+ countries"
-				},
-				{
-					value: "<60s",
-					label: "Avg. Time",
-					description: "Per document"
-				}
-			]}
-		/>
-
-		<!-- Workflow Section - How It Works -->
-		<Workflow
+		<!-- Review Section - How It Works with Screenshots -->
+		<Review
 			backgroundColor="white"
 			title="How It Works"
-			description="Four simple steps from upload to secure, compliant documents. Our AI does the heavy lifting while you stay in control."
+			description="Four simple steps from upload to secure, compliant documents. See our intuitive dashboard in action."
 		/>
 
 		<!-- Features Section - Core Value Props -->
@@ -109,11 +81,11 @@ const pageKeywords =
 			description="Join hundreds of companies that trust Nvisy to protect their sensitive information."
 		/>
 
-		<!-- Integrations Section - Easy Integration -->
-		<Integrations
-			backgroundColor="gray"
-			title="Works with Your Workflow"
-			description="Seamlessly integrate with the tools you already use. Connect via API or use our integrations with popular platforms."
+		<!-- Connect Section - Integrations & Webhooks -->
+		<Connect
+			backgroundColor="white"
+			title="Connect Your Workflow"
+			description="Seamlessly integrate Nvisy into your existing infrastructure with powerful APIs and webhooks."
 		/>
 
 		<!-- FAQ Section - Answer Objections -->

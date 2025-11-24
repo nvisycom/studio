@@ -6,10 +6,12 @@ export { default as Features } from "./sections/Features.astro";
 export { default as Hero } from "./sections/Hero.astro";
 export { default as Workflow } from "./sections/Workflow.astro";
 export { default as Integrations } from "./sections/Integrations.astro";
-export { default as PressCarousel } from "./sections/PressCarousel.astro";
+export { default as Press } from "./sections/Press.astro";
+export { default as Clients } from "./sections/Clients.astro";
 export { default as Security } from "./sections/Security.astro";
 export { default as Testimonials } from "./sections/Testimonials.astro";
 export { default as UseCases } from "./sections/UseCases.astro";
+export { default as Review } from "./sections/Review.astro";
 
 export { default as PricingCards } from "./features/pricing/PricingCards.vue";
 export { default as BillingToggle } from "./features/pricing/BillingToggle.vue";
