@@ -6,33 +6,33 @@ import WebhookAnimation from "./WebhookAnimation.vue";
 import type { FunctionalComponent } from "vue";
 
 interface ConnectCard {
-  id: string;
-  title: string;
-  description: string;
-  icon: FunctionalComponent;
-  href: string;
-  component: any;
+	id: string;
+	title: string;
+	description: string;
+	icon: FunctionalComponent;
+	href: string;
+	component: any;
 }
 
 const cards: ConnectCard[] = [
-  {
-    id: "integrations",
-    title: "Integrations",
-    description:
-      "Connect with your favorite tools and platforms. Integrate Nvisy seamlessly with cloud storage, collaboration tools, and enterprise software.",
-    icon: Plug2,
-    href: "/integrations",
-    component: IntegrationAnimation,
-  },
-  {
-    id: "webhooks",
-    title: "Webhooks",
-    description:
-      "Build powerful automations with real-time webhooks. Receive instant notifications for document processing events and trigger custom workflows.",
-    icon: Webhook,
-    href: "https://docs.nvisy.com/webhooks",
-    component: WebhookAnimation,
-  },
+	{
+		id: "integrations",
+		title: "Integrations",
+		description:
+			"Connect with your favorite tools and platforms. Integrate Nvisy seamlessly with cloud storage, collaboration tools, and enterprise software.",
+		icon: Plug2,
+		href: "/integrations",
+		component: IntegrationAnimation,
+	},
+	{
+		id: "webhooks",
+		title: "Webhooks",
+		description:
+			"Build powerful automations with real-time webhooks. Receive instant notifications for document processing events and trigger custom workflows.",
+		icon: Webhook,
+		href: "https://docs.nvisy.com/webhooks",
+		component: WebhookAnimation,
+	},
 ];
 </script>
 

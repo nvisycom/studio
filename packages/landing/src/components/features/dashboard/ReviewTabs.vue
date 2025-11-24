@@ -4,42 +4,42 @@ import { Upload, Eye, FileSearch, Download } from "lucide-vue-next";
 import type { FunctionalComponent } from "vue";
 
 interface Screenshot {
-  id: string;
-  label: string;
-  icon: FunctionalComponent;
-  image: string;
-  alt: string;
+	id: string;
+	label: string;
+	icon: FunctionalComponent;
+	image: string;
+	alt: string;
 }
 
 const screenshots: Screenshot[] = [
-  {
-    id: "upload",
-    label: "Upload",
-    icon: Upload,
-    image: "/screenshots/upload.png",
-    alt: "Upload documents interface",
-  },
-  {
-    id: "review",
-    label: "Review",
-    icon: Eye,
-    image: "/screenshots/review.png",
-    alt: "Review redactions interface",
-  },
-  {
-    id: "redact",
-    label: "Redact",
-    icon: FileSearch,
-    image: "/screenshots/redact.png",
-    alt: "Redaction results interface",
-  },
-  {
-    id: "export",
-    label: "Export",
-    icon: Download,
-    image: "/screenshots/export.png",
-    alt: "Export documents interface",
-  },
+	{
+		id: "upload",
+		label: "Upload",
+		icon: Upload,
+		image: "/screenshots/upload.png",
+		alt: "Upload documents interface",
+	},
+	{
+		id: "review",
+		label: "Review",
+		icon: Eye,
+		image: "/screenshots/review.png",
+		alt: "Review redactions interface",
+	},
+	{
+		id: "redact",
+		label: "Redact",
+		icon: FileSearch,
+		image: "/screenshots/redact.png",
+		alt: "Redaction results interface",
+	},
+	{
+		id: "export",
+		label: "Export",
+		icon: Download,
+		image: "/screenshots/export.png",
+		alt: "Export documents interface",
+	},
 ];
 </script>
 

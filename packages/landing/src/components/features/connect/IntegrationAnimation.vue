@@ -6,111 +6,111 @@ import { Badge } from "@/components/ui/badge";
 import type { FunctionalComponent } from "vue";
 
 interface Step {
-  id: number;
-  icon: FunctionalComponent;
-  text: string;
-  service: string;
-  badgeColor: string;
-  status: "pending" | "loading" | "completed";
-  duration: string;
-  dataSize: string;
-  timestamp: string;
+	id: number;
+	icon: FunctionalComponent;
+	text: string;
+	service: string;
+	badgeColor: string;
+	status: "pending" | "loading" | "completed";
+	duration: string;
+	dataSize: string;
+	timestamp: string;
 }
 
 const formatTime = () => {
-  const now = new Date();
-  const month = now.toLocaleString("en-US", { month: "short" });
-  const day = now.getDate();
-  const time = now.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  });
-  return `${month} ${day} ${time}`;
+	const now = new Date();
+	const month = now.toLocaleString("en-US", { month: "short" });
+	const day = now.getDate();
+	const time = now.toLocaleTimeString("en-US", {
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
+		hour12: false,
+	});
+	return `${month} ${day} ${time}`;
 };
 
 const steps = ref([
-  {
-    id: 1,
-    icon: Cloud,
-    text: "Sync documents",
-    service: "Google Drive",
-    badgeColor:
-      "bg-gray-100 text-gray-900 dark:bg-black dark:text-white border-gray-300 dark:border-neutral-700",
-    status: "pending" as const,
-    duration: "1.2s",
-    dataSize: "2.4 MB",
-    timestamp: formatTime(),
-  },
-  {
-    id: 2,
-    icon: Cpu,
-    text: "Process redactions",
-    service: "Nvisy Cloud",
-    badgeColor:
-      "bg-gray-100 text-gray-900 dark:bg-black dark:text-white border-gray-300 dark:border-neutral-700",
-    status: "pending" as const,
-    duration: "3.8s",
-    dataSize: "15 entities",
-    timestamp: formatTime(),
-  },
-  {
-    id: 3,
-    icon: Send,
-    text: "Send notification",
-    service: "Slack",
-    badgeColor:
-      "bg-gray-100 text-gray-900 dark:bg-black dark:text-white border-gray-300 dark:border-neutral-700",
-    status: "pending" as const,
-    duration: "0.4s",
-    dataSize: "webhook",
-    timestamp: formatTime(),
-  },
+	{
+		id: 1,
+		icon: Cloud,
+		text: "Sync documents",
+		service: "Google Drive",
+		badgeColor:
+			"bg-gray-100 text-gray-900 dark:bg-black dark:text-white border-gray-300 dark:border-neutral-700",
+		status: "pending" as const,
+		duration: "1.2s",
+		dataSize: "2.4 MB",
+		timestamp: formatTime(),
+	},
+	{
+		id: 2,
+		icon: Cpu,
+		text: "Process redactions",
+		service: "Nvisy Cloud",
+		badgeColor:
+			"bg-gray-100 text-gray-900 dark:bg-black dark:text-white border-gray-300 dark:border-neutral-700",
+		status: "pending" as const,
+		duration: "3.8s",
+		dataSize: "15 entities",
+		timestamp: formatTime(),
+	},
+	{
+		id: 3,
+		icon: Send,
+		text: "Send notification",
+		service: "Slack",
+		badgeColor:
+			"bg-gray-100 text-gray-900 dark:bg-black dark:text-white border-gray-300 dark:border-neutral-700",
+		status: "pending" as const,
+		duration: "0.4s",
+		dataSize: "webhook",
+		timestamp: formatTime(),
+	},
 ]);
 
 let interval: number | null = null;
 
 const runAnimation = () => {
-  let currentStep = 0;
+	let currentStep = 0;
 
-  interval = window.setInterval(() => {
-    if (currentStep < steps.value.length) {
-      // Update timestamp and mark as loading
-      steps.value[currentStep].timestamp = formatTime();
-      steps.value[currentStep].status = "loading";
+	interval = window.setInterval(() => {
+		if (currentStep < steps.value.length) {
+			// Update timestamp and mark as loading
+			steps.value[currentStep].timestamp = formatTime();
+			steps.value[currentStep].status = "loading";
 
-      // After 800ms, mark as completed and move to next
-      setTimeout(() => {
-        if (currentStep < steps.value.length) {
-          steps.value[currentStep].status = "completed";
-          currentStep++;
+			// After 800ms, mark as completed and move to next
+			setTimeout(() => {
+				if (currentStep < steps.value.length) {
+					steps.value[currentStep].status = "completed";
+					currentStep++;
 
-          // If all steps completed, show spinner on all then reset
-          if (currentStep === steps.value.length) {
-            setTimeout(() => {
-              // Set all steps to loading for spinner effect
-              steps.value.forEach((step) => (step.status = "loading"));
+					// If all steps completed, show spinner on all then reset
+					if (currentStep === steps.value.length) {
+						setTimeout(() => {
+							// Set all steps to loading for spinner effect
+							steps.value.forEach((step) => (step.status = "loading"));
 
-              setTimeout(() => {
-                // Reset all after spinner
-                steps.value.forEach((step) => (step.status = "pending"));
-                currentStep = 0;
-              }, 800);
-            }, 1200);
-          }
-        }
-      }, 800);
-    }
-  }, 1300);
+							setTimeout(() => {
+								// Reset all after spinner
+								steps.value.forEach((step) => (step.status = "pending"));
+								currentStep = 0;
+							}, 800);
+						}, 1200);
+					}
+				}
+			}, 800);
+		}
+	}, 1300);
 };
 
 onMounted(() => {
-  runAnimation();
+	runAnimation();
 });
 
 onUnmounted(() => {
-  if (interval) clearInterval(interval);
+	if (interval) clearInterval(interval);
 });
 </script>
 

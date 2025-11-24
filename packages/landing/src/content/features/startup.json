@@ -1,44 +1,44 @@
 [
-  {
-    "title": "Launch in Minutes",
-    "description": "Get up and running with document redaction in under 5 minutes. No complex setup, no lengthy {procurement|Process of obtaining goods or services, often involving approval workflows} processes.",
-    "icon": "zap",
-    "order": 1,
-    "featured": true
-  },
-  {
-    "title": "Developer Friendly",
-    "description": "{RESTful APIs|Representational State Transfer - web service architecture}, comprehensive documentation, and {SDKs|Software Development Kits for easy integration} that make integration straightforward for any development team.",
-    "icon": "code",
-    "order": 2,
-    "featured": true
-  },
-  {
-    "title": "Pay-as-you-Scale",
-    "description": "Start free and only pay for what you use as you grow. No upfront costs, no long-term contracts. {Usage-based pricing|You're charged based on actual consumption}.",
-    "icon": "dollar-sign",
-    "order": 3,
-    "featured": true
-  },
-  {
-    "title": "Built to Scale",
-    "description": "From prototype to production, our infrastructure {scales automatically|System adjusts capacity based on demand without manual intervention} with your growth without any configuration.",
-    "icon": "trending-up",
-    "order": 4,
-    "featured": true
-  },
-  {
-    "title": "Community Powered",
-    "description": "Join a growing community of startup founders and developers building with document redaction {APIs|Application Programming Interfaces for programmatic access}.",
-    "icon": "users",
-    "order": 5,
-    "featured": true
-  },
-  {
-    "title": "Security First",
-    "description": "Built with security best practices from the ground up. Be ready for {compliance requirements|Regulatory standards like GDPR, HIPAA, SOC 2} as you scale.",
-    "icon": "lock",
-    "order": 6,
-    "featured": true
-  }
+	{
+		"title": "Launch in Minutes",
+		"description": "Get up and running with document redaction in under 5 minutes. No complex setup, no lengthy {procurement|Process of obtaining goods or services, often involving approval workflows} processes.",
+		"icon": "zap",
+		"order": 1,
+		"featured": true
+	},
+	{
+		"title": "Developer Friendly",
+		"description": "{RESTful APIs|Representational State Transfer - web service architecture}, comprehensive documentation, and {SDKs|Software Development Kits for easy integration} that make integration straightforward for any development team.",
+		"icon": "code",
+		"order": 2,
+		"featured": true
+	},
+	{
+		"title": "Pay-as-you-Scale",
+		"description": "Start free and only pay for what you use as you grow. No upfront costs, no long-term contracts. {Usage-based pricing|You're charged based on actual consumption}.",
+		"icon": "dollar-sign",
+		"order": 3,
+		"featured": true
+	},
+	{
+		"title": "Built to Scale",
+		"description": "From prototype to production, our infrastructure {scales automatically|System adjusts capacity based on demand without manual intervention} with your growth without any configuration.",
+		"icon": "trending-up",
+		"order": 4,
+		"featured": true
+	},
+	{
+		"title": "Community Powered",
+		"description": "Join a growing community of startup founders and developers building with document redaction {APIs|Application Programming Interfaces for programmatic access}.",
+		"icon": "users",
+		"order": 5,
+		"featured": true
+	},
+	{
+		"title": "Security First",
+		"description": "Built with security best practices from the ground up. Be ready for {compliance requirements|Regulatory standards like GDPR, HIPAA, SOC 2} as you scale.",
+		"icon": "lock",
+		"order": 6,
+		"featured": true
+	}
 ]

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
 } from "@/components/ui/tooltip";
 
 interface Props {
-  description: string;
+	description: string;
 }
 
 const props = defineProps<Props>();
@@ -15,27 +15,27 @@ const props = defineProps<Props>();
 // Parse description to identify tooltip triggers
 // Format: {word|tooltip text}
 const parseDescription = (text: string) => {
-  const parts: Array<{ text: string; tooltip?: string }> = [];
-  const regex = /\{([^|]+)\|([^}]+)\}/g;
-  let lastIndex = 0;
-  let match;
+	const parts: Array<{ text: string; tooltip?: string }> = [];
+	const regex = /\{([^|]+)\|([^}]+)\}/g;
+	let lastIndex = 0;
+	let match;
 
-  while ((match = regex.exec(text)) !== null) {
-    // Add text before the match
-    if (match.index > lastIndex) {
-      parts.push({ text: text.slice(lastIndex, match.index) });
-    }
-    // Add the tooltip trigger
-    parts.push({ text: match[1], tooltip: match[2] });
-    lastIndex = match.index + match[0].length;
-  }
+	while ((match = regex.exec(text)) !== null) {
+		// Add text before the match
+		if (match.index > lastIndex) {
+			parts.push({ text: text.slice(lastIndex, match.index) });
+		}
+		// Add the tooltip trigger
+		parts.push({ text: match[1], tooltip: match[2] });
+		lastIndex = match.index + match[0].length;
+	}
 
-  // Add remaining text
-  if (lastIndex < text.length) {
-    parts.push({ text: text.slice(lastIndex) });
-  }
+	// Add remaining text
+	if (lastIndex < text.length) {
+		parts.push({ text: text.slice(lastIndex) });
+	}
 
-  return parts.length > 0 ? parts : [{ text }];
+	return parts.length > 0 ? parts : [{ text }];
 };
 
 const descriptionParts = parseDescription(props.description);

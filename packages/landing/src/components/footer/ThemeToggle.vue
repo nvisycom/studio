@@ -5,37 +5,37 @@ import { Sun, Moon } from "lucide-vue-next";
 const isDark = ref(false);
 
 function initTheme() {
-  // Get stored theme or use system preference
-  const stored = localStorage.getItem("theme");
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const shouldBeDark = stored ? stored === "dark" : prefersDark;
+	// Get stored theme or use system preference
+	const stored = localStorage.getItem("theme");
+	const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+	const shouldBeDark = stored ? stored === "dark" : prefersDark;
 
-  // Apply theme
-  isDark.value = shouldBeDark;
-  if (shouldBeDark) {
-    document.documentElement.classList.add("dark");
-  } else {
-    document.documentElement.classList.remove("dark");
-  }
+	// Apply theme
+	isDark.value = shouldBeDark;
+	if (shouldBeDark) {
+		document.documentElement.classList.add("dark");
+	} else {
+		document.documentElement.classList.remove("dark");
+	}
 
-  // Store preference
-  localStorage.setItem("theme", shouldBeDark ? "dark" : "light");
+	// Store preference
+	localStorage.setItem("theme", shouldBeDark ? "dark" : "light");
 }
 
 function toggleTheme() {
-  isDark.value = !isDark.value;
+	isDark.value = !isDark.value;
 
-  if (isDark.value) {
-    document.documentElement.classList.add("dark");
-    localStorage.setItem("theme", "dark");
-  } else {
-    document.documentElement.classList.remove("dark");
-    localStorage.setItem("theme", "light");
-  }
+	if (isDark.value) {
+		document.documentElement.classList.add("dark");
+		localStorage.setItem("theme", "dark");
+	} else {
+		document.documentElement.classList.remove("dark");
+		localStorage.setItem("theme", "light");
+	}
 }
 
 onMounted(() => {
-  initTheme();
+	initTheme();
 });
 </script>
 

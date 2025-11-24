@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuTrigger,
+	NavigationMenuContent,
+	NavigationMenuItem,
+	NavigationMenuLink,
+	NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { ChevronRight } from "lucide-vue-next";
 import { solutions } from "./desktop-nav-data";

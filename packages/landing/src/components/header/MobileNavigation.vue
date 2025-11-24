@@ -6,7 +6,7 @@ import MobileResources from "./MobileResources.vue";
 import { useMobileMenu } from "./useMobileMenu.ts";
 
 defineProps<{
-  menuOnly?: boolean;
+	menuOnly?: boolean;
 }>();
 
 const { mobileMenuOpen, toggleMobileMenu } = useMobileMenu();
