@@ -84,7 +84,7 @@ const allJobs = (await getCollection("jobs"))
           </div>
 
           <!-- Title -->
-          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-tight mb-6">
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 dark:text-white leading-tight mb-6">
             {entry.data.title}
           </h1>
 
@@ -113,7 +113,7 @@ const allJobs = (await getCollection("jobs"))
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
           <!-- Requirements -->
           <div>
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Requirements</h2>
+            <h2 class="text-2xl font-light text-gray-900 dark:text-white mb-6">Requirements</h2>
             <ul class="space-y-3">
               {entry.data.requirements.map((req: string) => (
                 <li class="text-gray-700 dark:text-neutral-300 flex items-start">
@@ -126,7 +126,7 @@ const allJobs = (await getCollection("jobs"))
 
           <!-- Nice to Have -->
           <div>
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Nice to Have</h2>
+            <h2 class="text-2xl font-light text-gray-900 dark:text-white mb-6">Nice to Have</h2>
             <ul class="space-y-3">
               {entry.data.niceToHave.map((nice: string) => (
                 <li class="text-gray-700 dark:text-neutral-300 flex items-start">
@@ -171,7 +171,7 @@ const allJobs = (await getCollection("jobs"))
         <!-- Other Positions -->
         {allJobs.length > 0 && (
           <div class="border-t border-gray-200 dark:border-neutral-700 pt-20">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-8">Other Open Positions</h2>
+            <h2 class="text-2xl font-light text-gray-900 dark:text-white mb-8">Other Open Positions</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               {allJobs.map(job => (
                 <a
@@ -195,7 +195,7 @@ const allJobs = (await getCollection("jobs"))
                     </div>
                   </div>
 
-                  <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                  <h3 class="text-lg font-light text-gray-900 dark:text-white mb-4">
                     {job.data.title}
                   </h3>
 

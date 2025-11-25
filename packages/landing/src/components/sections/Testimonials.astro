@@ -6,7 +6,6 @@ import { Quote, CheckCircle2, Users } from "lucide-vue-next";
 export interface Props {
 	title?: string;
 	description?: string;
-	backgroundColor?: "white" | "gray";
 	category?: string;
 	featured?: boolean;
 	limit?: number;
@@ -15,7 +14,6 @@ export interface Props {
 const {
 	title = "Trusted by Enterprise Leaders",
 	description = "See what our customers say about transforming their document security workflows.",
-	backgroundColor = "white",
 	category,
 	featured = true,
 	limit,
@@ -41,14 +39,9 @@ if (limit) {
 
 // Duplicate testimonials for seamless infinite scroll
 const duplicatedTestimonials = [...allTestimonials, ...allTestimonials];
-
-const bgClass =
-	backgroundColor === "gray"
-		? "bg-gray-50 dark:bg-neutral-950"
-		: "bg-white dark:bg-black";
 ---
 
-<section class={`py-12 md:py-20 ${bgClass}`}>
+<section class="py-12 md:py-20 bg-white dark:bg-black">
   <div class="container mx-auto max-w-7xl px-4">
     <div class="text-center mb-12 md:mb-16">
       <h2 class="text-3xl md:text-4xl lg:text-5xl font-light text-gray-900 dark:text-white mb-3 md:mb-4">

@@ -1,17 +1,28 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, CTA, SocialProof, Testimonials, FAQ, Security } from "@/components";
+import {
+	Hero,
+	CTA,
+	SocialProof,
+	Testimonials,
+	FAQ,
+	Security,
+	CaseStudies,
+} from "@/components";
 import {
 	Shield,
 	Check,
-	Building,
 	FileText,
-	Zap,
-	Globe,
 	AlertCircle,
 	Stethoscope,
 	User,
 } from "lucide-vue-next";
+import { getCollection } from "astro:content";
+
+// Get case studies from blog
+const caseStudies = (await getCollection("blog"))
+	.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
+	.slice(0, 3);
 ---
 
 <Layout
@@ -272,6 +283,14 @@ import {
       backgroundColor="white"
       category="general"
       featured={true}
+    />
+
+    <!-- Case Studies -->
+    <CaseStudies
+      title="Healthcare Success Stories"
+      description="See how healthcare organizations are using Nvisy to protect patient information and streamline compliance."
+      backgroundColor="gray"
+      caseStudies={caseStudies}
     />
 
     <!-- CTA -->

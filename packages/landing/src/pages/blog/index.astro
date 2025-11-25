@@ -7,12 +7,10 @@ import { File } from "lucide-vue-next";
 
 // Get all blog entries and sort by publishedAt (newest first)
 const blogEntries = (await getCollection("blog"))
-	.map((entry) => {
-		return {
-			...entry,
-			readingTime: calculateReadingTime(entry.body),
-		};
-	})
+	.map((entry) => ({
+		...entry,
+		readingTime: calculateReadingTime(entry.body),
+	}))
 	.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
 ---
 
@@ -84,7 +82,7 @@ const blogEntries = (await getCollection("blog"))
                       </div>
 
                       <!-- Title -->
-                      <h3 class="font-bold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-base leading-snug line-clamp-2">
+                      <h3 class="font-light text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-base leading-snug line-clamp-2">
                         {post.data.title}
                       </h3>
 
@@ -115,7 +113,7 @@ const blogEntries = (await getCollection("blog"))
             <div class="w-20 h-20 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-6 text-neutral-400 dark:text-neutral-500">
               <File class="w-4 h-4" client:load />
             </div>
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">No blog posts found</h3>
+            <h3 class="text-xl font-light text-gray-900 dark:text-white mb-2">No blog posts found</h3>
             <p class="text-gray-500 dark:text-neutral-400">Blog posts will appear here once they are published.</p>
           </div>
         )}

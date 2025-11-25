@@ -1,15 +1,16 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, CTA, SocialProof, Testimonials, FAQ, Premium } from "@/components";
+import {
+	Hero,
+	CTA,
+	SocialProof,
+	Testimonials,
+	FAQ,
+	Premium,
+	ROICalculator,
+} from "@/components";
 import Connect from "@/components/sections/Connect.astro";
 import SDKExamples from "@/components/sections/SDKExamples.astro";
-import {
-	Check,
-	Shield,
-	Globe,
-	Lock,
-	Zap,
-} from "lucide-vue-next";
 ---
 
 <Layout
@@ -59,6 +60,9 @@ import {
       description="Enterprise-ready SDKs with comprehensive documentation, type safety, and dedicated support."
       backgroundColor="gray"
     />
+
+    <!-- ROI Calculator -->
+    <ROICalculator backgroundColor="white" />
 
     <!-- Testimonials -->
     <Testimonials

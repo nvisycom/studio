@@ -1,44 +1,37 @@
 ---
-import { getCollection } from 'astro:content';
-import SDKShowcase from '@/components/features/sdk/SDKShowcase.vue';
+import { getCollection } from "astro:content";
+import SDKShowcase from "@/components/features/sdk/SDKShowcase.vue";
 
 export interface Props {
-  title?: string;
-  description?: string;
-  backgroundColor?: "white" | "gray";
+	title?: string;
+	description?: string;
 }
 
 const {
-  title = "Simple, Powerful SDKs",
-  description = "Integrate document redaction in minutes with our easy-to-use SDKs. Built for developers, by developers.",
-  backgroundColor = "white",
+	title = "Simple, Powerful SDKs",
+	description = "Integrate document redaction in minutes with our easy-to-use SDKs. Built for developers, by developers.",
 } = Astro.props;
 
-const bgClass =
-  backgroundColor === "gray"
-    ? "bg-gray-50 dark:bg-neutral-950"
-    : "bg-white dark:bg-black";
-
 // Fetch SDK content and render Content components
-const sdkEntries = await getCollection('sdks');
+const sdkEntries = await getCollection("sdks");
 const sortedSdks = sdkEntries.sort((a, b) => a.data.order - b.data.order);
 
 // Render each SDK entry to get Content component
 const sdksData = await Promise.all(
-  sortedSdks.map(async (entry) => {
-    const { Content } = await entry.render();
-    return {
-      name: entry.data.name,
-      language: entry.data.language,
-      githubUrl: entry.data.githubUrl,
-      Content,
-      order: entry.data.order,
-    };
-  })
+	sortedSdks.map(async (entry) => {
+		const { Content } = await entry.render();
+		return {
+			name: entry.data.name,
+			language: entry.data.language,
+			githubUrl: entry.data.githubUrl,
+			Content,
+			order: entry.data.order,
+		};
+	}),
 );
 ---
 
-<section class={`py-12 md:py-20 ${bgClass}`}>
+<section class="py-12 md:py-20 bg-white dark:bg-black">
   <div class="container mx-auto max-w-5xl px-4">
     <div class="text-center mb-12">
       <h2 class="text-3xl md:text-4xl lg:text-5xl font-light text-gray-900 dark:text-white mb-4 md:mb-6">

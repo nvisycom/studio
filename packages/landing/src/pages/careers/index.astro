@@ -47,7 +47,7 @@ const openPositions = jobEntries
         {openPositions.length > 0 ? (
           <>
             <div class="flex items-center justify-between mb-8">
-              <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+              <h2 class="text-2xl font-light text-gray-900 dark:text-white">
                 Open Positions
               </h2>
               <span class="text-sm text-gray-500 dark:text-neutral-400">
@@ -77,7 +77,7 @@ const openPositions = jobEntries
                           </div>
                         </div>
 
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                        <h3 class="text-xl font-light text-gray-900 dark:text-white mb-4">
                           {position.title}
                         </h3>
 
@@ -87,7 +87,7 @@ const openPositions = jobEntries
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div>
-                            <h4 class="font-semibold text-gray-900 dark:text-white mb-3">Requirements</h4>
+                            <h4 class="font-light text-gray-900 dark:text-white mb-3">Requirements</h4>
                             <ul class="space-y-2">
                               {position.requirements.slice(0, 3).map((req: string) => (
                                 <li class="text-sm text-gray-600 dark:text-neutral-400 flex items-start">
@@ -99,7 +99,7 @@ const openPositions = jobEntries
                           </div>
 
                           <div>
-                            <h4 class="font-semibold text-gray-900 dark:text-white mb-3">Nice to Have</h4>
+                            <h4 class="font-light text-gray-900 dark:text-white mb-3">Nice to Have</h4>
                             <ul class="space-y-2">
                               {position.niceToHave.slice(0, 3).map((nice: string) => (
                                 <li class="text-sm text-gray-600 dark:text-neutral-400 flex items-start">
@@ -138,7 +138,7 @@ const openPositions = jobEntries
             <div class="w-16 h-16 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-900 dark:text-white">
               <Briefcase class="w-8 h-8" />
             </div>
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">No open positions</h3>
+            <h3 class="text-xl font-light text-gray-900 dark:text-white mb-2">No open positions</h3>
             <p class="text-gray-500 dark:text-neutral-400">Check back soon for new opportunities.</p>
           </div>
         )}

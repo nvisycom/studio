@@ -3,7 +3,7 @@ name: Python
 language: python
 filename: redact_document
 extension: py
-githubUrl: https://github.com/nvisycom/python-sdk
+githubUrl: https://github.com/nvisycom/sdk-py
 order: 2
 ---
 

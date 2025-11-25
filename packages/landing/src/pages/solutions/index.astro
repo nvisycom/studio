@@ -1,21 +1,23 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, CompanyStats, CTA, Security, UseCases, Team } from "@/components";
+import {
+	Hero,
+	CompanyStats,
+	CTA,
+	Security,
+	UseCases,
+	Team,
+	CaseStudies,
+} from "@/components";
 import SDKExamples from "@/components/sections/SDKExamples.astro";
 import Connect from "@/components/sections/Connect.astro";
-import {
-	Building,
-	Rocket,
-	Code,
-	Shield,
-	Zap,
-	ChevronRight,
-	Check,
-	Globe,
-	Heart,
-	Lock,
-	DollarSign,
-} from "lucide-vue-next";
+import { Building, Rocket, ChevronRight, Check } from "lucide-vue-next";
+import { getCollection } from "astro:content";
+
+// Get case studies from blog
+const caseStudies = (await getCollection("blog"))
+	.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
+	.slice(0, 3);
 ---
 
 <Layout
@@ -214,6 +216,14 @@ import {
 
     <!-- Team -->
     <Team backgroundColor="gray" />
+
+    <!-- Case Studies -->
+    <CaseStudies
+      title="Customer Success Stories"
+      description="See how organizations across industries are using Nvisy to protect sensitive information."
+      backgroundColor="white"
+      caseStudies={caseStudies}
+    />
 
     <!-- CTA Section -->
     <CTA

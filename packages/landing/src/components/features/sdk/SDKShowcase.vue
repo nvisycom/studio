@@ -5,14 +5,14 @@ import TypeScriptIcon from "@/assets/sdks/typescript.svg?raw";
 import PythonIcon from "@/assets/sdks/python.svg?raw";
 
 interface SDK {
-  name: string;
-  language: string;
-  githubUrl: string;
-  order: number;
+	name: string;
+	language: string;
+	githubUrl: string;
+	order: number;
 }
 
 const props = defineProps<{
-  sdks: SDK[];
+	sdks: SDK[];
 }>();
 
 const activeTab = ref(0);
@@ -21,41 +21,41 @@ const codeHtmlMap = ref<Record<string, string>>({});
 
 const activeSdk = computed(() => props.sdks[activeTab.value]);
 const activeCodeHtml = computed(
-  () => codeHtmlMap.value[activeSdk.value.name] || "",
+	() => codeHtmlMap.value[activeSdk.value.name] || "",
 );
 
 onMounted(() => {
-  // Listen for code-ready event from Astro
-  const container = document.querySelector("[data-sdk-showcase]");
-  if (container) {
-    container.addEventListener("code-ready", ((e: CustomEvent) => {
-      codeHtmlMap.value = e.detail;
-    }) as EventListener);
+	// Listen for code-ready event from Astro
+	const container = document.querySelector("[data-sdk-showcase]");
+	if (container) {
+		container.addEventListener("code-ready", ((e: CustomEvent) => {
+			codeHtmlMap.value = e.detail;
+		}) as EventListener);
 
-    // Also check if data is already available
-    const codeAttr = container.getAttribute("data-code-html");
-    if (codeAttr) {
-      try {
-        codeHtmlMap.value = JSON.parse(codeAttr);
-      } catch (e) {
-        console.error("Failed to parse code HTML data:", e);
-      }
-    }
-  }
+		// Also check if data is already available
+		const codeAttr = container.getAttribute("data-code-html");
+		if (codeAttr) {
+			try {
+				codeHtmlMap.value = JSON.parse(codeAttr);
+			} catch (e) {
+				console.error("Failed to parse code HTML data:", e);
+			}
+		}
+	}
 });
 
 const copyCode = async () => {
-  if (activeCodeHtml.value) {
-    // Extract text content from the rendered HTML
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = activeCodeHtml.value;
-    const codeText = tempDiv.querySelector("code")?.textContent || "";
-    await navigator.clipboard.writeText(codeText);
-    copied.value = true;
-    setTimeout(() => {
-      copied.value = false;
-    }, 2000);
-  }
+	if (activeCodeHtml.value) {
+		// Extract text content from the rendered HTML
+		const tempDiv = document.createElement("div");
+		tempDiv.innerHTML = activeCodeHtml.value;
+		const codeText = tempDiv.querySelector("code")?.textContent || "";
+		await navigator.clipboard.writeText(codeText);
+		copied.value = true;
+		setTimeout(() => {
+			copied.value = false;
+		}, 2000);
+	}
 };
 </script>
 

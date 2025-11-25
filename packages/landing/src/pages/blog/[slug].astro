@@ -96,7 +96,7 @@ const relatedPosts = allPosts
           </div>
 
           <!-- Title -->
-          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-tight mb-6">
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 dark:text-white leading-tight mb-6">
             {entry.data.title}
           </h1>
 
@@ -116,7 +116,7 @@ const relatedPosts = allPosts
                 </span>
               </div>
               <div>
-                <div class="font-semibold text-gray-900 dark:text-white">{entry.data.author}</div>
+                <div class="font-light text-gray-900 dark:text-white">{entry.data.author}</div>
                 <div class="text-sm text-gray-500 dark:text-neutral-400">Author</div>
               </div>
             </div>
@@ -173,7 +173,7 @@ const relatedPosts = allPosts
                   <div class="text-sm text-gray-500 dark:text-neutral-400 mb-2">Previous Article</div>
                   <a href={`/blog/${previousPost.slug}`} class="group inline-flex items-center gap-3">
                     <ChevronLeft class="w-5 h-5 text-gray-400 dark:text-neutral-500 group-hover:text-black dark:group-hover:text-white transition-colors" />
-                    <span class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-black dark:group-hover:text-white transition-colors">
+                    <span class="text-lg font-light text-gray-900 dark:text-white group-hover:text-black dark:group-hover:text-white transition-colors">
                       {previousPost.data.title}
                     </span>
                   </a>
@@ -184,7 +184,7 @@ const relatedPosts = allPosts
                   <div class="text-sm text-gray-500 dark:text-neutral-400 mb-2">Next Article</div>
                   <a href={`/blog/${nextPost.slug}`} class="group inline-flex items-center gap-3 md:flex-row-reverse">
                     <ChevronRight class="w-5 h-5 text-gray-400 dark:text-neutral-500 group-hover:text-black dark:group-hover:text-white transition-colors" />
-                    <span class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-black dark:group-hover:text-white transition-colors">
+                    <span class="text-lg font-light text-gray-900 dark:text-white group-hover:text-black dark:group-hover:text-white transition-colors">
                       {nextPost.data.title}
                     </span>
                   </a>
@@ -197,7 +197,7 @@ const relatedPosts = allPosts
         <!-- Related Posts -->
         {relatedPosts.length > 0 && (
           <div class="border-t border-gray-200 dark:border-neutral-700 pt-12">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-8">Related Articles</h2>
+            <h2 class="text-2xl font-light text-gray-900 dark:text-white mb-8">Related Articles</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
               {relatedPosts.map(post => (
                 <article class="group">
@@ -212,7 +212,7 @@ const relatedPosts = allPosts
                         day: 'numeric'
                       })}
                     </div>
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-black dark:group-hover:text-neutral-300 transition-colors mb-2">
+                    <h3 class="text-lg font-light text-gray-900 dark:text-white group-hover:text-black dark:group-hover:text-neutral-300 transition-colors mb-2">
                       {post.data.title}
                     </h3>
                     <p class="text-gray-600 dark:text-neutral-300 text-sm overflow-hidden" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">

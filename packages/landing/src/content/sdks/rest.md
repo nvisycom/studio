@@ -3,7 +3,7 @@ name: REST API
 language: bash
 filename: redact-document
 extension: sh
-githubUrl: https://github.com/nvisycom/api-docs
+githubUrl: https://github.com/nvisycom/docs
 order: 3
 ---
 

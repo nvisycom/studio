@@ -33,7 +33,7 @@ const handleSubmit = (e: Event) => {
   >
     <div class="mb-10">
       <h2
-        class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3"
+        class="text-3xl md:text-4xl font-light text-gray-900 dark:text-white mb-3"
       >
         Send us a Message
       </h2>

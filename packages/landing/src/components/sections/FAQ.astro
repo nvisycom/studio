@@ -10,7 +10,6 @@ export interface FAQItem {
 export interface Props {
 	title?: string;
 	description?: string;
-	backgroundColor?: "white" | "gray";
 	faqs?: FAQItem[];
 	maxWidth?: "3xl" | "4xl" | "5xl";
 	category?: string;
@@ -20,7 +19,6 @@ export interface Props {
 const {
 	title = "Frequently Asked Questions",
 	description = "Everything you need to know about our platform and services.",
-	backgroundColor = "white",
 	maxWidth = "4xl",
 	category,
 	featured,
@@ -68,14 +66,10 @@ if (!propFaqs) {
 	}
 }
 
-const bgClass =
-	backgroundColor === "gray"
-		? "bg-gray-50 dark:bg-neutral-950"
-		: "bg-white dark:bg-black";
 const maxWidthClass = `max-w-${maxWidth}`;
 ---
 
-<section class={`py-12 md:py-20 ${bgClass}`}>
+<section class="py-12 md:py-20 bg-white dark:bg-black">
   <div class="container mx-auto px-4">
     <div class="text-center mb-12 md:mb-16">
       <h2 class="text-3xl md:text-4xl lg:text-5xl font-light text-gray-900 dark:text-white mb-4 md:mb-6">

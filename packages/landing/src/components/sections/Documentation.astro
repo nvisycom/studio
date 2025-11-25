@@ -1,0 +1,79 @@
+---
+import { Book, Globe, ChevronRight } from "lucide-vue-next";
+
+export interface Props {
+	title?: string;
+	description?: string;
+}
+
+const {
+	title = "Comprehensive Documentation",
+	description = "Everything you need to integrate document redaction into your application, from quick start guides to advanced customization options.",
+} = Astro.props;
+
+const docs = [
+	{
+		title: "Full Documentation",
+		subtitle: "Complete guides and examples",
+		description:
+			"Comprehensive documentation with tutorials, best practices, and real-world examples to get you up and running quickly.",
+		icon: "book",
+		href: "https://docs.nvisy.com",
+		linkText: "Browse Documentation →",
+	},
+	{
+		title: "API Reference",
+		subtitle: "Interactive API documentation",
+		description:
+			"Interactive API reference with live examples, request/response schemas, and detailed endpoint documentation.",
+		icon: "globe",
+		href: "https://docs.nvisy.com/api-reference",
+		linkText: "View API Reference →",
+	},
+];
+---
+
+<section class="py-12 md:py-20 px-4 bg-white dark:bg-black">
+  <div class="container mx-auto max-w-4xl">
+    <div class="text-center mb-12 md:mb-16">
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">
+        {title}
+      </h2>
+      <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 max-w-3xl mx-auto leading-relaxed px-4">
+        {description}
+      </p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-4 md:gap-6">
+      {docs.map((doc) => {
+        const IconComponent = doc.icon === "book" ? Book : Globe;
+        return (
+          <a
+            href={doc.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 transition-all duration-300 hover:shadow-lg p-6 no-underline relative block"
+          >
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center flex-shrink-0 text-gray-900 dark:text-white">
+                  <IconComponent class="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 class="text-base font-medium text-gray-900 dark:text-white">
+                    {doc.title}
+                  </h3>
+                  <p class="text-sm text-neutral-500 dark:text-neutral-400">{doc.subtitle}</p>
+                </div>
+              </div>
+              <ChevronRight class="w-4 h-4 text-gray-400 dark:text-neutral-500 group-hover:text-gray-900 dark:group-hover:text-white group-hover:translate-x-1 transition-all flex-shrink-0 mt-1" />
+            </div>
+            <p class="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
+              {doc.description}
+            </p>
+          </a>
+        );
+      })}
+    </div>
+  </div>
+</section>

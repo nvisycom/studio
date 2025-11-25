@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-white dark:bg-black border border-gray-200 dark:border-neutral-700 rounded-xl p-6 hover:shadow-lg transition-all duration-300"
+    class="bg-white dark:bg-black border border-gray-200 dark:border-neutral-700 rounded-xl p-6 hover:shadow-lg transition-all duration-300 flex flex-col"
   >
     <div class="flex items-start justify-between mb-4">
       <div
@@ -16,7 +16,7 @@
     <div class="mb-2">
       <div class="flex items-center gap-2 mb-2">
         <h3
-          class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-0"
+          class="text-xl font-light text-gray-900 dark:text-white flex items-center gap-2 mb-0"
         >
           {{ title }}
           <span
@@ -28,11 +28,11 @@
       </div>
     </div>
 
-    <p class="text-gray-600 dark:text-neutral-400 text-sm mb-4">
+    <p class="text-gray-600 dark:text-neutral-400 text-sm mb-4 flex-grow">
       {{ description }}
     </p>
 
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-4 mt-auto">
       <!-- Version with icon -->
       <div
         class="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400"

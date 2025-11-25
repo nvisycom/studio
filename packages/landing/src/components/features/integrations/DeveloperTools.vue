@@ -3,7 +3,7 @@
     <div class="container mx-auto px-4">
       <div class="text-center mb-12">
         <h2
-          class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6"
+          class="text-3xl md:text-4xl font-light text-gray-900 dark:text-white mb-6"
         >
           Developer Tools
         </h2>
@@ -35,7 +35,7 @@
           </div>
 
           <div class="mb-2">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+            <h3 class="text-lg font-light text-gray-900 dark:text-white">
               {{ tool.data.title }}
             </h3>
           </div>

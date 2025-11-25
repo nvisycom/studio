@@ -55,7 +55,7 @@ const descriptionParts = parseDescription(props.description);
           </TooltipTrigger>
           <TooltipContent
             :side-offset="8"
-            class="!bg-neutral-900 dark:!bg-black !text-white !border-neutral-700 dark:!border-neutral-800 !px-2 !py-1.5 !text-xs [&_[data-slot=tooltip-arrow]]:!hidden"
+            class="bg-neutral-900 dark:bg-black text-white border-neutral-700 px-2 py-1.5 text-xs"
           >
             <p class="max-w-[200px]">{{ part.tooltip }}</p>
           </TooltipContent>

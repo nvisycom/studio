@@ -3,7 +3,7 @@ name: TypeScript
 language: typescript
 filename: redact-document
 extension: ts
-githubUrl: https://github.com/nvisycom/typescript-sdk
+githubUrl: https://github.com/nvisycom/sdk-ts
 order: 1
 ---
 

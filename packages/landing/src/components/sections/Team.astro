@@ -2,24 +2,17 @@
 import { Heart } from "lucide-vue-next";
 
 export interface Props {
-  title?: string;
-  description?: string;
-  backgroundColor?: "white" | "gray";
+	title?: string;
+	description?: string;
 }
 
 const {
-  title = "Built by a Focused Team",
-  description = "Nvisy is a dedicated 2-4 person startup focused exclusively on document redaction and data anonymization. Our small, expert team ensures rapid development, direct communication, and solutions tailored to your specific needs. We understand the challenges of building secure products because we're building alongside you.",
-  backgroundColor = "gray",
+	title = "Built by a Focused Team",
+	description = "Nvisy is a dedicated 2-4 person startup focused exclusively on document redaction and data anonymization. Our small, expert team ensures rapid development, direct communication, and solutions tailored to your specific needs. We understand the challenges of building secure products because we're building alongside you.",
 } = Astro.props;
-
-const bgClass =
-  backgroundColor === "gray"
-    ? "bg-neutral-50 dark:bg-neutral-950"
-    : "bg-white dark:bg-black";
 ---
 
-<section class={`py-12 md:py-20 ${bgClass}`}>
+<section class="py-12 md:py-20 bg-white dark:bg-black">
   <div class="container mx-auto px-4">
     <div class="max-w-4xl mx-auto text-center">
       <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-8">

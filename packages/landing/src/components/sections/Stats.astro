@@ -7,7 +7,6 @@ interface StatItem {
 
 export interface Props {
 	title?: string;
-	backgroundColor?: "white" | "gray";
 	stats?: StatItem[];
 	inline?: boolean;
 	padding?: "sm" | "md" | "lg" | "xl";
@@ -16,7 +15,6 @@ export interface Props {
 
 const {
 	title,
-	backgroundColor = "white",
 	stats,
 	inline = false,
 	padding = "xl",
@@ -32,11 +30,7 @@ const defaultStats: StatItem[] = [
 
 const statsData = stats || defaultStats;
 
-const bgClass = inline
-	? ""
-	: backgroundColor === "gray"
-		? "bg-gray-50 dark:bg-neutral-950"
-		: "bg-white dark:bg-black";
+const bgClass = inline ? "" : "bg-white dark:bg-black";
 
 const paddingClass = inline
 	? ""
