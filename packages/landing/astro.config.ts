@@ -16,28 +16,34 @@ const srcPath = fileURLToPath(srcImport);
 
 // https://astro.build/config
 export default defineConfig({
-	site: "https://nvisy.com",
-	srcDir: "./src",
-	integrations: [mdx(), sitemap(), vue()],
+  site: "https://nvisy.com",
+  srcDir: "./src",
+  integrations: [mdx(), sitemap(), vue()],
 
-	i18n: {
-		locales: ["en", "de", "fr"],
-		defaultLocale: "en",
-		fallback: {
-			de: "en",
-			fr: "en",
-		},
-	},
+  i18n: {
+    locales: ["en", "de", "fr"],
+    // locales: ["en", "de", "fr"],
+    defaultLocale: "en",
+    fallback: {
+      // de: "en",
+      // fr: "en",
+    },
+  },
 
-	markdown: {
-		shikiConfig: {
-			theme: "github-light-default",
-			transformers: [],
-		},
-	},
+  markdown: {
+    shikiConfig: {
+      defaultColor: "light",
+      themes: {
+        light: "github-light-default",
+        dark: "github-dark-high-contrast",
+      },
+      wrap: true,
+      transformers: [],
+    },
+  },
 
-	vite: {
-		plugins: [vueDevTools(), tailwindcss()],
-		resolve: { alias: { "@": srcPath } },
-	},
+  vite: {
+    plugins: [vueDevTools(), tailwindcss()],
+    resolve: { alias: { "@": srcPath } },
+  },
 });

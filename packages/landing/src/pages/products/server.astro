@@ -1,6 +1,8 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, CTA } from "@/components";
+import { Hero, CTA, OpenSource, Premium } from "@/components";
+import SDKExamples from "@/components/sections/SDKExamples.astro";
+import Connect from "@/components/sections/Connect.astro";
 import {
 	Check,
 	Shield,
@@ -297,6 +299,34 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
         </div>
       </div>
     </div>
+
+    <!-- Open Source -->
+    <OpenSource
+      title="Built on Open Source"
+      description="Server is fully open source. Contribute, validate our security approach, and build with confidence."
+      backgroundColor="gray"
+    />
+
+    <!-- Connect/Integration -->
+    <Connect
+      title="Flexible Integration"
+      description="Self-hosted server with the same powerful APIs as Nvisy Cloud. Integrate seamlessly into your infrastructure."
+      backgroundColor="white"
+    />
+
+    <!-- SDK Examples -->
+    <SDKExamples
+      title="Compatible SDKs"
+      description="Use the same TypeScript and Python SDKs as Nvisy Cloud. Simply point to your server endpoint."
+      backgroundColor="gray"
+    />
+
+    <!-- Premium -->
+    <Premium
+      title="Enterprise Support"
+      description="Get dedicated support for your on-premise deployment. Source code access, custom modifications, and priority assistance available."
+      backgroundColor="white"
+    />
 
     <!-- CTA Section -->
     <CTA

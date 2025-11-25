@@ -1,8 +1,7 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, CTA, CompanyStats } from "@/components";
+import { Hero, CTA, SocialProof, Testimonials, FAQ, Security } from "@/components";
 import {
-	Building,
 	Shield,
 	Check,
 	FileText,
@@ -39,14 +38,24 @@ import {
       ]}
     />
 
-    <!-- Company Stats -->
-    <CompanyStats backgroundColor="white" />
+    <!-- Social Proof -->
+    <SocialProof
+      title="Trusted by Government Agencies"
+      subtitle="Federal, state, and local government agencies trust Nvisy to protect sensitive citizen data"
+      backgroundColor="white"
+    />
+
+    <Security
+      title="Enterprise-Grade Document Security"
+      description="Built with compliance and security at the core. Our platform meets the rigorous standards required by government agencies."
+      backgroundColor="gray"
+    />
 
     <!-- Key Challenges -->
     <div class="container mx-auto px-4 py-20">
       <div class="max-w-6xl mx-auto">
         <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
+          <h2 class="text-3xl md:text-4xl font-light text-neutral-900 dark:text-white mb-6">
             Government Data Protection Challenges
           </h2>
           <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
@@ -91,7 +100,7 @@ import {
       <div class="container mx-auto px-4">
         <div class="max-w-6xl mx-auto">
           <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
+            <h2 class="text-3xl md:text-4xl font-light text-neutral-900 dark:text-white mb-6">
               Comprehensive Government Data Protection
             </h2>
             <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
@@ -169,7 +178,7 @@ import {
     <div class="container mx-auto px-4 py-20">
       <div class="max-w-6xl mx-auto">
         <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
+          <h2 class="text-3xl md:text-4xl font-light text-neutral-900 dark:text-white mb-6">
             Government Use Cases
           </h2>
           <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
@@ -248,203 +257,21 @@ import {
       </div>
     </div>
 
-    <!-- Implementation Options -->
-    <div class="bg-neutral-50 dark:bg-neutral-950 py-20">
-      <div class="container mx-auto px-4">
-        <div class="max-w-6xl mx-auto">
-          <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
-              Secure Deployment Options
-            </h2>
-            <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-              Choose the deployment model that best fits your agency's security requirements,
-              clearance levels, and data sovereignty needs.
-            </p>
-          </div>
+    <!-- Testimonials -->
+    <Testimonials
+      backgroundColor="white"
+      title="Trusted by Government Agencies"
+      description="See how government organizations are protecting sensitive citizen data with Nvisy"
+    />
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
-              <div class="flex items-center gap-3 mb-6">
-                <Globe class="w-8 h-8 text-blue-600" />
-                <div>
-                  <h3 class="text-xl font-bold text-neutral-900 dark:text-white">Cloud API</h3>
-                  <p class="text-sm text-neutral-500">For local and state government agencies</p>
-                </div>
-              </div>
-              <ul class="space-y-3 mb-6">
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300">Quick integration with REST API</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300">TypeScript and Python SDKs</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300">GDPR & CCPA compliant infrastructure</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300">Government-friendly pricing</span>
-                </li>
-              </ul>
-              <a
-                href="https://docs.nvisy.com"
-                class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium transition-colors"
-              >
-                View API Documentation →
-              </a>
-            </div>
-
-            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
-              <div class="flex items-center gap-3 mb-6">
-                <Building class="w-8 h-8 text-purple-600" />
-                <div>
-                  <h3 class="text-xl font-bold text-neutral-900 dark:text-white">On-Premise Deployment</h3>
-                  <p class="text-sm text-neutral-500">For federal agencies and sensitive environments</p>
-                </div>
-              </div>
-              <ul class="space-y-3 mb-6">
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300">Complete data sovereignty and control</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300">Source code access for security reviews</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300">Air-gapped deployment options</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300">Special government pricing</span>
-                </li>
-              </ul>
-              <a
-                href="/contact"
-                class="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium transition-colors"
-              >
-                Contact Government Sales →
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Compliance Status -->
-    <div class="container mx-auto px-4 py-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
-            Security & Certification Status
-          </h2>
-          <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-            We're committed to meeting the highest security and compliance standards
-            required by government agencies and public sector organizations.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
-                <Check class="w-5 h-5 text-green-600" />
-              </div>
-              <div>
-                <h3 class="text-xl font-bold text-neutral-900 dark:text-white">Current Compliance</h3>
-                <p class="text-sm text-neutral-500">Operational and certified</p>
-              </div>
-            </div>
-            <ul class="space-y-3">
-              <li class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">GDPR Compliant</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">CCPA Compliant</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">End-to-end encryption</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">Comprehensive audit trails</span>
-              </li>
-            </ul>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center">
-                <Zap class="w-5 h-5 text-orange-600" />
-              </div>
-              <div>
-                <h3 class="text-xl font-bold text-neutral-900 dark:text-white">In Progress</h3>
-                <p class="text-sm text-neutral-500">Active certification processes</p>
-              </div>
-            </div>
-            <ul class="space-y-3">
-              <li class="flex items-center gap-3">
-                <div class="w-5 h-5 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center flex-shrink-0">
-                  <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
-                </div>
-                <span class="text-neutral-700 dark:text-neutral-300">SOC II Type 2 Certification</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <div class="w-5 h-5 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center flex-shrink-0">
-                  <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
-                </div>
-                <span class="text-neutral-700 dark:text-neutral-300">FedRAMP Authorization (future)</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">FOIA compliance support</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">Role-based access control</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- About -->
-    <div class="bg-neutral-50 dark:bg-neutral-950 py-20">
-      <div class="container mx-auto px-4">
-        <div class="max-w-4xl mx-auto text-center">
-          <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-8">
-            Built by a Focused Team
-          </h2>
-          <p class="text-lg text-neutral-600 dark:text-neutral-300 mb-8">
-            Nvisy is a dedicated 2-4 person startup focused exclusively on document redaction and data anonymization.
-            We understand the unique challenges government agencies face balancing transparency with privacy,
-            and we're building solutions specifically designed for public sector requirements.
-          </p>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="text-center">
-              <div class="text-2xl font-bold text-neutral-900 dark:text-white mb-2">100%</div>
-              <div class="text-neutral-600 dark:text-neutral-400">Focus on Data Security</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-bold text-neutral-900 dark:text-white mb-2">Direct</div>
-              <div class="text-neutral-600 dark:text-neutral-400">Founder Communication</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-bold text-neutral-900 dark:text-white mb-2">Rapid</div>
-              <div class="text-neutral-600 dark:text-neutral-400">Feature Development</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- FAQ -->
+    <FAQ
+      title="Government FAQs"
+      description="Common questions about document redaction for government agencies"
+      backgroundColor="white"
+      category="general"
+      featured={true}
+    />
 
     <!-- CTA -->
     <CTA

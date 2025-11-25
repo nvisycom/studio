@@ -1,6 +1,8 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, CTA } from "@/components";
+import { Hero, CTA, Security, Premium } from "@/components";
+import SDKExamples from "@/components/sections/SDKExamples.astro";
+import Connect from "@/components/sections/Connect.astro";
 import ReviewTabs from "@/components/features/dashboard/ReviewTabs.vue";
 import {
 	Check,
@@ -214,6 +216,34 @@ import {
         </div>
       </div>
     </div>
+
+    <!-- Security -->
+    <Security
+      title="Enterprise-Grade Security"
+      description="Built with compliance and security at the core. GDPR & CCPA compliant with SOC II and HIPAA certifications in progress."
+      backgroundColor="gray"
+    />
+
+    <!-- Connect/Integration -->
+    <Connect
+      title="Seamless Integration"
+      description="Powerful APIs and comprehensive SDKs make it easy to integrate document redaction into your applications."
+      backgroundColor="white"
+    />
+
+    <!-- SDK Examples -->
+    <SDKExamples
+      title="Developer-Friendly SDKs"
+      description="Get started in minutes with our TypeScript and Python SDKs. Built for developers, with full type safety and comprehensive documentation."
+      backgroundColor="gray"
+    />
+
+    <!-- Premium -->
+    <Premium
+      title="Enterprise Solutions"
+      description="Need more control? We offer on-premise deployment, source code access, and custom enterprise pricing for organizations with specific requirements."
+      backgroundColor="white"
+    />
 
     <!-- CTA Section -->
     <CTA

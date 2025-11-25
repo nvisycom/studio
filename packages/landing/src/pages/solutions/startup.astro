@@ -1,6 +1,8 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, CTA, CompanyStats } from "@/components";
+import { Hero, CTA, SocialProof, Testimonials, FAQ, OpenSource } from "@/components";
+import Connect from "@/components/sections/Connect.astro";
+import SDKExamples from "@/components/sections/SDKExamples.astro";
 import {
 	Code,
 	Zap,
@@ -17,7 +19,7 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
 ---
 
 <Layout
-  title="Startup Solutions"
+  title="Startup"
   description="Document redaction API built for startups. Easy integration, open source core services, TypeScript and Python SDKs. Free to start with special startup pricing."
 >
   <div class="bg-white dark:bg-black min-h-screen">
@@ -41,104 +43,19 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
       ]}
     />
 
-    <!-- Company Stats -->
-    <CompanyStats backgroundColor="white" />
-
-    <!-- Core Features -->
-    <div class="container mx-auto px-4 py-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
-            Built for Developer Experience
-          </h2>
-          <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-            Everything you need to add document redaction to your product quickly.
-            Clean APIs, comprehensive SDKs, and transparent open source core services.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
-            <div class="w-12 h-12 bg-neutral-100 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-6">
-              <Globe class="w-6 h-6 text-neutral-700 dark:text-neutral-300" />
-            </div>
-            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">RESTful API</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 mb-4">
-              Clean, intuitive REST API that follows industry standards. Get started in minutes.
-            </p>
-            <ul class="space-y-2 text-sm">
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-neutral-500" />
-                <span class="text-neutral-600 dark:text-neutral-400">OpenAPI specification</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-neutral-500" />
-                <span class="text-neutral-600 dark:text-neutral-400">Comprehensive examples</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-neutral-500" />
-                <span class="text-neutral-600 dark:text-neutral-400">Fast response times</span>
-              </li>
-            </ul>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
-            <div class="w-12 h-12 bg-neutral-100 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-6">
-              <Code class="w-6 h-6 text-neutral-700 dark:text-neutral-300" />
-            </div>
-            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Official SDKs</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 mb-4">
-              TypeScript and Python SDKs with full type safety and comprehensive documentation.
-            </p>
-            <ul class="space-y-2 text-sm">
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-neutral-500" />
-                <span class="text-neutral-600 dark:text-neutral-400">TypeScript SDK</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-neutral-500" />
-                <span class="text-neutral-600 dark:text-neutral-400">Python SDK</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-neutral-500" />
-                <span class="text-neutral-600 dark:text-neutral-400">Full type safety</span>
-              </li>
-            </ul>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
-            <div class="w-12 h-12 bg-neutral-100 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-6">
-              <Fragment set:html={GithubIcon} />
-            </div>
-            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Open Source Core</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 mb-4">
-              Core services are open source. Validate our approach and contribute improvements.
-            </p>
-            <ul class="space-y-2 text-sm">
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-neutral-500" />
-                <span class="text-neutral-600 dark:text-neutral-400">Transparent algorithms</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-neutral-500" />
-                <span class="text-neutral-600 dark:text-neutral-400">Community contributions</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-neutral-500" />
-                <span class="text-neutral-600 dark:text-neutral-400">Security validation</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Social Proof -->
+    <SocialProof
+      title="Trusted by Startups Worldwide"
+      subtitle="Fast-growing startups trust Nvisy to protect their users' sensitive data"
+      backgroundColor="white"
+    />
 
     <!-- Documentation & Resources -->
     <div class="bg-neutral-50 dark:bg-neutral-950 py-20">
       <div class="container mx-auto px-4">
         <div class="max-w-6xl mx-auto">
           <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
+            <h2 class="text-3xl md:text-4xl font-light text-neutral-900 dark:text-white mb-6">
               Comprehensive Documentation
             </h2>
             <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
@@ -192,251 +109,42 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
       </div>
     </div>
 
-    <!-- Getting Started -->
-    <div class="container mx-auto px-4 py-20">
-      <div class="max-w-5xl mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
-            From Idea to Production in Minutes
-          </h2>
-          <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-            Our streamlined integration process gets you from zero to redacting documents
-            faster than building your own solution.
-          </p>
-        </div>
+    <!-- Open Source -->
+    <OpenSource
+      title="Built on Open Source"
+      description="Our core services and SDKs are open source. Contribute, validate our security approach, and build with confidence."
+      backgroundColor="white"
+    />
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div class="text-center">
-            <div class="w-16 h-16 bg-black dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
-              <span class="text-white dark:text-black font-bold text-xl">1</span>
-            </div>
-            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4">Sign Up Free</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 text-sm">
-              Create your account with just your email. No credit card required to get started.
-            </p>
-          </div>
+    <!-- Connect/Integration -->
+    <Connect
+      title="Integrate in Minutes"
+      description="Simple APIs and comprehensive SDKs make it easy to add document redaction to your product. Ship faster with ready-to-use tools."
+      backgroundColor="white"
+    />
 
-          <div class="text-center">
-            <div class="w-16 h-16 bg-black dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
-              <span class="text-white dark:text-black font-bold text-xl">2</span>
-            </div>
-            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4">Install SDK</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 text-sm">
-              Install our TypeScript or Python SDK, or use the REST API directly. Full examples included.
-            </p>
-          </div>
+    <!-- SDK Examples -->
+    <SDKExamples
+      title="Simple, Powerful SDKs"
+      description="Get started in minutes with our easy-to-use SDKs. Built for developers, by developers."
+      backgroundColor="gray"
+    />
 
-          <div class="text-center">
-            <div class="w-16 h-16 bg-black dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
-              <span class="text-white dark:text-black font-bold text-xl">3</span>
-            </div>
-            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4">Start Building</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 text-sm">
-              Make your first API call and start processing documents. Scale automatically as you grow.
-            </p>
-          </div>
-        </div>
+    <!-- Testimonials -->
+    <Testimonials
+      backgroundColor="white"
+      title="Trusted by Startups"
+      description="See how startups are building secure products faster with Nvisy"
+    />
 
-        <!-- Code Example -->
-        <div class="mt-16 bg-neutral-900 rounded-xl p-8 overflow-x-auto">
-          <div class="flex items-center justify-between mb-4">
-            <h4 class="text-white font-medium">Quick Start Example</h4>
-            <div class="flex gap-2">
-              <span class="bg-neutral-700 text-neutral-300 px-2 py-1 rounded text-xs">TypeScript</span>
-              <span class="bg-neutral-700 text-neutral-300 px-2 py-1 rounded text-xs">Python</span>
-            </div>
-          </div>
-          <code class="text-green-400 text-sm">
-            <div class="text-neutral-500">// npm install @nvisy/sdk</div>
-            <div class="mt-2"><span class="text-blue-400">import</span> <span class="text-white">&#123; NvisyClient &#125;</span> <span class="text-blue-400">from</span> <span class="text-yellow-300">'@nvisy/sdk'</span></div>
-            <br/>
-            <div><span class="text-blue-400">const</span> <span class="text-white">client = new NvisyClient(&#123; apiKey: process.env.NVISY_API_KEY &#125;)</span></div>
-            <br/>
-            <div><span class="text-blue-400">const</span> <span class="text-white">result = await client.redact(&#123;</span></div>
-            <div class="ml-4"><span class="text-white">file: documentBuffer,</span></div>
-            <div class="ml-4"><span class="text-white">types: ['email', 'phone', 'ssn']</span></div>
-            <div><span class="text-white">&#125;)</span></div>
-          </code>
-        </div>
-      </div>
-    </div>
-
-    <!-- Startup Benefits -->
-    <div class="bg-neutral-50 dark:bg-neutral-950 py-20">
-      <div class="container mx-auto px-4">
-        <div class="max-w-6xl mx-auto">
-          <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
-              Why Startups Choose Nvisy
-            </h2>
-            <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-              Built by founders who understand the challenges of building secure products
-              on limited resources and tight timelines.
-            </p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
-              <Zap class="w-12 h-12 text-blue-600 mx-auto mb-4" />
-              <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-2">Ship Faster</h3>
-              <p class="text-neutral-600 dark:text-neutral-300 text-sm">
-                Focus on your core product instead of building document security from scratch.
-              </p>
-            </div>
-
-            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
-              <DollarSign class="w-12 h-12 text-green-600 mx-auto mb-4" />
-              <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-2">Save Money</h3>
-              <p class="text-neutral-600 dark:text-neutral-300 text-sm">
-                Special startup pricing and free tier. Much cheaper than hiring a security team.
-              </p>
-            </div>
-
-            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
-              <Shield class="w-12 h-12 text-purple-600 mx-auto mb-4" />
-              <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-2">Stay Compliant</h3>
-              <p class="text-neutral-600 dark:text-neutral-300 text-sm">
-                GDPR & CCPA compliant platform with SOC II and HIPAA certifications in progress.
-              </p>
-            </div>
-
-            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
-              <Rocket class="w-12 h-12 text-orange-600 mx-auto mb-4" />
-              <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-2">Scale Seamlessly</h3>
-              <p class="text-neutral-600 dark:text-neutral-300 text-sm">
-                From prototype to production without changing providers or rebuilding integrations.
-              </p>
-            </div>
-          </div>
-
-          <!-- Startup-Specific Features -->
-          <div class="bg-white dark:bg-black rounded-2xl border border-neutral-200 dark:border-neutral-700 p-8">
-            <h3 class="text-2xl font-bold text-neutral-900 dark:text-white mb-8 text-center">Startup-Friendly Features</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <h4 class="font-semibold text-neutral-900 dark:text-white mb-4">Developer Experience</h4>
-                <ul class="space-y-3">
-                  <li class="flex items-center gap-3">
-                    <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <span class="text-neutral-700 dark:text-neutral-300">5-minute integration</span>
-                  </li>
-                  <li class="flex items-center gap-3">
-                    <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <span class="text-neutral-700 dark:text-neutral-300">TypeScript & Python SDKs</span>
-                  </li>
-                  <li class="flex items-center gap-3">
-                    <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <span class="text-neutral-700 dark:text-neutral-300">Comprehensive documentation</span>
-                  </li>
-                  <li class="flex items-center gap-3">
-                    <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <span class="text-neutral-700 dark:text-neutral-300">Open source core services</span>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h4 class="font-semibold text-neutral-900 dark:text-white mb-4">Business Benefits</h4>
-                <ul class="space-y-3">
-                  <li class="flex items-center gap-3">
-                    <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <span class="text-neutral-700 dark:text-neutral-300">Free to start, affordable to scale</span>
-                  </li>
-                  <li class="flex items-center gap-3">
-                    <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <span class="text-neutral-700 dark:text-neutral-300">Special startup pricing available</span>
-                  </li>
-                  <li class="flex items-center gap-3">
-                    <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <span class="text-neutral-700 dark:text-neutral-300">Direct access to founders</span>
-                  </li>
-                  <li class="flex items-center gap-3">
-                    <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <span class="text-neutral-700 dark:text-neutral-300">Investor-ready security posture</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Compliance & Security -->
-    <div class="container mx-auto px-4 py-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
-            Enterprise-Grade Security, Startup-Friendly Pricing
-          </h2>
-          <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-            Don't compromise on security just because you're a startup. Get enterprise-level
-            compliance and security features at prices that make sense for growing companies.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
-            <div class="flex items-center gap-3 mb-6">
-              <Lock class="w-8 h-8 text-green-600" />
-              <div>
-                <h3 class="text-xl font-bold text-neutral-900 dark:text-white">Security & Compliance</h3>
-                <p class="text-sm text-neutral-500">Built for modern privacy requirements</p>
-              </div>
-            </div>
-            <ul class="space-y-3">
-              <li class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">GDPR & CCPA compliant</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <div class="w-5 h-5 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center flex-shrink-0">
-                  <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
-                </div>
-                <span class="text-neutral-700 dark:text-neutral-300">SOC II certification (in progress)</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <div class="w-5 h-5 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center flex-shrink-0">
-                  <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
-                </div>
-                <span class="text-neutral-700 dark:text-neutral-300">HIPAA certification (in progress)</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">End-to-end encryption</span>
-              </li>
-            </ul>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
-            <div class="flex items-center gap-3 mb-6">
-              <Heart class="w-8 h-8 text-red-500" />
-              <div>
-                <h3 class="text-xl font-bold text-neutral-900 dark:text-white">Built by Founders</h3>
-                <p class="text-sm text-neutral-500">We understand startup challenges</p>
-              </div>
-            </div>
-            <ul class="space-y-3">
-              <li class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">2-4 person focused team</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">Direct founder communication</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">Rapid feature development</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">Startup-friendly approach</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- FAQ -->
+    <FAQ
+      title="Startup FAQs"
+      description="Common questions about document redaction for startups"
+      backgroundColor="white"
+      category="general"
+      featured={true}
+    />
 
     <CTA
       title="Ready to Ship Faster with Secure Document Redaction?"

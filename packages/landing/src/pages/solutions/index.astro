@@ -1,6 +1,8 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, CompanyStats, CTA } from "@/components";
+import { Hero, CompanyStats, CTA, Security, UseCases, Team } from "@/components";
+import SDKExamples from "@/components/sections/SDKExamples.astro";
+import Connect from "@/components/sections/Connect.astro";
 import {
 	Building,
 	Rocket,
@@ -47,7 +49,7 @@ import {
     <div class="container mx-auto px-4 py-20">
       <div class="max-w-6xl mx-auto">
         <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
+          <h2 class="text-3xl md:text-4xl font-light text-neutral-900 dark:text-white mb-6">
             Solutions Built for Your Needs
           </h2>
           <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
@@ -182,236 +184,36 @@ import {
       </div>
     </div>
 
-    <!-- Industry-Specific Solutions -->
-    <div class="container mx-auto px-4 py-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
-            Industry-Specific Solutions
-          </h2>
-          <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-            Specialized document redaction solutions tailored for specific industry requirements,
-            regulations, and compliance needs.
-          </p>
-        </div>
+    <!-- Use Cases -->
+    <UseCases
+      title="Industry-Specific Solutions"
+      description="Specialized document redaction solutions tailored for specific industry requirements, regulations, and compliance needs."
+      backgroundColor="white"
+    />
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <DollarSign class="w-6 h-6 text-blue-700 dark:text-blue-300" />
-            </div>
-            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">Financial Services</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-6">
-              GDPR & CCPA compliant redaction for banks, credit unions, and fintech companies.
-              Protect customer PII and financial data.
-            </p>
-            <a
-              href="/solutions/financial"
-              class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium transition-colors text-sm"
-            >
-              Learn More
-              <ChevronRight class="w-4 h-4 ml-1" />
-            </a>
-          </div>
+    <!-- Connect/Integration -->
+    <Connect
+      title="Developer-First Platform"
+      description="Comprehensive APIs, SDKs, and documentation designed to get you up and running quickly, regardless of your tech stack or organizational size."
+      backgroundColor="gray"
+    />
 
-          <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-            <div class="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <Heart class="w-6 h-6 text-red-700 dark:text-red-300" />
-            </div>
-            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">Healthcare</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-6">
-              HIPAA-focused redaction for hospitals, clinics, and health systems.
-              Protect PHI and patient data with healthcare compliance.
-            </p>
-            <a
-              href="/solutions/healthcare"
-              class="inline-flex items-center text-red-600 hover:text-red-700 font-medium transition-colors text-sm"
-            >
-              Learn More
-              <ChevronRight class="w-4 h-4 ml-1" />
-            </a>
-          </div>
+    <!-- SDK Examples -->
+    <SDKExamples
+      title="Official SDKs"
+      description="TypeScript and Python SDKs with full type safety, comprehensive examples, and excellent documentation."
+      backgroundColor="white"
+    />
 
-          <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-            <div class="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <Building class="w-6 h-6 text-gray-700 dark:text-gray-300" />
-            </div>
-            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">Government</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-6">
-              Secure redaction for government agencies. Balance transparency
-              requirements with citizen privacy protection.
-            </p>
-            <a
-              href="/solutions/government"
-              class="inline-flex items-center text-gray-600 hover:text-gray-700 font-medium transition-colors text-sm"
-            >
-              Learn More
-              <ChevronRight class="w-4 h-4 ml-1" />
-            </a>
-          </div>
+    <!-- Security -->
+    <Security
+      title="Security & Compliance First"
+      description="Built with enterprise security standards from day one. Currently GDPR & CCPA compliant with SOC II and HIPAA certifications actively in progress."
+      backgroundColor="white"
+    />
 
-          <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-            <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <Shield class="w-6 h-6 text-green-700 dark:text-green-300" />
-            </div>
-            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">Insurance</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-6">
-              Protect policyholder information and claims data.
-              SOC II and regulatory compliance for insurance carriers.
-            </p>
-            <a
-              href="/solutions/insurance"
-              class="inline-flex items-center text-green-600 hover:text-green-700 font-medium transition-colors text-sm"
-            >
-              Learn More
-              <ChevronRight class="w-4 h-4 ml-1" />
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Technology Stack -->
-    <div class="bg-neutral-50 dark:bg-neutral-950 py-20">
-      <div class="container mx-auto px-4">
-        <div class="max-w-6xl mx-auto">
-          <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
-              Developer-First Platform
-            </h2>
-            <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-              Comprehensive APIs, SDKs, and documentation designed to get you up and running quickly,
-              regardless of your tech stack or organizational size.
-            </p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
-              <Globe class="w-12 h-12 text-blue-600 mx-auto mb-6" />
-              <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">REST API</h3>
-              <p class="text-neutral-600 dark:text-neutral-300 mb-4">
-                Clean, well-documented REST API that follows industry standards and best practices.
-              </p>
-              <a
-                href="https://docs.nvisy.com/api-reference"
-                class="text-blue-600 hover:text-blue-700 font-medium transition-colors"
-              >
-                View API Reference →
-              </a>
-            </div>
-
-            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
-              <Code class="w-12 h-12 text-green-600 mx-auto mb-6" />
-              <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Official SDKs</h3>
-              <p class="text-neutral-600 dark:text-neutral-300 mb-4">
-                TypeScript and Python SDKs with full type safety and comprehensive examples.
-              </p>
-              <div class="flex justify-center gap-2">
-                <span class="bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 px-3 py-1 rounded-full text-sm">TypeScript</span>
-                <span class="bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 px-3 py-1 rounded-full text-sm">Python</span>
-              </div>
-            </div>
-
-            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
-              <Shield class="w-12 h-12 text-purple-600 mx-auto mb-6" />
-              <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Open Source</h3>
-              <p class="text-neutral-600 dark:text-neutral-300 mb-4">
-                Core services are open source, allowing for transparency and community validation.
-              </p>
-              <a
-                href="https://docs.nvisy.com"
-                class="text-purple-600 hover:text-purple-700 font-medium transition-colors"
-              >
-                View Documentation →
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Compliance & Security -->
-    <div class="container mx-auto px-4 py-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
-            Security & Compliance First
-          </h2>
-          <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-            Built with enterprise security standards from day one. Currently GDPR & CCPA compliant
-            with SOC II and HIPAA certifications actively in progress.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 text-center">
-            <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <Check class="w-6 h-6 text-green-600" />
-            </div>
-            <h3 class="font-bold text-neutral-900 dark:text-white mb-2">GDPR Compliant</h3>
-            <p class="text-sm text-neutral-600 dark:text-neutral-300">Full GDPR compliance for European data protection</p>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 text-center">
-            <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <Check class="w-6 h-6 text-green-600" />
-            </div>
-            <h3 class="font-bold text-neutral-900 dark:text-white mb-2">CCPA Compliant</h3>
-            <p class="text-sm text-neutral-600 dark:text-neutral-300">California Consumer Privacy Act compliance</p>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 text-center">
-            <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <Zap class="w-6 h-6 text-orange-600" />
-            </div>
-            <h3 class="font-bold text-neutral-900 dark:text-white mb-2">SOC II</h3>
-            <p class="text-sm text-neutral-600 dark:text-neutral-300">SOC II Type 2 certification in active progress</p>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 text-center">
-            <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <Lock class="w-6 h-6 text-orange-600" />
-            </div>
-            <h3 class="font-bold text-neutral-900 dark:text-white mb-2">HIPAA</h3>
-            <p class="text-sm text-neutral-600 dark:text-neutral-300">HIPAA certification process underway</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- About Section -->
-    <div class="bg-neutral-50 dark:bg-neutral-950 py-20">
-      <div class="container mx-auto px-4">
-        <div class="max-w-4xl mx-auto text-center">
-          <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-8">
-            <Heart class="w-8 h-8 text-white" />
-          </div>
-          <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-8">
-            Built by a Focused Team
-          </h2>
-          <p class="text-lg text-neutral-600 dark:text-neutral-300 mb-12">
-            Nvisy is a dedicated 2-4 person startup focused exclusively on document redaction and data anonymization.
-            Our small, expert team ensures rapid development, direct communication, and solutions tailored to your specific needs.
-            We understand the challenges of building secure products because we're building alongside you.
-          </p>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="text-center">
-              <div class="text-2xl font-bold text-neutral-900 dark:text-white mb-2">100%</div>
-              <div class="text-neutral-600 dark:text-neutral-400">Focus on Document Security</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-bold text-neutral-900 dark:text-white mb-2">Direct</div>
-              <div class="text-neutral-600 dark:text-neutral-400">Access to Founders</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-bold text-neutral-900 dark:text-white mb-2">Rapid</div>
-              <div class="text-neutral-600 dark:text-neutral-400">Feature Development</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Team -->
+    <Team backgroundColor="gray" />
 
     <!-- CTA Section -->
     <CTA

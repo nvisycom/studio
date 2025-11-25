@@ -7,18 +7,17 @@ import {
 	UseCases,
 	Testimonials,
 	CTA,
-	Clients,
+	SocialProof,
 	FAQ,
 } from "@/components";
 import Connect from "@/components/sections/Connect.astro";
 
 // SEO and metadata
-const pageTitle =
-	"AI-Powered Document Redaction | Nvisy - Protect Sensitive Information";
+const pageTitle = "Home";
 const pageDescription =
-	"Redact sensitive information from documents automatically with AI. 99.9% accuracy, SOC 2 compliant, trusted by 500+ enterprises. Start free today.";
+	"Automatically redact sensitive information from documents with AI. Trusted by enterprises worldwide.";
 const pageKeywords =
-	"document redaction, AI redaction, automated redaction, PII removal, data privacy, GDPR compliance, HIPAA compliance, sensitive data protection";
+	"document redaction, AI redaction, PII removal, data privacy, compliance";
 ---
 
 <Layout
@@ -30,7 +29,6 @@ const pageKeywords =
 		<!-- Hero Section - Immediate Impact -->
 		<Hero
 			title="Redact Sensitive Information in Seconds"
-			titleHighlight="Redact"
 			description="Automatically identify and remove PII, PHI, and confidential data from any document. AI-powered precision that saves hours of manual work while ensuring compliance."
 			buttons={[
 				{
@@ -47,17 +45,10 @@ const pageKeywords =
 		/>
 
 		<!-- Social Proof - Clients -->
-		<Clients
+		<SocialProof
 			title="Trusted by Industry Leaders"
 			subtitle="Join hundreds of companies protecting their sensitive data"
 			backgroundColor="white"
-		/>
-
-		<!-- Review Section - How It Works with Screenshots -->
-		<Review
-			backgroundColor="white"
-			title="How It Works"
-			description="Four simple steps from upload to secure, compliant documents. See our intuitive dashboard in action."
 		/>
 
 		<!-- Features Section - Core Value Props -->
@@ -66,6 +57,13 @@ const pageKeywords =
 			featured={true}
 			title="Enterprise-Grade Document Security"
 			description="Everything you need to protect sensitive information at scale. Advanced AI meets strict compliance requirements."
+		/>
+
+		<!-- Review Section - How It Works with Screenshots -->
+		<Review
+			backgroundColor="white"
+			title="How It Works"
+			description="Four simple steps from upload to secure, compliant documents. See our intuitive dashboard in action."
 		/>
 
 		<!-- Use Cases Section - Real-World Applications -->

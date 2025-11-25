@@ -1,12 +1,11 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, CTA, CompanyStats } from "@/components";
+import { Hero, CTA, SocialProof, Testimonials, FAQ, Premium } from "@/components";
+import Connect from "@/components/sections/Connect.astro";
+import SDKExamples from "@/components/sections/SDKExamples.astro";
 import {
 	Check,
 	Shield,
-	Building,
-	Code,
-	Users,
 	Globe,
 	Lock,
 	Zap,
@@ -14,7 +13,7 @@ import {
 ---
 
 <Layout
-  title="Enterprise Solutions"
+  title="Enterprise"
   description="Enterprise-grade document redaction and anonymization platform. GDPR & CCPA compliant with SOC II and HIPAA certification in progress. Special pricing and on-premise deployment available."
 >
   <div class="bg-white dark:bg-black min-h-screen">
@@ -38,316 +37,44 @@ import {
       ]}
     />
 
-    <!-- Company Stats -->
-    <CompanyStats backgroundColor="white" />
+    <!-- Social Proof -->
+    <SocialProof
+      title="Trusted by Enterprise Organizations"
+      subtitle="Leading enterprises trust Nvisy for secure, compliant document redaction at scale"
+      backgroundColor="white"
+    />
 
-    <!-- Enterprise Features -->
-    <div class="container mx-auto px-4 py-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
-            Built for Enterprise Requirements
-          </h2>
-          <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-            Everything your organization needs for secure document redaction at scale,
-            with compliance-ready features and flexible deployment options.
-          </p>
-        </div>
+    <Premium backgroundColor="white" />
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
-            <div class="w-12 h-12 bg-neutral-100 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-6">
-              <Building class="w-6 h-6 text-neutral-700 dark:text-neutral-300" />
-            </div>
-            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">On-Premise Deployment</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 mb-4">
-              Deploy our cloud platform within your own infrastructure for maximum security and control.
-            </p>
-            <ul class="space-y-2 text-sm">
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-neutral-500" />
-                <span class="text-neutral-600 dark:text-neutral-400">Full platform deployment</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-neutral-500" />
-                <span class="text-neutral-600 dark:text-neutral-400">Your infrastructure</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-neutral-500" />
-                <span class="text-neutral-600 dark:text-neutral-400">Complete data control</span>
-              </li>
-            </ul>
-          </div>
+    <!-- Connect/Integration -->
+    <Connect
+      title="Enterprise Integration"
+      description="Powerful APIs, comprehensive SDKs, and dedicated support for seamless integration into your enterprise infrastructure."
+      backgroundColor="white"
+    />
 
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
-            <div class="w-12 h-12 bg-neutral-100 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-6">
-              <Code class="w-6 h-6 text-neutral-700 dark:text-neutral-300" />
-            </div>
-            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Source Code Access</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 mb-4">
-              Source code available on demand for security reviews and compliance audits.
-            </p>
-            <ul class="space-y-2 text-sm">
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-neutral-500" />
-                <span class="text-neutral-600 dark:text-neutral-400">Security audits</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-neutral-500" />
-                <span class="text-neutral-600 dark:text-neutral-400">Compliance reviews</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-neutral-500" />
-                <span class="text-neutral-600 dark:text-neutral-400">Custom modifications</span>
-              </li>
-            </ul>
-          </div>
+    <!-- SDK Examples -->
+    <SDKExamples
+      title="Developer-Friendly SDKs"
+      description="Enterprise-ready SDKs with comprehensive documentation, type safety, and dedicated support."
+      backgroundColor="gray"
+    />
 
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
-            <div class="w-12 h-12 bg-neutral-100 dark:bg-neutral-800 rounded-lg flex items-center justify-center mb-6">
-              <Users class="w-6 h-6 text-neutral-700 dark:text-neutral-300" />
-            </div>
-            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Special Pricing</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 mb-4">
-              Tailored pricing for large enterprises with volume discounts and custom terms.
-            </p>
-            <ul class="space-y-2 text-sm">
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-neutral-500" />
-                <span class="text-neutral-600 dark:text-neutral-400">Volume discounts</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-neutral-500" />
-                <span class="text-neutral-600 dark:text-neutral-400">Custom contracts</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <Check class="w-4 h-4 text-neutral-500" />
-                <span class="text-neutral-600 dark:text-neutral-400">Flexible terms</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Testimonials -->
+    <Testimonials
+      backgroundColor="white"
+      title="Trusted by Enterprises"
+      description="See how leading enterprises are securing their documents with Nvisy"
+    />
 
-    <!-- Compliance & Security -->
-    <div class="bg-neutral-50 dark:bg-neutral-950 py-20">
-      <div class="container mx-auto px-4">
-        <div class="max-w-6xl mx-auto">
-          <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
-              Compliance-Ready Platform
-            </h2>
-            <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-              Built with enterprise compliance requirements in mind. Currently GDPR & CCPA compliant
-              with SOC II and HIPAA certifications in active progress.
-            </p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
-              <div class="flex items-center gap-3 mb-6">
-                <Shield class="w-8 h-8 text-green-600" />
-                <div>
-                  <h3 class="text-xl font-bold text-neutral-900 dark:text-white">Current Compliance</h3>
-                  <p class="text-sm text-neutral-500">Certified and operational</p>
-                </div>
-              </div>
-              <ul class="space-y-3">
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300">GDPR Compliant</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300">CCPA Compliant</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300">End-to-end encryption</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300">Comprehensive audit trails</span>
-                </li>
-              </ul>
-            </div>
-
-            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
-              <div class="flex items-center gap-3 mb-6">
-                <Zap class="w-8 h-8 text-orange-500" />
-                <div>
-                  <h3 class="text-xl font-bold text-neutral-900 dark:text-white">In Progress</h3>
-                  <p class="text-sm text-neutral-500">Active certification process</p>
-                </div>
-              </div>
-              <ul class="space-y-3">
-                <li class="flex items-center gap-3">
-                  <div class="w-5 h-5 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center flex-shrink-0">
-                    <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
-                  </div>
-                  <span class="text-neutral-700 dark:text-neutral-300">SOC II Certification</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <div class="w-5 h-5 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center flex-shrink-0">
-                    <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
-                  </div>
-                  <span class="text-neutral-700 dark:text-neutral-300">HIPAA Certification</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300">Multi-factor authentication</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300">Role-based access control</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Integration & API -->
-    <div class="container mx-auto px-4 py-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
-            Developer-First Platform
-          </h2>
-          <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-            Comprehensive APIs, SDKs, and documentation to integrate document redaction
-            seamlessly into your enterprise workflows.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
-            <Globe class="w-12 h-12 text-neutral-600 dark:text-neutral-400 mx-auto mb-6" />
-            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">RESTful API</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 mb-6">
-              Clean, well-documented REST API that integrates with your existing systems.
-            </p>
-            <a
-              href="https://docs.nvisy.com/api-reference"
-              class="inline-flex items-center gap-2 text-black dark:text-white font-medium hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors"
-            >
-              API Reference →
-            </a>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
-            <Code class="w-12 h-12 text-neutral-600 dark:text-neutral-400 mx-auto mb-6" />
-            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">SDKs Available</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 mb-6">
-              Official SDKs for TypeScript and Python with comprehensive examples.
-            </p>
-            <div class="flex justify-center gap-2">
-              <span class="bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 px-3 py-1 rounded-full text-sm">TypeScript</span>
-              <span class="bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 px-3 py-1 rounded-full text-sm">Python</span>
-            </div>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
-            <Lock class="w-12 h-12 text-neutral-600 dark:text-neutral-400 mx-auto mb-6" />
-            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Enterprise Security</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 mb-6">
-              SSO integration, role-based access, and comprehensive audit capabilities.
-            </p>
-            <div class="text-sm text-neutral-500">
-              Custom integrations available
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Implementation Process -->
-    <div class="bg-neutral-50 dark:bg-neutral-950 py-20">
-      <div class="container mx-auto px-4">
-        <div class="max-w-5xl mx-auto">
-          <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
-              Enterprise Implementation
-            </h2>
-            <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-              Our proven process ensures successful deployment with minimal disruption
-              to your existing workflows and maximum security compliance.
-            </p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div class="text-center">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
-                <span class="text-white dark:text-black font-bold text-xl">1</span>
-              </div>
-              <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4">Security Assessment</h3>
-              <p class="text-neutral-600 dark:text-neutral-300 text-sm">
-                Comprehensive review of your security requirements and compliance needs.
-              </p>
-            </div>
-
-            <div class="text-center">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
-                <span class="text-white dark:text-black font-bold text-xl">2</span>
-              </div>
-              <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4">Custom Planning</h3>
-              <p class="text-neutral-600 dark:text-neutral-300 text-sm">
-                Tailored deployment strategy including on-premise options and integrations.
-              </p>
-            </div>
-
-            <div class="text-center">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
-                <span class="text-white dark:text-black font-bold text-xl">3</span>
-              </div>
-              <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4">Secure Deployment</h3>
-              <p class="text-neutral-600 dark:text-neutral-300 text-sm">
-                Staged rollout with security validation, testing, and team training.
-              </p>
-            </div>
-
-            <div class="text-center">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
-                <span class="text-white dark:text-black font-bold text-xl">4</span>
-              </div>
-              <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4">Ongoing Support</h3>
-              <p class="text-neutral-600 dark:text-neutral-300 text-sm">
-                Dedicated enterprise support with SLA guarantees and optimization guidance.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- About Section -->
-    <div class="container mx-auto px-4 py-20">
-      <div class="max-w-4xl mx-auto text-center">
-        <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-8">
-          Built by a Focused Team
-        </h2>
-        <p class="text-lg text-neutral-600 dark:text-neutral-300 mb-8">
-          Nvisy is a dedicated 2-4 person startup focused exclusively on document redaction and data anonymization.
-          Our small, expert team ensures rapid development, direct communication, and solutions tailored to your specific needs.
-        </p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div class="text-center">
-            <div class="text-2xl font-bold text-neutral-900 dark:text-white mb-2">100%</div>
-            <div class="text-neutral-600 dark:text-neutral-400">Focus on Document Security</div>
-          </div>
-          <div class="text-center">
-            <div class="text-2xl font-bold text-neutral-900 dark:text-white mb-2">Direct</div>
-            <div class="text-neutral-600 dark:text-neutral-400">Access to Founders</div>
-          </div>
-          <div class="text-center">
-            <div class="text-2xl font-bold text-neutral-900 dark:text-white mb-2">Rapid</div>
-            <div class="text-neutral-600 dark:text-neutral-400">Feature Development</div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- FAQ -->
+    <FAQ
+      title="Enterprise FAQs"
+      description="Common questions about enterprise document redaction and deployment"
+      backgroundColor="white"
+      category="general"
+      featured={true}
+    />
 
     <CTA
       title="Ready for Enterprise-Grade Document Security?"

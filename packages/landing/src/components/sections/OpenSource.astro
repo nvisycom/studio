@@ -1,0 +1,107 @@
+---
+import { ExternalLink, Star } from "lucide-vue-next";
+
+export interface Props {
+  title?: string;
+  description?: string;
+  backgroundColor?: "white" | "gray";
+}
+
+const {
+  title = "Open Source",
+  description = "Our core services and tools are open source. Contribute, validate our approach, and build with confidence.",
+  backgroundColor = "white",
+} = Astro.props;
+
+const bgClass =
+  backgroundColor === "gray"
+    ? "bg-gray-50 dark:bg-neutral-950"
+    : "bg-white dark:bg-black";
+
+// Nvisy organization repositories
+const nvisyRepos = [
+  {
+    name: "nvisycom/server",
+    description: "Document redaction server - core processing engine",
+    url: "https://github.com/nvisycom/server",
+    language: "Rust",
+    stars: 87,
+  },
+  {
+    name: "nvisycom/desktop",
+    description: "Desktop application for document redaction",
+    url: "https://github.com/nvisycom/desktop",
+    language: "TypeScript",
+    stars: 54,
+  },
+  {
+    name: "nvisycom/sdk-ts",
+    description: "TypeScript SDK for seamless integration",
+    url: "https://github.com/nvisycom/sdk-ts",
+    language: "TypeScript",
+    stars: 42,
+  },
+  {
+    name: "nvisycom/sdk-py",
+    description: "Python SDK for easy document redaction",
+    url: "https://github.com/nvisycom/sdk-py",
+    language: "Python",
+    stars: 38,
+  },
+  {
+    name: "nvisycom/docs",
+    description: "Documentation and guides",
+    url: "https://github.com/nvisycom/docs",
+    language: "MDX",
+    stars: 23,
+  },
+];
+---
+
+<section class={`py-12 md:py-20 ${bgClass}`}>
+  <div class="container mx-auto max-w-6xl px-4">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-light text-gray-900 dark:text-white mb-4 md:mb-6">
+        {title}
+      </h2>
+      <p class="text-base md:text-lg lg:text-xl font-light text-gray-600 dark:text-neutral-400 max-w-3xl mx-auto leading-relaxed">
+        {description}
+      </p>
+    </div>
+
+    <!-- Nvisy Repositories -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {nvisyRepos.map((repo) => (
+        <a
+          href={repo.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-6 hover:border-gray-900 dark:hover:border-white transition-all flex flex-col"
+        >
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-2">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white group-hover:text-black dark:group-hover:text-white transition-colors">
+                  {repo.name}
+                </h3>
+                <div class="flex items-center gap-1 text-gray-600 dark:text-neutral-400">
+                  <Star class="w-4 h-4" />
+                  <span class="text-xs">{repo.stars}</span>
+                </div>
+              </div>
+              <p class="text-sm text-gray-600 dark:text-neutral-400 mb-4">
+                {repo.description}
+              </p>
+            </div>
+            <ExternalLink class="w-5 h-5 text-gray-400 dark:text-neutral-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors flex-shrink-0 ml-3" />
+          </div>
+          <div class="mt-auto">
+            <span class="inline-block text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300">
+              {repo.language}
+            </span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

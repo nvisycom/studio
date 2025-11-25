@@ -1,10 +1,10 @@
 ---
 import {
-	FileText,
-	DollarSign,
-	Heart,
+	Building2,
+	Landmark,
+	HeartPulse,
+	ShieldCheck,
 	Building,
-	Briefcase,
 	Rocket,
 	ChevronRight,
 } from "lucide-vue-next";
@@ -12,7 +12,13 @@ import {
 export interface UseCase {
 	title: string;
 	description: string;
-	icon: "document" | "dollar" | "heart" | "building" | "briefcase" | "rocket";
+	icon:
+		| "financial"
+		| "government"
+		| "healthcare"
+		| "insurance"
+		| "enterprise"
+		| "startup";
 	href: string;
 }
 
@@ -29,45 +35,45 @@ const {
 	backgroundColor = "white",
 	useCases = [
 		{
-			title: "Healthcare",
-			description:
-				"HIPAA-compliant redaction for patient records, medical histories, and research data.",
-			icon: "heart",
-			href: "/solutions/healthcare",
-		},
-		{
-			title: "Financial Services",
+			title: "Financial",
 			description:
 				"Secure financial data, account numbers, and PII in customer communications.",
-			icon: "dollar",
+			icon: "financial",
 			href: "/solutions/financial",
-		},
-		{
-			title: "Insurance",
-			description:
-				"Protect policyholder information and claims data while maintaining compliance.",
-			icon: "briefcase",
-			href: "/solutions/insurance",
 		},
 		{
 			title: "Government",
 			description:
 				"Redact classified information for FOIA requests and public disclosures.",
-			icon: "building",
+			icon: "government",
 			href: "/solutions/government",
+		},
+		{
+			title: "Healthcare",
+			description:
+				"HIPAA-compliant redaction for patient records, medical histories, and research data.",
+			icon: "healthcare",
+			href: "/solutions/healthcare",
+		},
+		{
+			title: "Insurance",
+			description:
+				"Protect policyholder information and claims data while maintaining compliance.",
+			icon: "insurance",
+			href: "/solutions/insurance",
 		},
 		{
 			title: "Enterprise",
 			description:
 				"Scale document security across your entire organization with enterprise tools.",
-			icon: "building",
+			icon: "enterprise",
 			href: "/solutions/enterprise",
 		},
 		{
 			title: "Startups",
 			description:
 				"Developer-friendly APIs and startup pricing to build privacy into your product.",
-			icon: "rocket",
+			icon: "startup",
 			href: "/solutions/startup",
 		},
 	],
@@ -81,12 +87,12 @@ const backgroundClasses = {
 
 const getIcon = (iconName: UseCase["icon"]) => {
 	const icons = {
-		document: FileText,
-		dollar: DollarSign,
-		heart: Heart,
-		building: Building,
-		briefcase: Briefcase,
-		rocket: Rocket,
+		financial: Building2,
+		government: Landmark,
+		healthcare: HeartPulse,
+		insurance: ShieldCheck,
+		enterprise: Building,
+		startup: Rocket,
 	};
 	return icons[iconName];
 };
@@ -113,23 +119,18 @@ const getIcon = (iconName: UseCase["icon"]) => {
 				return (
 					<a
 						href={useCase.href}
-						class="group bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 transition-all duration-300 hover:shadow-lg p-6 md:p-8 no-underline relative block"
+						class="group bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 transition-all duration-300 hover:shadow-lg p-6 no-underline relative block"
 					>
-						<div class="absolute top-4 right-4 text-gray-400 dark:text-neutral-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
-							<ChevronRight class="w-5 h-5" aria-hidden="true" />
-						</div>
-						<div class="flex items-start gap-4 mb-4">
-							<div class="w-10 h-10 md:w-12 md:h-12 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center flex-shrink-0 text-gray-900 dark:text-white">
-								<IconComponent class="w-5 h-5 md:w-6 md:h-6" aria-hidden="true" />
+						<div class="flex items-center justify-between">
+							<div class="flex items-center gap-3">
+								<div class="w-10 h-10 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center flex-shrink-0 text-gray-900 dark:text-white">
+									<IconComponent class="w-5 h-5" aria-hidden="true" />
+								</div>
+								<h3 class="text-base font-light text-gray-900 dark:text-white">
+									{useCase.title}
+								</h3>
 							</div>
-						</div>
-						<div>
-							<h3 class="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-2 md:mb-3">
-								{useCase.title}
-							</h3>
-							<p class="text-sm md:text-base text-gray-700 dark:text-neutral-300 leading-relaxed">
-								{useCase.description}
-							</p>
+							<ChevronRight class="w-4 h-4 text-gray-400 dark:text-neutral-500 group-hover:text-gray-900 dark:group-hover:text-white group-hover:translate-x-1 transition-all" aria-hidden="true" />
 						</div>
 					</a>
 				);

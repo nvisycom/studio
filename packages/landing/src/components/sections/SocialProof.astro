@@ -1,0 +1,38 @@
+---
+import ClientsGrid from "@/components/features/clients/ClientsGrid.vue";
+
+export interface Props {
+	title?: string;
+	subtitle?: string;
+	backgroundColor?: "white" | "gray";
+}
+
+const {
+	title = "Trusted by Industry Leaders",
+	subtitle = "Join hundreds of companies protecting their sensitive data",
+	backgroundColor = "white",
+} = Astro.props;
+
+const bgClass =
+	backgroundColor === "gray"
+		? "bg-gray-50 dark:bg-neutral-950"
+		: "bg-white dark:bg-black";
+---
+
+<section class={`py-12 md:py-16 ${bgClass}`}>
+  <div class="container mx-auto max-w-7xl px-4">
+    <div class="text-center mb-8 md:mb-12">
+      <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 dark:text-white mb-3">
+        {title}
+      </h2>
+      {subtitle && (
+        <p class="text-base md:text-lg text-gray-600 dark:text-neutral-400">
+          {subtitle}
+        </p>
+      )}
+    </div>
+
+    <!-- Client Avatars Grid -->
+    <ClientsGrid client:load />
+  </div>
+</section>
