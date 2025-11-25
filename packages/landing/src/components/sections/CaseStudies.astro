@@ -31,29 +31,27 @@ const {
         {caseStudies.map((study) => (
           <a
             href={`/blog/${study.slug}`}
-            class="group bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 p-6 block"
+            class="group bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 p-6 flex flex-col"
           >
-            {/* Category Badge */}
-            {study.data.category && (
-              <div class="mb-4">
-                <span class="text-xs font-medium text-white bg-black dark:bg-white dark:text-black px-2 py-1 rounded">
+            {/* Title and Category */}
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <h3 class="text-lg font-light text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-neutral-300 transition-colors line-clamp-2">
+                {study.data.title}
+              </h3>
+              {study.data.category && (
+                <span class="text-xs font-medium text-white bg-black dark:bg-white dark:text-black px-2 py-1 rounded whitespace-nowrap flex-shrink-0">
                   {study.data.category}
                 </span>
-              </div>
-            )}
-
-            {/* Title */}
-            <h3 class="text-lg font-light text-gray-900 dark:text-white mb-3 group-hover:text-gray-700 dark:group-hover:text-neutral-300 transition-colors line-clamp-2">
-              {study.data.title}
-            </h3>
+              )}
+            </div>
 
             {/* Excerpt */}
-            <p class="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4 line-clamp-3">
+            <p class="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4 line-clamp-3 flex-grow">
               {study.data.excerpt || study.data.description}
             </p>
 
             {/* Footer */}
-            <div class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-neutral-800">
+            <div class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-neutral-800 mt-auto">
               <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-neutral-500">
                 <Clock class="w-3 h-3" />
                 <span>

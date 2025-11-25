@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto px-4 py-16" id="integrations">
+  <div class="container mx-auto px-4 py-12 md:py-20" id="integrations">
     <div class="max-w-6xl mx-auto">
       <div class="mb-16">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -25,7 +25,7 @@ import IntegrationCard from "./IntegrationCard.vue";
 import type { CollectionEntry } from "astro:content";
 
 interface Props {
-	integrations: CollectionEntry<"integrations">[];
+  integrations: CollectionEntry<"integrations">[];
 }
 
 const props = defineProps<Props>();

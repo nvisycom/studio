@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-50 dark:bg-black py-12 border-t dark:border-neutral-800">
+  <div class="bg-gray-50 dark:bg-black py-12 md:py-20">
     <div class="container mx-auto px-4">
       <div class="text-center mb-12">
         <h2
@@ -74,18 +74,18 @@
 <script setup lang="ts">
 import type { CollectionEntry } from "astro:content";
 import {
-	Server,
-	Code,
-	Code2,
-	Link,
-	FileText,
-	Clock,
-	Calendar,
-	CircleCheck,
+  Server,
+  Code,
+  Code2,
+  Link,
+  FileText,
+  Clock,
+  Calendar,
+  CircleCheck,
 } from "lucide-vue-next";
 
 interface Props {
-	integrations: CollectionEntry<"integrations">[];
+  integrations: CollectionEntry<"integrations">[];
 }
 
 const props = defineProps<Props>();
@@ -93,38 +93,38 @@ const { integrations } = props;
 
 // Icon mapping from FontAwesome to Lucide
 const getIcon = (iconName: string) => {
-	const iconMap: Record<string, any> = {
-		server: Server,
-		python: Code,
-		js: Code2,
-		link: Link,
-	};
+  const iconMap: Record<string, any> = {
+    server: Server,
+    python: Code,
+    js: Code2,
+    link: Link,
+  };
 
-	return iconMap[iconName] || FileText;
+  return iconMap[iconName] || FileText;
 };
 
 // Status icon mapping
 const getStatusIcon = (status: string) => {
-	const statusIconMap: Record<string, any> = {
-		Completed: CircleCheck,
-		"In Progress": Clock,
-		Planned: Calendar,
-	};
+  const statusIconMap: Record<string, any> = {
+    Completed: CircleCheck,
+    "In Progress": Clock,
+    Planned: Calendar,
+  };
 
-	return statusIconMap[status] || Clock;
+  return statusIconMap[status] || Clock;
 };
 
 // Status text color classes - less prominent
 const getStatusTextClasses = (status: string) => {
-	switch (status.toLowerCase()) {
-		case "completed":
-			return "text-gray-600 dark:text-gray-400";
-		case "in progress":
-			return "text-gray-500 dark:text-gray-500";
-		case "planned":
-			return "text-gray-500 dark:text-gray-500";
-		default:
-			return "text-gray-600 dark:text-gray-400";
-	}
+  switch (status.toLowerCase()) {
+    case "completed":
+      return "text-gray-600 dark:text-gray-400";
+    case "in progress":
+      return "text-gray-500 dark:text-gray-500";
+    case "planned":
+      return "text-gray-500 dark:text-gray-500";
+    default:
+      return "text-gray-600 dark:text-gray-400";
+  }
 };
 </script>
