@@ -6,7 +6,7 @@ import MobileResources from "./MobileResources.vue";
 import { useMobileMenu } from "./useMobileMenu.ts";
 
 defineProps<{
-	menuOnly?: boolean;
+  menuOnly?: boolean;
 }>();
 
 const { mobileMenuOpen, toggleMobileMenu } = useMobileMenu();
@@ -35,7 +35,7 @@ const { mobileMenuOpen, toggleMobileMenu } = useMobileMenu();
 
       <a
         href="/pricing"
-        class="text-gray-900 dark:text-white font-light text-base tracking-wide transition-all duration-300 px-2 py-2"
+        class="text-gray-900 dark:text-white font-light text-base tracking-wide transition-all duration-300 px-2 py-2 uppercase"
       >
         Pricing
       </a>

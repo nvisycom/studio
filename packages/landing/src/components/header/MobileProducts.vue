@@ -6,7 +6,7 @@ import { products } from "./mobile-nav-data";
 const isOpen = ref(false);
 
 const toggle = () => {
-	isOpen.value = !isOpen.value;
+  isOpen.value = !isOpen.value;
 };
 </script>
 
@@ -14,7 +14,7 @@ const toggle = () => {
   <div class="px-2">
     <button
       @click="toggle"
-      class="flex items-center justify-between w-full text-gray-900 dark:text-white font-medium text-base tracking-wide transition-all duration-300 py-2"
+      class="flex items-center justify-between w-full text-gray-900 dark:text-white font-light text-base tracking-wide transition-all duration-300 py-2 uppercase"
     >
       <span>Products</span>
       <ChevronDown

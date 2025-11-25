@@ -6,7 +6,7 @@ import { resources } from "./mobile-nav-data";
 const isOpen = ref(false);
 
 const toggle = () => {
-	isOpen.value = !isOpen.value;
+  isOpen.value = !isOpen.value;
 };
 </script>
 
@@ -14,7 +14,7 @@ const toggle = () => {
   <div class="px-2">
     <button
       @click="toggle"
-      class="flex items-center justify-between w-full text-gray-900 dark:text-white font-medium text-base tracking-wide transition-all duration-300 py-2"
+      class="flex items-center justify-between w-full text-gray-900 dark:text-white font-light text-base tracking-wide transition-all duration-300 py-2 uppercase"
     >
       <span>Resources</span>
       <ChevronDown
@@ -28,29 +28,13 @@ const toggle = () => {
           v-for="developer in resources.developers"
           :key="developer.title"
           :href="developer.href"
-          :target="
-            developer.title === 'Documentation' ||
-            developer.title === 'API Reference'
-              ? '_blank'
-              : undefined
-          "
-          :rel="
-            developer.title === 'Documentation' ||
-            developer.title === 'API Reference'
-              ? 'noopener noreferrer'
-              : undefined
-          "
+          :target="developer.isExternal ? '_blank' : undefined"
+          :rel="developer.isExternal ? 'noopener noreferrer' : undefined"
           class="text-gray-600 dark:text-neutral-300 hover:text-gray-900 dark:hover:text-white transition-colors text-sm"
         >
           <span class="flex items-center gap-1">
             {{ developer.title }}
-            <ExternalLink
-              v-if="
-                developer.title === 'Documentation' ||
-                developer.title === 'API Reference'
-              "
-              class="w-3 h-3"
-            />
+            <ExternalLink v-if="developer.isExternal" class="w-3 h-3" />
           </span>
         </a>
         <a
