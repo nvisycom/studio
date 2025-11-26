@@ -45,7 +45,7 @@ const caseStudies = (await getCollection("blog"))
     />
 
     <!-- Company Stats -->
-    <CompanyStats backgroundColor="white" />
+    <CompanyStats />
 
     <!-- Main Solutions -->
     <div class="container mx-auto px-4 py-20">
@@ -190,38 +190,33 @@ const caseStudies = (await getCollection("blog"))
     <UseCases
       title="Industry-Specific Solutions"
       description="Specialized document redaction solutions tailored for specific industry requirements, regulations, and compliance needs."
-      backgroundColor="white"
     />
 
     <!-- Connect/Integration -->
     <Connect
       title="Developer-First Platform"
       description="Comprehensive APIs, SDKs, and documentation designed to get you up and running quickly, regardless of your tech stack or organizational size."
-      backgroundColor="gray"
     />
 
     <!-- SDK Examples -->
     <SDKExamples
       title="Official SDKs"
       description="TypeScript and Python SDKs with full type safety, comprehensive examples, and excellent documentation."
-      backgroundColor="white"
     />
 
     <!-- Security -->
     <Security
       title="Security & Compliance First"
       description="Built with enterprise security standards from day one. Currently GDPR & CCPA compliant with SOC II and HIPAA certifications actively in progress."
-      backgroundColor="white"
     />
 
     <!-- Team -->
-    <Team backgroundColor="gray" />
+    <Team />
 
     <!-- Case Studies -->
     <CaseStudies
       title="Customer Success Stories"
       description="See how organizations across industries are using Nvisy to protect sensitive information."
-      backgroundColor="white"
       caseStudies={caseStudies}
     />
 

@@ -4,42 +4,42 @@ import { Upload, Eye, FileSearch, Download } from "lucide-vue-next";
 import type { FunctionalComponent } from "vue";
 
 interface Screenshot {
-	id: string;
-	label: string;
-	icon: FunctionalComponent;
-	image: string;
-	alt: string;
+  id: string;
+  label: string;
+  icon: FunctionalComponent;
+  image: string;
+  alt: string;
 }
 
 const screenshots: Screenshot[] = [
-	{
-		id: "upload",
-		label: "Upload",
-		icon: Upload,
-		image: "/screenshots/upload.png",
-		alt: "Upload documents interface",
-	},
-	{
-		id: "review",
-		label: "Review",
-		icon: Eye,
-		image: "/screenshots/review.png",
-		alt: "Review redactions interface",
-	},
-	{
-		id: "redact",
-		label: "Redact",
-		icon: FileSearch,
-		image: "/screenshots/redact.png",
-		alt: "Redaction results interface",
-	},
-	{
-		id: "export",
-		label: "Export",
-		icon: Download,
-		image: "/screenshots/export.png",
-		alt: "Export documents interface",
-	},
+  {
+    id: "upload",
+    label: "Upload",
+    icon: Upload,
+    image: "/screenshots/upload.png",
+    alt: "Upload documents interface",
+  },
+  {
+    id: "review",
+    label: "Review",
+    icon: Eye,
+    image: "/screenshots/review.png",
+    alt: "Review redactions interface",
+  },
+  {
+    id: "redact",
+    label: "Redact",
+    icon: FileSearch,
+    image: "/screenshots/redact.png",
+    alt: "Redaction results interface",
+  },
+  {
+    id: "export",
+    label: "Export",
+    icon: Download,
+    image: "/screenshots/export.png",
+    alt: "Export documents interface",
+  },
 ];
 </script>
 
@@ -53,13 +53,19 @@ const screenshots: Screenshot[] = [
         :key="screenshot.id"
         :value="screenshot.id"
         :class="[
-          'flex items-center justify-start gap-3 px-4 py-4 text-base font-light relative',
-          index !== screenshots.length - 1 &&
-            'after:content-[\'\'] after:absolute after:-right-1.5 after:top-[20%] after:bottom-[20%] after:w-px after:bg-gray-200 dark:after:bg-neutral-800',
+          'flex items-center justify-between lg:justify-start gap-3 px-4 py-4 text-base font-light relative',
+          'border border-gray-200 dark:border-neutral-700 lg:border lg:border-transparent rounded-xl transition-all duration-300',
+          'hover:border-gray-300 dark:hover:border-neutral-600 hover:shadow-lg lg:hover:shadow-none',
+          'data-[state=active]:border-gray-900 dark:data-[state=active]:border-white data-[state=active]:bg-gray-50 dark:data-[state=active]:bg-neutral-900',
+          'lg:data-[state=active]:bg-transparent lg:data-[state=active]:border-gray-300 dark:lg:data-[state=active]:border-neutral-600',
+          index < 3 &&
+            'lg:after:content-[\'\'] lg:after:absolute lg:after:right-[-7.5px] lg:after:top-[20%] lg:after:bottom-[20%] lg:after:w-px lg:after:bg-gray-200 dark:lg:after:bg-neutral-800',
         ]"
       >
-        <component :is="screenshot.icon" class="w-5 h-5 flex-shrink-0" />
-        <span>{{ screenshot.label }}</span>
+        <div class="flex items-center gap-3">
+          <component :is="screenshot.icon" class="w-5 h-5 flex-shrink-0" />
+          <span>{{ screenshot.label }}</span>
+        </div>
       </TabsTrigger>
     </TabsList>
 

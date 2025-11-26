@@ -1,18 +1,9 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, CTA, Security, Premium } from "@/components";
+import { Hero, CTA, Security, Premium, Features } from "@/components";
 import SDKExamples from "@/components/sections/SDKExamples.astro";
 import Connect from "@/components/sections/Connect.astro";
-import ReviewTabs from "@/components/features/dashboard/ReviewTabs.vue";
-import {
-	Check,
-	Zap,
-	Shield,
-	Globe,
-	DollarSign,
-	RefreshCw,
-	Activity,
-} from "lucide-vue-next";
+import Review from "@/components/sections/Review.astro";
 ---
 
 <Layout
@@ -41,208 +32,42 @@ import {
       />
     </div>
 
-    <!-- Why Choose Nvisy Cloud -->
-    <div class="container mx-auto px-4 py-12 md:py-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-12 md:mb-16">
-          <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">
-            Why Choose Nvisy Cloud
-          </h2>
-          <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto px-4">
-            A fully managed, globally distributed document redaction platform built for modern enterprises.
-          </p>
-        </div>
+    <!-- Features -->
+    <Features
+      title="Built for Enterprise Scale"
+      description="Advanced AI technology meets enterprise security requirements. Process thousands of documents with unprecedented accuracy."
+      category="general"
+      featured={true}
+    />
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          <!-- Instant Deployment -->
-          <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-            <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
-              <Zap class="w-6 h-6 md:w-7 md:h-7 text-white" />
-            </div>
-            <h3 class="text-lg md:text-xl font-light text-neutral-900 dark:text-white mb-2 md:mb-3">Instant Deployment</h3>
-            <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
-              Deploy in minutes with no infrastructure setup or complex configurations. Start redacting documents within 5 minutes of signing up.
-            </p>
-          </div>
-
-          <!-- Cost Effective -->
-          <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-            <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
-              <DollarSign class="w-6 h-6 md:w-7 md:h-7 text-white" />
-            </div>
-            <h3 class="text-lg md:text-xl font-light text-neutral-900 dark:text-white mb-2 md:mb-3">Cost Effective</h3>
-            <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
-              Pay only for what you use with transparent per-page pricing. No upfront costs, no maintenance fees, no infrastructure investments.
-            </p>
-          </div>
-
-          <!-- Enterprise Security -->
-          <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-            <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
-              <Shield class="w-6 h-6 md:w-7 md:h-7 text-white" />
-            </div>
-            <h3 class="text-lg md:text-xl font-light text-neutral-900 dark:text-white mb-2 md:mb-3">Enterprise Security</h3>
-            <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
-              Bank-level security with SOC 2 Type II, GDPR, HIPAA, and CCPA compliance. Comprehensive audit trails and encryption at rest and in transit.
-            </p>
-          </div>
-
-          <!-- Always Up to Date -->
-          <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-            <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
-              <RefreshCw class="w-6 h-6 md:w-7 md:h-7 text-white" />
-            </div>
-            <h3 class="text-lg md:text-xl font-light text-neutral-900 dark:text-white mb-2 md:mb-3">Always Up to Date</h3>
-            <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
-              Automatic updates with the latest AI models, security patches, and features. Zero downtime deployments ensure continuous availability.
-            </p>
-          </div>
-
-          <!-- Global Scale -->
-          <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-            <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
-              <Globe class="w-6 h-6 md:w-7 md:h-7 text-white" />
-            </div>
-            <h3 class="text-lg md:text-xl font-light text-neutral-900 dark:text-white mb-2 md:mb-3">Global Scale</h3>
-            <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
-              Multi-region deployment with automatic failover and load balancing. Process thousands of documents simultaneously with consistent performance.
-            </p>
-          </div>
-
-          <!-- Enterprise Reliability -->
-          <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-            <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
-              <Activity class="w-6 h-6 md:w-7 md:h-7 text-white" />
-            </div>
-            <h3 class="text-lg md:text-xl font-light text-neutral-900 dark:text-white mb-2 md:mb-3">Enterprise Reliability</h3>
-            <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
-              99.99% uptime SLA with guaranteed availability. Globally distributed infrastructure ensures your redaction workflows never stop.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Review Dashboard Section -->
-    <div class="bg-white dark:bg-black">
-      <div class="container mx-auto px-4 py-12 md:py-20">
-        <div class="max-w-6xl mx-auto">
-          <div class="text-center mb-12 md:mb-16">
-            <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">
-              How It Works
-            </h2>
-            <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-              Simple, secure workflow from upload to download. AI-powered redaction in four easy steps.
-            </p>
-          </div>
-
-          <ReviewTabs client:load />
-        </div>
-      </div>
-    </div>
-
-    <!-- Key Features -->
-    <div class="container mx-auto px-4 py-12 md:py-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-12 md:mb-16">
-          <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">
-            Key Features
-          </h2>
-          <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto px-4">
-            Advanced AI technology meets enterprise security requirements. Process thousands of documents with precision and speed.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          <div class="flex items-start gap-3">
-            <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <h3 class="font-semibold text-neutral-900 dark:text-white mb-1">99.9% AI Accuracy</h3>
-              <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                Industry-leading accuracy with continuously improving AI models trained on millions of documents.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-3">
-            <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <h3 class="font-semibold text-neutral-900 dark:text-white mb-1">Auto-Scaling Infrastructure</h3>
-              <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                Automatically scales to handle traffic spikes without manual intervention or downtime.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-3">
-            <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <h3 class="font-semibold text-neutral-900 dark:text-white mb-1">Multi-Region Deployment</h3>
-              <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                Data centers across the globe ensure low latency and high availability for all users.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-3">
-            <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <h3 class="font-semibold text-neutral-900 dark:text-white mb-1">SOC 2 Type II Certified</h3>
-              <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                Independently audited security controls meeting the highest industry standards.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-3">
-            <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <h3 class="font-semibold text-neutral-900 dark:text-white mb-1">Comprehensive API</h3>
-              <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                RESTful API with SDKs for JavaScript, Python, and more. Integrate seamlessly into your workflows.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-3">
-            <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <h3 class="font-semibold text-neutral-900 dark:text-white mb-1">Real-Time Processing</h3>
-              <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                Process documents in real-time with sub-second response times for most operations.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- How It Works -->
+    <Review
+      title="How It Works"
+      description="Simple, secure workflow from upload to download. AI-powered redaction in four easy steps."
+    />
 
     <!-- Security -->
     <Security
       title="Enterprise-Grade Security"
       description="Built with compliance and security at the core. GDPR & CCPA compliant with SOC II and HIPAA certifications in progress."
-      backgroundColor="gray"
     />
 
     <!-- Connect/Integration -->
     <Connect
       title="Seamless Integration"
       description="Powerful APIs and comprehensive SDKs make it easy to integrate document redaction into your applications."
-      backgroundColor="white"
     />
 
     <!-- SDK Examples -->
     <SDKExamples
       title="Developer-Friendly SDKs"
       description="Get started in minutes with our TypeScript and Python SDKs. Built for developers, with full type safety and comprehensive documentation."
-      backgroundColor="gray"
     />
 
     <!-- Premium -->
     <Premium
       title="Enterprise Solutions"
       description="Need more control? We offer on-premise deployment, source code access, and custom enterprise pricing for organizations with specific requirements."
-      backgroundColor="white"
     />
 
     <!-- CTA Section -->

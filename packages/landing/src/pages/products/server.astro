@@ -1,16 +1,11 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, CTA, OpenSource, Premium } from "@/components";
+import { Hero, CTA, OpenSource, Premium, Features } from "@/components";
 import SDKExamples from "@/components/sections/SDKExamples.astro";
 import Connect from "@/components/sections/Connect.astro";
 import {
 	Check,
 	Shield,
-	WifiOff,
-	Box,
-	Settings,
-	Zap,
-	Lock,
 	ArrowRight,
 	BookOpen,
 } from "lucide-vue-next";
@@ -59,8 +54,10 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
           <!-- Open Source -->
           <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col">
             <div class="flex items-center gap-3 mb-6">
-              <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center">
-                <Fragment set:html={GithubIcon} />
+              <div class="w-12 h-12 md:w-14 md:h-14 bg-neutral-100 dark:bg-neutral-800 rounded-2xl flex items-center justify-center">
+                <div class="w-6 h-6 md:w-7 md:h-7 text-neutral-900 dark:text-white [&>svg]:w-full [&>svg]:h-full">
+                  <Fragment set:html={GithubIcon} />
+                </div>
               </div>
               <div>
                 <h3 class="text-xl md:text-2xl font-light text-neutral-900 dark:text-white">Open Source</h3>
@@ -96,7 +93,9 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
                 href="https://github.com/nvisycom/server"
                 class="inline-flex items-center justify-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-black font-medium py-3 px-6 rounded-xl hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all duration-200 text-sm"
               >
-                <Fragment set:html={GithubIcon} />
+                <div class="w-4 h-4 [&>svg]:w-full [&>svg]:h-full">
+                  <Fragment set:html={GithubIcon} />
+                </div>
                 View on GitHub
               </a>
               <a
@@ -110,8 +109,8 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
           </div>
 
           <!-- Enterprise -->
-          <div class="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 rounded-xl border-2 border-blue-500 dark:border-blue-400 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col">
-            <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-xs font-medium px-3 py-1 rounded-full">
+          <div class="bg-white dark:bg-black rounded-xl border-2 border-neutral-900 dark:border-white p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col">
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-black dark:bg-white text-white dark:text-black text-xs font-medium px-3 py-1 rounded-full">
               Recommended for Enterprise
             </div>
 
@@ -121,7 +120,7 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
               </div>
               <div>
                 <h3 class="text-xl md:text-2xl font-light text-neutral-900 dark:text-white">Enterprise License</h3>
-                <p class="text-sm text-neutral-600 dark:text-neutral-400">Annual Subscription</p>
+                <a href="/pricing" class="text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white underline">View Pricing</a>
               </div>
             </div>
 
@@ -156,176 +155,36 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
       </div>
     </div>
 
-    <!-- Why Choose Nvisy Server -->
-    <div class="bg-gradient-to-br from-gray-50 to-neutral-50 dark:from-gray-950/30 dark:to-neutral-950/30">
-      <div class="container mx-auto px-4 py-12 md:py-20">
-        <div class="max-w-6xl mx-auto">
-          <div class="text-center mb-12 md:mb-16">
-            <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">
-              Why Choose Nvisy Server
-            </h2>
-            <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto px-4">
-              All the power of Nvisy's AI technology, deployed entirely within your secure infrastructure with complete data sovereignty and control.
-            </p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            <!-- Complete Data Sovereignty -->
-            <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-              <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-gray-700 to-gray-900 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
-                <Shield class="w-6 h-6 md:w-7 md:h-7 text-white" />
-              </div>
-              <h3 class="text-lg md:text-xl font-light text-neutral-900 dark:text-white mb-2 md:mb-3">Complete Data Sovereignty</h3>
-              <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
-                100% on-premises deployment ensures your sensitive documents never leave your network. Perfect for government, healthcare, and financial institutions with strict data residency requirements.
-              </p>
-            </div>
-
-            <!-- Air-Gap Ready -->
-            <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-              <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
-                <WifiOff class="w-6 h-6 md:w-7 md:h-7 text-white" />
-              </div>
-              <h3 class="text-lg md:text-xl font-light text-neutral-900 dark:text-white mb-2 md:mb-3">Air-Gap Ready</h3>
-              <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
-                Deploy in completely isolated environments with no internet connectivity required. Ideal for classified networks, secure facilities, and high-security operations.
-              </p>
-            </div>
-
-            <!-- Bring Your Own Models -->
-            <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-              <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
-                <Box class="w-6 h-6 md:w-7 md:h-7 text-white" />
-              </div>
-              <h3 class="text-lg md:text-xl font-light text-neutral-900 dark:text-white mb-2 md:mb-3">Bring Your Own Models</h3>
-              <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
-                Use your own custom-trained AI models or Nvisy's pre-trained models. Full flexibility to adapt the system to your specific document types and redaction requirements.
-              </p>
-            </div>
-
-            <!-- Enterprise Customization -->
-            <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-              <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
-                <Settings class="w-6 h-6 md:w-7 md:h-7 text-white" />
-              </div>
-              <h3 class="text-lg md:text-xl font-light text-neutral-900 dark:text-white mb-2 md:mb-3">Enterprise Customization</h3>
-              <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
-                Customize workflows, integrate with existing systems, and adapt the platform to your exact requirements. Complete API access for deep integration.
-              </p>
-            </div>
-
-            <!-- GPU Acceleration -->
-            <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-              <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
-                <Zap class="w-6 h-6 md:w-7 md:h-7 text-white" />
-              </div>
-              <h3 class="text-lg md:text-xl font-light text-neutral-900 dark:text-white mb-2 md:mb-3">GPU Acceleration</h3>
-              <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
-                Leverage NVIDIA GPUs for 10x faster processing of large document batches. Process thousands of pages per hour with optimal hardware utilization.
-              </p>
-            </div>
-
-            <!-- Compliance Ready -->
-            <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-              <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
-                <Lock class="w-6 h-6 md:w-7 md:h-7 text-white" />
-              </div>
-              <h3 class="text-lg md:text-xl font-light text-neutral-900 dark:text-white mb-2 md:mb-3">Compliance Ready</h3>
-              <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
-                Meet strict regulatory requirements with comprehensive audit trails, access controls, and compliance documentation for government and enterprise deployments.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Deployment Process -->
-    <div class="container mx-auto px-4 py-12 md:py-20">
-      <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-8 md:mb-12">
-          <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">
-            Deployment Process
-          </h2>
-          <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300">
-            Our team guides you through every step of the enterprise deployment process.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          <!-- Step 1 -->
-          <div class="bg-white dark:bg-black rounded-xl p-6 md:p-8 border border-neutral-200 dark:border-neutral-700">
-            <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 rounded-full flex items-center justify-center font-bold text-lg md:text-xl mb-4">
-              1
-            </div>
-            <h3 class="font-bold text-neutral-900 dark:text-white mb-2 text-base md:text-lg">Infrastructure Assessment</h3>
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              We analyze your infrastructure and plan the optimal deployment architecture.
-            </p>
-          </div>
-
-          <!-- Step 2 -->
-          <div class="bg-white dark:bg-black rounded-xl p-6 md:p-8 border border-neutral-200 dark:border-neutral-700">
-            <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 rounded-full flex items-center justify-center font-bold text-lg md:text-xl mb-4">
-              2
-            </div>
-            <h3 class="font-bold text-neutral-900 dark:text-white mb-2 text-base md:text-lg">Installation & Configuration</h3>
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Our engineers install and configure Nvisy Server to your specifications.
-            </p>
-          </div>
-
-          <!-- Step 3 -->
-          <div class="bg-white dark:bg-black rounded-xl p-6 md:p-8 border border-neutral-200 dark:border-neutral-700">
-            <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 rounded-full flex items-center justify-center font-bold text-lg md:text-xl mb-4">
-              3
-            </div>
-            <h3 class="font-bold text-neutral-900 dark:text-white mb-2 text-base md:text-lg">Training & Knowledge Transfer</h3>
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Comprehensive training for your team on operation and maintenance.
-            </p>
-          </div>
-
-          <!-- Step 4 -->
-          <div class="bg-white dark:bg-black rounded-xl p-6 md:p-8 border border-neutral-200 dark:border-neutral-700">
-            <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 rounded-full flex items-center justify-center font-bold text-lg md:text-xl mb-4">
-              4
-            </div>
-            <h3 class="font-bold text-neutral-900 dark:text-white mb-2 text-base md:text-lg">Go-Live with Support</h3>
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Launch your deployment with ongoing 24/7 enterprise support.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Features -->
+    <Features
+      title="Complete Control & Flexibility"
+      description="Deploy on your infrastructure with full customization capabilities. Perfect for organizations with strict security and compliance requirements."
+      category="enterprise"
+      featured={true}
+    />
 
     <!-- Open Source -->
     <OpenSource
       title="Built on Open Source"
       description="Server is fully open source. Contribute, validate our security approach, and build with confidence."
-      backgroundColor="gray"
     />
 
     <!-- Connect/Integration -->
     <Connect
       title="Flexible Integration"
       description="Self-hosted server with the same powerful APIs as Nvisy Cloud. Integrate seamlessly into your infrastructure."
-      backgroundColor="white"
     />
 
     <!-- SDK Examples -->
     <SDKExamples
       title="Compatible SDKs"
       description="Use the same TypeScript and Python SDKs as Nvisy Cloud. Simply point to your server endpoint."
-      backgroundColor="gray"
     />
 
     <!-- Premium -->
     <Premium
       title="Enterprise Support"
       description="Get dedicated support for your on-premise deployment. Source code access, custom modifications, and priority assistance available."
-      backgroundColor="white"
     />
 
     <!-- CTA Section -->
