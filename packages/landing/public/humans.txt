@@ -12,4 +12,4 @@ Language: English
 Doctype: HTML5
 Standards: HTML5, CSS3, ES2022
 Components: Astro, Vue, Tailwind
-Software: VS Code, Git
+Software: Zed, Git

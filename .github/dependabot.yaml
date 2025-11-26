@@ -1,29 +1,41 @@
 version: 2
 updates:
+  # Version updates for npm dependencies
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
       timezone: "Europe/Berlin"
-      day: "friday"
-      time: "18:00"
+      day: "monday"
+      time: "04:00"
     open-pull-requests-limit: 5
     labels:
       - "chore"
     commit-message:
-      prefix: "dependabot"
+      prefix: "chore(deps)"
       include: "scope"
+    groups:
+      npm-dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
       timezone: "Europe/Berlin"
-      day: "friday"
-      time: "18:00"
+      day: "monday"
+      time: "04:00"
     open-pull-requests-limit: 5
     labels:
       - "chore"
     commit-message:
-      prefix: "dependabot"
+      prefix: "chore(actions)"
       include: "scope"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
