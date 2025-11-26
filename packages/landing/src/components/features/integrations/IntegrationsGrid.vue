@@ -25,7 +25,7 @@ import IntegrationCard from "./IntegrationCard.vue";
 import type { CollectionEntry } from "astro:content";
 
 interface Props {
-  integrations: CollectionEntry<"integrations">[];
+	integrations: CollectionEntry<"integrations">[];
 }
 
 const props = defineProps<Props>();

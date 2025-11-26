@@ -6,7 +6,7 @@ import { resources } from "./mobile-nav-data";
 const isOpen = ref(false);
 
 const toggle = () => {
-  isOpen.value = !isOpen.value;
+	isOpen.value = !isOpen.value;
 };
 </script>
 
