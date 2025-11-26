@@ -198,24 +198,4 @@ export const resources: ResourceSection = {
 			icon: Scale,
 		},
 	],
-	blog: [
-		{
-			title: "Blog Post 02",
-			href: "/blog/lorem-ipsum-02",
-			excerpt:
-				"Exploring the fundamentals of modern web development and industry best practices.",
-		},
-		{
-			title: "Blog Post 03",
-			href: "/blog/lorem-ipsum-03",
-			excerpt:
-				"An in-depth look at content creation and publishing in the digital age.",
-		},
-		{
-			title: "Blog Post 01",
-			href: "/blog/lorem-ipsum-01",
-			excerpt:
-				"A comprehensive guide exploring modern development practices with TypeScript and Rust examples.",
-		},
-	],
 };

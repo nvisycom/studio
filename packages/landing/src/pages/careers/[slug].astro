@@ -2,14 +2,6 @@
 import { Layout } from "@/layouts";
 import { getCollection, type CollectionEntry } from "astro:content";
 import { CTA } from "@/components";
-import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbLink,
-	BreadcrumbList,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 
 export async function getStaticPaths() {
 	try {
@@ -47,24 +39,7 @@ const allJobs = (await getCollection("jobs"))
     <!-- Job Header -->
     <div class="container mx-auto px-4 py-8">
       <div class="max-w-4xl mx-auto">
-        <!-- Breadcrumb -->
-        <Breadcrumb>
-            <BreadcrumbList>
-                <BreadcrumbItem>
-                    <BreadcrumbLink href="/careers">
-                        Careers
-                    </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                    <BreadcrumbPage>
-                        {entry.data.title}
-                    </BreadcrumbPage>
-                </BreadcrumbItem>
-            </BreadcrumbList>
-        </Breadcrumb>
-
-        <div class="mt-6">
+        <div>
           <!-- Department & Meta -->
           <div class="flex flex-wrap items-center gap-4 mb-6">
             <span class="text-sm font-medium text-white bg-black dark:bg-white dark:text-black px-3 py-1 rounded-full">

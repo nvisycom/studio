@@ -14,12 +14,6 @@ export interface CustomerStory {
 	excerpt: string;
 }
 
-export interface BlogPost {
-	title: string;
-	href: string;
-	excerpt: string;
-}
-
 export interface ProductSection {
 	platforms: NavigationItem[];
 	opensource: NavigationItem[];
@@ -37,5 +31,4 @@ export interface SolutionSection {
 export interface ResourceSection {
 	developers: NavigationItem[];
 	support: NavigationItem[];
-	blog: BlogPost[];
 }

@@ -9,6 +9,17 @@ import {
 import ProductsDropdown from "./DesktopProducts.vue";
 import SolutionsDropdown from "./DesktopSolutions.vue";
 import ResourcesDropdown from "./DesktopResources.vue";
+
+interface BlogPost {
+	title: string;
+	href: string;
+}
+
+interface Props {
+	blogPosts: BlogPost[];
+}
+
+const props = defineProps<Props>();
 </script>
 
 <template>
@@ -25,7 +36,7 @@ import ResourcesDropdown from "./DesktopResources.vue";
       <SolutionsDropdown />
 
       <!-- Resources -->
-      <ResourcesDropdown />
+      <ResourcesDropdown :blogPosts="props.blogPosts" />
 
       <!-- Pricing -->
       <NavigationMenuItem>

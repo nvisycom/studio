@@ -6,8 +6,8 @@ import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 
 const pagesPerMonth = ref([5000]);
+const hourlyRate = ref([30]);
 const isManual = ref<boolean>(true);
-const hourlyRate = ref([50]);
 
 // Time per page based on method
 const timePerPage = computed(() => {
@@ -63,8 +63,8 @@ const roi = computed(() => {
           </Label>
           <Slider
             v-model="pagesPerMonth"
-            :min="1000"
-            :max="50000"
+            :min="500"
+            :max="10000"
             :step="500"
             class="w-full"
           />
@@ -104,9 +104,9 @@ const roi = computed(() => {
           </Label>
           <Slider
             v-model="hourlyRate"
-            :min="25"
+            :min="30"
             :max="200"
-            :step="5"
+            :step="10"
             class="w-full"
           />
           <div
