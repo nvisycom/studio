@@ -1,34 +1,28 @@
 ---
 import { Layout } from "@/layouts";
-import { CompanyStats } from "@/sections";
+import { CompanyStats, CTA } from "@/components";
+import { Shield, Building2, Zap, Target } from "lucide-vue-next";
+import TeamMember from "@/components/features/about/TeamMember.vue";
 
-import { calculateReadingTime } from "@/lib/content";
 import { getCollection } from "astro:content";
 
 const teamMembers = [
 	{
-		name: "Sarah Johnson",
+		name: "Alex Rivera",
 		role: "CEO & Co-Founder",
-		bio: "Former VP of Product at Fortune 500 company. Passionate about building enterprise tools that drive real business outcomes.",
-		image: "SJ",
+		linkedin: "#",
+		github: "#",
 	},
 	{
-		name: "Michael Chen",
+		name: "Jordan Martinez",
 		role: "CTO & Co-Founder",
-		bio: "15+ years building scalable systems for enterprise customers. Expert in AI/ML and document processing technologies.",
-		image: "MC",
+		linkedin: "#",
+		github: "#",
 	},
 	{
-		name: "Emma Rodriguez",
-		role: "Head of Engineering",
-		bio: "Former principal engineer at major tech companies. Leads our technical vision and platform architecture.",
-		image: "ER",
-	},
-	{
-		name: "David Kim",
-		role: "VP of Product",
-		bio: "Product leader with deep expertise in enterprise software and regulatory compliance requirements.",
-		image: "DK",
+		name: "Sam Chen",
+		role: "VP of Engineering",
+		linkedin: "#",
 	},
 ];
 
@@ -37,176 +31,151 @@ const values = [
 		title: "Security First",
 		description:
 			"Every decision prioritizes the security and privacy of customer data above all else.",
+		icon: Shield,
 	},
 	{
 		title: "Enterprise Focus",
 		description:
 			"Built for the scale, reliability, and compliance requirements of enterprise organizations.",
+		icon: Building2,
 	},
 	{
 		title: "Continuous Innovation",
 		description:
 			"Constantly advancing our AI capabilities to stay ahead of emerging threats and use cases.",
+		icon: Zap,
 	},
 	{
 		title: "Customer Success",
 		description:
 			"Our success is measured by the tangible business value we deliver to our customers.",
+		icon: Target,
 	},
 ];
 
 // Get blog entries from content/blog
 const blogEntries = (await getCollection("blog"))
-	.map((entry) => {
-		const calculatedReadingTime = calculateReadingTime(entry.body);
-		return {
-			...entry,
-			data: {
-				...entry.data,
-				readingTime: entry.data.readingTime || calculatedReadingTime,
-			},
-		};
-	})
 	.sort(
 		(rhs, lhs) =>
 			new Date(lhs.data.publishedAt).getTime() -
 			new Date(rhs.data.publishedAt).getTime(),
 	)
 	.slice(0, 3); // Only show first 3 posts
+
+// Custom stats without team members
+const customStats = [
+	{ label: "Founded", value: "2025" },
+	{ label: "Enterprise Customers", value: "10+" },
+	{ label: "Documents Processed", value: "1M+" },
+];
 ---
 
 <Layout
   title="About Us"
-  description="Learn about Nvisy's mission to revolutionize document redaction and data protection for enterprise organizations worldwide."
+  description="Learn about Nvisy's mission to provide enterprise-grade AI-powered solutions for secure data processing and compliance."
 >
   <div class="bg-white dark:bg-black min-h-screen">
     <!-- Mission & Story -->
-    <div class="container mx-auto px-4 py-20 pb-12">
+    <section aria-label="Mission and Story" class="container mx-auto px-4 py-12 md:py-20 pb-8 md:pb-12">
       <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-16">
-          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+        <div class="text-center mb-12 md:mb-16">
+          <h1 class="text-3xl md:text-4xl lg:text-5xl font-light text-gray-900 dark:text-white mb-4 md:mb-6">
             Our Mission
           </h1>
-          <p class="text-xl text-gray-600 dark:text-neutral-300 leading-relaxed">
-            To provide enterprise organizations with the most secure, accurate, and efficient document redaction platform,
-            enabling them to protect sensitive data while maintaining business velocity.
+          <p class="text-lg md:text-xl text-gray-600 dark:text-neutral-300 leading-relaxed px-4">
+            To provide enterprise organizations with secure, accurate, and efficient AI-powered solutions for data processing and compliance,
+            enabling them to protect sensitive information while maintaining business velocity.
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-          <div>
-            <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+          <div class="text-center md:text-left">
+            <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 dark:text-white mb-6">
               The Challenge
             </h2>
-            <p class="text-gray-600 dark:text-neutral-400 leading-relaxed mb-4">
-              Enterprise organizations process millions of documents containing sensitive information. Traditional redaction methods are manual, error-prone, and don't scale with business needs.
+            <p class="text-base md:text-lg text-gray-600 dark:text-neutral-400 leading-relaxed mb-4">
+              Enterprise organizations process millions of documents containing sensitive information. Traditional methods are manual, error-prone, and don't scale with business needs.
             </p>
-            <p class="text-gray-600 dark:text-neutral-400 leading-relaxed">
-              Compliance requirements are becoming more stringent, while the volume and complexity of documents continue to grow exponentially.
+            <p class="text-base md:text-lg text-gray-600 dark:text-neutral-400 leading-relaxed">
+              Compliance requirements are becoming more stringent, while the volume and complexity of data continues to grow exponentially.
             </p>
           </div>
 
-          <div>
-            <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+          <div class="text-center md:text-left">
+            <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 dark:text-white mb-6">
               Our Solution
             </h2>
-            <p class="text-gray-600 dark:text-neutral-400 leading-relaxed mb-4">
-              We've built an AI-powered platform that automatically identifies and redacts sensitive information with enterprise-grade accuracy and security.
+            <p class="text-base md:text-lg text-gray-600 dark:text-neutral-400 leading-relaxed mb-4">
+              We've built an AI-powered platform that automatically identifies and protects sensitive information with enterprise-grade accuracy and security.
             </p>
-            <p class="text-gray-600 dark:text-neutral-400 leading-relaxed">
+            <p class="text-base md:text-lg text-gray-600 dark:text-neutral-400 leading-relaxed">
               Our solution integrates seamlessly into existing workflows while providing the transparency, auditability, and control that enterprises require.
             </p>
           </div>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- Company Stats -->
+    <CompanyStats stats={customStats} />
 
     <!-- Values -->
-    <div class="bg-gray-50 dark:bg-neutral-900 py-20">
+    <section aria-label="Company Values" class="container mx-auto px-4 py-12 md:py-20">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-12 md:mb-16">
+          <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 dark:text-white mb-4 md:mb-6">
+            Our Values
+          </h2>
+          <p class="text-base md:text-lg text-gray-600 dark:text-neutral-300 max-w-3xl mx-auto px-4">
+            These principles guide every decision we make, from product development to customer relationships.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+          {values.map(value => (
+            <div class="group text-center p-6 md:p-8 rounded-xl hover:-translate-y-1 transition-all duration-300">
+              <div class="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-neutral-800 dark:to-neutral-700 group-hover:scale-110 transition-transform duration-300">
+                <value.icon class="w-8 h-8 text-gray-700 dark:text-neutral-300" />
+              </div>
+              <h3 class="text-lg md:text-xl font-light text-gray-900 dark:text-white mb-3">
+                {value.title}
+              </h3>
+              <p class="text-sm md:text-base text-gray-600 dark:text-neutral-400 leading-relaxed">
+                {value.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Team -->
+    <section aria-label="Team" class="bg-gray-50 dark:bg-black py-12 md:py-20">
       <div class="container mx-auto px-4">
         <div class="max-w-6xl mx-auto">
-          <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              Our Values
+          <div class="text-center mb-12 md:mb-16">
+            <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 dark:text-white mb-4 md:mb-6">
+              Meet the Team
             </h2>
-            <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-3xl mx-auto">
-              These principles guide every decision we make, from product development to customer relationships.
+            <p class="text-base md:text-lg text-gray-600 dark:text-neutral-300 max-w-3xl mx-auto px-4">
+              Driven by expertise in AI, enterprise software, and regulatory compliance.
             </p>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {values.map(value => (
-              <div class="bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-neutral-700 p-8">
-                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                  {value.title}
-                </h3>
-                <p class="text-gray-600 dark:text-neutral-400 leading-relaxed">
-                  {value.description}
-                </p>
-              </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 max-w-4xl mx-auto">
+            {teamMembers.map(member => (
+              <TeamMember client:load {...member} />
             ))}
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- Leadership Team -->
-    <div class="container mx-auto px-4 py-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-            Leadership Team
-          </h2>
-          <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-3xl mx-auto">
-            Our team combines deep expertise in AI, enterprise software, and regulatory compliance to deliver world-class solutions.
-          </p>
-        </div>
-
-        <div class="flex justify-center mb-8">
-          <div class="w-48 h-48 bg-gray-200 dark:bg-neutral-700 rounded-full flex items-center justify-center">
-            <span class="text-4xl text-gray-500 dark:text-neutral-400">Team Photo</span>
-          </div>
-        </div>
-
-        <div class="text-center">
-          <p class="text-lg text-gray-600 dark:text-neutral-300">
-            {teamMembers.map((member, index) => member.name).join(', ')}
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Company Stats -->
-    <CompanyStats backgroundColor="white" />
-
-    <!-- We Are Hiring Section -->
-    <div class="bg-gray-50 dark:bg-black py-32">
-      <div class="container mx-auto px-4">
-        <div class="max-w-6xl mx-auto">
-          <div class="text-center">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              We Are Hiring
-            </h2>
-            <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-3xl mx-auto mb-8">
-              Join our team and help build the future of enterprise document security.
-              We're looking for talented professionals to drive innovation in compliance and automation.
-            </p>
-            <a href="/careers" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all outline-none bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 px-6">
-              View Open Positions
-              <svg class="size-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
+    </section>
 
     <!-- From Our Blog Section -->
-    <div class="container mx-auto px-4 py-32">
+    <section aria-label="Latest Blog Posts" class="container mx-auto px-4 py-16 md:py-24">
       <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-8">
-          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+        <div class="text-center mb-8 md:mb-12">
+          <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 dark:text-white">
             From Our Blog
           </h2>
         </div>
@@ -217,7 +186,7 @@ const blogEntries = (await getCollection("blog"))
               <a href={`/blog/${post.slug}`} class="block">
                 <div class="overflow-hidden">
                   <!-- Image placeholder -->
-                  <div class="aspect-[16/9] bg-gradient-to-br from-gray-100 to-gray-200 dark:from-neutral-800 dark:to-neutral-700 flex items-center justify-center rounded-lg">
+                  <div class="aspect-[16/9] bg-gradient-to-br from-gray-100 to-gray-200 dark:from-neutral-800 dark:to-neutral-700 flex items-center justify-center rounded-lg group-hover:shadow-lg transition-shadow duration-300">
                     <div class="text-gray-400 dark:text-neutral-500 text-2xl">
                       {post.data.category === 'Engineering' && '⚡'}
                       {post.data.category === 'Development' && '💻'}
@@ -229,8 +198,8 @@ const blogEntries = (await getCollection("blog"))
                   </div>
 
                   <!-- Content -->
-                  <div class="pt-3">
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-gray-700 dark:group-hover:text-neutral-200 transition-colors">
+                  <div class="pt-4">
+                    <h3 class="text-lg font-light text-gray-900 dark:text-white mb-2 group-hover:text-gray-700 dark:group-hover:text-neutral-200 transition-colors line-clamp-2">
                       {post.data.title}
                     </h3>
 
@@ -248,8 +217,20 @@ const blogEntries = (await getCollection("blog"))
           ))}
         </div>
       </div>
-    </div>
+    </section>
 
-
+    <!-- Careers CTA -->
+    <CTA
+      title="Join Our Team"
+      description="Help us build the future of enterprise data security. We're looking for talented professionals to drive innovation in compliance and automation."
+      background="gradient"
+      buttons={[
+        {
+          text: "View Open Positions",
+          href: "/careers",
+          variant: "primary"
+        }
+      ]}
+    />
   </div>
 </Layout>

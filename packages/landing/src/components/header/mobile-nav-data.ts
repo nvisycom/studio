@@ -1,40 +1,48 @@
 import type {
 	ProductSection,
-	SolutionSection,
 	ResourceSection,
+	SolutionSection,
 } from "./nav-types";
 import {
-	Server,
+	BookOpen,
+	Braces,
+	Building,
+	Building2,
 	Cloud,
 	Code,
-	Terminal,
-	Building2,
-	Landmark,
 	HeartPulse,
-	ShieldCheck,
-	Building,
-	Rocket,
-	BookOpen,
-	HelpCircle,
-	Scale,
-	Megaphone,
+	Info,
+	Landmark,
+	Mail,
+	Map as MapIcon,
+	Package,
 	Plug,
-	MapIcon,
+	Rocket,
+	Scale,
+	Server,
+	ShieldCheck,
+	Terminal,
 } from "lucide-vue-next";
 
 export const products: ProductSection = {
 	platforms: [
 		{
-			title: "Nvisy Local",
-			href: "/products/local",
-			description: "On-premise security & control",
-			icon: Server,
-		},
-		{
 			title: "Nvisy Cloud",
 			href: "/products/cloud",
 			description: "Scalable cloud deployment",
 			icon: Cloud,
+		},
+		{
+			title: "Nvisy Server",
+			href: "/products/server",
+			description: "On-premise security & control",
+			icon: Server,
+		},
+		{
+			title: "Nvisy Desktop",
+			href: "/products/desktop",
+			description: "Cross-platform redaction UI",
+			icon: Terminal,
 		},
 	],
 	opensource: [
@@ -42,13 +50,22 @@ export const products: ProductSection = {
 			title: "Nvisy Runtime",
 			href: "https://github.com/nvisycom/run",
 			description: "Secure OCR runtime with redaction",
-			icon: Code,
+			icon: Package,
+			isExternal: true,
 		},
 		{
-			title: "Nvisy Terminal",
-			href: "https://github.com/nvisycom/core",
-			description: "Command-line redaction tool",
-			icon: Terminal,
+			title: "TypeScript SDK",
+			href: "https://github.com/nvisycom/sdk-ts",
+			description: "Modern JavaScript/TypeScript SDK",
+			icon: Braces,
+			isExternal: true,
+		},
+		{
+			title: "Python SDK",
+			href: "https://github.com/nvisycom/sdk-py",
+			description: "Native Python library",
+			icon: Code,
+			isExternal: true,
 		},
 	],
 	features: [],
@@ -57,7 +74,38 @@ export const products: ProductSection = {
 };
 
 export const solutions: SolutionSection = {
-	integrations: [],
+	integrations: [
+		{
+			title: "Slack",
+			href: "/integrations",
+			icon: Plug,
+		},
+		{
+			title: "Google Drive",
+			href: "/integrations",
+			icon: Cloud,
+		},
+		{
+			title: "Dropbox",
+			href: "/integrations",
+			icon: Cloud,
+		},
+		{
+			title: "Notion",
+			href: "/integrations",
+			icon: BookOpen,
+		},
+		{
+			title: "Zapier",
+			href: "/integrations",
+			icon: Plug,
+		},
+		{
+			title: "Make",
+			href: "/integrations",
+			icon: Rocket,
+		},
+	],
 	usecase: [
 		{
 			title: "Financial",
@@ -97,10 +145,11 @@ export const solutions: SolutionSection = {
 export const resources: ResourceSection = {
 	developers: [
 		{
-			title: "API Reference",
-			href: "https://docs.nvisy.com/api",
-			description: "API documentation",
+			title: "Reference",
+			href: "https://docs.nvisy.com/api-reference",
+			description: "Complete API documentation",
 			icon: Code,
+			isExternal: true,
 		},
 		{
 			title: "Integrations",
@@ -120,24 +169,12 @@ export const resources: ResourceSection = {
 			description: "Join our remote team",
 			icon: Building2,
 		},
-		{
-			title: "Customers",
-			href: "/customers",
-			description: "Customer success stories",
-			icon: Building,
-		},
-		{
-			title: "Comparisons",
-			href: "/comparisons",
-			description: "Compare Nvisy with alternatives",
-			icon: ShieldCheck,
-		},
 	],
 	support: [
 		{
-			title: "Documentation",
+			title: "Docs",
 			href: "https://docs.nvisy.com",
-			description: "Guides & tutorials",
+			description: "Guides & API docs",
 			icon: BookOpen,
 			isExternal: true,
 		},
@@ -145,7 +182,13 @@ export const resources: ResourceSection = {
 			title: "Contact",
 			href: "/contact",
 			description: "Get in touch with our team",
-			icon: HelpCircle,
+			icon: Mail,
+		},
+		{
+			title: "About",
+			href: "/about",
+			description: "Learn more about Nvisy",
+			icon: Info,
 		},
 		{
 			title: "Legal",
@@ -153,18 +196,25 @@ export const resources: ResourceSection = {
 			description: "Policies & legal documents",
 			icon: Scale,
 		},
+	],
+	blog: [
 		{
-			title: "Newsroom",
-			href: "/newsroom",
-			description: "News & press releases",
-			icon: Megaphone,
+			title: "Blog Post 02",
+			href: "/blog/lorem-ipsum-02",
+			excerpt:
+				"Exploring the fundamentals of modern web development and industry best practices.",
 		},
 		{
-			title: "Blog",
-			href: "/blog",
-			description: "Latest articles & updates",
-			icon: BookOpen,
+			title: "Blog Post 03",
+			href: "/blog/lorem-ipsum-03",
+			excerpt:
+				"An in-depth look at content creation and publishing in the digital age.",
+		},
+		{
+			title: "Blog Post 01",
+			href: "/blog/lorem-ipsum-01",
+			excerpt:
+				"A comprehensive guide exploring modern development practices with TypeScript and Rust examples.",
 		},
 	],
-	blog: [],
 };

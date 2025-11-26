@@ -4,6 +4,6 @@
 	"version": "v1.0",
 	"status": "Planned",
 	"title": "Dropbox",
-	"category": "Cloud Storage",
-	"description": "Enterprise-grade document redaction for Dropbox Business with automated workflows and secure file processing across shared folders."
+	"category": "File Import/Export",
+	"description": "Import and export documents from Dropbox with automated redaction workflows and secure file processing for shared folders and team spaces."
 }

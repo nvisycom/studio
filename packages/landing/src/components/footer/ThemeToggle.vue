@@ -42,20 +42,17 @@ onMounted(() => {
 <template>
   <button
     @click="toggleTheme"
-    class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 transition-colors duration-200"
+    class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-black dark:hover:bg-neutral-900 border border-transparent dark:border-neutral-800 transition-colors duration-200"
     :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
     :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
   >
     <!-- Sun icon (shown in dark mode) -->
-    <Sun
-        v-show="isDark"
-        class="w-5 h-5 text-gray-600 dark:text-neutral-300"
-    />
+    <Sun v-show="isDark" class="w-5 h-5 text-gray-600 dark:text-neutral-300" />
 
     <!-- Moon icon (shown in light mode) -->
     <Moon
-        v-show="!isDark"
-        class="w-5 h-5 text-gray-600 dark:text-neutral-300"
+      v-show="!isDark"
+      class="w-5 h-5 text-gray-600 dark:text-neutral-300"
     />
   </button>
 </template>

@@ -1,8 +1,7 @@
 ---
 import { Layout } from "@/layouts";
 import { getCollection, type CollectionEntry } from "astro:content";
-import { CTA, Hero } from "@/sections";
-import { LegalCard } from "@/sections/legal";
+import { CTA, Hero, LegalCard } from "@/components";
 import { File } from "lucide-vue-next";
 
 // Get all legal documents
@@ -24,8 +23,6 @@ legalEntries.sort((a, b) => a.data.title.localeCompare(b.data.title));
       title="Legal Information"
       description="Access our legal documents, policies, and terms that govern our services."
       background="gradient"
-      fontSize="lg"
-      padding="lg"
       buttons={[]}
     />
 
@@ -35,7 +32,7 @@ legalEntries.sort((a, b) => a.data.title.localeCompare(b.data.title));
         {legalEntries.length > 0 ? (
           <>
             <div class="flex items-center justify-between mb-8">
-              <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+              <h2 class="text-2xl font-light text-gray-900 dark:text-white">
                 Documents
               </h2>
               <span class="text-sm text-gray-500 dark:text-neutral-400">
@@ -53,7 +50,7 @@ legalEntries.sort((a, b) => a.data.title.localeCompare(b.data.title));
             <div class="w-16 h-16 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-6 text-neutral-400">
                  <File/>
             </div>
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">No legal documents found</h3>
+            <h3 class="text-xl font-light text-gray-900 dark:text-white mb-2">No legal documents found</h3>
             <p class="text-gray-500 dark:text-neutral-400">Legal documents will appear here once they are available.</p>
           </div>
         )}
@@ -64,16 +61,15 @@ legalEntries.sort((a, b) => a.data.title.localeCompare(b.data.title));
       title="Questions about our legal policies?"
       description="If you have questions about our legal documents or need clarification on our policies, please don't hesitate to reach out to our legal team."
       background="solid"
-      padding="lg"
       buttons={[
         {
-          text: "Contact Support",
-          href: "/support",
+          text: "Contact Us",
+          href: "/contact",
           variant: "primary"
         },
         {
-          text: "Email Legal Team",
-          href: "mailto:legal@nvisy.com",
+          text: "Email Us",
+          href: "mailto:hello@nvisy.com",
           variant: "secondary"
         }
       ]}

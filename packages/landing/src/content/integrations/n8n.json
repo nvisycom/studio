@@ -5,5 +5,5 @@
 	"status": "In Progress",
 	"title": "n8n",
 	"category": "Automation",
-	"description": "Open-source workflow automation platform with custom redaction nodes and advanced document processing capabilities for enterprise workflows."
+	"description": "Self-hosted workflow automation with full control over your redaction pipelines. Build custom nodes, integrate with any API, and maintain complete data privacy."
 }

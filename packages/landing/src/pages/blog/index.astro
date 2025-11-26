@@ -1,28 +1,17 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero } from "@/sections";
+import { Hero } from "@/components";
 import { calculateReadingTime } from "@/lib/content";
 import { getCollection } from "astro:content";
 import { File } from "lucide-vue-next";
 
 // Get all blog entries and sort by publishedAt (newest first)
 const blogEntries = (await getCollection("blog"))
-	.map((entry) => {
-		const calculatedReadingTime = calculateReadingTime(entry.body);
-
-		return {
-			...entry,
-			data: {
-				...entry.data,
-				readingTime: entry.data.readingTime || calculatedReadingTime,
-			},
-		};
-	})
-	.sort(
-		(rhs, lhs) =>
-			new Date(lhs.data.publishedAt).getTime() -
-			new Date(rhs.data.publishedAt).getTime(),
-	);
+	.map((entry) => ({
+		...entry,
+		readingTime: calculateReadingTime(entry.body),
+	}))
+	.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
 ---
 
 <Layout title="Blog" description="Insights, stories, and updates from our team">
@@ -32,8 +21,6 @@ const blogEntries = (await getCollection("blog"))
       title="Stories & Insights"
       description="Discover the latest from our team. Engineering insights, product updates, and thought leadership from the people building the future."
       background="gradient"
-      fontSize="lg"
-      padding="lg"
       buttons={[]}
     />
 
@@ -90,16 +77,12 @@ const blogEntries = (await getCollection("blog"))
                             day: 'numeric'
                           })}
                         </span>
-                        {post.data.readingTime && (
-                          <>
-                            <span class="text-gray-300 dark:text-neutral-600">•</span>
-                            <span>{post.data.readingTime} min read</span>
-                          </>
-                        )}
+                        <span class="text-gray-300 dark:text-neutral-600">•</span>
+                        <span>{post.readingTime} min read</span>
                       </div>
 
                       <!-- Title -->
-                      <h3 class="font-bold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-base leading-snug line-clamp-2">
+                      <h3 class="font-light text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-base leading-snug line-clamp-2">
                         {post.data.title}
                       </h3>
 
@@ -130,7 +113,7 @@ const blogEntries = (await getCollection("blog"))
             <div class="w-20 h-20 bg-gray-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-6 text-neutral-400 dark:text-neutral-500">
               <File class="w-4 h-4" client:load />
             </div>
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">No blog posts found</h3>
+            <h3 class="text-xl font-light text-gray-900 dark:text-white mb-2">No blog posts found</h3>
             <p class="text-gray-500 dark:text-neutral-400">Blog posts will appear here once they are published.</p>
           </div>
         )}

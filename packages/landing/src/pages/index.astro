@@ -2,23 +2,22 @@
 import Layout from "@/layouts/Layout.astro";
 import {
 	Hero,
-	Workflow,
+	Review,
 	Features,
-	Integrations,
 	UseCases,
 	Testimonials,
 	CTA,
-	CompanyStats,
-	Stats,
-	Security,
-} from "@/sections";
+	SocialProof,
+	FAQ,
+} from "@/components";
+import Connect from "@/components/sections/Connect.astro";
 
 // SEO and metadata
-const pageTitle = "Document Redaction Platform";
+const pageTitle = "Home";
 const pageDescription =
-	"Secure your sensitive documents with AI-powered redaction. Enterprise-grade security, 99.9% accuracy, SOC 2 compliant. Start your free trial today.";
+	"Automatically redact sensitive information from documents with AI. Trusted by enterprises worldwide.";
 const pageKeywords =
-	"document redaction, AI security, enterprise compliance, data protection, GDPR, HIPAA, document processing";
+	"document redaction, AI redaction, PII removal, data privacy, compliance";
 ---
 
 <Layout
@@ -26,67 +25,88 @@ const pageKeywords =
 	description={pageDescription}
 	keywords={pageKeywords}
 >
-	<main>
-		<!-- Hero Section - Clear Value Proposition -->
-		<section aria-labelledby="hero-section">
-			<Hero />
-		</section>
+	<main class="overflow-hidden">
+		<!-- Hero Section - Immediate Impact -->
+		<Hero
+			title="Redact Sensitive Information in Seconds"
+			description="Automatically identify and remove PII, PHI, and confidential data from any document. AI-powered precision that saves hours of manual work while ensuring compliance."
+			buttons={[
+				{
+					text: "Start Free Trial",
+					href: "/pricing",
+					variant: "primary"
+				},
+				{
+					text: "See How It Works",
+					href: "#workflow",
+					variant: "secondary"
+				}
+			]}
+		/>
 
-		<!-- Company Stats Section -->
-		<section class="bg-white dark:bg-black" aria-labelledby="company-stats-section">
-			<CompanyStats backgroundColor="white" />
-		</section>
+		<!-- Social Proof - Clients -->
+		<SocialProof
+			title="Trusted by Industry Leaders"
+			subtitle="Join hundreds of companies protecting their sensitive data"
+		/>
 
-		<!-- Features Section - Core Capabilities -->
-		<section class="bg-gray-50 dark:bg-neutral-950" aria-labelledby="features-section">
-			<Features />
-		</section>
+		<!-- Features Section - Core Value Props -->
+		<Features
+			category="general"
+			featured={true}
+			title="Enterprise-Grade Document Security"
+			description="Everything you need to protect sensitive information at scale. Advanced AI meets strict compliance requirements."
+		/>
 
-		<!-- Workflow Section - Remove Friction & Objections -->
-		<section class="bg-white dark:bg-black" aria-labelledby="workflow-section">
-			<Workflow backgroundColor="white" />
-		</section>
+		<!-- Review Section - How It Works with Screenshots -->
+		<Review
+			title="How It Works"
+			description="Four simple steps from upload to secure, compliant documents. See our intuitive dashboard in action."
+		/>
 
-		<!-- Testimonials Section - Customer Validation -->
-		<section class="bg-gray-50 dark:bg-neutral-950" aria-labelledby="testimonials-section">
-			<Testimonials backgroundColor="gray" />
-		</section>
+		<!-- Use Cases Section - Real-World Applications -->
+		<UseCases
+			title="Built for Every Industry"
+			description="From legal firms to healthcare providers, organizations worldwide rely on Nvisy to protect their most sensitive documents."
+		/>
 
-		<!-- Use Cases Section - Industry Applications -->
-		<section
-			class="bg-white dark:bg-black border-t border-gray-200 dark:border-neutral-800"
-			aria-labelledby="use-cases-section"
-		>
-			<UseCases />
-		</section>
+		<!-- Testimonials Section -->
+		<Testimonials
+			title="Loved by Teams Worldwide"
+			description="Join hundreds of companies that trust Nvisy to protect their sensitive information."
+		/>
 
-		<!-- Integrations Section - Ecosystem Fit -->
-		<section class="bg-white dark:bg-black" aria-labelledby="integrations-section">
-			<Integrations backgroundColor="white" />
-		</section>
+		<!-- Connect Section - Integrations & Webhooks -->
+		<Connect
+			title="Connect Your Workflow"
+			description="Seamlessly integrate Nvisy into your existing infrastructure with powerful APIs and webhooks."
+		/>
 
-		<!-- Security Section - Trust & Compliance -->
-		<Security backgroundColor="gray" />
+		<!-- FAQ Section - Answer Objections -->
+		<FAQ
+			title="Common Questions"
+			description="Everything you need to know about protecting your documents with Nvisy"
+			category="general"
+			featured={true}
+		/>
 
-		<!-- Call-to-Action Section - Clear Next Steps -->
-		<section aria-labelledby="cta-section">
-			<CTA
-				title="Ready to Secure Your Documents?"
-				description="Join hundreds of enterprises already protecting sensitive information with our AI-powered redaction platform."
-				background="gradient"
-				buttons={[
-					{
-						text: "Start Free Trial",
-						href: "/dashboard",
-						variant: "primary"
-					},
-					{
-						text: "Contact Sales",
-						href: "/contact",
-						variant: "secondary"
-					}
-				]}
-			/>
-		</section>
+		<!-- Final CTA - Strong Close -->
+		<CTA
+			title="Ready to Protect Your Documents?"
+			description="Join 500+ companies already using Nvisy. Start with 100 free pages, no credit card required."
+			background="gradient"
+			buttons={[
+				{
+					text: "Start Free Trial",
+					href: "/pricing",
+					variant: "primary"
+				},
+				{
+					text: "Talk to Sales",
+					href: "/contact",
+					variant: "secondary"
+				}
+			]}
+		/>
 	</main>
 </Layout>

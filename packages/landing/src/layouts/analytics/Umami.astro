@@ -1,0 +1,38 @@
+---
+/**
+ * Umami Analytics Component
+ *
+ * Integrates Umami analytics tracking script into the application.
+ * Umami is a privacy-focused, open-source analytics platform.
+ *
+ * @see https://umami.is
+ * @see https://umami.is/docs
+ * @see https://github.com/umami-software/umami
+ */
+
+/**
+ * Props for the Umami analytics component
+ */
+export interface Props {
+	/**
+	 * URL to the Umami analytics script
+	 * @default "https://cloud.umami.is/script.js"
+	 */
+	scriptUrl?: string;
+
+	/**
+	 * Unique website identifier for Umami tracking
+	 * @default "af19adf2-bb53-4bd9-aaf9-369b9e16c88d"
+	 */
+	websiteId?: string;
+}
+
+const {
+	scriptUrl = "https://cloud.umami.is/script.js",
+	websiteId = "af19adf2-bb53-4bd9-aaf9-369b9e16c88d",
+} = Astro.props;
+---
+<script is:inline
+    src={scriptUrl}
+    data-website-id={websiteId}
+    ></script>

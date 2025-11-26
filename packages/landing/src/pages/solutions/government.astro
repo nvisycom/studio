@@ -1,259 +1,181 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, Features, CTA, CompanyStats } from "@/sections";
 import {
-	ShieldCheck,
-	Users,
-	Eye,
+	Hero,
+	CTA,
+	SocialProof,
+	Testimonials,
+	FAQ,
+	Security,
+	CaseStudies,
+} from "@/components";
+import {
+	Shield,
 	Check,
-	Building,
 	FileText,
-	BarChart3,
-	Lock,
 	Scale,
-	Clipboard,
+	Eye,
+	UserCheck,
 } from "lucide-vue-next";
+import { getCollection } from "astro:content";
+
+// Get case studies from blog
+const caseStudies = (await getCollection("blog"))
+	.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
+	.slice(0, 3);
 ---
 
-<Layout title="Government Solutions" description="Document redaction solutions for government agencies. Security-focused features to help protect classified and sensitive government data with comprehensive audit capabilities.">
+<Layout
+  title="Government Solutions"
+  description="Document redaction for government agencies and public sector organizations. GDPR & CCPA compliant with SOC II certification in progress. Protect sensitive citizen data and classified information."
+>
   <div class="bg-white dark:bg-black min-h-screen">
+
     <!-- Hero Section -->
     <Hero
-      title="Government Document Protection"
-      description="Protect classified and sensitive government data with AI-powered redaction designed for public sector workflows. Security-focused features to help maintain data protection standards and audit requirements."
+      title="Government Document Security"
+      description="Protect sensitive citizen data and classified information with compliant document redaction. Built for federal agencies, state governments, and public sector organizations that need reliable data protection while meeting transparency and security requirements."
       background="gradient"
-      fontSize="xl"
-      padding="xl"
       buttons={[
         {
-          text: "Request Demo",
+          text: "Schedule Demo",
           href: "/contact",
           variant: "primary"
         },
         {
-          text: "View Pricing",
-          href: "/pricing",
+          text: "View Documentation",
+          href: "https://docs.nvisy.com",
           variant: "secondary"
         }
       ]}
-      stats={[
-        {
-          value: "Security",
-          label: "Focused"
-        },
-        {
-          value: "Audit",
-          label: "Ready"
-        },
-        {
-          value: "Classified",
-          label: "Data Support"
-        }
-      ]}
     />
 
-    <!-- Company Stats -->
-    <CompanyStats backgroundColor="white" />
-
-    <!-- Government-Specific Features -->
-    <Features
-      title="Built for Government Workflows"
-      description="Document redaction features designed specifically to help government agencies protect sensitive information while maintaining transparency and supporting audit requirements."
-      features={[
-        {
-          title: "Classified Data Handling",
-          description: "Automatically identify and redact classified information, personal identifiers, and sensitive government data across multiple security levels.",
-          icon: "shield-check"
-        },
-        {
-          title: "Security-First Design",
-          description: "Built with government security requirements in mind, including comprehensive access controls and secure data handling practices.",
-          icon: "lock"
-        },
-        {
-          title: "FOIA Request Support",
-          description: "Streamline Freedom of Information Act requests by quickly redacting sensitive information while preserving transparency.",
-          icon: "eye"
-        },
-        {
-          title: "Comprehensive Audit Trails",
-          description: "Detailed logging of all redaction activities to support compliance audits and regulatory oversight requirements.",
-          icon: "clipboard-check"
-        },
-        {
-          title: "Multi-Level Security",
-          description: "Handle documents across different classification levels with appropriate security controls and access restrictions.",
-          icon: "layers"
-        },
-        {
-          title: "Government Integration",
-          description: "Integrate securely with existing government systems through encrypted APIs and secure data transmission protocols.",
-          icon: "link"
-        }
-      ]}
+    <!-- Social Proof -->
+    <SocialProof
+      title="Trusted by Government Agencies"
+      subtitle="Federal, state, and local government agencies trust Nvisy to protect sensitive citizen data"
     />
 
-    <!-- Government Use Cases -->
-    <div class="bg-gray-50 dark:bg-neutral-950 py-20">
-      <div class="container mx-auto px-4">
-        <div class="max-w-6xl mx-auto">
-          <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              Common Government Use Cases
-            </h2>
-            <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-2xl mx-auto">
-              See how government agencies use Nvisy to protect sensitive information
-              across various administrative and operational workflows.
+    <Security
+      title="Enterprise-Grade Document Security"
+      description="Built with compliance and security at the core. Our platform meets the rigorous standards required by government agencies."
+    />
+
+    <!-- Key Challenges -->
+    <div class="container mx-auto px-4 py-20">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-light text-neutral-900 dark:text-white mb-6">
+            Government Data Protection Challenges
+          </h2>
+          <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
+            Government agencies handle sensitive citizen data and classified information,
+            requiring robust protection while maintaining transparency obligations and operational efficiency.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
+            <UserCheck class="w-12 h-12 text-red-600 mx-auto mb-6" />
+            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Citizen Privacy Protection</h3>
+            <p class="text-neutral-600 dark:text-neutral-300">
+              Protect Social Security numbers, addresses, personal identifiers, and sensitive citizen information
+              across all government documentation and communications.
             </p>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- FOIA Requests -->
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
-                <Eye class="w-8 h-8 text-white dark:text-black" />
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
+            <Scale class="w-12 h-12 text-orange-600 mx-auto mb-6" />
+            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">FOIA Compliance</h3>
+            <p class="text-neutral-600 dark:text-neutral-300">
+              Balance transparency requirements with privacy protection for Freedom of Information Act requests
+              while maintaining comprehensive audit trails.
+            </p>
+          </div>
+
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
+            <Eye class="w-12 h-12 text-blue-600 mx-auto mb-6" />
+            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Information Security</h3>
+            <p class="text-neutral-600 dark:text-neutral-300">
+              Automate redaction of classified and sensitive information while maintaining operational
+              efficiency and meeting security clearance requirements.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Solutions -->
+    <div class="bg-neutral-50 dark:bg-neutral-950 py-20">
+      <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-light text-neutral-900 dark:text-white mb-6">
+              Comprehensive Government Data Protection
+            </h2>
+            <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
+              Our document redaction platform addresses the specific needs of government agencies
+              with security-focused features and compliance-ready infrastructure for sensitive data protection.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
+              <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-6">
+                <FileText class="w-6 h-6 text-blue-700 dark:text-blue-300" />
               </div>
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">FOIA Requests</h3>
-              <p class="text-gray-600 dark:text-neutral-300 mb-4">
-                Process Freedom of Information Act requests efficiently by redacting sensitive information while maintaining transparency.
+              <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Government Document Processing</h3>
+              <p class="text-neutral-600 dark:text-neutral-300 mb-6">
+                Automated redaction for FOIA responses, case files, citizen communications,
+                and regulatory documentation with high accuracy sensitive data detection.
               </p>
-              <ul class="space-y-2 text-sm">
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Personal identifiers</span>
+              <ul class="space-y-3">
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Social Security numbers and tax IDs</span>
                 </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Law enforcement exemptions</span>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Personal addresses and contact information</span>
                 </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Security-sensitive information</span>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Case numbers and identifiers</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Classified and sensitive markings</span>
                 </li>
               </ul>
             </div>
 
-            <!-- Classified Documents -->
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
-                <Lock class="w-8 h-8 text-white dark:text-black" />
+            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
+              <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-6">
+                <Shield class="w-6 h-6 text-green-700 dark:text-green-300" />
               </div>
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Classified Documents</h3>
-              <p class="text-gray-600 dark:text-neutral-300 mb-4">
-                Handle classified and sensitive documents across different security levels with appropriate redaction controls.
+              <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Security & Compliance</h3>
+              <p class="text-neutral-600 dark:text-neutral-300 mb-6">
+                Built with government security requirements in mind,
+                including comprehensive audit trails and data protection controls for sensitive information.
               </p>
-              <ul class="space-y-2 text-sm">
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Multi-level classification</span>
+              <ul class="space-y-3">
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">GDPR & CCPA compliant</span>
                 </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Security clearance controls</span>
+                <li class="flex items-center gap-3">
+                  <div class="w-5 h-5 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center flex-shrink-0">
+                    <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
+                  </div>
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">SOC II certification in progress</span>
                 </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Compartmented information</span>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">FOIA compliance ready</span>
                 </li>
-              </ul>
-            </div>
-
-            <!-- Legal Proceedings -->
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
-                <Scale class="w-8 h-8 text-white dark:text-black" />
-              </div>
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Legal Proceedings</h3>
-              <p class="text-gray-600 dark:text-neutral-300 mb-4">
-                Prepare government documents for legal proceedings and court cases while protecting sensitive information.
-              </p>
-              <ul class="space-y-2 text-sm">
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Court filings</span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Discovery documents</span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Evidence preparation</span>
-                </li>
-              </ul>
-            </div>
-
-            <!-- Public Records -->
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
-                <FileText class="w-8 h-8 text-white dark:text-black" />
-              </div>
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Public Records</h3>
-              <p class="text-gray-600 dark:text-neutral-300 mb-4">
-                Manage public records releases by redacting personal information while maintaining public access to information.
-              </p>
-              <ul class="space-y-2 text-sm">
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Meeting minutes</span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Budget documents</span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Administrative records</span>
-                </li>
-              </ul>
-            </div>
-
-            <!-- Compliance Reporting -->
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
-                <BarChart3 class="w-8 h-8 text-white dark:text-black" />
-              </div>
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Compliance & Oversight</h3>
-              <p class="text-gray-600 dark:text-neutral-300 mb-4">
-                Support regulatory compliance and oversight activities by preparing redacted documents for review and audit.
-              </p>
-              <ul class="space-y-2 text-sm">
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Audit preparations</span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Regulatory reports</span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Oversight documentation</span>
-                </li>
-              </ul>
-            </div>
-
-            <!-- Inter-Agency Sharing -->
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
-                <Building class="w-8 h-8 text-white dark:text-black" />
-              </div>
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Inter-Agency Sharing</h3>
-              <p class="text-gray-600 dark:text-neutral-300 mb-4">
-                Facilitate secure information sharing between government agencies while protecting sensitive data and maintaining security protocols.
-              </p>
-              <ul class="space-y-2 text-sm">
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Cross-agency reports</span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Intelligence sharing</span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Collaborative investigations</span>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">End-to-end encryption</span>
                 </li>
               </ul>
             </div>
@@ -262,150 +184,123 @@ import {
       </div>
     </div>
 
-    <!-- Implementation Benefits -->
+    <!-- Use Cases -->
     <div class="container mx-auto px-4 py-20">
       <div class="max-w-6xl mx-auto">
         <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-            Government Implementation Benefits
+          <h2 class="text-3xl md:text-4xl font-light text-neutral-900 dark:text-white mb-6">
+            Government Use Cases
           </h2>
-          <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-2xl mx-auto">
-            Real benefits that government agencies experience when implementing
-            our document redaction platform for sensitive data protection.
+          <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
+            Government agencies across federal, state, and local levels use our platform
+            to protect sensitive information while maintaining transparency and operational efficiency.
           </p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div class="text-center">
-            <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <ShieldCheck class="w-8 h-8 text-white dark:text-black" />
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Enhanced Security</h3>
-            <p class="text-gray-600 dark:text-neutral-300">
-              Consistent, automated protection of classified and sensitive government information across all document types.
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6">
+            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">FOIA Requests</h3>
+            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-4">
+              Automatically redact personal and sensitive information from government documents
+              for Freedom of Information Act responses while maintaining transparency requirements.
             </p>
+            <div class="text-xs text-neutral-500 bg-neutral-50 dark:bg-neutral-900 rounded-lg p-3">
+              Federal Agencies, State Governments
+            </div>
           </div>
 
-          <div class="text-center">
-            <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Users class="w-8 h-8 text-white dark:text-black" />
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Improved Transparency</h3>
-            <p class="text-gray-600 dark:text-neutral-300">
-              Faster processing of FOIA requests and public records while maintaining appropriate security protections.
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6">
+            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">Law Enforcement</h3>
+            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-4">
+              Protect witness identities, victim information, and sensitive case details
+              in police reports, court documents, and investigation files.
             </p>
+            <div class="text-xs text-neutral-500 bg-neutral-50 dark:bg-neutral-900 rounded-lg p-3">
+              Police Departments, Sheriff's Offices
+            </div>
           </div>
 
-          <div class="text-center">
-            <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Clipboard class="w-8 h-8 text-white dark:text-black" />
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6">
+            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">Social Services</h3>
+            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-4">
+              Redact personal information in benefits applications, case files, and citizen correspondence
+              while maintaining program integrity and privacy protection.
+            </p>
+            <div class="text-xs text-neutral-500 bg-neutral-50 dark:bg-neutral-900 rounded-lg p-3">
+              Social Services Departments, Benefits Agencies
             </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Audit Readiness</h3>
-            <p class="text-gray-600 dark:text-neutral-300">
-              Comprehensive audit trails and logging capabilities support regulatory oversight and compliance requirements.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Security Features -->
-    <div class="bg-gray-50 dark:bg-neutral-950 py-20">
-      <div class="container mx-auto px-4">
-        <div class="max-w-6xl mx-auto">
-          <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              Government-Grade Security
-            </h2>
-            <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-2xl mx-auto">
-              Built with government security requirements in mind, including data protection
-              and audit capabilities for sensitive government information.
-            </p>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Security Controls</h3>
-              <ul class="space-y-3">
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Multi-level security handling</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Access control enforcement</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Secure data transmission</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Encryption at rest and transit</span>
-                </li>
-              </ul>
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6">
+            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">Public Records</h3>
+            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-4">
+              Prepare public records for release by automatically redacting private citizen information
+              while maintaining document integrity and public access requirements.
+            </p>
+            <div class="text-xs text-neutral-500 bg-neutral-50 dark:bg-neutral-900 rounded-lg p-3">
+              Records Departments, Clerks' Offices
             </div>
+          </div>
 
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Audit Capabilities</h3>
-              <ul class="space-y-3">
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Comprehensive audit logs</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Activity tracking</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Data lineage documentation</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Compliance reporting</span>
-                </li>
-              </ul>
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6">
+            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">Regulatory Compliance</h3>
+            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-4">
+              Protect sensitive information in regulatory filings, compliance reports,
+              and inter-agency communications while maintaining oversight capabilities.
+            </p>
+            <div class="text-xs text-neutral-500 bg-neutral-50 dark:bg-neutral-900 rounded-lg p-3">
+              Regulatory Agencies, Oversight Bodies
             </div>
+          </div>
 
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Government Features</h3>
-              <ul class="space-y-3">
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Classification handling</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">FOIA request support</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Inter-agency integration</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Flexible deployment options</span>
-                </li>
-              </ul>
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6">
+            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">Inter-agency Sharing</h3>
+            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-4">
+              Safely share sensitive documents between government agencies by redacting
+              information not relevant to receiving department's mandate.
+            </p>
+            <div class="text-xs text-neutral-500 bg-neutral-50 dark:bg-neutral-900 rounded-lg p-3">
+              Multi-agency Collaborations, Task Forces
             </div>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Testimonials -->
+    <Testimonials
+      title="Trusted by Government Agencies"
+      description="See how government organizations are protecting sensitive citizen data with Nvisy"
+    />
+
+    <!-- FAQ -->
+    <FAQ
+      title="Government FAQs"
+      description="Common questions about document redaction for government agencies"
+      category="general"
+      featured={true}
+    />
+
+    <!-- Case Studies -->
+    <CaseStudies
+      title="Government Success Stories"
+      description="See how government agencies are using Nvisy to protect citizen data and ensure transparency."
+      caseStudies={caseStudies}
+    />
+
+    <!-- CTA -->
     <CTA
-      title="Ready to Protect Government Data?"
-      description="Join government agencies using Nvisy to safely redact and anonymize sensitive documents while maintaining transparency and audit requirements."
+      title="Ready to Secure Your Government Documents?"
+      description="Whether you're a local agency or federal department, we have solutions tailored for your security and transparency needs. Special government pricing and on-premise deployment available."
       buttons={[
         {
-          text: "Schedule Government Demo",
+          text: "Schedule Demo",
           href: "/contact",
           variant: "primary"
         },
         {
-          text: "View Government Pricing",
-          href: "/pricing",
+          text: "View API Documentation",
+          href: "https://docs.nvisy.com",
           variant: "secondary"
         }
       ]}

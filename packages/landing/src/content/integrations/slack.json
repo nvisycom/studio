@@ -4,6 +4,6 @@
 	"version": "v1.0",
 	"status": "Planned",
 	"title": "Slack",
-	"category": "Collaboration",
-	"description": "Secure file sharing integration with automatic redaction of sensitive data in Slack uploads and shared documents across team channels."
+	"category": "Notification",
+	"description": "Receive real-time notifications about redaction workflows, document processing status, and security alerts directly in your Slack channels."
 }

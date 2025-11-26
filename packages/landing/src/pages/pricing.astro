@@ -1,6 +1,12 @@
 ---
-import { Hero, CTA, FAQ, Testimonials } from "@/sections";
-import { PricingCards, BillingToggle } from "@/sections/pricing";
+import {
+	Hero,
+	CTA,
+	FAQ,
+	Testimonials,
+	PricingCards,
+	BillingToggle,
+} from "@/components";
 import { Layout } from "@/layouts";
 ---
 
@@ -11,8 +17,6 @@ import { Layout } from "@/layouts";
       title="Simple, Transparent Pricing"
       description="Choose the perfect plan for your needs. Start free and scale as you grow, with no hidden fees or surprise charges."
       background="gradient"
-      fontSize="xl"
-      padding="lg"
       buttons={[]}
       >
         <BillingToggle client:load slot="content" />
@@ -25,7 +29,6 @@ import { Layout } from "@/layouts";
     <Testimonials
       title="Trusted by teams worldwide"
       description="See what our customers say about transforming their document redaction workflows."
-      backgroundColor="gray"
     />
 
     <FAQ

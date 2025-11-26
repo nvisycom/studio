@@ -1,174 +1,92 @@
 ---
-import Layout from "@/layouts/Layout.astro";
-import { CTA, Features, Testimonials } from "@/sections";
-import {
-	ProductHero,
-	ProductBenefits,
-	ProductComparison,
-	ProductPricing,
-} from "@/sections/products";
+import { Layout } from "@/layouts";
+import { Hero, CTA, Security, Premium, Features } from "@/components";
+import SDKExamples from "@/components/sections/SDKExamples.astro";
+import Connect from "@/components/sections/Connect.astro";
+import Review from "@/components/sections/Review.astro";
 ---
 
-<Layout title="Nvisy Cloud - AI-Powered Document Redaction" description="Deploy Nvisy's AI-powered document redaction in the cloud. Global scale, managed infrastructure, and enterprise security with zero maintenance.">
+<Layout
+  title="Nvisy Cloud"
+  description="Deploy Nvisy's AI-powered document redaction in the cloud. Global scale, managed infrastructure, and enterprise security with zero maintenance."
+>
   <div class="bg-white dark:bg-black min-h-screen">
     <!-- Hero Section -->
-    <ProductHero
-      title="Nvisy Cloud"
-      description="Enterprise-grade document redaction delivered as a fully managed cloud service. Global scale, zero maintenance, maximum security."
-      primaryCta={{
-        text: "Start Free Trial",
-        href: "/pricing"
-      }}
-      secondaryCta={{
-        text: "Schedule Demo",
-        href: "/contact"
-      }}
-      stats={[
-        {
-          value: "99.99%",
-          label: "Uptime SLA"
-        },
-        {
-          value: "Global",
-          label: "Multi-Region"
-        },
-        {
-          value: "5 min",
-          label: "Setup Time"
-        }
-      ]}
-    />
+    <div class="border-b border-neutral-200 dark:border-neutral-800">
+      <Hero
+        title="Nvisy Cloud"
+        description="Enterprise-grade document redaction delivered as a fully managed cloud service. Deploy in minutes, scale instantly, maintain nothing. Get the power of AI-driven redaction without the infrastructure complexity."
+        background="gradient"
+        buttons={[
+          {
+            text: "Start Free Trial",
+            href: "/pricing",
+            variant: "primary"
+          },
+          {
+            text: "Schedule Demo",
+            href: "/contact",
+            variant: "secondary"
+          }
+        ]}
+      />
+    </div>
 
-    <!-- Features Section -->
+    <!-- Features -->
     <Features
       title="Built for Enterprise Scale"
-      description="Advanced AI technology meets enterprise security requirements. Process thousands of documents with unprecedented accuracy and speed."
-      category="cloud"
-    />
-
-    <!-- Benefits Section -->
-    <ProductBenefits
-      title="Why Choose Nvisy Cloud"
-      description="Experience the benefits of a fully managed, globally distributed document redaction platform built for modern enterprises."
-      benefits={[
-        {
-          title: "Faster Time to Market",
-          description: "Deploy in minutes, not months. No infrastructure setup, no complex configurations.",
-          icon: "zap"
-        },
-        {
-          title: "Cost Effective",
-          description: "Pay only for what you use. No upfront costs, no maintenance fees, no infrastructure investments."
-        },
-        {
-          title: "Enterprise Security",
-          description: "Bank-level security with comprehensive compliance certifications and audit trails.",
-          icon: "lock"
-        },
-        {
-          title: "Always Up to Date",
-          description: "Automatic updates with the latest AI models, security patches, and features.",
-          icon: "settings"
-        }
-      ]}
-      visualContent={{
-        title: "Ready in 5 Minutes",
-        description: "Get started instantly with our cloud platform. No setup, no configuration, no waiting.",
-        steps: [
-          { text: "Sign up with email" },
-          { text: "Upload your first document" },
-          { text: "Get redacted results instantly" }
-        ]
-      }}
-    />
-
-    <!-- Customers/Testimonials Section -->
-    <Testimonials
-      title="Trusted by Enterprise Leaders"
-      description="See what our customers say about transforming their document security workflows with Nvisy Cloud."
-      backgroundColor="white"
-      category="cloud"
+      description="Advanced AI technology meets enterprise security requirements. Process thousands of documents with unprecedented accuracy."
+      category="general"
       featured={true}
     />
 
-    <!-- Comparisons Section -->
-    <ProductComparison
-      title="How Nvisy Cloud Compares"
-      description="See how Nvisy Cloud stacks up against other document redaction solutions in the market."
-      mainProduct={{
-        name: "Nvisy Cloud",
-        description: "AI-Powered Cloud Platform",
-        features: [
-          { name: "99.9% AI accuracy", status: "check" },
-          { name: "5-minute setup", status: "check" },
-          { name: "Global scalability", status: "check" },
-          { name: "Zero maintenance", status: "check" },
-          { name: "SOC 2 Type II", status: "check" }
-        ]
-      }}
-      competitors={[
-        {
-          name: "Traditional Tools",
-          description: "Manual/Legacy Solutions",
-          features: [
-            { name: "Manual, error-prone", status: "x" },
-            { name: "Weeks to deploy", status: "x" },
-            { name: "Limited scalability", status: "x" },
-            { name: "High maintenance", status: "x" },
-            { name: "Limited compliance", status: "x" }
-          ]
-        },
-        {
-          name: "Other Cloud Tools",
-          description: "Generic Solutions",
-          features: [
-            { name: "Basic accuracy", status: "warning" },
-            { name: "Cloud deployment", status: "check" },
-            { name: "Limited scalability", status: "warning" },
-            { name: "Some maintenance", status: "warning" },
-            { name: "Basic compliance", status: "warning" }
-          ]
-        }
-      ]}
+    <!-- How It Works -->
+    <Review
+      title="How It Works"
+      description="Simple, secure workflow from upload to download. AI-powered redaction in four easy steps."
     />
 
-    <!-- Simple Pricing Preview -->
-    <ProductPricing
-      title="Simple, Transparent Pricing"
-      description="Start free and scale as you grow. No hidden fees, no long-term contracts."
-      tiers={[
+    <!-- Security -->
+    <Security
+      title="Enterprise-Grade Security"
+      description="Built with compliance and security at the core. GDPR & CCPA compliant with SOC II and HIPAA certifications in progress."
+    />
+
+    <!-- Connect/Integration -->
+    <Connect
+      title="Seamless Integration"
+      description="Powerful APIs and comprehensive SDKs make it easy to integrate document redaction into your applications."
+    />
+
+    <!-- SDK Examples -->
+    <SDKExamples
+      title="Developer-Friendly SDKs"
+      description="Get started in minutes with our TypeScript and Python SDKs. Built for developers, with full type safety and comprehensive documentation."
+    />
+
+    <!-- Premium -->
+    <Premium
+      title="Enterprise Solutions"
+      description="Need more control? We offer on-premise deployment, source code access, and custom enterprise pricing for organizations with specific requirements."
+    />
+
+    <!-- CTA Section -->
+    <CTA
+      title="Ready to Get Started?"
+      description="Deploy AI-powered document redaction in minutes. Start with 100 free pages per month."
+      buttons={[
         {
-          name: "100 pages/month",
-          price: "Free",
-          description: "Perfect for getting started"
-        },
-        {
-          name: "per additional page",
-          price: "$0.10",
-          description: "Pay as you scale"
-        },
-        {
-          name: "enterprise pricing",
-          price: "Custom",
-          description: "Volume discounts available"
-        }
-      ]}
-      ctas={[
-        {
-          text: "View Full Pricing",
+          text: "Start Free Trial",
           href: "/pricing",
           variant: "primary"
         },
         {
-          text: "Start Free Trial",
-          href: "/pricing",
+          text: "Schedule Demo",
+          href: "/contact",
           variant: "secondary"
         }
       ]}
-      compact={true}
+      background="solid"
     />
-
-    <!-- CTA Section -->
-    <CTA />
   </div>
 </Layout>

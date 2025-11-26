@@ -5,13 +5,14 @@ import {
 	NavigationMenuLink,
 	NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { ChevronRight } from "lucide-vue-next";
 import { solutions } from "./desktop-nav-data";
 </script>
 
 <template>
   <NavigationMenuItem>
     <NavigationMenuTrigger
-      class="group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium text-gray-600 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white focus:bg-gray-50 dark:focus:bg-neutral-800 focus:text-gray-900 dark:focus:text-white disabled:pointer-events-none disabled:opacity-50 data-[state=open]:bg-gray-50 dark:data-[state=open]:bg-neutral-800 data-[state=open]:text-gray-900 dark:data-[state=open]:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-300 dark:focus-visible:ring-neutral-600 transition-all duration-200"
+      class="group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-base font-light text-gray-600 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white focus:bg-gray-50 dark:focus:bg-neutral-800 focus:text-gray-900 dark:focus:text-white disabled:pointer-events-none disabled:opacity-50 data-[state=open]:bg-gray-50 dark:data-[state=open]:bg-neutral-800 data-[state=open]:text-gray-900 dark:data-[state=open]:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-300 dark:focus-visible:ring-neutral-600 transition-all duration-200"
     >
       Solutions
     </NavigationMenuTrigger>
@@ -25,7 +26,7 @@ import { solutions } from "./desktop-nav-data";
             <!-- By Use Case Section -->
             <div>
               <h3
-                class="font-semibold text-gray-500 dark:text-neutral-400 mb-3 text-xs uppercase tracking-wide"
+                class="font-light text-gray-500 dark:text-neutral-400 mb-3 text-xs tracking-wide"
               >
                 By Use Case
               </h3>
@@ -43,7 +44,7 @@ import { solutions } from "./desktop-nav-data";
                       <component :is="solution.icon" class="w-5 h-5" />
                     </span>
                     <div class="flex-1">
-                      <div class="text-sm font-medium leading-none">
+                      <div class="text-sm font-light leading-none">
                         {{ solution.title }}
                       </div>
                     </div>
@@ -55,7 +56,7 @@ import { solutions } from "./desktop-nav-data";
             <!-- By Stage Section -->
             <div>
               <h3
-                class="font-semibold text-gray-500 dark:text-neutral-400 mb-3 text-xs uppercase tracking-wide"
+                class="font-light text-gray-500 dark:text-neutral-400 mb-3 text-xs tracking-wide"
               >
                 By Stage
               </h3>
@@ -73,7 +74,7 @@ import { solutions } from "./desktop-nav-data";
                       <component :is="solution.icon" class="w-5 h-5" />
                     </span>
                     <div class="flex-1">
-                      <div class="text-sm font-medium leading-none">
+                      <div class="text-sm font-light leading-none">
                         {{ solution.title }}
                       </div>
                     </div>
@@ -89,23 +90,11 @@ import { solutions } from "./desktop-nav-data";
           <!-- Integrations Header -->
           <NavigationMenuLink
             href="/integrations"
-            class="inline-flex items-center font-semibold text-gray-500 dark:text-neutral-400 mb-2 text-xs uppercase tracking-wide transition-colors hover:text-gray-900 dark:hover:text-white focus:text-gray-900 dark:focus:text-white"
+            class="inline-flex items-center font-light text-gray-500 dark:text-neutral-400 mb-2 text-xs tracking-wide transition-colors hover:text-gray-900 dark:hover:text-white focus:text-gray-900 dark:focus:text-white"
           >
-            <span class="flex">
+            <span class="flex items-center">
               Integrations
-              <svg
-                class="h-4 w-4 ml-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
+              <ChevronRight class="h-4 w-4 ml-1" />
             </span>
           </NavigationMenuLink>
 
@@ -122,7 +111,7 @@ import { solutions } from "./desktop-nav-data";
                 class="w-6 h-6 text-gray-400 dark:text-neutral-500 mb-1.5"
               />
               <span
-                class="text-xs font-medium text-gray-700 dark:text-neutral-300 text-center"
+                class="text-xs font-light text-gray-700 dark:text-neutral-300 text-center"
               >
                 {{ integration.title }}
               </span>

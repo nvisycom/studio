@@ -1,7 +1,8 @@
 ---
 import { Layout } from "@/layouts";
-import { IntegrationsGrid, DeveloperTools } from "@/sections/integrations";
-import { CTA, Hero } from "@/sections";
+import { CTA, Hero, IntegrationsGrid, DeveloperTools } from "@/components";
+import Connect from "@/components/sections/Connect.astro";
+import SDKExamples from "@/components/sections/SDKExamples.astro";
 import { getCollection } from "astro:content";
 
 // Get all integrations
@@ -26,8 +27,6 @@ const developerIntegrations = integrations.filter(
       title="Powerful Integrations"
       description="Connect seamlessly with your existing tools and workflows. Our comprehensive integration ecosystem ensures secure document redaction fits naturally into your processes."
       background="gradient"
-      fontSize="xl"
-      padding="lg"
       buttons={[
         {
           text: "Request Integration",
@@ -46,15 +45,20 @@ const developerIntegrations = integrations.filter(
     <div class="bg-white dark:bg-black">
       <IntegrationsGrid integrations={regularIntegrations} client:load />
 
+      <!-- Connect -->
+      <Connect />
+
       <!-- Developer Tools -->
       <DeveloperTools integrations={developerIntegrations} client:load />
+
+      <!-- SDK Examples -->
+      <SDKExamples />
 
       <!-- Custom Integration CTA -->
       <CTA
         title="Need a Custom Integration?"
         description="Don't see your tool listed? Our team can build custom integrations to fit your specific workflow requirements. Get in touch to discuss your needs."
         background="none"
-        padding="md"
         buttons={[
           {
             text: "Contact Sales",
@@ -63,8 +67,9 @@ const developerIntegrations = integrations.filter(
           },
           {
             text: "View Documentation",
-            href: "#",
-            variant: "secondary"
+            href: "https://docs.nvisy.com",
+            variant: "secondary",
+            external: true
           }
         ]}
       />

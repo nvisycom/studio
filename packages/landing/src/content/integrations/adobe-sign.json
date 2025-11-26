@@ -1,0 +1,9 @@
+{
+	"icon": "adobe",
+	"isBrand": true,
+	"version": "v1.0",
+	"status": "Planned",
+	"title": "Adobe Sign",
+	"category": "Pre/Post Signing",
+	"description": "Seamlessly redact documents before and after Adobe Sign workflows, protecting sensitive data while maintaining document integrity for digital signatures."
+}

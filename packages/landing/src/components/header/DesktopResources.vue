@@ -6,13 +6,13 @@ import {
 	NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { resources } from "./desktop-nav-data";
-import { ExternalLink } from "lucide-vue-next";
+import { ExternalLink, ChevronRight } from "lucide-vue-next";
 </script>
 
 <template>
   <NavigationMenuItem>
     <NavigationMenuTrigger
-      class="group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium text-gray-600 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white focus:bg-gray-50 dark:focus:bg-neutral-800 focus:text-gray-900 dark:focus:text-white disabled:pointer-events-none disabled:opacity-50 data-[state=open]:bg-gray-50 dark:data-[state=open]:bg-neutral-800 data-[state=open]:text-gray-900 dark:data-[state=open]:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-300 dark:focus-visible:ring-neutral-600 transition-all duration-200"
+      class="group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-base font-light text-gray-600 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white focus:bg-gray-50 dark:focus:bg-neutral-800 focus:text-gray-900 dark:focus:text-white disabled:pointer-events-none disabled:opacity-50 data-[state=open]:bg-gray-50 dark:data-[state=open]:bg-neutral-800 data-[state=open]:text-gray-900 dark:data-[state=open]:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-300 dark:focus-visible:ring-neutral-600 transition-all duration-200"
     >
       Resources
     </NavigationMenuTrigger>
@@ -26,7 +26,7 @@ import { ExternalLink } from "lucide-vue-next";
             <!-- Developers Section -->
             <div>
               <h3
-                class="font-semibold text-gray-500 dark:text-neutral-400 mb-3 text-xs uppercase tracking-wide"
+                class="font-light text-gray-500 dark:text-neutral-400 mb-3 text-xs tracking-wide"
               >
                 Developers
               </h3>
@@ -49,7 +49,7 @@ import { ExternalLink } from "lucide-vue-next";
                     </span>
                     <div class="flex-1">
                       <div
-                        class="text-sm font-medium leading-none flex items-center gap-1.5"
+                        class="text-sm font-light leading-none flex items-center gap-1.5"
                       >
                         {{ developer.title }}
                         <ExternalLink
@@ -66,7 +66,7 @@ import { ExternalLink } from "lucide-vue-next";
             <!-- Support Section -->
             <div>
               <h3
-                class="font-semibold text-gray-500 dark:text-neutral-400 mb-3 text-xs uppercase tracking-wide"
+                class="font-light text-gray-500 dark:text-neutral-400 mb-3 text-xs tracking-wide"
               >
                 Support
               </h3>
@@ -87,7 +87,7 @@ import { ExternalLink } from "lucide-vue-next";
                     </span>
                     <div class="flex-1">
                       <div
-                        class="text-sm font-medium leading-none flex items-center gap-1.5"
+                        class="text-sm font-light leading-none flex items-center gap-1.5"
                       >
                         {{ support.title }}
                         <ExternalLink
@@ -108,23 +108,11 @@ import { ExternalLink } from "lucide-vue-next";
           <!-- Blog Header -->
           <NavigationMenuLink
             href="/blog"
-            class="inline-flex items-center font-semibold text-gray-500 dark:text-neutral-400 mb-2 text-xs uppercase tracking-wide transition-colors hover:text-gray-900 dark:hover:text-white focus:text-gray-900 dark:focus:text-white"
+            class="inline-flex items-center font-light text-gray-500 dark:text-neutral-400 mb-2 text-xs tracking-wide transition-colors hover:text-gray-900 dark:hover:text-white focus:text-gray-900 dark:focus:text-white"
           >
-            <span class="flex">
+            <span class="flex items-center">
               Blog
-              <svg
-                class="h-4 w-4 ml-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
+              <ChevronRight class="h-4 w-4 ml-1" />
             </span>
           </NavigationMenuLink>
 
@@ -136,11 +124,11 @@ import { ExternalLink } from "lucide-vue-next";
               :href="post.href"
               class="block select-none rounded-md leading-none no-underline outline-none transition-colors hover:bg-gray-50 dark:hover:bg-neutral-800/30 hover:text-gray-900 dark:hover:text-white focus:bg-gray-50 dark:focus:bg-neutral-800/30 focus:text-gray-900 dark:focus:text-white"
             >
-              <div class="text-sm font-medium leading-tight mb-2">
+              <div class="text-sm font-light leading-tight mb-2">
                 {{ post.title }}
               </div>
               <p
-                class="text-xs leading-snug text-gray-500 dark:text-neutral-400"
+                class="text-xs font-light leading-snug text-gray-500 dark:text-neutral-400"
               >
                 {{ post.excerpt }}
               </p>

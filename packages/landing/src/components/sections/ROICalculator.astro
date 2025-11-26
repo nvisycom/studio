@@ -1,0 +1,28 @@
+---
+import ROICalculatorForm from "@/components/features/ROICalculatorForm.vue";
+
+export interface Props {
+	title?: string;
+	description?: string;
+}
+
+const {
+	title = "Calculate Your ROI",
+	description = "See how much time and money you can save by automating document redaction with Nvisy. Our enterprise customers typically see ROI within 3-6 months.",
+} = Astro.props;
+---
+
+<section class="py-12 md:py-20 px-4 bg-white dark:bg-black">
+  <div class="container mx-auto max-w-5xl">
+    <div class="text-center mb-12 md:mb-16">
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">
+        {title}
+      </h2>
+      <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 max-w-3xl mx-auto leading-relaxed">
+        {description}
+      </p>
+    </div>
+
+    <ROICalculatorForm client:load />
+  </div>
+</section>

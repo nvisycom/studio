@@ -1,0 +1,31 @@
+---
+import ClientsGrid from "@/components/features/clients/ClientsGrid.vue";
+
+export interface Props {
+	title?: string;
+	subtitle?: string;
+}
+
+const {
+	title = "Trusted by Industry Leaders",
+	subtitle = "Join hundreds of companies protecting their sensitive data",
+} = Astro.props;
+---
+
+<section class="py-12 md:py-16 bg-white dark:bg-black">
+  <div class="container mx-auto max-w-7xl px-4">
+    <div class="text-center mb-8 md:mb-12 px-4 md:px-0">
+      <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 dark:text-white mb-3">
+        {title}
+      </h2>
+      {subtitle && (
+        <p class="text-base md:text-lg text-gray-600 dark:text-neutral-400">
+          {subtitle}
+        </p>
+      )}
+    </div>
+
+    <!-- Client Avatars Grid -->
+    <ClientsGrid client:load />
+  </div>
+</section>

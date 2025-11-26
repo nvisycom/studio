@@ -1,41 +1,7 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero } from "@/sections";
-import { Briefcase, HeadphonesIcon, Mail, Rocket } from "lucide-vue-next";
-import { Inquery } from "@/sections/contact";
-
-const contactMethods = [
-	{
-		title: "Sales",
-		description: "Interested in our platform?",
-		value: "sales@nvisy.com",
-		href: "mailto:sales@nvisy.com",
-		icon: Briefcase,
-	},
-	{
-		title: "Support",
-		description: "Need help with your account?",
-		value: "support@nvisy.com",
-		href: "mailto:support@nvisy.com",
-		icon: HeadphonesIcon,
-	},
-	{
-		title: "General",
-		description: "General inquiries",
-		value: "hello@nvisy.com",
-		href: "mailto:hello@nvisy.com",
-		icon: Mail,
-	},
-	{
-		title: "Careers",
-		description: "Join our team",
-		value: "careers@nvisy.com",
-		href: "mailto:careers@nvisy.com",
-		icon: Rocket,
-	},
-];
+import { Hero, Press, Inquery } from "@/components";
 ---
-
 <Layout
   title="Contact"
   description="Get in touch with Nvisy. Contact our team for sales inquiries, support, or general questions about our document redaction platform."
@@ -46,61 +12,51 @@ const contactMethods = [
       title="Get in Touch"
       description="Ready to protect your sensitive documents? Have questions about our platform? We'll respond within 24 hours."
       background="gradient"
-      fontSize="xl"
-      padding="xl"
       buttons={[]}
     />
 
-    <!-- Contact Methods -->
+    <!-- Contact Content -->
     <div class="container mx-auto px-4 py-16">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            How Can We Help?
-          </h2>
-          <p class="text-lg text-gray-600 dark:text-neutral-400">
-            Choose the best way to reach us based on your needs.
-          </p>
-        </div>
+      <div class="max-w-7xl mx-auto">
+        <!-- Two Column Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          <!-- Left Column - Contact Form -->
+          <div>
+            <Inquery client:load />
+          </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
-          {contactMethods.map(method => (
-            <a
-              href={method.href}
-              class="group relative border border-gray-200 dark:border-neutral-800 rounded-xl p-6 text-center hover:shadow-lg hover:border-gray-300 dark:hover:border-neutral-700 transition-all duration-300 bg-white dark:bg-neutral-950"
-            >
-              <div class="mb-4 flex justify-center">
-                <div class="p-3 rounded-lg bg-gray-100 dark:bg-neutral-900 group-hover:bg-gray-200 dark:group-hover:bg-neutral-800 transition-colors">
-                  <method.icon class="w-6 h-6 text-gray-700 dark:text-neutral-300" />
-                </div>
+          <!-- Right Column - Brand Carousel -->
+          <div class="lg:pt-12">
+            <div class="flex flex-col h-full min-h-[600px]">
+              <!-- Text Content -->
+              <div>
+                <p class="text-lg text-gray-600 dark:text-neutral-400 mb-4">
+                  Whether you're looking to secure sensitive documents, need technical support, or want to learn more about our enterprise solutions, our team is ready to assist you.
+                </p>
               </div>
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                {method.title}
-              </h3>
-              <p class="text-sm text-gray-600 dark:text-neutral-400 mb-3">
-                {method.description}
-              </p>
-              <p class="text-sm font-medium text-gray-700 dark:text-neutral-300 group-hover:text-black dark:group-hover:text-white transition-colors">
-                {method.value}
-              </p>
-            </a>
-          ))}
-        </div>
 
-        <!-- Main Content -->
-        <div class="max-w-3xl mx-auto">
-          <!-- Contact Form -->
-          <Inquery client:load />
+              <!-- Brand Carousel -->
+              <div class="flex items-center my-8">
+                <Press
+                  title="Trusted by Industry Leaders"
+                  subtitle="Companies worldwide rely on our platform"
+                />
+              </div>
 
-          <!-- Additional Info -->
-          <div class="mt-12 text-center">
-            <p class="text-gray-600 dark:text-neutral-400">
-              Need immediate assistance? Check out our{" "}
-              <a href="/docs" class="text-gray-900 dark:text-white font-medium hover:underline">
-                documentation
-              </a>{" "}
-              or reach out via email directly.
-            </p>
+              <!-- Additional Info at Bottom -->
+              <div class="mt-8 text-center">
+                <p class="text-gray-600 dark:text-neutral-400">
+                  Need immediate assistance?{" "}
+                  <a href="/docs" class="text-gray-900 dark:text-white font-medium hover:underline">
+                    Check out our documentation
+                  </a>{" "}
+                  or{" "}
+                  <a href="mailto:hello@nvisy.com" class="text-gray-900 dark:text-white font-medium hover:underline">
+                    reach out via email directly.
+                  </a>
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

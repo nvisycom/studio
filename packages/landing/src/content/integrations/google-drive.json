@@ -4,6 +4,6 @@
 	"version": "v1.0",
 	"status": "Planned",
 	"title": "Google Drive",
-	"category": "Cloud Storage",
-	"description": "Seamless integration with Google Drive for automated document redaction with real-time synchronization and collaborative workspace protection."
+	"category": "File Import/Export",
+	"description": "Import and export documents directly from Google Drive for seamless redaction workflows with automatic synchronization and secure file handling."
 }

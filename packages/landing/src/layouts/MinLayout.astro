@@ -5,22 +5,46 @@ import {
 	BUILD_VERSION,
 } from "@nvisy/config";
 
-import "@/styles/index.css";
-import "@/styles/fonts.css";
-import "@/styles/block.css";
+import "@/assets/styles/blocks.css";
+import "@/assets/styles/fonts.css";
+import "@/assets/styles/tailwind.css";
 
-import Umami from "@/layouts/Umami.astro";
-
+/**
+ * Props interface for the MinLayout component
+ *
+ * This is the minimal layout that provides the HTML document structure,
+ * meta tags, SEO optimization, and basic page scaffolding without
+ * header/footer components.
+ */
 export interface Props {
+	/** Page title (will be combined with site title if withDefaultTitle is true) */
 	title?: string | undefined;
+
+	/** Meta description for SEO and social media sharing */
 	description?: string | undefined;
+
+	/** Build version to display in meta tags */
 	version?: string | undefined;
+
+	/** Whether to append the default site title to the page title */
 	withDefaultTitle?: boolean | undefined;
+
+	/** Open Graph image URL for social media sharing */
 	image?: string | undefined;
+
+	/** Whether this page represents an article (affects structured data and meta tags) */
 	article?: boolean | undefined;
+
+	/** Article published timestamp in ISO 8601 format (for article structured data) */
 	publishedTime?: string | undefined;
+
+	/** Article modified timestamp in ISO 8601 format (for article structured data) */
 	modifiedTime?: string | undefined;
+
+	/** Article author name (for article structured data) */
 	author?: string | undefined;
+
+	/** SEO keywords as comma-separated string */
 	keywords?: string | undefined;
 }
 
@@ -132,7 +156,6 @@ const structuredData = {
     <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)}></script>
 
     <!-- Analytics -->
-    <Umami />
     <slot name="analytics"/>
 </head>
 <body class="transition-all duration-75 bg-white dark:bg-black antialiased">
@@ -145,6 +168,9 @@ const structuredData = {
     </a>
 
     <slot name="content"/>
+
+    <!-- Compliance Components -->
+    <slot name="compliance"/>
 
     <!-- Service Worker Registration -->
     <script is:inline>

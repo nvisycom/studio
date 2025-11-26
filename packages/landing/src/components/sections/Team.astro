@@ -1,0 +1,44 @@
+---
+import { Heart } from "lucide-vue-next";
+
+export interface Props {
+	title?: string;
+	description?: string;
+}
+
+const {
+	title = "Built by a Focused Team",
+	description = "Nvisy is a dedicated 2-4 person startup focused exclusively on document redaction and data anonymization. Our small, expert team ensures rapid development, direct communication, and solutions tailored to your specific needs. We understand the challenges of building secure products because we're building alongside you.",
+} = Astro.props;
+---
+
+<section class="py-12 md:py-20 bg-white dark:bg-black">
+  <div class="container mx-auto px-4">
+    <div class="max-w-4xl mx-auto text-center">
+      <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-8">
+        <Heart class="w-8 h-8 text-white" />
+      </div>
+      <h2 class="text-3xl md:text-4xl font-light text-neutral-900 dark:text-white mb-8">
+        {title}
+      </h2>
+      <p class="text-lg text-neutral-600 dark:text-neutral-300 mb-12">
+        {description}
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-neutral-900 dark:text-white mb-2">100%</div>
+          <div class="text-neutral-600 dark:text-neutral-400">Focus on Document Security</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-neutral-900 dark:text-white mb-2">Direct</div>
+          <div class="text-neutral-600 dark:text-neutral-400">Access to Founders</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-neutral-900 dark:text-white mb-2">Rapid</div>
+          <div class="text-neutral-600 dark:text-neutral-400">Feature Development</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

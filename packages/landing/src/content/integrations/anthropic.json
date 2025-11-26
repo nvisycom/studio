@@ -1,0 +1,9 @@
+{
+	"icon": "sparkles",
+	"isBrand": false,
+	"version": "v1.0",
+	"status": "Planned",
+	"title": "Anthropic",
+	"category": "Contextual Redaction",
+	"description": "Use Claude AI for advanced contextual redaction with deep understanding of document nuances, ensuring accurate protection of sensitive information."
+}

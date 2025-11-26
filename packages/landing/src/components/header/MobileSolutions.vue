@@ -14,7 +14,7 @@ const toggle = () => {
   <div class="px-2">
     <button
       @click="toggle"
-      class="flex items-center justify-between w-full text-gray-900 dark:text-white font-medium text-base uppercase tracking-wide transition-all duration-300 py-2"
+      class="flex items-center justify-between w-full text-gray-900 dark:text-white font-light text-base tracking-wide transition-all duration-300 py-2 uppercase"
     >
       <span>Solutions</span>
       <ChevronDown

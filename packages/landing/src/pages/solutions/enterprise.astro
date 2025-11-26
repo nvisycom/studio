@@ -1,253 +1,29 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, Features, CTA, CompanyStats } from "@/sections";
-import { Check } from "lucide-vue-next";
+import {
+	Hero,
+	CTA,
+	SocialProof,
+	Testimonials,
+	FAQ,
+	Premium,
+	ROICalculator,
+} from "@/components";
+import Connect from "@/components/sections/Connect.astro";
+import SDKExamples from "@/components/sections/SDKExamples.astro";
 ---
 
-<Layout title="Enterprise Solutions" description="Document redaction solutions for larger organizations. Security-focused features and dedicated support for teams that need reliable data protection.">
+<Layout
+  title="Enterprise"
+  description="Enterprise-grade document redaction and anonymization platform. GDPR & CCPA compliant with SOC II and HIPAA certification in progress. Special pricing and on-premise deployment available."
+>
   <div class="bg-white dark:bg-black min-h-screen">
 
     <!-- Hero Section -->
     <Hero
-      title="Enterprise Document Security"
-      description="Protect sensitive information across your organization with our growing document redaction platform. Security-focused features and dedicated support built for larger teams."
+      title="Enterprise Document Redaction"
+      description="Secure, compliant document redaction at enterprise scale. GDPR & CCPA compliant platform with SOC II and HIPAA certifications in progress. Built for organizations that need reliable data protection with enterprise-grade security."
       background="gradient"
-      fontSize="xl"
-      padding="xl"
-      buttons={[
-        {
-          text: "Request Demo",
-          href: "/contact",
-          variant: "primary"
-        },
-        {
-          text: "View Pricing",
-          href: "/pricing",
-          variant: "secondary"
-        }
-      ]}
-      stats={[
-        {
-          value: "Growing",
-          label: "Platform"
-        },
-        {
-          value: "Security",
-          label: "Focused"
-        },
-        {
-          value: "Dedicated",
-          label: "Support"
-        }
-      ]}
-    />
-
-    <!-- Company Stats -->
-    <CompanyStats backgroundColor="white" />
-
-    <!-- Key Features -->
-    <Features
-      title="Built for Enterprise Requirements"
-      description="Everything your organization needs to implement document redaction at scale, with the security standards and support that enterprise teams require."
-      category="enterprise"
-    />
-
-    <!-- Implementation Process -->
-    <div class="bg-neutral-50 dark:bg-neutral-950 py-20">
-      <div class="container mx-auto px-4">
-        <div class="max-w-5xl mx-auto">
-          <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              Enterprise Implementation Process
-            </h2>
-            <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-2xl mx-auto">
-              Our proven implementation methodology ensures successful deployment
-              with minimal disruption to your existing workflows.
-            </p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div class="text-center">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
-                <span class="text-white dark:text-black font-bold text-xl">1</span>
-              </div>
-              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Assessment</h3>
-              <p class="text-gray-600 dark:text-neutral-300 text-sm">
-                Comprehensive security and requirements assessment with your team.
-              </p>
-            </div>
-
-            <div class="text-center">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
-                <span class="text-white dark:text-black font-bold text-xl">2</span>
-              </div>
-              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Planning</h3>
-              <p class="text-gray-600 dark:text-neutral-300 text-sm">
-                Custom deployment plan and architecture design for your environment.
-              </p>
-            </div>
-
-            <div class="text-center">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
-                <span class="text-white dark:text-black font-bold text-xl">3</span>
-              </div>
-              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Deployment</h3>
-              <p class="text-gray-600 dark:text-neutral-300 text-sm">
-                Staged rollout with testing, validation, and team training.
-              </p>
-            </div>
-
-            <div class="text-center">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
-                <span class="text-white dark:text-black font-bold text-xl">4</span>
-              </div>
-              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Support</h3>
-              <p class="text-gray-600 dark:text-neutral-300 text-sm">
-                Ongoing optimization, monitoring, and dedicated support.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Enterprise Benefits -->
-    <div class="container mx-auto px-4 py-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
-            Why Organizations Choose Nvisy
-          </h2>
-          <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-            Proven results that help drive business value and operational efficiency
-            for growing organizations.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
-            <div class="text-4xl font-bold text-neutral-900 dark:text-white mb-2">90%+</div>
-            <div class="text-neutral-600 dark:text-neutral-400 mb-4 font-medium">Faster Processing</div>
-            <p class="text-neutral-600 dark:text-neutral-300 text-sm">
-              Automate manual redaction processes and significantly reduce document review time.
-            </p>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
-            <div class="text-4xl font-bold text-neutral-900 dark:text-white mb-2">Reliable</div>
-            <div class="text-neutral-600 dark:text-neutral-400 mb-4 font-medium">Detection</div>
-            <p class="text-neutral-600 dark:text-neutral-300 text-sm">
-              Consistent, reliable redaction across all document types with continuous improvements.
-            </p>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
-            <div class="text-4xl font-bold text-neutral-900 dark:text-white mb-2">Significant</div>
-            <div class="text-neutral-600 dark:text-neutral-400 mb-4 font-medium">Cost Savings</div>
-            <p class="text-neutral-600 dark:text-neutral-300 text-sm">
-              Reduce operational costs through automation and improved efficiency.
-            </p>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
-            <div class="text-4xl font-bold text-neutral-900 dark:text-white mb-2">Dedicated</div>
-            <div class="text-neutral-600 dark:text-neutral-400 mb-4 font-medium">Support Team</div>
-            <p class="text-neutral-600 dark:text-neutral-300 text-sm">
-              Dedicated support team focused on your success and quick issue resolution.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Security & Compliance -->
-    <div class="bg-neutral-50 dark:bg-neutral-950 py-20">
-      <div class="container mx-auto px-4">
-        <div class="max-w-6xl mx-auto">
-          <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
-              Enterprise-Grade Security
-            </h2>
-            <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-              Built to meet stringent security requirements with a focus on data protection
-              and compliance readiness for large organizations.
-            </p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
-              <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Security Controls</h3>
-              <ul class="space-y-3">
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">End-to-end encryption</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Multi-factor authentication</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Security-first architecture</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Comprehensive audit trails</span>
-                </li>
-              </ul>
-            </div>
-
-            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
-              <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Compliance Ready</h3>
-              <ul class="space-y-3">
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">GDPR considerations</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">HIPAA-focused features</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Data residency controls</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Audit trail capabilities</span>
-                </li>
-              </ul>
-            </div>
-
-            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
-              <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Enterprise Features</h3>
-              <ul class="space-y-3">
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">SSO integration support</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Role-based access control</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Flexible deployment options</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Dedicated account management</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <CTA
-      title="Ready for Enterprise-Grade Document Security?"
-      description="Let's discuss how our document redaction platform can meet your organization's specific needs and security requirements."
       buttons={[
         {
           text: "Schedule Demo",
@@ -255,8 +31,62 @@ import { Check } from "lucide-vue-next";
           variant: "primary"
         },
         {
-          text: "View Pricing",
-          href: "/pricing",
+          text: "View Documentation",
+          href: "https://docs.nvisy.com",
+          variant: "secondary"
+        }
+      ]}
+    />
+
+    <!-- Social Proof -->
+    <SocialProof
+      title="Trusted by Enterprise Organizations"
+      subtitle="Leading enterprises trust Nvisy for secure, compliant document redaction at scale"
+    />
+
+    <Premium/>
+
+    <!-- Connect/Integration -->
+    <Connect
+      title="Enterprise Integration"
+      description="Powerful APIs, comprehensive SDKs, and dedicated support for seamless integration into your enterprise infrastructure."
+    />
+
+    <!-- SDK Examples -->
+    <SDKExamples
+      title="Developer-Friendly SDKs"
+      description="Enterprise-ready SDKs with comprehensive documentation, type safety, and dedicated support."
+    />
+
+    <!-- ROI Calculator -->
+    <ROICalculator/>
+
+    <!-- Testimonials -->
+    <Testimonials
+      title="Trusted by Enterprises"
+      description="See how leading enterprises are securing their documents with Nvisy"
+    />
+
+    <!-- FAQ -->
+    <FAQ
+      title="Enterprise FAQs"
+      description="Common questions about enterprise document redaction and deployment"
+      category="general"
+      featured={true}
+    />
+
+    <CTA
+      title="Ready for Enterprise-Grade Document Security?"
+      description="Let's discuss your specific requirements, compliance needs, and how our platform can be tailored for your organization. Special enterprise pricing and on-premise deployment available."
+      buttons={[
+        {
+          text: "Schedule Enterprise Demo",
+          href: "/contact",
+          variant: "primary"
+        },
+        {
+          text: "View Documentation",
+          href: "https://docs.nvisy.com",
           variant: "secondary"
         }
       ]}

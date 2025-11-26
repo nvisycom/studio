@@ -1,43 +1,43 @@
 [
 	{
-		"title": "AI-Powered Detection",
-		"description": "Automatically detect and redact sensitive information like PII, PHI, and other confidential data across multiple document formats.",
+		"title": "State-of-the-Art AI Detection",
+		"description": "Powered by latest Claude and GPT models for unmatched accuracy. Automatically detect and redact {PII|Personally Identifiable Information - names, addresses, phone numbers, SSNs}, {PHI|Protected Health Information - medical records, diagnoses, treatment data}, and confidential data across all document formats.",
 		"icon": "zap",
 		"order": 1,
 		"featured": true
 	},
 	{
-		"title": "Developer Friendly",
-		"description": "RESTful APIs, comprehensive documentation, and SDKs that make integration straightforward for any development team.",
-		"icon": "code",
+		"title": "Enterprise Security & Compliance",
+		"description": "{AES-256|Advanced Encryption Standard with 256-bit keys} encryption, zero-trust architecture, and private processing. {GDPR|General Data Protection Regulation} compliant with SOC 2, ISO 27001, {HIPAA|Health Insurance Portability and Accountability Act}, and CCPA readiness.",
+		"icon": "shield-check",
 		"order": 2,
 		"featured": true
 	},
 	{
-		"title": "Security First",
-		"description": "Built with security best practices from the ground up. Your documents are processed securely and never stored longer than necessary.",
-		"icon": "lock",
+		"title": "Developer Friendly APIs",
+		"description": "{RESTful APIs|Representational State Transfer - web service architecture} with comprehensive documentation, TypeScript and Python {SDKs|Software Development Kits}. Integration takes minutes, not weeks.",
+		"icon": "code",
 		"order": 3,
 		"featured": true
 	},
 	{
-		"title": "Flexible Deployment",
-		"description": "Choose from cloud-hosted, on-premises, or hybrid deployment options to meet your organization's specific requirements.",
-		"icon": "server",
+		"title": "Seamless Integrations",
+		"description": "Connect with Google Drive, Dropbox, AWS S3, and popular platforms. Automate workflows with {webhooks|HTTP callbacks that trigger when events occur} and real-time processing.",
+		"icon": "link",
 		"order": 4,
 		"featured": true
 	},
 	{
-		"title": "Audit Ready",
-		"description": "Comprehensive logging and audit trails help you meet compliance requirements and maintain data governance standards.",
-		"icon": "clipboard-check",
+		"title": "Flexible Deployment Options",
+		"description": "Choose cloud-hosted, {on-premises|Software installed and run on your own servers}, or {hybrid deployment|Combination of cloud and on-premises infrastructure}. Works with both cloud APIs and self-hosted servers.",
+		"icon": "server",
 		"order": 5,
 		"featured": true
 	},
 	{
-		"title": "Growing Platform",
-		"description": "Continuously improving our redaction capabilities based on real customer feedback and emerging compliance needs.",
-		"icon": "trending-up",
+		"title": "Audit-Ready Compliance",
+		"description": "Comprehensive logging, {audit trails|Chronological record of system activities}, and detailed reporting. Meet compliance requirements with complete {data governance|Framework for managing data availability, usability, integrity and security}.",
+		"icon": "clipboard-check",
 		"order": 6,
 		"featured": true
 	}

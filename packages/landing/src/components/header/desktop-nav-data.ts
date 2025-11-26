@@ -1,43 +1,48 @@
 import type {
 	ProductSection,
-	SolutionSection,
 	ResourceSection,
+	SolutionSection,
 } from "./nav-types";
 import {
-	Server,
+	BookOpen,
+	Braces,
+	Building,
+	Building2,
 	Cloud,
 	Code,
-	Terminal,
-	Building2,
-	Landmark,
 	HeartPulse,
-	ShieldCheck,
-	Building,
-	Rocket,
-	BookOpen,
-	Megaphone,
-	Scale,
-	Plug,
-	Map as MapIcon,
-	Star,
 	HelpCircle,
-	Shield,
-	Mail,
+	Info,
+	Landmark,
+	Map as MapIcon,
+	Package,
+	Plug,
+	Rocket,
+	Scale,
+	Server,
+	ShieldCheck,
+	Terminal,
 } from "lucide-vue-next";
 
 export const products: ProductSection = {
 	platforms: [
 		{
-			title: "Nvisy Local",
-			href: "/products/local",
-			description: "On-premise security & control",
-			icon: Server,
-		},
-		{
 			title: "Nvisy Cloud",
 			href: "/products/cloud",
 			description: "Scalable cloud deployment",
 			icon: Cloud,
+		},
+		{
+			title: "Nvisy Server",
+			href: "/products/server",
+			description: "On-premise security & control",
+			icon: Server,
+		},
+		{
+			title: "Nvisy Desktop",
+			href: "/products/desktop",
+			description: "Cross-platform redaction UI",
+			icon: Terminal,
 		},
 	],
 	opensource: [
@@ -45,46 +50,27 @@ export const products: ProductSection = {
 			title: "Nvisy Runtime",
 			href: "https://github.com/nvisycom/run",
 			description: "Secure OCR runtime with redaction",
-			icon: Code,
+			icon: Package,
 			isExternal: true,
 		},
 		{
-			title: "Nvisy Terminal",
-			href: "https://github.com/nvisycom/core",
-			description: "Command-line redaction tool",
-			icon: Terminal,
+			title: "TypeScript SDK",
+			href: "https://github.com/nvisycom/sdk-ts",
+			description: "Modern JavaScript/TypeScript SDK",
+			icon: Braces,
+			isExternal: true,
+		},
+		{
+			title: "Python SDK",
+			href: "https://github.com/nvisycom/sdk-py",
+			description: "Native Python library",
+			icon: Code,
 			isExternal: true,
 		},
 	],
-	features: [
-		{
-			title: "Features",
-			href: "/features",
-			description: "Explore our powerful features",
-			icon: Star,
-		},
-	],
-	customers: [
-		{
-			title: "TechCorp: 95% Processing Time Reduction",
-			href: "/customers/techcorp-data-protection",
-			excerpt:
-				"How a Fortune 500 financial firm automated compliance workflows",
-		},
-		{
-			title: "HealthPlus: 100% HIPAA Compliance",
-			href: "/customers/healthplus-hipaa-compliance",
-			excerpt: "Protecting 50M+ patient records with on-premise deployment",
-		},
-	],
-	comparisons: [
-		{
-			title: "Nvisy Cloud vs Adobe Redaction",
-			href: "/comparisons/adobe",
-			description: "Compare with Adobe's document services",
-			icon: Code,
-		},
-	],
+	features: [],
+	customers: [],
+	comparisons: [],
 };
 
 export const solutions: SolutionSection = {
@@ -199,16 +185,16 @@ export const resources: ResourceSection = {
 			icon: HelpCircle,
 		},
 		{
+			title: "About",
+			href: "/about",
+			description: "Learn more about Nvisy",
+			icon: Info,
+		},
+		{
 			title: "Legal",
 			href: "/legal",
 			description: "Policies & legal documents",
 			icon: Scale,
-		},
-		{
-			title: "Newsroom",
-			href: "/newsroom",
-			description: "News & press releases",
-			icon: Megaphone,
 		},
 	],
 	blog: [

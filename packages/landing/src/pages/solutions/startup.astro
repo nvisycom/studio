@@ -1,243 +1,87 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, Features, CTA, CompanyStats } from "@/sections";
-import { Zap, DollarSign, ShieldCheck, TrendingUp } from "lucide-vue-next";
+import {
+	Hero,
+	CTA,
+	SocialProof,
+	Testimonials,
+	FAQ,
+	OpenSource,
+	Documentation,
+} from "@/components";
+import Connect from "@/components/sections/Connect.astro";
+import SDKExamples from "@/components/sections/SDKExamples.astro";
 ---
 
-<Layout title="Startup Solutions" description="Document redaction solutions built for startups. Quick setup, affordable pricing, and built to scale with your growing business.">
+<Layout
+  title="Startup"
+  description="Document redaction API built for startups. Easy integration, open source core services, TypeScript and Python SDKs. Free to start with special startup pricing."
+>
   <div class="bg-white dark:bg-black min-h-screen">
+
     <!-- Hero Section -->
     <Hero
-      title="Document Security That Scales"
-      description="Protect sensitive data from day one without breaking the bank. Built for fast-moving startups who need reliable document redaction at startup-friendly prices."
+      title="Document Redaction API for Startups"
+      description="Focus on building your product while we handle document security. Easy-to-use APIs, comprehensive SDKs, and open source core services. Built by founders, for founders."
       background="gradient"
-      fontSize="xl"
-      padding="xl"
       buttons={[
         {
-          text: "Start Free Trial",
+          text: "Start Free",
           href: "/pricing",
           variant: "primary"
         },
         {
-          text: "Talk to Founders",
-          href: "/contact",
+          text: "View API Docs",
+          href: "https://docs.nvisy.com",
           variant: "secondary"
         }
       ]}
-      stats={[
-        {
-          value: "5 min",
-          label: "Setup Time"
-        },
-        {
-          value: "$0",
-          label: "To Get Started"
-        },
-        {
-          value: "API",
-          label: "First"
-        }
-      ]}
     />
 
-    <!-- Company Stats -->
-    <CompanyStats backgroundColor="white" />
-
-    <!-- Why Startups Choose Section -->
-    <Features
-      title="Built for Startup Speed"
-      description="Everything you need to implement secure document redaction quickly, affordably, and with the flexibility to scale as you grow."
-      category="startup"
+    <!-- Social Proof -->
+    <SocialProof
+      title="Trusted by Startups Worldwide"
+      subtitle="Fast-growing startups trust Nvisy to protect their users' sensitive data"
     />
 
-    <!-- Getting Started Process -->
-    <div class="bg-gray-50 dark:bg-neutral-950 py-20">
-      <div class="container mx-auto px-4">
-        <div class="max-w-5xl mx-auto">
-          <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              From Idea to Production in Minutes
-            </h2>
-            <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-2xl mx-auto">
-              Our streamlined onboarding gets you from zero to redacting documents
-              faster than building your own solution.
-            </p>
-          </div>
+    <!-- Documentation -->
+    <Documentation />
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="text-center">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
-                <span class="text-white dark:text-black font-bold text-xl">1</span>
-              </div>
-              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Sign Up</h3>
-              <p class="text-gray-600 dark:text-neutral-300 text-sm">
-                Create your account with just your email. No credit card required for the free tier.
-              </p>
-            </div>
+    <!-- Open Source -->
+    <OpenSource
+      title="Built on Open Source"
+      description="Our core services and SDKs are open source. Contribute, validate our security approach, and build with confidence."
+    />
 
-            <div class="text-center">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
-                <span class="text-white dark:text-black font-bold text-xl">2</span>
-              </div>
-              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Integrate</h3>
-              <p class="text-gray-600 dark:text-neutral-300 text-sm">
-                Add our SDK to your app or make direct API calls. Full documentation and examples included.
-              </p>
-            </div>
+    <!-- Connect/Integration -->
+    <Connect
+      title="Integrate in Minutes"
+      description="Simple APIs and comprehensive SDKs make it easy to add document redaction to your product. Ship faster with ready-to-use tools."
+    />
 
-            <div class="text-center">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-full flex items-center justify-center mx-auto mb-6">
-                <span class="text-white dark:text-black font-bold text-xl">3</span>
-              </div>
-              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Scale</h3>
-              <p class="text-gray-600 dark:text-neutral-300 text-sm">
-                Start processing documents immediately. Scale automatically as your usage grows.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- SDK Examples -->
+    <SDKExamples
+      title="Simple, Powerful SDKs"
+      description="Get started in minutes with our easy-to-use SDKs. Built for developers, by developers."
+    />
 
-    <!-- Success Stories -->
-    <div class="container mx-auto px-4 py-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-            Trusted by Growing Startups
-          </h2>
-          <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-2xl mx-auto">
-            Real results that help startups move faster and build trust with customers.
-          </p>
-        </div>
+    <!-- Testimonials -->
+    <Testimonials
+      title="Trusted by Startups"
+      description="See how startups are building secure products faster with Nvisy"
+    />
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-          <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8 text-center">
-            <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">Fast</div>
-            <div class="text-gray-600 dark:text-neutral-400 mb-4 font-medium">Time to Market</div>
-            <p class="text-gray-600 dark:text-neutral-300 text-sm">
-              Get compliant document handling up and running quickly without building in-house.
-            </p>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8 text-center">
-            <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">Affordable</div>
-            <div class="text-gray-600 dark:text-neutral-400 mb-4 font-medium">Startup Pricing</div>
-            <p class="text-gray-600 dark:text-neutral-300 text-sm">
-              Significant savings compared to hiring a team to build document redaction from scratch.
-            </p>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8 text-center">
-            <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">Reliable</div>
-            <div class="text-gray-600 dark:text-neutral-400 mb-4 font-medium">Performance</div>
-            <p class="text-gray-600 dark:text-neutral-300 text-sm">
-              Built for reliability from day one without enterprise complexity.
-            </p>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8 text-center">
-            <div class="text-4xl font-bold text-gray-900 dark:text-white mb-2">Growing</div>
-            <div class="text-gray-600 dark:text-neutral-400 mb-4 font-medium">Community</div>
-            <p class="text-gray-600 dark:text-neutral-300 text-sm">
-              Active community and responsive support team to help you succeed.
-            </p>
-          </div>
-        </div>
-
-        <!-- Startup Specific Benefits -->
-        <div class="bg-gray-50 dark:bg-neutral-950 rounded-2xl p-8">
-          <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">Why Startups Choose Nvisy</h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="flex items-start gap-3">
-              <Zap class="w-6 h-6 text-gray-600 dark:text-neutral-400 mt-1 flex-shrink-0" />
-              <div>
-                <h4 class="font-semibold text-gray-900 dark:text-white mb-1">Ship Features, Not Infrastructure</h4>
-                <p class="text-sm text-gray-600 dark:text-neutral-300">Focus on your core product while we handle document security.</p>
-              </div>
-            </div>
-            <div class="flex items-start gap-3">
-              <DollarSign class="w-6 h-6 text-gray-600 dark:text-neutral-400 mt-1 flex-shrink-0" />
-              <div>
-                <h4 class="font-semibold text-gray-900 dark:text-white mb-1">Bootstrap-Friendly Pricing</h4>
-                <p class="text-sm text-gray-600 dark:text-neutral-300">Start free, scale affordably without breaking your runway.</p>
-              </div>
-            </div>
-            <div class="flex items-start gap-3">
-              <ShieldCheck class="w-6 h-6 text-gray-600 dark:text-neutral-400 mt-1 flex-shrink-0" />
-              <div>
-                <h4 class="font-semibold text-gray-900 dark:text-white mb-1">Investor-Ready Security</h4>
-                <p class="text-sm text-gray-600 dark:text-neutral-300">Impress investors with professional-grade data protection.</p>
-              </div>
-            </div>
-            <div class="flex items-start gap-3">
-              <TrendingUp class="w-6 h-6 text-gray-600 dark:text-neutral-400 mt-1 flex-shrink-0" />
-              <div>
-                <h4 class="font-semibold text-gray-900 dark:text-white mb-1">Scales With Your Growth</h4>
-                <p class="text-sm text-gray-600 dark:text-neutral-300">From prototype to production without changing providers.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Developer Experience -->
-    <div class="bg-gray-50 dark:bg-neutral-950 py-20">
-      <div class="container mx-auto px-4">
-        <div class="max-w-6xl mx-auto">
-          <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              Built for Developers
-            </h2>
-            <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-2xl mx-auto">
-              Everything you need to integrate document redaction into your application quickly and reliably.
-            </p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">RESTful API</h3>
-              <p class="text-gray-600 dark:text-neutral-300 mb-4">
-                Clean, intuitive REST API that follows industry standards. Easy to understand and implement.
-              </p>
-              <div class="bg-gray-50 dark:bg-neutral-900 rounded-lg p-3">
-                <code class="text-sm text-gray-800 dark:text-neutral-200">
-                  POST /api/v1/redact
-                </code>
-              </div>
-            </div>
-
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">SDKs & Libraries</h3>
-              <p class="text-gray-600 dark:text-neutral-300 mb-4">
-                Official SDKs for popular languages with comprehensive documentation and examples.
-              </p>
-              <div class="flex gap-2 text-sm">
-                <span class="bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 px-2 py-1 rounded">Python</span>
-                <span class="bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 px-2 py-1 rounded">Node.js</span>
-                <span class="bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 px-2 py-1 rounded">Go</span>
-              </div>
-            </div>
-
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Comprehensive Docs</h3>
-              <p class="text-gray-600 dark:text-neutral-300 mb-4">
-                Complete documentation with examples, tutorials, and best practices to get you started quickly.
-              </p>
-              <a href="/docs" class="text-black dark:text-white font-medium hover:text-gray-700 dark:hover:text-neutral-300 transition-colors">
-                View Documentation →
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- FAQ -->
+    <FAQ
+      title="Startup FAQs"
+      description="Common questions about document redaction for startups"
+      category="general"
+      featured={true}
+    />
 
     <CTA
-      title="Ready to Ship Faster?"
-      description="Join the growing number of startups using Nvisy to protect sensitive documents while focusing on what matters most - building great products."
+      title="Ready to Ship Faster with Secure Document Redaction?"
+      description="Join the growing number of startups using Nvisy to protect sensitive documents while focusing on what matters most - building great products. Special pricing available for new startups."
       buttons={[
         {
           text: "Start Free Trial",

@@ -1,228 +1,183 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, Features, CTA, CompanyStats } from "@/sections";
+import {
+	Hero,
+	CTA,
+	SocialProof,
+	Testimonials,
+	FAQ,
+	Security,
+	CaseStudies,
+} from "@/components";
+import { getCollection } from "astro:content";
+
+// Get case studies from blog
+const caseStudies = (await getCollection("blog"))
+	.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
+	.slice(0, 3);
 import {
 	Shield,
-	ShieldCheck,
-	FileText,
-	BarChart3,
-	Users,
-	Clipboard,
 	Check,
-	Building2,
-	AlertTriangle,
-	DollarSign,
+	FileText,
+	Users,
+	AlertCircle,
+	TrendingUp,
 } from "lucide-vue-next";
 ---
 
-<Layout title="Insurance Solutions" description="Document redaction solutions for insurance companies. Help protect policyholder information and claims data while supporting underwriting and regulatory workflows.">
+<Layout
+  title="Insurance Solutions"
+  description="Document redaction for insurance companies and carriers. GDPR & CCPA compliant with SOC II and HIPAA certifications in progress. Protect policyholder PII, claims data, and sensitive insurance information."
+>
   <div class="bg-white dark:bg-black min-h-screen">
+
     <!-- Hero Section -->
     <Hero
-      title="Insurance Document Protection"
-      description="Protect policyholder information and sensitive claims data with AI-powered redaction designed for insurance workflows. Help maintain privacy standards while supporting operational efficiency."
+      title="Insurance Document Security"
+      description="Protect policyholder PII and sensitive insurance data with compliant document redaction. Built for insurance carriers, brokers, and insurance technology companies that need reliable data protection while meeting regulatory requirements."
       background="gradient"
-      fontSize="xl"
-      padding="xl"
       buttons={[
         {
-          text: "Request Demo",
+          text: "Schedule Demo",
           href: "/contact",
           variant: "primary"
         },
         {
-          text: "View Pricing",
-          href: "/pricing",
+          text: "View Documentation",
+          href: "https://docs.nvisy.com",
           variant: "secondary"
         }
       ]}
-      stats={[
-        {
-          value: "Privacy",
-          label: "Focused"
-        },
-        {
-          value: "Claims",
-          label: "Support"
-        },
-        {
-          value: "Secure",
-          label: "Processing"
-        }
-      ]}
     />
 
-    <!-- Company Stats -->
-    <CompanyStats backgroundColor="white" />
-
-    <!-- Insurance-Specific Features -->
-    <Features
-      title="Built for Insurance Workflows"
-      description="Document redaction features designed specifically to help insurance companies protect sensitive information while maintaining operational efficiency and supporting regulatory requirements."
-      category="insurance"
+    <!-- Social Proof -->
+    <SocialProof
+      title="Trusted by Insurance Companies"
+      subtitle="Insurance carriers and brokers trust Nvisy to protect policyholder data and sensitive claims information"
     />
 
-    <!-- Insurance Use Cases -->
-    <div class="bg-gray-50 dark:bg-neutral-950 py-20">
-      <div class="container mx-auto px-4">
-        <div class="max-w-6xl mx-auto">
-          <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              Common Insurance Use Cases
-            </h2>
-            <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-2xl mx-auto">
-              See how insurance companies use Nvisy to protect sensitive information
-              across various operational and regulatory workflows.
+    <Security
+      title="Enterprise-Grade Document Security"
+      description="Built with compliance and security at the core. Our platform meets the rigorous standards required by insurance companies."
+    />
+
+    <!-- Key Challenges -->
+    <div class="container mx-auto px-4 py-20">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-light text-neutral-900 dark:text-white mb-6">
+            Insurance Data Protection Challenges
+          </h2>
+          <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
+            Insurance companies handle extensive personal and financial data throughout the policy lifecycle,
+            requiring robust protection while maintaining operational efficiency and regulatory compliance.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
+            <Users class="w-12 h-12 text-red-600 mx-auto mb-6" />
+            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Policyholder Privacy</h3>
+            <p class="text-neutral-600 dark:text-neutral-300">
+              Protect Social Security numbers, driver's licenses, medical information, and financial data
+              across all policy documentation, claims, and customer communications.
             </p>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Claims Documentation -->
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
-                <FileText class="w-8 h-8 text-white dark:text-black" />
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
+            <AlertCircle class="w-12 h-12 text-orange-600 mx-auto mb-6" />
+            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Regulatory Compliance</h3>
+            <p class="text-neutral-600 dark:text-neutral-300">
+              Meet state insurance regulations, GDPR, CCPA, and HIPAA requirements while maintaining
+              comprehensive audit trails for regulatory examinations.
+            </p>
+          </div>
+
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
+            <TrendingUp class="w-12 h-12 text-blue-600 mx-auto mb-6" />
+            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Claims Processing</h3>
+            <p class="text-neutral-600 dark:text-neutral-300">
+              Automate redaction in claims documentation, fraud investigations, and underwriting files
+              while maintaining processing speed and accuracy requirements.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Solutions -->
+    <div class="bg-neutral-50 dark:bg-neutral-950 py-20">
+      <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-light text-neutral-900 dark:text-white mb-6">
+              Comprehensive Insurance Data Protection
+            </h2>
+            <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
+              Our document redaction platform addresses the specific needs of insurance organizations
+              with compliance-ready features and enterprise-grade security for policyholder data protection.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
+              <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-6">
+                <FileText class="w-6 h-6 text-blue-700 dark:text-blue-300" />
               </div>
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Claims Documentation</h3>
-              <p class="text-gray-600 dark:text-neutral-300 mb-4">
-                Process claims files and documentation while protecting policyholder personal information and sensitive claim details.
+              <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Insurance Document Processing</h3>
+              <p class="text-neutral-600 dark:text-neutral-300 mb-6">
+                Automated redaction for policy applications, claims forms, underwriting documents,
+                and correspondence with high accuracy PII and sensitive data detection.
               </p>
-              <ul class="space-y-2 text-sm">
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Claim forms and applications</span>
+              <ul class="space-y-3">
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Social Security and tax ID numbers</span>
                 </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Medical records and reports</span>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Driver's license and vehicle information</span>
                 </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Adjuster notes and assessments</span>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Medical and health information</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">Financial account information</span>
                 </li>
               </ul>
             </div>
 
-            <!-- Policy Underwriting -->
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
-                <BarChart3 class="w-8 h-8 text-white dark:text-black" />
+            <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8">
+              <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-6">
+                <Shield class="w-6 h-6 text-green-700 dark:text-green-300" />
               </div>
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Policy Underwriting</h3>
-              <p class="text-gray-600 dark:text-neutral-300 mb-4">
-                Support underwriting processes by preparing anonymized applications and supporting documents for risk assessment.
+              <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Compliance & Security</h3>
+              <p class="text-neutral-600 dark:text-neutral-300 mb-6">
+                Built with insurance industry compliance requirements in mind,
+                including comprehensive audit trails and data protection controls for sensitive information.
               </p>
-              <ul class="space-y-2 text-sm">
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Insurance applications</span>
+              <ul class="space-y-3">
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">GDPR & CCPA compliant</span>
                 </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Risk assessment documents</span>
+                <li class="flex items-center gap-3">
+                  <div class="w-5 h-5 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center flex-shrink-0">
+                    <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
+                  </div>
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">SOC II certification in progress</span>
                 </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Actuarial analysis reports</span>
+                <li class="flex items-center gap-3">
+                  <div class="w-5 h-5 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center flex-shrink-0">
+                    <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
+                  </div>
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">HIPAA certification in progress</span>
                 </li>
-              </ul>
-            </div>
-
-            <!-- Fraud Investigation -->
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
-                <AlertTriangle class="w-8 h-8 text-white dark:text-black" />
-              </div>
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Fraud Investigation</h3>
-              <p class="text-gray-600 dark:text-neutral-300 mb-4">
-                Support fraud investigation activities by preparing redacted case files and documentation while protecting privacy.
-              </p>
-              <ul class="space-y-2 text-sm">
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Investigation reports</span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Evidence documentation</span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Case file summaries</span>
-                </li>
-              </ul>
-            </div>
-
-            <!-- Regulatory Reporting -->
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
-                <Clipboard class="w-8 h-8 text-white dark:text-black" />
-              </div>
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Regulatory Reporting</h3>
-              <p class="text-gray-600 dark:text-neutral-300 mb-4">
-                Prepare regulatory reports and compliance documentation by redacting sensitive information while preserving analytical value.
-              </p>
-              <ul class="space-y-2 text-sm">
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Regulatory filings</span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Compliance audits</span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Market conduct examinations</span>
-                </li>
-              </ul>
-            </div>
-
-            <!-- Customer Communications -->
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
-                <Users class="w-8 h-8 text-white dark:text-black" />
-              </div>
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Customer Communications</h3>
-              <p class="text-gray-600 dark:text-neutral-300 mb-4">
-                Prepare customer communications and service documentation while protecting personal information and policy details.
-              </p>
-              <ul class="space-y-2 text-sm">
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Policy documents</span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Correspondence records</span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Service interaction logs</span>
-                </li>
-              </ul>
-            </div>
-
-            <!-- Third-Party Sharing -->
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mb-6">
-                <Building2 class="w-8 h-8 text-white dark:text-black" />
-              </div>
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Third-Party Data Sharing</h3>
-              <p class="text-gray-600 dark:text-neutral-300 mb-4">
-                Safely share insurance data with reinsurers, vendors, and partners by redacting sensitive policyholder information.
-              </p>
-              <ul class="space-y-2 text-sm">
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Reinsurer reports</span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Vendor data sharing</span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <Check class="w-4 h-4 text-gray-600 dark:text-neutral-400" />
-                  <span class="text-gray-700 dark:text-neutral-300">Partner analytics</span>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300 text-sm">End-to-end encryption</span>
                 </li>
               </ul>
             </div>
@@ -231,150 +186,123 @@ import {
       </div>
     </div>
 
-    <!-- Implementation Benefits -->
+    <!-- Use Cases -->
     <div class="container mx-auto px-4 py-20">
       <div class="max-w-6xl mx-auto">
         <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-            Insurance Implementation Benefits
+          <h2 class="text-3xl md:text-4xl font-light text-neutral-900 dark:text-white mb-6">
+            Insurance Use Cases
           </h2>
-          <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-2xl mx-auto">
-            Real benefits that insurance companies experience when implementing
-            our document redaction platform for sensitive data protection.
+          <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
+            Insurance organizations across different lines of business use our platform
+            to protect policyholder information while maintaining operational efficiency and regulatory compliance.
           </p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div class="text-center">
-            <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Shield class="w-8 h-8 text-white dark:text-black" />
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Enhanced Privacy Protection</h3>
-            <p class="text-gray-600 dark:text-neutral-300">
-              Consistent, automated protection of policyholder personal information across all insurance documents and workflows.
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6">
+            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">Claims Processing</h3>
+            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-4">
+              Automatically redact personal information in claims forms, medical records, police reports,
+              and supporting documentation while preserving claim details for processing.
             </p>
+            <div class="text-xs text-neutral-500 bg-neutral-50 dark:bg-neutral-900 rounded-lg p-3">
+              Auto, Health, Property & Casualty
+            </div>
           </div>
 
-          <div class="text-center">
-            <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <DollarSign class="w-8 h-8 text-white dark:text-black" />
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Operational Efficiency</h3>
-            <p class="text-gray-600 dark:text-neutral-300">
-              Significantly reduce manual document review time while maintaining accuracy in sensitive data identification and protection.
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6">
+            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">Underwriting Support</h3>
+            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-4">
+              Protect sensitive applicant information in underwriting files, risk assessments,
+              and medical examinations while maintaining necessary data for risk evaluation.
             </p>
+            <div class="text-xs text-neutral-500 bg-neutral-50 dark:bg-neutral-900 rounded-lg p-3">
+              Life, Health, Disability Insurance
+            </div>
           </div>
 
-          <div class="text-center">
-            <div class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <ShieldCheck class="w-8 h-8 text-white dark:text-black" />
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6">
+            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">Fraud Investigation</h3>
+            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-4">
+              Redact uninvolved party information in fraud investigation files, surveillance reports,
+              and case documentation while preserving investigative integrity.
+            </p>
+            <div class="text-xs text-neutral-500 bg-neutral-50 dark:bg-neutral-900 rounded-lg p-3">
+              Special Investigation Units, Claims Fraud
             </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Compliance Support</h3>
-            <p class="text-gray-600 dark:text-neutral-300">
-              Built-in features that help support insurance regulatory compliance requirements and data protection standards.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Security Features -->
-    <div class="bg-gray-50 dark:bg-neutral-950 py-20">
-      <div class="container mx-auto px-4">
-        <div class="max-w-6xl mx-auto">
-          <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              Insurance-Grade Security
-            </h2>
-            <p class="text-lg text-gray-600 dark:text-neutral-300 max-w-2xl mx-auto">
-              Built with insurance industry security requirements in mind, including data protection
-              and compliance readiness for sensitive policyholder information.
-            </p>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Data Protection</h3>
-              <ul class="space-y-3">
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">End-to-end encryption</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Secure data handling</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Data retention controls</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Secure transmission</span>
-                </li>
-              </ul>
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6">
+            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">Regulatory Reporting</h3>
+            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-4">
+              Prepare regulatory filings and compliance reports by redacting personal information
+              while maintaining aggregate data and compliance metrics for state regulators.
+            </p>
+            <div class="text-xs text-neutral-500 bg-neutral-50 dark:bg-neutral-900 rounded-lg p-3">
+              State Insurance Departments, NAIC Reporting
             </div>
+          </div>
 
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Access Controls</h3>
-              <ul class="space-y-3">
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Role-based permissions</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Authentication controls</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Session management</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">API security</span>
-                </li>
-              </ul>
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6">
+            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">Legal & Litigation</h3>
+            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-4">
+              Protect sensitive information in legal proceedings, subpoena responses,
+              and litigation discovery while maintaining relevant case information.
+            </p>
+            <div class="text-xs text-neutral-500 bg-neutral-50 dark:bg-neutral-900 rounded-lg p-3">
+              Legal Departments, Coverage Disputes
             </div>
+          </div>
 
-            <div class="bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Compliance Features</h3>
-              <ul class="space-y-3">
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Audit trail logging</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Activity monitoring</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Compliance reporting</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <Check class="w-5 h-5 text-gray-600 dark:text-neutral-400 flex-shrink-0" />
-                  <span class="text-gray-700 dark:text-neutral-300 text-sm">Data lineage tracking</span>
-                </li>
-              </ul>
+          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6">
+            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">Third-Party Sharing</h3>
+            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-4">
+              Safely share policy and claims information with reinsurers, vendors, and service providers
+              by automatically redacting unnecessary personal details.
+            </p>
+            <div class="text-xs text-neutral-500 bg-neutral-50 dark:bg-neutral-900 rounded-lg p-3">
+              Reinsurance, Claims Administration, TPAs
             </div>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Testimonials -->
+    <Testimonials
+      title="Trusted by Insurance Companies"
+      description="See how insurance carriers and brokers are protecting policyholder data with Nvisy"
+    />
+
+    <!-- FAQ -->
+    <FAQ
+      title="Insurance FAQs"
+      description="Common questions about document redaction for insurance companies"
+      category="general"
+      featured={true}
+    />
+
+    <!-- Case Studies -->
+    <CaseStudies
+      title="Insurance Success Stories"
+      description="See how insurance companies are using Nvisy to protect policyholder data and streamline claims processing."
+      caseStudies={caseStudies}
+    />
+
+    <!-- CTA -->
     <CTA
-      title="Ready to Protect Policyholder Data?"
-      description="Join insurance companies using Nvisy to safely redact and anonymize sensitive documents while maintaining operational efficiency and compliance standards."
+      title="Ready to Secure Your Insurance Documents?"
+      description="Whether you're an insurtech startup or a large carrier, we have solutions tailored for your compliance and operational needs. Special pricing available for qualifying insurance organizations."
       buttons={[
         {
-          text: "Schedule Insurance Demo",
+          text: "Schedule Demo",
           href: "/contact",
           variant: "primary"
         },
         {
-          text: "View Insurance Pricing",
-          href: "/pricing",
+          text: "View API Documentation",
+          href: "https://docs.nvisy.com",
           variant: "secondary"
         }
       ]}
