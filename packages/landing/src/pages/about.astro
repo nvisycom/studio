@@ -54,7 +54,7 @@ const values = [
 ];
 
 // Get blog entries from content/blog
-const blogEntries = (await getCollection("blog"))
+const blogEntries = (await getCollection("blog-posts"))
 	.sort(
 		(rhs, lhs) =>
 			new Date(lhs.data.publishedAt).getTime() -

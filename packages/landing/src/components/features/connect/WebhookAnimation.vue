@@ -9,39 +9,39 @@ let eventCounter = 0;
 let interval: number | null = null;
 
 const formatTime = () => {
-  const now = new Date();
-  const month = now.toLocaleString("en-US", { month: "short" });
-  const day = now.getDate();
-  const time = now.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  });
-  return `${month} ${day} ${time}`;
+	const now = new Date();
+	const month = now.toLocaleString("en-US", { month: "short" });
+	const day = now.getDate();
+	const time = now.toLocaleTimeString("en-US", {
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
+		hour12: false,
+	});
+	return `${month} ${day} ${time}`;
 };
 
 const addEvent = () => {
-  const template = webhookEvents[eventCounter % webhookEvents.length];
-  const newEvent: WebhookEvent = {
-    ...template,
-    id: Date.now(),
-    timestamp: formatTime(),
-  };
+	const template = webhookEvents[eventCounter % webhookEvents.length];
+	const newEvent: WebhookEvent = {
+		...template,
+		id: Date.now(),
+		timestamp: formatTime(),
+	};
 
-  events.value = [newEvent, ...events.value].slice(0, 3);
-  eventCounter++;
+	events.value = [newEvent, ...events.value].slice(0, 3);
+	eventCounter++;
 };
 
 onMounted(() => {
-  addEvent();
-  interval = window.setInterval(() => {
-    addEvent();
-  }, 3500);
+	addEvent();
+	interval = window.setInterval(() => {
+		addEvent();
+	}, 3500);
 });
 
 onUnmounted(() => {
-  if (interval) clearInterval(interval);
+	if (interval) clearInterval(interval);
 });
 </script>
 

@@ -1,18 +1,22 @@
 ---
-import { ChevronRight, Building2, TrendingUp, Clock } from "lucide-vue-next";
-import type { CollectionEntry } from "astro:content";
+import { ChevronRight, Building2, Clock } from "lucide-vue-next";
+import { getCollection } from "astro:content";
 
 export interface Props {
 	title?: string;
 	description?: string;
-	caseStudies: CollectionEntry<"blog">[];
 }
 
 const {
 	title = "Customer Success Stories",
 	description = "See how leading organizations are using Nvisy to protect sensitive information and streamline compliance workflows.",
-	caseStudies = [],
 } = Astro.props;
+
+// Fetch blog posts with "Case Study" category
+const caseStudies = (await getCollection("blog-posts"))
+	.filter((post) => post.data.category === "Case Study")
+	.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
+	.slice(0, 3);
 ---
 
 <section class="py-12 md:py-20 px-4 bg-white dark:bg-black">

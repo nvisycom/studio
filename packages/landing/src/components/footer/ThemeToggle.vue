@@ -5,51 +5,51 @@ import { Sun, Moon } from "lucide-vue-next";
 const isDark = ref(false);
 
 function updateThemeColor(dark: boolean) {
-  // Update theme-color meta tag for Safari tab bar
-  const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-  if (metaThemeColor) {
-    metaThemeColor.setAttribute("content", dark ? "#000000" : "#ffffff");
-  }
+	// Update theme-color meta tag for Safari tab bar
+	const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+	if (metaThemeColor) {
+		metaThemeColor.setAttribute("content", dark ? "#000000" : "#ffffff");
+	}
 }
 
 function initTheme() {
-  // Get stored theme or use system preference
-  const stored = localStorage.getItem("theme");
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const shouldBeDark = stored ? stored === "dark" : prefersDark;
+	// Get stored theme or use system preference
+	const stored = localStorage.getItem("theme");
+	const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+	const shouldBeDark = stored ? stored === "dark" : prefersDark;
 
-  // Apply theme
-  isDark.value = shouldBeDark;
-  if (shouldBeDark) {
-    document.documentElement.classList.add("dark");
-  } else {
-    document.documentElement.classList.remove("dark");
-  }
+	// Apply theme
+	isDark.value = shouldBeDark;
+	if (shouldBeDark) {
+		document.documentElement.classList.add("dark");
+	} else {
+		document.documentElement.classList.remove("dark");
+	}
 
-  // Update theme color for Safari
-  updateThemeColor(shouldBeDark);
+	// Update theme color for Safari
+	updateThemeColor(shouldBeDark);
 
-  // Store preference
-  localStorage.setItem("theme", shouldBeDark ? "dark" : "light");
+	// Store preference
+	localStorage.setItem("theme", shouldBeDark ? "dark" : "light");
 }
 
 function toggleTheme() {
-  isDark.value = !isDark.value;
+	isDark.value = !isDark.value;
 
-  if (isDark.value) {
-    document.documentElement.classList.add("dark");
-    localStorage.setItem("theme", "dark");
-  } else {
-    document.documentElement.classList.remove("dark");
-    localStorage.setItem("theme", "light");
-  }
+	if (isDark.value) {
+		document.documentElement.classList.add("dark");
+		localStorage.setItem("theme", "dark");
+	} else {
+		document.documentElement.classList.remove("dark");
+		localStorage.setItem("theme", "light");
+	}
 
-  // Update theme color for Safari
-  updateThemeColor(isDark.value);
+	// Update theme color for Safari
+	updateThemeColor(isDark.value);
 }
 
 onMounted(() => {
-  initTheme();
+	initTheme();
 });
 </script>
 

@@ -8,6 +8,7 @@ export { default as Press } from "./sections/Press.astro";
 export { default as Clients } from "./sections/Clients.astro";
 export { default as SocialProof } from "./sections/SocialProof.astro";
 export { default as Testimonials } from "./sections/Testimonials.astro";
+export { default as Industries } from "./sections/Industries.astro";
 export { default as UseCases } from "./sections/UseCases.astro";
 export { default as Review } from "./sections/Review.astro";
 export { default as OpenSource } from "./sections/OpenSource.astro";

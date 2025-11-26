@@ -1,0 +1,32 @@
+[
+	{
+		"title": "FOIA Requests",
+		"description": "Process Freedom of Information Act requests by automatically redacting personal information, classified data, and law enforcement sensitive information.",
+		"audience": "Federal, State, Local Agencies"
+	},
+	{
+		"title": "Public Records",
+		"description": "Prepare court documents, police reports, and administrative records for public disclosure while protecting privacy and security interests.",
+		"audience": "Courts, Law Enforcement, Public Records Offices"
+	},
+	{
+		"title": "Case Management",
+		"description": "Redact sensitive information from case files, investigation reports, and legal documents for inter-agency sharing and case coordination.",
+		"audience": "Social Services, Child Welfare, Criminal Justice"
+	},
+	{
+		"title": "Citizen Services",
+		"description": "Protect citizen PII in applications, permits, licenses, and service requests while maintaining operational transparency.",
+		"audience": "DMV, Licensing Agencies, Municipal Services"
+	},
+	{
+		"title": "Procurement & Contracts",
+		"description": "Redact proprietary information and personal data from procurement documents, bids, and contracts for public transparency requirements.",
+		"audience": "Procurement Offices, Contract Management"
+	},
+	{
+		"title": "Internal Communications",
+		"description": "Prepare internal emails, memos, and reports for disclosure requests while protecting deliberative processes and personal information.",
+		"audience": "All Government Agencies"
+	}
+]

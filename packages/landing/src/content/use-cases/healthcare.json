@@ -1,0 +1,32 @@
+[
+	{
+		"title": "Clinical Documentation",
+		"description": "Redact PHI from clinical notes, discharge summaries, and care plans for quality improvement, training, or case studies while preserving medical context.",
+		"audience": "Hospitals, Clinics, Health Systems"
+	},
+	{
+		"title": "Medical Research",
+		"description": "Prepare patient data for research studies, clinical trials, and publications while maintaining HIPAA compliance and patient anonymity.",
+		"audience": "Research Institutions, Academic Medical Centers"
+	},
+	{
+		"title": "Insurance & Billing",
+		"description": "Protect patient information in insurance claims, prior authorization requests, and billing documentation while maintaining necessary medical details.",
+		"audience": "Healthcare Billing Companies, Payers"
+	},
+	{
+		"title": "Patient Portals",
+		"description": "Automatically redact sensitive information when sharing medical records with patients, family members, or authorized representatives through patient portals.",
+		"audience": "Healthcare IT Vendors, EMR Systems"
+	},
+	{
+		"title": "Legal & Compliance",
+		"description": "Prepare medical records for legal proceedings, malpractice cases, or regulatory investigations while protecting uninvolved patient information.",
+		"audience": "Legal Departments, Risk Management"
+	},
+	{
+		"title": "Quality Improvement",
+		"description": "Create de-identified datasets for quality improvement initiatives, outcome analysis, and population health studies.",
+		"audience": "Quality Departments, Public Health Organizations"
+	}
+]

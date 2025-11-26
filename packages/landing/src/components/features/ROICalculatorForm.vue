@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { TrendingUp, Clock, DollarSign, Users } from "lucide-vue-next";
+import { TrendingUp, Clock, Wallet, Users } from "lucide-vue-next";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
@@ -11,7 +11,7 @@ const hourlyRate = ref([50]);
 
 // Time per page based on method
 const timePerPage = computed(() => {
-	return isManual.value ? 3 : 0.5; // 3 min manual, 0.5 min automated non-AI
+	return isManual.value ? 3 : 1; // 3 min manual, 1 min automated non-AI
 });
 
 const currentMonthlyCost = computed(() => {
@@ -125,7 +125,7 @@ const roi = computed(() => {
 
         <div class="bg-neutral-50 dark:bg-neutral-900 rounded-lg p-4">
           <div class="flex items-center gap-2 mb-2">
-            <DollarSign class="w-5 h-5 text-green-600" />
+            <Wallet class="w-5 h-5 text-neutral-900 dark:text-white" />
             <span
               class="text-sm font-medium text-neutral-700 dark:text-neutral-300"
               >Monthly Savings</span
@@ -138,20 +138,7 @@ const roi = computed(() => {
 
         <div class="bg-neutral-50 dark:bg-neutral-900 rounded-lg p-4">
           <div class="flex items-center gap-2 mb-2">
-            <TrendingUp class="w-5 h-5 text-blue-600" />
-            <span
-              class="text-sm font-medium text-neutral-700 dark:text-neutral-300"
-              >Annual Savings</span
-            >
-          </div>
-          <div class="text-3xl font-bold text-neutral-900 dark:text-white">
-            ${{ annualSavings.toLocaleString() }}
-          </div>
-        </div>
-
-        <div class="bg-neutral-50 dark:bg-neutral-900 rounded-lg p-4">
-          <div class="flex items-center gap-2 mb-2">
-            <Clock class="w-5 h-5 text-purple-600" />
+            <Clock class="w-5 h-5 text-neutral-900 dark:text-white" />
             <span
               class="text-sm font-medium text-neutral-700 dark:text-neutral-300"
               >Time Saved per Month</span

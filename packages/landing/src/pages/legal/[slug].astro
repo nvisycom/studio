@@ -14,7 +14,7 @@ import { Clock, FileText } from "lucide-vue-next";
 
 export async function getStaticPaths() {
 	try {
-		const legalEntries = await getCollection("legal");
+		const legalEntries = await getCollection("legal-docs");
 		return legalEntries.map((entry) => ({
 			params: { slug: entry.slug },
 			props: { entry },

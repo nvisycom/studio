@@ -8,14 +8,8 @@ import {
 	FAQ,
 	Security,
 	CaseStudies,
+	UseCases,
 } from "@/components";
-import { Shield, AlertCircle, BarChart3 } from "lucide-vue-next";
-import { getCollection } from "astro:content";
-
-// Get case studies from blog
-const caseStudies = (await getCollection("blog"))
-	.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
-	.slice(0, 3);
 ---
 
 <Layout
@@ -49,137 +43,19 @@ const caseStudies = (await getCollection("blog"))
       subtitle="Banks, credit unions, and fintech companies trust Nvisy to protect sensitive financial data"
     />
 
+    <!-- Case Studies -->
+    <CaseStudies />
+
     <Security
       title="Enterprise-Grade Document Security"
       description="Built with compliance and security at the core. Our platform meets the rigorous standards required by financial institutions."
     />
 
-    <!-- Key Challenges -->
-    <div class="container mx-auto px-4 py-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-light text-neutral-900 dark:text-white mb-6">
-            Financial Services Challenges
-          </h2>
-          <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-            Financial institutions handle some of the most sensitive personal and financial data,
-            requiring robust protection while maintaining operational efficiency and regulatory compliance.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
-            <Shield class="w-12 h-12 text-red-600 mx-auto mb-6" />
-            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Customer PII Protection</h3>
-            <p class="text-neutral-600 dark:text-neutral-300">
-              Protect Social Security numbers, account details, addresses, and personal financial information
-              across all document types and communications.
-            </p>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
-            <AlertCircle class="w-12 h-12 text-orange-600 mx-auto mb-6" />
-            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Regulatory Compliance</h3>
-            <p class="text-neutral-600 dark:text-neutral-300">
-              Meet GDPR, CCPA, PCI-DSS, and SOX requirements while maintaining comprehensive
-              audit trails for regulatory examinations.
-            </p>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 text-center">
-            <BarChart3 class="w-12 h-12 text-blue-600 mx-auto mb-6" />
-            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Operational Efficiency</h3>
-            <p class="text-neutral-600 dark:text-neutral-300">
-              Automate manual redaction processes for loan applications, account statements,
-              and regulatory filings while maintaining accuracy.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Use Cases -->
-    <div class="container mx-auto px-4 py-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-light text-neutral-900 dark:text-white mb-6">
-            Common Use Cases
-          </h2>
-          <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-            Financial institutions across different segments use our platform
-            to protect sensitive data while maintaining operational efficiency.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6">
-            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">Loan Processing</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-4">
-              Automatically redact sensitive information in loan applications, income statements,
-              and supporting documentation for regulatory compliance.
-            </p>
-            <div class="text-xs text-neutral-500 bg-neutral-50 dark:bg-neutral-900 rounded-lg p-3">
-              Banks, Credit Unions, Mortgage Lenders
-            </div>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6">
-            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">KYC & AML</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-4">
-              Protect customer identity documents and transaction records while maintaining
-              necessary information for Know Your Customer and Anti-Money Laundering processes.
-            </p>
-            <div class="text-xs text-neutral-500 bg-neutral-50 dark:bg-neutral-900 rounded-lg p-3">
-              Investment Firms, Payment Processors
-            </div>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6">
-            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">Regulatory Reporting</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-4">
-              Prepare customer data and transaction reports for regulatory bodies
-              while protecting individual privacy and sensitive information.
-            </p>
-            <div class="text-xs text-neutral-500 bg-neutral-50 dark:bg-neutral-900 rounded-lg p-3">
-              All Financial Institutions
-            </div>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6">
-            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">Customer Communications</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-4">
-              Redact account statements, transaction histories, and correspondence
-              for customer service, dispute resolution, or third-party sharing.
-            </p>
-            <div class="text-xs text-neutral-500 bg-neutral-50 dark:bg-neutral-900 rounded-lg p-3">
-              Retail Banks, Credit Card Companies
-            </div>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6">
-            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">Fintech Integration</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-4">
-              API-first approach allows fintech applications to integrate document redaction
-              directly into their platforms for user data protection.
-            </p>
-            <div class="text-xs text-neutral-500 bg-neutral-50 dark:bg-neutral-900 rounded-lg p-3">
-              Fintech Startups, Neobanks
-            </div>
-          </div>
-
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6">
-            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">Internal Audits</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-4">
-              Prepare documentation for internal compliance reviews and external audits
-              while protecting sensitive customer and transaction data.
-            </p>
-            <div class="text-xs text-neutral-500 bg-neutral-50 dark:bg-neutral-900 rounded-lg p-3">
-              Large Banks, Insurance Companies
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <UseCases
+      title="Financial Services Use Cases"
+      description="Financial institutions across different segments use our platform to protect sensitive data while maintaining operational efficiency."
+      category="financial"
+    />
 
     <!-- Testimonials -->
     <Testimonials
@@ -193,13 +69,6 @@ const caseStudies = (await getCollection("blog"))
       description="Common questions about document redaction for financial institutions"
       category="general"
       featured={true}
-    />
-
-    <!-- Case Studies -->
-    <CaseStudies
-      title="Financial Services Success Stories"
-      description="See how financial institutions are using Nvisy to protect customer data and meet compliance requirements."
-      caseStudies={caseStudies}
     />
 
     <!-- CTA -->

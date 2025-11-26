@@ -6,80 +6,80 @@ import { Badge } from "@/components/ui/badge";
 import { integrationSteps } from "./integrations";
 
 interface Step {
-  id: number;
-  icon: any;
-  text: string;
-  service: string;
-  badgeColor: string;
-  status: "pending" | "loading" | "completed";
-  duration: string;
-  dataSize: string;
-  timestamp: string;
+	id: number;
+	icon: any;
+	text: string;
+	service: string;
+	badgeColor: string;
+	status: "pending" | "loading" | "completed";
+	duration: string;
+	dataSize: string;
+	timestamp: string;
 }
 
 const formatTime = () => {
-  const now = new Date();
-  const month = now.toLocaleString("en-US", { month: "short" });
-  const day = now.getDate();
-  const time = now.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  });
-  return `${month} ${day} ${time}`;
+	const now = new Date();
+	const month = now.toLocaleString("en-US", { month: "short" });
+	const day = now.getDate();
+	const time = now.toLocaleTimeString("en-US", {
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
+		hour12: false,
+	});
+	return `${month} ${day} ${time}`;
 };
 
 const steps = ref(
-  integrationSteps.map((step) => ({
-    ...step,
-    status: "pending" as const,
-    timestamp: formatTime(),
-  })),
+	integrationSteps.map((step) => ({
+		...step,
+		status: "pending" as const,
+		timestamp: formatTime(),
+	})),
 );
 
 let interval: number | null = null;
 
 const runAnimation = () => {
-  let currentStep = 0;
+	let currentStep = 0;
 
-  interval = window.setInterval(() => {
-    if (currentStep < steps.value.length) {
-      // Update timestamp and mark as loading
-      steps.value[currentStep].timestamp = formatTime();
-      steps.value[currentStep].status = "loading";
+	interval = window.setInterval(() => {
+		if (currentStep < steps.value.length) {
+			// Update timestamp and mark as loading
+			steps.value[currentStep].timestamp = formatTime();
+			steps.value[currentStep].status = "loading";
 
-      // After 800ms, mark as completed and move to next
-      setTimeout(() => {
-        if (currentStep < steps.value.length) {
-          steps.value[currentStep].status = "completed";
-          currentStep++;
+			// After 800ms, mark as completed and move to next
+			setTimeout(() => {
+				if (currentStep < steps.value.length) {
+					steps.value[currentStep].status = "completed";
+					currentStep++;
 
-          // If all steps completed, show spinner on all then reset
-          if (currentStep === steps.value.length) {
-            setTimeout(() => {
-              // Set all steps to loading for spinner effect
-              steps.value.forEach((step) => (step.status = "loading"));
+					// If all steps completed, show spinner on all then reset
+					if (currentStep === steps.value.length) {
+						setTimeout(() => {
+							// Set all steps to loading for spinner effect
+							steps.value.forEach((step) => (step.status = "loading"));
 
-              setTimeout(() => {
-                // Reset all after spinner
-                steps.value.forEach((step) => (step.status = "pending"));
-                currentStep = 0;
-              }, 800);
-            }, 1200);
-          }
-        }
-      }, 800);
-    }
-  }, 1300);
+							setTimeout(() => {
+								// Reset all after spinner
+								steps.value.forEach((step) => (step.status = "pending"));
+								currentStep = 0;
+							}, 800);
+						}, 1200);
+					}
+				}
+			}, 800);
+		}
+	}, 1300);
 };
 
 onMounted(() => {
-  runAnimation();
+	runAnimation();
 });
 
 onUnmounted(() => {
-  if (interval) clearInterval(interval);
+	if (interval) clearInterval(interval);
 });
 </script>
 
