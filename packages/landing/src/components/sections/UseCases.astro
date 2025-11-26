@@ -4,7 +4,7 @@ import { getEntry } from "astro:content";
 export interface Props {
 	title?: string;
 	description?: string;
-	category?: string;
+	category: string;
 }
 
 const {
@@ -13,15 +13,9 @@ const {
 	category,
 } = Astro.props;
 
-// Fetch use cases from content if category is provided
-let useCases: any[] = [];
-
-if (category) {
-	const categoryUseCases = await getEntry("use-cases", category);
-	if (categoryUseCases) {
-		useCases = categoryUseCases.data;
-	}
-}
+// Fetch use cases from content collection
+const categoryUseCases = await getEntry("use-cases", category);
+const useCases = categoryUseCases?.data || [];
 ---
 
 <section class="container mx-auto px-4 py-20">
