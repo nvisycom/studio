@@ -186,7 +186,7 @@ onMounted((): void => {
       class="w-full h-full bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl p-6 flex flex-col"
     >
       <!-- Header -->
-      <div class="flex-shrink-0 mb-3">
+      <div class="shrink-0 mb-3">
         <div class="text-2xl mb-2">🍪</div>
         <h3
           class="text-lg font-semibold text-gray-900 dark:text-white leading-tight"
@@ -212,7 +212,7 @@ onMounted((): void => {
       </div>
 
       <!-- Buttons -->
-      <div class="flex-shrink-0 space-y-2">
+      <div class="shrink-0 space-y-2">
         <button
           @click="handleAcceptAll"
           class="w-full bg-black dark:bg-white text-white dark:text-black rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"

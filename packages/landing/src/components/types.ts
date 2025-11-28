@@ -15,13 +15,7 @@ export interface ButtonProps {
 	external?: boolean;
 }
 
-export type BackgroundVariant =
-	| "white"
-	| "gray"
-	| "dark"
-	| "solid"
-	| "gradient"
-	| "none";
+export type BackgroundVariant = "solid" | "gradient" | "none";
 export type LayoutVariant = "grid" | "list" | "cards";
 export type AlignmentVariant = "left" | "center" | "right";
 export type MaxWidthVariant =

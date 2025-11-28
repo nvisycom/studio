@@ -1,0 +1,113 @@
+---
+import { Layout } from "@/layouts";
+import { Hero, CTA, Features, Stats } from "@/components";
+import Industries from "@/components/sections/Industries.astro";
+import CaseStudies from "@/components/sections/CaseStudies.astro";
+---
+
+<Layout
+  title="Solutions"
+  description="Industry-specific document redaction solutions. From healthcare to financial services, find the perfect compliance and security solution for your industry."
+>
+  <div class="bg-white dark:bg-black min-h-screen">
+    <!-- Hero Section -->
+    <Hero
+      title="Solutions by Industry"
+      description="Tailored document redaction solutions that meet your industry's unique compliance requirements, security standards, and operational needs. From healthcare PHI to financial PII, we've got you covered."
+      background="gradient"
+      buttons={[
+        {
+          text: "Schedule Demo",
+          href: "/contact",
+          variant: "primary"
+        },
+        {
+          text: "View All Industries",
+          href: "#industries",
+          variant: "secondary"
+        }
+      ]}
+    />
+
+    <!-- Stats Section -->
+    <Stats
+      stats={[
+        { label: "Industries Served", value: "6+" },
+        { label: "Compliance Standards", value: "15+" },
+        { label: "Enterprise Customers", value: "100+" },
+        { label: "Accuracy Rate", value: "99.9%" },
+      ]}
+      inline={false}
+      padding="lg"
+    />
+
+    <!-- Industries Section -->
+    <div id="industries">
+      <Industries
+        title="Industry-Specific Solutions"
+        description="Every industry has unique compliance requirements and security challenges. Our solutions are built to address your specific regulatory needs while maintaining the highest standards of data protection."
+      />
+    </div>
+
+    <!-- Case Studies -->
+    <CaseStudies />
+
+    <!-- Key Features for Industries -->
+    <Features
+      title="Built for Regulatory Compliance"
+      description="Our industry solutions include everything you need to meet regulatory requirements and protect sensitive data across different sectors."
+      features={[
+        {
+          title: "HIPAA Compliance",
+          description: "Healthcare-specific redaction templates for PHI protection and patient privacy.",
+          icon: "shield"
+        },
+        {
+          title: "Financial Regulations",
+          description: "SOX, PCI DSS, and banking compliance with automated audit trails.",
+          icon: "dollar"
+        },
+        {
+          title: "Government Standards",
+          description: "FedRAMP, FISMA compliance with air-gap deployment capabilities.",
+          icon: "government"
+        },
+        {
+          title: "Data Sovereignty",
+          description: "Keep sensitive data within your jurisdiction with on-premises options.",
+          icon: "globe"
+        },
+        {
+          title: "Audit & Reporting",
+          description: "Comprehensive audit logs and compliance reporting for all industries.",
+          icon: "clipboard"
+        },
+        {
+          title: "Custom Integration",
+          description: "Seamlessly integrate with your existing industry-specific workflows.",
+          icon: "link"
+        }
+      ]}
+    />
+
+
+
+    <!-- CTA Section -->
+    <CTA
+      title="Ready to Protect Your Industry's Data?"
+      description="Choose the solution that matches your compliance requirements and security needs. Get started with a personalized demo tailored to your industry."
+      buttons={[
+        {
+          text: "Schedule Industry Demo",
+          href: "/contact",
+          variant: "primary"
+        },
+        {
+          text: "View Pricing",
+          href: "/pricing",
+          variant: "secondary"
+        }
+      ]}
+    />
+  </div>
+</Layout>

@@ -1,15 +1,16 @@
 ---
 import { Layout } from "@/layouts";
 import { Hero, CTA } from "@/components";
+import SDKExamples from "@/components/sections/SDKExamples.astro";
 import {
 	Cloud,
 	Server,
 	Check,
-	Monitor,
-	Code2,
-	ExternalLink,
+	ArrowRight,
+	Zap,
+	Shield,
+	Github,
 } from "lucide-vue-next";
-import GithubIcon from "@/assets/icons/github.svg?raw";
 ---
 
 <Layout
@@ -20,8 +21,8 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
     <!-- Hero Section -->
     <div class="border-b border-neutral-200 dark:border-neutral-800">
       <Hero
-        title="Products"
-        description="AI-powered document redaction deployed your way. Choose cloud for instant scale and zero maintenance, or on-premises for complete control and data sovereignty."
+        title="AI-Powered Document Redaction"
+        description="Deploy anywhere, scale everywhere. Choose cloud for instant deployment and zero maintenance, or on-premises for complete control and data sovereignty."
         background="gradient"
         buttons={[
           {
@@ -38,374 +39,219 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
       />
     </div>
 
-    <!-- Product Cards -->
-    <div class="container mx-auto px-4 py-12 md:py-20" id="products">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-12 md:mb-16">
-          <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 dark:text-white mb-4 md:mb-6">
-            Choose Your Deployment Model
-          </h2>
-          <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto px-4">
-            Same powerful AI-powered redaction technology, different deployment models to match your
-            security, compliance, and operational requirements.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-12 md:mb-20">
-          <!-- Nvisy Cloud -->
-          <div class="group bg-white dark:bg-black rounded-2xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-10 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-            <div class="flex items-center justify-between mb-6 md:mb-8">
-              <div class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Cloud class="w-6 h-6 md:w-8 md:h-8 text-white" />
-              </div>
-              <span class="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs md:text-sm font-medium px-3 md:px-4 py-1 rounded-full">
-                Most Popular
-              </span>
-            </div>
-
-            <h3 class="text-2xl md:text-3xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">Nvisy Cloud</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 mb-6 leading-relaxed text-base md:text-lg">
-              Fully managed cloud service with global scale, zero maintenance, and instant deployment.
-              Perfect for teams that want to move fast without infrastructure overhead.
-            </p>
-
-            <!-- Key Features -->
-            <div class="space-y-3 mb-8">
-              <div class="flex items-start gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <span class="text-neutral-900 dark:text-white font-medium">5-minute setup</span>
-                  <p class="text-sm text-neutral-600 dark:text-neutral-400">Deploy instantly with no infrastructure</p>
-                </div>
-              </div>
-              <div class="flex items-start gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <span class="text-neutral-900 dark:text-white font-medium">99.99% uptime SLA</span>
-                  <p class="text-sm text-neutral-600 dark:text-neutral-400">Global multi-region deployment</p>
-                </div>
-              </div>
-              <div class="flex items-start gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <span class="text-neutral-900 dark:text-white font-medium">Auto-scaling</span>
-                  <p class="text-sm text-neutral-600 dark:text-neutral-400">Handle traffic spikes automatically</p>
-                </div>
-              </div>
-              <div class="flex items-start gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <span class="text-neutral-900 dark:text-white font-medium">Automatic updates</span>
-                  <p class="text-sm text-neutral-600 dark:text-neutral-400">Latest AI models and security patches</p>
-                </div>
-              </div>
-              <div class="flex items-start gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <span class="text-neutral-900 dark:text-white font-medium">Pay-as-you-go pricing</span>
-                  <p class="text-sm text-neutral-600 dark:text-neutral-400">No upfront costs or commitments</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Stats -->
-            <div class="grid grid-cols-3 gap-2 md:gap-4 mb-6 md:mb-8 pt-6 border-t border-neutral-200 dark:border-neutral-700">
-              <div class="text-center">
-                <div class="text-lg md:text-2xl font-bold text-neutral-900 dark:text-white">99.99%</div>
-                <div class="text-xs text-neutral-500">Uptime</div>
-              </div>
-              <div class="text-center">
-                <div class="text-lg md:text-2xl font-bold text-neutral-900 dark:text-white">Global</div>
-                <div class="text-xs text-neutral-500">Multi-Region</div>
-              </div>
-              <div class="text-center">
-                <div class="text-lg md:text-2xl font-bold text-neutral-900 dark:text-white">5 min</div>
-                <div class="text-xs text-neutral-500">Setup</div>
-              </div>
-            </div>
-
-            <!-- Best For -->
-            <div class="bg-blue-50 dark:bg-blue-950 rounded-lg p-3 md:p-4 mb-6 md:mb-8">
-              <h4 class="text-sm font-semibold text-neutral-900 dark:text-white mb-2">Best for:</h4>
-              <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                Startups, SaaS companies, and organizations prioritizing speed and scalability with enterprise-grade security
-              </p>
-            </div>
-
-            <a
-              href="/pricing"
-              class="inline-flex items-center justify-center w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium py-3 px-6 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 text-sm md:text-base"
-            >
-              Start Free Trial
-            </a>
+    <!-- Quick Stats -->
+    <div class="bg-neutral-50 dark:bg-neutral-950/50 py-8 md:py-12">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto text-center">
+          <div>
+            <div class="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white">99.99%</div>
+            <div class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">Uptime SLA</div>
           </div>
-
-          <!-- Nvisy Server -->
-          <div class="group bg-white dark:bg-black rounded-2xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-10 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-            <div class="flex items-start md:items-center justify-between mb-6 md:mb-8 gap-3">
-              <div class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-gray-800 to-black rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
-                <Server class="w-6 h-6 md:w-8 md:h-8 text-white" />
-              </div>
-              <span class="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs md:text-sm font-medium px-3 md:px-4 py-1 rounded-full">
-                Enterprise
-              </span>
-            </div>
-
-            <h3 class="text-2xl md:text-3xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">Nvisy Server</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 mb-6 leading-relaxed text-base md:text-lg">
-              On-premises deployment with complete control, data sovereignty, and air-gap capability.
-              Perfect for enterprises with strict compliance and security requirements.
-            </p>
-
-            <!-- Key Features -->
-            <div class="space-y-3 mb-8">
-              <div class="flex items-start gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <span class="text-neutral-900 dark:text-white font-medium">100% on-premises</span>
-                  <p class="text-sm text-neutral-600 dark:text-neutral-400">Zero data leaves your network</p>
-                </div>
-              </div>
-              <div class="flex items-start gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <span class="text-neutral-900 dark:text-white font-medium">Air-gap ready</span>
-                  <p class="text-sm text-neutral-600 dark:text-neutral-400">Deploy in isolated environments</p>
-                </div>
-              </div>
-              <div class="flex items-start gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <span class="text-neutral-900 dark:text-white font-medium">Bring your own models</span>
-                  <p class="text-sm text-neutral-600 dark:text-neutral-400">Use your own AI models and configurations</p>
-                </div>
-              </div>
-              <div class="flex items-start gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <span class="text-neutral-900 dark:text-white font-medium">Optional Cloud integration</span>
-                  <p class="text-sm text-neutral-600 dark:text-neutral-400">Connect to Nvisy Cloud when needed</p>
-                </div>
-              </div>
-              <div class="flex items-start gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <span class="text-neutral-900 dark:text-white font-medium">Annual licensing</span>
-                  <p class="text-sm text-neutral-600 dark:text-neutral-400">Flexible annual subscription model</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Stats -->
-            <div class="grid grid-cols-3 gap-2 md:gap-4 mb-6 md:mb-8 pt-6 border-t border-neutral-200 dark:border-neutral-700">
-              <div class="text-center">
-                <div class="text-lg md:text-2xl font-bold text-neutral-900 dark:text-white">100%</div>
-                <div class="text-xs text-neutral-500">On-Premises</div>
-              </div>
-              <div class="text-center">
-                <div class="text-lg md:text-2xl font-bold text-neutral-900 dark:text-white">Air-Gap</div>
-                <div class="text-xs text-neutral-500">Ready</div>
-              </div>
-              <div class="text-center">
-                <div class="text-lg md:text-2xl font-bold text-neutral-900 dark:text-white">Open</div>
-                <div class="text-xs text-neutral-500">Source</div>
-              </div>
-            </div>
-
-            <!-- Best For -->
-            <div class="bg-gray-50 dark:bg-gray-950 rounded-lg p-3 md:p-4 mb-6 md:mb-8">
-              <h4 class="text-sm font-semibold text-neutral-900 dark:text-white mb-2">Best for:</h4>
-              <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                Government, healthcare, finance, and enterprises requiring data sovereignty and air-gapped deployments
-              </p>
-            </div>
-
-            <div class="flex flex-col sm:flex-row gap-3">
-              <a
-                href="https://github.com/nvisycom/server"
-                class="flex-1 inline-flex items-center justify-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-black font-medium py-3 px-6 rounded-xl hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all duration-200 text-sm md:text-base"
-              >
-                <Fragment set:html={GithubIcon} />
-                GitHub
-              </a>
-              <a
-                href="/products/server"
-                class="flex-1 inline-flex items-center justify-center gap-2 border-2 border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-white font-medium py-3 px-6 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-all duration-200 text-sm md:text-base"
-              >
-                <ExternalLink class="w-4 h-4" />
-                Learn More
-              </a>
-            </div>
+          <div>
+            <div class="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white">5 min</div>
+            <div class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">Setup Time</div>
           </div>
-        </div>
-
-        <!-- Open Source Products -->
-        <div class="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950/30 dark:to-blue-950/30 rounded-3xl p-8 md:p-12">
-          <div class="text-center mb-12 md:mb-16">
-            <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">
-              Open Source
-            </h2>
-            <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto px-4">
-              Community-driven tools for developers. Use our desktop app for both cloud and local deployments,
-              or integrate with our SDKs in your preferred language.
-            </p>
+          <div>
+            <div class="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white">100M+</div>
+            <div class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">Documents Processed</div>
           </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
-          <!-- Desktop App -->
-          <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 md:p-10 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col">
-            <div class="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
-              <Monitor class="w-6 h-6 md:w-7 md:h-7 text-neutral-600 dark:text-neutral-400" />
-            </div>
-
-            <h3 class="text-lg md:text-xl font-light text-neutral-900 dark:text-white mb-2 md:mb-3">Desktop UI</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 mb-4 md:mb-6 text-sm leading-relaxed">
-              Cross-platform desktop application with intuitive UI for document redaction.
-              Works with both Nvisy Cloud and Server deployments.
-            </p>
-
-            <!-- Features -->
-            <div class="space-y-2 mb-4 md:mb-6 flex-grow">
-              <div class="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-400">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0" />
-                <span>Windows, macOS, Linux</span>
-              </div>
-              <div class="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-400">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0" />
-                <span>Batch processing support</span>
-              </div>
-              <div class="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-400">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0" />
-                <span>Cloud & Server backend support</span>
-              </div>
-              <div class="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-400">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0" />
-                <span>Built with Tauri</span>
-              </div>
-            </div>
-
-            <!-- Links at bottom -->
-            <div class="flex gap-2 mt-auto">
-              <a
-                href="/products/desktop"
-                class="flex-1 inline-flex items-center justify-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-black font-medium py-2 px-4 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors text-sm"
-              >
-                <ExternalLink class="w-4 h-4" />
-                Learn More
-              </a>
-            </div>
+          <div>
+            <div class="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white">SOC 2</div>
+            <div class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">Certified</div>
           </div>
-
-          <!-- JavaScript SDK -->
-          <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 md:p-10 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col">
-            <div class="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
-              <Code2 class="w-6 h-6 md:w-7 md:h-7 text-neutral-600 dark:text-neutral-400" />
-            </div>
-
-            <h3 class="text-lg md:text-xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">JavaScript SDK</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 mb-4 md:mb-6 text-sm leading-relaxed">
-              Modern JavaScript/TypeScript SDK for Node.js and browsers with full type safety
-              and promise-based API.
-            </p>
-
-            <!-- Features -->
-            <div class="space-y-2 mb-4 md:mb-6 flex-grow">
-              <div class="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-400">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0" />
-                <span>TypeScript support</span>
-              </div>
-              <div class="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-400">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0" />
-                <span>Node.js & browser compatible</span>
-              </div>
-              <div class="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-400">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0" />
-                <span>Promise & async/await</span>
-              </div>
-              <div class="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-400">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0" />
-                <span>Comprehensive docs</span>
-              </div>
-            </div>
-
-            <!-- Links at bottom -->
-            <div class="flex gap-2 mt-auto">
-              <a
-                href="https://github.com/nvisycom/sdk-ts"
-                class="flex-1 inline-flex items-center justify-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-black font-medium py-2 px-4 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors text-sm"
-              >
-                <Fragment set:html={GithubIcon} />
-                GitHub
-              </a>
-              <a
-                href="https://docs.nvisy.com/sdks/javascript"
-                class="flex-1 inline-flex items-center justify-center gap-2 border border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-white font-medium py-2 px-4 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors text-sm"
-              >
-                <ExternalLink class="w-4 h-4" />
-                Docs
-              </a>
-            </div>
-          </div>
-
-          <!-- Python SDK -->
-          <div class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-8 md:p-10 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col">
-            <div class="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
-              <Code2 class="w-6 h-6 md:w-7 md:h-7 text-neutral-600 dark:text-neutral-400" />
-            </div>
-
-            <h3 class="text-lg md:text-xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">Python SDK</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 mb-4 md:mb-6 text-sm leading-relaxed">
-              Native Python library with async support, type hints, and comprehensive
-              error handling for seamless integration.
-            </p>
-
-            <!-- Features -->
-            <div class="space-y-2 mb-4 md:mb-6 flex-grow">
-              <div class="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-400">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0" />
-                <span>Python 3.8+ support</span>
-              </div>
-              <div class="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-400">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0" />
-                <span>Async/await support</span>
-              </div>
-              <div class="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-400">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0" />
-                <span>Type hints included</span>
-              </div>
-              <div class="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-400">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0" />
-                <span>Detailed error messages</span>
-              </div>
-            </div>
-
-            <!-- Links at bottom -->
-            <div class="flex gap-2 mt-auto">
-              <a
-                href="https://github.com/nvisycom/sdk-py"
-                class="flex-1 inline-flex items-center justify-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-black font-medium py-2 px-4 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors text-sm"
-              >
-                <Fragment set:html={GithubIcon} />
-                GitHub
-              </a>
-              <a
-                href="https://docs.nvisy.com/sdks/python"
-                class="flex-1 inline-flex items-center justify-center gap-2 border border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-white font-medium py-2 px-4 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors text-sm"
-              >
-                <ExternalLink class="w-4 h-4" />
-                Docs
-              </a>
-            </div>
-          </div>
-        </div>
         </div>
       </div>
     </div>
 
+    <!-- Main Products -->
+    <div class="container mx-auto px-4 py-16 md:py-24" id="products">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl lg:text-5xl font-light text-neutral-900 dark:text-white mb-6">
+            Choose Your Deployment
+          </h2>
+          <p class="text-lg md:text-xl text-neutral-600 dark:text-neutral-300 max-w-3xl mx-auto leading-relaxed">
+            Same powerful AI technology, different deployment options. Pick what works best for your security,
+            compliance, and operational requirements.
+          </p>
+        </div>
+
+        <!-- Product Comparison -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-20">
+          <!-- Nvisy Cloud -->
+          <div class="group relative bg-white dark:bg-black rounded-3xl border-2 border-neutral-200 dark:border-neutral-700 overflow-hidden hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+            <!-- Recommended Badge -->
+            <div class="absolute -top-px left-1/2 transform -translate-x-1/2">
+              <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs font-semibold px-4 py-1 rounded-b-lg">
+                Most Popular
+              </div>
+            </div>
+
+            <div class="p-8 md:p-10 pt-12 md:pt-14">
+              <!-- Icon and Badge -->
+              <div class="flex items-start justify-between mb-8">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Cloud class="w-8 h-8 text-white" />
+                </div>
+                <div class="flex items-center gap-2">
+                  <Zap class="w-4 h-4 text-blue-600" />
+                  <span class="text-blue-700 dark:text-blue-300 text-sm font-medium">Instant Setup</span>
+                </div>
+              </div>
+
+              <h3 class="text-2xl md:text-3xl font-light text-neutral-900 dark:text-white mb-4">Nvisy Cloud</h3>
+              <p class="text-lg text-neutral-600 dark:text-neutral-300 mb-8 leading-relaxed">
+                Fully managed cloud service with global scale, zero maintenance, and enterprise-grade security.
+                Perfect for teams that prioritize speed and scalability.
+              </p>
+
+              <!-- Key Benefits -->
+              <div class="space-y-4 mb-8">
+                <div class="flex items-start gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-1" />
+                  <div>
+                    <span class="text-neutral-900 dark:text-white font-semibold">Deploy in 5 minutes</span>
+                    <p class="text-sm text-neutral-600 dark:text-neutral-400">No infrastructure setup required</p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-1" />
+                  <div>
+                    <span class="text-neutral-900 dark:text-white font-semibold">99.99% uptime SLA</span>
+                    <p class="text-sm text-neutral-600 dark:text-neutral-400">Multi-region global deployment</p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-1" />
+                  <div>
+                    <span class="text-neutral-900 dark:text-white font-semibold">Auto-scaling</span>
+                    <p class="text-sm text-neutral-600 dark:text-neutral-400">Handle any volume automatically</p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-1" />
+                  <div>
+                    <span class="text-neutral-900 dark:text-white font-semibold">Pay-as-you-go pricing</span>
+                    <p class="text-sm text-neutral-600 dark:text-neutral-400">No upfront costs or commitments</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Best For -->
+              <div class="bg-blue-50 dark:bg-blue-950 rounded-xl p-4 mb-8">
+                <h4 class="font-semibold text-neutral-900 dark:text-white mb-2">Perfect for:</h4>
+                <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                  SaaS companies, startups, and organizations prioritizing rapid deployment and scalability
+                </p>
+              </div>
+
+              <a
+                href="/pricing"
+                class="inline-flex items-center justify-center w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-4 px-6 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 group"
+              >
+                Start Free Trial
+                <ArrowRight class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </a>
+            </div>
+          </div>
+
+          <!-- Nvisy Server -->
+          <div class="group relative bg-white dark:bg-black rounded-3xl border-2 border-neutral-200 dark:border-neutral-700 overflow-hidden hover:border-gray-400 dark:hover:border-gray-500 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+            <!-- Enterprise Badge -->
+            <div class="absolute -top-px left-1/2 transform -translate-x-1/2">
+              <div class="bg-gradient-to-r from-gray-800 to-black text-white text-xs font-semibold px-4 py-1 rounded-b-lg">
+                Enterprise
+              </div>
+            </div>
+
+            <div class="p-8 md:p-10 pt-12 md:pt-14">
+              <!-- Icon and Badge -->
+              <div class="flex items-start justify-between mb-8">
+                <div class="w-16 h-16 bg-gradient-to-br from-gray-800 to-black rounded-3xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Server class="w-8 h-8 text-white" />
+                </div>
+                <div class="flex items-center gap-2">
+                  <Shield class="w-4 h-4 text-green-600" />
+                  <span class="text-green-700 dark:text-green-300 text-sm font-medium">Max Security</span>
+                </div>
+              </div>
+
+              <h3 class="text-2xl md:text-3xl font-light text-neutral-900 dark:text-white mb-4">Nvisy Server</h3>
+              <p class="text-lg text-neutral-600 dark:text-neutral-300 mb-8 leading-relaxed">
+                On-premises deployment with complete control, data sovereignty, and air-gap capability.
+                Built for enterprises with strict compliance requirements.
+              </p>
+
+              <!-- Key Benefits -->
+              <div class="space-y-4 mb-8">
+                <div class="flex items-start gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-1" />
+                  <div>
+                    <span class="text-neutral-900 dark:text-white font-semibold">100% on-premises</span>
+                    <p class="text-sm text-neutral-600 dark:text-neutral-400">Zero data leaves your network</p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-1" />
+                  <div>
+                    <span class="text-neutral-900 dark:text-white font-semibold">Air-gap ready</span>
+                    <p class="text-sm text-neutral-600 dark:text-neutral-400">Deploy in isolated environments</p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-1" />
+                  <div>
+                    <span class="text-neutral-900 dark:text-white font-semibold">Custom AI models</span>
+                    <p class="text-sm text-neutral-600 dark:text-neutral-400">Bring your own models and configurations</p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-3">
+                  <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-1" />
+                  <div>
+                    <span class="text-neutral-900 dark:text-white font-semibold">Annual licensing</span>
+                    <p class="text-sm text-neutral-600 dark:text-neutral-400">Flexible subscription model</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Best For -->
+              <div class="bg-gray-50 dark:bg-gray-950 rounded-xl p-4 mb-8">
+                <h4 class="font-semibold text-neutral-900 dark:text-white mb-2">Perfect for:</h4>
+                <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                  Government, healthcare, finance, and enterprises requiring data sovereignty
+                </p>
+              </div>
+
+              <div class="flex gap-3">
+                <a
+                  href="https://github.com/nvisycom/server"
+                  class="flex-1 inline-flex items-center justify-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-black font-semibold py-4 px-6 rounded-xl hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all duration-200"
+                >
+                  <Github class="w-4 h-4" />
+                  GitHub
+                </a>
+                <a
+                  href="/products/server"
+                  class="flex-1 inline-flex items-center justify-center gap-2 border-2 border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-white font-semibold py-4 px-6 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-all duration-200 group"
+                >
+                  Learn More
+                  <ArrowRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    <!-- SDKs and Developer Tools -->
+    <SDKExamples
+      title="Developer Tools & SDKs"
+      description="Integrate document redaction into your applications with our comprehensive developer tools. All open source and community-driven."
+    />
+
     <!-- CTA Section -->
     <CTA
       title="Ready to Get Started?"
-      description="Choose the deployment model that fits your needs and start protecting sensitive information today."
+      description="Choose the deployment model that fits your needs and start protecting sensitive information in minutes, not months."
       buttons={[
         {
           text: "Start Free Trial",
@@ -413,12 +259,11 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
           variant: "primary"
         },
         {
-          text: "Contact Sales",
+          text: "Schedule Demo",
           href: "/contact",
           variant: "secondary"
         }
       ]}
-      background="solid"
     />
   </div>
 </Layout>

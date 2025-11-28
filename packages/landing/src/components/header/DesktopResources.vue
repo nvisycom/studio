@@ -123,7 +123,7 @@ const displayedBlogPosts = computed(() => props.blogPosts || []);
           <!-- Blog Header -->
           <NavigationMenuLink
             href="/blog"
-            class="inline-flex items-center font-light text-gray-500 dark:text-neutral-400 mb-2 text-xs tracking-wide transition-colors hover:text-gray-900 dark:hover:text-white focus:text-gray-900 dark:focus:text-white"
+            class="inline-flex items-center font-light text-gray-500 dark:text-neutral-400 mb-1 text-xs tracking-wide transition-colors hover:text-gray-900 dark:hover:text-white focus:text-gray-900 dark:focus:text-white"
           >
             <span class="flex items-center">
               Blog
