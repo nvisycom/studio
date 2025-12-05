@@ -194,7 +194,7 @@ onUnmounted(() => {
     <!-- Last Updated -->
     <div
       v-if="lastUpdated"
-      class="opacity-0 group-hover:opacity-100 transition-all duration-300 text-xs text-gray-500 dark:text-neutral-400 font-mono"
+      class="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300 text-xs text-gray-500 dark:text-neutral-400 font-mono"
       :title="`Last updated: ${lastUpdated.toLocaleString()}`"
     >
       {{ updateTimestamp }}

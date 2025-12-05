@@ -24,7 +24,7 @@ const props = defineProps<Props>();
 
 <template>
   <NavigationMenu
-    class="relative z-10 hidden lg:flex max-w-max flex-1 items-center justify-center"
+    class="relative z-10 hidden lg:flex max-w-max flex-1 items-center justify-center ml-20"
   >
     <NavigationMenuList
       class="group flex flex-1 list-none items-center justify-center space-x-1"

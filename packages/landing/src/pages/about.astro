@@ -3,8 +3,7 @@ import { Layout } from "@/layouts";
 import { CompanyStats, CTA, Press, SocialProof } from "@/components";
 import { Shield, Building2, Zap, Target } from "lucide-vue-next";
 import TeamMember from "@/components/features/about/TeamMember.vue";
-
-import { getCollection } from "astro:content";
+import Blogposts from "@/components/sections/Blogposts.astro";
 
 const teamMembers = [
 	{
@@ -52,15 +51,6 @@ const values = [
 		icon: Target,
 	},
 ];
-
-// Get blog entries from content/blog
-const blogEntries = (await getCollection("blog-posts"))
-	.sort(
-		(rhs, lhs) =>
-			new Date(lhs.data.publishedAt).getTime() -
-			new Date(rhs.data.publishedAt).getTime(),
-	)
-	.slice(0, 3); // Only show first 3 posts
 
 // Custom stats without team members
 const customStats = [
@@ -184,52 +174,10 @@ const customStats = [
     />
 
     <!-- From Our Blog Section -->
-    <section aria-label="Latest Blog Posts" class="container mx-auto px-4 py-16 md:py-24">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-8 md:mb-12">
-          <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 dark:text-white">
-            From Our Blog
-          </h2>
-        </div>
-
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {blogEntries.map(post => (
-            <article class="group transition-all duration-300 hover:-translate-y-1">
-              <a href={`/blog/${post.slug}`} class="block">
-                <div class="overflow-hidden">
-                  <!-- Image placeholder -->
-                  <div class="aspect-[16/9] bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-700 flex items-center justify-center rounded-lg group-hover:shadow-lg transition-shadow duration-300">
-                    <div class="text-neutral-400 dark:text-neutral-500 text-2xl">
-                      {post.data.category === 'Engineering' && '⚡'}
-                      {post.data.category === 'Development' && '💻'}
-                      {post.data.category === 'Design' && '🎨'}
-                      {post.data.category === 'Architecture' && '🏗️'}
-                      {post.data.category === 'Content' && '📝'}
-                      {!post.data.category && '📄'}
-                    </div>
-                  </div>
-
-                  <!-- Content -->
-                  <div class="pt-4">
-                    <h3 class="text-lg font-light text-neutral-900 dark:text-white mb-2 group-hover:text-neutral-700 dark:group-hover:text-neutral-200 transition-colors line-clamp-2">
-                      {post.data.title}
-                    </h3>
-
-                    <div class="text-sm text-neutral-500 dark:text-neutral-400">
-                      {new Date(post.data.publishedAt).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
+    <Blogposts
+      title="From Our Blog"
+      description="Read about our journey, insights, and the latest updates from the team"
+    />
 
     <!-- Careers CTA -->
     <CTA

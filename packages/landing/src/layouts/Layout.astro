@@ -8,7 +8,7 @@ import {
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import MinLayout from "@/layouts/MinLayout.astro";
-import { Umami } from "@/layouts/analytics";
+import { PlausibleInit } from "@/layouts/analytics";
 import { Cookies } from "@/layouts/compliance";
 
 /**
@@ -87,7 +87,7 @@ const {
 	keywords={keywords}
 >
 	<!-- Analytics Slot -->
-	<Umami slot="analytics" />
+	<PlausibleInit slot="analytics" />
 
 	<!-- Page Content -->
 	<div slot="content" class="flex flex-col min-h-screen">
