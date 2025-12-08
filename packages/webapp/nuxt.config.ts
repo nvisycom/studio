@@ -6,6 +6,20 @@ export default defineNuxtConfig({
 	devtools: { enabled: true },
 	telemetry: { enabled: false },
 
+	// hooks: {
+	//   "prerender:routes"({ routes }) {
+	//     routes.clear();
+	//   },
+	// },
+
+	nitro: {
+		prerender: {
+			crawlLinks: false,
+			// ignore: ignoredNitroRoutes,
+			routes: ["/"],
+		},
+	},
+
 	css: ["~/assets/css/fonts.css", "~/assets/css/tailwind.css"],
 
 	modules: [
@@ -14,12 +28,9 @@ export default defineNuxtConfig({
 		"@pinia/nuxt",
 		"@nuxtjs/color-mode",
 		"@nuxtjs/device",
-		"@nuxtjs/seo",
-		"@nuxtjs/sitemap",
-		"@nuxtjs/robots",
 		"@nuxtjs/i18n",
-		"nuxt-og-image",
-		"nuxt-schema-org",
+		// "nuxt-og-image",
+		// "nuxt-schema-org",
 	],
 
 	vite: {
