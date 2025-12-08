@@ -20,9 +20,6 @@ build-deps: # Builds shared dependencies (config, shared).
 	@npm run build --workspace=@nvisy/shared
 	$(call log,Shared dependencies built.)
 
-.PHONY: build
-build: build-com build-app # Builds all packages.
-
 .PHONY: build-com
 build-com: build-deps # Builds landing (nvisy.com).
 	$(call log,Building nvisy.com...)
@@ -40,6 +37,9 @@ build-app: build-deps # Builds webapp (app.nvisy.com).
 	@mkdir -p ./output/app
 	@cp -r packages/webapp/.output/* ./output/app/
 	$(call log,Copied build output to ./output/app folder.)
+
+.PHONY: build
+build: build-com build-app # Builds all packages.
 
 .PHONY: clean
 clean: # Cleans build artifacts and dependencies.
