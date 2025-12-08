@@ -17,9 +17,11 @@ install: # Installs all dependencies.
 build: # Builds all packages.
 	$(call log,Building all packages...)
 	@npm run build --workspaces --if-present
-	$(call log,Copying dist to ./output folder...)
-	@cp -r packages/landing/dist ./output
-	$(call log,Copied dist to ./output folder.)
+	$(call log,Copying build outputs to ./output folder...)
+	@mkdir -p ./output/landing ./output/webapp
+	@cp -r packages/landing/dist/* ./output/landing/
+	@cp -r packages/webapp/.output/* ./output/webapp/
+	$(call log,Copied build outputs to ./output folder.)
 
 .PHONY: clean
 clean: # Cleans build artifacts and dependencies.
@@ -27,6 +29,8 @@ clean: # Cleans build artifacts and dependencies.
 	@rm -rf node_modules
 	@rm -rf packages/*/node_modules
 	@rm -rf packages/*/dist
+	@rm -rf packages/*/.output
+	@rm -rf packages/*/.nuxt
 	@rm -rf output
 	$(call log,Cleaned build artifacts.)
 

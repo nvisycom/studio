@@ -1,0 +1,13 @@
+---
+export interface Props {
+	event: string;
+	interactive?: boolean;
+}
+
+const { event, interactive = true } = Astro.props;
+---
+
+<script is:inline define:vars={{ event, interactive }}>
+import { track } from "@plausible-analytics/tracker";
+track(event, { interactive });
+</script>

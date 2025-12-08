@@ -1,0 +1,32 @@
+[
+	{
+		"title": "Loan Processing",
+		"description": "Automatically redact sensitive information in loan applications, income statements, and supporting documentation for regulatory compliance.",
+		"audience": "Banks, Credit Unions, Mortgage Lenders"
+	},
+	{
+		"title": "KYC & AML",
+		"description": "Protect customer identity documents and transaction records while maintaining necessary information for Know Your Customer and Anti-Money Laundering processes.",
+		"audience": "Investment Firms, Payment Processors"
+	},
+	{
+		"title": "Regulatory Reporting",
+		"description": "Prepare customer data and transaction reports for regulatory bodies while protecting individual privacy and sensitive information.",
+		"audience": "All Financial Institutions"
+	},
+	{
+		"title": "Customer Communications",
+		"description": "Redact account statements, transaction histories, and correspondence for customer service, dispute resolution, or third-party sharing.",
+		"audience": "Retail Banks, Credit Card Companies"
+	},
+	{
+		"title": "Fintech Integration",
+		"description": "API-first approach allows fintech applications to integrate document redaction directly into their platforms for user data protection.",
+		"audience": "Fintech Startups, Neobanks"
+	},
+	{
+		"title": "Internal Audits",
+		"description": "Prepare documentation for internal compliance reviews and external audits while protecting sensitive customer and transaction data.",
+		"audience": "Large Banks, Insurance Companies"
+	}
+]

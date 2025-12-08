@@ -7,10 +7,8 @@ import { ref, onMounted } from "vue";
 interface CookieConsent {
 	/** Always true - necessary cookies are required for basic functionality */
 	necessary: boolean;
-	/** Whether analytics cookies are allowed (e.g., Google Analytics, Umami) */
+	/** Whether analytics cookies are allowed (e.g., Plausible) */
 	analytics: boolean;
-	/** Whether marketing/advertising cookies are allowed */
-	marketing: boolean;
 	/** Unix timestamp when consent was given */
 	timestamp: number;
 }
@@ -88,14 +86,6 @@ function handleAcceptAll(): void {
 	saveConsent(consent);
 	hidePopup();
 
-	// Initialize analytics if available
-	if (typeof (window as any).gtag !== "undefined") {
-		(window as any).gtag("consent", "update", {
-			analytics_storage: "granted",
-			ad_storage: "granted",
-		});
-	}
-
 	console.log("Cookie consent: All accepted");
 }
 
@@ -112,14 +102,6 @@ function handleNecessaryOnly(): void {
 	saveConsent(consent);
 	hidePopup();
 
-	// Update analytics consent
-	if (typeof (window as any).gtag !== "undefined") {
-		(window as any).gtag("consent", "update", {
-			analytics_storage: "denied",
-			ad_storage: "denied",
-		});
-	}
-
 	console.log("Cookie consent: Necessary only");
 }
 
@@ -135,14 +117,6 @@ function handleDecline(): void {
 
 	saveConsent(consent);
 	hidePopup();
-
-	// Update analytics consent
-	if (typeof (window as any).gtag !== "undefined") {
-		(window as any).gtag("consent", "update", {
-			analytics_storage: "denied",
-			ad_storage: "denied",
-		});
-	}
 
 	console.log("Cookie consent: Declined");
 }
@@ -161,14 +135,6 @@ onMounted((): void => {
 	} else {
 		// Apply existing consent
 		console.log("Existing cookie consent found:", existingConsent);
-
-		// Initialize analytics based on existing consent
-		if (typeof (window as any).gtag !== "undefined") {
-			(window as any).gtag("consent", "update", {
-				analytics_storage: existingConsent.analytics ? "granted" : "denied",
-				ad_storage: existingConsent.marketing ? "granted" : "denied",
-			});
-		}
 	}
 });
 </script>
@@ -183,13 +149,13 @@ onMounted((): void => {
     }"
   >
     <div
-      class="w-full h-full bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl p-6 flex flex-col"
+      class="w-full h-full bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow-2xl p-6 flex flex-col"
     >
       <!-- Header -->
-      <div class="flex-shrink-0 mb-3">
+      <div class="shrink-0 mb-3">
         <div class="text-2xl mb-2">🍪</div>
         <h3
-          class="text-lg font-semibold text-gray-900 dark:text-white leading-tight"
+          class="text-lg font-semibold text-neutral-900 dark:text-white leading-tight"
         >
           We use cookies
         </h3>
@@ -198,12 +164,12 @@ onMounted((): void => {
       <!-- Content -->
       <div class="flex-grow flex flex-col justify-center">
         <p
-          class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-4"
+          class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed mb-4"
         >
           We use cookies to enhance your experience and analyze traffic.
           <a
             href="/legal/privacy-policy"
-            class="text-black dark:text-white underline hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+            class="text-black dark:text-white underline hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors"
             target="_blank"
           >
             Learn more
@@ -212,10 +178,10 @@ onMounted((): void => {
       </div>
 
       <!-- Buttons -->
-      <div class="flex-shrink-0 space-y-2">
+      <div class="shrink-0 space-y-2">
         <button
           @click="handleAcceptAll"
-          class="w-full bg-black dark:bg-white text-white dark:text-black rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+          class="w-full bg-black dark:bg-white text-white dark:text-black rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors"
         >
           Accept All
         </button>
@@ -223,14 +189,14 @@ onMounted((): void => {
         <div class="grid grid-cols-2 gap-2">
           <button
             @click="handleNecessaryOnly"
-            class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg px-3 py-2 text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            class="bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-lg px-3 py-2 text-xs font-medium hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
           >
             Essential Only
           </button>
 
           <button
             @click="handleDecline"
-            class="border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 rounded-lg px-3 py-2 text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            class="border border-neutral-300 dark:border-neutral-600 text-neutral-600 dark:text-neutral-400 rounded-lg px-3 py-2 text-xs font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
           >
             Decline
           </button>

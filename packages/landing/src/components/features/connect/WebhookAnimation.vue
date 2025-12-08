@@ -1,111 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
-import {
-	FileText,
-	CheckCircle,
-	Upload,
-	Download,
-	Calendar,
-	Shield,
-} from "lucide-vue-next";
+import { Calendar } from "lucide-vue-next";
 import { Badge } from "@/components/ui/badge";
-import type { FunctionalComponent } from "vue";
-
-interface UploadedEvent {
-	type: "uploaded";
-	icon: FunctionalComponent;
-	eventColor: string;
-	filename: string;
-	author: string;
-	size: string;
-}
-
-interface RedactedEvent {
-	type: "redacted";
-	icon: FunctionalComponent;
-	eventColor: string;
-	filename: string;
-	author: string;
-	credits: string;
-	size: string;
-	version: string;
-}
-
-interface VerifiedEvent {
-	type: "verified";
-	icon: FunctionalComponent;
-	eventColor: string;
-	filename: string;
-	author: string;
-	duration: string;
-	version: string;
-}
-
-interface DownloadedEvent {
-	type: "downloaded";
-	icon: FunctionalComponent;
-	eventColor: string;
-	filename: string;
-	author: string;
-	version: string;
-}
-
-type WebhookEventTemplate =
-	| UploadedEvent
-	| RedactedEvent
-	| VerifiedEvent
-	| DownloadedEvent;
-
-interface WebhookEvent extends WebhookEventTemplate {
-	id: number;
-	timestamp: string;
-}
+import { webhookEvents, type WebhookEvent } from "./webhooks";
 
 const events = ref<WebhookEvent[]>([]);
 let eventCounter = 0;
 let interval: number | null = null;
-
-const eventTemplates: WebhookEventTemplate[] = [
-	{
-		type: "uploaded",
-		icon: Upload,
-		eventColor:
-			"bg-blue-500/20 text-blue-900 dark:text-blue-200 border-blue-500/30",
-		filename: "Q4-Report.pdf",
-		author: "john@nvisy.com",
-		size: "2.4 MB",
-	},
-	{
-		type: "redacted",
-		icon: Shield,
-		eventColor:
-			"bg-green-500/20 text-green-900 dark:text-green-200 border-green-500/30",
-		filename: "Contract-2024.docx",
-		author: "sarah@nvisy.com",
-		credits: "28",
-		size: "3.1 MB",
-		version: "v2.1.3",
-	},
-	{
-		type: "verified",
-		icon: CheckCircle,
-		eventColor:
-			"bg-green-500/20 text-green-900 dark:text-green-200 border-green-500/30",
-		filename: "Invoice-Nov.pdf",
-		author: "mike@nvisy.com",
-		duration: "40s",
-		version: "v2.1.3",
-	},
-	{
-		type: "downloaded",
-		icon: Download,
-		eventColor:
-			"bg-blue-500/20 text-blue-900 dark:text-blue-200 border-blue-500/30",
-		filename: "Report-Final.pdf",
-		author: "alice@nvisy.com",
-		version: "v2.1.3",
-	},
-];
 
 const formatTime = () => {
 	const now = new Date();
@@ -121,7 +22,7 @@ const formatTime = () => {
 };
 
 const addEvent = () => {
-	const template = eventTemplates[eventCounter % eventTemplates.length];
+	const template = webhookEvents[eventCounter % webhookEvents.length];
 	const newEvent: WebhookEvent = {
 		...template,
 		id: Date.now(),

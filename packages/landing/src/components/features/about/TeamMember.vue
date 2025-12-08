@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getInitials } from "@/lib/content";
+import { getInitials } from "@nvisy/shared";
 import LinkedInIcon from "@/assets/icons/linkedin.svg?raw";
 import GitHubIcon from "@/assets/icons/github.svg?raw";
 

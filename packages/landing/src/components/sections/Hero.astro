@@ -69,7 +69,7 @@ const maxWidthClasses = {
 	${getBackgroundClass(background)}
 	py-24 px-12
 	min-h-[20vh] flex items-center
-	border-b border-gray-200 dark:border-neutral-800
+	${background === 'gradient' ? 'border-b border-gray-200 dark:border-neutral-800' : ''}
 `}>
 	<div class="container mx-auto px-4 w-full">
 		<div class={`grid ${heroImage ? 'lg:grid-cols-2 gap-12 items-center' : 'grid-cols-1'}`}>

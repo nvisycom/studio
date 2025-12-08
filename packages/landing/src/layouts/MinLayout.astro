@@ -100,9 +100,9 @@ const structuredData = {
     <link rel="dns-prefetch" href="https://cloud.umami.is"/>
 
     <!-- Theme and Appearance -->
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)"/>
-    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)"/>
     <meta name="color-scheme" content="light dark"/>
+    <meta name="theme-color" content="#ffffff"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 
     <!-- Favicon and Icons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
@@ -168,19 +168,6 @@ const structuredData = {
     </a>
 
     <slot name="content"/>
-
-    <!-- Compliance Components -->
     <slot name="compliance"/>
-
-    <!-- Service Worker Registration -->
-    <script is:inline>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(() => {
-                    // Silently fail if service worker registration fails
-                });
-            });
-        }
-    </script>
 </body>
 </html>

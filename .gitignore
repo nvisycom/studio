@@ -9,19 +9,21 @@ Thumbs.db
 .fleet/
 .zed/
 
-# Javascript
+# Node & JavaScript
+node_modules/
 .vite/
 .astro/
+.output/
+.nuxt/
+.nitro/
+.cache/
+
+# Testing
 playwright-report/
 test-results/
-node_modules/
-
-# Generated
-*.pem
-*.backup
 coverage/
 
-# Output
+# Build Output
 dist/
 build/
 output/
@@ -34,6 +36,10 @@ output/
 logs/
 *.log
 *.log*
+
+# Generated
+*.pem
+*.backup
 
 # Other
 .ignore*/

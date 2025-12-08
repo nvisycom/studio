@@ -6,14 +6,15 @@ import type {
 import {
 	BookOpen,
 	Braces,
+	Briefcase,
 	Building,
 	Building2,
 	Cloud,
 	Code,
 	HeartPulse,
-	HelpCircle,
 	Info,
 	Landmark,
+	Mail,
 	Map as MapIcon,
 	Package,
 	Plug,
@@ -167,7 +168,7 @@ export const resources: ResourceSection = {
 			title: "Careers",
 			href: "/careers",
 			description: "Join our remote team",
-			icon: Building2,
+			icon: Briefcase,
 		},
 	],
 	support: [
@@ -182,7 +183,7 @@ export const resources: ResourceSection = {
 			title: "Contact",
 			href: "/contact",
 			description: "Get in touch with our team",
-			icon: HelpCircle,
+			icon: Mail,
 		},
 		{
 			title: "About",
@@ -195,26 +196,6 @@ export const resources: ResourceSection = {
 			href: "/legal",
 			description: "Policies & legal documents",
 			icon: Scale,
-		},
-	],
-	blog: [
-		{
-			title: "Blog Post 02",
-			href: "/blog/lorem-ipsum-02",
-			excerpt:
-				"Exploring the fundamentals of modern web development and industry best practices.",
-		},
-		{
-			title: "Blog Post 03",
-			href: "/blog/lorem-ipsum-03",
-			excerpt:
-				"An in-depth look at content creation and publishing in the digital age.",
-		},
-		{
-			title: "Blog Post 01",
-			href: "/blog/lorem-ipsum-01",
-			excerpt:
-				"A comprehensive guide exploring modern development practices with TypeScript and Rust examples.",
 		},
 	],
 };

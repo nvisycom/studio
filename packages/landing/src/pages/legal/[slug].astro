@@ -2,19 +2,11 @@
 import { CTA } from "@/components";
 import { Layout } from "@/layouts";
 import { getCollection, type CollectionEntry } from "astro:content";
-import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbLink,
-	BreadcrumbList,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { Clock, FileText } from "lucide-vue-next";
 
 export async function getStaticPaths() {
 	try {
-		const legalEntries = await getCollection("legal");
+		const legalEntries = await getCollection("legal-docs");
 		return legalEntries.map((entry) => ({
 			params: { slug: entry.slug },
 			props: { entry },
@@ -36,23 +28,6 @@ const { Content } = await entry.render();
 
 <Layout title={entry.data.title} description={(entry.data as any).description || entry.data.title}>
   <div class="container mx-auto max-w-4xl px-4 py-8">
-      <!-- Breadcrumb -->
-      <Breadcrumb>
-          <BreadcrumbList>
-              <BreadcrumbItem>
-                  <BreadcrumbLink href="/legal">
-                      Legal
-                  </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                  <BreadcrumbPage>
-                      {entry.data.title}
-                  </BreadcrumbPage>
-              </BreadcrumbItem>
-          </BreadcrumbList>
-      </Breadcrumb>
-
     <article class="max-w-none mt-8">
       <header class="text-center mb-8">
         <h1 class="text-4xl md:text-5xl font-light text-black dark:text-white mb-4">{entry.data.title}</h1>

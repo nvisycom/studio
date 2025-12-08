@@ -4,6 +4,14 @@ import { Sun, Moon } from "lucide-vue-next";
 
 const isDark = ref(false);
 
+function updateThemeColor(dark: boolean) {
+	// Update theme-color meta tag for Safari tab bar
+	const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+	if (metaThemeColor) {
+		metaThemeColor.setAttribute("content", dark ? "#000000" : "#ffffff");
+	}
+}
+
 function initTheme() {
 	// Get stored theme or use system preference
 	const stored = localStorage.getItem("theme");
@@ -17,6 +25,9 @@ function initTheme() {
 	} else {
 		document.documentElement.classList.remove("dark");
 	}
+
+	// Update theme color for Safari
+	updateThemeColor(shouldBeDark);
 
 	// Store preference
 	localStorage.setItem("theme", shouldBeDark ? "dark" : "light");
@@ -32,6 +43,9 @@ function toggleTheme() {
 		document.documentElement.classList.remove("dark");
 		localStorage.setItem("theme", "light");
 	}
+
+	// Update theme color for Safari
+	updateThemeColor(isDark.value);
 }
 
 onMounted(() => {

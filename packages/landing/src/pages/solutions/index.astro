@@ -1,242 +1,113 @@
 ---
 import { Layout } from "@/layouts";
-import {
-	Hero,
-	CompanyStats,
-	CTA,
-	Security,
-	UseCases,
-	Team,
-	CaseStudies,
-} from "@/components";
-import SDKExamples from "@/components/sections/SDKExamples.astro";
-import Connect from "@/components/sections/Connect.astro";
-import { Building, Rocket, ChevronRight, Check } from "lucide-vue-next";
-import { getCollection } from "astro:content";
-
-// Get case studies from blog
-const caseStudies = (await getCollection("blog"))
-	.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
-	.slice(0, 3);
+import { Hero, CTA, Features, Stats } from "@/components";
+import Industries from "@/components/sections/Industries.astro";
+import CaseStudies from "@/components/sections/CaseStudies.astro";
 ---
 
 <Layout
   title="Solutions"
-  description="Document redaction and anonymization solutions for enterprises and startups. GDPR & CCPA compliant platform with comprehensive APIs and SDKs."
+  description="Industry-specific document redaction solutions. From healthcare to financial services, find the perfect compliance and security solution for your industry."
 >
   <div class="bg-white dark:bg-black min-h-screen">
     <!-- Hero Section -->
     <Hero
-      title="Document Redaction Solutions"
-      description="Secure, compliant document redaction for organizations of all sizes. From startups building their first product to enterprises managing sensitive data at scale."
+      title="Solutions by Industry"
+      description="Tailored document redaction solutions that meet your industry's unique compliance requirements, security standards, and operational needs. From healthcare PHI to financial PII, we've got you covered."
       background="gradient"
       buttons={[
         {
-          text: "View API Documentation",
-          href: "https://docs.nvisy.com",
+          text: "Schedule Demo",
+          href: "/contact",
           variant: "primary"
         },
         {
-          text: "Contact Sales",
-          href: "/contact",
+          text: "View All Industries",
+          href: "#industries",
           variant: "secondary"
         }
       ]}
     />
 
-    <!-- Company Stats -->
-    <CompanyStats />
+    <!-- Stats Section -->
+    <Stats
+      stats={[
+        { label: "Industries Served", value: "6+" },
+        { label: "Compliance Standards", value: "15+" },
+        { label: "Enterprise Customers", value: "100+" },
+        { label: "Accuracy Rate", value: "99.9%" },
+      ]}
+      inline={false}
+      padding="lg"
+    />
 
-    <!-- Main Solutions -->
-    <div class="container mx-auto px-4 py-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-light text-neutral-900 dark:text-white mb-6">
-            Solutions Built for Your Needs
-          </h2>
-          <p class="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-            Whether you're a startup looking to ship fast or an enterprise requiring compliance and scale,
-            our document redaction platform adapts to your specific requirements.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <!-- Startup Solution -->
-          <div class="group bg-white dark:bg-black rounded-2xl border border-neutral-200 dark:border-neutral-700 p-10 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-              <Rocket class="w-8 h-8 text-white" />
-            </div>
-
-            <h3 class="text-2xl font-bold text-neutral-900 dark:text-white mb-4">For Startups</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 mb-6 leading-relaxed">
-              Fast integration, developer-friendly APIs, and startup pricing.
-              Built by founders who understand the need to ship quickly without compromising security.
-            </p>
-
-            <!-- Key Features -->
-            <div class="space-y-3 mb-8">
-              <div class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">Free to start, affordable to scale</span>
-              </div>
-              <div class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">5-minute integration with TypeScript/Python SDKs</span>
-              </div>
-              <div class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">Open source core services for validation</span>
-              </div>
-              <div class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">Special pricing for new startups</span>
-              </div>
-              <div class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">Direct access to founders</span>
-              </div>
-            </div>
-
-            <!-- Stats -->
-            <div class="grid grid-cols-3 gap-4 mb-8 pt-6 border-t border-neutral-200 dark:border-neutral-700">
-              <div class="text-center">
-                <div class="text-lg font-bold text-neutral-900 dark:text-white">5 min</div>
-                <div class="text-xs text-neutral-500">Integration</div>
-              </div>
-              <div class="text-center">
-                <div class="text-lg font-bold text-neutral-900 dark:text-white">Free</div>
-                <div class="text-xs text-neutral-500">To Start</div>
-              </div>
-              <div class="text-center">
-                <div class="text-lg font-bold text-neutral-900 dark:text-white">Open</div>
-                <div class="text-xs text-neutral-500">Source Core</div>
-              </div>
-            </div>
-
-            <a
-              href="/solutions/startup"
-              class="inline-flex items-center justify-center w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium py-3 px-6 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 group"
-            >
-              Explore Startup Solutions
-              <ChevronRight class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-            </a>
-          </div>
-
-          <!-- Enterprise Solution -->
-          <div class="group bg-white dark:bg-black rounded-2xl border border-neutral-200 dark:border-neutral-700 p-10 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-            <div class="w-16 h-16 bg-gradient-to-br from-gray-800 to-black rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-              <Building class="w-8 h-8 text-white" />
-            </div>
-
-            <h3 class="text-2xl font-bold text-neutral-900 dark:text-white mb-4">For Enterprise</h3>
-            <p class="text-neutral-600 dark:text-neutral-300 mb-6 leading-relaxed">
-              Enterprise-grade security, compliance certifications, and deployment flexibility.
-              Designed for organizations with stringent security and compliance requirements.
-            </p>
-
-            <!-- Key Features -->
-            <div class="space-y-3 mb-8">
-              <div class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">GDPR & CCPA compliant platform</span>
-              </div>
-              <div class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">On-premise deployment available</span>
-              </div>
-              <div class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">Source code access for security reviews</span>
-              </div>
-              <div class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">Special enterprise pricing</span>
-              </div>
-              <div class="flex items-center gap-3">
-                <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span class="text-neutral-700 dark:text-neutral-300">SOC II & HIPAA certifications in progress</span>
-              </div>
-            </div>
-
-            <!-- Stats -->
-            <div class="grid grid-cols-3 gap-4 mb-8 pt-6 border-t border-neutral-200 dark:border-neutral-700">
-              <div class="text-center">
-                <div class="text-lg font-bold text-neutral-900 dark:text-white">GDPR</div>
-                <div class="text-xs text-neutral-500">Compliant</div>
-              </div>
-              <div class="text-center">
-                <div class="text-lg font-bold text-neutral-900 dark:text-white">On-Prem</div>
-                <div class="text-xs text-neutral-500">Available</div>
-              </div>
-              <div class="text-center">
-                <div class="text-lg font-bold text-neutral-900 dark:text-white">Source</div>
-                <div class="text-xs text-neutral-500">Access</div>
-              </div>
-            </div>
-
-            <a
-              href="/solutions/enterprise"
-              class="inline-flex items-center justify-center w-full bg-black dark:bg-white text-white dark:text-black font-medium py-3 px-6 rounded-xl hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all duration-200 group"
-            >
-              Explore Enterprise Solutions
-              <ChevronRight class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-            </a>
-          </div>
-        </div>
-      </div>
+    <!-- Industries Section -->
+    <div id="industries">
+      <Industries
+        title="Industry-Specific Solutions"
+        description="Every industry has unique compliance requirements and security challenges. Our solutions are built to address your specific regulatory needs while maintaining the highest standards of data protection."
+      />
     </div>
 
-    <!-- Use Cases -->
-    <UseCases
-      title="Industry-Specific Solutions"
-      description="Specialized document redaction solutions tailored for specific industry requirements, regulations, and compliance needs."
-    />
-
-    <!-- Connect/Integration -->
-    <Connect
-      title="Developer-First Platform"
-      description="Comprehensive APIs, SDKs, and documentation designed to get you up and running quickly, regardless of your tech stack or organizational size."
-    />
-
-    <!-- SDK Examples -->
-    <SDKExamples
-      title="Official SDKs"
-      description="TypeScript and Python SDKs with full type safety, comprehensive examples, and excellent documentation."
-    />
-
-    <!-- Security -->
-    <Security
-      title="Security & Compliance First"
-      description="Built with enterprise security standards from day one. Currently GDPR & CCPA compliant with SOC II and HIPAA certifications actively in progress."
-    />
-
-    <!-- Team -->
-    <Team />
-
     <!-- Case Studies -->
-    <CaseStudies
-      title="Customer Success Stories"
-      description="See how organizations across industries are using Nvisy to protect sensitive information."
-      caseStudies={caseStudies}
+    <CaseStudies />
+
+    <!-- Key Features for Industries -->
+    <Features
+      title="Built for Regulatory Compliance"
+      description="Our industry solutions include everything you need to meet regulatory requirements and protect sensitive data across different sectors."
+      features={[
+        {
+          title: "HIPAA Compliance",
+          description: "Healthcare-specific redaction templates for PHI protection and patient privacy.",
+          icon: "shield"
+        },
+        {
+          title: "Financial Regulations",
+          description: "SOX, PCI DSS, and banking compliance with automated audit trails.",
+          icon: "dollar"
+        },
+        {
+          title: "Government Standards",
+          description: "FedRAMP, FISMA compliance with air-gap deployment capabilities.",
+          icon: "government"
+        },
+        {
+          title: "Data Sovereignty",
+          description: "Keep sensitive data within your jurisdiction with on-premises options.",
+          icon: "globe"
+        },
+        {
+          title: "Audit & Reporting",
+          description: "Comprehensive audit logs and compliance reporting for all industries.",
+          icon: "clipboard"
+        },
+        {
+          title: "Custom Integration",
+          description: "Seamlessly integrate with your existing industry-specific workflows.",
+          icon: "link"
+        }
+      ]}
     />
+
+
 
     <!-- CTA Section -->
     <CTA
-      title="Ready to Secure Your Documents?"
-      description="Whether you're a startup looking to move fast or an enterprise requiring comprehensive compliance, we have the right solution for your needs."
+      title="Ready to Protect Your Industry's Data?"
+      description="Choose the solution that matches your compliance requirements and security needs. Get started with a personalized demo tailored to your industry."
       buttons={[
         {
-          text: "View Documentation",
-          href: "https://docs.nvisy.com",
+          text: "Schedule Industry Demo",
+          href: "/contact",
           variant: "primary"
         },
         {
-          text: "Contact Sales",
-          href: "/contact",
+          text: "View Pricing",
+          href: "/pricing",
           variant: "secondary"
         }
       ]}
-      background="solid"
     />
   </div>
 </Layout>

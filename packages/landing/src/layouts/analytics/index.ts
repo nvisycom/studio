@@ -1,2 +1,2 @@
-/** Umami analytics tracking script component */
-export { default as Umami } from "./Umami.astro";
+export { default as PlausibleInit } from "./PlausibleInit.astro";
+export { default as PlausibleTrack } from "./PlausibleTrack.astro";

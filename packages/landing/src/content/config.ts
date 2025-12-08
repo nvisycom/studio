@@ -13,7 +13,7 @@ const blogSchema = z.object({
 });
 
 export type BlogItem = z.infer<typeof blogSchema>;
-const blog = defineCollection({
+const blogPosts = defineCollection({
 	type: "content",
 	schema: blogSchema,
 });
@@ -27,7 +27,7 @@ const legalSchema = z.object({
 });
 
 export type LegalItem = z.infer<typeof legalSchema>;
-const legal = defineCollection({
+const legalDocs = defineCollection({
 	type: "content",
 	schema: legalSchema,
 });
@@ -146,9 +146,21 @@ const sdks = defineCollection({
 	schema: sdkSchema,
 });
 
+const useCaseSchema = z.object({
+	title: z.string(),
+	description: z.string(),
+	audience: z.string(),
+});
+
+export type UseCaseItem = z.infer<typeof useCaseSchema>;
+const useCases = defineCollection({
+	type: "data",
+	schema: z.array(useCaseSchema),
+});
+
 export const collections = {
-	blog,
-	legal,
+	"blog-posts": blogPosts,
+	"legal-docs": legalDocs,
 	jobs,
 	roadmap,
 	integrations,
@@ -156,4 +168,5 @@ export const collections = {
 	testimonials,
 	features,
 	sdks,
+	"use-cases": useCases,
 };

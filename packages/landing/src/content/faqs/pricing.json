@@ -21,13 +21,13 @@
 		"question": "What's the difference between Basic and Professional plans?",
 		"answer": "Professional plan includes AI Insights and integrations not available in Basic. It also offers 20GB storage (vs 5GB), priority support, and lower per-document pricing.",
 		"order": 4,
-		"featured": false
+		"featured": true
 	},
 	{
 		"question": "What's included in the Enterprise plan?",
 		"answer": "Enterprise includes everything in Professional plus unlimited storage, 24/7 dedicated support, custom integrations, SLA guarantees, on-premise deployment options, and custom pricing tailored to your volume and needs.",
 		"order": 5,
-		"featured": false
+		"featured": true
 	},
 	{
 		"question": "Do you offer volume discounts?",

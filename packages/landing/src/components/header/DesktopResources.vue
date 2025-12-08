@@ -7,6 +7,21 @@ import {
 } from "@/components/ui/navigation-menu";
 import { resources } from "./desktop-nav-data";
 import { ExternalLink, ChevronRight } from "lucide-vue-next";
+import { computed } from "vue";
+
+interface BlogPost {
+	title: string;
+	href: string;
+}
+
+interface Props {
+	blogPosts?: BlogPost[];
+}
+
+const props = defineProps<Props>();
+
+// Use blog posts from props
+const displayedBlogPosts = computed(() => props.blogPosts || []);
 </script>
 
 <template>
@@ -17,7 +32,7 @@ import { ExternalLink, ChevronRight } from "lucide-vue-next";
       Resources
     </NavigationMenuTrigger>
     <NavigationMenuContent
-      class="left-0 top-0 w-full data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52 md:absolute md:w-auto"
+      class="left-0 top-0 w-full data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52 md:absolute md:w-auto md:left-1/2 md:-translate-x-1/2"
     >
       <div class="grid gap-0 p-0 md:w-[800px] lg:grid-cols-2">
         <!-- Left side: Resource Categories -->
@@ -108,7 +123,7 @@ import { ExternalLink, ChevronRight } from "lucide-vue-next";
           <!-- Blog Header -->
           <NavigationMenuLink
             href="/blog"
-            class="inline-flex items-center font-light text-gray-500 dark:text-neutral-400 mb-2 text-xs tracking-wide transition-colors hover:text-gray-900 dark:hover:text-white focus:text-gray-900 dark:focus:text-white"
+            class="inline-flex items-center font-light text-gray-500 dark:text-neutral-400 mb-1 text-xs tracking-wide transition-colors hover:text-gray-900 dark:hover:text-white focus:text-gray-900 dark:focus:text-white"
           >
             <span class="flex items-center">
               Blog
@@ -119,19 +134,14 @@ import { ExternalLink, ChevronRight } from "lucide-vue-next";
           <!-- Latest Blog Posts -->
           <div class="space-y-1">
             <NavigationMenuLink
-              v-for="post in resources.blog"
+              v-for="post in displayedBlogPosts"
               :key="post.title"
               :href="post.href"
               class="block select-none rounded-md leading-none no-underline outline-none transition-colors hover:bg-gray-50 dark:hover:bg-neutral-800/30 hover:text-gray-900 dark:hover:text-white focus:bg-gray-50 dark:focus:bg-neutral-800/30 focus:text-gray-900 dark:focus:text-white"
             >
-              <div class="text-sm font-light leading-tight mb-2">
+              <div class="text-sm font-light leading-tight">
                 {{ post.title }}
               </div>
-              <p
-                class="text-xs font-light leading-snug text-gray-500 dark:text-neutral-400"
-              >
-                {{ post.excerpt }}
-              </p>
             </NavigationMenuLink>
           </div>
         </div>

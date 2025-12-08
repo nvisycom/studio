@@ -8,7 +8,7 @@ import {
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import MinLayout from "@/layouts/MinLayout.astro";
-import { Umami } from "@/layouts/analytics";
+import { PlausibleInit } from "@/layouts/analytics";
 import { Cookies } from "@/layouts/compliance";
 
 /**
@@ -53,6 +53,9 @@ export interface Props {
 
 	/** Whether to hide the site footer */
 	hideFooter?: boolean | undefined;
+
+	/** Whether to show the cookie consent popup */
+	showCookiePopup?: boolean | undefined;
 }
 
 const {
@@ -68,6 +71,7 @@ const {
 	keywords,
 	hideHeader = false,
 	hideFooter = false,
+	showCookiePopup = true,
 } = Astro.props;
 ---
 <MinLayout
@@ -83,13 +87,13 @@ const {
 	keywords={keywords}
 >
 	<!-- Analytics Slot -->
-	<Umami slot="analytics" />
+	<PlausibleInit slot="analytics" />
 
 	<!-- Page Content -->
 	<div slot="content" class="flex flex-col min-h-screen">
 		<!-- Header -->
 		{!hideHeader && (
-			<header role="banner" class="flex-shrink-0">
+			<header role="banner" class="shrink-0">
 				<Header />
 			</header>
 		)}
@@ -106,12 +110,12 @@ const {
 
 		<!-- Footer -->
 		{!hideFooter && (
-			<footer role="contentinfo" class="flex-shrink-0">
+			<footer role="contentinfo" class="shrink-0">
 				<Footer />
 			</footer>
 		)}
 
 		<!-- Compliance Slot -->
-		<Cookies slot="compliance" />
+		{showCookiePopup && <Cookies slot="compliance" />}
 	</div>
 </MinLayout>

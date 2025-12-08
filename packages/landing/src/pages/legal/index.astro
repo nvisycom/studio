@@ -7,7 +7,7 @@ import { File } from "lucide-vue-next";
 // Get all legal documents
 let legalEntries: CollectionEntry<"legal">[] = [];
 try {
-	legalEntries = await getCollection("legal");
+	legalEntries = await getCollection("legal-docs");
 } catch (error: unknown) {
 	console.error("Error fetching legal collection:", error);
 }
