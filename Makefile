@@ -18,9 +18,9 @@ build: # Builds all packages.
 	$(call log,Building all packages...)
 	@npm run build --workspaces --if-present
 	$(call log,Copying build outputs to ./output folder...)
-	@mkdir -p ./output/landing ./output/webapp
-	@cp -r packages/landing/dist/* ./output/landing/
-	@cp -r packages/webapp/.output/* ./output/webapp/
+	@mkdir -p ./output/com ./output/app
+	@cp -r packages/landing/dist/* ./output/com/
+	@cp -r packages/webapp/.output/* ./output/app/
 	$(call log,Copied build outputs to ./output folder.)
 
 .PHONY: clean
