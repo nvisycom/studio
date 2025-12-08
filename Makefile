@@ -13,20 +13,33 @@ install: # Installs all dependencies.
 	@chmod +x scripts/*.sh
 	$(call log,Made scripts executable.)
 
-.PHONY: build
-build: # Builds all packages.
-	$(call log,Building all packages...)
-	$(call log,Building shared dependencies first...)
+.PHONY: build-deps
+build-deps: # Builds shared dependencies (config, shared).
+	$(call log,Building shared dependencies...)
 	@npm run build --workspace=@nvisy/config
 	@npm run build --workspace=@nvisy/shared
-	$(call log,Building applications...)
+	$(call log,Shared dependencies built.)
+
+.PHONY: build-com
+build-com: build-deps # Builds landing (nvisy.com).
+	$(call log,Building nvisy.com...)
 	@npm run build --workspace=@nvisy/landing
-	@npm run build --workspace=@nvisy/webapp
-	$(call log,Copying build outputs to ./output folder...)
-	@mkdir -p ./output/com ./output/app
+	$(call log,Copying build output to ./output/com folder...)
+	@mkdir -p ./output/com
 	@cp -r packages/landing/dist/* ./output/com/
+	$(call log,Copied build output to ./output/com folder.)
+
+.PHONY: build-app
+build-app: build-deps # Builds webapp (app.nvisy.com).
+	$(call log,Building app.nvisy.com...)
+	@npm run build --workspace=@nvisy/webapp
+	$(call log,Copying build output to ./output/app folder...)
+	@mkdir -p ./output/app
 	@cp -r packages/webapp/.output/* ./output/app/
-	$(call log,Copied build outputs to ./output folder.)
+	$(call log,Copied build output to ./output/app folder.)
+
+.PHONY: build
+build: build-com build-app # Builds all packages.
 
 .PHONY: clean
 clean: # Cleans build artifacts and dependencies.
