@@ -16,7 +16,12 @@ install: # Installs all dependencies.
 .PHONY: build
 build: # Builds all packages.
 	$(call log,Building all packages...)
-	@npm run build --workspaces --if-present
+	$(call log,Building shared dependencies first...)
+	@npm run build --workspace=@nvisy/config
+	@npm run build --workspace=@nvisy/shared
+	$(call log,Building applications...)
+	@npm run build --workspace=@nvisy/landing
+	@npm run build --workspace=@nvisy/webapp
 	$(call log,Copying build outputs to ./output folder...)
 	@mkdir -p ./output/com ./output/app
 	@cp -r packages/landing/dist/* ./output/com/
