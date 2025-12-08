@@ -11,8 +11,9 @@ This folder contains all components related to the OneDrive integration.
 
 ## Usage
 
-Components in this folder should be imported from the main integrations barrel export:
+Components in this folder should be imported from the main integrations barrel
+export:
 
 ```typescript
-import { ConnectOneDriveDialog } from '@/components/integrations'
+import { ConnectOneDriveDialog } from "@/components/integrations";
 ```

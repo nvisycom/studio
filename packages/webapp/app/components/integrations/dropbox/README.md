@@ -11,8 +11,9 @@ This folder contains all components related to the Dropbox integration.
 
 ## Usage
 
-Components in this folder should be imported from the main integrations barrel export:
+Components in this folder should be imported from the main integrations barrel
+export:
 
 ```typescript
-import { ConnectDropboxDialog } from '@/components/integrations'
+import { ConnectDropboxDialog } from "@/components/integrations";
 ```

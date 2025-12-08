@@ -1,9 +1,5 @@
-# Nuxt dev/build outputs
-.output
-.data
-.nuxt
-.nitro
-.cache
+# Astro dev/build outputs
+.astro
 dist
 
 # Node dependencies
@@ -13,15 +9,12 @@ node_modules
 logs
 *.log
 
-# OS
+# Misc
 .DS_Store
-
-# Editors
 .fleet
 .idea
-.vscode
 
-# Environment
+# Local env files
 .env
 .env.*
 !.env.example

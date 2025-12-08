@@ -1,24 +1,19 @@
 # nvisy.com/landing
 
-[![Node](https://img.shields.io/badge/node-%3E%3D20-black?style=flat&logo=node.js&logoColor=white&labelColor=black)](https://nodejs.org/)
+[![Node](https://img.shields.io/badge/node-20-black?style=flat&logo=node.js&logoColor=white&labelColor=black)](https://nodejs.org/)
 [![Astro](https://img.shields.io/badge/astro-5.0-black?style=flat&logo=astro&logoColor=white&labelColor=black)](https://astro.build/)
 [![Vue](https://img.shields.io/badge/vue-3.5-black?style=flat&logo=vue.js&logoColor=white&labelColor=black)](https://vuejs.org/)
 
 ## Overview
 
-Statically-rendered landing page for nvisy.com, built with Astro and Vue.
-Features modern component architecture with Tailwind CSS, MDX support, and
-optimized static build outputs for maximum performance.
-
-## Tech Stack
-
-- **Astro 5**: Static site generation with island architecture
-- **Vue 3.5**: Interactive components with Composition API
-- **Tailwind CSS 4**: Utility-first styling with Vite integration
-- **Reka UI**: Accessible, unstyled component primitives
-- **MDX**: Markdown with component support
-- **Vitest**: Unit testing framework
-- **Playwright**: End-to-end testing
+Statically-rendered landing page for [nvisy.com](https://nvisy.com), built with
+[Astro](https://astro.build/) and [Vue](https://vuejs.org/). Features modern
+component architecture with [Tailwind CSS](https://tailwindcss.com/),
+[MDX](https://mdxjs.com/) support, and optimized static build outputs for
+maximum performance. Uses [Astro](https://astro.build/) 5 for static site
+generation with island architecture, [Vue](https://vuejs.org/) 3.5 for
+interactive components, [Tailwind CSS](https://tailwindcss.com/) 4 for styling,
+and [Reka UI](https://www.reka-ui.com/) for accessible component primitives.
 
 ## Project Structure
 
@@ -33,17 +28,30 @@ optimized static build outputs for maximum performance.
 └── dist/                 # Build output
 ```
 
-## Deployment
+## Development
 
-- **Domain**: nvisy.com
-- **Type**: Static site
-- **Build output**: Pre-rendered HTML, CSS, and minimal JavaScript
+Start the development server:
+
+```bash
+npm run dev
+```
+
+## Build
+
+Build for production:
+
+```bash
+npm run build
+```
+
+Preview the build:
+
+```bash
+npm run preview
+```
 
 ## Notes
 
 - Statically generated for optimal performance and SEO
-- Components use Reka UI for accessibility
-- Tailwind CSS v4 with Vite plugin for optimal performance
-- MDX support for content-rich pages
-- Type-safe development with TypeScript
 - Island architecture for selective hydration
+- MDX support for content-rich pages

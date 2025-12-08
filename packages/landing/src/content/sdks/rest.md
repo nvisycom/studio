@@ -6,6 +6,7 @@ extension: sh
 githubUrl: https://github.com/nvisycom/docs
 order: 3
 ---
+
 ```bash
 # Redact a document
 curl -X POST https://api.nvisy.com/v1/documents/redact \
