@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {
-	NavigationMenuContent,
-	NavigationMenuItem,
-	NavigationMenuLink,
-	NavigationMenuTrigger,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { ChevronRight } from "lucide-vue-next";
 import { solutions } from "./desktop-nav-data";
@@ -17,7 +17,7 @@ import { solutions } from "./desktop-nav-data";
       Solutions
     </NavigationMenuTrigger>
     <NavigationMenuContent
-      class="left-0 top-0 w-full data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52 md:absolute md:w-auto"
+      class="left-0 top-0 w-full data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52 md:absolute md:w-auto md:left-1/2 md:-translate-x-1/2"
     >
       <div class="grid gap-0 p-0 md:w-[800px] lg:grid-cols-2">
         <!-- Left side: Solutions Categories -->

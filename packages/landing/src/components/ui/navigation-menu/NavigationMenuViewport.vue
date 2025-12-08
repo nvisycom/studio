@@ -6,16 +6,17 @@ import { NavigationMenuViewport, useForwardProps } from "reka-ui";
 import { cn } from "@/lib/utils";
 
 const props = defineProps<
-	NavigationMenuViewportProps & { class?: HTMLAttributes["class"] }
+  NavigationMenuViewportProps & { class?: HTMLAttributes["class"] }
 >();
 
 const delegatedProps = reactiveOmit(props, "class");
-
 const forwardedProps = useForwardProps(delegatedProps);
 </script>
 
 <template>
-  <div class="absolute top-full left-0 isolate z-50 flex justify-center">
+  <div
+    class="absolute top-full left-1/2 -translate-x-1/2 isolate z-50 flex justify-center"
+  >
     <NavigationMenuViewport
       data-slot="navigation-menu-viewport"
       v-bind="forwardedProps"
