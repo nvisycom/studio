@@ -1,0 +1,46 @@
+{
+  "name": "@nvisy/shared",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "files": [
+    "./dist"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./constants": {
+      "types": "./dist/constants.d.ts",
+      "default": "./dist/constants.js"
+    },
+    "./utilities": {
+      "types": "./dist/utilities.d.ts",
+      "default": "./dist/utilities.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "test:types": "tsc --noEmit",
+    "test:cov": "vitest run --coverage",
+    "bench": "vitest bench",
+    "bench:watch": "vitest bench -w",
+    "format": "biome format --write .",
+    "lint": "biome lint --write .",
+    "check": "biome check --write .",
+    "ci": "biome ci ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.7",
+    "@types/node": "^24.10.1",
+    "@vitest/coverage-v8": "^4.0.13",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.13"
+  }
+}

@@ -6,7 +6,7 @@
 
 ## Overview
 
-Modern monorepo for Nvisy's web properties, built with Astro and Vue. This workspace manages shared configurations and landing pages with optimized build processes and type-safe development workflows.
+Modern monorepo for Nvisy's web properties, built with Astro, Nuxt, and Vue. This workspace manages shared configurations, a statically-rendered landing page (nvisy.com), and a single-page web application (app.nvisy.com) with optimized build processes and type-safe development workflows.
 
 ## Prerequisites
 
@@ -21,8 +21,10 @@ Modern monorepo for Nvisy's web properties, built with Astro and Vue. This works
 ├── .github/
 │   └── workflows/         # GitHub Actions CI/CD workflows
 ├── packages/              # Workspace packages
-│   ├── config/            # Configuration package
-│   └── landing/           # Landing page package
+│   ├── config/            # Shared configuration package
+│   ├── shared/            # Shared utilities and helpers
+│   ├── landing/           # Static landing page - nvisy.com (Astro + Vue)
+│   └── webapp/            # SPA web application - app.nvisy.com (Nuxt + Vue)
 ├── Makefile               # Build automation
 ├── package.json           # Root package configuration
 └── README.md              # This file

@@ -6,9 +6,9 @@
 
 ## Overview
 
-Landing page package for nvisy.com, built with Astro and Vue. Features modern
-component architecture with Tailwind CSS, MDX support, and optimized build
-outputs.
+Statically-rendered landing page for nvisy.com, built with Astro and Vue.
+Features modern component architecture with Tailwind CSS, MDX support, and
+optimized static build outputs for maximum performance.
 
 ## Tech Stack
 
@@ -33,9 +33,17 @@ outputs.
 └── dist/                 # Build output
 ```
 
+## Deployment
+
+- **Domain**: nvisy.com
+- **Type**: Static site
+- **Build output**: Pre-rendered HTML, CSS, and minimal JavaScript
+
 ## Notes
 
+- Statically generated for optimal performance and SEO
 - Components use Reka UI for accessibility
 - Tailwind CSS v4 with Vite plugin for optimal performance
 - MDX support for content-rich pages
 - Type-safe development with TypeScript
+- Island architecture for selective hydration

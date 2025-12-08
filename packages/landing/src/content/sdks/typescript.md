@@ -6,9 +6,8 @@ extension: ts
 githubUrl: https://github.com/nvisycom/sdk-ts
 order: 1
 ---
-
 ```typescript
-import { NvisyClient } from '@nvisy/sdk';
+import { NvisyClient } from "@nvisy/sdk";
 
 // Initialize the client
 const client = new NvisyClient({
@@ -17,11 +16,11 @@ const client = new NvisyClient({
 
 // Redact a document
 const result = await client.documents.redact({
-  file: './sensitive-document.pdf',
-  redactionTypes: ['PII', 'PHI', 'CREDIT_CARD'],
-  outputFormat: 'pdf',
+  file: "./sensitive-document.pdf",
+  redactionTypes: ["PII", "PHI", "CREDIT_CARD"],
+  outputFormat: "pdf",
 });
 
-console.log('Document redacted:', result.documentId);
-console.log('Download URL:', result.downloadUrl);
+console.log("Document redacted:", result.documentId);
+console.log("Download URL:", result.downloadUrl);
 ```

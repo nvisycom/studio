@@ -5,8 +5,7 @@
 
 ## Overview
 
-Shared configuration package for the nvisy.com monorepo.
-Provides constants, utilities, and type-safe configuration exports for use across all workspace packages.
+Shared configuration package for the nvisy.com monorepo. Provides constants, utilities, and type-safe configuration exports for use across all workspace packages (landing, webapp).
 
 ## Tech Stack
 
@@ -24,10 +23,9 @@ import { ... } from '@nvisy/config'
 
 // Constants
 import { ... } from '@nvisy/config/constants'
-
-// Utilities
-import { ... } from '@nvisy/config/utilities'
 ```
+
+**Note**: Shared utilities have been moved to the `@nvisy/shared` package.
 
 ## Project Structure
 
@@ -35,12 +33,18 @@ import { ... } from '@nvisy/config/utilities'
 .
 ├── src/
 │   ├── index.ts          # Main exports
-│   ├── constants.ts      # Shared constants
-│   └── utilities.ts      # Utility functions
+│   └── constants.ts      # Shared constants
 ├── dist/                 # Build output (CJS + ESM)
 ├── assets/               # Static assets
 └── schema.json           # JSON schema definitions
 ```
+
+## Usage Across Packages
+
+This package is consumed by:
+- **shared**: Configuration for shared utilities package
+- **landing**: Static site configuration and constants
+- **webapp**: Application configuration and constants
 
 ## Notes
 
@@ -48,3 +52,4 @@ import { ... } from '@nvisy/config/utilities'
 - Tree-shakeable exports for optimal bundle size
 - Full TypeScript type definitions included
 - Benchmarking suite for performance tracking
+- Centralized configuration reduces duplication across packages
