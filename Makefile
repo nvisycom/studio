@@ -32,10 +32,10 @@ build-com: build-deps # Builds landing (nvisy.com).
 .PHONY: build-app
 build-app: build-deps # Builds webapp (app.nvisy.com).
 	$(call log,Building app.nvisy.com...)
-	@npm run build --workspace=@nvisy/webapp
+	@npm run generate --workspace=@nvisy/webapp
 	$(call log,Copying build output to ./output/app folder...)
 	@mkdir -p ./output/app
-	@cp -r packages/webapp/.output/* ./output/app/
+	@cp -r packages/webapp/.output/public/* ./output/app/
 	$(call log,Copied build output to ./output/app folder.)
 
 .PHONY: build
