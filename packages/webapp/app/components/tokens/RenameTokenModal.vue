@@ -1,40 +1,40 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
+import { Edit } from "lucide-vue-next";
+import { Button } from "@/components/ui/button";
 import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface Token {
-	id: string;
-	name: string;
-	service: string;
-	browser: string;
-	os: string;
-	authMethod: string;
-	scope: string[];
-	createdAt: Date;
-	expiresAt: Date | null;
-	lastUsed: Date | null;
-	token?: string;
+  id: string;
+  name: string;
+  service: string;
+  browser: string;
+  os: string;
+  authMethod: string;
+  scope: string[];
+  createdAt: Date;
+  expiresAt: Date | null;
+  lastUsed: Date | null;
+  token?: string;
 }
 
 interface Props {
-	open: boolean;
-	token: Token | null;
+  open: boolean;
+  token: Token | null;
 }
 
 interface Emits {
-	(e: "update:open", value: boolean): void;
-	(e: "confirm", newName: string): void;
+  (e: "update:open", value: boolean): void;
+  (e: "confirm", newName: string): void;
 }
 
 const props = defineProps<Props>();
@@ -44,59 +44,60 @@ const newTokenName = ref("");
 
 // Watch for token changes to update the input
 watch(
-	() => props.token,
-	(token) => {
-		if (token) {
-			newTokenName.value = token.name;
-		}
-	},
-	{ immediate: true },
+  () => props.token,
+  (token) => {
+    if (token) {
+      newTokenName.value = token.name;
+    }
+  },
+  { immediate: true },
 );
 
-function handleConfirm() {
-	if (newTokenName.value.trim()) {
-		emit("confirm", newTokenName.value.trim());
-		emit("update:open", false);
-	}
+function closeModal() {
+  emit("update:open", false);
+  // Reset to original name
+  if (props.token) {
+    newTokenName.value = props.token.name;
+  }
 }
 
-function handleCancel() {
-	emit("update:open", false);
-	// Reset to original name
-	if (props.token) {
-		newTokenName.value = props.token.name;
-	}
+function confirmRename() {
+  if (newTokenName.value.trim()) {
+    emit("confirm", newTokenName.value.trim());
+    closeModal();
+  }
 }
 </script>
 
 <template>
-  <AlertDialog :open="open" @update:open="emit('update:open', $event)">
-    <AlertDialogContent>
-      <AlertDialogHeader>
-        <AlertDialogTitle>Rename Token</AlertDialogTitle>
-        <AlertDialogDescription>
+  <Dialog :open="open" @update:open="closeModal">
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Rename Token</DialogTitle>
+        <DialogDescription>
           Enter a new name for this API token. This will not affect the token's
           functionality.
-        </AlertDialogDescription>
-      </AlertDialogHeader>
+        </DialogDescription>
+      </DialogHeader>
       <div class="py-4">
         <Label for="tokenName" class="mb-2 block">Token Name</Label>
         <Input
           id="tokenName"
           v-model="newTokenName"
           placeholder="e.g., Production API"
-          @keyup.enter="handleConfirm"
+          @keyup.enter="confirmRename"
         />
       </div>
-      <AlertDialogFooter>
-        <AlertDialogCancel @click="handleCancel">Cancel</AlertDialogCancel>
-        <AlertDialogAction
-          @click="handleConfirm"
+      <DialogFooter>
+        <Button @click="closeModal" variant="outline"> Cancel </Button>
+        <Button
+          @click="confirmRename"
           :disabled="!newTokenName.trim() || newTokenName === token?.name"
         >
+          <Edit :size="16" class="mr-2" />
           Rename
-        </AlertDialogAction>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>
