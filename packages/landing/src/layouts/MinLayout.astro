@@ -157,6 +157,33 @@ const structuredData = {
 
     <!-- Analytics -->
     <slot name="analytics"/>
+
+    <!-- Minimal Theme Initialization (prevent flash) -->
+    <script is:inline>
+        (function() {
+            try {
+                const stored = localStorage.getItem('theme');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const shouldBeDark = stored ? stored === 'dark' : prefersDark;
+
+                document.documentElement.classList.remove('dark', 'light');
+                const theme = shouldBeDark ? 'dark' : 'light';
+                document.documentElement.classList.add(theme);
+                document.documentElement.setAttribute('data-theme', theme);
+
+                const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+                if (metaThemeColor) {
+                    metaThemeColor.setAttribute('content', shouldBeDark ? '#000000' : '#fafafa');
+                }
+
+                localStorage.setItem('theme', theme);
+            } catch (error) {
+                console.error('Theme initialization error:', error);
+                document.documentElement.classList.add('light');
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
 </head>
 <body class="transition-all duration-75 bg-white dark:bg-black antialiased">
     <!-- Skip to main content for accessibility -->
@@ -166,6 +193,8 @@ const structuredData = {
     >
         Skip to main content
     </a>
+
+
 
     <slot name="content"/>
     <slot name="compliance"/>

@@ -16,7 +16,7 @@ export { default as Security } from "./sections/Security.astro";
 export { default as Premium } from "./sections/Premium.astro";
 export { default as Team } from "./sections/Team.astro";
 export { default as Documentation } from "./sections/Documentation.astro";
-export { default as ROICalculator } from "./sections/ROICalculator.astro";
+
 export { default as CaseStudies } from "./sections/CaseStudies.astro";
 
 export { default as PricingCards } from "./features/pricing/PricingCards.vue";

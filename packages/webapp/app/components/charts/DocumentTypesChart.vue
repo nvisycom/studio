@@ -3,26 +3,26 @@ import type { ChartConfig } from "@/components/ui/chart";
 import { Donut } from "@unovis/ts";
 import { VisDonut, VisSingleContainer } from "@unovis/vue";
 import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  componentToString,
+	ChartContainer,
+	ChartTooltip,
+	ChartTooltipContent,
+	componentToString,
 } from "@/components/ui/chart";
 
 interface Props {
-  dateRange?: string;
+	dateRange?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  dateRange: "7d",
+	dateRange: "7d",
 });
 
 const chartData = [
-  { type: "pdf", count: 450, fill: "url(#gradientPdf)" },
-  { type: "docx", count: 320, fill: "url(#gradientDocx)" },
-  { type: "xlsx", count: 180, fill: "url(#gradientXlsx)" },
-  { type: "jpg", count: 140, fill: "url(#gradientJpg)" },
-  { type: "other", count: 95, fill: "url(#gradientOther)" },
+	{ type: "pdf", count: 450, fill: "url(#gradientPdf)" },
+	{ type: "docx", count: 320, fill: "url(#gradientDocx)" },
+	{ type: "xlsx", count: 180, fill: "url(#gradientXlsx)" },
+	{ type: "jpg", count: 140, fill: "url(#gradientJpg)" },
+	{ type: "other", count: 95, fill: "url(#gradientOther)" },
 ];
 
 type Data = (typeof chartData)[number];
@@ -51,29 +51,29 @@ const svgDefs = `
 `;
 
 const chartConfig = {
-  count: {
-    label: "Documents",
-  },
-  pdf: {
-    label: "PDF",
-    color: "var(--chart-1)",
-  },
-  docx: {
-    label: "DOCX",
-    color: "var(--chart-2)",
-  },
-  xlsx: {
-    label: "XLSX",
-    color: "var(--chart-3)",
-  },
-  jpg: {
-    label: "JPG/PNG",
-    color: "var(--chart-4)",
-  },
-  other: {
-    label: "Other",
-    color: "var(--chart-5)",
-  },
+	count: {
+		label: "Documents",
+	},
+	pdf: {
+		label: "PDF",
+		color: "var(--chart-1)",
+	},
+	docx: {
+		label: "DOCX",
+		color: "var(--chart-2)",
+	},
+	xlsx: {
+		label: "XLSX",
+		color: "var(--chart-3)",
+	},
+	jpg: {
+		label: "JPG/PNG",
+		color: "var(--chart-4)",
+	},
+	other: {
+		label: "Other",
+		color: "var(--chart-5)",
+	},
 } satisfies ChartConfig;
 </script>
 

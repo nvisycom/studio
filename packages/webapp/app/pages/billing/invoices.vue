@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { Download, ArrowLeft } from "lucide-vue-next";
+import { Download } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -21,11 +21,7 @@ import {
 } from "@/components/ui/table";
 
 definePageMeta({
-	breadcrumbs: [
-		{ label: "[account]" },
-		{ label: "Billing", href: "/account/billing" },
-		{ label: "Invoices" },
-	],
+	pageName: "Billing",
 });
 
 // Invoices data
@@ -93,26 +89,10 @@ function getStatusClass(status: string) {
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="max-w-4xl mx-auto w-full">
-      <!-- Header -->
-      <div class="mb-8 flex items-center justify-between">
-        <div>
-          <h1 class="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
-            Invoice History
-          </h1>
-          <p class="text-neutral-600 dark:text-neutral-400">
-            View and download your past invoices
-          </p>
-        </div>
-        <Button as-child>
-          <NuxtLink to="/account/billing" class="flex items-center gap-2">
-            <ArrowLeft :size="16" />
-            Back to Billing
-          </NuxtLink>
-        </Button>
-      </div>
-
       <!-- Invoice Table -->
-      <Card class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800">
+      <Card
+        class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+      >
         <CardContent>
           <Table>
             <TableHeader>
@@ -131,19 +111,32 @@ function getStatusClass(status: string) {
                   {{ invoice.id }}
                 </TableCell>
                 <TableCell>
-                  {{ new Date(invoice.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }}
+                  {{
+                    new Date(invoice.date).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })
+                  }}
                 </TableCell>
                 <TableCell>{{ invoice.description }}</TableCell>
                 <TableCell class="font-semibold">
                   ${{ invoice.amount.toFixed(2) }}
                 </TableCell>
                 <TableCell>
-                  <Badge variant="secondary" :class="getStatusClass(invoice.status)">
+                  <Badge
+                    variant="secondary"
+                    :class="getStatusClass(invoice.status)"
+                  >
                     {{ invoice.status }}
                   </Badge>
                 </TableCell>
                 <TableCell class="text-right">
-                  <Button variant="ghost" size="sm" @click="downloadInvoice(invoice.id)">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    @click="downloadInvoice(invoice.id)"
+                  >
                     <Download :size="16" />
                   </Button>
                 </TableCell>
@@ -151,9 +144,12 @@ function getStatusClass(status: string) {
             </TableBody>
           </Table>
         </CardContent>
-        <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl">
+        <CardFooter
+          class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+        >
           <p class="text-sm text-neutral-600 dark:text-neutral-400">
-            Invoices are generated monthly and sent to your billing email address. You can download them as PDF files.
+            Invoices are generated monthly and sent to your billing email
+            address. You can download them as PDF files.
           </p>
         </CardFooter>
       </Card>

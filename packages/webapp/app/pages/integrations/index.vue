@@ -29,12 +29,7 @@ import {
 } from "@/components/integrations";
 
 definePageMeta({
-	breadcrumbs: [
-		{ label: "[project]" },
-		{
-			label: "Integrations",
-		},
-	],
+	pageName: "Integrations",
 });
 
 // Mock active integrations
@@ -282,150 +277,171 @@ function testWebhook(webhook: Webhook) {
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="max-w-4xl mx-auto w-full">
-      <!-- Header -->
-      <div class="mb-8">
-      <h1 class="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
-        {{ t('integrations.page.title') }}
-      </h1>
-      <p class="text-neutral-600 dark:text-neutral-400">
-        {{ t('integrations.page.description') }}
-      </p>
-    </div>
-
-    <!-- Active Integrations -->
-    <Card v-if="activeIntegrations.length > 0" class="mb-8 py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800">
-      <CardHeader>
-        <div class="flex items-center justify-between">
-          <div>
-            <CardTitle>{{ t('integrations.sections.connectedServices.title') }}</CardTitle>
-            <CardDescription>{{ t('integrations.sections.connectedServices.description', { count: activeIntegrations.length }) }}</CardDescription>
-          </div>
-          <Button as-child>
-            <NuxtLink to="/integrations/library">
-              {{ t('integrations.actions.explore') }}
-            </NuxtLink>
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <IntegrationsTable
-          :integrations="activeIntegrations"
-          @configure="openConfigureIntegrationDialog"
-          @disconnect="openDisconnectIntegrationDialog"
-        />
-      </CardContent>
-      <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl">
-        <p class="text-sm text-neutral-600 dark:text-neutral-400">
-          {{ t('integrations.messages.integrationFooter') }}
-          <a
-            href="https://docs.nvisy.com/integrations"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-1 text-neutral-900 dark:text-white hover:underline font-medium"
-          >
-            {{ t('integrations.messages.documentation') }}
-            <ExternalLink :size="12" />
-          </a>
-        </p>
-      </CardFooter>
-    </Card>
-
-    <Card v-else class="mb-8 pt-6 py-0 rounded-xl border-neutral-200 dark:border-neutral-800">
-      <CardContent class="py-12">
-        <div class="text-center">
-          <p class="text-neutral-600 dark:text-neutral-400 mb-4">
-            {{ t('integrations.sections.connectedServices.noIntegrationsTitle') }}
-          </p>
-          <Button as-child>
-            <NuxtLink to="/integrations/library">
-              {{ t('integrations.actions.browse') }}
-            </NuxtLink>
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-
-    <!-- Webhook Endpoints Section -->
-    <Card class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800">
-      <CardHeader>
-        <div class="flex items-center justify-between">
-          <div>
-            <CardTitle>{{ t('integrations.sections.webhooks.title') }}</CardTitle>
-            <CardDescription>{{ t('integrations.sections.webhooks.description', { count: existingWebhooks.length }) }}</CardDescription>
-          </div>
-          <CreateWebhookDialog
-            v-model:open="isCreateDialogOpen"
-            :event-categories="eventCategories"
-            @create="handleCreateWebhook"
-          />
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div v-if="existingWebhooks.length > 0">
-          <WebhooksTable
-            :webhooks="existingWebhooks"
-            @edit="openEditDialog"
-            @delete="openDeleteDialog"
-            @test="testWebhook"
-          />
-        </div>
-
-        <Empty v-else>
-          <EmptyHeader>
-            <EmptyTitle>{{ t('integrations.sections.webhooks.noWebhooksTitle') }}</EmptyTitle>
-            <EmptyDescription>
-              {{ t('integrations.sections.webhooks.noWebhooksDescription') }}
-            </EmptyDescription>
-          </EmptyHeader>
-          <EmptyContent>
-            <Button @click="isCreateDialogOpen = true" class="flex items-center gap-2">
-              <Plus :size="16" />
-              {{ t('integrations.actions.createWebhook') }}
+      <!-- Active Integrations -->
+      <Card
+        v-if="activeIntegrations.length > 0"
+        class="mb-8 py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+      >
+        <CardHeader>
+          <div class="flex items-center justify-between">
+            <div>
+              <CardTitle>{{
+                t("integrations.sections.connectedServices.title")
+              }}</CardTitle>
+              <CardDescription>{{
+                t("integrations.sections.connectedServices.description", {
+                  count: activeIntegrations.length,
+                })
+              }}</CardDescription>
+            </div>
+            <Button as-child>
+              <NuxtLink to="/integrations/library">
+                {{ t("integrations.actions.explore") }}
+              </NuxtLink>
             </Button>
-          </EmptyContent>
-        </Empty>
-      </CardContent>
-      <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl">
-        <p class="text-sm text-neutral-600 dark:text-neutral-400">
-          {{ t('integrations.messages.webhookFooter') }}
-          <a
-            href="https://docs.nvisy.com/webhooks"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-1 text-neutral-900 dark:text-white hover:underline font-medium"
-          >
-            {{ t('integrations.messages.documentation') }}
-            <ExternalLink :size="12" />
-          </a>
-        </p>
-      </CardFooter>
-    </Card>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <IntegrationsTable
+            :integrations="activeIntegrations"
+            @configure="openConfigureIntegrationDialog"
+            @disconnect="openDisconnectIntegrationDialog"
+          />
+        </CardContent>
+        <CardFooter
+          class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+        >
+          <p class="text-sm text-neutral-600 dark:text-neutral-400">
+            {{ t("integrations.messages.integrationFooter") }}
+            <a
+              href="https://docs.nvisy.com/integrations"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 text-neutral-900 dark:text-white hover:underline font-medium"
+            >
+              {{ t("integrations.messages.documentation") }}
+              <ExternalLink :size="12" />
+            </a>
+          </p>
+        </CardFooter>
+      </Card>
 
-    <!-- Dialogs -->
-    <ConfigureIntegrationDialog
-      v-model:open="isConfigureIntegrationDialogOpen"
-      :integration="selectedIntegration"
-      @update="handleUpdateIntegration"
-    />
+      <Card
+        v-else
+        class="mb-8 pt-6 py-0 rounded-xl border-neutral-200 dark:border-neutral-800"
+      >
+        <CardContent class="py-12">
+          <div class="text-center">
+            <p class="text-neutral-600 dark:text-neutral-400 mb-4">
+              {{
+                t("integrations.sections.connectedServices.noIntegrationsTitle")
+              }}
+            </p>
+            <Button as-child>
+              <NuxtLink to="/integrations/library">
+                {{ t("integrations.actions.browse") }}
+              </NuxtLink>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
-    <DisconnectIntegrationDialog
-      v-model:open="isDisconnectIntegrationDialogOpen"
-      :integration="selectedIntegration"
-      @disconnect="handleDisconnectIntegration"
-    />
+      <!-- Webhook Endpoints Section -->
+      <Card
+        class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+      >
+        <CardHeader>
+          <div class="flex items-center justify-between">
+            <div>
+              <CardTitle>{{
+                t("integrations.sections.webhooks.title")
+              }}</CardTitle>
+              <CardDescription>{{
+                t("integrations.sections.webhooks.description", {
+                  count: existingWebhooks.length,
+                })
+              }}</CardDescription>
+            </div>
+            <CreateWebhookDialog
+              v-model:open="isCreateDialogOpen"
+              :event-categories="eventCategories"
+              @create="handleCreateWebhook"
+            />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div v-if="existingWebhooks.length > 0">
+            <WebhooksTable
+              :webhooks="existingWebhooks"
+              @edit="openEditDialog"
+              @delete="openDeleteDialog"
+              @test="testWebhook"
+            />
+          </div>
 
-    <EditWebhookDialog
-      v-model:open="isEditDialogOpen"
-      :webhook="selectedWebhook"
-      :event-categories="eventCategories"
-      @update="handleUpdateWebhook"
-    />
+          <Empty v-else>
+            <EmptyHeader>
+              <EmptyTitle>{{
+                t("integrations.sections.webhooks.noWebhooksTitle")
+              }}</EmptyTitle>
+              <EmptyDescription>
+                {{ t("integrations.sections.webhooks.noWebhooksDescription") }}
+              </EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <Button
+                @click="isCreateDialogOpen = true"
+                class="flex items-center gap-2"
+              >
+                <Plus :size="16" />
+                {{ t("integrations.actions.createWebhook") }}
+              </Button>
+            </EmptyContent>
+          </Empty>
+        </CardContent>
+        <CardFooter
+          class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+        >
+          <p class="text-sm text-neutral-600 dark:text-neutral-400">
+            {{ t("integrations.messages.webhookFooter") }}
+            <a
+              href="https://docs.nvisy.com/webhooks"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 text-neutral-900 dark:text-white hover:underline font-medium"
+            >
+              {{ t("integrations.messages.documentation") }}
+              <ExternalLink :size="12" />
+            </a>
+          </p>
+        </CardFooter>
+      </Card>
 
-    <DeleteWebhookDialog
-      v-model:open="isDeleteDialogOpen"
-      :webhook="selectedWebhook"
-      @delete="handleDeleteWebhook"
-    />
+      <!-- Dialogs -->
+      <ConfigureIntegrationDialog
+        v-model:open="isConfigureIntegrationDialogOpen"
+        :integration="selectedIntegration"
+        @update="handleUpdateIntegration"
+      />
+
+      <DisconnectIntegrationDialog
+        v-model:open="isDisconnectIntegrationDialogOpen"
+        :integration="selectedIntegration"
+        @disconnect="handleDisconnectIntegration"
+      />
+
+      <EditWebhookDialog
+        v-model:open="isEditDialogOpen"
+        :webhook="selectedWebhook"
+        :event-categories="eventCategories"
+        @update="handleUpdateWebhook"
+      />
+
+      <DeleteWebhookDialog
+        v-model:open="isDeleteDialogOpen"
+        :webhook="selectedWebhook"
+        @delete="handleDeleteWebhook"
+      />
     </div>
   </div>
 </template>

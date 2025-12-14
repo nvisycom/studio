@@ -1,54 +1,54 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import {
-  Play,
-  Pause,
-  MoreVertical,
-  Plus,
-  CheckCircle,
-  XCircle,
-  Clock,
-  Search,
-  ChevronDown,
+	Play,
+	Pause,
+	MoreVertical,
+	Plus,
+	CheckCircle,
+	XCircle,
+	Clock,
+	Search,
+	ChevronDown,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+	CardFooter,
 } from "@/components/ui/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 definePageMeta({
-  pageName: "Pipelines",
+	pageName: "Pipelines",
 });
 
 interface Pipeline {
-  id: string;
-  name: string;
-  description: string;
-  status: "active" | "paused" | "failed";
-  lastRun: Date;
-  runsCount: number;
-  successRate: string;
+	id: string;
+	name: string;
+	description: string;
+	status: "active" | "paused" | "failed";
+	lastRun: Date;
+	runsCount: number;
+	successRate: string;
 }
 
 const searchQuery = ref("");
@@ -56,133 +56,133 @@ const statusFilter = ref("all");
 const sortBy = ref("name-asc");
 
 const pipelines = ref<Pipeline[]>([
-  {
-    id: "1",
-    name: "Document Processing Pipeline",
-    description: "Automated redaction and classification workflow",
-    status: "active",
-    lastRun: new Date(Date.now() - 15 * 60000),
-    runsCount: 1234,
-    successRate: "98.5%",
-  },
-  {
-    id: "2",
-    name: "Daily Report Generation",
-    description: "Generate and distribute daily analytics reports",
-    status: "active",
-    lastRun: new Date(Date.now() - 2 * 3600000),
-    runsCount: 456,
-    successRate: "100%",
-  },
-  {
-    id: "3",
-    name: "Email Integration Sync",
-    description: "Sync documents from email attachments",
-    status: "paused",
-    lastRun: new Date(Date.now() - 24 * 3600000),
-    runsCount: 789,
-    successRate: "95.2%",
-  },
-  {
-    id: "4",
-    name: "Archive Cleanup",
-    description: "Remove old documents based on retention policy",
-    status: "failed",
-    lastRun: new Date(Date.now() - 6 * 3600000),
-    runsCount: 234,
-    successRate: "87.3%",
-  },
+	{
+		id: "1",
+		name: "Document Processing Pipeline",
+		description: "Automated redaction and classification workflow",
+		status: "active",
+		lastRun: new Date(Date.now() - 15 * 60000),
+		runsCount: 1234,
+		successRate: "98.5%",
+	},
+	{
+		id: "2",
+		name: "Daily Report Generation",
+		description: "Generate and distribute daily analytics reports",
+		status: "active",
+		lastRun: new Date(Date.now() - 2 * 3600000),
+		runsCount: 456,
+		successRate: "100%",
+	},
+	{
+		id: "3",
+		name: "Email Integration Sync",
+		description: "Sync documents from email attachments",
+		status: "paused",
+		lastRun: new Date(Date.now() - 24 * 3600000),
+		runsCount: 789,
+		successRate: "95.2%",
+	},
+	{
+		id: "4",
+		name: "Archive Cleanup",
+		description: "Remove old documents based on retention policy",
+		status: "failed",
+		lastRun: new Date(Date.now() - 6 * 3600000),
+		runsCount: 234,
+		successRate: "87.3%",
+	},
 ]);
 
 const statusFilters = [
-  { value: "all", label: "All Statuses" },
-  { value: "active", label: "Active" },
-  { value: "paused", label: "Paused" },
-  { value: "failed", label: "Failed" },
+	{ value: "all", label: "All Statuses" },
+	{ value: "active", label: "Active" },
+	{ value: "paused", label: "Paused" },
+	{ value: "failed", label: "Failed" },
 ];
 
 const sortOptions = [
-  { value: "name-asc", label: "Name (A-Z)" },
-  { value: "name-desc", label: "Name (Z-A)" },
-  { value: "runs-desc", label: "Most Runs" },
-  { value: "runs-asc", label: "Least Runs" },
+	{ value: "name-asc", label: "Name (A-Z)" },
+	{ value: "name-desc", label: "Name (Z-A)" },
+	{ value: "runs-desc", label: "Most Runs" },
+	{ value: "runs-asc", label: "Least Runs" },
 ];
 
 const filteredPipelines = computed(() => {
-  let filtered = pipelines.value;
+	let filtered = pipelines.value;
 
-  if (statusFilter.value !== "all") {
-    filtered = filtered.filter((p) => p.status === statusFilter.value);
-  }
+	if (statusFilter.value !== "all") {
+		filtered = filtered.filter((p) => p.status === statusFilter.value);
+	}
 
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(
-      (p) =>
-        p.name.toLowerCase().includes(query) ||
-        p.description.toLowerCase().includes(query),
-    );
-  }
+	if (searchQuery.value) {
+		const query = searchQuery.value.toLowerCase();
+		filtered = filtered.filter(
+			(p) =>
+				p.name.toLowerCase().includes(query) ||
+				p.description.toLowerCase().includes(query),
+		);
+	}
 
-  // Sort
-  if (sortBy.value === "name-asc") {
-    filtered.sort((a, b) => a.name.localeCompare(b.name));
-  } else if (sortBy.value === "name-desc") {
-    filtered.sort((a, b) => b.name.localeCompare(a.name));
-  } else if (sortBy.value === "runs-desc") {
-    filtered.sort((a, b) => b.runsCount - a.runsCount);
-  } else if (sortBy.value === "runs-asc") {
-    filtered.sort((a, b) => a.runsCount - b.runsCount);
-  }
+	// Sort
+	if (sortBy.value === "name-asc") {
+		filtered.sort((a, b) => a.name.localeCompare(b.name));
+	} else if (sortBy.value === "name-desc") {
+		filtered.sort((a, b) => b.name.localeCompare(a.name));
+	} else if (sortBy.value === "runs-desc") {
+		filtered.sort((a, b) => b.runsCount - a.runsCount);
+	} else if (sortBy.value === "runs-asc") {
+		filtered.sort((a, b) => a.runsCount - b.runsCount);
+	}
 
-  return filtered;
+	return filtered;
 });
 
 function getStatusIcon(status: string) {
-  switch (status) {
-    case "active":
-      return CheckCircle;
-    case "failed":
-      return XCircle;
-    default:
-      return Clock;
-  }
+	switch (status) {
+		case "active":
+			return CheckCircle;
+		case "failed":
+			return XCircle;
+		default:
+			return Clock;
+	}
 }
 
 function getStatusClass(status: string) {
-  switch (status) {
-    case "active":
-      return "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300";
-    case "failed":
-      return "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300";
-    default:
-      return "bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300";
-  }
+	switch (status) {
+		case "active":
+			return "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300";
+		case "failed":
+			return "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300";
+		default:
+			return "bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300";
+	}
 }
 
 function formatTime(date: Date) {
-  const now = Date.now();
-  const diff = now - date.getTime();
-  const minutes = Math.floor(diff / 60000);
-  const hours = Math.floor(diff / 3600000);
-  const days = Math.floor(diff / 86400000);
+	const now = Date.now();
+	const diff = now - date.getTime();
+	const minutes = Math.floor(diff / 60000);
+	const hours = Math.floor(diff / 3600000);
+	const days = Math.floor(diff / 86400000);
 
-  if (minutes < 60) return `${minutes}m ago`;
-  if (hours < 24) return `${hours}h ago`;
-  return `${days}d ago`;
+	if (minutes < 60) return `${minutes}m ago`;
+	if (hours < 24) return `${hours}h ago`;
+	return `${days}d ago`;
 }
 
 function createPipeline() {
-  console.log("Creating new pipeline");
-  // TODO: Implement pipeline creation modal
+	console.log("Creating new pipeline");
+	// TODO: Implement pipeline creation modal
 }
 
 function selectStatusFilter(value: string) {
-  statusFilter.value = value;
+	statusFilter.value = value;
 }
 
 function selectSortBy(value: string) {
-  sortBy.value = value;
+	sortBy.value = value;
 }
 </script>
 

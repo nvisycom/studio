@@ -1,36 +1,36 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import {
-  Download,
-  Upload,
-  Search,
-  Filter,
-  AlertCircle,
-  Info,
-  XCircle,
+	Download,
+	Upload,
+	Search,
+	Filter,
+	AlertCircle,
+	Info,
+	XCircle,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 
 definePageMeta({
-  pageName: "Analytics",
+	pageName: "Analytics",
 });
 
 // Filters
@@ -44,125 +44,125 @@ const isOnPremise = ref(false); // TODO: Get this from config/environment
 
 // Mock log data
 const logs = ref([
-  {
-    id: "1",
-    timestamp: new Date(Date.now() - 5 * 60000),
-    level: "info",
-    message: "API request processed successfully",
-    endpoint: "/api/documents/analyze",
-    duration: "245ms",
-    status: 200,
-  },
-  {
-    id: "2",
-    timestamp: new Date(Date.now() - 12 * 60000),
-    level: "warning",
-    message: "Rate limit approaching threshold",
-    endpoint: "/api/documents/process",
-    duration: "89ms",
-    status: 429,
-  },
-  {
-    id: "3",
-    timestamp: new Date(Date.now() - 18 * 60000),
-    level: "error",
-    message: "Failed to process document: Invalid format",
-    endpoint: "/api/documents/upload",
-    duration: "12ms",
-    status: 400,
-  },
-  {
-    id: "4",
-    timestamp: new Date(Date.now() - 25 * 60000),
-    level: "info",
-    message: "User authentication successful",
-    endpoint: "/api/auth/login",
-    duration: "156ms",
-    status: 200,
-  },
-  {
-    id: "5",
-    timestamp: new Date(Date.now() - 32 * 60000),
-    level: "info",
-    message: "Integration sync completed",
-    endpoint: "/api/integrations/sync",
-    duration: "3.2s",
-    status: 200,
-  },
-  {
-    id: "6",
-    timestamp: new Date(Date.now() - 45 * 60000),
-    level: "info",
-    message: "Document processing initiated",
-    endpoint: "/api/documents/process",
-    duration: "67ms",
-    status: 202,
-  },
+	{
+		id: "1",
+		timestamp: new Date(Date.now() - 5 * 60000),
+		level: "info",
+		message: "API request processed successfully",
+		endpoint: "/api/documents/analyze",
+		duration: "245ms",
+		status: 200,
+	},
+	{
+		id: "2",
+		timestamp: new Date(Date.now() - 12 * 60000),
+		level: "warning",
+		message: "Rate limit approaching threshold",
+		endpoint: "/api/documents/process",
+		duration: "89ms",
+		status: 429,
+	},
+	{
+		id: "3",
+		timestamp: new Date(Date.now() - 18 * 60000),
+		level: "error",
+		message: "Failed to process document: Invalid format",
+		endpoint: "/api/documents/upload",
+		duration: "12ms",
+		status: 400,
+	},
+	{
+		id: "4",
+		timestamp: new Date(Date.now() - 25 * 60000),
+		level: "info",
+		message: "User authentication successful",
+		endpoint: "/api/auth/login",
+		duration: "156ms",
+		status: 200,
+	},
+	{
+		id: "5",
+		timestamp: new Date(Date.now() - 32 * 60000),
+		level: "info",
+		message: "Integration sync completed",
+		endpoint: "/api/integrations/sync",
+		duration: "3.2s",
+		status: 200,
+	},
+	{
+		id: "6",
+		timestamp: new Date(Date.now() - 45 * 60000),
+		level: "info",
+		message: "Document processing initiated",
+		endpoint: "/api/documents/process",
+		duration: "67ms",
+		status: 202,
+	},
 ]);
 
 const filteredLogs = computed(() => {
-  let filtered = logs.value;
+	let filtered = logs.value;
 
-  if (logLevel.value !== "all") {
-    filtered = filtered.filter((log) => log.level === logLevel.value);
-  }
+	if (logLevel.value !== "all") {
+		filtered = filtered.filter((log) => log.level === logLevel.value);
+	}
 
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(
-      (log) =>
-        log.message.toLowerCase().includes(query) ||
-        log.endpoint.toLowerCase().includes(query),
-    );
-  }
+	if (searchQuery.value) {
+		const query = searchQuery.value.toLowerCase();
+		filtered = filtered.filter(
+			(log) =>
+				log.message.toLowerCase().includes(query) ||
+				log.endpoint.toLowerCase().includes(query),
+		);
+	}
 
-  return filtered;
+	return filtered;
 });
 
 function getLevelIcon(level: string) {
-  switch (level) {
-    case "error":
-      return XCircle;
-    case "warning":
-      return AlertCircle;
-    default:
-      return Info;
-  }
+	switch (level) {
+		case "error":
+			return XCircle;
+		case "warning":
+			return AlertCircle;
+		default:
+			return Info;
+	}
 }
 
 function getLevelClass(level: string) {
-  switch (level) {
-    case "error":
-      return "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300";
-    case "warning":
-      return "bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300";
-    default:
-      return "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300";
-  }
+	switch (level) {
+		case "error":
+			return "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300";
+		case "warning":
+			return "bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300";
+		default:
+			return "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300";
+	}
 }
 
 function formatTimestamp(date: Date) {
-  return new Intl.DateTimeFormat("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  }).format(date);
+	return new Intl.DateTimeFormat("en-US", {
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
+		hour12: false,
+	}).format(date);
 }
 
 function exportLogs() {
-  console.log(
-    "Exporting logs for range:",
-    dateRange.value,
-    "level:",
-    logLevel.value,
-  );
-  // TODO: Implement actual export functionality
+	console.log(
+		"Exporting logs for range:",
+		dateRange.value,
+		"level:",
+		logLevel.value,
+	);
+	// TODO: Implement actual export functionality
 }
 
 function importLogs() {
-  console.log("Importing logs");
-  // TODO: Implement actual import functionality
+	console.log("Importing logs");
+	// TODO: Implement actual import functionality
 }
 </script>
 

@@ -22,22 +22,7 @@ import {
 } from "@/components/ui/popover";
 
 definePageMeta({
-	breadcrumbs: [
-		{ label: "[project]" },
-		{
-			label: "Settings",
-			href: "/settings",
-		},
-		{
-			label: "Security",
-			dropdown: [
-				{ label: "General", value: "/settings" },
-				{ label: "Billing", value: "/settings/billing" },
-				{ label: "Notifications", value: "/settings/notifications" },
-				{ label: "Security", value: "/settings/security" },
-			],
-		},
-	],
+	pageName: "Settings",
 });
 
 // IP Address Visibility
@@ -121,23 +106,18 @@ function exportAuditLog(format: "csv" | "json") {
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="max-w-4xl mx-auto w-full">
-      <!-- Header -->
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
-          Security
-        </h1>
-        <p class="text-neutral-600 dark:text-neutral-400">
-          Configure security policies and access controls for your project
-        </p>
-      </div>
-
       <div class="space-y-6">
-
         <!-- IP Address Visibility -->
-        <Card class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800" id="ip-address-visibility">
+        <Card
+          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+          id="ip-address-visibility"
+        >
           <CardHeader>
             <CardTitle>IP Address Visibility</CardTitle>
-            <CardDescription>Control where IP addresses are visible in your project</CardDescription>
+            <CardDescription
+              >Control where IP addresses are visible in your
+              project</CardDescription
+            >
           </CardHeader>
           <CardContent>
             <div class="space-y-4 pl-4">
@@ -147,7 +127,8 @@ function exportAuditLog(format: "csv" | "json") {
                     Dashboard Visibility
                   </p>
                   <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                    IP addresses are currently {{ showIpInDashboard ? 'visible' : 'hidden' }} in Dashboard
+                    IP addresses are currently
+                    {{ showIpInDashboard ? "visible" : "hidden" }} in Dashboard
                   </p>
                 </div>
                 <Switch v-model:checked="showIpInDashboard" />
@@ -159,54 +140,76 @@ function exportAuditLog(format: "csv" | "json") {
                     Logs Visibility
                   </p>
                   <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                    IP addresses are currently {{ showIpInLogs ? 'visible' : 'hidden' }} in Logs
+                    IP addresses are currently
+                    {{ showIpInLogs ? "visible" : "hidden" }} in Logs
                   </p>
                 </div>
                 <Switch v-model:checked="showIpInLogs" />
               </div>
             </div>
           </CardContent>
-          <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between">
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
+          >
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Under some laws, IP addresses are considered personal information and may be subject to privacy regulations. Hiding IP addresses improves privacy but may limit troubleshooting capabilities.
+              Under some laws, IP addresses are considered personal information
+              and may be subject to privacy regulations. Hiding IP addresses
+              improves privacy but may limit troubleshooting capabilities.
             </p>
-            <Button size="sm" @click="saveIpVisibility">
-              Save
-            </Button>
+            <Button size="sm" @click="saveIpVisibility"> Save </Button>
           </CardFooter>
         </Card>
 
         <!-- Two-Factor Authentication Enforcement -->
-        <Card class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800" id="two-factor-authentication-enforcement">
+        <Card
+          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+          id="two-factor-authentication-enforcement"
+        >
           <CardHeader>
             <CardTitle>Two-Factor Authentication Enforcement</CardTitle>
-            <CardDescription>Require all project members to enable two-factor authentication</CardDescription>
+            <CardDescription
+              >Require all project members to enable two-factor
+              authentication</CardDescription
+            >
           </CardHeader>
           <CardContent>
             <div class="flex items-center justify-between">
               <div class="flex-1">
                 <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                  Require all project members to enable two-factor authentication
+                  Require all project members to enable two-factor
+                  authentication
                 </p>
               </div>
               <Switch v-model:checked="enforce2FA" class="ml-4" />
             </div>
           </CardContent>
-          <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between">
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
+          >
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Enabling 2FA enforcement significantly improves account security. Members without 2FA will be prompted to set it up. <NuxtLink to="/members" class="inline-flex items-center gap-1 text-neutral-900 dark:text-white hover:underline font-medium">View member 2FA status</NuxtLink>
+              Enabling 2FA enforcement significantly improves account security.
+              Members without 2FA will be prompted to set it up.
+              <NuxtLink
+                to="/members"
+                class="inline-flex items-center gap-1 text-neutral-900 dark:text-white hover:underline font-medium"
+                >View member 2FA status</NuxtLink
+              >
             </p>
-            <Button size="sm" @click="save2FAEnforcement">
-              Save
-            </Button>
+            <Button size="sm" @click="save2FAEnforcement"> Save </Button>
           </CardFooter>
         </Card>
 
         <!-- SAML Single Sign-On -->
-        <Card class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800" id="saml-single-sign-on">
+        <Card
+          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+          id="saml-single-sign-on"
+        >
           <CardHeader>
             <CardTitle>SAML Single Sign-On</CardTitle>
-            <CardDescription>Configure SAML-based single sign-on for your organization</CardDescription>
+            <CardDescription
+              >Configure SAML-based single sign-on for your
+              organization</CardDescription
+            >
           </CardHeader>
           <CardContent>
             <div class="flex items-center justify-between mb-4">
@@ -218,9 +221,14 @@ function exportAuditLog(format: "csv" | "json") {
               <Switch v-model:checked="samlEnabled" class="ml-4" />
             </div>
 
-            <div v-if="samlEnabled" class="space-y-4 pt-4 border-t border-neutral-200 dark:border-neutral-800">
+            <div
+              v-if="samlEnabled"
+              class="space-y-4 pt-4 border-t border-neutral-200 dark:border-neutral-800"
+            >
               <div>
-                <label class="block text-sm font-medium text-neutral-900 dark:text-white mb-2">
+                <label
+                  class="block text-sm font-medium text-neutral-900 dark:text-white mb-2"
+                >
                   Entity ID
                 </label>
                 <input
@@ -232,7 +240,9 @@ function exportAuditLog(format: "csv" | "json") {
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-neutral-900 dark:text-white mb-2">
+                <label
+                  class="block text-sm font-medium text-neutral-900 dark:text-white mb-2"
+                >
                   SSO URL
                 </label>
                 <input
@@ -244,7 +254,9 @@ function exportAuditLog(format: "csv" | "json") {
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-neutral-900 dark:text-white mb-2">
+                <label
+                  class="block text-sm font-medium text-neutral-900 dark:text-white mb-2"
+                >
                   X.509 Certificate
                 </label>
                 <textarea
@@ -256,32 +268,44 @@ function exportAuditLog(format: "csv" | "json") {
               </div>
             </div>
           </CardContent>
-          <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between">
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
+          >
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              SAML SSO allows your organization to manage authentication through your identity provider.
+              SAML SSO allows your organization to manage authentication through
+              your identity provider.
             </p>
-            <Button size="sm" @click="saveSamlSettings">
-              Save
-            </Button>
+            <Button size="sm" @click="saveSamlSettings"> Save </Button>
           </CardFooter>
         </Card>
 
         <!-- Audit Log -->
-        <Card class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800" id="audit-log">
+        <Card
+          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+          id="audit-log"
+        >
           <CardHeader>
             <CardTitle>Audit Log</CardTitle>
-            <CardDescription>Export security and activity logs for compliance and auditing</CardDescription>
+            <CardDescription
+              >Export security and activity logs for compliance and
+              auditing</CardDescription
+            >
           </CardHeader>
           <CardContent>
             <div class="space-y-4">
               <div>
-                <label class="block text-sm font-medium text-neutral-900 dark:text-white mb-3">
+                <label
+                  class="block text-sm font-medium text-neutral-900 dark:text-white mb-3"
+                >
                   Date Range
                 </label>
                 <div class="flex items-center gap-3">
                   <Popover v-model:open="isCalendarOpen">
                     <PopoverTrigger as-child>
-                      <Button variant="outline" class="justify-start text-left font-normal min-w-[280px]">
+                      <Button
+                        variant="outline"
+                        class="justify-start text-left font-normal min-w-[280px]"
+                      >
                         <Calendar :size="16" class="mr-2" />
                         {{ formattedDateRange }}
                       </Button>
@@ -313,9 +337,12 @@ function exportAuditLog(format: "csv" | "json") {
               </div>
             </div>
           </CardContent>
-          <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl">
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+          >
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Audit logs include all security events, user activity, and system changes within the selected date range.
+              Audit logs include all security events, user activity, and system
+              changes within the selected date range.
             </p>
           </CardFooter>
         </Card>

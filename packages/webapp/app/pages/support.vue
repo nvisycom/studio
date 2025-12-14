@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-	breadcrumbs: [{ label: "[project]" }, { label: "Support" }],
+	pageName: "Support",
 });
 
 import { ref, computed } from "vue";
@@ -160,9 +160,13 @@ function getStatusColor(status: string) {
   <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-6 sm:py-8 lg:py-12">
     <!-- Header -->
     <div class="mb-8">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+      >
         <div>
-          <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white mb-2">
+          <h1
+            class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white mb-2"
+          >
             Support Cases
           </h1>
           <p class="text-neutral-600 dark:text-neutral-400">
@@ -170,7 +174,10 @@ function getStatusColor(status: string) {
           </p>
         </div>
         <!-- New Case Button -->
-        <Button @click="createNewCase" class="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-start">
+        <Button
+          @click="createNewCase"
+          class="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-start"
+        >
           <Plus :size="16" />
           Create New Case
         </Button>
@@ -178,10 +185,15 @@ function getStatusColor(status: string) {
     </div>
 
     <!-- Filters and Search -->
-    <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center mb-6">
+    <div
+      class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center mb-6"
+    >
       <!-- Search Input -->
       <div class="relative flex-1 min-w-0">
-        <Search :size="16" class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+        <Search
+          :size="16"
+          class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+        />
         <Input
           v-model="searchQuery"
           placeholder="Search cases..."
@@ -194,8 +206,14 @@ function getStatusColor(status: string) {
         <!-- Status Filter -->
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
-            <Button variant="outline" class="justify-between flex-1 sm:min-w-32 sm:flex-none">
-              {{ statusOptions.find(o => o.value === statusFilter)?.label || 'All Cases' }}
+            <Button
+              variant="outline"
+              class="justify-between flex-1 sm:min-w-32 sm:flex-none"
+            >
+              {{
+                statusOptions.find((o) => o.value === statusFilter)?.label ||
+                "All Cases"
+              }}
               <ChevronDown :size="16" />
             </Button>
           </DropdownMenuTrigger>
@@ -213,8 +231,13 @@ function getStatusColor(status: string) {
         <!-- Sort -->
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
-            <Button variant="outline" class="justify-between flex-1 sm:min-w-36 sm:flex-none">
-              {{ sortOptions.find(o => o.value === sortBy)?.label || 'Sort by' }}
+            <Button
+              variant="outline"
+              class="justify-between flex-1 sm:min-w-36 sm:flex-none"
+            >
+              {{
+                sortOptions.find((o) => o.value === sortBy)?.label || "Sort by"
+              }}
               <ChevronDown :size="16" />
             </Button>
           </DropdownMenuTrigger>
@@ -232,7 +255,9 @@ function getStatusColor(status: string) {
     </div>
 
     <!-- Cases Table or Empty State -->
-    <div class="bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden">
+    <div
+      class="bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden"
+    >
       <div v-if="filteredCases.length > 0" class="overflow-x-auto">
         <Table>
           <TableHeader>
@@ -241,49 +266,75 @@ function getStatusColor(status: string) {
               <TableHead class="whitespace-nowrap px-6">Subject</TableHead>
               <TableHead class="whitespace-nowrap px-6">Status</TableHead>
               <TableHead class="whitespace-nowrap px-6">Severity</TableHead>
-              <TableHead class="whitespace-nowrap px-6 hidden sm:table-cell">Created</TableHead>
-              <TableHead class="whitespace-nowrap px-6 hidden lg:table-cell">Last Updated</TableHead>
+              <TableHead class="whitespace-nowrap px-6 hidden sm:table-cell"
+                >Created</TableHead
+              >
+              <TableHead class="whitespace-nowrap px-6 hidden lg:table-cell"
+                >Last Updated</TableHead
+              >
             </TableRow>
           </TableHeader>
-        <TableBody>
-          <TableRow
-            v-for="supportCase in filteredCases"
-            :key="supportCase.id"
-            class="hover:bg-neutral-50 dark:hover:bg-neutral-900 cursor-pointer transition-colors"
-          >
-            <TableCell class="whitespace-nowrap px-6">
-              <span class="font-mono text-sm text-neutral-900 dark:text-white">
-                {{ supportCase.id }}
-              </span>
-            </TableCell>
-            <TableCell class="max-w-0 w-full px-6">
-              <div class="min-w-0">
-                <p class="font-medium text-neutral-900 dark:text-white truncate sm:whitespace-normal">{{ supportCase.subject }}</p>
-                <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1 truncate sm:whitespace-normal">{{ supportCase.description }}</p>
-              </div>
-            </TableCell>
-            <TableCell class="whitespace-nowrap px-6">
-              <span class="inline-flex items-center px-2.5 py-1.5 rounded-md text-xs font-medium" :class="getStatusColor(supportCase.status)">
-                {{ supportCase.status.charAt(0).toUpperCase() + supportCase.status.slice(1) }}
-              </span>
-            </TableCell>
-            <TableCell class="whitespace-nowrap px-6">
-              <span class="inline-flex items-center px-2.5 py-1.5 rounded-md text-xs font-medium" :class="getSeverityColor(supportCase.severity)">
-                {{ supportCase.severity.charAt(0).toUpperCase() + supportCase.severity.slice(1) }}
-              </span>
-            </TableCell>
-            <TableCell class="whitespace-nowrap px-6 hidden sm:table-cell">
-              <span class="text-sm text-neutral-600 dark:text-neutral-400">
-                {{ formatDate(supportCase.dateCreated) }}
-              </span>
-            </TableCell>
-            <TableCell class="whitespace-nowrap px-6 hidden lg:table-cell">
-              <span class="text-sm text-neutral-600 dark:text-neutral-400">
-                {{ formatDate(supportCase.lastUpdated) }}
-              </span>
-            </TableCell>
-          </TableRow>
-        </TableBody>
+          <TableBody>
+            <TableRow
+              v-for="supportCase in filteredCases"
+              :key="supportCase.id"
+              class="hover:bg-neutral-50 dark:hover:bg-neutral-900 cursor-pointer transition-colors"
+            >
+              <TableCell class="whitespace-nowrap px-6">
+                <span
+                  class="font-mono text-sm text-neutral-900 dark:text-white"
+                >
+                  {{ supportCase.id }}
+                </span>
+              </TableCell>
+              <TableCell class="max-w-0 w-full px-6">
+                <div class="min-w-0">
+                  <p
+                    class="font-medium text-neutral-900 dark:text-white truncate sm:whitespace-normal"
+                  >
+                    {{ supportCase.subject }}
+                  </p>
+                  <p
+                    class="text-sm text-neutral-600 dark:text-neutral-400 mt-1 truncate sm:whitespace-normal"
+                  >
+                    {{ supportCase.description }}
+                  </p>
+                </div>
+              </TableCell>
+              <TableCell class="whitespace-nowrap px-6">
+                <span
+                  class="inline-flex items-center px-2.5 py-1.5 rounded-md text-xs font-medium"
+                  :class="getStatusColor(supportCase.status)"
+                >
+                  {{
+                    supportCase.status.charAt(0).toUpperCase() +
+                    supportCase.status.slice(1)
+                  }}
+                </span>
+              </TableCell>
+              <TableCell class="whitespace-nowrap px-6">
+                <span
+                  class="inline-flex items-center px-2.5 py-1.5 rounded-md text-xs font-medium"
+                  :class="getSeverityColor(supportCase.severity)"
+                >
+                  {{
+                    supportCase.severity.charAt(0).toUpperCase() +
+                    supportCase.severity.slice(1)
+                  }}
+                </span>
+              </TableCell>
+              <TableCell class="whitespace-nowrap px-6 hidden sm:table-cell">
+                <span class="text-sm text-neutral-600 dark:text-neutral-400">
+                  {{ formatDate(supportCase.dateCreated) }}
+                </span>
+              </TableCell>
+              <TableCell class="whitespace-nowrap px-6 hidden lg:table-cell">
+                <span class="text-sm text-neutral-600 dark:text-neutral-400">
+                  {{ formatDate(supportCase.lastUpdated) }}
+                </span>
+              </TableCell>
+            </TableRow>
+          </TableBody>
         </Table>
       </div>
 
@@ -291,7 +342,11 @@ function getStatusColor(status: string) {
         <EmptyHeader>
           <EmptyTitle>No support cases found</EmptyTitle>
           <EmptyDescription>
-            {{ searchQuery || statusFilter !== 'all' ? 'Try adjusting your search or filters' : 'You haven\'t created any support cases yet' }}
+            {{
+              searchQuery || statusFilter !== "all"
+                ? "Try adjusting your search or filters"
+                : "You haven't created any support cases yet"
+            }}
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent v-if="!searchQuery && statusFilter === 'all'">

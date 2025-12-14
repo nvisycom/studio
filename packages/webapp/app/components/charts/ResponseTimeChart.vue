@@ -3,40 +3,40 @@ import type { ChartConfig } from "@/components/ui/chart";
 import { VisArea, VisAxis, VisLine, VisXYContainer } from "@unovis/vue";
 import { Zap } from "lucide-vue-next";
 import {
-  ChartContainer,
-  ChartCrosshair,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-  componentToString,
+	ChartContainer,
+	ChartCrosshair,
+	ChartLegendContent,
+	ChartTooltip,
+	ChartTooltipContent,
+	componentToString,
 } from "@/components/ui/chart";
 
 interface Props {
-  dateRange?: string;
+	dateRange?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  dateRange: "7d",
+	dateRange: "7d",
 });
 
 const chartData = [
-  { date: new Date("2024-06-24"), value: 245 },
-  { date: new Date("2024-06-25"), value: 220 },
-  { date: new Date("2024-06-26"), value: 198 },
-  { date: new Date("2024-06-27"), value: 235 },
-  { date: new Date("2024-06-28"), value: 210 },
-  { date: new Date("2024-06-29"), value: 185 },
-  { date: new Date("2024-06-30"), value: 175 },
+	{ date: new Date("2024-06-24"), value: 245 },
+	{ date: new Date("2024-06-25"), value: 220 },
+	{ date: new Date("2024-06-26"), value: 198 },
+	{ date: new Date("2024-06-27"), value: 235 },
+	{ date: new Date("2024-06-28"), value: 210 },
+	{ date: new Date("2024-06-29"), value: 185 },
+	{ date: new Date("2024-06-30"), value: 175 },
 ];
 
 type Data = (typeof chartData)[number];
 
 const chartConfig = {
-  value: {
-    label: "Response Time (ms)",
-    color: "var(--chart-3)",
-    icon: Zap,
-  },
+	value: {
+		label: "Response Time (ms)",
+		color: "var(--chart-3)",
+		icon: Zap,
+	},
 } satisfies ChartConfig;
 
 const svgDefs = `

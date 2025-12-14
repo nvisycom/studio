@@ -40,7 +40,7 @@ import {
 } from "@/components/ui/empty";
 
 definePageMeta({
-	breadcrumbs: [{ label: "[project]" }, { label: "Documents" }],
+	pageName: "Documents",
 });
 
 interface Document {
@@ -275,18 +275,10 @@ function getFormatColor(format: string): string {
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-0">
     <div class="max-w-7xl mx-auto w-full">
-      <!-- Header -->
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
-          Documents
-        </h1>
-        <p class="text-neutral-600 dark:text-neutral-400">
-          Manage and track all your redacted documents
-        </p>
-      </div>
-
       <!-- Search and Filters -->
-      <div class="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center mb-6">
+      <div
+        class="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center mb-6"
+      >
         <div class="relative flex-1">
           <Search
             :size="16"
@@ -303,7 +295,10 @@ function getFormatColor(format: string): string {
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
             <Button variant="outline" class="justify-between min-w-[160px]">
-              {{ formatFilters.find(f => f.value === filterFormat)?.label || 'Any Format' }}
+              {{
+                formatFilters.find((f) => f.value === filterFormat)?.label ||
+                "Any Format"
+              }}
               <ChevronDown :size="16" class="ml-2" />
             </Button>
           </DropdownMenuTrigger>
@@ -322,7 +317,10 @@ function getFormatColor(format: string): string {
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
             <Button variant="outline" class="justify-between min-w-[160px]">
-              {{ statusFilters.find(f => f.value === filterStatus)?.label || 'Any Status' }}
+              {{
+                statusFilters.find((f) => f.value === filterStatus)?.label ||
+                "Any Status"
+              }}
               <ChevronDown :size="16" class="ml-2" />
             </Button>
           </DropdownMenuTrigger>
@@ -341,7 +339,10 @@ function getFormatColor(format: string): string {
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
             <Button variant="outline" class="justify-between min-w-[180px]">
-              {{ sortingOptions.find(o => o.value === selectedSorting)?.label || 'Sort by' }}
+              {{
+                sortingOptions.find((o) => o.value === selectedSorting)
+                  ?.label || "Sort by"
+              }}
               <ChevronDown :size="16" class="ml-2" />
             </Button>
           </DropdownMenuTrigger>
@@ -363,7 +364,10 @@ function getFormatColor(format: string): string {
       </div>
 
       <!-- Documents Table -->
-      <div v-if="filteredDocuments.length > 0" class="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden">
+      <div
+        v-if="filteredDocuments.length > 0"
+        class="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden"
+      >
         <Table>
           <TableHeader>
             <TableRow>
@@ -403,7 +407,10 @@ function getFormatColor(format: string): string {
                 </span>
               </TableCell>
               <TableCell>
-                <span class="text-sm text-neutral-600 dark:text-neutral-400" :title="doc.uploadedAt">
+                <span
+                  class="text-sm text-neutral-600 dark:text-neutral-400"
+                  :title="doc.uploadedAt"
+                >
                   {{ formatDate(doc.uploadedAt) }}
                 </span>
               </TableCell>
@@ -429,13 +436,21 @@ function getFormatColor(format: string): string {
                   <component
                     :is="doc.verified ? ShieldCheck : ShieldX"
                     :size="14"
-                    :class="doc.verified ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'"
+                    :class="
+                      doc.verified
+                        ? 'text-green-600 dark:text-green-400'
+                        : 'text-red-600 dark:text-red-400'
+                    "
                   />
                   <span
                     class="text-xs font-medium"
-                    :class="doc.verified ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'"
+                    :class="
+                      doc.verified
+                        ? 'text-green-600 dark:text-green-400'
+                        : 'text-red-600 dark:text-red-400'
+                    "
                   >
-                    {{ doc.verified ? 'Verified' : 'Unverified' }}
+                    {{ doc.verified ? "Verified" : "Unverified" }}
                   </span>
                 </div>
               </TableCell>
@@ -461,7 +476,10 @@ function getFormatColor(format: string): string {
                       Download
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem @click="deleteDocument(doc.id)" class="text-red-600 dark:text-red-400">
+                    <DropdownMenuItem
+                      @click="deleteDocument(doc.id)"
+                      class="text-red-600 dark:text-red-400"
+                    >
                       <Trash2 :size="16" class="mr-2" />
                       Delete
                     </DropdownMenuItem>
@@ -479,15 +497,17 @@ function getFormatColor(format: string): string {
           <EmptyTitle>No documents found</EmptyTitle>
           <EmptyDescription>
             {{
-              searchQuery ||
-              filterFormat !== 'any' ||
-              filterStatus !== 'any'
-                ? 'Try adjusting your search or filters'
-                : 'Upload your first document to get started'
+              searchQuery || filterFormat !== "any" || filterStatus !== "any"
+                ? "Try adjusting your search or filters"
+                : "Upload your first document to get started"
             }}
           </EmptyDescription>
         </EmptyHeader>
-        <EmptyContent v-if="!searchQuery && filterFormat === 'any' && filterStatus === 'any'">
+        <EmptyContent
+          v-if="
+            !searchQuery && filterFormat === 'any' && filterStatus === 'any'
+          "
+        >
           <Button class="flex items-center gap-2">
             <Plus :size="16" />
             Upload Document

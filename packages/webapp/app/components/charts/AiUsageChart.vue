@@ -2,43 +2,43 @@
 import type { ChartConfig } from "@/components/ui/chart";
 import { VisArea, VisAxis, VisLine, VisXYContainer } from "@unovis/vue";
 import {
-  ChartContainer,
-  ChartCrosshair,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-  componentToString,
+	ChartContainer,
+	ChartCrosshair,
+	ChartLegendContent,
+	ChartTooltip,
+	ChartTooltipContent,
+	componentToString,
 } from "@/components/ui/chart";
 
 interface Props {
-  dateRange?: string;
+	dateRange?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  dateRange: "7d",
+	dateRange: "7d",
 });
 
 const chartData = [
-  { date: new Date("2024-06-24"), ocr: 450, vlm: 12500 },
-  { date: new Date("2024-06-25"), ocr: 520, vlm: 14200 },
-  { date: new Date("2024-06-26"), ocr: 610, vlm: 16800 },
-  { date: new Date("2024-06-27"), ocr: 580, vlm: 15300 },
-  { date: new Date("2024-06-28"), ocr: 670, vlm: 18900 },
-  { date: new Date("2024-06-29"), ocr: 720, vlm: 21400 },
-  { date: new Date("2024-06-30"), ocr: 690, vlm: 19800 },
+	{ date: new Date("2024-06-24"), ocr: 450, vlm: 12500 },
+	{ date: new Date("2024-06-25"), ocr: 520, vlm: 14200 },
+	{ date: new Date("2024-06-26"), ocr: 610, vlm: 16800 },
+	{ date: new Date("2024-06-27"), ocr: 580, vlm: 15300 },
+	{ date: new Date("2024-06-28"), ocr: 670, vlm: 18900 },
+	{ date: new Date("2024-06-29"), ocr: 720, vlm: 21400 },
+	{ date: new Date("2024-06-30"), ocr: 690, vlm: 19800 },
 ];
 
 type Data = (typeof chartData)[number];
 
 const chartConfig = {
-  ocr: {
-    label: "OCR Credits",
-    color: "var(--chart-1)",
-  },
-  vlm: {
-    label: "VLM Tokens",
-    color: "var(--chart-2)",
-  },
+	ocr: {
+		label: "OCR Credits",
+		color: "var(--chart-1)",
+	},
+	vlm: {
+		label: "VLM Tokens",
+		color: "var(--chart-2)",
+	},
 } satisfies ChartConfig;
 
 // Calculate max value for y-domain (cumulative)

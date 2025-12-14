@@ -15,22 +15,7 @@ import {
 } from "@/components/ui/card";
 
 definePageMeta({
-	breadcrumbs: [
-		{ label: "[project]" },
-		{
-			label: "Settings",
-			href: "/settings",
-		},
-		{
-			label: "General",
-			dropdown: [
-				{ label: "General", value: "/settings" },
-				{ label: "Billing", value: "/settings/billing" },
-				{ label: "Notifications", value: "/settings/notifications" },
-				{ label: "Security", value: "/settings/security" },
-			],
-		},
-	],
+	pageName: "Settings",
 });
 
 // Reactive data
@@ -89,23 +74,17 @@ function deleteProject() {
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="max-w-4xl mx-auto w-full">
-      <!-- Header -->
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
-          General
-        </h1>
-        <p class="text-neutral-600 dark:text-neutral-400">
-          Manage your project settings and configuration
-        </p>
-      </div>
-
       <div class="space-y-6">
-
         <!-- Project Name -->
-        <Card class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800">
+        <Card
+          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+        >
           <CardHeader>
             <CardTitle>Project Name</CardTitle>
-            <CardDescription>The name of your project as it appears across the platform</CardDescription>
+            <CardDescription
+              >The name of your project as it appears across the
+              platform</CardDescription
+            >
           </CardHeader>
           <CardContent>
             <div class="space-y-2">
@@ -118,18 +97,20 @@ function deleteProject() {
               />
             </div>
           </CardContent>
-          <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between">
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
+          >
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
               Please use 32 characters at maximum.
             </p>
-            <Button size="sm" @click="saveProjectName">
-              Save
-            </Button>
+            <Button size="sm" @click="saveProjectName"> Save </Button>
           </CardFooter>
         </Card>
 
         <!-- Project URL -->
-        <Card class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800">
+        <Card
+          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+        >
           <CardHeader>
             <CardTitle>Project URL</CardTitle>
             <CardDescription>The URL slug for your project</CardDescription>
@@ -157,27 +138,36 @@ function deleteProject() {
                   @click="copyProjectUrl"
                   class="flex items-center justify-center w-10 h-10 p-0"
                 >
-                  <Check v-if="copiedProjectUrl" :size="16" class="text-green-500" />
+                  <Check
+                    v-if="copiedProjectUrl"
+                    :size="16"
+                    class="text-green-500"
+                  />
                   <Copy v-else :size="16" />
                 </Button>
               </div>
             </div>
           </CardContent>
-          <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between">
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
+          >
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
               Only lowercase letters, numbers, and hyphens are allowed.
             </p>
-            <Button size="sm" @click="saveProjectUrl">
-              Save
-            </Button>
+            <Button size="sm" @click="saveProjectUrl"> Save </Button>
           </CardFooter>
         </Card>
 
         <!-- Project Avatar -->
-        <Card class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800">
+        <Card
+          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+        >
           <CardHeader>
             <CardTitle>Project Avatar</CardTitle>
-            <CardDescription>Project avatar image. Click on the avatar to upload a new image.</CardDescription>
+            <CardDescription
+              >Project avatar image. Click on the avatar to upload a new
+              image.</CardDescription
+            >
           </CardHeader>
           <CardContent>
             <button
@@ -185,15 +175,21 @@ function deleteProject() {
               class="group relative hover:opacity-80 transition-opacity cursor-pointer"
             >
               <Avatar class="size-24">
-                <AvatarFallback class="bg-gradient-to-br from-blue-500 to-purple-600">
+                <AvatarFallback
+                  class="bg-gradient-to-br from-blue-500 to-purple-600"
+                >
                 </AvatarFallback>
               </Avatar>
-              <div class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
+              <div
+                class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
+              >
                 <Upload :size="24" class="text-white" />
               </div>
             </button>
           </CardContent>
-          <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl">
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+          >
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
               Recommended size: 256x256px. Supports PNG, JPG, and SVG formats.
             </p>
@@ -201,10 +197,14 @@ function deleteProject() {
         </Card>
 
         <!-- Project ID -->
-        <Card class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800">
+        <Card
+          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+        >
           <CardHeader>
             <CardTitle>Project ID</CardTitle>
-            <CardDescription>Unique identifier for this project</CardDescription>
+            <CardDescription
+              >Unique identifier for this project</CardDescription
+            >
           </CardHeader>
           <CardContent>
             <div class="space-y-2">
@@ -222,13 +222,19 @@ function deleteProject() {
                   @click="copyProjectId"
                   class="flex items-center justify-center w-10 h-10 p-0"
                 >
-                  <Check v-if="copiedProjectId" :size="16" class="text-green-500" />
+                  <Check
+                    v-if="copiedProjectId"
+                    :size="16"
+                    class="text-green-500"
+                  />
                   <Copy v-else :size="16" />
                 </Button>
               </div>
             </div>
           </CardContent>
-          <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl">
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+          >
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
               This is your project's unique identifier used in API calls.
             </p>
@@ -236,19 +242,27 @@ function deleteProject() {
         </Card>
 
         <!-- Leave Project -->
-        <Card class="py-0 pt-6 border border-red-600 dark:border-red-800 rounded-xl">
+        <Card
+          class="py-0 pt-6 border border-red-600 dark:border-red-800 rounded-xl"
+        >
           <CardHeader>
             <CardTitle>Leave Project</CardTitle>
-            <CardDescription>Remove yourself from this project. You won't be able to access it anymore.</CardDescription>
+            <CardDescription
+              >Remove yourself from this project. You won't be able to access it
+              anymore.</CardDescription
+            >
           </CardHeader>
           <CardContent>
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
               This action will remove you from the project immediately.
             </p>
           </CardContent>
-          <CardFooter class="border-t pb-6 border-red-600 dark:border-red-800 bg-red-50 dark:bg-red-500 rounded-b-xl flex items-center justify-between">
+          <CardFooter
+            class="border-t pb-6 border-red-600 dark:border-red-800 bg-red-50 dark:bg-red-500 rounded-b-xl flex items-center justify-between"
+          >
             <p class="text-sm text-red-600 dark:text-red-400">
-              This action cannot be undone. You'll need to be re-invited to access this project.
+              This action cannot be undone. You'll need to be re-invited to
+              access this project.
             </p>
             <Button size="sm" variant="destructive" @click="leaveProject">
               Leave Project
@@ -257,19 +271,28 @@ function deleteProject() {
         </Card>
 
         <!-- Delete Project -->
-        <Card class="py-0 pt-6 border border-red-600 dark:border-red-800 rounded-xl">
+        <Card
+          class="py-0 pt-6 border border-red-600 dark:border-red-800 rounded-xl"
+        >
           <CardHeader>
             <CardTitle>Delete Project</CardTitle>
-            <CardDescription>Permanently delete this project and all of its data. This action cannot be undone.</CardDescription>
+            <CardDescription
+              >Permanently delete this project and all of its data. This action
+              cannot be undone.</CardDescription
+            >
           </CardHeader>
           <CardContent>
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              This will permanently delete everything including data, deployments, and configurations.
+              This will permanently delete everything including data,
+              deployments, and configurations.
             </p>
           </CardContent>
-          <CardFooter class="border-t pb-6 border-red-600 dark:border-red-800 bg-red-50 dark:bg-red-500 rounded-b-xl flex items-center justify-between">
+          <CardFooter
+            class="border-t pb-6 border-red-600 dark:border-red-800 bg-red-50 dark:bg-red-500 rounded-b-xl flex items-center justify-between"
+          >
             <p class="text-sm text-red-600 dark:text-red-400">
-              This will permanently delete everything. This action is irreversible.
+              This will permanently delete everything. This action is
+              irreversible.
             </p>
             <Button size="sm" variant="destructive" @click="deleteProject">
               Delete Project

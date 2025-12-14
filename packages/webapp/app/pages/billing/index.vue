@@ -30,31 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 definePageMeta({
-	breadcrumbs: [
-		{ label: "[project]" },
-		{
-			label: "Settings",
-			href: "/settings",
-		},
-		{
-			label: "Billing",
-			dropdown: [
-				{ label: "General", value: "/settings" },
-				{ label: "Billing", value: "/settings/billing" },
-				{ label: "Notifications", value: "/settings/notifications" },
-				{ label: "Security", value: "/settings/security" },
-			],
-		},
-	],
-});
-
-// Mock useI18n since it's not available
-const useI18n = () => ({
-	locales: ref([
-		{ code: "en", name: "English" },
-		{ code: "fr", name: "French" },
-		{ code: "de", name: "German" },
-	]),
+	pageName: "Billing",
 });
 
 // Reactive data
@@ -237,39 +213,46 @@ function getStatusColor(status: string) {
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="max-w-4xl mx-auto w-full">
-      <!-- Header -->
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
-          Billing
-        </h1>
-        <p class="text-neutral-600 dark:text-neutral-400">
-          Manage your subscription and payment information
-        </p>
-      </div>
-
       <div class="space-y-6">
-
         <!-- Plan -->
-        <Card class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800" id="billing-plan">
+        <Card
+          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+          id="billing-plan"
+        >
           <CardHeader>
             <CardTitle>Plan</CardTitle>
-            <CardDescription>Your current subscription plan and usage</CardDescription>
+            <CardDescription
+              >Your current subscription plan and usage</CardDescription
+            >
           </CardHeader>
           <CardContent>
             <div class="p-6 bg-white dark:bg-black space-y-6">
               <div class="grid grid-cols-2 gap-8">
                 <div class="space-y-2">
-                  <span class="font-semibold text-lg text-neutral-900 dark:text-white">{{ planUsage.currentPlan }} Plan</span>
+                  <span
+                    class="font-semibold text-lg text-neutral-900 dark:text-white"
+                    >{{ planUsage.currentPlan }} Plan</span
+                  >
                   <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                    {{ planUsage.currentPlan === 'Basic' ? 'Perfect for getting started' : 'Everything you need for professional projects' }}
+                    {{
+                      planUsage.currentPlan === "Basic"
+                        ? "Perfect for getting started"
+                        : "Everything you need for professional projects"
+                    }}
                   </p>
                   <p class="text-xs text-neutral-500 dark:text-neutral-400">
                     Next billing: January 15, 2024
                   </p>
                 </div>
                 <div class="flex items-start justify-end">
-                  <span class="text-2xl font-bold text-neutral-900 dark:text-white">
-                    ${{ planUsage.currentPlan === 'Basic' ? '29' : '49' }}<span class="text-sm font-normal text-neutral-600 dark:text-neutral-400">/mo</span>
+                  <span
+                    class="text-2xl font-bold text-neutral-900 dark:text-white"
+                  >
+                    ${{ planUsage.currentPlan === "Basic" ? "29" : "49"
+                    }}<span
+                      class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
+                      >/mo</span
+                    >
                   </span>
                 </div>
               </div>
@@ -277,7 +260,10 @@ function getStatusColor(status: string) {
               <!-- Document Usage Slider -->
               <div>
                 <div class="mb-2">
-                  <span class="text-sm font-medium text-neutral-900 dark:text-white">Document Redactions</span>
+                  <span
+                    class="text-sm font-medium text-neutral-900 dark:text-white"
+                    >Document Redactions</span
+                  >
                 </div>
                 <div class="space-y-2">
                   <input
@@ -288,7 +274,9 @@ function getStatusColor(status: string) {
                     :value="planUsage.documentsUsed"
                     class="w-full h-2 bg-neutral-200 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer slider"
                   />
-                  <div class="flex justify-between text-xs text-neutral-600 dark:text-neutral-400">
+                  <div
+                    class="flex justify-between text-xs text-neutral-600 dark:text-neutral-400"
+                  >
                     <span>Min: 10</span>
                     <span>Current: {{ planUsage.documentsUsed }}</span>
                     <span>Max: 50</span>
@@ -297,62 +285,96 @@ function getStatusColor(status: string) {
               </div>
 
               <!-- Enabled Add-ons -->
-              <div v-if="addons.some(a => a.enabled)" class="border-t border-neutral-200 dark:border-neutral-700 pt-4">
-                <h4 class="text-sm font-medium text-neutral-900 dark:text-white mb-3">Active Add-ons</h4>
+              <div
+                v-if="addons.some((a) => a.enabled)"
+                class="border-t border-neutral-200 dark:border-neutral-700 pt-4"
+              >
+                <h4
+                  class="text-sm font-medium text-neutral-900 dark:text-white mb-3"
+                >
+                  Active Add-ons
+                </h4>
                 <div class="space-y-2">
                   <div
-                    v-for="addon in addons.filter(a => a.enabled)"
+                    v-for="addon in addons.filter((a) => a.enabled)"
                     :key="addon.id"
                     class="flex justify-between items-center"
                   >
-                    <span class="text-sm text-neutral-700 dark:text-neutral-300">{{ addon.name }}</span>
-                    <span class="text-sm font-medium text-neutral-900 dark:text-white">
+                    <span
+                      class="text-sm text-neutral-700 dark:text-neutral-300"
+                      >{{ addon.name }}</span
+                    >
+                    <span
+                      class="text-sm font-medium text-neutral-900 dark:text-white"
+                    >
                       ${{ addon.price }}/mo
                     </span>
                   </div>
-                  <div class="pt-2 border-t border-neutral-200 dark:border-neutral-600 flex justify-between items-center">
-                    <span class="text-sm font-medium text-neutral-900 dark:text-white">Total Add-ons:</span>
-                    <span class="text-sm font-semibold text-neutral-900 dark:text-white">
-                      ${{ addons.filter(a => a.enabled).reduce((sum, addon) => sum + addon.price, 0) }}/mo
+                  <div
+                    class="pt-2 border-t border-neutral-200 dark:border-neutral-600 flex justify-between items-center"
+                  >
+                    <span
+                      class="text-sm font-medium text-neutral-900 dark:text-white"
+                      >Total Add-ons:</span
+                    >
+                    <span
+                      class="text-sm font-semibold text-neutral-900 dark:text-white"
+                    >
+                      ${{
+                        addons
+                          .filter((a) => a.enabled)
+                          .reduce((sum, addon) => sum + addon.price, 0)
+                      }}/mo
                     </span>
                   </div>
                 </div>
               </div>
 
               <div class="flex items-center gap-2 pt-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  @click="changePlan"
-                >
+                <Button variant="outline" size="sm" @click="changePlan">
                   Change Plan
                 </Button>
-                <Button
-                  variant="default"
-                  size="sm"
-                  @click="changePlan"
-                >
-                  {{ planUsage.currentPlan === 'Basic' ? 'Upgrade to Pro' : 'Upgrade to Business' }}
+                <Button variant="default" size="sm" @click="changePlan">
+                  {{
+                    planUsage.currentPlan === "Basic"
+                      ? "Upgrade to Pro"
+                      : "Upgrade to Business"
+                  }}
                 </Button>
               </div>
             </div>
           </CardContent>
-          <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl">
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+          >
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Changes take effect immediately. <a href="https://nvisy.com/pricing" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">Learn more about pricing here</a>
+              Changes take effect immediately.
+              <a
+                href="https://nvisy.com/pricing"
+                target="_blank"
+                class="text-blue-600 dark:text-blue-400 hover:underline"
+                >Learn more about pricing here</a
+              >
             </p>
           </CardFooter>
         </Card>
 
         <!-- Invoice History -->
-        <Card class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800" id="invoices-list">
+        <Card
+          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+          id="invoices-list"
+        >
           <CardHeader>
             <CardTitle>Invoice History</CardTitle>
-            <CardDescription>Download and view your past invoices</CardDescription>
+            <CardDescription
+              >Download and view your past invoices</CardDescription
+            >
           </CardHeader>
           <CardContent>
             <!-- Invoice Table -->
-            <div class="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden">
+            <div
+              class="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden"
+            >
               <div v-if="invoices.length > 0" class="overflow-x-auto">
                 <Table>
                   <TableHeader>
@@ -373,18 +395,24 @@ function getStatusColor(status: string) {
                       <TableCell class="px-6">
                         <div class="flex items-center gap-3">
                           <FileText :size="16" class="text-neutral-400" />
-                          <span class="font-medium text-neutral-900 dark:text-white text-sm">
+                          <span
+                            class="font-medium text-neutral-900 dark:text-white text-sm"
+                          >
                             {{ invoice.number }}
                           </span>
                         </div>
                       </TableCell>
                       <TableCell class="px-6">
-                        <span class="text-sm text-neutral-600 dark:text-neutral-400">
+                        <span
+                          class="text-sm text-neutral-600 dark:text-neutral-400"
+                        >
                           {{ invoice.date }}
                         </span>
                       </TableCell>
                       <TableCell class="px-6">
-                        <span class="text-sm font-medium text-neutral-900 dark:text-white">
+                        <span
+                          class="text-sm font-medium text-neutral-900 dark:text-white"
+                        >
                           {{ invoice.amount }}
                         </span>
                       </TableCell>
@@ -393,7 +421,10 @@ function getStatusColor(status: string) {
                           class="inline-flex items-center px-2 py-1 rounded text-xs font-medium"
                           :class="getStatusColor(invoice.status)"
                         >
-                          {{ invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1) }}
+                          {{
+                            invoice.status.charAt(0).toUpperCase() +
+                            invoice.status.slice(1)
+                          }}
                         </span>
                       </TableCell>
                       <TableCell class="px-6">
@@ -415,8 +446,12 @@ function getStatusColor(status: string) {
               <Empty v-else class="py-12">
                 <div class="text-center">
                   <FileText :size="48" class="mx-auto text-neutral-400 mb-4" />
-                  <h4 class="font-medium text-neutral-900 dark:text-white mb-2">No invoices yet</h4>
-                  <p class="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
+                  <h4 class="font-medium text-neutral-900 dark:text-white mb-2">
+                    No invoices yet
+                  </h4>
+                  <p
+                    class="text-sm text-neutral-600 dark:text-neutral-400 mb-2"
+                  >
                     Your invoices will appear here once you start getting billed
                   </p>
                   <p class="text-sm text-neutral-600 dark:text-neutral-400">
@@ -426,15 +461,21 @@ function getStatusColor(status: string) {
               </Empty>
             </div>
           </CardContent>
-          <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl">
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+          >
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Invoices are generated monthly and sent to your billing email address. You can download them as PDF files.
+              Invoices are generated monthly and sent to your billing email
+              address. You can download them as PDF files.
             </p>
           </CardFooter>
         </Card>
 
         <!-- Payment Method -->
-        <Card class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800" id="billing-payment">
+        <Card
+          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+          id="billing-payment"
+        >
           <CardHeader>
             <CardTitle>Payment Methods</CardTitle>
             <CardDescription>Manage your payment information</CardDescription>
@@ -450,27 +491,31 @@ function getStatusColor(status: string) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow
-                  v-for="method in paymentMethods"
-                  :key="method.id"
-                >
+                <TableRow v-for="method in paymentMethods" :key="method.id">
                   <TableCell>
                     <div class="flex items-center gap-3">
                       <CreditCard :size="20" class="text-neutral-400" />
                       <div>
-                        <p class="font-medium text-neutral-900 dark:text-white text-sm">
+                        <p
+                          class="font-medium text-neutral-900 dark:text-white text-sm"
+                        >
                           {{ method.brand }} •••• {{ method.last4 }}
                         </p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <span class="text-sm text-neutral-600 dark:text-neutral-400">
+                    <span
+                      class="text-sm text-neutral-600 dark:text-neutral-400"
+                    >
                       {{ method.expiryMonth }}/{{ method.expiryYear }}
                     </span>
                   </TableCell>
                   <TableCell>
-                    <span v-if="method.isDefault" class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                    <span
+                      v-if="method.isDefault"
+                      class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
+                    >
                       Default
                     </span>
                   </TableCell>
@@ -487,7 +532,10 @@ function getStatusColor(status: string) {
               </TableBody>
             </Table>
 
-            <Empty v-else class="border border-dashed border-neutral-200 dark:border-neutral-700">
+            <Empty
+              v-else
+              class="border border-dashed border-neutral-200 dark:border-neutral-700"
+            >
               <CreditCard :size="48" class="mx-auto text-neutral-400 mb-4" />
               <h4 class="font-medium text-neutral-900 dark:text-white mb-2">
                 No payment methods
@@ -500,7 +548,9 @@ function getStatusColor(status: string) {
               </Button>
             </Empty>
           </CardContent>
-          <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl">
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+          >
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
               We accept Visa, Mastercard, American Express, and Discover cards.
             </p>
@@ -508,15 +558,27 @@ function getStatusColor(status: string) {
         </Card>
 
         <!-- Add-Ons -->
-        <Card class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800" id="billing-addons">
+        <Card
+          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+          id="billing-addons"
+        >
           <CardHeader>
             <CardTitle>Add-Ons</CardTitle>
-            <CardDescription>Enhance your project with additional features</CardDescription>
+            <CardDescription
+              >Enhance your project with additional features</CardDescription
+            >
           </CardHeader>
           <CardContent>
             <div class="space-y-6">
-              <div v-for="category in ['Documents', 'Analytics']" :key="category">
-                <h4 class="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">{{ category }}</h4>
+              <div
+                v-for="category in ['Documents', 'Analytics']"
+                :key="category"
+              >
+                <h4
+                  class="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3"
+                >
+                  {{ category }}
+                </h4>
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -526,20 +588,42 @@ function getStatusColor(status: string) {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    <TableRow v-for="addon in addons.filter(a => a.category === category)" :key="addon.id">
+                    <TableRow
+                      v-for="addon in addons.filter(
+                        (a) => a.category === category,
+                      )"
+                      :key="addon.id"
+                    >
                       <TableCell>
                         <div>
-                          <p class="font-medium text-neutral-900 dark:text-white">{{ addon.name }}</p>
-                          <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">{{ addon.description }}</p>
+                          <p
+                            class="font-medium text-neutral-900 dark:text-white"
+                          >
+                            {{ addon.name }}
+                          </p>
+                          <p
+                            class="text-sm text-neutral-600 dark:text-neutral-400 mt-1"
+                          >
+                            {{ addon.description }}
+                          </p>
                         </div>
                       </TableCell>
                       <TableCell class="text-right pr-6">
-                        <span class="font-medium text-neutral-900 dark:text-white">
-                          ${{ addon.price }}<span class="text-sm font-normal text-neutral-600 dark:text-neutral-400">/mo</span>
+                        <span
+                          class="font-medium text-neutral-900 dark:text-white"
+                        >
+                          ${{ addon.price
+                          }}<span
+                            class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
+                            >/mo</span
+                          >
                         </span>
                       </TableCell>
                       <TableCell>
-                        <Switch :checked="addon.enabled" @update:checked="toggleAddon(addon.id)" />
+                        <Switch
+                          :checked="addon.enabled"
+                          @update:checked="toggleAddon(addon.id)"
+                        />
                       </TableCell>
                     </TableRow>
                   </TableBody>
@@ -547,7 +631,9 @@ function getStatusColor(status: string) {
               </div>
             </div>
           </CardContent>
-          <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl">
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+          >
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
               Add-ons will be prorated and appear on your next invoice.
             </p>
@@ -555,10 +641,15 @@ function getStatusColor(status: string) {
         </Card>
 
         <!-- Invoice Email -->
-        <Card class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800" id="billing-email">
+        <Card
+          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+          id="billing-email"
+        >
           <CardHeader>
             <CardTitle>Invoice Email Recipient</CardTitle>
-            <CardDescription>Email address for invoice delivery</CardDescription>
+            <CardDescription
+              >Email address for invoice delivery</CardDescription
+            >
           </CardHeader>
           <CardContent>
             <Input
@@ -568,21 +659,27 @@ function getStatusColor(status: string) {
               class="max-w-md"
             />
           </CardContent>
-          <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between">
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
+          >
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              This email address will receive all invoices and billing notifications.
+              This email address will receive all invoices and billing
+              notifications.
             </p>
-            <Button size="sm" @click="saveInvoiceEmail">
-              Save
-            </Button>
+            <Button size="sm" @click="saveInvoiceEmail"> Save </Button>
           </CardFooter>
         </Card>
 
         <!-- Company Name -->
-        <Card class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800" id="billing-company">
+        <Card
+          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+          id="billing-company"
+        >
           <CardHeader>
             <CardTitle>Company Name</CardTitle>
-            <CardDescription>Company name for invoices and receipts</CardDescription>
+            <CardDescription
+              >Company name for invoices and receipts</CardDescription
+            >
           </CardHeader>
           <CardContent>
             <Input
@@ -591,28 +688,38 @@ function getStatusColor(status: string) {
               class="max-w-md"
             />
           </CardContent>
-          <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between">
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
+          >
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
               This name will appear on all your invoices and receipts.
             </p>
-            <Button size="sm" @click="saveCompanyName">
-              Save
-            </Button>
+            <Button size="sm" @click="saveCompanyName"> Save </Button>
           </CardFooter>
         </Card>
 
         <!-- Billing Address -->
-        <Card class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800" id="billing-address">
+        <Card
+          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+          id="billing-address"
+        >
           <CardHeader>
             <CardTitle>Billing Address</CardTitle>
-            <CardDescription>Address for tax calculations and invoices</CardDescription>
+            <CardDescription
+              >Address for tax calculations and invoices</CardDescription
+            >
           </CardHeader>
           <CardContent>
             <div class="space-y-3 max-w-md">
               <DropdownMenu>
                 <DropdownMenuTrigger as-child>
                   <Button variant="outline" class="w-full justify-between">
-                    {{ selectedCountry ? countries.find(c => c.code === selectedCountry)?.name : 'Select country' }}
+                    {{
+                      selectedCountry
+                        ? countries.find((c) => c.code === selectedCountry)
+                            ?.name
+                        : "Select country"
+                    }}
                     <ChevronDown :size="16" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -634,27 +741,36 @@ function getStatusColor(status: string) {
               />
             </div>
           </CardContent>
-          <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between">
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
+          >
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              This address will be used for tax calculations and invoice documentation.
+              This address will be used for tax calculations and invoice
+              documentation.
             </p>
-            <Button size="sm" @click="saveBillingAddress">
-              Save
-            </Button>
+            <Button size="sm" @click="saveBillingAddress"> Save </Button>
           </CardFooter>
         </Card>
 
         <!-- Invoice Language -->
-        <Card class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800" id="billing-language">
+        <Card
+          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+          id="billing-language"
+        >
           <CardHeader>
             <CardTitle>Invoice Language</CardTitle>
-            <CardDescription>Language for invoices and billing communications</CardDescription>
+            <CardDescription
+              >Language for invoices and billing communications</CardDescription
+            >
           </CardHeader>
           <CardContent>
             <DropdownMenu>
               <DropdownMenuTrigger as-child>
                 <Button variant="outline" class="w-48 justify-between">
-                  {{ availableLanguages.find((l) => l.code === selectedLanguage)?.name || 'Select language' }}
+                  {{
+                    availableLanguages.find((l) => l.code === selectedLanguage)
+                      ?.name || "Select language"
+                  }}
                   <ChevronDown :size="16" />
                 </Button>
               </DropdownMenuTrigger>
@@ -669,13 +785,13 @@ function getStatusColor(status: string) {
               </DropdownMenuContent>
             </DropdownMenu>
           </CardContent>
-          <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between">
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
+          >
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
               Choose the language for your invoices and billing communications.
             </p>
-            <Button size="sm" @click="saveInvoiceLanguage">
-              Save
-            </Button>
+            <Button size="sm" @click="saveInvoiceLanguage"> Save </Button>
           </CardFooter>
         </Card>
       </div>

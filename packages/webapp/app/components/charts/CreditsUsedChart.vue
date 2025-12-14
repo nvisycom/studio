@@ -3,48 +3,48 @@ import type { ChartConfig } from "@/components/ui/chart";
 import { VisArea, VisAxis, VisLine, VisXYContainer } from "@unovis/vue";
 import { Zap, Server } from "lucide-vue-next";
 import {
-  ChartContainer,
-  ChartCrosshair,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-  componentToString,
+	ChartContainer,
+	ChartCrosshair,
+	ChartLegendContent,
+	ChartTooltip,
+	ChartTooltipContent,
+	componentToString,
 } from "@/components/ui/chart";
 
 interface Props {
-  dateRange?: string;
+	dateRange?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  dateRange: "7d",
+	dateRange: "7d",
 });
 
 const chartData = [
-  { date: new Date("2024-06-24"), ai: 750, other: 450 },
-  { date: new Date("2024-06-25"), ai: 950, other: 550 },
-  { date: new Date("2024-06-26"), ai: 1150, other: 650 },
-  { date: new Date("2024-06-27"), ai: 1000, other: 600 },
-  { date: new Date("2024-06-28"), ai: 1350, other: 750 },
-  { date: new Date("2024-06-29"), ai: 1550, other: 850 },
-  { date: new Date("2024-06-30"), ai: 1400, other: 800 },
+	{ date: new Date("2024-06-24"), ai: 750, other: 450 },
+	{ date: new Date("2024-06-25"), ai: 950, other: 550 },
+	{ date: new Date("2024-06-26"), ai: 1150, other: 650 },
+	{ date: new Date("2024-06-27"), ai: 1000, other: 600 },
+	{ date: new Date("2024-06-28"), ai: 1350, other: 750 },
+	{ date: new Date("2024-06-29"), ai: 1550, other: 850 },
+	{ date: new Date("2024-06-30"), ai: 1400, other: 800 },
 ];
 
 type Data = (typeof chartData)[number];
 
 const chartConfig = {
-  credits: {
-    label: "Credits",
-  },
-  other: {
-    label: "Other",
-    color: "var(--chart-1)",
-    icon: Server,
-  },
-  ai: {
-    label: "AI",
-    color: "var(--chart-2)",
-    icon: Zap,
-  },
+	credits: {
+		label: "Credits",
+	},
+	other: {
+		label: "Other",
+		color: "var(--chart-1)",
+		icon: Server,
+	},
+	ai: {
+		label: "AI",
+		color: "var(--chart-2)",
+		icon: Zap,
+	},
 } satisfies ChartConfig;
 
 // Calculate max value for y-domain (cumulative)

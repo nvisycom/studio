@@ -31,7 +31,7 @@ const { isMobile } = useSidebar();
 
 <template>
   <SidebarGroup class="group-data-[collapsible=icon]:hidden">
-    <SidebarGroupLabel>Projects</SidebarGroupLabel>
+    <SidebarGroupLabel class="uppercase">Recent</SidebarGroupLabel>
     <SidebarMenu>
       <SidebarMenuItem v-for="item in projects" :key="item.name">
         <SidebarMenuButton as-child>
@@ -67,14 +67,6 @@ const { isMobile } = useSidebar();
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </SidebarMenuItem>
-      <SidebarMenuItem>
-        <SidebarMenuButton class="text-sidebar-foreground/70" as-child>
-          <NuxtLink to="/account">
-            <MoreHorizontal class="text-sidebar-foreground/70" />
-            <span>More</span>
-          </NuxtLink>
-        </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>
   </SidebarGroup>

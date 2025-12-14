@@ -1,28 +1,28 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
-  Download,
-  Upload,
-  TrendingUp,
-  DollarSign,
-  Database,
-  CreditCard,
+	Download,
+	Upload,
+	TrendingUp,
+	DollarSign,
+	Database,
+	CreditCard,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import CreditsUsedChart from "~/components/charts/CreditsUsedChart.vue";
@@ -31,7 +31,7 @@ import DocumentsUploadDownloadChart from "~/components/charts/DocumentsUploadDow
 import DocumentsEditVerifyChart from "~/components/charts/DocumentsEditVerifyChart.vue";
 
 definePageMeta({
-  pageName: "Analytics",
+	pageName: "Analytics",
 });
 
 // Date range for analytics
@@ -53,13 +53,13 @@ const storageRemaining = storageTotal - storageUsed;
 const storagePercentage = (storageUsed / storageTotal) * 100;
 
 function exportAnalytics() {
-  console.log("Exporting analytics data for range:", dateRange.value);
-  // TODO: Implement actual export functionality
+	console.log("Exporting analytics data for range:", dateRange.value);
+	// TODO: Implement actual export functionality
 }
 
 function importAnalytics() {
-  console.log("Importing analytics data");
-  // TODO: Implement actual import functionality
+	console.log("Importing analytics data");
+	// TODO: Implement actual import functionality
 }
 </script>
 

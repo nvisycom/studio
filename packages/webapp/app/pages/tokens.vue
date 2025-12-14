@@ -1,62 +1,62 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import {
-  Key,
-  Copy,
-  Check,
-  ChevronDown,
-  MoreHorizontal,
-  Trash2,
-  Calendar,
+	Key,
+	Copy,
+	Check,
+	ChevronDown,
+	MoreHorizontal,
+	Trash2,
+	Calendar,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import {
-  Empty,
-  EmptyHeader,
-  EmptyTitle,
-  EmptyDescription,
+	Empty,
+	EmptyHeader,
+	EmptyTitle,
+	EmptyDescription,
 } from "@/components/ui/empty";
 import {
-  TokensTable,
-  TokenCreatedModal,
-  DeleteTokenModal,
-  DeleteMultipleTokensModal,
-  RenameTokenModal,
+	TokensTable,
+	TokenCreatedModal,
+	DeleteTokenModal,
+	DeleteMultipleTokensModal,
+	RenameTokenModal,
 } from "@/components/tokens";
 
 definePageMeta({
-  pageName: "Tokens",
+	pageName: "Tokens",
 });
 
 interface Token {
-  id: string;
-  name: string;
-  service: string;
-  browser: string;
-  os: string;
-  authMethod: string;
-  scope: string[];
-  createdAt: Date;
-  expiresAt: Date | null;
-  lastUsed: Date | null;
-  token?: string;
+	id: string;
+	name: string;
+	service: string;
+	browser: string;
+	os: string;
+	authMethod: string;
+	scope: string[];
+	createdAt: Date;
+	expiresAt: Date | null;
+	lastUsed: Date | null;
+	token?: string;
 }
 
 // Form state
@@ -78,179 +78,179 @@ const copiedTokenId = ref<string | null>(null);
 
 // Constants
 const expirations = [
-  { label: "30 days", value: "30" },
-  { label: "90 days", value: "90" },
-  { label: "1 year", value: "365" },
-  { label: "Never", value: "never" },
+	{ label: "30 days", value: "30" },
+	{ label: "90 days", value: "90" },
+	{ label: "1 year", value: "365" },
+	{ label: "Never", value: "never" },
 ] as const;
 
 // Mock data
 const tokens = ref<Token[]>([
-  {
-    id: "1",
-    name: "Nvisy from Chrome on Windows",
-    service: "Nvisy",
-    browser: "Chrome",
-    os: "Windows",
-    authMethod: "OAuth",
-    scope: ["read", "write"],
-    createdAt: new Date("2024-01-15"),
-    expiresAt: new Date("2025-01-15"),
-    lastUsed: new Date("2024-10-10"),
-    token: "nvisy_prod_abc123def456",
-  },
-  {
-    id: "2",
-    name: "Nvisy from Safari on Mac OS",
-    service: "Nvisy",
-    browser: "Safari",
-    os: "Mac OS",
-    authMethod: "API Key",
-    scope: ["read", "write", "admin"],
-    createdAt: new Date("2024-03-20"),
-    expiresAt: null,
-    lastUsed: new Date("2024-10-11"),
-    token: "nvisy_cicd_xyz789ghi012",
-  },
-  {
-    id: "3",
-    name: "Nvisy from Firefox on Linux",
-    service: "Nvisy",
-    browser: "Firefox",
-    os: "Linux",
-    authMethod: "OAuth",
-    scope: ["read"],
-    createdAt: new Date("2024-08-05"),
-    expiresAt: new Date("2024-11-05"),
-    lastUsed: null,
-    token: "nvisy_dev_jkl345mno678",
-  },
+	{
+		id: "1",
+		name: "Nvisy from Chrome on Windows",
+		service: "Nvisy",
+		browser: "Chrome",
+		os: "Windows",
+		authMethod: "OAuth",
+		scope: ["read", "write"],
+		createdAt: new Date("2024-01-15"),
+		expiresAt: new Date("2025-01-15"),
+		lastUsed: new Date("2024-10-10"),
+		token: "nvisy_prod_abc123def456",
+	},
+	{
+		id: "2",
+		name: "Nvisy from Safari on Mac OS",
+		service: "Nvisy",
+		browser: "Safari",
+		os: "Mac OS",
+		authMethod: "API Key",
+		scope: ["read", "write", "admin"],
+		createdAt: new Date("2024-03-20"),
+		expiresAt: null,
+		lastUsed: new Date("2024-10-11"),
+		token: "nvisy_cicd_xyz789ghi012",
+	},
+	{
+		id: "3",
+		name: "Nvisy from Firefox on Linux",
+		service: "Nvisy",
+		browser: "Firefox",
+		os: "Linux",
+		authMethod: "OAuth",
+		scope: ["read"],
+		createdAt: new Date("2024-08-05"),
+		expiresAt: new Date("2024-11-05"),
+		lastUsed: null,
+		token: "nvisy_dev_jkl345mno678",
+	},
 ]);
 
 // Token creation
 function createToken() {
-  if (!tokenName.value.trim()) return;
+	if (!tokenName.value.trim()) return;
 
-  const expiresAt =
-    tokenExpiration.value === "never"
-      ? null
-      : new Date(
-          Date.now() +
-            Number.parseInt(tokenExpiration.value) * 24 * 60 * 60 * 1000,
-        );
+	const expiresAt =
+		tokenExpiration.value === "never"
+			? null
+			: new Date(
+					Date.now() +
+						Number.parseInt(tokenExpiration.value) * 24 * 60 * 60 * 1000,
+				);
 
-  const newToken: Token = {
-    id: Date.now().toString(),
-    name: tokenName.value,
-    service: "Nvisy",
-    browser: "Chrome",
-    os: "Mac OS",
-    authMethod: "API Key",
-    scope: ["read", "write"],
-    createdAt: new Date(),
-    expiresAt,
-    lastUsed: null,
-    token: `nvisy_${Math.random().toString(36).substring(2)}`,
-  };
+	const newToken: Token = {
+		id: Date.now().toString(),
+		name: tokenName.value,
+		service: "Nvisy",
+		browser: "Chrome",
+		os: "Mac OS",
+		authMethod: "API Key",
+		scope: ["read", "write"],
+		createdAt: new Date(),
+		expiresAt,
+		lastUsed: null,
+		token: `nvisy_${Math.random().toString(36).substring(2)}`,
+	};
 
-  tokens.value.unshift(newToken);
-  newTokenGenerated.value = newToken.token || null;
-  isTokenCreatedModalOpen.value = true;
+	tokens.value.unshift(newToken);
+	newTokenGenerated.value = newToken.token || null;
+	isTokenCreatedModalOpen.value = true;
 
-  // Reset form
-  tokenName.value = "";
-  tokenExpiration.value = "90";
+	// Reset form
+	tokenName.value = "";
+	tokenExpiration.value = "90";
 }
 
 function closeTokenCreatedModal() {
-  isTokenCreatedModalOpen.value = false;
-  newTokenGenerated.value = null;
+	isTokenCreatedModalOpen.value = false;
+	newTokenGenerated.value = null;
 }
 
 // Token deletion
 function openDeleteDialog(token: Token) {
-  tokenToDelete.value = token;
-  isDeleteDialogOpen.value = true;
+	tokenToDelete.value = token;
+	isDeleteDialogOpen.value = true;
 }
 
 function deleteToken() {
-  if (!tokenToDelete.value) return;
+	if (!tokenToDelete.value) return;
 
-  tokens.value = tokens.value.filter((t) => t.id !== tokenToDelete.value?.id);
-  isDeleteDialogOpen.value = false;
-  tokenToDelete.value = null;
+	tokens.value = tokens.value.filter((t) => t.id !== tokenToDelete.value?.id);
+	isDeleteDialogOpen.value = false;
+	tokenToDelete.value = null;
 }
 
 function openDeleteMultipleDialog() {
-  isDeleteMultipleDialogOpen.value = true;
+	isDeleteMultipleDialogOpen.value = true;
 }
 
 function deleteSelectedTokens() {
-  tokens.value = tokens.value.filter((t) => !selectedTokens.value.has(t.id));
-  selectedTokens.value = new Set();
-  isDeleteMultipleDialogOpen.value = false;
+	tokens.value = tokens.value.filter((t) => !selectedTokens.value.has(t.id));
+	selectedTokens.value = new Set();
+	isDeleteMultipleDialogOpen.value = false;
 }
 
 // Clipboard
 async function copyToken(token: string, tokenId: string) {
-  try {
-    await navigator.clipboard.writeText(token);
-    copiedTokenId.value = tokenId;
-    setTimeout(() => {
-      copiedTokenId.value = null;
-    }, 2000);
-  } catch (err) {
-    console.error("Failed to copy token:", err);
-  }
+	try {
+		await navigator.clipboard.writeText(token);
+		copiedTokenId.value = tokenId;
+		setTimeout(() => {
+			copiedTokenId.value = null;
+		}, 2000);
+	} catch (err) {
+		console.error("Failed to copy token:", err);
+	}
 }
 
 // Computed
 const allSelected = computed(
-  () =>
-    tokens.value.length > 0 &&
-    selectedTokens.value.size === tokens.value.length,
+	() =>
+		tokens.value.length > 0 &&
+		selectedTokens.value.size === tokens.value.length,
 );
 
 // Utilities
 function formatDate(date: Date | null): string {
-  if (!date) return "Never";
-  return new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  }).format(date);
+	if (!date) return "Never";
+	return new Intl.DateTimeFormat("en-US", {
+		year: "numeric",
+		month: "short",
+		day: "numeric",
+	}).format(date);
 }
 
 function toggleSelectAll() {
-  selectedTokens.value = allSelected.value
-    ? new Set()
-    : new Set(tokens.value.map((t) => t.id));
+	selectedTokens.value = allSelected.value
+		? new Set()
+		: new Set(tokens.value.map((t) => t.id));
 }
 
 function toggleToken(tokenId: string) {
-  const newSet = new Set(selectedTokens.value);
-  newSet.has(tokenId) ? newSet.delete(tokenId) : newSet.add(tokenId);
-  selectedTokens.value = newSet;
+	const newSet = new Set(selectedTokens.value);
+	newSet.has(tokenId) ? newSet.delete(tokenId) : newSet.add(tokenId);
+	selectedTokens.value = newSet;
 }
 
 // Token rename
 function openRenameDialog(token: Token) {
-  tokenToRename.value = token;
-  isRenameDialogOpen.value = true;
+	tokenToRename.value = token;
+	isRenameDialogOpen.value = true;
 }
 
 function renameToken(newName: string) {
-  if (!tokenToRename.value) return;
+	if (!tokenToRename.value) return;
 
-  const tokenIndex = tokens.value.findIndex(
-    (t) => t.id === tokenToRename.value?.id,
-  );
-  if (tokenIndex !== -1) {
-    tokens.value[tokenIndex].name = newName;
-  }
+	const tokenIndex = tokens.value.findIndex(
+		(t) => t.id === tokenToRename.value?.id,
+	);
+	if (tokenIndex !== -1) {
+		tokens.value[tokenIndex].name = newName;
+	}
 
-  isRenameDialogOpen.value = false;
-  tokenToRename.value = null;
+	isRenameDialogOpen.value = false;
+	tokenToRename.value = null;
 }
 </script>
 

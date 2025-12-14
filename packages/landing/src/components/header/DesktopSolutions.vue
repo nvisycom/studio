@@ -1,12 +1,23 @@
 <script setup lang="ts">
 import {
-	NavigationMenuContent,
-	NavigationMenuItem,
-	NavigationMenuLink,
-	NavigationMenuTrigger,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { ChevronRight } from "lucide-vue-next";
 import { solutions } from "./desktop-nav-data";
+
+interface BlogPost {
+  title: string;
+  href: string;
+}
+
+interface Props {
+  blogPosts: BlogPost[];
+}
+
+const props = defineProps<Props>();
 </script>
 
 <template>
@@ -19,103 +30,65 @@ import { solutions } from "./desktop-nav-data";
     <NavigationMenuContent
       class="left-0 top-0 w-full data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52 md:absolute md:w-auto md:left-1/2 md:-translate-x-1/2"
     >
-      <div class="grid gap-0 p-0 md:w-[800px] lg:grid-cols-2">
-        <!-- Left side: Solutions Categories -->
-        <div class="p-6 border-r border-gray-100 dark:border-neutral-700">
-          <div class="grid grid-cols-2 gap-10">
-            <!-- By Use Case Section -->
-            <div>
-              <h3
-                class="font-light text-gray-500 dark:text-neutral-400 mb-3 text-xs tracking-wide"
+      <div class="p-0 md:w-[800px]">
+        <div class="grid gap-0 lg:grid-cols-2">
+          <!-- Left Column: Solutions 2x2 Grid -->
+          <div class="p-6 border-r border-gray-100 dark:border-neutral-700">
+            <h3
+              class="font-light text-gray-500 dark:text-neutral-400 mb-4 text-xs tracking-wide"
+            >
+              By Use Case
+            </h3>
+            <div class="grid grid-cols-2 gap-3">
+              <NavigationMenuLink
+                v-for="solution in solutions.usecase"
+                :key="solution.title"
+                :href="solution.href"
+                class="flex flex-col p-4 rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 transition-all hover:bg-gray-50 dark:hover:bg-neutral-900 hover:border-gray-300 dark:hover:border-neutral-600 hover:shadow-sm"
               >
-                By Use Case
-              </h3>
-              <div class="space-y-2">
-                <NavigationMenuLink
-                  v-for="solution in solutions.usecase"
-                  :key="solution.title"
-                  :href="solution.href"
-                  class="block select-none rounded-md leading-none no-underline outline-none transition-colors hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white focus:bg-gray-50 dark:focus:bg-neutral-800 focus:text-gray-900 dark:focus:text-white"
-                >
-                  <div class="flex items-center">
-                    <span
-                      class="text-gray-400 dark:text-neutral-500 mr-3 mt-0.5 flex-shrink-0"
-                    >
-                      <component :is="solution.icon" class="w-5 h-5" />
-                    </span>
-                    <div class="flex-1">
-                      <div class="text-sm font-light leading-none">
-                        {{ solution.title }}
-                      </div>
-                    </div>
+                <component
+                  :is="solution.icon"
+                  class="w-6 h-6 text-gray-400 dark:text-neutral-500 mb-2"
+                />
+                <div class="flex items-center justify-between">
+                  <div
+                    class="text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    {{ solution.title }}
                   </div>
-                </NavigationMenuLink>
-              </div>
-            </div>
-
-            <!-- By Stage Section -->
-            <div>
-              <h3
-                class="font-light text-gray-500 dark:text-neutral-400 mb-3 text-xs tracking-wide"
-              >
-                By Stage
-              </h3>
-              <div class="space-y-2">
-                <NavigationMenuLink
-                  v-for="solution in solutions.stage"
-                  :key="solution.title"
-                  :href="solution.href"
-                  class="block select-none rounded-md leading-none no-underline outline-none transition-colors hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white focus:bg-gray-50 dark:focus:bg-neutral-800 focus:text-gray-900 dark:focus:text-white"
-                >
-                  <div class="flex items-center">
-                    <span
-                      class="text-gray-400 dark:text-neutral-500 mr-3 mt-0.5 flex-shrink-0"
-                    >
-                      <component :is="solution.icon" class="w-5 h-5" />
-                    </span>
-                    <div class="flex-1">
-                      <div class="text-sm font-light leading-none">
-                        {{ solution.title }}
-                      </div>
-                    </div>
-                  </div>
-                </NavigationMenuLink>
-              </div>
+                  <ChevronRight
+                    class="w-4 h-4 text-gray-400 dark:text-neutral-500"
+                  />
+                </div>
+              </NavigationMenuLink>
             </div>
           </div>
-        </div>
 
-        <!-- Right side: Integrations Section -->
-        <div class="bg-gray-50/30 dark:bg-neutral-800/10 px-6 pb-6 pt-4">
-          <!-- Integrations Header -->
-          <NavigationMenuLink
-            href="/integrations"
-            class="inline-flex items-center font-light text-gray-500 dark:text-neutral-400 mb-2 text-xs tracking-wide transition-colors hover:text-gray-900 dark:hover:text-white focus:text-gray-900 dark:focus:text-white"
-          >
-            <span class="flex items-center">
-              Integrations
-              <ChevronRight class="h-4 w-4 ml-1" />
-            </span>
-          </NavigationMenuLink>
-
-          <!-- Integration Cards -->
-          <div class="grid grid-cols-3 gap-2">
+          <!-- Right Column: Blog Section -->
+          <div class="p-6">
             <NavigationMenuLink
-              v-for="integration in solutions.integrations"
-              :key="integration.title"
-              :href="integration.href"
-              class="flex flex-col items-center justify-center p-3 rounded-md border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 transition-colors hover:bg-gray-50 dark:hover:bg-neutral-800 hover:border-gray-300 dark:hover:border-neutral-600 h-[92px]"
+              href="/blog"
+              class="inline-flex items-center font-light text-gray-500 dark:text-neutral-400 mb-3 text-xs tracking-wide transition-colors hover:text-gray-900 dark:hover:text-white focus:text-gray-900 dark:focus:text-white -mt-2"
             >
-              <component
-                :is="integration.icon"
-                class="w-6 h-6 text-gray-400 dark:text-neutral-500 mb-1.5"
-              />
-              <span
-                class="text-xs font-light text-gray-700 dark:text-neutral-300 text-center"
-              >
-                {{ integration.title }}
+              <span class="flex items-center">
+                Blog
+                <ChevronRight class="h-4 w-4 ml-1" />
               </span>
             </NavigationMenuLink>
+            <div class="space-y-2">
+              <NavigationMenuLink
+                v-for="post in props.blogPosts.slice(0, 3)"
+                :key="post.href"
+                :href="post.href"
+                class="block p-3 rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 transition-colors hover:bg-gray-50 dark:hover:bg-neutral-900 hover:border-gray-300 dark:hover:border-neutral-600"
+              >
+                <div
+                  class="text-sm font-light text-gray-900 dark:text-white line-clamp-2"
+                >
+                  {{ post.title }}
+                </div>
+              </NavigationMenuLink>
+            </div>
           </div>
         </div>
       </div>

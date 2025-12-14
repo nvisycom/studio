@@ -14,12 +14,6 @@ requirements:
   - "Self-motivated with ability to work independently"
   - "Outstanding communication skills for remote collaboration"
   - "Willingness to contribute to both frontend and backend development"
-niceToHave:
-  - "Experience with React, Vue, or similar modern frameworks"
-  - "Knowledge of build tools, testing frameworks, and CI/CD"
-  - "Previous experience in developer tools or productivity software"
-  - "Understanding of web performance optimization techniques"
-  - "Experience with design systems and component libraries"
 published: true
 createdAt: 2024-01-15
 ---

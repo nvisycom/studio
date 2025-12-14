@@ -10,16 +10,8 @@ dist
 node_modules
 
 # Logs
-logs
 *.log
-
-# OS
-.DS_Store
-
-# Editors
-.fleet
-.idea
-.vscode
+*.log*
 
 # Environment
 .env

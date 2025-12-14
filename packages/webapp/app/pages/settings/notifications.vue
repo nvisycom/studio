@@ -13,22 +13,7 @@ import Switch from "@/components/ui/switch/Switch.vue";
 import Checkbox from "@/components/ui/checkbox/Checkbox.vue";
 
 definePageMeta({
-	breadcrumbs: [
-		{ label: "[project]" },
-		{
-			label: "Settings",
-			href: "/settings",
-		},
-		{
-			label: "Notifications",
-			dropdown: [
-				{ label: "General", value: "/settings" },
-				{ label: "Billing", value: "/settings/billing" },
-				{ label: "Notifications", value: "/settings/notifications" },
-				{ label: "Security", value: "/settings/security" },
-			],
-		},
-	],
+	pageName: "Settings",
 });
 
 // Reactive data
@@ -171,23 +156,17 @@ function updateNotificationSetting(
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="max-w-4xl mx-auto w-full">
-      <!-- Header -->
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
-          Notifications
-        </h1>
-        <p class="text-neutral-600 dark:text-neutral-400">
-          Configure how and when you receive notifications
-        </p>
-      </div>
-
       <div class="space-y-6">
-
         <!-- Notification Channels -->
-        <Card class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800" id="notifications-channels">
+        <Card
+          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+          id="notifications-channels"
+        >
           <CardHeader>
             <CardTitle>Notification Channels</CardTitle>
-            <CardDescription>Choose where you want to receive notifications</CardDescription>
+            <CardDescription
+              >Choose where you want to receive notifications</CardDescription
+            >
           </CardHeader>
           <CardContent>
             <div class="p-4 rounded-lg bg-white dark:bg-black space-y-4">
@@ -215,9 +194,12 @@ function updateNotificationSetting(
               </div>
             </div>
           </CardContent>
-          <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between">
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
+          >
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Web notifications are always enabled to ensure you don't miss important updates.
+              Web notifications are always enabled to ensure you don't miss
+              important updates.
             </p>
             <Button size="sm" @click="saveNotificationCategories">
               Save
@@ -226,27 +208,37 @@ function updateNotificationSetting(
         </Card>
 
         <!-- Notification Categories -->
-        <Card class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800" id="notifications-categories">
+        <Card
+          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+          id="notifications-categories"
+        >
           <CardHeader>
             <CardTitle>Notification Types</CardTitle>
-            <CardDescription>Choose which notifications you want to receive</CardDescription>
+            <CardDescription
+              >Choose which notifications you want to receive</CardDescription
+            >
           </CardHeader>
           <CardContent>
             <div class="space-y-6">
-              <div
-                v-for="category in categories"
-                :key="category.id"
-              >
+              <div v-for="category in categories" :key="category.id">
                 <!-- Category Header with Web/Email Labels -->
-                <div class="flex items-center justify-between pb-2 border-b border-neutral-300 dark:border-neutral-600">
-                  <h4 class="text-sm font-medium text-neutral-900 dark:text-white">
+                <div
+                  class="flex items-center justify-between pb-2 border-b border-neutral-300 dark:border-neutral-600"
+                >
+                  <h4
+                    class="text-sm font-medium text-neutral-900 dark:text-white"
+                  >
                     {{ category.name }}
                   </h4>
                   <div class="flex items-center gap-8">
-                    <span class="text-xs font-medium text-neutral-600 dark:text-neutral-400 w-16 text-center">
+                    <span
+                      class="text-xs font-medium text-neutral-600 dark:text-neutral-400 w-16 text-center"
+                    >
                       Web
                     </span>
-                    <span class="text-xs font-medium text-neutral-600 dark:text-neutral-400 w-16 text-center">
+                    <span
+                      class="text-xs font-medium text-neutral-600 dark:text-neutral-400 w-16 text-center"
+                    >
                       Email
                     </span>
                   </div>
@@ -263,7 +255,9 @@ function updateNotificationSetting(
                       <p class="text-sm text-neutral-900 dark:text-white">
                         {{ notification.name }}
                       </p>
-                      <p class="text-xs text-neutral-600 dark:text-neutral-400 mt-1">
+                      <p
+                        class="text-xs text-neutral-600 dark:text-neutral-400 mt-1"
+                      >
                         {{ notification.description }}
                       </p>
                     </div>
@@ -272,16 +266,36 @@ function updateNotificationSetting(
                       <!-- Web Checkbox -->
                       <div class="w-16 flex justify-center">
                         <Checkbox
-                          :default-value="(notificationCategories as any)[notification.key]?.web"
-                          @update:checked="(value: boolean) => updateNotificationSetting(notification.key, 'web', value)"
+                          :default-value="
+                            (notificationCategories as any)[notification.key]
+                              ?.web
+                          "
+                          @update:checked="
+                            (value: boolean) =>
+                              updateNotificationSetting(
+                                notification.key,
+                                'web',
+                                value,
+                              )
+                          "
                         />
                       </div>
 
                       <!-- Email Checkbox -->
                       <div class="w-16 flex justify-center">
                         <Checkbox
-                          :default-value="(notificationCategories as any)[notification.key]?.email"
-                          @update:checked="(value: boolean) => updateNotificationSetting(notification.key, 'email', value)"
+                          :default-value="
+                            (notificationCategories as any)[notification.key]
+                              ?.email
+                          "
+                          @update:checked="
+                            (value: boolean) =>
+                              updateNotificationSetting(
+                                notification.key,
+                                'email',
+                                value,
+                              )
+                          "
                         />
                       </div>
                     </div>
@@ -290,9 +304,12 @@ function updateNotificationSetting(
               </div>
             </div>
           </CardContent>
-          <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between">
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
+          >
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Security notifications are highly recommended and cannot be disabled for critical alerts.
+              Security notifications are highly recommended and cannot be
+              disabled for critical alerts.
             </p>
             <Button size="sm" @click="saveNotificationCategories">
               Save

@@ -23,11 +23,16 @@ import {
 	MessageCircle,
 	Github,
 	ExternalLink,
+	BarChart3,
+	FileSearch,
+	Upload,
+	Download,
+	Workflow,
 } from "lucide-vue-next";
-import NavMain from "@/components/NavMain.vue";
-import NavProjects from "@/components/NavProjects.vue";
-import NavUser from "@/components/NavUser.vue";
-import ProjectSwitcher from "@/components/ProjectSwitcher.vue";
+import NavMain from "@/components/sidebar/NavMain.vue";
+import NavProjects from "@/components/sidebar/NavProjects.vue";
+import NavUser from "@/components/sidebar/NavUser.vue";
+import ProjectSwitcher from "@/components/sidebar/ProjectSwitcher.vue";
 import {
 	Sidebar,
 	SidebarContent,
@@ -73,7 +78,7 @@ const data = {
 			plan: "Free",
 		},
 	],
-	navMain: [
+	navDashboard: [
 		{
 			title: "Dashboard",
 			url: "/",
@@ -81,15 +86,23 @@ const data = {
 			isActive: false,
 		},
 		{
+			title: "Tokens",
+			url: "/tokens",
+			icon: Key,
+			isActive: false,
+		},
+	],
+	navMain: [
+		{
 			title: "Documents",
 			url: "/documents",
 			icon: FileText,
 			isActive: false,
 		},
 		{
-			title: "Activity",
-			url: "/activity",
-			icon: Activity,
+			title: "Pipelines",
+			url: "/pipelines",
+			icon: Workflow,
 			isActive: false,
 		},
 		{
@@ -104,28 +117,36 @@ const data = {
 			icon: Users,
 			isActive: false,
 		},
+	],
+	navObservability: [
 		{
-			title: "Settings",
-			url: "/settings",
-			icon: Settings,
+			title: "Analytics",
+			url: "/analytics",
+			icon: BarChart3,
+			isActive: false,
+		},
+		{
+			title: "Logs",
+			url: "/analytics/logs",
+			icon: FileSearch,
 			isActive: false,
 		},
 	],
 	quickProjects: [
 		{
-			name: "Design Engineering",
-			url: "#",
-			icon: Frame,
+			name: "contract_template.pdf",
+			url: "/documents",
+			icon: FileText,
 		},
 		{
-			name: "Sales & Marketing",
-			url: "#",
-			icon: PieChart,
+			name: "employee_handbook.docx",
+			url: "/documents",
+			icon: FileText,
 		},
 		{
-			name: "Travel",
-			url: "#",
-			icon: Map,
+			name: "quarterly_report.xlsx",
+			url: "/documents",
+			icon: FileText,
 		},
 	],
 };
@@ -137,11 +158,29 @@ const data = {
       <ProjectSwitcher :projects="data.projects" />
     </SidebarHeader>
     <SidebarContent>
-      <NavMain :items="data.navMain" />
+      <NavMain :items="data.navDashboard" label="" />
+      <NavMain :items="data.navMain" label="Platform" />
+      <NavMain :items="data.navObservability" label="Observability" />
       <NavProjects :projects="data.quickProjects" />
     </SidebarContent>
     <SidebarFooter>
       <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton as-child>
+            <NuxtLink to="/billing">
+              <CreditCard />
+              <span>Billing</span>
+            </NuxtLink>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton as-child>
+            <NuxtLink to="/settings">
+              <Settings />
+              <span>Settings</span>
+            </NuxtLink>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
         <SidebarMenuItem>
           <DropdownMenu>
             <DropdownMenuTrigger as-child>
@@ -152,7 +191,12 @@ const data = {
             </DropdownMenuTrigger>
             <DropdownMenuContent side="right" align="start" class="w-48">
               <DropdownMenuItem as-child>
-                <a href="https://docs.nvisy.com" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between gap-2">
+                <a
+                  href="https://docs.nvisy.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex items-center justify-between gap-2"
+                >
                   <div class="flex items-center gap-2">
                     <BookOpen :size="16" />
                     <span>Documentation</span>
@@ -161,7 +205,12 @@ const data = {
                 </a>
               </DropdownMenuItem>
               <DropdownMenuItem as-child>
-                <a href="https://docs.nvisy.com/api-reference" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between gap-2">
+                <a
+                  href="https://docs.nvisy.com/api-reference"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex items-center justify-between gap-2"
+                >
                   <div class="flex items-center gap-2">
                     <Code :size="16" />
                     <span>API Reference</span>
@@ -170,7 +219,12 @@ const data = {
                 </a>
               </DropdownMenuItem>
               <DropdownMenuItem as-child>
-                <a href="https://discord.gg/nvisy" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between gap-2">
+                <a
+                  href="https://discord.gg/nvisy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex items-center justify-between gap-2"
+                >
                   <div class="flex items-center gap-2">
                     <MessageCircle :size="16" />
                     <span>Discord</span>
@@ -179,7 +233,12 @@ const data = {
                 </a>
               </DropdownMenuItem>
               <DropdownMenuItem as-child>
-                <a href="https://github.com/nvisy" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between gap-2">
+                <a
+                  href="https://github.com/nvisy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex items-center justify-between gap-2"
+                >
                   <div class="flex items-center gap-2">
                     <Github :size="16" />
                     <span>GitHub</span>

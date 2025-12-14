@@ -2,43 +2,43 @@
 import type { ChartConfig } from "@/components/ui/chart";
 import { VisArea, VisAxis, VisLine, VisXYContainer } from "@unovis/vue";
 import {
-  ChartContainer,
-  ChartCrosshair,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-  componentToString,
+	ChartContainer,
+	ChartCrosshair,
+	ChartLegendContent,
+	ChartTooltip,
+	ChartTooltipContent,
+	componentToString,
 } from "@/components/ui/chart";
 
 interface Props {
-  dateRange?: string;
+	dateRange?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  dateRange: "7d",
+	dateRange: "7d",
 });
 
 const chartData = [
-  { date: new Date("2024-06-24"), uploaded: 45, downloaded: 32 },
-  { date: new Date("2024-06-25"), uploaded: 52, downloaded: 38 },
-  { date: new Date("2024-06-26"), uploaded: 61, downloaded: 45 },
-  { date: new Date("2024-06-27"), uploaded: 58, downloaded: 41 },
-  { date: new Date("2024-06-28"), uploaded: 67, downloaded: 49 },
-  { date: new Date("2024-06-29"), uploaded: 72, downloaded: 55 },
-  { date: new Date("2024-06-30"), uploaded: 69, downloaded: 52 },
+	{ date: new Date("2024-06-24"), uploaded: 45, downloaded: 32 },
+	{ date: new Date("2024-06-25"), uploaded: 52, downloaded: 38 },
+	{ date: new Date("2024-06-26"), uploaded: 61, downloaded: 45 },
+	{ date: new Date("2024-06-27"), uploaded: 58, downloaded: 41 },
+	{ date: new Date("2024-06-28"), uploaded: 67, downloaded: 49 },
+	{ date: new Date("2024-06-29"), uploaded: 72, downloaded: 55 },
+	{ date: new Date("2024-06-30"), uploaded: 69, downloaded: 52 },
 ];
 
 type Data = (typeof chartData)[number];
 
 const chartConfig = {
-  uploaded: {
-    label: "Uploaded",
-    color: "var(--chart-1)",
-  },
-  downloaded: {
-    label: "Downloaded",
-    color: "var(--chart-2)",
-  },
+	uploaded: {
+		label: "Uploaded",
+		color: "var(--chart-1)",
+	},
+	downloaded: {
+		label: "Downloaded",
+		color: "var(--chart-2)",
+	},
 } satisfies ChartConfig;
 
 // Calculate max value for y-domain (cumulative)

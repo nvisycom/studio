@@ -14,12 +14,6 @@ requirements:
   - "Self-motivated with ability to work independently"
   - "Outstanding communication skills for remote collaboration"
   - "Willingness to contribute to both backend and frontend development"
-niceToHave:
-  - "Experience with distributed systems and microservices"
-  - "Knowledge of web technologies and frontend frameworks"
-  - "Previous experience in developer tools or productivity software"
-  - "Open source contributions or community involvement"
-  - "Experience with performance optimization and profiling"
 published: true
 createdAt: 2024-01-15
 ---

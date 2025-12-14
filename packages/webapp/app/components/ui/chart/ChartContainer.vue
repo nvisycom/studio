@@ -1,11 +1,11 @@
 <script lang="ts">
-import type { HTMLAttributes } from "vue"
-import type { ChartConfig } from "."
-import { useId } from "reka-ui"
-import { computed, toRefs } from "vue"
-import { cn } from '@/utils/shadcn'
-import { provideChartContext } from "."
-import ChartStyle from "./ChartStyle.vue"
+import type { HTMLAttributes } from "vue";
+import type { ChartConfig } from ".";
+import { useId } from "reka-ui";
+import { computed, toRefs } from "vue";
+import { cn } from "@/utils/shadcn";
+import { provideChartContext } from ".";
+import ChartStyle from "./ChartStyle.vue";
 </script>
 
 <script setup lang="ts">

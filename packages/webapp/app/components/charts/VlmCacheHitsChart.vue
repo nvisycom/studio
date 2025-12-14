@@ -2,43 +2,43 @@
 import type { ChartConfig } from "@/components/ui/chart";
 import { VisArea, VisAxis, VisLine, VisXYContainer } from "@unovis/vue";
 import {
-  ChartContainer,
-  ChartCrosshair,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-  componentToString,
+	ChartContainer,
+	ChartCrosshair,
+	ChartLegendContent,
+	ChartTooltip,
+	ChartTooltipContent,
+	componentToString,
 } from "@/components/ui/chart";
 
 interface Props {
-  dateRange?: string;
+	dateRange?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  dateRange: "7d",
+	dateRange: "7d",
 });
 
 const chartData = [
-  { date: new Date("2024-06-24"), hits: 850, misses: 420 },
-  { date: new Date("2024-06-25"), hits: 920, misses: 380 },
-  { date: new Date("2024-06-26"), hits: 1050, misses: 410 },
-  { date: new Date("2024-06-27"), hits: 980, misses: 360 },
-  { date: new Date("2024-06-28"), hits: 1180, misses: 450 },
-  { date: new Date("2024-06-29"), hits: 1290, misses: 480 },
-  { date: new Date("2024-06-30"), hits: 1210, misses: 430 },
+	{ date: new Date("2024-06-24"), hits: 850, misses: 420 },
+	{ date: new Date("2024-06-25"), hits: 920, misses: 380 },
+	{ date: new Date("2024-06-26"), hits: 1050, misses: 410 },
+	{ date: new Date("2024-06-27"), hits: 980, misses: 360 },
+	{ date: new Date("2024-06-28"), hits: 1180, misses: 450 },
+	{ date: new Date("2024-06-29"), hits: 1290, misses: 480 },
+	{ date: new Date("2024-06-30"), hits: 1210, misses: 430 },
 ];
 
 type Data = (typeof chartData)[number];
 
 const chartConfig = {
-  hits: {
-    label: "Cache Hits",
-    color: "var(--chart-3)",
-  },
-  misses: {
-    label: "Cache Misses",
-    color: "var(--chart-4)",
-  },
+	hits: {
+		label: "Cache Hits",
+		color: "var(--chart-3)",
+	},
+	misses: {
+		label: "Cache Misses",
+		color: "var(--chart-4)",
+	},
 } satisfies ChartConfig;
 
 // Calculate maximum y-value for dynamic domain (hits + misses stacked)

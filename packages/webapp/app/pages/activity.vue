@@ -52,7 +52,7 @@ import {
 } from "@/components/ui/pagination";
 
 definePageMeta({
-	breadcrumbs: [{ label: "[project]" }, { label: "Activity" }],
+	pageName: "Activity",
 });
 
 interface ActivityEvent {
@@ -389,7 +389,7 @@ function formatFullTimestamp(date: Date): string {
 
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-0">
-      <div class="max-w-7xl mx-auto w-full">
+    <div class="max-w-7xl mx-auto w-full">
       <!-- Header -->
       <div class="mb-8">
         <h1 class="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
@@ -401,7 +401,9 @@ function formatFullTimestamp(date: Date): string {
       </div>
 
       <!-- Search and Filters -->
-      <div class="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center mb-6">
+      <div
+        class="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center mb-6"
+      >
         <div class="relative flex-1">
           <Search
             :size="16"
@@ -438,8 +440,8 @@ function formatFullTimestamp(date: Date): string {
           <DropdownMenuTrigger as-child>
             <Button variant="outline" class="justify-between min-w-[180px]">
               {{
-                sortingOptions.find((o) => o.value === selectedSorting)?.label ||
-                "Sort by"
+                sortingOptions.find((o) => o.value === selectedSorting)
+                  ?.label || "Sort by"
               }}
               <ChevronDown :size="16" class="ml-2" />
             </Button>
@@ -463,9 +465,7 @@ function formatFullTimestamp(date: Date): string {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuCheckboxItem
-              v-model:checked="columnVisibility.event"
-            >
+            <DropdownMenuCheckboxItem v-model:checked="columnVisibility.event">
               Event
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
@@ -478,9 +478,7 @@ function formatFullTimestamp(date: Date): string {
             >
               IP Address
             </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              v-model:checked="columnVisibility.time"
-            >
+            <DropdownMenuCheckboxItem v-model:checked="columnVisibility.time">
               Time
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
@@ -488,13 +486,18 @@ function formatFullTimestamp(date: Date): string {
       </div>
 
       <!-- Activity List -->
-      <div v-if="filteredActivities.length > 0" class="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden">
+      <div
+        v-if="filteredActivities.length > 0"
+        class="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden"
+      >
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead class="w-12">
                 <Checkbox
-                  :checked="isAllSelected || (isSomeSelected ? 'indeterminate' : false)"
+                  :checked="
+                    isAllSelected || (isSomeSelected ? 'indeterminate' : false)
+                  "
                   @update:checked="toggleAllRows"
                   aria-label="Select all"
                 />
@@ -502,7 +505,9 @@ function formatFullTimestamp(date: Date): string {
               <TableHead v-if="columnVisibility.icon" class="w-12"></TableHead>
               <TableHead v-if="columnVisibility.event">Event</TableHead>
               <TableHead v-if="columnVisibility.location">Location</TableHead>
-              <TableHead v-if="columnVisibility.ipAddress">IP Address</TableHead>
+              <TableHead v-if="columnVisibility.ipAddress"
+                >IP Address</TableHead
+              >
               <TableHead v-if="columnVisibility.time">Time</TableHead>
             </TableRow>
           </TableHeader>
@@ -564,8 +569,7 @@ function formatFullTimestamp(date: Date): string {
           <EmptyTitle>No activity found</EmptyTitle>
           <EmptyDescription>
             {{
-              searchQuery ||
-              selectedTypeFilter !== "All Events"
+              searchQuery || selectedTypeFilter !== "All Events"
                 ? "Try adjusting your search or filters"
                 : "Your account activity will appear here"
             }}
@@ -574,9 +578,13 @@ function formatFullTimestamp(date: Date): string {
       </Empty>
 
       <!-- Pagination -->
-      <div v-if="filteredActivities.length > 0" class="flex items-center justify-between py-4">
+      <div
+        v-if="filteredActivities.length > 0"
+        class="flex items-center justify-between py-4"
+      >
         <div class="flex-1 text-sm text-neutral-500 dark:text-neutral-400">
-          {{ selectedRows.size }} of {{ filteredActivities.length }} row(s) selected.
+          {{ selectedRows.size }} of {{ filteredActivities.length }} row(s)
+          selected.
         </div>
         <Pagination
           v-slot="{ page }"
@@ -603,7 +611,6 @@ function formatFullTimestamp(date: Date): string {
           </PaginationContent>
         </Pagination>
       </div>
-
-      </div>
+    </div>
   </div>
 </template>

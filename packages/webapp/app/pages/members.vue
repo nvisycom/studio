@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 definePageMeta({
-	breadcrumbs: [{ label: "[project]" }, { label: "Members" }],
+	pageName: "Members",
 });
 
 const { t } = useI18n();
@@ -414,218 +414,253 @@ function selectSorting(sorting: string): void {
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="max-w-4xl mx-auto w-full">
-      <!-- Header -->
-      <div class="mb-8">
-    <h1 class="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
-      {{ t('members.page.title') }}
-    </h1>
-    <p class="text-neutral-600 dark:text-neutral-400">
-      {{ t('members.page.description') }}
-    </p>
-  </div>
-
-  <!-- Invite Members Section -->
-  <Card class="mb-8 overflow-hidden py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800">
-    <CardHeader>
-      <div class="flex items-center justify-between">
-        <div>
-          <CardTitle>{{ t('members.forms.invite.title') }}</CardTitle>
-          <CardDescription>{{ t('members.forms.invite.description') }}</CardDescription>
-        </div>
-        <Button
-          variant="outline"
-          @click="copyInviteLink"
-          class="flex items-center gap-2"
+      <!-- Invite Members Section -->
+      <Card
+        class="mb-8 overflow-hidden py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+      >
+        <CardHeader>
+          <div class="flex items-center justify-between">
+            <div>
+              <CardTitle>{{ t("members.forms.invite.title") }}</CardTitle>
+              <CardDescription>{{
+                t("members.forms.invite.description")
+              }}</CardDescription>
+            </div>
+            <Button
+              variant="outline"
+              @click="copyInviteLink"
+              class="flex items-center gap-2"
+            >
+              <Check
+                v-if="copiedInviteLink"
+                :size="16"
+                class="text-green-500"
+              />
+              <Copy v-else :size="16" />
+              {{ t("members.forms.invite.copyLink") }}
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div class="flex gap-3">
+            <Input
+              v-model="inviteEmail"
+              type="email"
+              :placeholder="t('members.forms.invite.emailPlaceholder')"
+              class="flex-1"
+              @keyup.enter="sendInvite"
+            />
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <Button variant="outline" class="w-32 justify-between">
+                  {{ roles.find((r) => r.value === selectedRole)?.label }}
+                  <ChevronDown :size="16" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  v-for="role in roles"
+                  :key="role.value"
+                  @click="selectRole(role.value)"
+                >
+                  {{ role.label }}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button @click="sendInvite" :disabled="!inviteEmail.trim()">
+              {{ t("members.forms.invite.button") }}
+            </Button>
+          </div>
+        </CardContent>
+        <CardFooter
+          class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
         >
-          <Check v-if="copiedInviteLink" :size="16" class="text-green-500" />
-          <Copy v-else :size="16" />
-          {{ t('members.forms.invite.copyLink') }}
-        </Button>
-      </div>
-    </CardHeader>
-    <CardContent>
-      <div class="flex gap-3">
-        <Input
-          v-model="inviteEmail"
-          type="email"
-          :placeholder="t('members.forms.invite.emailPlaceholder')"
-          class="flex-1"
-          @keyup.enter="sendInvite"
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button variant="outline" class="w-32 justify-between">
-              {{ roles.find(r => r.value === selectedRole)?.label }}
-              <ChevronDown :size="16" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              v-for="role in roles"
-              :key="role.value"
-              @click="selectRole(role.value)"
-            >
-              {{ role.label }}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <Button @click="sendInvite" :disabled="!inviteEmail.trim()">
-          {{ t('members.forms.invite.button') }}
-        </Button>
-      </div>
-    </CardContent>
-    <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl">
-      <p class="text-sm text-neutral-600 dark:text-neutral-400">
-        {{ t('members.messages.inviteFooter') }}
-      </p>
-    </CardFooter>
-  </Card>
+          <p class="text-sm text-neutral-600 dark:text-neutral-400">
+            {{ t("members.messages.inviteFooter") }}
+          </p>
+        </CardFooter>
+      </Card>
 
-  <!-- Members and Invites -->
-  <Card class="overflow-hidden py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800">
-    <CardHeader>
-      <Tabs v-model="activeTab" class="w-full">
-        <div class="flex items-center justify-between mb-4">
-          <TabsList class="dark:bg-neutral-800 dark:border dark:border-neutral-700">
-            <TabsTrigger value="members" class="dark:data-[state=active]:bg-neutral-900 dark:data-[state=active]:text-white">{{ t('members.page.tabs.teamMembers') }}</TabsTrigger>
-            <TabsTrigger value="invites" class="dark:data-[state=active]:bg-neutral-900 dark:data-[state=active]:text-white">{{ t('members.page.tabs.pendingInvites') }}</TabsTrigger>
-          </TabsList>
-        </div>
-      </Tabs>
+      <!-- Members and Invites -->
+      <Card
+        class="overflow-hidden py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+      >
+        <CardHeader>
+          <Tabs v-model="activeTab" class="w-full">
+            <div class="flex items-center justify-between mb-4">
+              <TabsList
+                class="dark:bg-neutral-800 dark:border dark:border-neutral-700"
+              >
+                <TabsTrigger
+                  value="members"
+                  class="dark:data-[state=active]:bg-neutral-900 dark:data-[state=active]:text-white"
+                  >{{ t("members.page.tabs.teamMembers") }}</TabsTrigger
+                >
+                <TabsTrigger
+                  value="invites"
+                  class="dark:data-[state=active]:bg-neutral-900 dark:data-[state=active]:text-white"
+                  >{{ t("members.page.tabs.pendingInvites") }}</TabsTrigger
+                >
+              </TabsList>
+            </div>
+          </Tabs>
 
-      <!-- Search and Filters -->
-      <div class="flex gap-3 items-center">
-        <div class="relative flex-1">
-          <Search :size="16" class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
-          <Input
-            v-model="searchQuery"
-            :placeholder="t('members.forms.search.placeholder')"
-            class="pl-10 border-neutral-300 dark:border-neutral-700"
-          />
-        </div>
+          <!-- Search and Filters -->
+          <div class="flex gap-3 items-center">
+            <div class="relative flex-1">
+              <Search
+                :size="16"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+              />
+              <Input
+                v-model="searchQuery"
+                :placeholder="t('members.forms.search.placeholder')"
+                class="pl-10 border-neutral-300 dark:border-neutral-700"
+              />
+            </div>
 
-        <!-- Role Filter -->
-        <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button variant="outline" class="justify-between min-w-32 border-neutral-300 dark:border-neutral-700">
-              {{ roleFilters.find(f => f.value === selectedRoleFilter)?.label }}
-              <ChevronDown :size="16" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              v-for="filter in roleFilters"
-              :key="filter.value"
-              @click="selectRoleFilter(filter.value)"
-            >
-              {{ filter.label }}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <!-- Role Filter -->
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <Button
+                  variant="outline"
+                  class="justify-between min-w-32 border-neutral-300 dark:border-neutral-700"
+                >
+                  {{
+                    roleFilters.find((f) => f.value === selectedRoleFilter)
+                      ?.label
+                  }}
+                  <ChevronDown :size="16" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  v-for="filter in roleFilters"
+                  :key="filter.value"
+                  @click="selectRoleFilter(filter.value)"
+                >
+                  {{ filter.label }}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-        <!-- 2FA Filter (only for members tab) -->
-        <DropdownMenu v-if="activeTab === 'members'">
-          <DropdownMenuTrigger as-child>
-            <Button variant="outline" class="justify-between min-w-32 border-neutral-300 dark:border-neutral-700">
-              {{ twoFAFilters.find(f => f.value === selected2FAFilter)?.label }}
-              <ChevronDown :size="16" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              v-for="filter in twoFAFilters"
-              :key="filter.value"
-              @click="select2FAFilter(filter.value)"
-            >
-              {{ filter.label }}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <!-- 2FA Filter (only for members tab) -->
+            <DropdownMenu v-if="activeTab === 'members'">
+              <DropdownMenuTrigger as-child>
+                <Button
+                  variant="outline"
+                  class="justify-between min-w-32 border-neutral-300 dark:border-neutral-700"
+                >
+                  {{
+                    twoFAFilters.find((f) => f.value === selected2FAFilter)
+                      ?.label
+                  }}
+                  <ChevronDown :size="16" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  v-for="filter in twoFAFilters"
+                  :key="filter.value"
+                  @click="select2FAFilter(filter.value)"
+                >
+                  {{ filter.label }}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-        <!-- Sorting -->
-        <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button variant="outline" class="justify-between min-w-32 border-neutral-300 dark:border-neutral-700">
-              {{ sortingOptions.find(o => o.value === selectedSorting)?.label || t('members.filters.sortBy') }}
-              <ChevronDown :size="16" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              v-for="option in sortingOptions"
-              :key="option.value"
-              @click="selectSorting(option.value)"
-            >
-              {{ option.label }}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </CardHeader>
-    <CardContent>
-      <Tabs v-model="activeTab" class="w-full">
-        <!-- Members Tab -->
-        <TabsContent value="members">
-          <MembersTable
-            :members="filteredMembers"
-            :selected-members="selectedMembers"
-            :all-selected="allMembersSelected"
-            @remove="openDeleteMemberDialog"
-            @toggle-select-all="toggleSelectAllMembers"
-            @toggle-member="toggleMember"
-            @delete-selected="openDeleteMultipleMembersDialog"
-          />
-        </TabsContent>
+            <!-- Sorting -->
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <Button
+                  variant="outline"
+                  class="justify-between min-w-32 border-neutral-300 dark:border-neutral-700"
+                >
+                  {{
+                    sortingOptions.find((o) => o.value === selectedSorting)
+                      ?.label || t("members.filters.sortBy")
+                  }}
+                  <ChevronDown :size="16" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  v-for="option in sortingOptions"
+                  :key="option.value"
+                  @click="selectSorting(option.value)"
+                >
+                  {{ option.label }}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Tabs v-model="activeTab" class="w-full">
+            <!-- Members Tab -->
+            <TabsContent value="members">
+              <MembersTable
+                :members="filteredMembers"
+                :selected-members="selectedMembers"
+                :all-selected="allMembersSelected"
+                @remove="openDeleteMemberDialog"
+                @toggle-select-all="toggleSelectAllMembers"
+                @toggle-member="toggleMember"
+                @delete-selected="openDeleteMultipleMembersDialog"
+              />
+            </TabsContent>
 
-        <!-- Pending Invites Tab -->
-        <TabsContent value="invites">
-          <InvitesTable
-            :invites="filteredInvites"
-            :selected-invites="selectedInvites"
-            :all-selected="allInvitesSelected"
-            @cancel="openCancelInviteDialog"
-            @toggle-select-all="toggleSelectAllInvites"
-            @toggle-invite="toggleInvite"
-            @cancel-selected="openCancelMultipleInvitesDialog"
-          />
-        </TabsContent>
-      </Tabs>
-    </CardContent>
-    <CardFooter class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl">
-      <p class="text-sm text-neutral-600 dark:text-neutral-400">
-        {{ t('members.messages.reviewFooter') }}
-      </p>
-    </CardFooter>
-  </Card>
+            <!-- Pending Invites Tab -->
+            <TabsContent value="invites">
+              <InvitesTable
+                :invites="filteredInvites"
+                :selected-invites="selectedInvites"
+                :all-selected="allInvitesSelected"
+                @cancel="openCancelInviteDialog"
+                @toggle-select-all="toggleSelectAllInvites"
+                @toggle-invite="toggleInvite"
+                @cancel-selected="openCancelMultipleInvitesDialog"
+              />
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+        <CardFooter
+          class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+        >
+          <p class="text-sm text-neutral-600 dark:text-neutral-400">
+            {{ t("members.messages.reviewFooter") }}
+          </p>
+        </CardFooter>
+      </Card>
 
-  <!-- Modals -->
-  <DeleteMemberModal
-    :open="isDeleteMemberDialogOpen"
-    :member="memberToDelete"
-    @update:open="isDeleteMemberDialogOpen = $event"
-    @confirm="deleteMember"
-  />
+      <!-- Modals -->
+      <DeleteMemberModal
+        :open="isDeleteMemberDialogOpen"
+        :member="memberToDelete"
+        @update:open="isDeleteMemberDialogOpen = $event"
+        @confirm="deleteMember"
+      />
 
-  <DeleteMultipleMembersModal
-    :open="isDeleteMultipleMembersDialogOpen"
-    :count="selectedMembers.size"
-    @update:open="isDeleteMultipleMembersDialogOpen = $event"
-    @confirm="deleteSelectedMembers"
-  />
+      <DeleteMultipleMembersModal
+        :open="isDeleteMultipleMembersDialogOpen"
+        :count="selectedMembers.size"
+        @update:open="isDeleteMultipleMembersDialogOpen = $event"
+        @confirm="deleteSelectedMembers"
+      />
 
-  <CancelInviteModal
-    :open="isCancelInviteDialogOpen"
-    :invite="inviteToCancel"
-    @update:open="isCancelInviteDialogOpen = $event"
-    @confirm="cancelInvite"
-  />
+      <CancelInviteModal
+        :open="isCancelInviteDialogOpen"
+        :invite="inviteToCancel"
+        @update:open="isCancelInviteDialogOpen = $event"
+        @confirm="cancelInvite"
+      />
 
-  <CancelMultipleInvitesModal
-    :open="isCancelMultipleInvitesDialogOpen"
-    :count="selectedInvites.size"
-    @update:open="isCancelMultipleInvitesDialogOpen = $event"
-    @confirm="cancelSelectedInvites"
-  />
+      <CancelMultipleInvitesModal
+        :open="isCancelMultipleInvitesDialogOpen"
+        :count="selectedInvites.size"
+        @update:open="isCancelMultipleInvitesDialogOpen = $event"
+        @confirm="cancelSelectedInvites"
+      />
     </div>
   </div>
 </template>

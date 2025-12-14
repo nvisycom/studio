@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from "vue"
-import { Primitive } from "reka-ui"
-import { computed } from "vue"
-import { THEMES, useChart } from "."
+import type { HTMLAttributes } from "vue";
+import { Primitive } from "reka-ui";
+import { computed } from "vue";
+import { THEMES, useChart } from ".";
 
 defineProps<{
-  id?: HTMLAttributes["id"]
-}>()
+	id?: HTMLAttributes["id"];
+}>();
 
-const { config } = useChart()
+const { config } = useChart();
 
 const colorConfig = computed(() => {
-  return Object.entries(config.value).filter(
-    ([, config]) => config.theme || config.color,
-  )
-})
+	return Object.entries(config.value).filter(
+		([, config]) => config.theme || config.color,
+	);
+});
 </script>
 
 <template>

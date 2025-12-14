@@ -4,53 +4,53 @@ import { Donut } from "@unovis/ts";
 import { VisDonut, VisSingleContainer } from "@unovis/vue";
 import { Database, Cpu, HardDrive, Network } from "lucide-vue-next";
 import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  componentToString,
+	ChartContainer,
+	ChartTooltip,
+	ChartTooltipContent,
+	componentToString,
 } from "@/components/ui/chart";
 
 interface Props {
-  dateRange?: string;
+	dateRange?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  dateRange: "7d",
+	dateRange: "7d",
 });
 
 const chartData = [
-  { service: "ai", cost: 1250, fill: "var(--color-ai)" },
-  { service: "storage", cost: 650, fill: "var(--color-storage)" },
-  { service: "compute", cost: 480, fill: "var(--color-compute)" },
-  { service: "network", cost: 320, fill: "var(--color-network)" },
+	{ service: "ai", cost: 1250, fill: "var(--color-ai)" },
+	{ service: "storage", cost: 650, fill: "var(--color-storage)" },
+	{ service: "compute", cost: 480, fill: "var(--color-compute)" },
+	{ service: "network", cost: 320, fill: "var(--color-network)" },
 ];
 
 type Data = (typeof chartData)[number];
 
 const chartConfig = {
-  cost: {
-    label: "Cost ($)",
-  },
-  ai: {
-    label: "AI Services",
-    color: "var(--chart-1)",
-    icon: Cpu,
-  },
-  storage: {
-    label: "Storage",
-    color: "var(--chart-2)",
-    icon: HardDrive,
-  },
-  compute: {
-    label: "Compute",
-    color: "var(--chart-3)",
-    icon: Database,
-  },
-  network: {
-    label: "Network",
-    color: "var(--chart-4)",
-    icon: Network,
-  },
+	cost: {
+		label: "Cost ($)",
+	},
+	ai: {
+		label: "AI Services",
+		color: "var(--chart-1)",
+		icon: Cpu,
+	},
+	storage: {
+		label: "Storage",
+		color: "var(--chart-2)",
+		icon: HardDrive,
+	},
+	compute: {
+		label: "Compute",
+		color: "var(--chart-3)",
+		icon: Database,
+	},
+	network: {
+		label: "Network",
+		color: "var(--chart-4)",
+		icon: Network,
+	},
 } satisfies ChartConfig;
 </script>
 

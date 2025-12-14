@@ -2,47 +2,47 @@
 import { MoreHorizontal, Trash2, Globe, Edit } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 
 interface Token {
-  id: string;
-  name: string;
-  service: string;
-  browser: string;
-  os: string;
-  authMethod: string;
-  scope: string[];
-  createdAt: Date;
-  expiresAt: Date | null;
-  lastUsed: Date | null;
-  token?: string;
+	id: string;
+	name: string;
+	service: string;
+	browser: string;
+	os: string;
+	authMethod: string;
+	scope: string[];
+	createdAt: Date;
+	expiresAt: Date | null;
+	lastUsed: Date | null;
+	token?: string;
 }
 
 interface Props {
-  tokens: Token[];
-  selectedTokens: Set<string>;
-  allSelected: boolean;
+	tokens: Token[];
+	selectedTokens: Set<string>;
+	allSelected: boolean;
 }
 
 interface Emits {
-  (e: "toggleSelectAll"): void;
-  (e: "toggleToken", tokenId: string): void;
-  (e: "deleteToken", token: Token): void;
-  (e: "deleteSelected"): void;
-  (e: "renameToken", token: Token): void;
+	(e: "toggleSelectAll"): void;
+	(e: "toggleToken", tokenId: string): void;
+	(e: "deleteToken", token: Token): void;
+	(e: "deleteSelected"): void;
+	(e: "renameToken", token: Token): void;
 }
 
 const props = defineProps<Props>();
@@ -50,33 +50,33 @@ const emit = defineEmits<Emits>();
 
 // Helper functions
 const isTokenSelected = (tokenId: string): boolean =>
-  props.selectedTokens.has(tokenId);
+	props.selectedTokens.has(tokenId);
 
 const formatDate = (date: Date | null): string => {
-  if (!date) return "Never";
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "2-digit",
-  }).format(date);
+	if (!date) return "Never";
+	return new Intl.DateTimeFormat("en-GB", {
+		day: "2-digit",
+		month: "2-digit",
+		year: "2-digit",
+	}).format(date);
 };
 
 const getAuthMethodColor = (method: string): string => {
-  const colors: Record<string, string> = {
-    oauth: "bg-blue-500",
-    "api key": "bg-green-500",
-    token: "bg-purple-500",
-  };
-  return colors[method.toLowerCase()] || "bg-neutral-500";
+	const colors: Record<string, string> = {
+		oauth: "bg-blue-500",
+		"api key": "bg-green-500",
+		token: "bg-purple-500",
+	};
+	return colors[method.toLowerCase()] || "bg-neutral-500";
 };
 
 const getAuthMethodInitial = (method: string): string => {
-  const initials: Record<string, string> = {
-    OAuth: "O",
-    "API Key": "K",
-    Token: "T",
-  };
-  return initials[method] || "T";
+	const initials: Record<string, string> = {
+		OAuth: "O",
+		"API Key": "K",
+		Token: "T",
+	};
+	return initials[method] || "T";
 };
 </script>
 

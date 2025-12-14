@@ -2,40 +2,40 @@
 import type { ChartConfig } from "@/components/ui/chart";
 import { VisArea, VisAxis, VisLine, VisXYContainer } from "@unovis/vue";
 import {
-  ChartContainer,
-  ChartCrosshair,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-  componentToString,
+	ChartContainer,
+	ChartCrosshair,
+	ChartLegendContent,
+	ChartTooltip,
+	ChartTooltipContent,
+	componentToString,
 } from "@/components/ui/chart";
 
 interface Props {
-  dateRange?: string;
+	dateRange?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  dateRange: "7d",
+	dateRange: "7d",
 });
 
 // Error rate percentage
 const chartData = [
-  { date: new Date("2024-06-24"), value: 2.3 },
-  { date: new Date("2024-06-25"), value: 1.8 },
-  { date: new Date("2024-06-26"), value: 2.1 },
-  { date: new Date("2024-06-27"), value: 1.5 },
-  { date: new Date("2024-06-28"), value: 1.9 },
-  { date: new Date("2024-06-29"), value: 1.2 },
-  { date: new Date("2024-06-30"), value: 1.4 },
+	{ date: new Date("2024-06-24"), value: 2.3 },
+	{ date: new Date("2024-06-25"), value: 1.8 },
+	{ date: new Date("2024-06-26"), value: 2.1 },
+	{ date: new Date("2024-06-27"), value: 1.5 },
+	{ date: new Date("2024-06-28"), value: 1.9 },
+	{ date: new Date("2024-06-29"), value: 1.2 },
+	{ date: new Date("2024-06-30"), value: 1.4 },
 ];
 
 type Data = (typeof chartData)[number];
 
 const chartConfig = {
-  value: {
-    label: "Error Rate (%)",
-    color: "var(--chart-5)",
-  },
+	value: {
+		label: "Error Rate (%)",
+		color: "var(--chart-5)",
+	},
 } satisfies ChartConfig;
 
 const svgDefs = `

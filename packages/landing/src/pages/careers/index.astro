@@ -24,7 +24,8 @@ const openPositions = jobEntries
 		type: job.data.type,
 		description: job.data.description,
 		requirements: job.data.requirements,
-		niceToHave: job.data.niceToHave,
+		responsibilities: job.data.responsibilities,
+		techStack: job.data.techStack,
 	}));
 ---
 
@@ -54,80 +55,65 @@ const openPositions = jobEntries
                 {openPositions.length} position{openPositions.length !== 1 ? 's' : ''}
               </span>
             </div>
-            <div class="space-y-6">
+            <div class="space-y-4">
               {openPositions.map(position => (
-                <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 transition-all duration-300 hover:shadow-lg">
-                  <a href={`/careers/${position.id}`} class="block p-8">
-                    <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between">
-                      <div class="flex-1">
-                        <div class="flex flex-wrap items-center gap-4 mb-6">
-                          <span class="text-sm font-medium text-white bg-black dark:bg-white dark:text-black px-3 py-1 rounded-full">
-                            {position.department}
-                          </span>
-                          <div class="flex items-center gap-3">
-                            <span class="text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 px-3 py-1 rounded-full">
-                              {position.location}
-                            </span>
-                            <span class="text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 px-3 py-1 rounded-full">
-                              {position.region}
-                            </span>
-                            <span class="text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 px-3 py-1 rounded-full">
-                              {position.type}
-                            </span>
-                          </div>
-                        </div>
-
-                        <h3 class="text-xl font-light text-neutral-900 dark:text-white mb-4">
-                          {position.title}
-                        </h3>
-
-                        <p class="text-neutral-700 dark:text-neutral-300 mb-6 leading-relaxed">
-                          {position.description}
-                        </p>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div>
-                            <h4 class="font-light text-neutral-900 dark:text-white mb-3">Requirements</h4>
-                            <ul class="space-y-2">
-                              {position.requirements.slice(0, 3).map((req: string) => (
-                                <li class="text-sm text-neutral-600 dark:text-neutral-400 flex items-start">
-                                  <span class="text-neutral-900 dark:text-white mr-2 mt-0.5">✓</span>
-                                  {req}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-
-                          <div>
-                            <h4 class="font-light text-neutral-900 dark:text-white mb-3">Nice to Have</h4>
-                            <ul class="space-y-2">
-                              {position.niceToHave.slice(0, 3).map((nice: string) => (
-                                <li class="text-sm text-neutral-600 dark:text-neutral-400 flex items-start">
-                                  <span class="text-neutral-900 dark:text-white mr-2 mt-0.5">+</span>
-                                  {nice}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
+                <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 transition-all duration-300 hover:shadow-lg p-6">
+                  <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                    <div class="flex-1">
+                      <div class="flex flex-wrap items-center gap-2 mb-3">
+                        <span class="text-xs font-medium text-white bg-black dark:bg-white dark:text-black px-3 py-1 rounded-full">
+                          {position.department}
+                        </span>
+                        <span class="text-xs font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 px-3 py-1 rounded-full">
+                          {position.location}
+                        </span>
+                        <span class="text-xs font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 px-3 py-1 rounded-full">
+                          {position.type}
+                        </span>
                       </div>
 
-                      <div class="mt-6 lg:mt-0 lg:ml-8 flex-shrink-0">
-                        <div class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-black dark:bg-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all duration-200 shadow-sm hover:shadow-md">
-                          Learn More
-                          <ChevronRight class="w-4 h-4 ml-2" client:load />
+                      <h3 class="text-lg font-light text-neutral-900 dark:text-white mb-2">
+                        {position.title}
+                      </h3>
+
+                      <p class="text-sm text-neutral-600 dark:text-neutral-400 mb-3 leading-relaxed">
+                        {position.description}
+                      </p>
+
+                      {position.responsibilities && position.responsibilities.length > 0 && (
+                        <div class="mb-3">
+                          <h4 class="text-xs font-medium text-neutral-900 dark:text-white mb-1.5">Responsibilities</h4>
+                          <ul class="space-y-1">
+                            {position.responsibilities.slice(0, 3).map((resp: string) => (
+                              <li class="text-xs text-neutral-600 dark:text-neutral-400 flex items-start">
+                                <span class="text-neutral-400 dark:text-neutral-500 mr-2 mt-0.5">•</span>
+                                {resp}
+                              </li>
+                            ))}
+                          </ul>
                         </div>
-                      </div>
+                      )}
+
+                      {position.techStack && position.techStack.length > 0 && (
+                        <div class="flex flex-wrap gap-1.5">
+                          {position.techStack.map((tech: string) => (
+                            <span class="text-xs font-medium text-neutral-600 dark:text-neutral-400 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 px-2 py-1 rounded">
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  </a>
-                  <div class="px-8 pb-6 border-t border-neutral-100 dark:border-neutral-800">
-                    <a
-                      href={`mailto:careers@nvisy.com?subject=Application for ${position.title}&body=Hi there,%0D%0A%0D%0AI'm interested in the ${position.title} position.%0D%0A%0D%0AThanks!`}
-                      class="inline-flex items-center text-sm font-medium text-neutral-900 dark:text-white hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors mt-4"
-                    >
-                      Quick Apply via Email
-                      <Mail class="w-4 h-4 ml-2" client:load />
-                    </a>
+
+                    <div class="flex lg:flex-shrink-0">
+                      <a
+                        href={`/careers/${position.id}`}
+                        class="inline-flex items-center justify-center px-5 py-2 text-sm font-medium rounded-lg text-white bg-black dark:bg-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all duration-200 whitespace-nowrap"
+                      >
+                        View Details
+                        <ChevronRight class="w-4 h-4 ml-1" client:load />
+                      </a>
+                    </div>
                   </div>
                 </div>
               ))}

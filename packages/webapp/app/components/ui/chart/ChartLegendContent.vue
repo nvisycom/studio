@@ -5,32 +5,32 @@ import { cn } from "@/utils/shadcn";
 import { useChart } from ".";
 
 const props = withDefaults(
-  defineProps<{
-    hideIcon?: boolean;
-    nameKey?: string;
-    verticalAlign?: "bottom" | "top";
-    // payload?: any[]
-    class?: HTMLAttributes["class"];
-  }>(),
-  {
-    verticalAlign: "bottom",
-  },
+	defineProps<{
+		hideIcon?: boolean;
+		nameKey?: string;
+		verticalAlign?: "bottom" | "top";
+		// payload?: any[]
+		class?: HTMLAttributes["class"];
+	}>(),
+	{
+		verticalAlign: "bottom",
+	},
 );
 
 const { id, config } = useChart();
 
 const payload = computed(() =>
-  Object.entries(config.value).map(([key, value]) => {
-    return {
-      key: props.nameKey || key,
-      itemConfig: config.value[key],
-    };
-  }),
+	Object.entries(config.value).map(([key, value]) => {
+		return {
+			key: props.nameKey || key,
+			itemConfig: config.value[key],
+		};
+	}),
 );
 
 const containerSelector = ref("");
 onMounted(() => {
-  containerSelector.value = `[data-chart="chart-${id}"]>[data-vis-xy-container]`;
+	containerSelector.value = `[data-chart="chart-${id}"]>[data-vis-xy-container]`;
 });
 </script>
 

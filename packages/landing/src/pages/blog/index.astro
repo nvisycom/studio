@@ -20,6 +20,26 @@ const blogEntries = (await getCollection("blog-posts"))
 		readingTime: calculateReadingTime(entry.body),
 	}))
 	.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+
+// Get unique categories for filtering
+const categories = ["All", ...new Set(blogEntries.map(entry => entry.data.category).filter(Boolean))] as string[];
+
+// Helper function to slugify category names
+const slugifyCategory = (category: string) => category.toLowerCase().replace(/\s+/g, '-');
+
+// Get selected category from URL params
+const url = new URL(Astro.request.url);
+const selectedCategorySlug = url.searchParams.get('category') || 'all';
+
+// Find the actual category name from the slug
+const selectedCategory = selectedCategorySlug === 'all'
+	? 'All'
+	: categories.find(cat => slugifyCategory(cat) === selectedCategorySlug) || 'All';
+
+// Filter posts by category
+const filteredPosts = selectedCategory === 'All'
+	? blogEntries
+	: blogEntries.filter(entry => entry.data.category === selectedCategory);
 ---
 
 <Layout title="Blog" description="Insights, stories, and updates from our team">
@@ -34,13 +54,30 @@ const blogEntries = (await getCollection("blog-posts"))
 
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-12">
-
-
-      <!-- Posts Grid -->
       <div class="max-w-7xl mx-auto">
-        {blogEntries.length > 0 ? (
+        <!-- Category Filter -->
+        {categories.length > 1 && (
+          <div class="flex flex-wrap gap-2 mb-8">
+            {categories.map(category => (
+              <a
+                href={category === 'All' ? '/blog' : `/blog?category=${slugifyCategory(category)}`}
+                class:list={[
+                  "px-4 py-2 text-sm font-medium rounded-lg transition-all",
+                  selectedCategory === category
+                    ? "bg-black dark:bg-white text-white dark:text-black"
+                    : "bg-white dark:bg-black text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600"
+                ]}
+              >
+                {category}
+              </a>
+            ))}
+          </div>
+        )}
+
+        <!-- Posts Grid -->
+        {filteredPosts.length > 0 ? (
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogEntries.map((post, index) => (
+            {filteredPosts.map((post, index) => (
               <article class="group transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
                 <a href={`/blog/${post.slug}`} class="block h-full">
                   <div class="bg-white dark:bg-black rounded-xl overflow-hidden border border-gray-200 dark:border-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 h-full flex flex-col min-h-[400px]">

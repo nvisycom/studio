@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import {
-	NavigationMenu,
-	NavigationMenuItem,
-	NavigationMenuLink,
-	NavigationMenuList,
-	navigationMenuTriggerStyle,
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import ProductsDropdown from "./DesktopProducts.vue";
 import SolutionsDropdown from "./DesktopSolutions.vue";
 import ResourcesDropdown from "./DesktopResources.vue";
 
 interface BlogPost {
-	title: string;
-	href: string;
+  title: string;
+  href: string;
 }
 
 interface Props {
-	blogPosts: BlogPost[];
+  blogPosts: BlogPost[];
 }
 
 const props = defineProps<Props>();
@@ -33,10 +33,10 @@ const props = defineProps<Props>();
       <ProductsDropdown />
 
       <!-- Solutions -->
-      <SolutionsDropdown />
+      <SolutionsDropdown :blogPosts="props.blogPosts" />
 
       <!-- Resources -->
-      <ResourcesDropdown :blogPosts="props.blogPosts" />
+      <ResourcesDropdown />
 
       <!-- Pricing -->
       <NavigationMenuItem>

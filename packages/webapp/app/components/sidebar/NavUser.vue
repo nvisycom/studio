@@ -3,14 +3,11 @@ import { ref } from "vue";
 import {
 	ChevronsUpDown,
 	LogOut,
-	Settings,
 	Command,
-	LayoutDashboard,
 	Moon,
 	Sun,
 	Home,
 	ExternalLink,
-	CreditCard,
 } from "lucide-vue-next";
 import { EntityAvatar } from "@/components/common";
 import {
@@ -60,11 +57,7 @@ function toggleTheme() {
             size="lg"
             class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
           >
-            <EntityAvatar
-              :src="user.avatar"
-              :name="user.name"
-              size="md"
-            />
+            <EntityAvatar :src="user.avatar" :name="user.name" size="md" />
             <div class="grid flex-1 text-left text-sm leading-tight">
               <span class="truncate font-semibold">{{ user.name }}</span>
               <span class="truncate text-xs">{{ user.email }}</span>
@@ -79,31 +72,13 @@ function toggleTheme() {
           :side-offset="4"
         >
           <DropdownMenuGroup>
-            <DropdownMenuItem as-child>
-              <NuxtLink to="/account" class="cursor-pointer">
-                <LayoutDashboard />
-                Overview
-              </NuxtLink>
-            </DropdownMenuItem>
-            <DropdownMenuItem as-child>
-              <NuxtLink to="/account/settings" class="cursor-pointer">
-                <Settings />
-                Account Settings
-              </NuxtLink>
-            </DropdownMenuItem>
-            <DropdownMenuItem as-child>
-              <NuxtLink to="/account/billing" class="cursor-pointer">
-                <CreditCard />
-                Billing
-              </NuxtLink>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
             <DropdownMenuItem @click="openCommandMenu" class="cursor-pointer">
               <Command />
               Command Menu
-              <span class="ml-auto text-xs text-neutral-500 dark:text-neutral-400">⌘K</span>
+              <span
+                class="ml-auto text-xs text-neutral-500 dark:text-neutral-400"
+                >⌘K</span
+              >
             </DropdownMenuItem>
             <DropdownMenuItem @click="toggleTheme" class="cursor-pointer">
               <Sun v-if="colorMode.value === 'dark'" />
@@ -114,7 +89,12 @@ function toggleTheme() {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem as-child>
-              <a href="https://nvisy.com" target="_blank" rel="noopener noreferrer" class="cursor-pointer flex items-center">
+              <a
+                href="https://nvisy.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="cursor-pointer flex items-center"
+              >
                 <Home />
                 Home Page
                 <ExternalLink :size="12" class="ml-auto opacity-60" />

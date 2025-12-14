@@ -84,33 +84,17 @@ const allJobs = (await getCollection("jobs"))
     <!-- Job Content -->
     <div class="container mx-auto px-4">
       <div class="max-w-4xl mx-auto">
-        <!-- Requirements & Nice to Have -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
-          <!-- Requirements -->
-          <div>
-            <h2 class="text-2xl font-light text-neutral-900 dark:text-white mb-6">Requirements</h2>
-            <ul class="space-y-3">
-              {entry.data.requirements.map((req: string) => (
-                <li class="text-neutral-700 dark:text-neutral-300 flex items-start">
-                  <span class="text-neutral-900 dark:text-white mr-3 mt-1 flex-shrink-0">✓</span>
-                  <span>{req}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <!-- Nice to Have -->
-          <div>
-            <h2 class="text-2xl font-light text-neutral-900 dark:text-white mb-6">Nice to Have</h2>
-            <ul class="space-y-3">
-              {entry.data.niceToHave.map((nice: string) => (
-                <li class="text-neutral-700 dark:text-neutral-300 flex items-start">
-                  <span class="text-neutral-900 dark:text-white mr-3 mt-1 flex-shrink-0">+</span>
-                  <span>{nice}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+        <!-- Requirements -->
+        <div class="mb-16">
+          <h2 class="text-2xl font-light text-neutral-900 dark:text-white mb-6">Requirements</h2>
+          <ul class="space-y-3">
+            {entry.data.requirements.map((req: string) => (
+              <li class="text-neutral-700 dark:text-neutral-300 flex items-start">
+                <span class="text-neutral-900 dark:text-white mr-3 mt-1 flex-shrink-0">✓</span>
+                <span>{req}</span>
+              </li>
+            ))}
+          </ul>
         </div>
 
         <!-- Full Job Description -->

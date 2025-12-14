@@ -60,20 +60,6 @@ const {
 			icon: "insurance",
 			href: "/solutions/insurance",
 		},
-		{
-			title: "Enterprise",
-			description:
-				"Scale document security across your entire organization with enterprise tools.",
-			icon: "enterprise",
-			href: "/solutions/enterprise",
-		},
-		{
-			title: "Startups",
-			description:
-				"Developer-friendly APIs and startup pricing to build privacy into your product.",
-			icon: "startup",
-			href: "/solutions/startup",
-		},
 	],
 } = Astro.props;
 
@@ -105,7 +91,7 @@ const getIcon = (iconName: UseCase["icon"]) => {
 		</header>
 
 		<!-- Use Cases Grid -->
-		<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+		<div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
 			{useCases.map((useCase) => {
 				const IconComponent = getIcon(useCase.icon);
 				return (

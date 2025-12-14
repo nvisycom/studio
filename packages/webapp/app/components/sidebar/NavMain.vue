@@ -17,23 +17,35 @@ import {
 	SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 
-defineProps<{
-	items: {
-		title: string;
-		url: string;
-		icon?: LucideIcon;
-		isActive?: boolean;
-		items?: {
-			title: string;
-			url: string;
-		}[];
-	}[];
-}>();
+interface NavSubItem {
+	title: string;
+	url: string;
+}
+
+interface NavItem {
+	title: string;
+	url: string;
+	icon?: LucideIcon;
+	isActive?: boolean;
+	items?: NavSubItem[];
+}
+
+withDefaults(
+	defineProps<{
+		items: NavItem[];
+		label?: string;
+	}>(),
+	{
+		label: "Platform",
+	},
+);
 </script>
 
 <template>
   <SidebarGroup>
-    <SidebarGroupLabel>Platform</SidebarGroupLabel>
+    <SidebarGroupLabel v-if="label" class="uppercase">{{
+      label
+    }}</SidebarGroupLabel>
     <SidebarMenu>
       <Collapsible
         v-for="item in items"

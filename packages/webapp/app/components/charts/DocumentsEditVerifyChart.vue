@@ -2,43 +2,43 @@
 import type { ChartConfig } from "@/components/ui/chart";
 import { VisArea, VisAxis, VisLine, VisXYContainer } from "@unovis/vue";
 import {
-  ChartContainer,
-  ChartCrosshair,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-  componentToString,
+	ChartContainer,
+	ChartCrosshair,
+	ChartLegendContent,
+	ChartTooltip,
+	ChartTooltipContent,
+	componentToString,
 } from "@/components/ui/chart";
 
 interface Props {
-  dateRange?: string;
+	dateRange?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  dateRange: "7d",
+	dateRange: "7d",
 });
 
 const chartData = [
-  { date: new Date("2024-06-24"), edited: 28, verified: 35 },
-  { date: new Date("2024-06-25"), edited: 32, verified: 41 },
-  { date: new Date("2024-06-26"), edited: 38, verified: 48 },
-  { date: new Date("2024-06-27"), edited: 35, verified: 44 },
-  { date: new Date("2024-06-28"), edited: 42, verified: 52 },
-  { date: new Date("2024-06-29"), edited: 48, verified: 58 },
-  { date: new Date("2024-06-30"), edited: 45, verified: 55 },
+	{ date: new Date("2024-06-24"), edited: 28, verified: 35 },
+	{ date: new Date("2024-06-25"), edited: 32, verified: 41 },
+	{ date: new Date("2024-06-26"), edited: 38, verified: 48 },
+	{ date: new Date("2024-06-27"), edited: 35, verified: 44 },
+	{ date: new Date("2024-06-28"), edited: 42, verified: 52 },
+	{ date: new Date("2024-06-29"), edited: 48, verified: 58 },
+	{ date: new Date("2024-06-30"), edited: 45, verified: 55 },
 ];
 
 type Data = (typeof chartData)[number];
 
 const chartConfig = {
-  edited: {
-    label: "Edited",
-    color: "var(--chart-2)",
-  },
-  verified: {
-    label: "Verified",
-    color: "var(--chart-3)",
-  },
+	edited: {
+		label: "Edited",
+		color: "var(--chart-2)",
+	},
+	verified: {
+		label: "Verified",
+		color: "var(--chart-3)",
+	},
 } satisfies ChartConfig;
 
 // Calculate max value for y-domain (cumulative)
