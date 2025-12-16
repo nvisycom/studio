@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ChartConfig } from "@/components/ui/chart";
 import { VisArea, VisAxis, VisLine, VisXYContainer } from "@unovis/vue";
+import { AlertTriangle } from "lucide-vue-next";
 import {
 	ChartContainer,
 	ChartCrosshair,
@@ -35,6 +36,7 @@ const chartConfig = {
 	value: {
 		label: "Error Rate (%)",
 		color: "var(--chart-5)",
+		icon: AlertTriangle,
 	},
 } satisfies ChartConfig;
 
@@ -83,7 +85,12 @@ const svgDefs = `
           }
         "
       />
-      <VisAxis type="y" :num-ticks="3" :tick-line="false" :domain-line="false" />
+      <VisAxis
+        type="y"
+        :num-ticks="3"
+        :tick-line="false"
+        :domain-line="false"
+      />
       <ChartTooltip />
       <ChartCrosshair
         :template="

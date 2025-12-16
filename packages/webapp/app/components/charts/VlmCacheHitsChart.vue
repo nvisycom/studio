@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ChartConfig } from "@/components/ui/chart";
 import { VisArea, VisAxis, VisLine, VisXYContainer } from "@unovis/vue";
+import { CheckCircle, XCircle } from "lucide-vue-next";
 import {
 	ChartContainer,
 	ChartCrosshair,
@@ -34,10 +35,12 @@ const chartConfig = {
 	hits: {
 		label: "Cache Hits",
 		color: "var(--chart-3)",
+		icon: CheckCircle,
 	},
 	misses: {
 		label: "Cache Misses",
 		color: "var(--chart-4)",
+		icon: XCircle,
 	},
 } satisfies ChartConfig;
 

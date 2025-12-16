@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ChartConfig } from "@/components/ui/chart";
 import { VisArea, VisAxis, VisLine, VisXYContainer } from "@unovis/vue";
+import { FileImage, Cpu } from "lucide-vue-next";
 import {
 	ChartContainer,
 	ChartCrosshair,
@@ -34,10 +35,12 @@ const chartConfig = {
 	ocr: {
 		label: "OCR Credits",
 		color: "var(--chart-1)",
+		icon: FileImage,
 	},
 	vlm: {
 		label: "VLM Tokens",
 		color: "var(--chart-2)",
+		icon: Cpu,
 	},
 } satisfies ChartConfig;
 
@@ -57,10 +60,7 @@ const svgDefs = `
 </script>
 
 <template>
-  <ChartContainer
-    :config="chartConfig"
-    class="aspect-auto h-[250px] w-full"
-  >
+  <ChartContainer :config="chartConfig" class="aspect-auto h-[250px] w-full">
     <VisXYContainer
       :data="chartData"
       :svg-defs="svgDefs"
@@ -71,7 +71,8 @@ const svgDefs = `
         :x="(d: Data) => d.date"
         :y="[(d: Data) => d.ocr, (d: Data) => d.vlm]"
         :color="
-          (d: Data, i: number) => ['url(#fillOcrUsage)', 'url(#fillVlmUsage)'][i]
+          (d: Data, i: number) =>
+            ['url(#fillOcrUsage)', 'url(#fillVlmUsage)'][i]
         "
         :opacity="0.6"
       />

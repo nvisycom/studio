@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import {
 	Play,
 	Pause,
@@ -8,12 +8,10 @@ import {
 	CheckCircle,
 	XCircle,
 	Clock,
-	Search,
-	ChevronDown,
+	ExternalLink,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import {
 	Card,
 	CardContent,
@@ -36,6 +34,13 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+	Empty,
+	EmptyContent,
+	EmptyDescription,
+	EmptyHeader,
+	EmptyTitle,
+} from "@/components/ui/empty";
 
 definePageMeta({
 	pageName: "Pipelines",
@@ -51,11 +56,7 @@ interface Pipeline {
 	successRate: string;
 }
 
-const searchQuery = ref("");
-const statusFilter = ref("all");
-const sortBy = ref("name-asc");
-
-const pipelines = ref<Pipeline[]>([
+const activePipelines = ref<Pipeline[]>([
 	{
 		id: "1",
 		name: "Document Processing Pipeline",
@@ -83,60 +84,7 @@ const pipelines = ref<Pipeline[]>([
 		runsCount: 789,
 		successRate: "95.2%",
 	},
-	{
-		id: "4",
-		name: "Archive Cleanup",
-		description: "Remove old documents based on retention policy",
-		status: "failed",
-		lastRun: new Date(Date.now() - 6 * 3600000),
-		runsCount: 234,
-		successRate: "87.3%",
-	},
 ]);
-
-const statusFilters = [
-	{ value: "all", label: "All Statuses" },
-	{ value: "active", label: "Active" },
-	{ value: "paused", label: "Paused" },
-	{ value: "failed", label: "Failed" },
-];
-
-const sortOptions = [
-	{ value: "name-asc", label: "Name (A-Z)" },
-	{ value: "name-desc", label: "Name (Z-A)" },
-	{ value: "runs-desc", label: "Most Runs" },
-	{ value: "runs-asc", label: "Least Runs" },
-];
-
-const filteredPipelines = computed(() => {
-	let filtered = pipelines.value;
-
-	if (statusFilter.value !== "all") {
-		filtered = filtered.filter((p) => p.status === statusFilter.value);
-	}
-
-	if (searchQuery.value) {
-		const query = searchQuery.value.toLowerCase();
-		filtered = filtered.filter(
-			(p) =>
-				p.name.toLowerCase().includes(query) ||
-				p.description.toLowerCase().includes(query),
-		);
-	}
-
-	// Sort
-	if (sortBy.value === "name-asc") {
-		filtered.sort((a, b) => a.name.localeCompare(b.name));
-	} else if (sortBy.value === "name-desc") {
-		filtered.sort((a, b) => b.name.localeCompare(a.name));
-	} else if (sortBy.value === "runs-desc") {
-		filtered.sort((a, b) => b.runsCount - a.runsCount);
-	} else if (sortBy.value === "runs-asc") {
-		filtered.sort((a, b) => a.runsCount - b.runsCount);
-	}
-
-	return filtered;
-});
 
 function getStatusIcon(status: string) {
 	switch (status) {
@@ -172,33 +120,36 @@ function formatTime(date: Date) {
 	return `${days}d ago`;
 }
 
+function togglePipeline(pipeline: Pipeline) {
+	if (pipeline.status === "active") {
+		pipeline.status = "paused";
+	} else {
+		pipeline.status = "active";
+	}
+}
+
 function createPipeline() {
 	console.log("Creating new pipeline");
-	// TODO: Implement pipeline creation modal
-}
-
-function selectStatusFilter(value: string) {
-	statusFilter.value = value;
-}
-
-function selectSortBy(value: string) {
-	sortBy.value = value;
 }
 </script>
 
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
-    <div class="max-w-7xl mx-auto w-full">
-      <!-- Pipelines Table -->
+    <div class="max-w-4xl mx-auto w-full">
+      <!-- Active Pipelines -->
       <Card
-        class="overflow-hidden py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+        v-if="activePipelines.length > 0"
+        class="mb-8 py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
       >
         <CardHeader>
-          <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center justify-between">
             <div>
-              <CardTitle>Pipelines</CardTitle>
+              <CardTitle>Active Pipelines</CardTitle>
               <CardDescription>
-                Manage automated workflows and data pipelines
+                {{ activePipelines.length }} pipeline{{
+                  activePipelines.length !== 1 ? "s" : ""
+                }}
+                running
               </CardDescription>
             </div>
             <Button @click="createPipeline">
@@ -206,69 +157,8 @@ function selectSortBy(value: string) {
               New Pipeline
             </Button>
           </div>
-
-          <!-- Search and Filters -->
-          <div class="flex gap-3 items-center">
-            <div class="relative flex-1">
-              <Search
-                :size="16"
-                class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
-              />
-              <Input
-                v-model="searchQuery"
-                placeholder="Search pipelines..."
-                class="pl-10 border-neutral-300 dark:border-neutral-700"
-              />
-            </div>
-
-            <!-- Status Filter -->
-            <DropdownMenu>
-              <DropdownMenuTrigger as-child>
-                <Button
-                  variant="outline"
-                  class="justify-between min-w-32 border-neutral-300 dark:border-neutral-700"
-                >
-                  {{
-                    statusFilters.find((f) => f.value === statusFilter)?.label
-                  }}
-                  <ChevronDown :size="16" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  v-for="filter in statusFilters"
-                  :key="filter.value"
-                  @click="selectStatusFilter(filter.value)"
-                >
-                  {{ filter.label }}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <!-- Sort By -->
-            <DropdownMenu>
-              <DropdownMenuTrigger as-child>
-                <Button
-                  variant="outline"
-                  class="justify-between min-w-32 border-neutral-300 dark:border-neutral-700"
-                >
-                  {{ sortOptions.find((o) => o.value === sortBy)?.label }}
-                  <ChevronDown :size="16" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  v-for="option in sortOptions"
-                  :key="option.value"
-                  @click="selectSortBy(option.value)"
-                >
-                  {{ option.label }}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
         </CardHeader>
-        <CardContent class="p-0">
+        <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
@@ -282,10 +172,7 @@ function selectSortBy(value: string) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow
-                v-for="pipeline in filteredPipelines"
-                :key="pipeline.id"
-              >
+              <TableRow v-for="pipeline in activePipelines" :key="pipeline.id">
                 <TableCell class="font-medium">
                   {{ pipeline.name }}
                 </TableCell>
@@ -324,13 +211,15 @@ function selectSortBy(value: string) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem v-if="pipeline.status === 'active'">
-                        <Pause :size="16" class="mr-2" />
-                        Pause
-                      </DropdownMenuItem>
-                      <DropdownMenuItem v-else>
-                        <Play :size="16" class="mr-2" />
-                        Resume
+                      <DropdownMenuItem @click="togglePipeline(pipeline)">
+                        <component
+                          :is="
+                            pipeline.status === 'active' ? Pause : Play
+                          "
+                          :size="16"
+                          class="mr-2"
+                        />
+                        {{ pipeline.status === "active" ? "Pause" : "Resume" }}
                       </DropdownMenuItem>
                       <DropdownMenuItem> View Details </DropdownMenuItem>
                       <DropdownMenuItem> Edit </DropdownMenuItem>
@@ -343,13 +232,6 @@ function selectSortBy(value: string) {
               </TableRow>
             </TableBody>
           </Table>
-
-          <div
-            v-if="filteredPipelines.length === 0"
-            class="py-12 text-center text-neutral-500"
-          >
-            No pipelines found matching your filters
-          </div>
         </CardContent>
         <CardFooter
           class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
@@ -357,8 +239,39 @@ function selectSortBy(value: string) {
           <p class="text-sm text-neutral-600 dark:text-neutral-400">
             Pipelines run automatically based on their configured schedules and
             triggers.
+            <a
+              href="https://docs.nvisy.com/pipelines"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 text-neutral-900 dark:text-white hover:underline font-medium"
+            >
+              Documentation
+              <ExternalLink :size="12" />
+            </a>
           </p>
         </CardFooter>
+      </Card>
+
+      <Card
+        v-else
+        class="mb-8 pt-6 py-0 rounded-xl border-neutral-200 dark:border-neutral-800"
+      >
+        <CardContent class="py-12">
+          <Empty>
+            <EmptyHeader>
+              <EmptyTitle>No Pipelines</EmptyTitle>
+              <EmptyDescription>
+                Get started by creating your first pipeline
+              </EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <Button @click="createPipeline">
+                <Plus :size="16" class="mr-2" />
+                Create Pipeline
+              </Button>
+            </EmptyContent>
+          </Empty>
+        </CardContent>
       </Card>
     </div>
   </div>

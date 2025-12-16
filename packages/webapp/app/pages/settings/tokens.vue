@@ -42,7 +42,7 @@ import {
 } from "@/components/tokens";
 
 definePageMeta({
-	pageName: "Tokens",
+	pageName: "Settings",
 });
 
 interface Token {

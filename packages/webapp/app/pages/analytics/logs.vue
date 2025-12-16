@@ -1,36 +1,63 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
+import type { DateRange } from "reka-ui";
+import type { Ref } from "vue";
+import { getLocalTimeZone, today } from "@internationalized/date";
 import {
-	Download,
-	Upload,
-	Search,
-	Filter,
-	AlertCircle,
-	Info,
-	XCircle,
+  Download,
+  Upload,
+  Search,
+  Filter,
+  AlertCircle,
+  Info,
+  XCircle,
+  Calendar,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { RangeCalendar } from "@/components/ui/range-calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 definePageMeta({
-	pageName: "Analytics",
+  pageName: "Analytics",
 });
 
 // Filters
@@ -42,134 +69,178 @@ const viewType = ref("logs"); // "logs" or "traces"
 // Check if on-premise deployment
 const isOnPremise = ref(false); // TODO: Get this from config/environment
 
+// Export modal
+const isExportModalOpen = ref(false);
+const start = today(getLocalTimeZone());
+const end = start.add({ days: 7 });
+const exportDateRange = ref({
+  start,
+  end,
+}) as Ref<DateRange>;
+const isCalendarOpen = ref(false);
+const exportEventTypes = ref({
+  info: true,
+  warning: true,
+  error: true,
+});
+
+const formattedExportDateRange = computed(() => {
+  if (!exportDateRange.value.start || !exportDateRange.value.end) {
+    return "Select date range";
+  }
+
+  const startDate = new Date(
+    exportDateRange.value.start.year,
+    exportDateRange.value.start.month - 1,
+    exportDateRange.value.start.day,
+  );
+  const endDate = new Date(
+    exportDateRange.value.end.year,
+    exportDateRange.value.end.month - 1,
+    exportDateRange.value.end.day,
+  );
+
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  return `${formatter.format(startDate)} - ${formatter.format(endDate)}`;
+});
+
 // Mock log data
 const logs = ref([
-	{
-		id: "1",
-		timestamp: new Date(Date.now() - 5 * 60000),
-		level: "info",
-		message: "API request processed successfully",
-		endpoint: "/api/documents/analyze",
-		duration: "245ms",
-		status: 200,
-	},
-	{
-		id: "2",
-		timestamp: new Date(Date.now() - 12 * 60000),
-		level: "warning",
-		message: "Rate limit approaching threshold",
-		endpoint: "/api/documents/process",
-		duration: "89ms",
-		status: 429,
-	},
-	{
-		id: "3",
-		timestamp: new Date(Date.now() - 18 * 60000),
-		level: "error",
-		message: "Failed to process document: Invalid format",
-		endpoint: "/api/documents/upload",
-		duration: "12ms",
-		status: 400,
-	},
-	{
-		id: "4",
-		timestamp: new Date(Date.now() - 25 * 60000),
-		level: "info",
-		message: "User authentication successful",
-		endpoint: "/api/auth/login",
-		duration: "156ms",
-		status: 200,
-	},
-	{
-		id: "5",
-		timestamp: new Date(Date.now() - 32 * 60000),
-		level: "info",
-		message: "Integration sync completed",
-		endpoint: "/api/integrations/sync",
-		duration: "3.2s",
-		status: 200,
-	},
-	{
-		id: "6",
-		timestamp: new Date(Date.now() - 45 * 60000),
-		level: "info",
-		message: "Document processing initiated",
-		endpoint: "/api/documents/process",
-		duration: "67ms",
-		status: 202,
-	},
+  {
+    id: "1",
+    timestamp: new Date(Date.now() - 5 * 60000),
+    level: "info",
+    message: "API request processed successfully",
+    endpoint: "/api/documents/analyze",
+    duration: "245ms",
+    status: 200,
+  },
+  {
+    id: "2",
+    timestamp: new Date(Date.now() - 12 * 60000),
+    level: "warning",
+    message: "Rate limit approaching threshold",
+    endpoint: "/api/documents/process",
+    duration: "89ms",
+    status: 429,
+  },
+  {
+    id: "3",
+    timestamp: new Date(Date.now() - 18 * 60000),
+    level: "error",
+    message: "Failed to process document: Invalid format",
+    endpoint: "/api/documents/upload",
+    duration: "12ms",
+    status: 400,
+  },
+  {
+    id: "4",
+    timestamp: new Date(Date.now() - 25 * 60000),
+    level: "info",
+    message: "User authentication successful",
+    endpoint: "/api/auth/login",
+    duration: "156ms",
+    status: 200,
+  },
+  {
+    id: "5",
+    timestamp: new Date(Date.now() - 32 * 60000),
+    level: "info",
+    message: "Integration sync completed",
+    endpoint: "/api/integrations/sync",
+    duration: "3.2s",
+    status: 200,
+  },
+  {
+    id: "6",
+    timestamp: new Date(Date.now() - 45 * 60000),
+    level: "info",
+    message: "Document processing initiated",
+    endpoint: "/api/documents/process",
+    duration: "67ms",
+    status: 202,
+  },
 ]);
 
 const filteredLogs = computed(() => {
-	let filtered = logs.value;
+  let filtered = logs.value;
 
-	if (logLevel.value !== "all") {
-		filtered = filtered.filter((log) => log.level === logLevel.value);
-	}
+  if (logLevel.value !== "all") {
+    filtered = filtered.filter((log) => log.level === logLevel.value);
+  }
 
-	if (searchQuery.value) {
-		const query = searchQuery.value.toLowerCase();
-		filtered = filtered.filter(
-			(log) =>
-				log.message.toLowerCase().includes(query) ||
-				log.endpoint.toLowerCase().includes(query),
-		);
-	}
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(
+      (log) =>
+        log.message.toLowerCase().includes(query) ||
+        log.endpoint.toLowerCase().includes(query),
+    );
+  }
 
-	return filtered;
+  return filtered;
 });
 
 function getLevelIcon(level: string) {
-	switch (level) {
-		case "error":
-			return XCircle;
-		case "warning":
-			return AlertCircle;
-		default:
-			return Info;
-	}
+  switch (level) {
+    case "error":
+      return XCircle;
+    case "warning":
+      return AlertCircle;
+    default:
+      return Info;
+  }
 }
 
 function getLevelClass(level: string) {
-	switch (level) {
-		case "error":
-			return "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300";
-		case "warning":
-			return "bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300";
-		default:
-			return "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300";
-	}
+  switch (level) {
+    case "error":
+      return "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300";
+    case "warning":
+      return "bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300";
+    default:
+      return "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300";
+  }
 }
 
 function formatTimestamp(date: Date) {
-	return new Intl.DateTimeFormat("en-US", {
-		hour: "2-digit",
-		minute: "2-digit",
-		second: "2-digit",
-		hour12: false,
-	}).format(date);
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).format(date);
 }
 
-function exportLogs() {
-	console.log(
-		"Exporting logs for range:",
-		dateRange.value,
-		"level:",
-		logLevel.value,
-	);
-	// TODO: Implement actual export functionality
+function openExportModal() {
+  isExportModalOpen.value = true;
+}
+
+function handleExport(format: "csv" | "json") {
+  console.log("Exporting logs:", {
+    format,
+    dateRange: exportDateRange.value,
+    eventTypes: exportEventTypes.value,
+  });
+  // TODO: Implement actual export functionality
+  isExportModalOpen.value = false;
 }
 
 function importLogs() {
-	console.log("Importing logs");
-	// TODO: Implement actual import functionality
+  console.log("Importing logs");
+  // TODO: Implement actual import functionality
 }
 </script>
 
 <template>
-  <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
-    <div class="max-w-7xl mx-auto w-full">
-      <!-- Toolbar -->
+  <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-0">
+    <div class="w-full">
+      <!-- Search and Filters -->
       <div class="flex items-center gap-4 mb-6 flex-wrap">
         <!-- Logs/Traces Toggle -->
         <div class="flex border rounded-md overflow-hidden">
@@ -233,26 +304,39 @@ function importLogs() {
             <SelectItem value="30d">Last 30 days</SelectItem>
           </SelectContent>
         </Select>
-
-        <div class="flex gap-2">
-          <Button
-            @click="importLogs"
-            variant="outline"
-            :disabled="!isOnPremise"
-          >
-            <Upload :size="16" class="mr-2" />
-            Import
-          </Button>
-          <Button @click="exportLogs" variant="outline">
-            <Download :size="16" class="mr-2" />
-            Export
-          </Button>
-        </div>
       </div>
 
       <!-- Logs Table -->
-      <Card class="rounded-xl border-neutral-200 dark:border-neutral-800">
-        <CardContent class="p-0">
+      <Card class="py-0 pt-6 pb-6 rounded-xl">
+        <CardHeader>
+          <div class="flex items-center justify-between">
+            <div>
+              <CardTitle>Activity Logs</CardTitle>
+              <CardDescription>
+                {{ filteredLogs.length }} log{{
+                  filteredLogs.length !== 1 ? "s" : ""
+                }}
+                found
+              </CardDescription>
+            </div>
+            <div class="flex gap-2">
+              <Button
+                @click="importLogs"
+                variant="outline"
+                size="sm"
+                :disabled="!isOnPremise"
+              >
+                <Upload :size="16" class="mr-2" />
+                Import
+              </Button>
+              <Button @click="openExportModal" variant="outline" size="sm">
+                <Download :size="16" class="mr-2" />
+                Export
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
@@ -318,6 +402,96 @@ function importLogs() {
           </div>
         </CardContent>
       </Card>
+
+      <!-- Export Modal -->
+      <Dialog v-model:open="isExportModalOpen">
+        <DialogContent class="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Export Logs</DialogTitle>
+            <DialogDescription>
+              Configure export settings for your logs
+            </DialogDescription>
+          </DialogHeader>
+
+          <div class="space-y-6 py-4">
+            <!-- Date Range -->
+            <div class="space-y-3">
+              <Label class="text-sm font-medium">Date Range</Label>
+              <Popover v-model:open="isCalendarOpen">
+                <PopoverTrigger as-child>
+                  <Button
+                    variant="outline"
+                    class="w-full justify-start text-left font-normal"
+                  >
+                    <Calendar :size="16" class="mr-2" />
+                    {{ formattedExportDateRange }}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent class="w-auto p-0" align="start">
+                  <RangeCalendar v-model="exportDateRange" />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <!-- Event Types -->
+            <div class="space-y-3">
+              <Label class="text-sm font-medium">Event Types</Label>
+              <div class="space-y-3">
+                <div class="flex items-center space-x-2">
+                  <Checkbox
+                    id="export-info"
+                    v-model:checked="exportEventTypes.info"
+                  />
+                  <label
+                    for="export-info"
+                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                  >
+                    Info
+                  </label>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <Checkbox
+                    id="export-warning"
+                    v-model:checked="exportEventTypes.warning"
+                  />
+                  <label
+                    for="export-warning"
+                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                  >
+                    Warning
+                  </label>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <Checkbox
+                    id="export-error"
+                    v-model:checked="exportEventTypes.error"
+                  />
+                  <label
+                    for="export-error"
+                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                  >
+                    Error
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" @click="isExportModalOpen = false">
+              Cancel
+            </Button>
+            <Button @click="handleExport('json')" variant="outline">
+              <Download :size="16" class="mr-2" />
+              Export as JSON
+            </Button>
+            <Button @click="handleExport('csv')">
+              <Download :size="16" class="mr-2" />
+              Export as CSV
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   </div>
 </template>

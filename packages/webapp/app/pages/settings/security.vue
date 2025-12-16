@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import type { DateRange } from "reka-ui";
-import type { Ref } from "vue";
-import { getLocalTimeZone, today } from "@internationalized/date";
-import { Download, Calendar } from "lucide-vue-next";
+import { ref } from "vue";
 import {
 	Card,
 	CardContent,
@@ -14,12 +10,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { RangeCalendar } from "@/components/ui/range-calendar";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
 
 definePageMeta({
 	pageName: "Settings",
@@ -37,42 +27,6 @@ const samlEnabled = ref(false);
 const samlEntityId = ref("");
 const samlSsoUrl = ref("");
 const samlCertificate = ref("");
-
-// Audit Log date range
-const start = today(getLocalTimeZone());
-const end = start.add({ days: 7 });
-
-const auditLogDateRange = ref({
-	start,
-	end,
-}) as Ref<DateRange>;
-
-const isCalendarOpen = ref(false);
-
-const formattedDateRange = computed(() => {
-	if (!auditLogDateRange.value.start || !auditLogDateRange.value.end) {
-		return "Select date range";
-	}
-
-	const startDate = new Date(
-		auditLogDateRange.value.start.year,
-		auditLogDateRange.value.start.month - 1,
-		auditLogDateRange.value.start.day,
-	);
-	const endDate = new Date(
-		auditLogDateRange.value.end.year,
-		auditLogDateRange.value.end.month - 1,
-		auditLogDateRange.value.end.day,
-	);
-
-	const formatter = new Intl.DateTimeFormat("en-US", {
-		month: "short",
-		day: "numeric",
-		year: "numeric",
-	});
-
-	return `${formatter.format(startDate)} - ${formatter.format(endDate)}`;
-});
 
 // Functions
 function saveIpVisibility() {
@@ -92,14 +46,6 @@ function saveSamlSettings() {
 		entityId: samlEntityId.value,
 		ssoUrl: samlSsoUrl.value,
 	});
-}
-
-function exportAuditLog(format: "csv" | "json") {
-	console.log(
-		`Exporting audit log as ${format.toUpperCase()}`,
-		auditLogDateRange.value,
-	);
-	// Implement export logic
 }
 </script>
 
@@ -276,74 +222,6 @@ function exportAuditLog(format: "csv" | "json") {
               your identity provider.
             </p>
             <Button size="sm" @click="saveSamlSettings"> Save </Button>
-          </CardFooter>
-        </Card>
-
-        <!-- Audit Log -->
-        <Card
-          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-          id="audit-log"
-        >
-          <CardHeader>
-            <CardTitle>Audit Log</CardTitle>
-            <CardDescription
-              >Export security and activity logs for compliance and
-              auditing</CardDescription
-            >
-          </CardHeader>
-          <CardContent>
-            <div class="space-y-4">
-              <div>
-                <label
-                  class="block text-sm font-medium text-neutral-900 dark:text-white mb-3"
-                >
-                  Date Range
-                </label>
-                <div class="flex items-center gap-3">
-                  <Popover v-model:open="isCalendarOpen">
-                    <PopoverTrigger as-child>
-                      <Button
-                        variant="outline"
-                        class="justify-start text-left font-normal min-w-[280px]"
-                      >
-                        <Calendar :size="16" class="mr-2" />
-                        {{ formattedDateRange }}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent class="w-auto p-0" align="start">
-                      <RangeCalendar v-model="auditLogDateRange" />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              </div>
-
-              <div class="flex gap-3">
-                <Button
-                  @click="exportAuditLog('csv')"
-                  variant="outline"
-                  class="flex items-center gap-2"
-                >
-                  <Download :size="16" />
-                  Export CSV
-                </Button>
-                <Button
-                  @click="exportAuditLog('json')"
-                  variant="outline"
-                  class="flex items-center gap-2"
-                >
-                  <Download :size="16" />
-                  Export JSON
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
-          >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Audit logs include all security events, user activity, and system
-              changes within the selected date range.
-            </p>
           </CardFooter>
         </Card>
       </div>

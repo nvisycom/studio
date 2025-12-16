@@ -168,10 +168,10 @@ function notifyMe(id: number) {
       <div
         class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center mb-6"
       >
-        <Button variant="outline" as-child>
+        <Button as-child>
           <NuxtLink to="/integrations" class="flex items-center gap-2">
             <ArrowLeft :size="16" />
-            Back to Connected
+            Back to Connections
           </NuxtLink>
         </Button>
 

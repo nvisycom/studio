@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ChartConfig } from "@/components/ui/chart";
 import { VisArea, VisAxis, VisLine, VisXYContainer } from "@unovis/vue";
+import { PenLine, BadgeCheck } from "lucide-vue-next";
 import {
 	ChartContainer,
 	ChartCrosshair,
@@ -34,10 +35,12 @@ const chartConfig = {
 	edited: {
 		label: "Edited",
 		color: "var(--chart-2)",
+		icon: PenLine,
 	},
 	verified: {
 		label: "Verified",
 		color: "var(--chart-3)",
+		icon: BadgeCheck,
 	},
 } satisfies ChartConfig;
 

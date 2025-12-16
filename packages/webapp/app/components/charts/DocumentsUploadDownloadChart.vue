@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ChartConfig } from "@/components/ui/chart";
 import { VisArea, VisAxis, VisLine, VisXYContainer } from "@unovis/vue";
+import { Upload, Download } from "lucide-vue-next";
 import {
 	ChartContainer,
 	ChartCrosshair,
@@ -34,10 +35,12 @@ const chartConfig = {
 	uploaded: {
 		label: "Uploaded",
 		color: "var(--chart-1)",
+		icon: Upload,
 	},
 	downloaded: {
 		label: "Downloaded",
 		color: "var(--chart-2)",
+		icon: Download,
 	},
 } satisfies ChartConfig;
 

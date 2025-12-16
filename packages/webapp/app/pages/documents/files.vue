@@ -1,274 +1,300 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import {
-	Search,
-	Plus,
-	FileText,
-	Download,
-	Eye,
-	Trash2,
-	MoreVertical,
-	ShieldCheck,
-	ShieldX,
-	ChevronDown,
-	File,
+  Search,
+  Plus,
+  FileText,
+  Download,
+  Eye,
+  Trash2,
+  MoreVertical,
+  ShieldCheck,
+  ShieldX,
+  ChevronDown,
+  File,
+  Upload,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-	DropdownMenuSeparator,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import {
-	Empty,
-	EmptyContent,
-	EmptyDescription,
-	EmptyHeader,
-	EmptyTitle,
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
 } from "@/components/ui/empty";
 
 definePageMeta({
-	pageName: "Documents",
+  pageName: "Documents",
 });
 
 interface Document {
-	id: number;
-	icon: string;
-	originalName: string;
-	size: string;
-	uploadedAt: string;
-	uploadedBy: string;
-	tags: string[];
-	verified: boolean;
-	version: number;
-	format: string;
+  id: number;
+  icon: string;
+  originalName: string;
+  size: string;
+  uploadedAt: string;
+  uploadedBy: string;
+  tags: string[];
+  verified: boolean;
+  version: number;
+  format: string;
 }
 
 const searchQuery = ref("");
 const filterFormat = ref("any");
 const filterStatus = ref("any");
 const selectedSorting = ref("date-desc");
+const fileInputRef = ref<HTMLInputElement | null>(null);
 
 const documents = ref<Document[]>([
-	{
-		id: 1,
-		icon: "pdf",
-		originalName: "contract_final_v3.pdf",
-		size: "2.4 MB",
-		uploadedAt: "2024-01-20 10:30",
-		uploadedBy: "John Doe",
-		tags: ["Contract", "Legal"],
-		verified: true,
-		version: 3,
-		format: "pdf",
-	},
-	{
-		id: 2,
-		icon: "pdf",
-		originalName: "financial_report_2024.pdf",
-		size: "1.8 MB",
-		uploadedAt: "2024-01-20 09:15",
-		uploadedBy: "Jane Smith",
-		tags: ["Finance", "Report"],
-		verified: true,
-		version: 1,
-		format: "pdf",
-	},
-	{
-		id: 3,
-		icon: "pdf",
-		originalName: "legal_document.pdf",
-		size: "3.2 MB",
-		uploadedAt: "2024-01-19 14:20",
-		uploadedBy: "Bob Johnson",
-		tags: ["Legal"],
-		verified: false,
-		version: 1,
-		format: "pdf",
-	},
-	{
-		id: 4,
-		icon: "doc",
-		originalName: "employee_records.docx",
-		size: "890 KB",
-		uploadedAt: "2024-01-19 11:45",
-		uploadedBy: "Alice Brown",
-		tags: ["HR", "Records"],
-		verified: true,
-		version: 2,
-		format: "doc",
-	},
-	{
-		id: 5,
-		icon: "txt",
-		originalName: "meeting_notes.txt",
-		size: "45 KB",
-		uploadedAt: "2024-01-18 16:00",
-		uploadedBy: "John Doe",
-		tags: ["Meeting", "Notes"],
-		verified: true,
-		version: 1,
-		format: "text",
-	},
-	{
-		id: 6,
-		icon: "pdf",
-		originalName: "proposal_draft.pdf",
-		size: "4.1 MB",
-		uploadedAt: "2024-01-18 09:30",
-		uploadedBy: "Jane Smith",
-		tags: ["Proposal", "Sales"],
-		verified: false,
-		version: 2,
-		format: "pdf",
-	},
+  {
+    id: 1,
+    icon: "pdf",
+    originalName: "contract_final_v3.pdf",
+    size: "2.4 MB",
+    uploadedAt: "2024-01-20 10:30",
+    uploadedBy: "John Doe",
+    tags: ["Contract", "Legal"],
+    verified: true,
+    version: 3,
+    format: "pdf",
+  },
+  {
+    id: 2,
+    icon: "pdf",
+    originalName: "financial_report_2024.pdf",
+    size: "1.8 MB",
+    uploadedAt: "2024-01-20 09:15",
+    uploadedBy: "Jane Smith",
+    tags: ["Finance", "Report"],
+    verified: true,
+    version: 1,
+    format: "pdf",
+  },
+  {
+    id: 3,
+    icon: "pdf",
+    originalName: "legal_document.pdf",
+    size: "3.2 MB",
+    uploadedAt: "2024-01-19 14:20",
+    uploadedBy: "Bob Johnson",
+    tags: ["Legal"],
+    verified: false,
+    version: 1,
+    format: "pdf",
+  },
+  {
+    id: 4,
+    icon: "doc",
+    originalName: "employee_records.docx",
+    size: "890 KB",
+    uploadedAt: "2024-01-19 11:45",
+    uploadedBy: "Alice Brown",
+    tags: ["HR", "Records"],
+    verified: true,
+    version: 2,
+    format: "doc",
+  },
+  {
+    id: 5,
+    icon: "txt",
+    originalName: "meeting_notes.txt",
+    size: "45 KB",
+    uploadedAt: "2024-01-18 16:00",
+    uploadedBy: "John Doe",
+    tags: ["Meeting", "Notes"],
+    verified: true,
+    version: 1,
+    format: "text",
+  },
+  {
+    id: 6,
+    icon: "pdf",
+    originalName: "proposal_draft.pdf",
+    size: "4.1 MB",
+    uploadedAt: "2024-01-18 09:30",
+    uploadedBy: "Jane Smith",
+    tags: ["Proposal", "Sales"],
+    verified: false,
+    version: 2,
+    format: "pdf",
+  },
 ]);
 
 const formatFilters = [
-	{ label: "Any Format", value: "any" },
-	{ label: "PDF", value: "pdf" },
-	{ label: "DOC", value: "doc" },
-	{ label: "Text", value: "text" },
+  { label: "Any Format", value: "any" },
+  { label: ".pdf", value: "pdf" },
+  { label: ".doc / .docx", value: "doc" },
+  { label: ".txt", value: "text" },
 ];
 
 const statusFilters = [
-	{ label: "Any Status", value: "any" },
-	{ label: "Verified", value: "verified" },
-	{ label: "Unverified", value: "unverified" },
+  { label: "Any Status", value: "any" },
+  { label: "Verified", value: "verified" },
+  { label: "Unverified", value: "unverified" },
 ];
 
 const sortingOptions = [
-	{ label: "Date (Newest)", value: "date-desc" },
-	{ label: "Date (Oldest)", value: "date-asc" },
-	{ label: "Name (A-Z)", value: "name-asc" },
-	{ label: "Name (Z-A)", value: "name-desc" },
-	{ label: "Size (Largest)", value: "size-desc" },
-	{ label: "Size (Smallest)", value: "size-asc" },
+  { label: "Date (Newest)", value: "date-desc" },
+  { label: "Date (Oldest)", value: "date-asc" },
+  { label: "Name (A-Z)", value: "name-asc" },
+  { label: "Name (Z-A)", value: "name-desc" },
+  { label: "Size (Largest)", value: "size-desc" },
+  { label: "Size (Smallest)", value: "size-asc" },
 ];
 
 const filteredDocuments = computed(() => {
-	let filtered = documents.value;
+  let filtered = documents.value;
 
-	// Apply search filter
-	if (searchQuery.value.trim()) {
-		const query = searchQuery.value.toLowerCase();
-		filtered = filtered.filter(
-			(doc) =>
-				doc.originalName.toLowerCase().includes(query) ||
-				doc.uploadedBy.toLowerCase().includes(query) ||
-				doc.tags.some((tag) => tag.toLowerCase().includes(query)),
-		);
-	}
+  // Apply search filter
+  if (searchQuery.value.trim()) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(
+      (doc) =>
+        doc.originalName.toLowerCase().includes(query) ||
+        doc.uploadedBy.toLowerCase().includes(query) ||
+        doc.tags.some((tag) => tag.toLowerCase().includes(query)),
+    );
+  }
 
-	// Apply format filter
-	if (filterFormat.value !== "any") {
-		filtered = filtered.filter((doc) => doc.format === filterFormat.value);
-	}
+  // Apply format filter
+  if (filterFormat.value !== "any") {
+    filtered = filtered.filter((doc) => doc.format === filterFormat.value);
+  }
 
-	// Apply status filter
-	if (filterStatus.value === "verified") {
-		filtered = filtered.filter((doc) => doc.verified);
-	} else if (filterStatus.value === "unverified") {
-		filtered = filtered.filter((doc) => !doc.verified);
-	}
+  // Apply status filter
+  if (filterStatus.value === "verified") {
+    filtered = filtered.filter((doc) => doc.verified);
+  } else if (filterStatus.value === "unverified") {
+    filtered = filtered.filter((doc) => !doc.verified);
+  }
 
-	// Sort the results
-	filtered = [...filtered].sort((a, b) => {
-		switch (selectedSorting.value) {
-			case "date-asc":
-				return (
-					new Date(a.uploadedAt).getTime() - new Date(b.uploadedAt).getTime()
-				);
-			case "date-desc":
-				return (
-					new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
-				);
-			case "name-asc":
-				return a.originalName.localeCompare(b.originalName);
-			case "name-desc":
-				return b.originalName.localeCompare(a.originalName);
-			case "size-asc":
-				return parseFloat(a.size) - parseFloat(b.size);
-			case "size-desc":
-				return parseFloat(b.size) - parseFloat(a.size);
-			default:
-				return 0;
-		}
-	});
+  // Sort the results
+  filtered = [...filtered].sort((a, b) => {
+    switch (selectedSorting.value) {
+      case "date-asc":
+        return (
+          new Date(a.uploadedAt).getTime() - new Date(b.uploadedAt).getTime()
+        );
+      case "date-desc":
+        return (
+          new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
+        );
+      case "name-asc":
+        return a.originalName.localeCompare(b.originalName);
+      case "name-desc":
+        return b.originalName.localeCompare(a.originalName);
+      case "size-asc":
+        return parseFloat(a.size) - parseFloat(b.size);
+      case "size-desc":
+        return parseFloat(b.size) - parseFloat(a.size);
+      default:
+        return 0;
+    }
+  });
 
-	return filtered;
+  return filtered;
 });
 
 function viewDocument(docId: number) {
-	console.log("Viewing document:", docId);
+  console.log("Viewing document:", docId);
 }
 
 function downloadDocument(docId: number) {
-	console.log("Downloading document:", docId);
+  console.log("Downloading document:", docId);
 }
 
 function deleteDocument(docId: number) {
-	console.log("Deleting document:", docId);
+  console.log("Deleting document:", docId);
+}
+
+function handleUploadClick() {
+  fileInputRef.value?.click();
+}
+
+function handleFileChange(event: Event) {
+  const target = event.target as HTMLInputElement;
+  const files = target.files;
+  if (files && files.length > 0) {
+    console.log(
+      "Uploading files:",
+      Array.from(files).map((f) => f.name),
+    );
+    // Here you would implement the actual upload logic
+    // For now, just log the file names
+  }
 }
 
 function selectFormatFilter(value: string) {
-	filterFormat.value = value;
+  filterFormat.value = value;
 }
 
 function selectStatusFilter(value: string) {
-	filterStatus.value = value;
+  filterStatus.value = value;
 }
 
 function selectSorting(value: string) {
-	selectedSorting.value = value;
+  selectedSorting.value = value;
 }
 
 function getFileIcon(format: string) {
-	return FileText;
+  return FileText;
 }
 
 function formatDate(dateStr: string): string {
-	const date = new Date(dateStr);
-	const now = new Date();
-	const diff = now.getTime() - date.getTime();
-	const hours = Math.floor(diff / (1000 * 60 * 60));
-	const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-	if (hours < 1) return "Just now";
-	if (hours < 24) return `${hours}h ago`;
-	if (days === 1) return "Yesterday";
-	if (days < 7) return `${days}d ago`;
+  if (hours < 1) return "Just now";
+  if (hours < 24) return `${hours}h ago`;
+  if (days === 1) return "Yesterday";
+  if (days < 7) return `${days}d ago`;
 
-	return date.toLocaleDateString("en-US", {
-		month: "short",
-		day: "numeric",
-		year: "numeric",
-	});
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 function getFormatColor(format: string): string {
-	switch (format) {
-		case "pdf":
-			return "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300";
-		case "doc":
-			return "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300";
-		case "text":
-			return "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300";
-		default:
-			return "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300";
-	}
+  switch (format) {
+    case "pdf":
+      return "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300";
+    case "doc":
+      return "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300";
+    case "text":
+      return "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300";
+    default:
+      return "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300";
+  }
 }
 </script>
 
@@ -330,7 +356,21 @@ function getFormatColor(format: string): string {
               :key="filter.value"
               @click="selectStatusFilter(filter.value)"
             >
-              {{ filter.label }}
+              <div class="flex items-center gap-2">
+                <component
+                  v-if="filter.value === 'verified'"
+                  :is="ShieldCheck"
+                  :size="14"
+                  class="text-green-600 dark:text-green-400"
+                />
+                <component
+                  v-else-if="filter.value === 'unverified'"
+                  :is="ShieldX"
+                  :size="14"
+                  class="text-red-600 dark:text-red-400"
+                />
+                <span>{{ filter.label }}</span>
+              </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -357,9 +397,17 @@ function getFormatColor(format: string): string {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Button class="flex items-center gap-2">
-          <Plus :size="16" />
-          Upload Document
+        <input
+          ref="fileInputRef"
+          type="file"
+          multiple
+          accept=".pdf,.doc,.docx,.txt"
+          class="hidden"
+          @change="handleFileChange"
+        />
+        <Button @click="handleUploadClick" class="flex items-center gap-2">
+          <Upload :size="16" />
+          Upload
         </Button>
       </div>
 
@@ -372,13 +420,13 @@ function getFormatColor(format: string): string {
           <TableHeader>
             <TableRow>
               <TableHead class="w-12"></TableHead>
+              <TableHead class="w-12"></TableHead>
               <TableHead>Original Name</TableHead>
               <TableHead>Size</TableHead>
               <TableHead>Uploaded At</TableHead>
               <TableHead>Uploaded By</TableHead>
               <TableHead>Tags</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Version</TableHead>
               <TableHead class="w-12"></TableHead>
             </TableRow>
           </TableHeader>
@@ -388,6 +436,9 @@ function getFormatColor(format: string): string {
               :key="doc.id"
               class="hover:bg-neutral-50 dark:hover:bg-neutral-900"
             >
+              <TableCell>
+                <Checkbox />
+              </TableCell>
               <TableCell>
                 <div
                   class="w-8 h-8 rounded flex items-center justify-center"
@@ -432,32 +483,24 @@ function getFormatColor(format: string): string {
                 </div>
               </TableCell>
               <TableCell>
-                <div class="flex items-center gap-1.5">
-                  <component
-                    :is="doc.verified ? ShieldCheck : ShieldX"
-                    :size="14"
-                    :class="
-                      doc.verified
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-red-600 dark:text-red-400'
-                    "
-                  />
-                  <span
-                    class="text-xs font-medium"
-                    :class="
-                      doc.verified
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-red-600 dark:text-red-400'
-                    "
-                  >
-                    {{ doc.verified ? "Verified" : "Unverified" }}
-                  </span>
-                </div>
-              </TableCell>
-              <TableCell>
-                <Badge variant="secondary" class="text-xs">
-                  v{{ doc.version }}
-                </Badge>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <component
+                        :is="doc.verified ? ShieldCheck : ShieldX"
+                        :size="16"
+                        :class="
+                          doc.verified
+                            ? 'text-green-600 dark:text-green-400'
+                            : 'text-red-600 dark:text-red-400'
+                        "
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{{ doc.verified ? "Verified" : "Unverified" }}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </TableCell>
               <TableCell>
                 <DropdownMenu>
@@ -508,9 +551,9 @@ function getFormatColor(format: string): string {
             !searchQuery && filterFormat === 'any' && filterStatus === 'any'
           "
         >
-          <Button class="flex items-center gap-2">
-            <Plus :size="16" />
-            Upload Document
+          <Button @click="handleUploadClick" class="flex items-center gap-2">
+            <Upload :size="16" />
+            Upload
           </Button>
         </EmptyContent>
       </Empty>

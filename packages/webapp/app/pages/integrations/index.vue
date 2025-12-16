@@ -295,7 +295,7 @@ function testWebhook(webhook: Webhook) {
               }}</CardDescription>
             </div>
             <Button as-child>
-              <NuxtLink to="/integrations/library">
+              <NuxtLink to="/integrations/explore">
                 {{ t("integrations.actions.explore") }}
               </NuxtLink>
             </Button>
@@ -338,7 +338,7 @@ function testWebhook(webhook: Webhook) {
               }}
             </p>
             <Button as-child>
-              <NuxtLink to="/integrations/library">
+              <NuxtLink to="/integrations/explore">
                 {{ t("integrations.actions.browse") }}
               </NuxtLink>
             </Button>
