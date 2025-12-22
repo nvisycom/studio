@@ -2,34 +2,34 @@
 import { ref, computed } from "vue";
 import { Wallet, ChevronDown } from "lucide-vue-next";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import Button from "@/components/ui/button/Button.vue";
 import Empty from "@/components/ui/empty/Empty.vue";
 import Input from "@/components/ui/input/Input.vue";
 import Textarea from "@/components/ui/textarea/Textarea.vue";
 import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-  TableCell,
+	Table,
+	TableBody,
+	TableHead,
+	TableHeader,
+	TableRow,
+	TableCell,
 } from "@/components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 definePageMeta({
-  pageName: "Billing",
+	pageName: "Billing",
 });
 
 // Reactive data
@@ -39,52 +39,52 @@ const billingAddress = ref("");
 
 // Mock payment methods data
 const paymentMethods = [
-  {
-    id: "1",
-    type: "card",
-    last4: "4242",
-    brand: "Visa",
-    expiryMonth: 12,
-    expiryYear: 2024,
-    isDefault: true,
-  },
+	{
+		id: "1",
+		type: "card",
+		last4: "4242",
+		brand: "Visa",
+		expiryMonth: 12,
+		expiryYear: 2024,
+		isDefault: true,
+	},
 ];
 
 // Countries for billing address
 const countries = [
-  { code: "US", name: "United States" },
-  { code: "CA", name: "Canada" },
-  { code: "GB", name: "United Kingdom" },
-  { code: "DE", name: "Germany" },
-  { code: "FR", name: "France" },
-  { code: "ES", name: "Spain" },
-  { code: "IT", name: "Italy" },
-  { code: "NL", name: "Netherlands" },
-  { code: "AU", name: "Australia" },
-  { code: "JP", name: "Japan" },
+	{ code: "US", name: "United States" },
+	{ code: "CA", name: "Canada" },
+	{ code: "GB", name: "United Kingdom" },
+	{ code: "DE", name: "Germany" },
+	{ code: "FR", name: "France" },
+	{ code: "ES", name: "Spain" },
+	{ code: "IT", name: "Italy" },
+	{ code: "NL", name: "Netherlands" },
+	{ code: "AU", name: "Australia" },
+	{ code: "JP", name: "Japan" },
 ];
 
 const selectedCountry = ref("");
 
 // Functions
 function updatePaymentMethod() {
-  console.log("Opening payment method update");
+	console.log("Opening payment method update");
 }
 
 function saveInvoiceEmail() {
-  console.log("Saving invoice email:", invoiceEmail.value);
+	console.log("Saving invoice email:", invoiceEmail.value);
 }
 
 function saveCompanyName() {
-  console.log("Saving company name:", companyName.value);
+	console.log("Saving company name:", companyName.value);
 }
 
 function saveBillingAddress() {
-  console.log("Saving billing address:", billingAddress.value);
+	console.log("Saving billing address:", billingAddress.value);
 }
 
 function selectCountry(country: string) {
-  selectedCountry.value = country;
+	selectedCountry.value = country;
 }
 </script>
 

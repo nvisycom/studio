@@ -104,6 +104,7 @@ const emit = defineEmits<Emits>();
       <Button
         v-else-if="integration.status === 'available'"
         @click="emit('connect', integration.id)"
+        variant="outline"
         class="w-full"
       >
         {{ t("integrations.actions.connect") }}

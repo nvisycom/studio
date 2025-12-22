@@ -3,26 +3,26 @@ import { ZoomIn, ZoomOut } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 
 interface Props {
-  zoomLevel?: number;
+	zoomLevel?: number;
 }
 
 interface Emits {
-  (e: "zoomIn"): void;
-  (e: "zoomOut"): void;
+	(e: "zoomIn"): void;
+	(e: "zoomOut"): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  zoomLevel: 100,
+	zoomLevel: 100,
 });
 
 const emit = defineEmits<Emits>();
 
 function zoomIn() {
-  emit("zoomIn");
+	emit("zoomIn");
 }
 
 function zoomOut() {
-  emit("zoomOut");
+	emit("zoomOut");
 }
 </script>
 

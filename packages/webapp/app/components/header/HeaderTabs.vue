@@ -3,34 +3,34 @@ import { computed } from "vue";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StudioFileTabs from "./StudioFileTabs.vue";
 import {
-  Settings,
-  Key,
-  Bell,
-  Shield,
-  BarChart3,
-  Cpu,
-  FileSearch,
-  Plug,
-  Library,
-  Receipt,
-  FileText,
-  Workflow,
-  PenTool,
-  LayoutTemplate,
-  FolderOpen,
-  Users,
-  ShieldCheck,
-  MessageSquare,
-  Database,
-  CreditCard,
-  PlayCircle,
+	Settings,
+	Key,
+	Bell,
+	Shield,
+	BarChart3,
+	Cpu,
+	FileSearch,
+	Plug,
+	Library,
+	Receipt,
+	FileText,
+	Workflow,
+	PenTool,
+	LayoutTemplate,
+	FolderOpen,
+	Users,
+	ShieldCheck,
+	MessageSquare,
+	Database,
+	CreditCard,
+	PlayCircle,
 } from "lucide-vue-next";
 
 const route = useRoute();
 
 // Check if current route should show tabs
 const showIntegrationTabs = computed(() =>
-  route.path.startsWith("/integrations"),
+	route.path.startsWith("/integrations"),
 );
 
 const showPipelinesTabs = computed(() => route.path.startsWith("/pipelines"));
@@ -48,50 +48,50 @@ const showMembersTabs = computed(() => route.path.startsWith("/members"));
 const showKnowledgeTabs = computed(() => route.path.startsWith("/knowledge"));
 
 const currentIntegrationTab = computed(() =>
-  route.path === "/integrations/explore" ? "library" : "active",
+	route.path === "/integrations/explore" ? "library" : "active",
 );
 
 const currentMembersTab = computed(() => {
-  if (route.path === "/members/permissions") return "permissions";
-  return "members";
+	if (route.path === "/members/permissions") return "permissions";
+	return "members";
 });
 
 const currentPipelinesTab = computed(() =>
-  route.path === "/pipelines/templates" ? "templates" : "pipelines",
+	route.path === "/pipelines/templates" ? "templates" : "pipelines",
 );
 
 const currentDocumentsTab = computed(() => {
-  if (route.path === "/documents/studio") return "studio";
-  return "files";
+	if (route.path === "/documents/studio") return "studio";
+	return "files";
 });
 
 const currentSettingsTab = computed(() => {
-  if (route.path === "/settings/tokens") return "tokens";
-  if (route.path === "/settings/notifications") return "notifications";
-  if (route.path === "/settings/security") return "security";
-  return "general";
+	if (route.path === "/settings/tokens") return "tokens";
+	if (route.path === "/settings/notifications") return "notifications";
+	if (route.path === "/settings/security") return "security";
+	return "general";
 });
 
 const currentAnalyticsTab = computed(() => {
-  if (route.path === "/analytics/ai") return "ai";
-  if (route.path.startsWith("/analytics/logs")) return "logs";
-  return "overview";
+	if (route.path === "/analytics/ai") return "ai";
+	if (route.path.startsWith("/analytics/logs")) return "logs";
+	return "overview";
 });
 
 const currentBillingTab = computed(() => {
-  if (route.path.startsWith("/billing/invoices")) return "invoices";
-  if (route.path.startsWith("/billing/method")) return "method";
-  return "plan";
+	if (route.path.startsWith("/billing/invoices")) return "invoices";
+	if (route.path.startsWith("/billing/method")) return "method";
+	return "plan";
 });
 
 const currentIntegrationTabValue = computed(() => {
-  if (route.path === "/integrations/explore") return "explore";
-  if (route.path === "/integrations/runs") return "runs";
-  return "connections";
+	if (route.path === "/integrations/explore") return "explore";
+	if (route.path === "/integrations/runs") return "runs";
+	return "connections";
 });
 
 const currentKnowledgeTab = computed(() =>
-  route.path === "/knowledge/corpus" ? "corpus" : "chat",
+	route.path === "/knowledge/corpus" ? "corpus" : "chat",
 );
 </script>
 

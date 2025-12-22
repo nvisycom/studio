@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { Plus, MoreVertical, Pencil, Trash2 } from "lucide-vue-next";
+import { Plus, MoreVertical, Pencil, Trash2, ArrowLeft } from "lucide-vue-next";
 import {
   Card,
   CardContent,
@@ -34,6 +34,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  EditRoleDialog,
+  DeleteRoleDialog,
+} from "@/components/pages/members/permissions";
 
 definePageMeta({
   pageName: "Members",
@@ -144,22 +148,57 @@ const permissionStates = ref<Record<string, boolean>>({
   "10": true,
 });
 
+const isEditDialogOpen = ref(false);
+const isDeleteDialogOpen = ref(false);
+const selectedRoleForEdit = ref<Role | null>(null);
+
 function createNewRole() {
   console.log("Creating new role");
 }
 
 function editRole(roleId: string) {
-  console.log("Editing role:", roleId);
+  const role = roles.value.find((r) => r.id === roleId);
+  if (role) {
+    selectedRoleForEdit.value = role;
+    isEditDialogOpen.value = true;
+  }
+}
+
+function saveRoleEdit(data: { name: string; description: string }) {
+  if (selectedRoleForEdit.value) {
+    selectedRoleForEdit.value.name = data.name;
+    selectedRoleForEdit.value.description = data.description;
+  }
 }
 
 function deleteRole(roleId: string) {
-  console.log("Deleting role:", roleId);
+  const role = roles.value.find((r) => r.id === roleId);
+  if (role) {
+    selectedRoleForEdit.value = role;
+    isDeleteDialogOpen.value = true;
+  }
+}
+
+function confirmDeleteRole() {
+  if (selectedRoleForEdit.value) {
+    roles.value = roles.value.filter(
+      (r) => r.id !== selectedRoleForEdit.value!.id,
+    );
+  }
 }
 </script>
 
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
-    <div class="max-w-7xl mx-auto w-full">
+    <div class="max-w-4xl mx-auto w-full">
+      <!-- Back to Members -->
+      <NuxtLink to="/members">
+        <Button variant="outline" size="sm" class="mb-4">
+          <ArrowLeft :size="16" class="mr-2" />
+          Back to Members
+        </Button>
+      </NuxtLink>
+
       <!-- Roles Table -->
       <Card
         class="mb-8 overflow-hidden py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
@@ -173,7 +212,7 @@ function deleteRole(roleId: string) {
                 your workspace
               </CardDescription>
             </div>
-            <Button @click="createNewRole" size="sm">
+            <Button @click="createNewRole" size="sm" disabled>
               <Plus :size="16" class="mr-2" />
               New Role
             </Button>
@@ -186,7 +225,6 @@ function deleteRole(roleId: string) {
                 <TableHead>Role Name</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead class="w-[120px]">Members</TableHead>
-                <TableHead class="w-[80px]">Status</TableHead>
                 <TableHead class="w-[60px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -214,15 +252,6 @@ function deleteRole(roleId: string) {
                   </span>
                 </TableCell>
                 <TableCell>
-                  <Badge
-                    v-if="role.isDefault"
-                    variant="outline"
-                    class="text-xs"
-                  >
-                    Default
-                  </Badge>
-                </TableCell>
-                <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger as-child>
                       <Button variant="ghost" size="icon" class="h-8 w-8">
@@ -234,9 +263,8 @@ function deleteRole(roleId: string) {
                         <Pencil :size="16" class="mr-2" />
                         Edit
                       </DropdownMenuItem>
-                      <DropdownMenuSeparator v-if="!role.isDefault" />
+                      <DropdownMenuSeparator />
                       <DropdownMenuItem
-                        v-if="!role.isDefault"
                         @click="deleteRole(role.id)"
                         class="text-red-600 dark:text-red-400"
                       >
@@ -306,7 +334,10 @@ function deleteRole(roleId: string) {
                   </p>
                 </TableCell>
                 <TableCell class="text-right">
-                  <Switch v-model:checked="permissionStates[permission.id]" />
+                  <Switch
+                    v-model:checked="permissionStates[permission.id]"
+                    disabled
+                  />
                 </TableCell>
               </TableRow>
             </TableBody>
@@ -326,6 +357,21 @@ function deleteRole(roleId: string) {
           </p>
         </CardFooter>
       </Card>
+
+      <!-- Edit Role Dialog -->
+      <EditRoleDialog
+        v-model:open="isEditDialogOpen"
+        :role-name="selectedRoleForEdit?.name ?? ''"
+        :role-description="selectedRoleForEdit?.description ?? ''"
+        @save="saveRoleEdit"
+      />
+
+      <!-- Delete Role Dialog -->
+      <DeleteRoleDialog
+        v-model:open="isDeleteDialogOpen"
+        :role-name="selectedRoleForEdit?.name ?? ''"
+        @confirm="confirmDeleteRole"
+      />
     </div>
   </div>
 </template>

@@ -1,19 +1,47 @@
-# Nuxt dev/build outputs
-.output
-.data
-.nuxt
-.nitro
-.cache
-dist
+# OS
+Thumbs.db
+.DS_Store
 
-# Node dependencies
-node_modules
+# Editors
+.vs/
+.vscode/
+.idea/
+.zed/
+.fleet/
+
+# Node & JavaScript
+node_modules/
+.vite/
+.astro/
+.output/
+.nuxt/
+.nitro/
+.cache/
+.data/
+
+# Testing
+playwright-report/
+test-results/
+coverage/
+
+# Build Output
+dist/
+build/
+output/
+
+# Environment
+.env*
+!.env.example
 
 # Logs
 *.log
 *.log*
+logs/
 
-# Environment
-.env
-.env.*
-!.env.example
+# Generated
+*.pem
+*.backup
+
+# Other
+.ignore*/
+LLM.md

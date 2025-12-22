@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {
-  AppOpenStatus,
-  LanguageSwitcher,
-  ThemeToggle,
+	AppOpenStatus,
+	LanguageSwitcher,
+	ThemeToggle,
 } from "@/components/footer";
 import { Separator } from "@/components/ui/separator";
 import { Toaster } from "@/components/ui/sonner";

@@ -2,52 +2,52 @@
 import { ref } from "vue";
 import { FileText, X, Loader2 } from "lucide-vue-next";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 
 interface OpenFile {
-  id: string;
-  name: string;
-  status: "unsaved" | "loading" | "saved";
+	id: string;
+	name: string;
+	status: "unsaved" | "loading" | "saved";
 }
 
 const openFiles = ref<OpenFile[]>([
-  { id: "1", name: "contract_final.pdf", status: "unsaved" },
-  { id: "2", name: "invoice_2024_q1_financial_report.pdf", status: "loading" },
-  { id: "3", name: "report.pdf", status: "saved" },
+	{ id: "1", name: "contract_final.pdf", status: "unsaved" },
+	{ id: "2", name: "invoice_2024_q1_financial_report.pdf", status: "loading" },
+	{ id: "3", name: "report.pdf", status: "saved" },
 ]);
 
 const activeFileId = ref("1");
 
 function selectFile(fileId: string) {
-  activeFileId.value = fileId;
+	activeFileId.value = fileId;
 }
 
 function closeFile(fileId: string) {
-  const index = openFiles.value.findIndex((f) => f.id === fileId);
-  if (index !== -1) {
-    openFiles.value.splice(index, 1);
-    if (activeFileId.value === fileId && openFiles.value.length > 0) {
-      activeFileId.value = openFiles.value[0].id;
-    }
-  }
+	const index = openFiles.value.findIndex((f) => f.id === fileId);
+	if (index !== -1) {
+		openFiles.value.splice(index, 1);
+		if (activeFileId.value === fileId && openFiles.value.length > 0) {
+			activeFileId.value = openFiles.value[0].id;
+		}
+	}
 }
 
 function getStatusColor(status: string) {
-  switch (status) {
-    case "unsaved":
-      return "bg-neutral-400";
-    case "loading":
-      return "";
-    case "saved":
-      return "hidden";
-    default:
-      return "bg-neutral-400";
-  }
+	switch (status) {
+		case "unsaved":
+			return "bg-neutral-400";
+		case "loading":
+			return "";
+		case "saved":
+			return "hidden";
+		default:
+			return "bg-neutral-400";
+	}
 }
 </script>
 

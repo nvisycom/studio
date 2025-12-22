@@ -1,136 +1,136 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
-  Play,
-  Pause,
-  MoreVertical,
-  Plus,
-  CheckCircle,
-  XCircle,
-  Clock,
-  ExternalLink,
+	Play,
+	Pause,
+	MoreVertical,
+	Plus,
+	CheckCircle,
+	XCircle,
+	Clock,
+	ExternalLink,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+	CardFooter,
 } from "@/components/ui/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
+	Empty,
+	EmptyContent,
+	EmptyDescription,
+	EmptyHeader,
+	EmptyTitle,
 } from "@/components/ui/empty";
 import { Switch } from "@/components/ui/switch";
 
 definePageMeta({
-  pageName: "Pipelines",
+	pageName: "Pipelines",
 });
 
 interface Pipeline {
-  id: string;
-  name: string;
-  description: string;
-  status: "active" | "paused" | "failed";
-  lastRun: Date;
-  runsCount: number;
-  successRate: string;
+	id: string;
+	name: string;
+	description: string;
+	status: "active" | "paused" | "failed";
+	lastRun: Date;
+	runsCount: number;
+	successRate: string;
 }
 
 const activePipelines = ref<Pipeline[]>([
-  {
-    id: "1",
-    name: "Document Processing Pipeline",
-    description: "Automated redaction and classification workflow",
-    status: "active",
-    lastRun: new Date(Date.now() - 15 * 60000),
-    runsCount: 1234,
-    successRate: "98.5%",
-  },
-  {
-    id: "2",
-    name: "Daily Report Generation",
-    description: "Generate and distribute daily analytics reports",
-    status: "active",
-    lastRun: new Date(Date.now() - 2 * 3600000),
-    runsCount: 456,
-    successRate: "100%",
-  },
-  {
-    id: "3",
-    name: "Email Integration Sync",
-    description: "Sync documents from email attachments",
-    status: "paused",
-    lastRun: new Date(Date.now() - 24 * 3600000),
-    runsCount: 789,
-    successRate: "95.2%",
-  },
+	{
+		id: "1",
+		name: "Document Processing Pipeline",
+		description: "Automated redaction and classification workflow",
+		status: "active",
+		lastRun: new Date(Date.now() - 15 * 60000),
+		runsCount: 1234,
+		successRate: "98.5%",
+	},
+	{
+		id: "2",
+		name: "Daily Report Generation",
+		description: "Generate and distribute daily analytics reports",
+		status: "active",
+		lastRun: new Date(Date.now() - 2 * 3600000),
+		runsCount: 456,
+		successRate: "100%",
+	},
+	{
+		id: "3",
+		name: "Email Integration Sync",
+		description: "Sync documents from email attachments",
+		status: "paused",
+		lastRun: new Date(Date.now() - 24 * 3600000),
+		runsCount: 789,
+		successRate: "95.2%",
+	},
 ]);
 
 function getStatusIcon(status: string) {
-  switch (status) {
-    case "active":
-      return CheckCircle;
-    case "failed":
-      return XCircle;
-    default:
-      return Clock;
-  }
+	switch (status) {
+		case "active":
+			return CheckCircle;
+		case "failed":
+			return XCircle;
+		default:
+			return Clock;
+	}
 }
 
 function getStatusClass(status: string) {
-  switch (status) {
-    case "active":
-      return "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300";
-    case "failed":
-      return "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300";
-    default:
-      return "bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300";
-  }
+	switch (status) {
+		case "active":
+			return "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300";
+		case "failed":
+			return "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300";
+		default:
+			return "bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300";
+	}
 }
 
 function formatTime(date: Date) {
-  const now = Date.now();
-  const diff = now - date.getTime();
-  const minutes = Math.floor(diff / 60000);
-  const hours = Math.floor(diff / 3600000);
-  const days = Math.floor(diff / 86400000);
+	const now = Date.now();
+	const diff = now - date.getTime();
+	const minutes = Math.floor(diff / 60000);
+	const hours = Math.floor(diff / 3600000);
+	const days = Math.floor(diff / 86400000);
 
-  if (minutes < 60) return `${minutes}m ago`;
-  if (hours < 24) return `${hours}h ago`;
-  return `${days}d ago`;
+	if (minutes < 60) return `${minutes}m ago`;
+	if (hours < 24) return `${hours}h ago`;
+	return `${days}d ago`;
 }
 
 function togglePipeline(pipeline: Pipeline) {
-  if (pipeline.status === "active") {
-    pipeline.status = "paused";
-  } else {
-    pipeline.status = "active";
-  }
+	if (pipeline.status === "active") {
+		pipeline.status = "paused";
+	} else {
+		pipeline.status = "active";
+	}
 }
 
 function createPipeline() {
-  console.log("Creating new pipeline");
+	console.log("Creating new pipeline");
 }
 </script>
 

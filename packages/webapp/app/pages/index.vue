@@ -1,54 +1,54 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import {
-  Upload,
-  UserPlus,
-  Plug,
-  TrendingUp,
-  TrendingDown,
-  CheckCircle2,
-  AlertCircle,
-  Info,
-  CreditCard,
-  Database,
-  FileText,
-  Clock,
-  Zap,
-  Activity,
-  Settings,
-  Eye,
-  EyeOff,
-  Download,
-  Calendar,
-  ChevronRight,
+	Upload,
+	UserPlus,
+	Plug,
+	TrendingUp,
+	TrendingDown,
+	CheckCircle2,
+	AlertCircle,
+	Info,
+	CreditCard,
+	Database,
+	FileText,
+	Clock,
+	Zap,
+	Activity,
+	Settings,
+	Eye,
+	EyeOff,
+	Download,
+	Calendar,
+	ChevronRight,
 } from "lucide-vue-next";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-  DropdownMenuCheckboxItem,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+	DropdownMenuSeparator,
+	DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from "@/components/ui/select";
 
 definePageMeta({
-  pageName: "Dashboard",
+	pageName: "Dashboard",
 });
 
 // Date range filter
@@ -56,13 +56,13 @@ const dateRange = ref("24h");
 
 // Card visibility state
 const cardVisibility = ref({
-  verificationRate: true,
-  documentsProcessed: true,
-  documentsUploaded: true,
-  documentsDownloaded: true,
-  errorRate: true,
-  responseTime: true,
-  cachePerformance: true,
+	verificationRate: true,
+	documentsProcessed: true,
+	documentsUploaded: true,
+	documentsDownloaded: true,
+	errorRate: true,
+	responseTime: true,
+	cachePerformance: true,
 });
 
 // Credits data
@@ -79,161 +79,161 @@ const storagePercentage = (storageUsed / storageTotal) * 100;
 
 // Metrics with trends
 const metrics = {
-  verificationRate: { value: 94.5, trend: 2.3, unit: "%" },
-  documentsProcessed: { value: 1247, trend: 12.5, unit: "" },
-  documentsUploaded: { value: 342, trend: -5.2, unit: "" },
-  documentsDownloaded: { value: 589, trend: 8.7, unit: "" },
-  errorRate: { value: 0.8, trend: -15.3, unit: "%" },
-  responseTime: { value: 245, trend: -8.2, unit: "ms" },
-  cachePerformance: { value: 87.3, trend: 5.1, unit: "%" },
+	verificationRate: { value: 94.5, trend: 2.3, unit: "%" },
+	documentsProcessed: { value: 1247, trend: 12.5, unit: "" },
+	documentsUploaded: { value: 342, trend: -5.2, unit: "" },
+	documentsDownloaded: { value: 589, trend: 8.7, unit: "" },
+	errorRate: { value: 0.8, trend: -15.3, unit: "%" },
+	responseTime: { value: 245, trend: -8.2, unit: "ms" },
+	cachePerformance: { value: 87.3, trend: 5.1, unit: "%" },
 };
 
 // Recent files
 const recentFiles = [
-  {
-    id: "1",
-    name: "contract_final_v3.pdf",
-    size: "2.4 MB",
-    uploadedAt: new Date("2024-01-20T10:30:00"),
-    status: "verified",
-  },
-  {
-    id: "2",
-    name: "financial_report_2024.pdf",
-    size: "1.8 MB",
-    uploadedAt: new Date("2024-01-20T09:15:00"),
-    status: "verified",
-  },
-  {
-    id: "3",
-    name: "legal_document.pdf",
-    size: "3.2 MB",
-    uploadedAt: new Date("2024-01-19T14:20:00"),
-    status: "processing",
-  },
-  {
-    id: "4",
-    name: "employee_records.docx",
-    size: "890 KB",
-    uploadedAt: new Date("2024-01-19T11:45:00"),
-    status: "verified",
-  },
-  {
-    id: "5",
-    name: "meeting_notes.txt",
-    size: "45 KB",
-    uploadedAt: new Date("2024-01-18T16:00:00"),
-    status: "verified",
-  },
+	{
+		id: "1",
+		name: "contract_final_v3.pdf",
+		size: "2.4 MB",
+		uploadedAt: new Date("2024-01-20T10:30:00"),
+		status: "verified",
+	},
+	{
+		id: "2",
+		name: "financial_report_2024.pdf",
+		size: "1.8 MB",
+		uploadedAt: new Date("2024-01-20T09:15:00"),
+		status: "verified",
+	},
+	{
+		id: "3",
+		name: "legal_document.pdf",
+		size: "3.2 MB",
+		uploadedAt: new Date("2024-01-19T14:20:00"),
+		status: "processing",
+	},
+	{
+		id: "4",
+		name: "employee_records.docx",
+		size: "890 KB",
+		uploadedAt: new Date("2024-01-19T11:45:00"),
+		status: "verified",
+	},
+	{
+		id: "5",
+		name: "meeting_notes.txt",
+		size: "45 KB",
+		uploadedAt: new Date("2024-01-18T16:00:00"),
+		status: "verified",
+	},
 ];
 
 // Recent activity
 const recentActivity = [
-  {
-    id: 1,
-    type: "success",
-    title: "Document redaction completed",
-    description: "contract_final_v3.pdf was successfully redacted",
-    time: "2 minutes ago",
-  },
-  {
-    id: 2,
-    type: "success",
-    title: "Batch processing finished",
-    description: "15 documents processed successfully",
-    time: "15 minutes ago",
-  },
-  {
-    id: 3,
-    type: "warning",
-    title: "Manual review required",
-    description: "legal_document.pdf contains sensitive data requiring review",
-    time: "1 hour ago",
-  },
-  {
-    id: 4,
-    type: "info",
-    title: "New member joined",
-    description: "alice@example.com accepted the team invitation",
-    time: "3 hours ago",
-  },
-  {
-    id: 5,
-    type: "success",
-    title: "Integration connected",
-    description: "Dropbox integration successfully configured",
-    time: "5 hours ago",
-  },
+	{
+		id: 1,
+		type: "success",
+		title: "Document redaction completed",
+		description: "contract_final_v3.pdf was successfully redacted",
+		time: "2 minutes ago",
+	},
+	{
+		id: 2,
+		type: "success",
+		title: "Batch processing finished",
+		description: "15 documents processed successfully",
+		time: "15 minutes ago",
+	},
+	{
+		id: 3,
+		type: "warning",
+		title: "Manual review required",
+		description: "legal_document.pdf contains sensitive data requiring review",
+		time: "1 hour ago",
+	},
+	{
+		id: 4,
+		type: "info",
+		title: "New member joined",
+		description: "alice@example.com accepted the team invitation",
+		time: "3 hours ago",
+	},
+	{
+		id: 5,
+		type: "success",
+		title: "Integration connected",
+		description: "Dropbox integration successfully configured",
+		time: "5 hours ago",
+	},
 ];
 
 function getActivityIcon(type: string) {
-  switch (type) {
-    case "success":
-      return CheckCircle2;
-    case "warning":
-      return AlertCircle;
-    case "info":
-      return Info;
-    default:
-      return Info;
-  }
+	switch (type) {
+		case "success":
+			return CheckCircle2;
+		case "warning":
+			return AlertCircle;
+		case "info":
+			return Info;
+		default:
+			return Info;
+	}
 }
 
 function getActivityColor(type: string) {
-  switch (type) {
-    case "success":
-      return "text-green-600 dark:text-green-400";
-    case "warning":
-      return "text-yellow-600 dark:text-yellow-400";
-    case "info":
-      return "text-blue-600 dark:text-blue-400";
-    default:
-      return "text-neutral-600 dark:text-neutral-400";
-  }
+	switch (type) {
+		case "success":
+			return "text-green-600 dark:text-green-400";
+		case "warning":
+			return "text-yellow-600 dark:text-yellow-400";
+		case "info":
+			return "text-blue-600 dark:text-blue-400";
+		default:
+			return "text-neutral-600 dark:text-neutral-400";
+	}
 }
 
 function getActivityBgColor(type: string) {
-  switch (type) {
-    case "success":
-      return "bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800";
-    case "warning":
-      return "bg-yellow-50 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-800";
-    case "info":
-      return "bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800";
-    default:
-      return "bg-neutral-50 dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800";
-  }
+	switch (type) {
+		case "success":
+			return "bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800";
+		case "warning":
+			return "bg-yellow-50 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-800";
+		case "info":
+			return "bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800";
+		default:
+			return "bg-neutral-50 dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800";
+	}
 }
 
 function formatDate(date: Date): string {
-  const now = new Date();
-  const diff = now.getTime() - date.getTime();
-  const hours = Math.floor(diff / (1000 * 60 * 60));
+	const now = new Date();
+	const diff = now.getTime() - date.getTime();
+	const hours = Math.floor(diff / (1000 * 60 * 60));
 
-  if (hours < 1) return "Just now";
-  if (hours < 24) return `${hours}h ago`;
+	if (hours < 1) return "Just now";
+	if (hours < 24) return `${hours}h ago`;
 
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
+	return date.toLocaleDateString("en-US", {
+		month: "short",
+		day: "numeric",
+	});
 }
 
 function getStatusColor(status: string) {
-  switch (status) {
-    case "verified":
-      return "text-green-600 dark:text-green-400";
-    case "processing":
-      return "text-blue-600 dark:text-blue-400";
-    case "failed":
-      return "text-red-600 dark:text-red-400";
-    default:
-      return "text-neutral-600 dark:text-neutral-400";
-  }
+	switch (status) {
+		case "verified":
+			return "text-green-600 dark:text-green-400";
+		case "processing":
+			return "text-blue-600 dark:text-blue-400";
+		case "failed":
+			return "text-red-600 dark:text-red-400";
+		default:
+			return "text-neutral-600 dark:text-neutral-400";
+	}
 }
 
 function toggleCardVisibility(key: string) {
-  cardVisibility.value[key] = !cardVisibility.value[key];
+	cardVisibility.value[key] = !cardVisibility.value[key];
 }
 </script>
 

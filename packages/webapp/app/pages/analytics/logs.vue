@@ -362,14 +362,7 @@ function importLogs() {
                 </TableCell>
                 <TableCell>
                   <span
-                    :class="{
-                      'text-green-600 dark:text-green-400':
-                        log.status >= 200 && log.status < 300,
-                      'text-yellow-600 dark:text-yellow-400':
-                        log.status >= 400 && log.status < 500,
-                      'text-red-600 dark:text-red-400': log.status >= 500,
-                    }"
-                    class="font-mono text-xs font-semibold"
+                    class="font-mono text-xs text-neutral-900 dark:text-white"
                   >
                     {{ log.status }}
                   </span>

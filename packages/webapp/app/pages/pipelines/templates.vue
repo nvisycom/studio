@@ -126,7 +126,7 @@ function useTemplate(template: PipelineTemplate) {
       <div
         class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center mb-6"
       >
-        <Button as-child>
+        <Button as-child variant="outline">
           <NuxtLink to="/pipelines" class="flex items-center gap-2">
             <ArrowLeft :size="16" />
             Back to Pipelines

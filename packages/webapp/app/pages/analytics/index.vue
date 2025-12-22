@@ -3,19 +3,19 @@ import { ref } from "vue";
 import { Download, Upload } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from "@/components/ui/select";
 import CreditsUsedChart from "~/components/pages/analytics/CreditsUsedChart.vue";
 import StorageUsedChart from "~/components/pages/analytics/StorageUsedChart.vue";
@@ -23,7 +23,7 @@ import DocumentsUploadDownloadChart from "~/components/pages/analytics/Documents
 import DocumentsEditVerifyChart from "~/components/pages/analytics/DocumentsEditVerifyChart.vue";
 
 definePageMeta({
-  pageName: "Analytics",
+	pageName: "Analytics",
 });
 
 // Date range for analytics
@@ -33,13 +33,13 @@ const dateRange = ref("7d");
 const isOnPremise = ref(false); // TODO: Get this from config/environment
 
 function exportAnalytics() {
-  console.log("Exporting analytics data for range:", dateRange.value);
-  // TODO: Implement actual export functionality
+	console.log("Exporting analytics data for range:", dateRange.value);
+	// TODO: Implement actual export functionality
 }
 
 function importAnalytics() {
-  console.log("Importing analytics data");
-  // TODO: Implement actual import functionality
+	console.log("Importing analytics data");
+	// TODO: Implement actual import functionality
 }
 </script>
 

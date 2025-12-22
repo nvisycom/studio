@@ -1,128 +1,141 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
+import { Search } from "lucide-vue-next";
 import {
-  Plus,
-  MoreVertical,
-  Pencil,
-  Trash2,
-  FileText,
-  Search,
-  HardDrive,
-  Zap,
-  Files,
-} from "lucide-vue-next";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from "@/components/ui/select";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
+	DeleteDocumentDialog,
+	EditDocumentDialog,
+	StatsCards,
+	CorpusTable,
+} from "@/components/pages/corpus";
+import type { CorpusDocument } from "@/components/pages/corpus/CorpusTable.vue";
 
 definePageMeta({
-  pageName: "Knowledge",
+	pageName: "Knowledge",
 });
-
-interface CorpusDocument {
-  id: string;
-  name: string;
-  type: string;
-  size: string;
-  addedDate: Date;
-  status: "indexed" | "processing" | "failed";
-}
 
 const searchQuery = ref("");
 const statusFilter = ref("all");
 
 const corpusDocuments = ref<CorpusDocument[]>([
-  {
-    id: "1",
-    name: "Product Documentation",
-    type: "PDF",
-    size: "2.4 MB",
-    addedDate: new Date("2024-01-15"),
-    status: "indexed",
-  },
-  {
-    id: "2",
-    name: "FAQ Database",
-    type: "TXT",
-    size: "156 KB",
-    addedDate: new Date("2024-01-20"),
-    status: "indexed",
-  },
-  {
-    id: "3",
-    name: "Training Materials",
-    type: "DOCX",
-    size: "5.1 MB",
-    addedDate: new Date("2024-01-22"),
-    status: "indexed",
-  },
+	{
+		id: "1",
+		name: "product-documentation.pdf",
+		fileSize: "2.4 MB",
+		indexSize: "128 KB",
+		avgQuery: "245ms",
+		indexedBy: "John Doe",
+		indexedAt: new Date("2024-01-15T14:30:00"),
+		visualSupport: false,
+		contentSegmentation: "semantic",
+		status: "indexed",
+	},
+	{
+		id: "2",
+		name: "faq-database.txt",
+		fileSize: "156 KB",
+		indexSize: "12 KB",
+		avgQuery: "89ms",
+		indexedBy: "Jane Smith",
+		indexedAt: new Date("2024-01-20T09:15:00"),
+		visualSupport: false,
+		contentSegmentation: "paragraph",
+		status: "processing",
+	},
+	{
+		id: "3",
+		name: "training-materials.docx",
+		fileSize: "5.1 MB",
+		indexSize: "256 KB",
+		avgQuery: "312ms",
+		indexedBy: "Bob Johnson",
+		indexedAt: new Date("2024-01-22T16:45:00"),
+		visualSupport: false,
+		contentSegmentation: "fixed",
+		status: "failed",
+	},
 ]);
 
 // Stats
 const totalDocumentsSize = ref("251 MB");
 const indexSize = ref("14.2 MB");
 const totalSize = ref("265.2 MB");
-const totalChunks = ref(2031);
+const totalSegments = ref(2031);
 const totalDocuments = ref(3);
-const avgChunkSize = ref("6.5 KB");
+const avgSegmentSize = ref("6.5 KB");
 const avgResponseTime = ref(124);
 const cacheHitRate = ref(78);
 const p95ResponseTime = ref(247);
 
 const documentCount = computed(() => corpusDocuments.value.length);
 
+const filteredDocuments = computed(() => {
+	return corpusDocuments.value.filter((doc) => {
+		const matchesStatus =
+			statusFilter.value === "all" || doc.status === statusFilter.value;
+		const matchesSearch =
+			searchQuery.value === "" ||
+			doc.name.toLowerCase().includes(searchQuery.value.toLowerCase());
+		return matchesStatus && matchesSearch;
+	});
+});
+
+const isEditDialogOpen = ref(false);
+const isDeleteDialogOpen = ref(false);
+const selectedDocument = ref<CorpusDocument | null>(null);
+
 function addDocument() {
-  console.log("Adding new document to corpus");
+	console.log("Adding new document to corpus");
 }
 
 function editDocument(docId: string) {
-  console.log("Editing document:", docId);
+	const doc = corpusDocuments.value.find((d) => d.id === docId);
+	if (doc) {
+		selectedDocument.value = doc;
+		isEditDialogOpen.value = true;
+	}
+}
+
+function saveEdit(data: {
+	visualSupport: boolean;
+	contentSegmentation: string;
+}) {
+	if (selectedDocument.value) {
+		selectedDocument.value.visualSupport = data.visualSupport;
+		selectedDocument.value.contentSegmentation = data.contentSegmentation;
+	}
 }
 
 function deleteDocument(docId: string) {
-  console.log("Deleting document:", docId);
+	const doc = corpusDocuments.value.find((d) => d.id === docId);
+	if (doc) {
+		selectedDocument.value = doc;
+		isDeleteDialogOpen.value = true;
+	}
 }
 
-function getStatusColor(status: string) {
-  switch (status) {
-    case "indexed":
-      return "text-green-600 dark:text-green-400";
-    case "processing":
-      return "text-yellow-600 dark:text-yellow-400";
-    case "failed":
-      return "text-red-600 dark:text-red-400";
-    default:
-      return "text-neutral-600 dark:text-neutral-400";
-  }
+function confirmDelete() {
+	if (selectedDocument.value) {
+		corpusDocuments.value = corpusDocuments.value.filter(
+			(d) => d.id !== selectedDocument.value!.id,
+		);
+	}
 }
 </script>
 
@@ -130,52 +143,17 @@ function getStatusColor(status: string) {
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="max-w-6xl mx-auto w-full space-y-4">
       <!-- Stats Cards -->
-      <div class="grid gap-6 grid-cols-3">
-        <Card>
-          <CardHeader
-            class="flex flex-row items-center justify-between space-y-0 pb-2"
-          >
-            <CardTitle class="text-sm font-medium">Storage Usage</CardTitle>
-            <HardDrive class="h-4 w-4 text-neutral-500" />
-          </CardHeader>
-          <CardContent>
-            <div class="text-2xl font-bold">{{ totalSize }}</div>
-            <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-              Files {{ totalDocumentsSize }} • Index {{ indexSize }}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader
-            class="flex flex-row items-center justify-between space-y-0 pb-2"
-          >
-            <CardTitle class="text-sm font-medium">Documents</CardTitle>
-            <Files class="h-4 w-4 text-neutral-500" />
-          </CardHeader>
-          <CardContent>
-            <div class="text-2xl font-bold">{{ totalDocuments }}</div>
-            <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-              {{ totalChunks.toLocaleString() }} chunks • {{ avgChunkSize }} avg
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader
-            class="flex flex-row items-center justify-between space-y-0 pb-2"
-          >
-            <CardTitle class="text-sm font-medium">Performance</CardTitle>
-            <Zap class="h-4 w-4 text-neutral-500" />
-          </CardHeader>
-          <CardContent>
-            <div class="text-2xl font-bold">{{ avgResponseTime }}ms</div>
-            <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-              p95 {{ p95ResponseTime }}ms • {{ cacheHitRate }}% cache hit
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <StatsCards
+        :total-size="totalSize"
+        :total-documents-size="totalDocumentsSize"
+        :index-size="indexSize"
+        :total-documents="totalDocuments"
+        :total-segments="totalSegments"
+        :avg-segment-size="avgSegmentSize"
+        :avg-response-time="avgResponseTime"
+        :p95-response-time="p95ResponseTime"
+        :cache-hit-rate="cacheHitRate"
+      />
 
       <!-- Main Card -->
       <Card
@@ -186,16 +164,13 @@ function getStatusColor(status: string) {
             <div>
               <CardTitle>Knowledge Corpus</CardTitle>
               <CardDescription>
-                {{ documentCount }} document{{
-                  documentCount !== 1 ? "s" : ""
-                }}
+                {{ documentCount }} document{{ documentCount !== 1 ? "s" : "" }}
                 in the index
               </CardDescription>
             </div>
-            <Button @click="addDocument" size="sm">
-              <Plus :size="16" class="mr-2" />
-              Add Document
-            </Button>
+            <NuxtLink to="/documents">
+              <Button size="sm" variant="outline"> View Documents </Button>
+            </NuxtLink>
           </div>
 
           <!-- Search and Filters -->
@@ -224,80 +199,11 @@ function getStatusColor(status: string) {
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Document Name</TableHead>
-                <TableHead class="w-[100px]">Type</TableHead>
-                <TableHead class="w-[120px]">Size</TableHead>
-                <TableHead class="w-[140px]">Added</TableHead>
-                <TableHead class="w-[120px]">Status</TableHead>
-                <TableHead class="w-[60px]"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow
-                v-for="doc in corpusDocuments"
-                :key="doc.id"
-                class="hover:bg-neutral-50 dark:hover:bg-neutral-900"
-              >
-                <TableCell>
-                  <div class="flex items-center gap-2">
-                    <FileText :size="16" class="text-neutral-400" />
-                    <p class="font-medium text-neutral-900 dark:text-white">
-                      {{ doc.name }}
-                    </p>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <span class="text-sm text-neutral-600 dark:text-neutral-400">
-                    {{ doc.type }}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <span class="text-sm text-neutral-600 dark:text-neutral-400">
-                    {{ doc.size }}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <span class="text-sm text-neutral-600 dark:text-neutral-400">
-                    {{ doc.addedDate.toLocaleDateString() }}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <span
-                    class="text-sm capitalize font-medium"
-                    :class="getStatusColor(doc.status)"
-                  >
-                    {{ doc.status }}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger as-child>
-                      <Button variant="ghost" size="icon" class="h-8 w-8">
-                        <MoreVertical :size="16" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem @click="editDocument(doc.id)">
-                        <Pencil :size="16" class="mr-2" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        @click="deleteDocument(doc.id)"
-                        class="text-red-600 dark:text-red-400"
-                      >
-                        <Trash2 :size="16" class="mr-2" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+          <CorpusTable
+            :documents="filteredDocuments"
+            @edit="editDocument"
+            @delete="deleteDocument"
+          />
         </CardContent>
         <CardFooter
           class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
@@ -309,5 +215,22 @@ function getStatusColor(status: string) {
         </CardFooter>
       </Card>
     </div>
+
+    <!-- Edit Dialog -->
+    <EditDocumentDialog
+      v-model:open="isEditDialogOpen"
+      :visual-support="selectedDocument?.visualSupport ?? false"
+      :content-segmentation="
+        selectedDocument?.contentSegmentation ?? 'semantic'
+      "
+      @save="saveEdit"
+    />
+
+    <!-- Delete Dialog -->
+    <DeleteDocumentDialog
+      v-model:open="isDeleteDialogOpen"
+      :document-name="selectedDocument?.name ?? ''"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>

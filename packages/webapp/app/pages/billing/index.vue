@@ -2,32 +2,32 @@
 import { ref, computed } from "vue";
 import { ChevronDown } from "lucide-vue-next";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import Button from "@/components/ui/button/Button.vue";
 import Switch from "@/components/ui/switch/Switch.vue";
 import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-  TableCell,
+	Table,
+	TableBody,
+	TableHead,
+	TableHeader,
+	TableRow,
+	TableCell,
 } from "@/components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 definePageMeta({
-  pageName: "Billing",
+	pageName: "Billing",
 });
 
 // Reactive data
@@ -39,65 +39,65 @@ const availableLanguages = computed(() => locales.value);
 
 // Addon settings with pricing
 const addons = ref([
-  {
-    id: "aiAssistant",
-    name: "AI Assistant",
-    description: "Intelligent document analysis and suggestions",
-    price: 15,
-    category: "Documents",
-    enabled: false,
-  },
-  {
-    id: "onPremiseProcessing",
-    name: "On-Premise Processing",
-    description: "Process documents on your own infrastructure",
-    price: 25,
-    category: "Documents",
-    enabled: false,
-  },
-  {
-    id: "aiInsights",
-    name: "AI Insights",
-    description: "Advanced analytics powered by artificial intelligence",
-    price: 20,
-    category: "Analytics",
-    enabled: true,
-  },
-  {
-    id: "advancedAnalytics",
-    name: "Advanced Analytics",
-    description: "Detailed reporting and usage statistics",
-    price: 10,
-    category: "Analytics",
-    enabled: false,
-  },
+	{
+		id: "aiAssistant",
+		name: "AI Assistant",
+		description: "Intelligent document analysis and suggestions",
+		price: 15,
+		category: "Documents",
+		enabled: false,
+	},
+	{
+		id: "onPremiseProcessing",
+		name: "On-Premise Processing",
+		description: "Process documents on your own infrastructure",
+		price: 25,
+		category: "Documents",
+		enabled: false,
+	},
+	{
+		id: "aiInsights",
+		name: "AI Insights",
+		description: "Advanced analytics powered by artificial intelligence",
+		price: 20,
+		category: "Analytics",
+		enabled: true,
+	},
+	{
+		id: "advancedAnalytics",
+		name: "Advanced Analytics",
+		description: "Detailed reporting and usage statistics",
+		price: 10,
+		category: "Analytics",
+		enabled: false,
+	},
 ]);
 
 // Plan usage data
 const planUsage = {
-  documentsUsed: 20,
-  documentsLimit: 50,
-  currentPlan: "Basic",
+	documentsUsed: 20,
+	documentsLimit: 50,
+	currentPlan: "Basic",
 };
 
 // Functions
 function changePlan() {
-  console.log("Opening plan change dialog");
+	console.log("Opening plan change dialog");
 }
 
 function saveInvoiceLanguage() {
-  console.log("Saving invoice language:", selectedLanguage.value);
+	console.log("Saving invoice language:", selectedLanguage.value);
 }
 
 function selectLanguage(language: string) {
-  selectedLanguage.value = language;
+	selectedLanguage.value = language;
 }
 
 function toggleAddon(addonId: string) {
-  const addon = addons.value.find((a) => a.id === addonId);
-  if (addon) {
-    addon.enabled = !addon.enabled;
-  }
+	const addon = addons.value.find((a) => a.id === addonId);
+	if (addon) {
+		addon.enabled = !addon.enabled;
+	}
 }
 </script>
 

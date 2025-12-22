@@ -1,72 +1,66 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import {
-  Search,
-  Plus,
-  FileText,
-  Download,
-  Eye,
-  Trash2,
-  MoreVertical,
-  ShieldCheck,
-  ShieldX,
-  ChevronDown,
-  File,
-  Upload,
-  FileArchive,
-  Pencil,
+	Search,
+	Plus,
+	FileText,
+	Download,
+	Eye,
+	Trash2,
+	MoreVertical,
+	ShieldCheck,
+	ShieldX,
+	ChevronDown,
+	File,
+	Upload,
+	FileArchive,
+	Pencil,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Switch } from "@/components/ui/switch";
 import EntityAvatar from "@/components/common/EntityAvatar.vue";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+	DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
+	Empty,
+	EmptyContent,
+	EmptyDescription,
+	EmptyHeader,
+	EmptyTitle,
 } from "@/components/ui/empty";
 
 definePageMeta({
-  pageName: "Documents",
+	pageName: "Documents",
 });
 
 interface Document {
-  id: number;
-  icon: string;
-  originalName: string;
-  size: string;
-  uploadedAt: string;
-  uploadedBy: string;
-  tags: string[];
-  verified: boolean;
-  indexed: boolean;
-  version: number;
-  format: string;
+	id: number;
+	icon: string;
+	originalName: string;
+	size: string;
+	uploadedAt: string;
+	uploadedBy: string;
+	tags: string[];
+	verified: boolean;
+	indexed: boolean;
+	version: number;
+	format: string;
 }
 
 const searchQuery = ref("");
@@ -77,286 +71,286 @@ const fileInputRef = ref<HTMLInputElement | null>(null);
 const selectedDocuments = ref<Set<number>>(new Set());
 
 const documents = ref<Document[]>([
-  {
-    id: 1,
-    icon: "pdf",
-    originalName: "contract_final_v3.pdf",
-    size: "2.4 MB",
-    uploadedAt: "2024-01-20 10:30",
-    uploadedBy: "John Doe",
-    tags: ["Contract", "Legal"],
-    verified: false,
-    indexed: true,
-    version: 3,
-    format: "pdf",
-  },
-  {
-    id: 2,
-    icon: "pdf",
-    originalName: "financial_report_2024.pdf",
-    size: "1.8 MB",
-    uploadedAt: "2024-01-20 09:15",
-    uploadedBy: "Jane Smith",
-    tags: ["Finance", "Report"],
-    verified: false,
-    indexed: true,
-    version: 1,
-    format: "pdf",
-  },
-  {
-    id: 3,
-    icon: "pdf",
-    originalName: "legal_document.pdf",
-    size: "3.2 MB",
-    uploadedAt: "2024-01-19 14:20",
-    uploadedBy: "Bob Johnson",
-    tags: ["Legal"],
-    verified: false,
-    indexed: true,
-    version: 1,
-    format: "pdf",
-  },
-  {
-    id: 4,
-    icon: "doc",
-    originalName: "employee_records.docx",
-    size: "890 KB",
-    uploadedAt: "2024-01-19 11:45",
-    uploadedBy: "Alice Brown",
-    tags: ["HR", "Records"],
-    verified: false,
-    indexed: true,
-    version: 2,
-    format: "doc",
-  },
-  {
-    id: 5,
-    icon: "txt",
-    originalName: "meeting_notes.txt",
-    size: "45 KB",
-    uploadedAt: "2024-01-18 16:00",
-    uploadedBy: "John Doe",
-    tags: ["Meeting", "Notes"],
-    verified: false,
-    indexed: true,
-    version: 1,
-    format: "text",
-  },
-  {
-    id: 6,
-    icon: "pdf",
-    originalName: "proposal_draft.pdf",
-    size: "4.1 MB",
-    uploadedAt: "2024-01-18 09:30",
-    uploadedBy: "Jane Smith",
-    tags: ["Proposal", "Sales"],
-    verified: false,
-    indexed: true,
-    version: 2,
-    format: "pdf",
-  },
+	{
+		id: 1,
+		icon: "pdf",
+		originalName: "contract_final_v3.pdf",
+		size: "2.4 MB",
+		uploadedAt: "2024-01-20 10:30",
+		uploadedBy: "John Doe",
+		tags: ["Contract", "Legal"],
+		verified: false,
+		indexed: true,
+		version: 3,
+		format: "pdf",
+	},
+	{
+		id: 2,
+		icon: "pdf",
+		originalName: "financial_report_2024.pdf",
+		size: "1.8 MB",
+		uploadedAt: "2024-01-20 09:15",
+		uploadedBy: "Jane Smith",
+		tags: ["Finance", "Report"],
+		verified: false,
+		indexed: true,
+		version: 1,
+		format: "pdf",
+	},
+	{
+		id: 3,
+		icon: "pdf",
+		originalName: "legal_document.pdf",
+		size: "3.2 MB",
+		uploadedAt: "2024-01-19 14:20",
+		uploadedBy: "Bob Johnson",
+		tags: ["Legal"],
+		verified: false,
+		indexed: true,
+		version: 1,
+		format: "pdf",
+	},
+	{
+		id: 4,
+		icon: "doc",
+		originalName: "employee_records.docx",
+		size: "890 KB",
+		uploadedAt: "2024-01-19 11:45",
+		uploadedBy: "Alice Brown",
+		tags: ["HR", "Records"],
+		verified: false,
+		indexed: true,
+		version: 2,
+		format: "doc",
+	},
+	{
+		id: 5,
+		icon: "txt",
+		originalName: "meeting_notes.txt",
+		size: "45 KB",
+		uploadedAt: "2024-01-18 16:00",
+		uploadedBy: "John Doe",
+		tags: ["Meeting", "Notes"],
+		verified: false,
+		indexed: true,
+		version: 1,
+		format: "text",
+	},
+	{
+		id: 6,
+		icon: "pdf",
+		originalName: "proposal_draft.pdf",
+		size: "4.1 MB",
+		uploadedAt: "2024-01-18 09:30",
+		uploadedBy: "Jane Smith",
+		tags: ["Proposal", "Sales"],
+		verified: false,
+		indexed: true,
+		version: 2,
+		format: "pdf",
+	},
 ]);
 
 const formatFilters = [
-  { label: "Any Format", value: "any" },
-  { label: ".pdf", value: "pdf" },
-  { label: ".doc / .docx", value: "doc" },
-  { label: ".txt", value: "text" },
+	{ label: "Any Format", value: "any" },
+	{ label: ".pdf", value: "pdf" },
+	{ label: ".doc / .docx", value: "doc" },
+	{ label: ".txt", value: "text" },
 ];
 
 const statusFilters = [
-  { label: "Any Status", value: "any" },
-  { label: "Verified", value: "verified" },
-  { label: "Unverified", value: "unverified" },
+	{ label: "Any Status", value: "any" },
+	{ label: "Verified", value: "verified" },
+	{ label: "Unverified", value: "unverified" },
 ];
 
 const sortingOptions = [
-  { label: "Date (Newest)", value: "date-desc" },
-  { label: "Date (Oldest)", value: "date-asc" },
-  { label: "Name (A-Z)", value: "name-asc" },
-  { label: "Name (Z-A)", value: "name-desc" },
-  { label: "Size (Largest)", value: "size-desc" },
-  { label: "Size (Smallest)", value: "size-asc" },
+	{ label: "Date (Newest)", value: "date-desc" },
+	{ label: "Date (Oldest)", value: "date-asc" },
+	{ label: "Name (A-Z)", value: "name-asc" },
+	{ label: "Name (Z-A)", value: "name-desc" },
+	{ label: "Size (Largest)", value: "size-desc" },
+	{ label: "Size (Smallest)", value: "size-asc" },
 ];
 
 const filteredDocuments = computed(() => {
-  let filtered = documents.value;
+	let filtered = documents.value;
 
-  // Apply search filter
-  if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(
-      (doc) =>
-        doc.originalName.toLowerCase().includes(query) ||
-        doc.uploadedBy.toLowerCase().includes(query) ||
-        doc.tags.some((tag) => tag.toLowerCase().includes(query)),
-    );
-  }
+	// Apply search filter
+	if (searchQuery.value.trim()) {
+		const query = searchQuery.value.toLowerCase();
+		filtered = filtered.filter(
+			(doc) =>
+				doc.originalName.toLowerCase().includes(query) ||
+				doc.uploadedBy.toLowerCase().includes(query) ||
+				doc.tags.some((tag) => tag.toLowerCase().includes(query)),
+		);
+	}
 
-  // Apply format filter
-  if (filterFormat.value !== "any") {
-    filtered = filtered.filter((doc) => doc.format === filterFormat.value);
-  }
+	// Apply format filter
+	if (filterFormat.value !== "any") {
+		filtered = filtered.filter((doc) => doc.format === filterFormat.value);
+	}
 
-  // Apply status filter
-  if (filterStatus.value === "verified") {
-    filtered = filtered.filter((doc) => doc.verified);
-  } else if (filterStatus.value === "unverified") {
-    filtered = filtered.filter((doc) => !doc.verified);
-  }
+	// Apply status filter
+	if (filterStatus.value === "verified") {
+		filtered = filtered.filter((doc) => doc.verified);
+	} else if (filterStatus.value === "unverified") {
+		filtered = filtered.filter((doc) => !doc.verified);
+	}
 
-  // Sort the results
-  filtered = [...filtered].sort((a, b) => {
-    switch (selectedSorting.value) {
-      case "date-asc":
-        return (
-          new Date(a.uploadedAt).getTime() - new Date(b.uploadedAt).getTime()
-        );
-      case "date-desc":
-        return (
-          new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
-        );
-      case "name-asc":
-        return a.originalName.localeCompare(b.originalName);
-      case "name-desc":
-        return b.originalName.localeCompare(a.originalName);
-      case "size-asc":
-        return parseFloat(a.size) - parseFloat(b.size);
-      case "size-desc":
-        return parseFloat(b.size) - parseFloat(a.size);
-      default:
-        return 0;
-    }
-  });
+	// Sort the results
+	filtered = [...filtered].sort((a, b) => {
+		switch (selectedSorting.value) {
+			case "date-asc":
+				return (
+					new Date(a.uploadedAt).getTime() - new Date(b.uploadedAt).getTime()
+				);
+			case "date-desc":
+				return (
+					new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
+				);
+			case "name-asc":
+				return a.originalName.localeCompare(b.originalName);
+			case "name-desc":
+				return b.originalName.localeCompare(a.originalName);
+			case "size-asc":
+				return parseFloat(a.size) - parseFloat(b.size);
+			case "size-desc":
+				return parseFloat(b.size) - parseFloat(a.size);
+			default:
+				return 0;
+		}
+	});
 
-  return filtered;
+	return filtered;
 });
 
 function viewDocument(docId: number) {
-  console.log("Viewing document:", docId);
+	console.log("Viewing document:", docId);
 }
 
 function downloadDocument(docId: number) {
-  console.log("Downloading document:", docId);
+	console.log("Downloading document:", docId);
 }
 
 function deleteDocument(docId: number) {
-  console.log("Deleting document:", docId);
+	console.log("Deleting document:", docId);
 }
 
 function handleUploadClick() {
-  fileInputRef.value?.click();
+	fileInputRef.value?.click();
 }
 
 function handleFileChange(event: Event) {
-  const target = event.target as HTMLInputElement;
-  const files = target.files;
-  if (files && files.length > 0) {
-    console.log(
-      "Uploading files:",
-      Array.from(files).map((f) => f.name),
-    );
-    // Here you would implement the actual upload logic
-    // For now, just log the file names
-  }
+	const target = event.target as HTMLInputElement;
+	const files = target.files;
+	if (files && files.length > 0) {
+		console.log(
+			"Uploading files:",
+			Array.from(files).map((f) => f.name),
+		);
+		// Here you would implement the actual upload logic
+		// For now, just log the file names
+	}
 }
 
 function selectFormatFilter(value: string) {
-  filterFormat.value = value;
+	filterFormat.value = value;
 }
 
 function selectStatusFilter(value: string) {
-  filterStatus.value = value;
+	filterStatus.value = value;
 }
 
 function selectSorting(value: string) {
-  selectedSorting.value = value;
+	selectedSorting.value = value;
 }
 
 function getFileIcon(format: string) {
-  return FileText;
+	return FileText;
 }
 
 function formatDate(dateStr: string): string {
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diff = now.getTime() - date.getTime();
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+	const date = new Date(dateStr);
+	const now = new Date();
+	const diff = now.getTime() - date.getTime();
+	const hours = Math.floor(diff / (1000 * 60 * 60));
+	const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-  if (hours < 1) return "Just now";
-  if (hours < 24) return `${hours}h ago`;
-  if (days === 1) return "Yesterday";
-  if (days < 7) return `${days}d ago`;
+	if (hours < 1) return "Just now";
+	if (hours < 24) return `${hours}h ago`;
+	if (days === 1) return "Yesterday";
+	if (days < 7) return `${days}d ago`;
 
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+	return date.toLocaleDateString("en-US", {
+		month: "short",
+		day: "numeric",
+		year: "numeric",
+	});
 }
 
 function getFormatColor(format: string): string {
-  switch (format) {
-    case "pdf":
-      return "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300";
-    case "doc":
-      return "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300";
-    case "text":
-      return "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300";
-    default:
-      return "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300";
-  }
+	switch (format) {
+		case "pdf":
+			return "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300";
+		case "doc":
+			return "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300";
+		case "text":
+			return "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300";
+		default:
+			return "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300";
+	}
 }
 
 function toggleDocument(docId: number) {
-  const newSet = new Set(selectedDocuments.value);
-  if (newSet.has(docId)) {
-    newSet.delete(docId);
-  } else {
-    newSet.add(docId);
-  }
-  selectedDocuments.value = newSet;
+	const newSet = new Set(selectedDocuments.value);
+	if (newSet.has(docId)) {
+		newSet.delete(docId);
+	} else {
+		newSet.add(docId);
+	}
+	selectedDocuments.value = newSet;
 }
 
 function downloadSelectedAsZip() {
-  console.log(
-    "Downloading selected documents as ZIP:",
-    Array.from(selectedDocuments.value),
-  );
+	console.log(
+		"Downloading selected documents as ZIP:",
+		Array.from(selectedDocuments.value),
+	);
 }
 
 function downloadSelectedAsTar() {
-  console.log(
-    "Downloading selected documents as TAR:",
-    Array.from(selectedDocuments.value),
-  );
+	console.log(
+		"Downloading selected documents as TAR:",
+		Array.from(selectedDocuments.value),
+	);
 }
 
 function editSelectedDocuments() {
-  console.log(
-    "Editing selected documents:",
-    Array.from(selectedDocuments.value),
-  );
+	console.log(
+		"Editing selected documents:",
+		Array.from(selectedDocuments.value),
+	);
 }
 
 function editDocument(docId: number) {
-  console.log("Editing document:", docId);
+	console.log("Editing document:", docId);
 }
 
 function toggleSelectAll() {
-  if (selectedDocuments.value.size === filteredDocuments.value.length) {
-    selectedDocuments.value = new Set();
-  } else {
-    selectedDocuments.value = new Set(filteredDocuments.value.map((d) => d.id));
-  }
+	if (selectedDocuments.value.size === filteredDocuments.value.length) {
+		selectedDocuments.value = new Set();
+	} else {
+		selectedDocuments.value = new Set(filteredDocuments.value.map((d) => d.id));
+	}
 }
 
 const allSelected = computed(() => {
-  return (
-    filteredDocuments.value.length > 0 &&
-    selectedDocuments.value.size === filteredDocuments.value.length
-  );
+	return (
+		filteredDocuments.value.length > 0 &&
+		selectedDocuments.value.size === filteredDocuments.value.length
+	);
 });
 </script>
 
@@ -573,21 +567,19 @@ const allSelected = computed(() => {
                 </span>
               </TableCell>
               <TableCell>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger as-child>
-                      <div class="flex items-center gap-2 cursor-pointer">
-                        <EntityAvatar :name="doc.uploadedBy" size="sm" />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p class="font-medium">{{ doc.uploadedBy }}</p>
-                      <p class="text-xs text-neutral-500">
-                        {{ doc.uploadedAt }}
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <div class="inline-flex items-center gap-2">
+                  <EntityAvatar :name="doc.uploadedBy" size="sm" />
+                  <div class="flex flex-col">
+                    <span class="text-sm font-medium">{{
+                      doc.uploadedBy
+                    }}</span>
+                    <span
+                      class="text-xs text-neutral-500 dark:text-neutral-400"
+                    >
+                      {{ doc.uploadedAt }}
+                    </span>
+                  </div>
+                </div>
               </TableCell>
               <TableCell>
                 <div class="flex flex-wrap gap-1">

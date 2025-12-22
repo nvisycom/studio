@@ -1,20 +1,46 @@
-# Astro dev/build outputs
-.astro
-dist
+# OS
+Thumbs.db
+.DS_Store
 
-# Node dependencies
-node_modules
+# Editors
+.vs/
+.vscode/
+.idea/
+.zed/
+.fleet/
+
+# Node & JavaScript
+node_modules/
+.vite/
+.astro/
+.output/
+.nuxt/
+.nitro/
+.cache/
+
+# Testing
+playwright-report/
+test-results/
+coverage/
+
+# Build Output
+dist/
+build/
+output/
+
+# Environment
+.env*
+!.env.example
 
 # Logs
-logs
 *.log
+*.log*
+logs/
 
-# Misc
-.DS_Store
-.fleet
-.idea
+# Generated
+*.pem
+*.backup
 
-# Local env files
-.env
-.env.*
-!.env.example
+# Other
+.ignore*/
+LLM.md

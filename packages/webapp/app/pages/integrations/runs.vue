@@ -347,16 +347,14 @@ function formatDate(date: Date): string {
                   >
                     <Spinner class="h-3 w-3" />
                     <span
-                      :class="getStatusCodeColor(run.statusCode)"
-                      class="font-mono text-xs font-semibold"
+                      class="font-mono text-xs text-neutral-900 dark:text-white"
                     >
                       {{ run.statusCode }}
                     </span>
                   </div>
                   <span
                     v-else
-                    :class="getStatusCodeColor(run.statusCode)"
-                    class="font-mono text-xs font-semibold"
+                    class="font-mono text-xs text-neutral-900 dark:text-white"
                   >
                     {{ run.statusCode }}
                   </span>

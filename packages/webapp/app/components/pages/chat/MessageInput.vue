@@ -1,50 +1,50 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import {
-  Send,
-  Pencil,
-  Paperclip,
-  Upload,
-  Sparkles,
-  FileText,
+	Send,
+	Pencil,
+	Paperclip,
+	Upload,
+	Sparkles,
+	FileText,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
 const props = defineProps<{
-  modelValue: string;
-  isEditing?: boolean;
+	modelValue: string;
+	isEditing?: boolean;
 }>();
 
 const emit = defineEmits<{
-  "update:modelValue": [value: string];
-  send: [];
-  attach: [];
-  upload: [];
-  generate: [];
-  summarize: [];
+	"update:modelValue": [value: string];
+	send: [];
+	attach: [];
+	upload: [];
+	generate: [];
+	summarize: [];
 }>();
 
 const localValue = ref(props.modelValue);
 
 watch(
-  () => props.modelValue,
-  (newValue) => {
-    localValue.value = newValue;
-  },
+	() => props.modelValue,
+	(newValue) => {
+		localValue.value = newValue;
+	},
 );
 
 function updateValue(event: Event) {
-  const target = event.target as HTMLTextAreaElement;
-  localValue.value = target.value;
-  emit("update:modelValue", target.value);
+	const target = event.target as HTMLTextAreaElement;
+	localValue.value = target.value;
+	emit("update:modelValue", target.value);
 }
 
 function handleSend() {
-  if (!localValue.value.trim()) return;
-  emit("send");
-  localValue.value = "";
-  emit("update:modelValue", "");
+	if (!localValue.value.trim()) return;
+	emit("send");
+	localValue.value = "";
+	emit("update:modelValue", "");
 }
 </script>
 
