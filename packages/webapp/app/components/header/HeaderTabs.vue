@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import StudioFileTabs from "./StudioFileTabs.vue";
 import {
   Settings,
   Key,
@@ -21,6 +22,8 @@ import {
   ShieldCheck,
   MessageSquare,
   Database,
+  CreditCard,
+  PlayCircle,
 } from "lucide-vue-next";
 
 const route = useRoute();
@@ -58,9 +61,8 @@ const currentPipelinesTab = computed(() =>
 );
 
 const currentDocumentsTab = computed(() => {
-  if (route.path === "/documents/files") return "files";
   if (route.path === "/documents/studio") return "studio";
-  return "overview";
+  return "files";
 });
 
 const currentSettingsTab = computed(() => {
@@ -76,9 +78,17 @@ const currentAnalyticsTab = computed(() => {
   return "overview";
 });
 
-const currentBillingTab = computed(() =>
-  route.path.startsWith("/billing/invoices") ? "invoices" : "billing",
-);
+const currentBillingTab = computed(() => {
+  if (route.path.startsWith("/billing/invoices")) return "invoices";
+  if (route.path.startsWith("/billing/method")) return "method";
+  return "plan";
+});
+
+const currentIntegrationTabValue = computed(() => {
+  if (route.path === "/integrations/explore") return "explore";
+  if (route.path === "/integrations/runs") return "runs";
+  return "connections";
+});
 
 const currentKnowledgeTab = computed(() =>
   route.path === "/knowledge/corpus" ? "corpus" : "chat",
@@ -87,18 +97,24 @@ const currentKnowledgeTab = computed(() =>
 
 <template>
   <!-- Integration Tabs -->
-  <Tabs v-if="showIntegrationTabs" :model-value="currentIntegrationTab">
+  <Tabs v-if="showIntegrationTabs" :model-value="currentIntegrationTabValue">
     <TabsList>
-      <TabsTrigger value="active" as-child>
+      <TabsTrigger value="connections" as-child>
         <NuxtLink to="/integrations" class="flex items-center gap-2">
           <Plug :size="16" />
           Connections
         </NuxtLink>
       </TabsTrigger>
-      <TabsTrigger value="library" as-child>
+      <TabsTrigger value="explore" as-child>
         <NuxtLink to="/integrations/explore" class="flex items-center gap-2">
           <Library :size="16" />
           Explore
+        </NuxtLink>
+      </TabsTrigger>
+      <TabsTrigger value="runs" as-child>
+        <NuxtLink to="/integrations/runs" class="flex items-center gap-2">
+          <PlayCircle :size="16" />
+          Runs
         </NuxtLink>
       </TabsTrigger>
     </TabsList>
@@ -123,28 +139,33 @@ const currentKnowledgeTab = computed(() =>
   </Tabs>
 
   <!-- Documents Tabs -->
-  <Tabs v-else-if="showDocumentsTabs" :model-value="currentDocumentsTab">
-    <TabsList>
-      <TabsTrigger value="overview" as-child>
-        <NuxtLink to="/documents" class="flex items-center gap-2">
-          <FileText :size="16" />
-          Overview
-        </NuxtLink>
-      </TabsTrigger>
-      <TabsTrigger value="files" as-child>
-        <NuxtLink to="/documents/files" class="flex items-center gap-2">
-          <FolderOpen :size="16" />
-          Files
-        </NuxtLink>
-      </TabsTrigger>
-      <TabsTrigger value="studio" as-child>
-        <NuxtLink to="/documents/studio" class="flex items-center gap-2">
-          <PenTool :size="16" />
-          Studio
-        </NuxtLink>
-      </TabsTrigger>
-    </TabsList>
-  </Tabs>
+  <template v-else-if="showDocumentsTabs">
+    <!-- Main Documents Tabs (Files/Studio) -->
+    <Tabs :model-value="currentDocumentsTab">
+      <TabsList>
+        <TabsTrigger value="files" as-child>
+          <NuxtLink to="/documents" class="flex items-center gap-2">
+            <FolderOpen :size="16" />
+            Files
+          </NuxtLink>
+        </TabsTrigger>
+        <TabsTrigger value="studio" as-child>
+          <NuxtLink to="/documents/studio" class="flex items-center gap-2">
+            <PenTool :size="16" />
+            Studio
+          </NuxtLink>
+        </TabsTrigger>
+      </TabsList>
+    </Tabs>
+
+    <!-- Studio File Tabs -->
+    <div
+      v-if="route.path === '/documents/studio'"
+      class="flex items-center gap-1 ml-2"
+    >
+      <StudioFileTabs />
+    </div>
+  </template>
 
   <!-- Members Tabs -->
   <Tabs v-else-if="showMembersTabs" :model-value="currentMembersTab">
@@ -239,10 +260,16 @@ const currentKnowledgeTab = computed(() =>
   <!-- Billing Tabs -->
   <Tabs v-else-if="showBillingTabs" :model-value="currentBillingTab">
     <TabsList>
-      <TabsTrigger value="billing" as-child>
+      <TabsTrigger value="plan" as-child>
         <NuxtLink to="/billing" class="flex items-center gap-2">
+          <CreditCard :size="16" />
+          Plan
+        </NuxtLink>
+      </TabsTrigger>
+      <TabsTrigger value="method" as-child>
+        <NuxtLink to="/billing/method" class="flex items-center gap-2">
           <Receipt :size="16" />
-          Billing
+          Method
         </NuxtLink>
       </TabsTrigger>
       <TabsTrigger value="invoices" as-child>

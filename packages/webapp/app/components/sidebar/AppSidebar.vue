@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import type { SidebarProps } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
@@ -30,11 +31,13 @@ import {
   Workflow,
   PlayCircle,
   Brain,
+  MessagesSquare,
 } from "lucide-vue-next";
 import NavMain from "@/components/sidebar/NavMain.vue";
 import NavProjects from "@/components/sidebar/NavProjects.vue";
 import NavUser from "@/components/sidebar/NavUser.vue";
 import ProjectSwitcher from "@/components/sidebar/ProjectSwitcher.vue";
+import HelpChat from "@/components/help/HelpChat.vue";
 import {
   Sidebar,
   SidebarContent,
@@ -50,12 +53,15 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 const props = withDefaults(defineProps<SidebarProps>(), {
   collapsible: "icon",
 });
+
+const helpChatRef = ref();
 
 // Sample data
 const data = {
@@ -155,6 +161,10 @@ const data = {
     },
   ],
 };
+
+function openHelpChat() {
+  helpChatRef.value?.toggleChat();
+}
 </script>
 
 <template>
@@ -202,76 +212,17 @@ const data = {
           </SidebarMenuButton>
         </SidebarMenuItem>
         <SidebarMenuItem>
-          <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <SidebarMenuButton>
-                <HelpCircle />
-                <span>Help</span>
-              </SidebarMenuButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent side="right" align="start" class="w-48">
-              <DropdownMenuItem as-child>
-                <a
-                  href="https://docs.nvisy.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="flex items-center justify-between gap-2"
-                >
-                  <div class="flex items-center gap-2">
-                    <BookOpen :size="16" />
-                    <span>Documentation</span>
-                  </div>
-                  <ExternalLink :size="12" class="opacity-50" />
-                </a>
-              </DropdownMenuItem>
-              <DropdownMenuItem as-child>
-                <a
-                  href="https://docs.nvisy.com/api-reference"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="flex items-center justify-between gap-2"
-                >
-                  <div class="flex items-center gap-2">
-                    <Code :size="16" />
-                    <span>API Reference</span>
-                  </div>
-                  <ExternalLink :size="12" class="opacity-50" />
-                </a>
-              </DropdownMenuItem>
-              <DropdownMenuItem as-child>
-                <a
-                  href="https://discord.gg/nvisy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="flex items-center justify-between gap-2"
-                >
-                  <div class="flex items-center gap-2">
-                    <MessageCircle :size="16" />
-                    <span>Discord</span>
-                  </div>
-                  <ExternalLink :size="12" class="opacity-50" />
-                </a>
-              </DropdownMenuItem>
-              <DropdownMenuItem as-child>
-                <a
-                  href="https://github.com/nvisy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="flex items-center justify-between gap-2"
-                >
-                  <div class="flex items-center gap-2">
-                    <Github :size="16" />
-                    <span>GitHub</span>
-                  </div>
-                  <ExternalLink :size="12" class="opacity-50" />
-                </a>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <SidebarMenuButton @click="openHelpChat">
+            <MessagesSquare />
+            <span>Support</span>
+          </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
       <NavUser :user="data.user" />
     </SidebarFooter>
     <SidebarRail />
   </Sidebar>
+
+  <!-- Help Chat Popup -->
+  <HelpChat ref="helpChatRef" />
 </template>

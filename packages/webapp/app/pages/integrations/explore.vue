@@ -2,162 +2,162 @@
 import { ref, computed } from "vue";
 const { t } = useI18n();
 import {
-	Search,
-	ChevronDown,
-	Workflow,
-	HardDrive,
-	ArrowLeft,
+  Search,
+  ChevronDown,
+  Workflow,
+  HardDrive,
+  ArrowLeft,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-	DropdownMenu,
-	DropdownMenuCheckboxItem,
-	DropdownMenuContent,
-	DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { IntegrationCard } from "@/components/integrations";
+import { IntegrationCard } from "~/components/pages/integrations";
 
 definePageMeta({
-	pageName: "Integrations",
+  pageName: "Integrations",
 });
 
 /**
  * Integration data structure
  */
 interface Integration {
-	id: number;
-	name: string;
-	description: string;
-	icon: any;
-	color: string;
-	status: "available" | "coming-soon";
-	category: string;
-	tags: string[];
-	isExternal?: boolean;
-	externalUrl?: string;
+  id: number;
+  name: string;
+  description: string;
+  icon: any;
+  color: string;
+  status: "available" | "coming-soon";
+  category: string;
+  tags: string[];
+  isExternal?: boolean;
+  externalUrl?: string;
 }
 
 const searchQuery = ref("");
 
 // Tag filters
 const selectedTags = ref({
-	fileStorage: false,
-	automation: false,
+  fileStorage: false,
+  automation: false,
 });
 
 const integrations = ref<Integration[]>([
-	// File Storage
-	{
-		id: 1,
-		name: "Google Drive",
-		description:
-			"Import and export documents directly to and from Google Drive",
-		icon: HardDrive,
-		color: "bg-blue-600",
-		status: "available",
-		category: "File Storage",
-		tags: ["fileStorage"],
-	},
-	{
-		id: 2,
-		name: "Microsoft OneDrive",
-		description:
-			"Seamlessly import and export files with Microsoft OneDrive integration",
-		icon: HardDrive,
-		color: "bg-sky-600",
-		status: "available",
-		category: "File Storage",
-		tags: ["fileStorage"],
-	},
-	{
-		id: 3,
-		name: "Dropbox",
-		description: "Connect Dropbox for easy file import and export workflows",
-		icon: HardDrive,
-		color: "bg-indigo-600",
-		status: "available",
-		category: "File Storage",
-		tags: ["fileStorage"],
-	},
-	// Automation
-	{
-		id: 4,
-		name: "Zapier",
-		description: "Automate redaction workflows with Zapier's no-code platform",
-		icon: Workflow,
-		color: "bg-orange-600",
-		status: "available",
-		category: "Automation",
-		tags: ["automation"],
-		isExternal: true,
-		externalUrl: "https://zapier.com",
-	},
-	{
-		id: 5,
-		name: "Make",
-		description:
-			"Build complex automation scenarios with Make (formerly Integromat)",
-		icon: Workflow,
-		color: "bg-fuchsia-600",
-		status: "available",
-		category: "Automation",
-		tags: ["automation"],
-		isExternal: true,
-		externalUrl: "https://www.make.com",
-	},
-	{
-		id: 6,
-		name: "n8n",
-		description: "Create custom automation workflows with n8n's visual editor",
-		icon: Workflow,
-		color: "bg-pink-600",
-		status: "available",
-		category: "Automation",
-		tags: ["automation"],
-		isExternal: true,
-		externalUrl: "https://n8n.io",
-	},
+  // File Storage
+  {
+    id: 1,
+    name: "Google Drive",
+    description:
+      "Import and export documents directly to and from Google Drive",
+    icon: HardDrive,
+    color: "bg-blue-600",
+    status: "available",
+    category: "File Storage",
+    tags: ["fileStorage"],
+  },
+  {
+    id: 2,
+    name: "Microsoft OneDrive",
+    description:
+      "Seamlessly import and export files with Microsoft OneDrive integration",
+    icon: HardDrive,
+    color: "bg-sky-600",
+    status: "available",
+    category: "File Storage",
+    tags: ["fileStorage"],
+  },
+  {
+    id: 3,
+    name: "Dropbox",
+    description: "Connect Dropbox for easy file import and export workflows",
+    icon: HardDrive,
+    color: "bg-indigo-600",
+    status: "available",
+    category: "File Storage",
+    tags: ["fileStorage"],
+  },
+  // Automation
+  {
+    id: 4,
+    name: "Zapier",
+    description: "Automate redaction workflows with Zapier's no-code platform",
+    icon: Workflow,
+    color: "bg-orange-600",
+    status: "available",
+    category: "Automation",
+    tags: ["automation"],
+    isExternal: true,
+    externalUrl: "https://zapier.com",
+  },
+  {
+    id: 5,
+    name: "Make",
+    description:
+      "Build complex automation scenarios with Make (formerly Integromat)",
+    icon: Workflow,
+    color: "bg-fuchsia-600",
+    status: "available",
+    category: "Automation",
+    tags: ["automation"],
+    isExternal: true,
+    externalUrl: "https://www.make.com",
+  },
+  {
+    id: 6,
+    name: "n8n",
+    description: "Create custom automation workflows with n8n's visual editor",
+    icon: Workflow,
+    color: "bg-pink-600",
+    status: "available",
+    category: "Automation",
+    tags: ["automation"],
+    isExternal: true,
+    externalUrl: "https://n8n.io",
+  },
 ]);
 
 const filteredIntegrations = computed(() => {
-	let filtered = integrations.value;
+  let filtered = integrations.value;
 
-	// Apply search filter
-	if (searchQuery.value.trim()) {
-		const query = searchQuery.value.toLowerCase();
-		filtered = filtered.filter(
-			(integration) =>
-				integration.name.toLowerCase().includes(query) ||
-				integration.description.toLowerCase().includes(query) ||
-				integration.category.toLowerCase().includes(query),
-		);
-	}
+  // Apply search filter
+  if (searchQuery.value.trim()) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(
+      (integration) =>
+        integration.name.toLowerCase().includes(query) ||
+        integration.description.toLowerCase().includes(query) ||
+        integration.category.toLowerCase().includes(query),
+    );
+  }
 
-	// Apply tag filters
-	const activeTags = Object.entries(selectedTags.value)
-		.filter(([_, isSelected]) => isSelected)
-		.map(([tag, _]) => tag);
+  // Apply tag filters
+  const activeTags = Object.entries(selectedTags.value)
+    .filter(([_, isSelected]) => isSelected)
+    .map(([tag, _]) => tag);
 
-	if (activeTags.length > 0) {
-		filtered = filtered.filter((integration) =>
-			integration.tags.some((tag) => activeTags.includes(tag)),
-		);
-	}
+  if (activeTags.length > 0) {
+    filtered = filtered.filter((integration) =>
+      integration.tags.some((tag) => activeTags.includes(tag)),
+    );
+  }
 
-	return filtered;
+  return filtered;
 });
 
 const activeTagCount = computed(() => {
-	return Object.values(selectedTags.value).filter((val) => val).length;
+  return Object.values(selectedTags.value).filter((val) => val).length;
 });
 
 function connectIntegration(id: number) {
-	console.log("Connect integration:", id);
+  console.log("Connect integration:", id);
 }
 
 function notifyMe(id: number) {
-	console.log("Notify about integration:", id);
+  console.log("Notify about integration:", id);
 }
 </script>
 
@@ -193,18 +193,22 @@ function notifyMe(id: number) {
               variant="outline"
               class="justify-between min-w-[160px] border-neutral-300 dark:border-neutral-700"
             >
-              {{
-                activeTagCount > 0
-                  ? t("integrations.categories.tags")
-                  : t("integrations.categories.anyTag")
-              }}
-              <span
-                v-if="activeTagCount > 0"
-                class="ml-2 px-1.5 py-0.5 text-xs rounded bg-neutral-900 dark:bg-white text-white dark:text-neutral-900"
-              >
-                {{ activeTagCount }}
+              <span>
+                {{
+                  activeTagCount > 0
+                    ? t("integrations.categories.tags")
+                    : t("integrations.categories.anyTag")
+                }}
               </span>
-              <ChevronDown :size="16" class="ml-2" />
+              <div class="flex items-center gap-2">
+                <span
+                  v-if="activeTagCount > 0"
+                  class="px-1.5 py-0.5 text-xs rounded bg-neutral-900 dark:bg-white text-white dark:text-neutral-900"
+                >
+                  {{ activeTagCount }}
+                </span>
+                <ChevronDown :size="16" />
+              </div>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent class="w-56">

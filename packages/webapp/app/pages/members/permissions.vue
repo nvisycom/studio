@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/select";
 
 definePageMeta({
-  pageName: "Permissions",
+  pageName: "Members",
 });
 
 interface Role {

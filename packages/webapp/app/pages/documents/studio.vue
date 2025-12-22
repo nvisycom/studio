@@ -2,48 +2,73 @@
 import { ref } from "vue";
 import {
   FileText,
-  Upload,
-  Download,
-  Layers,
   ZoomIn,
   ZoomOut,
-  RotateCw,
-  Square,
-  Highlighter,
-  Type,
-  Eraser,
-  Undo,
-  Redo,
-  Save,
+  X,
+  Split,
+  Merge,
+  Edit3,
+  FileOutput,
+  Loader2,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Tools, Layers, ZoomControls } from "~/components/pages/studio";
 
 definePageMeta({
   pageName: "Documents",
 });
 
-const selectedTool = ref<string>("select");
+const selectedTool = ref<string>("highlight");
 const zoomLevel = ref(100);
-const currentPage = ref(1);
-const totalPages = ref(5);
 
-const tools = [
-  { id: "select", name: "Select", icon: Square },
-  { id: "redact", name: "Redact", icon: Highlighter },
-  { id: "text", name: "Text", icon: Type },
-  { id: "erase", name: "Erase", icon: Eraser },
-];
+interface OpenFile {
+  id: string;
+  name: string;
+  status: "unsaved" | "loading" | "saved";
+}
+
+const openFiles = ref<OpenFile[]>([
+  { id: "1", name: "contract_final.pdf", status: "unsaved" },
+  { id: "2", name: "invoice_2024_q1_financial_report.pdf", status: "loading" },
+  { id: "3", name: "report.pdf", status: "saved" },
+]);
+
+const activeFileId = ref("1");
+
+const layers = ref([
+  { id: "1", name: "Split Operation", icon: Split, page: 1 },
+  { id: "2", name: "Edit Annotation", icon: Edit3, page: 2 },
+  { id: "3", name: "Extract Data", icon: FileOutput, page: 3 },
+  { id: "4", name: "Merge Pages", icon: Merge, page: 4 },
+]);
 
 function selectTool(toolId: string) {
   selectedTool.value = toolId;
+  console.log("Selected tool:", toolId);
+}
+
+function rotate() {
+  console.log("Rotating document");
+}
+
+function saveAsPdf() {
+  console.log("Saving as PDF");
+}
+
+function saveAsDoc() {
+  console.log("Saving as DOC");
+}
+
+function deleteLayer(layerId: string) {
+  const index = layers.value.findIndex((l) => l.id === layerId);
+  if (index !== -1) {
+    layers.value.splice(index, 1);
+  }
+}
+
+function selectLayer(layerId: string) {
+  console.log("Selected layer:", layerId);
 }
 
 function zoomIn() {
@@ -58,10 +83,6 @@ function zoomOut() {
   }
 }
 
-function rotate() {
-  console.log("Rotating document");
-}
-
 function undo() {
   console.log("Undo");
 }
@@ -70,124 +91,52 @@ function redo() {
   console.log("Redo");
 }
 
-function save() {
-  console.log("Saving document");
+function selectFile(fileId: string) {
+  activeFileId.value = fileId;
 }
 
-function exportDocument() {
-  console.log("Exporting document");
-}
-
-function uploadDocument() {
-  console.log("Uploading new document");
-}
-
-function previousPage() {
-  if (currentPage.value > 1) {
-    currentPage.value--;
+function closeFile(fileId: string) {
+  const index = openFiles.value.findIndex((f) => f.id === fileId);
+  if (index !== -1) {
+    openFiles.value.splice(index, 1);
+    if (activeFileId.value === fileId && openFiles.value.length > 0) {
+      activeFileId.value = openFiles.value[0].id;
+    }
   }
 }
 
-function nextPage() {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++;
+function getStatusColor(status: string) {
+  switch (status) {
+    case "unsaved":
+      return "bg-neutral-400";
+    case "loading":
+      return "";
+    case "saved":
+      return "hidden";
+    default:
+      return "bg-neutral-400";
   }
 }
 </script>
 
 <template>
-  <div class="flex flex-1 flex-col h-full">
-    <!-- Top Toolbar -->
-    <div
-      class="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 px-4 py-3"
-    >
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <div class="flex items-center gap-2">
-            <FileText
-              :size="20"
-              class="text-neutral-600 dark:text-neutral-400"
-            />
-            <span class="font-semibold">document_sample.pdf</span>
-            <Badge variant="secondary" class="text-xs">Draft</Badge>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <Button variant="outline" size="sm" @click="uploadDocument">
-            <Upload :size="16" class="mr-2" />
-            Upload
-          </Button>
-          <Button variant="outline" size="sm" @click="exportDocument">
-            <Download :size="16" class="mr-2" />
-            Export
-          </Button>
-          <Button size="sm" @click="save">
-            <Save :size="16" class="mr-2" />
-            Save
-          </Button>
-        </div>
-      </div>
-    </div>
-
+  <div class="flex flex-1 flex-col h-full bg-neutral-100 dark:bg-neutral-950">
     <!-- Main Content Area -->
-    <div class="flex flex-1 overflow-hidden">
-      <!-- Left Sidebar - Tools -->
-      <div
-        class="w-16 border-r border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 flex flex-col items-center py-4 gap-2"
-      >
-        <Button
-          v-for="tool in tools"
-          :key="tool.id"
-          :variant="selectedTool === tool.id ? 'default' : 'ghost'"
-          size="sm"
-          class="w-12 h-12 p-0"
-          @click="selectTool(tool.id)"
-          :title="tool.name"
-        >
-          <component :is="tool.icon" :size="20" />
-        </Button>
-
-        <div class="flex-1" />
-
-        <Button variant="ghost" size="sm" class="w-12 h-12 p-0" @click="undo">
-          <Undo :size="20" />
-        </Button>
-        <Button variant="ghost" size="sm" class="w-12 h-12 p-0" @click="redo">
-          <Redo :size="20" />
-        </Button>
-      </div>
-
+    <div class="flex flex-1">
       <!-- Center - Canvas Area -->
-      <div class="flex-1 flex flex-col bg-neutral-100 dark:bg-neutral-950">
-        <!-- Zoom Controls -->
-        <div
-          class="flex items-center justify-center gap-2 py-2 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900"
-        >
-          <Button variant="outline" size="sm" @click="zoomOut">
-            <ZoomOut :size="16" />
-          </Button>
-          <span class="text-sm font-medium min-w-[60px] text-center">
-            {{ zoomLevel }}%
-          </span>
-          <Button variant="outline" size="sm" @click="zoomIn">
-            <ZoomIn :size="16" />
-          </Button>
-          <div
-            class="border-l border-neutral-200 dark:border-neutral-800 h-6 mx-2"
-          />
-          <Button variant="outline" size="sm" @click="rotate">
-            <RotateCw :size="16" />
-          </Button>
-        </div>
-
-        <!-- Document Canvas -->
-        <div class="flex-1 flex items-center justify-center p-8 overflow-auto">
+      <div
+        class="flex-1 flex flex-col bg-neutral-100 dark:bg-neutral-950 overflow-y-auto relative"
+      >
+        <!-- Document Canvas with Scrollable Pages -->
+        <div class="flex flex-col items-center gap-6 p-8 pb-20">
           <Card
-            class="shadow-lg"
+            v-for="page in 5"
+            :key="page"
+            class="shadow-lg flex-shrink-0"
             :style="{
               transform: `scale(${zoomLevel / 100})`,
-              transformOrigin: 'center',
+              transformOrigin: 'top center',
+              marginBottom: `${(zoomLevel - 100) * 8}px`,
             }"
           >
             <CardContent class="p-0">
@@ -197,98 +146,43 @@ function nextPage() {
                 <div class="text-center">
                   <FileText :size="64" class="mx-auto mb-4 opacity-20" />
                   <p class="text-sm">Document Preview Area</p>
-                  <p class="text-xs mt-2">
-                    Page {{ currentPage }} of {{ totalPages }}
-                  </p>
+                  <p class="text-xs mt-2">Page {{ page }} of 5</p>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <!-- Page Navigation -->
-        <div
-          class="flex items-center justify-center gap-4 py-2 border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900"
-        >
-          <Button
-            variant="outline"
-            size="sm"
-            @click="previousPage"
-            :disabled="currentPage === 1"
-          >
-            Previous
-          </Button>
-          <span class="text-sm font-medium">
-            Page {{ currentPage }} of {{ totalPages }}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            @click="nextPage"
-            :disabled="currentPage === totalPages"
-          >
-            Next
-          </Button>
-        </div>
+        <!-- Zoom Controls - Fixed Bottom Center -->
+        <ZoomControls
+          :zoom-level="zoomLevel"
+          @zoom-in="zoomIn"
+          @zoom-out="zoomOut"
+        />
       </div>
 
-      <!-- Right Sidebar - Layers/Properties -->
+      <!-- Right Sidebar - Tools and Layers -->
       <div
-        class="w-64 border-l border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-4"
+        class="w-80 bg-neutral-100 dark:bg-neutral-950 sticky top-16 right-0 self-start overflow-y-auto px-3 py-2 space-y-2 z-10"
       >
-        <div class="flex items-center gap-2 mb-4">
-          <Layers :size="18" />
-          <h3 class="font-semibold">Layers</h3>
-        </div>
+        <!-- Tools Widget -->
+        <Tools
+          :selected-tool="selectedTool"
+          @select-tool="selectTool"
+          @rotate="rotate"
+          @save-as-pdf="saveAsPdf"
+          @save-as-doc="saveAsDoc"
+        />
 
-        <div class="space-y-2">
-          <Card
-            class="cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-900"
-          >
-            <CardContent class="p-3">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <Square :size="14" />
-                  <span class="text-sm">Redaction 1</span>
-                </div>
-                <Badge variant="secondary" class="text-xs">Page 1</Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card
-            class="cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-900"
-          >
-            <CardContent class="p-3">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <Type :size="14" />
-                  <span class="text-sm">Text Annotation</span>
-                </div>
-                <Badge variant="secondary" class="text-xs">Page 2</Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card
-            class="cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-900"
-          >
-            <CardContent class="p-3">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <Highlighter :size="14" />
-                  <span class="text-sm">Highlight</span>
-                </div>
-                <Badge variant="secondary" class="text-xs">Page 3</Badge>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <!-- Layers Widget -->
+        <Layers
+          :layers="layers"
+          @undo="undo"
+          @redo="redo"
+          @delete-layer="deleteLayer"
+          @select-layer="selectLayer"
+        />
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-/* Ensure the page takes full height */
-</style>

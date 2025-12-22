@@ -197,17 +197,6 @@ function getLevelIcon(level: string) {
   }
 }
 
-function getLevelClass(level: string) {
-  switch (level) {
-    case "error":
-      return "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300";
-    case "warning":
-      return "bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300";
-    default:
-      return "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300";
-  }
-}
-
 function formatTimestamp(date: Date) {
   return new Intl.DateTimeFormat("en-US", {
     hour: "2-digit",
@@ -354,14 +343,9 @@ function importLogs() {
                   {{ formatTimestamp(log.timestamp) }}
                 </TableCell>
                 <TableCell>
-                  <Badge
-                    variant="secondary"
-                    :class="getLevelClass(log.level)"
-                    class="flex items-center gap-1 w-fit"
-                  >
-                    <component :is="getLevelIcon(log.level)" :size="12" />
-                    {{ log.level }}
-                  </Badge>
+                  <span class="text-xs text-neutral-600 dark:text-neutral-400">
+                    {{ log.level.toLowerCase() }}
+                  </span>
                 </TableCell>
                 <TableCell class="max-w-md truncate">
                   {{ log.message }}

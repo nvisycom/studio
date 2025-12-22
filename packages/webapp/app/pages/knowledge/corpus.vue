@@ -1,6 +1,16 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { Plus, MoreVertical, Pencil, Trash2, FileText } from "lucide-vue-next";
+import { ref, computed } from "vue";
+import {
+  Plus,
+  MoreVertical,
+  Pencil,
+  Trash2,
+  FileText,
+  Search,
+  HardDrive,
+  Zap,
+  Files,
+} from "lucide-vue-next";
 import {
   Card,
   CardContent,
@@ -18,6 +28,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +43,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+
 definePageMeta({
   pageName: "Knowledge",
 });
@@ -37,6 +56,9 @@ interface CorpusDocument {
   addedDate: Date;
   status: "indexed" | "processing" | "failed";
 }
+
+const searchQuery = ref("");
+const statusFilter = ref("all");
 
 const corpusDocuments = ref<CorpusDocument[]>([
   {
@@ -61,9 +83,22 @@ const corpusDocuments = ref<CorpusDocument[]>([
     type: "DOCX",
     size: "5.1 MB",
     addedDate: new Date("2024-01-22"),
-    status: "processing",
+    status: "indexed",
   },
 ]);
+
+// Stats
+const totalDocumentsSize = ref("251 MB");
+const indexSize = ref("14.2 MB");
+const totalSize = ref("265.2 MB");
+const totalChunks = ref(2031);
+const totalDocuments = ref(3);
+const avgChunkSize = ref("6.5 KB");
+const avgResponseTime = ref(124);
+const cacheHitRate = ref(78);
+const p95ResponseTime = ref(247);
+
+const documentCount = computed(() => corpusDocuments.value.length);
 
 function addDocument() {
   console.log("Adding new document to corpus");
@@ -93,25 +128,99 @@ function getStatusColor(status: string) {
 
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
-    <div class="max-w-4xl mx-auto w-full">
+    <div class="max-w-6xl mx-auto w-full space-y-4">
+      <!-- Stats Cards -->
+      <div class="grid gap-6 grid-cols-3">
+        <Card>
+          <CardHeader
+            class="flex flex-row items-center justify-between space-y-0 pb-2"
+          >
+            <CardTitle class="text-sm font-medium">Storage Usage</CardTitle>
+            <HardDrive class="h-4 w-4 text-neutral-500" />
+          </CardHeader>
+          <CardContent>
+            <div class="text-2xl font-bold">{{ totalSize }}</div>
+            <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+              Files {{ totalDocumentsSize }} • Index {{ indexSize }}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader
+            class="flex flex-row items-center justify-between space-y-0 pb-2"
+          >
+            <CardTitle class="text-sm font-medium">Documents</CardTitle>
+            <Files class="h-4 w-4 text-neutral-500" />
+          </CardHeader>
+          <CardContent>
+            <div class="text-2xl font-bold">{{ totalDocuments }}</div>
+            <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+              {{ totalChunks.toLocaleString() }} chunks • {{ avgChunkSize }} avg
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader
+            class="flex flex-row items-center justify-between space-y-0 pb-2"
+          >
+            <CardTitle class="text-sm font-medium">Performance</CardTitle>
+            <Zap class="h-4 w-4 text-neutral-500" />
+          </CardHeader>
+          <CardContent>
+            <div class="text-2xl font-bold">{{ avgResponseTime }}ms</div>
+            <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+              p95 {{ p95ResponseTime }}ms • {{ cacheHitRate }}% cache hit
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <!-- Main Card -->
       <Card
         class="overflow-hidden py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
       >
         <CardHeader>
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between mb-4">
             <div>
               <CardTitle>Knowledge Corpus</CardTitle>
               <CardDescription>
-                {{ corpusDocuments.length }} document{{
-                  corpusDocuments.length !== 1 ? "s" : ""
+                {{ documentCount }} document{{
+                  documentCount !== 1 ? "s" : ""
                 }}
-                in your knowledge base
+                in the index
               </CardDescription>
             </div>
             <Button @click="addDocument" size="sm">
               <Plus :size="16" class="mr-2" />
               Add Document
             </Button>
+          </div>
+
+          <!-- Search and Filters -->
+          <div class="flex gap-2">
+            <div class="relative flex-1">
+              <Search
+                class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400"
+              />
+              <Input
+                v-model="searchQuery"
+                placeholder="Search documents..."
+                class="pl-9"
+              />
+            </div>
+            <Select v-model="statusFilter">
+              <SelectTrigger class="w-[180px]">
+                <SelectValue placeholder="All statuses" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All statuses</SelectItem>
+                <SelectItem value="indexed">Indexed</SelectItem>
+                <SelectItem value="processing">Processing</SelectItem>
+                <SelectItem value="failed">Failed</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardHeader>
         <CardContent>
@@ -194,8 +303,8 @@ function getStatusColor(status: string) {
           class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
         >
           <p class="text-sm text-neutral-600 dark:text-neutral-400">
-            Manage documents in your knowledge base. Documents are automatically
-            indexed for intelligent search and retrieval.
+            Documents are automatically indexed for intelligent search and
+            retrieval.
           </p>
         </CardFooter>
       </Card>

@@ -10,7 +10,7 @@ import {
 	DeleteMultipleMembersModal,
 	CancelInviteModal,
 	CancelMultipleInvitesModal,
-} from "@/components/members";
+} from "~/components/pages/members";
 import {
 	Card,
 	CardContent,

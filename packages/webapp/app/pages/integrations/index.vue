@@ -4,129 +4,129 @@ const { t } = useI18n();
 import { Github, Slack, Database, ExternalLink, Plus } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import {
-	Empty,
-	EmptyContent,
-	EmptyDescription,
-	EmptyHeader,
-	EmptyTitle,
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
 } from "@/components/ui/empty";
 import {
-	WebhooksTable,
-	ConfigureIntegrationDialog,
-	DisconnectIntegrationDialog,
-	CreateWebhookDialog,
-	DeleteWebhookDialog,
-	EditWebhookDialog,
-	IntegrationsTable,
-} from "@/components/integrations";
+  WebhooksTable,
+  ConfigureIntegrationDialog,
+  DisconnectIntegrationDialog,
+  CreateWebhookDialog,
+  DeleteWebhookDialog,
+  EditWebhookDialog,
+  IntegrationsTable,
+} from "~/components/pages/integrations";
 
 definePageMeta({
-	pageName: "Integrations",
+  pageName: "Integrations",
 });
 
 // Mock active integrations
 const activeIntegrations = ref([
-	{
-		id: 1,
-		name: "GitHub",
-		description: "Repository sync enabled",
-		icon: Github,
-		color: "bg-gray-900",
-		status: "active",
-		connectedAt: "2 weeks ago",
-	},
-	{
-		id: 2,
-		name: "Slack",
-		description: "Workspace: Acme Inc",
-		icon: Slack,
-		color: "bg-purple-600",
-		status: "active",
-		connectedAt: "1 month ago",
-	},
-	{
-		id: 3,
-		name: "PostgreSQL",
-		description: "Database: production",
-		icon: Database,
-		color: "bg-blue-600",
-		status: "active",
-		connectedAt: "3 days ago",
-	},
+  {
+    id: 1,
+    name: "GitHub",
+    description: "Repository sync enabled",
+    icon: Github,
+    color: "bg-gray-900",
+    status: "active",
+    connectedAt: "2 weeks ago",
+  },
+  {
+    id: 2,
+    name: "Slack",
+    description: "Workspace: Acme Inc",
+    icon: Slack,
+    color: "bg-purple-600",
+    status: "active",
+    connectedAt: "1 month ago",
+  },
+  {
+    id: 3,
+    name: "PostgreSQL",
+    description: "Database: production",
+    icon: Database,
+    color: "bg-blue-600",
+    status: "active",
+    connectedAt: "3 days ago",
+  },
 ]);
 
 // Integration dialogs
 const isConfigureIntegrationDialogOpen = ref(false);
 const isDisconnectIntegrationDialogOpen = ref(false);
 const selectedIntegration = ref<(typeof activeIntegrations.value)[0] | null>(
-	null,
+  null,
 );
 
 function openConfigureIntegrationDialog(id: number) {
-	const integration = activeIntegrations.value.find((i) => i.id === id);
-	if (integration) {
-		selectedIntegration.value = integration;
-		isConfigureIntegrationDialogOpen.value = true;
-	}
+  const integration = activeIntegrations.value.find((i) => i.id === id);
+  if (integration) {
+    selectedIntegration.value = integration;
+    isConfigureIntegrationDialogOpen.value = true;
+  }
 }
 
 function openDisconnectIntegrationDialog(id: number) {
-	const integration = activeIntegrations.value.find((i) => i.id === id);
-	if (integration) {
-		selectedIntegration.value = integration;
-		isDisconnectIntegrationDialogOpen.value = true;
-	}
+  const integration = activeIntegrations.value.find((i) => i.id === id);
+  if (integration) {
+    selectedIntegration.value = integration;
+    isDisconnectIntegrationDialogOpen.value = true;
+  }
 }
 
 function handleUpdateIntegration(integrationData: any) {
-	if (!selectedIntegration.value) return;
+  if (!selectedIntegration.value) return;
 
-	const integrationIndex = activeIntegrations.value.findIndex(
-		(i) => i.id === selectedIntegration.value?.id,
-	);
-	if (integrationIndex !== -1) {
-		const integration = activeIntegrations.value[integrationIndex];
-		if (integration) {
-			integration.name = integrationData.name;
-			integration.description = integrationData.description;
-			integration.status = integrationData.active ? "active" : "inactive";
-		}
-	}
+  const integrationIndex = activeIntegrations.value.findIndex(
+    (i) => i.id === selectedIntegration.value?.id,
+  );
+  if (integrationIndex !== -1) {
+    const integration = activeIntegrations.value[integrationIndex];
+    if (integration) {
+      integration.name = integrationData.name;
+      integration.description = integrationData.description;
+      integration.status = integrationData.active ? "active" : "inactive";
+    }
+  }
 
-	console.log("Updated integration:", selectedIntegration.value);
+  console.log("Updated integration:", selectedIntegration.value);
 }
 
 function handleDisconnectIntegration(integrationId: number) {
-	activeIntegrations.value = activeIntegrations.value.filter(
-		(i) => i.id !== integrationId,
-	);
-	console.log("Disconnected integration:", integrationId);
+  activeIntegrations.value = activeIntegrations.value.filter(
+    (i) => i.id !== integrationId,
+  );
+  console.log("Disconnected integration:", integrationId);
 }
 
 // Webhooks
 interface Webhook {
-	id: string;
-	name: string;
-	url: string;
-	status: "active" | "inactive";
-	events: string[];
-	createdAt: Date;
-	lastDelivery: Date;
+  id: string;
+  name: string;
+  url: string;
+  status: "active" | "inactive";
+  events: string[];
+  createdAt: Date;
+  lastDelivery: Date;
 }
 
 interface WebhookData {
-	name: string;
-	url: string;
-	active: boolean;
-	events: Record<string, boolean>;
+  name: string;
+  url: string;
+  active: boolean;
+  events: Record<string, boolean>;
 }
 
 const isCreateDialogOpen = ref(false);
@@ -135,142 +135,142 @@ const isDeleteDialogOpen = ref(false);
 const selectedWebhook = ref<Webhook | null>(null);
 
 const eventCategories = [
-	{
-		id: "documents",
-		name: "Documents",
-		events: [
-			{
-				key: "documentsUploaded",
-				name: "Document Uploaded",
-				description: "When a new document is uploaded to your project",
-			},
-			{
-				key: "documentsDownloaded",
-				name: "Document Downloaded",
-				description: "When a document is downloaded from your project",
-			},
-			{
-				key: "documentsRedacted",
-				name: "Document Redacted",
-				description: "When a document is successfully redacted",
-			},
-			{
-				key: "documentsVerified",
-				name: "Document Verified",
-				description: "When a document passes verification checks",
-			},
-		],
-	},
-	{
-		id: "integrations",
-		name: "Integrations",
-		events: [
-			{
-				key: "integrationTriggered",
-				name: "Integration Triggered",
-				description: "When an integration workflow is started",
-			},
-			{
-				key: "integrationSucceeded",
-				name: "Integration Succeeded",
-				description: "When an integration completes successfully",
-			},
-			{
-				key: "integrationFailed",
-				name: "Integration Failed",
-				description: "When an integration encounters errors or failures",
-			},
-		],
-	},
+  {
+    id: "documents",
+    name: "Documents",
+    events: [
+      {
+        key: "documentsUploaded",
+        name: "Document Uploaded",
+        description: "When a new document is uploaded to your project",
+      },
+      {
+        key: "documentsDownloaded",
+        name: "Document Downloaded",
+        description: "When a document is downloaded from your project",
+      },
+      {
+        key: "documentsRedacted",
+        name: "Document Redacted",
+        description: "When a document is successfully redacted",
+      },
+      {
+        key: "documentsVerified",
+        name: "Document Verified",
+        description: "When a document passes verification checks",
+      },
+    ],
+  },
+  {
+    id: "integrations",
+    name: "Integrations",
+    events: [
+      {
+        key: "integrationTriggered",
+        name: "Integration Triggered",
+        description: "When an integration workflow is started",
+      },
+      {
+        key: "integrationSucceeded",
+        name: "Integration Succeeded",
+        description: "When an integration completes successfully",
+      },
+      {
+        key: "integrationFailed",
+        name: "Integration Failed",
+        description: "When an integration encounters errors or failures",
+      },
+    ],
+  },
 ];
 
 const existingWebhooks = ref<Webhook[]>([
-	{
-		id: "1",
-		name: "Production API",
-		url: "https://api.production.com/webhooks",
-		status: "active",
-		events: ["documentsUploaded", "documentsRedacted", "integrationFailed"],
-		createdAt: new Date("2024-01-10"),
-		lastDelivery: new Date("2024-01-20"),
-	},
-	{
-		id: "2",
-		name: "Slack Notifications",
-		url: "https://hooks.slack.com/services/xxx/yyy/zzz",
-		status: "active",
-		events: ["integrationFailed", "documentsVerified"],
-		createdAt: new Date("2024-01-15"),
-		lastDelivery: new Date("2024-01-19"),
-	},
-	{
-		id: "3",
-		name: "Analytics Webhook",
-		url: "https://analytics.myapp.com/webhook",
-		status: "inactive",
-		events: ["documentsUploaded", "documentsDownloaded"],
-		createdAt: new Date("2024-01-05"),
-		lastDelivery: new Date("2024-01-18"),
-	},
+  {
+    id: "1",
+    name: "Production API",
+    url: "https://api.production.com/webhooks",
+    status: "active",
+    events: ["documentsUploaded", "documentsRedacted", "integrationFailed"],
+    createdAt: new Date("2024-01-10"),
+    lastDelivery: new Date("2024-01-20"),
+  },
+  {
+    id: "2",
+    name: "Slack Notifications",
+    url: "https://hooks.slack.com/services/xxx/yyy/zzz",
+    status: "active",
+    events: ["integrationFailed", "documentsVerified"],
+    createdAt: new Date("2024-01-15"),
+    lastDelivery: new Date("2024-01-19"),
+  },
+  {
+    id: "3",
+    name: "Analytics Webhook",
+    url: "https://analytics.myapp.com/webhook",
+    status: "inactive",
+    events: ["documentsUploaded", "documentsDownloaded"],
+    createdAt: new Date("2024-01-05"),
+    lastDelivery: new Date("2024-01-18"),
+  },
 ]);
 
 function handleCreateWebhook(webhookData: WebhookData) {
-	const newWebhook: Webhook = {
-		id: Date.now().toString(),
-		name: webhookData.name,
-		url: webhookData.url,
-		status: webhookData.active ? "active" : "inactive",
-		events: Object.entries(webhookData.events)
-			.filter(([_, enabled]) => enabled)
-			.map(([key, _]) => key),
-		createdAt: new Date(),
-		lastDelivery: new Date(),
-	};
+  const newWebhook: Webhook = {
+    id: Date.now().toString(),
+    name: webhookData.name,
+    url: webhookData.url,
+    status: webhookData.active ? "active" : "inactive",
+    events: Object.entries(webhookData.events)
+      .filter(([_, enabled]) => enabled)
+      .map(([key, _]) => key),
+    createdAt: new Date(),
+    lastDelivery: new Date(),
+  };
 
-	existingWebhooks.value.push(newWebhook);
-	console.log("Created webhook:", newWebhook);
+  existingWebhooks.value.push(newWebhook);
+  console.log("Created webhook:", newWebhook);
 }
 
 function handleUpdateWebhook(webhookData: WebhookData) {
-	if (!selectedWebhook.value) return;
+  if (!selectedWebhook.value) return;
 
-	const webhookIndex = existingWebhooks.value.findIndex(
-		(w) => w.id === selectedWebhook.value?.id,
-	);
-	if (webhookIndex !== -1) {
-		const webhook = existingWebhooks.value[webhookIndex];
-		if (webhook) {
-			webhook.name = webhookData.name;
-			webhook.url = webhookData.url;
-			webhook.status = webhookData.active ? "active" : "inactive";
-			webhook.events = Object.entries(webhookData.events)
-				.filter(([_, enabled]) => enabled)
-				.map(([key, _]) => key);
-		}
-	}
+  const webhookIndex = existingWebhooks.value.findIndex(
+    (w) => w.id === selectedWebhook.value?.id,
+  );
+  if (webhookIndex !== -1) {
+    const webhook = existingWebhooks.value[webhookIndex];
+    if (webhook) {
+      webhook.name = webhookData.name;
+      webhook.url = webhookData.url;
+      webhook.status = webhookData.active ? "active" : "inactive";
+      webhook.events = Object.entries(webhookData.events)
+        .filter(([_, enabled]) => enabled)
+        .map(([key, _]) => key);
+    }
+  }
 
-	console.log("Updated webhook:", selectedWebhook.value);
+  console.log("Updated webhook:", selectedWebhook.value);
 }
 
 function handleDeleteWebhook(webhookId: string) {
-	existingWebhooks.value = existingWebhooks.value.filter(
-		(w) => w.id !== webhookId,
-	);
-	console.log("Deleted webhook:", webhookId);
+  existingWebhooks.value = existingWebhooks.value.filter(
+    (w) => w.id !== webhookId,
+  );
+  console.log("Deleted webhook:", webhookId);
 }
 
 function openEditDialog(webhook: Webhook) {
-	selectedWebhook.value = webhook;
-	isEditDialogOpen.value = true;
+  selectedWebhook.value = webhook;
+  isEditDialogOpen.value = true;
 }
 
 function openDeleteDialog(webhook: Webhook) {
-	selectedWebhook.value = webhook;
-	isDeleteDialogOpen.value = true;
+  selectedWebhook.value = webhook;
+  isDeleteDialogOpen.value = true;
 }
 
 function testWebhook(webhook: Webhook) {
-	console.log("Testing webhook:", webhook);
+  console.log("Testing webhook:", webhook);
 }
 </script>
 
@@ -294,11 +294,16 @@ function testWebhook(webhook: Webhook) {
                 })
               }}</CardDescription>
             </div>
-            <Button as-child>
-              <NuxtLink to="/integrations/explore">
-                {{ t("integrations.actions.explore") }}
-              </NuxtLink>
-            </Button>
+            <div class="flex items-center gap-2">
+              <Button as-child>
+                <NuxtLink to="/integrations/explore">
+                  {{ t("integrations.actions.explore") }}
+                </NuxtLink>
+              </Button>
+              <Button as-child variant="outline">
+                <NuxtLink to="/integrations/runs"> View Runs </NuxtLink>
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
