@@ -11,7 +11,6 @@ import {
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
 	Card,
 	CardContent,
@@ -228,7 +227,7 @@ function formatDate(date: Date): string {
     <div class="max-w-4xl mx-auto w-full">
       <!-- Search and Filters -->
       <div class="flex items-center gap-3 mb-6 flex-wrap">
-        <Button as-child>
+        <Button as-child variant="outline">
           <NuxtLink to="/integrations" class="flex items-center gap-2">
             <ArrowLeft :size="16" />
             Back to Connections
@@ -298,7 +297,7 @@ function formatDate(date: Date): string {
               :disabled="selectedRuns.size === 0"
               class="flex items-center gap-2"
             >
-              <Check v-if="logsCopied" :size="16" />
+              <Check v-if="logsCopied" :size="16" class="text-green-500" />
               <Copy v-else :size="16" />
               {{ logsCopied ? "Copied!" : "Copy Logs" }}
             </Button>

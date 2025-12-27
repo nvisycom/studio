@@ -2,147 +2,147 @@
 import { ref } from "vue";
 import { Plus, MoreVertical, Pencil, Trash2, ArrowLeft } from "lucide-vue-next";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+	DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from "@/components/ui/select";
 import { EditRoleDialog, DeleteRoleDialog } from "@/components/pages/members";
 
 definePageMeta({
-  pageName: "Members",
+	pageName: "Members",
 });
 
 interface Role {
-  id: string;
-  name: string;
-  description: string;
-  membersCount: number;
-  isDefault: boolean;
+	id: string;
+	name: string;
+	description: string;
+	membersCount: number;
+	isDefault: boolean;
 }
 
 interface Permission {
-  id: string;
-  name: string;
-  description: string;
+	id: string;
+	name: string;
+	description: string;
 }
 
 const roles = ref<Role[]>([
-  {
-    id: "1",
-    name: "Owner",
-    description: "Full access to all workspace features",
-    membersCount: 2,
-    isDefault: true,
-  },
-  {
-    id: "2",
-    name: "Editor",
-    description: "Can manage documents and pipelines",
-    membersCount: 5,
-    isDefault: true,
-  },
-  {
-    id: "3",
-    name: "Member",
-    description: "Basic access to view and upload documents",
-    membersCount: 12,
-    isDefault: true,
-  },
+	{
+		id: "1",
+		name: "Owner",
+		description: "Full access to all workspace features",
+		membersCount: 2,
+		isDefault: true,
+	},
+	{
+		id: "2",
+		name: "Editor",
+		description: "Can manage documents and pipelines",
+		membersCount: 5,
+		isDefault: true,
+	},
+	{
+		id: "3",
+		name: "Member",
+		description: "Basic access to view and upload documents",
+		membersCount: 12,
+		isDefault: true,
+	},
 ]);
 
 const permissions = ref<Permission[]>([
-  {
-    id: "1",
-    name: "View documents",
-    description: "Can view and download documents",
-  },
-  {
-    id: "2",
-    name: "Upload documents",
-    description: "Can upload new documents to the workspace",
-  },
-  {
-    id: "3",
-    name: "Delete documents",
-    description: "Can permanently delete documents",
-  },
-  {
-    id: "4",
-    name: "Manage pipelines",
-    description: "Can create, edit, and delete automation pipelines",
-  },
-  {
-    id: "5",
-    name: "Manage integrations",
-    description: "Can connect and disconnect integrations",
-  },
-  {
-    id: "6",
-    name: "Invite members",
-    description: "Can invite new team members to the workspace",
-  },
-  {
-    id: "7",
-    name: "Remove members",
-    description: "Can remove members from the workspace",
-  },
-  {
-    id: "8",
-    name: "Manage billing",
-    description: "Can view and update billing information",
-  },
-  {
-    id: "9",
-    name: "View analytics",
-    description: "Can access analytics and usage reports",
-  },
-  {
-    id: "10",
-    name: "Manage workspace settings",
-    description: "Can modify workspace settings and preferences",
-  },
+	{
+		id: "1",
+		name: "View documents",
+		description: "Can view and download documents",
+	},
+	{
+		id: "2",
+		name: "Upload documents",
+		description: "Can upload new documents to the workspace",
+	},
+	{
+		id: "3",
+		name: "Delete documents",
+		description: "Can permanently delete documents",
+	},
+	{
+		id: "4",
+		name: "Manage pipelines",
+		description: "Can create, edit, and delete automation pipelines",
+	},
+	{
+		id: "5",
+		name: "Manage integrations",
+		description: "Can connect and disconnect integrations",
+	},
+	{
+		id: "6",
+		name: "Invite members",
+		description: "Can invite new team members to the workspace",
+	},
+	{
+		id: "7",
+		name: "Remove members",
+		description: "Can remove members from the workspace",
+	},
+	{
+		id: "8",
+		name: "Manage billing",
+		description: "Can view and update billing information",
+	},
+	{
+		id: "9",
+		name: "View analytics",
+		description: "Can access analytics and usage reports",
+	},
+	{
+		id: "10",
+		name: "Manage workspace settings",
+		description: "Can modify workspace settings and preferences",
+	},
 ]);
 
 const selectedRole = ref("1");
 const permissionStates = ref<Record<string, boolean>>({
-  "1": true,
-  "2": true,
-  "3": true,
-  "4": true,
-  "5": true,
-  "6": true,
-  "7": true,
-  "8": true,
-  "9": true,
-  "10": true,
+	"1": true,
+	"2": true,
+	"3": true,
+	"4": true,
+	"5": true,
+	"6": true,
+	"7": true,
+	"8": true,
+	"9": true,
+	"10": true,
 });
 
 const isEditDialogOpen = ref(false);
@@ -150,38 +150,38 @@ const isDeleteDialogOpen = ref(false);
 const selectedRoleForEdit = ref<Role | null>(null);
 
 function createNewRole() {
-  console.log("Creating new role");
+	console.log("Creating new role");
 }
 
 function editRole(roleId: string) {
-  const role = roles.value.find((r) => r.id === roleId);
-  if (role) {
-    selectedRoleForEdit.value = role;
-    isEditDialogOpen.value = true;
-  }
+	const role = roles.value.find((r) => r.id === roleId);
+	if (role) {
+		selectedRoleForEdit.value = role;
+		isEditDialogOpen.value = true;
+	}
 }
 
 function saveRoleEdit(data: { name: string; description: string }) {
-  if (selectedRoleForEdit.value) {
-    selectedRoleForEdit.value.name = data.name;
-    selectedRoleForEdit.value.description = data.description;
-  }
+	if (selectedRoleForEdit.value) {
+		selectedRoleForEdit.value.name = data.name;
+		selectedRoleForEdit.value.description = data.description;
+	}
 }
 
 function deleteRole(roleId: string) {
-  const role = roles.value.find((r) => r.id === roleId);
-  if (role) {
-    selectedRoleForEdit.value = role;
-    isDeleteDialogOpen.value = true;
-  }
+	const role = roles.value.find((r) => r.id === roleId);
+	if (role) {
+		selectedRoleForEdit.value = role;
+		isDeleteDialogOpen.value = true;
+	}
 }
 
 function confirmDeleteRole() {
-  if (selectedRoleForEdit.value) {
-    roles.value = roles.value.filter(
-      (r) => r.id !== selectedRoleForEdit.value!.id,
-    );
-  }
+	if (selectedRoleForEdit.value) {
+		roles.value = roles.value.filter(
+			(r) => r.id !== selectedRoleForEdit.value!.id,
+		);
+	}
 }
 </script>
 

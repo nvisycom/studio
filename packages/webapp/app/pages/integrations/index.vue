@@ -295,7 +295,7 @@ function testWebhook(webhook: Webhook) {
               }}</CardDescription>
             </div>
             <div class="flex items-center gap-2">
-              <Button as-child>
+              <Button as-child variant="outline">
                 <NuxtLink to="/integrations/explore">
                   {{ t("integrations.actions.explore") }}
                 </NuxtLink>

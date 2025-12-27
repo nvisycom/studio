@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-vue-next";
+import {
+	Mail,
+	Lock,
+	Eye,
+	EyeOff,
+	ArrowRight,
+	ExternalLink,
+} from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -80,169 +87,192 @@ async function handleMicrosoftSignup(): Promise<void> {
 </script>
 
 <template>
-  <div class="min-h-[calc(100vh-57px)] flex">
-    <!-- Left Side: Gradient -->
-    <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-neutral-900 via-neutral-800 to-white dark:from-black dark:via-neutral-900 dark:to-neutral-800" />
-
-    <!-- Right Side: Form -->
-    <div class="flex-1 flex items-center justify-center p-6 bg-neutral-50 dark:bg-neutral-950">
-      <div class="w-full max-w-[480px]">
-        <!-- Header -->
-        <div class="mb-8">
-          <h1 class="text-2xl font-semibold text-neutral-900 dark:text-white mb-2">
-            Create an account
-          </h1>
-          <p class="text-neutral-600 dark:text-neutral-400">
-            Get started with your free account
-          </p>
-        </div>
-
-        <!-- Signup Card -->
-        <Card class="border-neutral-200 dark:border-neutral-800">
-          <CardHeader class="space-y-1 pb-4">
-            <CardTitle class="text-xl font-semibold">Sign up</CardTitle>
-            <CardDescription>Create your account to get started</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form @submit.prevent="handleSignup" class="space-y-4">
-              <!-- Email -->
-              <div class="space-y-2">
-                <Label for="email" class="text-sm font-medium">Email address</Label>
-                <div class="relative">
-                  <Mail :size="16" class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
-                  <Input
-                    id="email"
-                    v-model="email"
-                    type="email"
-                    placeholder="name@company.com"
-                    class="pl-9 h-10 border-neutral-300 dark:border-neutral-700"
-                    required
-                  />
-                </div>
-              </div>
-
-              <!-- Password -->
-              <div class="space-y-2">
-                <Label for="password" class="text-sm font-medium">Password</Label>
-                <div class="relative">
-                  <Lock :size="16" class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
-                  <Input
-                    id="password"
-                    v-model="password"
-                    :type="showPassword ? 'text' : 'password'"
-                    placeholder="Create a password"
-                    class="pl-9 pr-9 h-10 border-neutral-300 dark:border-neutral-700"
-                    required
-                  />
-                  <button
-                    type="button"
-                    @click="togglePasswordVisibility"
-                    class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
-                  >
-                    <Eye v-if="!showPassword" :size="16" />
-                    <EyeOff v-else :size="16" />
-                  </button>
-                </div>
-              </div>
-
-              <!-- Terms Agreement -->
-              <div class="flex items-start gap-2">
-                <Checkbox
-                  id="terms"
-                  v-model:checked="agreeToTerms"
-                  class="mt-0.5 border-neutral-400 dark:border-neutral-600"
-                />
-                <Label for="terms" class="text-xs font-normal cursor-pointer leading-tight text-neutral-600 dark:text-neutral-400">
-                  I agree to the
-                  <a
-                    href="https://nvisy.com/legal/terms-of-service"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-neutral-900 dark:text-white hover:underline"
-                  >
-                    Terms of Service
-                  </a>
-                  and
-                  <a
-                    href="https://nvisy.com/legal/privacy-policy"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-neutral-900 dark:text-white hover:underline"
-                  >
-                    Privacy Policy
-                  </a>
-                </Label>
-              </div>
-
-              <!-- Submit Button -->
-              <Button type="submit" class="w-full h-10" :disabled="isLoading">
-                <span v-if="!isLoading" class="flex items-center justify-center gap-2">
-                  Create account
-                  <ArrowRight :size="16" />
-                </span>
-                <span v-else>Creating account...</span>
-              </Button>
-
-              <!-- Divider -->
-              <div class="relative">
-                <div class="absolute inset-0 flex items-center">
-                  <Separator />
-                </div>
-                <div class="relative flex justify-center text-xs">
-                  <span class="bg-white dark:bg-neutral-950 px-2 text-neutral-500 dark:text-neutral-400">
-                    Or continue with
-                  </span>
-                </div>
-              </div>
-
-              <!-- Social Signup Buttons -->
-              <div class="grid grid-cols-2 gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  @click="handleGoogleSignup"
-                  class="w-full border-neutral-300 dark:border-neutral-700"
-                >
-                  <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                  </svg>
-                  Google
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  @click="handleMicrosoftSignup"
-                  class="w-full border-neutral-300 dark:border-neutral-700"
-                >
-                  <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24">
-                    <path fill="#f25022" d="M1 1h10v10H1z"/>
-                    <path fill="#00a4ef" d="M13 1h10v10H13z"/>
-                    <path fill="#7fba00" d="M1 13h10v10H1z"/>
-                    <path fill="#ffb900" d="M13 13h10v10H13z"/>
-                  </svg>
-                  Microsoft
-                </Button>
-              </div>
-
-              <!-- Login Link -->
-              <div class="text-center pt-2">
-                <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                  Already have an account?
-                  <NuxtLink
-                    to="/auth/login"
-                    class="font-medium text-neutral-900 dark:text-white hover:underline ml-1"
-                  >
-                    Log in
-                  </NuxtLink>
-                </p>
-              </div>
-            </form>
-          </CardContent>
-</Card>
-      </div>
+  <div>
+    <!-- Header -->
+    <div class="mb-8">
+      <h1
+        class="text-4xl md:text-5xl font-light leading-tight text-neutral-900 dark:text-white"
+      >
+        Create an account
+      </h1>
+      <p
+        class="text-lg md:text-xl leading-relaxed text-neutral-600 dark:text-neutral-400"
+      >
+        Get started with your free account
+      </p>
     </div>
+
+    <!-- Signup Card -->
+    <Card class="border-neutral-200 dark:border-neutral-800">
+      <CardHeader class="space-y-0 pb-4">
+        <CardTitle class="text-2xl font-light text-neutral-900 dark:text-white"
+          >Sign up</CardTitle
+        >
+        <CardDescription
+          class="text-base text-neutral-600 dark:text-neutral-400"
+          >Create your account to get started</CardDescription
+        >
+      </CardHeader>
+      <CardContent>
+        <form @submit.prevent="handleSignup" class="space-y-4">
+          <!-- Email -->
+          <div class="space-y-2">
+            <Label
+              for="email"
+              class="text-sm font-normal text-neutral-700 dark:text-neutral-300"
+              >Email address</Label
+            >
+            <div class="relative">
+              <Mail
+                :size="16"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+              />
+              <Input
+                id="email"
+                v-model="email"
+                type="email"
+                placeholder="name@company.com"
+                class="pl-9 h-10 border-neutral-300 dark:border-neutral-700"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="space-y-2">
+            <Label
+              for="password"
+              class="text-sm font-normal text-neutral-700 dark:text-neutral-300"
+              >Password</Label
+            >
+            <div class="relative">
+              <Lock
+                :size="16"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+              />
+              <Input
+                id="password"
+                v-model="password"
+                :type="showPassword ? 'text' : 'password'"
+                placeholder="Create a password"
+                class="pl-9 pr-9 h-10 border-neutral-300 dark:border-neutral-700"
+                required
+              />
+              <button
+                type="button"
+                @click="togglePasswordVisibility"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
+              >
+                <Eye v-if="!showPassword" :size="16" />
+                <EyeOff v-else :size="16" />
+              </button>
+            </div>
+          </div>
+
+          <!-- Terms Agreement -->
+          <div class="flex items-start gap-2">
+            <Checkbox
+              id="terms"
+              v-model:checked="agreeToTerms"
+              class="mt-0.5 border-neutral-400 dark:border-neutral-600"
+            />
+            <Label
+              for="terms"
+              class="text-sm font-light cursor-pointer leading-tight text-neutral-600 dark:text-neutral-400"
+            >
+              I agree to the
+              <a
+                href="https://nvisy.com/legal/terms-of-service"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1 text-neutral-900 dark:text-white hover:underline"
+              >
+                Terms of Service
+                <ExternalLink :size="10" />
+              </a>
+              and
+              <a
+                href="https://nvisy.com/legal/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1 text-neutral-900 dark:text-white hover:underline"
+              >
+                Privacy Policy
+                <ExternalLink :size="10" />
+              </a>
+            </Label>
+          </div>
+
+          <!-- Submit Button -->
+          <Button type="submit" class="w-full h-10" :disabled="isLoading">
+            <span
+              v-if="!isLoading"
+              class="flex items-center justify-center gap-2"
+            >
+              Create account
+              <ArrowRight :size="16" />
+            </span>
+            <span v-else>Creating account...</span>
+          </Button>
+
+          <!-- Divider -->
+          <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+              <Separator />
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span
+                class="bg-white dark:bg-neutral-950 px-2 text-neutral-600 dark:text-neutral-400 font-light"
+              >
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          <!-- Social Signup Buttons -->
+          <div class="grid grid-cols-2 gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              @click="handleGoogleSignup"
+              class="w-full border-neutral-300 dark:border-neutral-700"
+            >
+              <img
+                src="~/assets/brands/google.png"
+                alt="Google"
+                class="w-4 h-4 mr-2"
+              />
+              Google
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              @click="handleMicrosoftSignup"
+              class="w-full border-neutral-300 dark:border-neutral-700"
+            >
+              <img
+                src="~/assets/brands/microsoft.png"
+                alt="Microsoft"
+                class="w-4 h-4 mr-2"
+              />
+              Microsoft
+            </Button>
+          </div>
+
+          <!-- Login Link -->
+          <div class="text-center pt-2">
+            <p class="text-sm text-neutral-600 dark:text-neutral-400">
+              Already have an account?
+              <NuxtLink
+                to="/auth/login"
+                class="font-medium text-neutral-900 dark:text-white hover:underline ml-1"
+              >
+                Log in
+              </NuxtLink>
+            </p>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   </div>
 </template>

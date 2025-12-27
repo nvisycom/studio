@@ -31,6 +31,7 @@ export interface CorpusDocument {
 	name: string;
 	fileSize: string;
 	indexSize: string;
+	segments: number;
 	avgQuery: string;
 	indexedBy: string;
 	indexedAt: Date;
@@ -86,6 +87,7 @@ function getStatusColor(status: string) {
         <TableHead class="w-[180px]">Indexed</TableHead>
         <TableHead class="w-[120px]">File Size</TableHead>
         <TableHead class="w-[120px]">Index Size</TableHead>
+        <TableHead class="w-[100px]">Segments</TableHead>
         <TableHead class="w-[120px]">Avg Query</TableHead>
         <TableHead class="w-[60px]"></TableHead>
       </TableRow>
@@ -127,6 +129,11 @@ function getStatusColor(status: string) {
         <TableCell>
           <span class="text-sm text-neutral-600 dark:text-neutral-400">
             {{ doc.indexSize }}
+          </span>
+        </TableCell>
+        <TableCell>
+          <span class="text-sm text-neutral-600 dark:text-neutral-400">
+            {{ doc.segments.toLocaleString() }}
           </span>
         </TableCell>
         <TableCell>

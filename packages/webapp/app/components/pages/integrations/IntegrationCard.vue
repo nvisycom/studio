@@ -88,6 +88,7 @@ const emit = defineEmits<Emits>();
       <Button
         v-if="integration.status === 'available' && integration.isExternal"
         as-child
+        variant="outline"
         class="w-full"
       >
         <a

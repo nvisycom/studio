@@ -100,9 +100,14 @@ function toggleTheme() {
                 <ExternalLink :size="12" class="ml-auto opacity-60" />
               </a>
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <LogOut />
-              Log Out
+            <DropdownMenuItem as-child>
+              <NuxtLink
+                to="/auth/login"
+                class="cursor-pointer flex items-center"
+              >
+                <LogOut />
+                Log Out
+              </NuxtLink>
             </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
