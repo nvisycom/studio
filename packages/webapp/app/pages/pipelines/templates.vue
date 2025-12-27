@@ -1,121 +1,121 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import {
-  Search,
-  ArrowLeft,
-  Split,
-  Merge,
-  Edit3,
-  FileOutput,
-  ScanText,
-  FileText,
+	Search,
+	ArrowLeft,
+	Split,
+	Merge,
+	Edit3,
+	FileOutput,
+	ScanText,
+	FileText,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 
 definePageMeta({
-  pageName: "Pipelines",
+	pageName: "Pipelines",
 });
 
 interface PipelineTemplate {
-  id: string;
-  name: string;
-  description: string;
-  icon: any;
-  color: string;
-  category: string;
-  estimatedTime: string;
-  popularity: "high" | "medium" | "low";
+	id: string;
+	name: string;
+	description: string;
+	icon: any;
+	color: string;
+	category: string;
+	estimatedTime: string;
+	popularity: "high" | "medium" | "low";
 }
 
 const searchQuery = ref("");
 
 const templates = ref<PipelineTemplate[]>([
-  {
-    id: "1",
-    name: "Split",
-    description: "Split multi-page documents into individual pages or sections",
-    icon: Split,
-    color: "bg-blue-600",
-    category: "Processing",
-    estimatedTime: "2 min",
-    popularity: "high",
-  },
-  {
-    id: "2",
-    name: "Merge",
-    description: "Combine multiple documents into a single file",
-    icon: Merge,
-    color: "bg-purple-600",
-    category: "Processing",
-    estimatedTime: "3 min",
-    popularity: "high",
-  },
-  {
-    id: "3",
-    name: "Edit",
-    description: "Apply redactions, annotations, and modifications",
-    icon: Edit3,
-    color: "bg-green-600",
-    category: "Processing",
-    estimatedTime: "5 min",
-    popularity: "high",
-  },
-  {
-    id: "4",
-    name: "Extract",
-    description: "Extract text, images, or specific data from documents",
-    icon: FileOutput,
-    color: "bg-yellow-600",
-    category: "Processing",
-    estimatedTime: "4 min",
-    popularity: "medium",
-  },
-  {
-    id: "5",
-    name: "Parse",
-    description: "Analyze document structure and extract structured data",
-    icon: ScanText,
-    color: "bg-orange-600",
-    category: "Processing",
-    estimatedTime: "6 min",
-    popularity: "medium",
-  },
-  {
-    id: "6",
-    name: "Summarize",
-    description: "Generate AI-powered summaries of document content",
-    icon: FileText,
-    color: "bg-indigo-600",
-    category: "AI",
-    estimatedTime: "8 min",
-    popularity: "high",
-  },
+	{
+		id: "1",
+		name: "Split",
+		description: "Split multi-page documents into individual pages or sections",
+		icon: Split,
+		color: "bg-blue-600",
+		category: "Processing",
+		estimatedTime: "2 min",
+		popularity: "high",
+	},
+	{
+		id: "2",
+		name: "Merge",
+		description: "Combine multiple documents into a single file",
+		icon: Merge,
+		color: "bg-purple-600",
+		category: "Processing",
+		estimatedTime: "3 min",
+		popularity: "high",
+	},
+	{
+		id: "3",
+		name: "Edit",
+		description: "Apply redactions, annotations, and modifications",
+		icon: Edit3,
+		color: "bg-green-600",
+		category: "Processing",
+		estimatedTime: "5 min",
+		popularity: "high",
+	},
+	{
+		id: "4",
+		name: "Extract",
+		description: "Extract text, images, or specific data from documents",
+		icon: FileOutput,
+		color: "bg-yellow-600",
+		category: "Processing",
+		estimatedTime: "4 min",
+		popularity: "medium",
+	},
+	{
+		id: "5",
+		name: "Parse",
+		description: "Analyze document structure and extract structured data",
+		icon: ScanText,
+		color: "bg-orange-600",
+		category: "Processing",
+		estimatedTime: "6 min",
+		popularity: "medium",
+	},
+	{
+		id: "6",
+		name: "Summarize",
+		description: "Generate AI-powered summaries of document content",
+		icon: FileText,
+		color: "bg-indigo-600",
+		category: "AI",
+		estimatedTime: "8 min",
+		popularity: "high",
+	},
 ]);
 
 const filteredTemplates = computed(() => {
-  if (!searchQuery.value) return templates.value;
+	if (!searchQuery.value) return templates.value;
 
-  const query = searchQuery.value.toLowerCase();
-  return templates.value.filter(
-    (template) =>
-      template.name.toLowerCase().includes(query) ||
-      template.description.toLowerCase().includes(query) ||
-      template.category.toLowerCase().includes(query),
-  );
+	const query = searchQuery.value.toLowerCase();
+	return templates.value.filter(
+		(template) =>
+			template.name.toLowerCase().includes(query) ||
+			template.description.toLowerCase().includes(query) ||
+			template.category.toLowerCase().includes(query),
+	);
 });
 
 function useTemplate(template: PipelineTemplate) {
-  console.log("Using template:", template.name);
-  // TODO: Implement template usage
+	console.log("Using template:", template.name);
+	// TODO: Implement template usage
 }
 </script>
 

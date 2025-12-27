@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -14,14 +14,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 interface Props {
-  open: boolean;
-  roleName: string;
-  roleDescription: string;
+	open: boolean;
+	roleName: string;
+	roleDescription: string;
 }
 
 interface Emits {
-  (e: "update:open", value: boolean): void;
-  (e: "save", data: { name: string; description: string }): void;
+	(e: "update:open", value: boolean): void;
+	(e: "save", data: { name: string; description: string }): void;
 }
 
 const props = defineProps<Props>();
@@ -31,21 +31,21 @@ const localName = ref(props.roleName);
 const localDescription = ref(props.roleDescription);
 
 watch(
-  () => props.open,
-  (newVal) => {
-    if (newVal) {
-      localName.value = props.roleName;
-      localDescription.value = props.roleDescription;
-    }
-  }
+	() => props.open,
+	(newVal) => {
+		if (newVal) {
+			localName.value = props.roleName;
+			localDescription.value = props.roleDescription;
+		}
+	},
 );
 
 function handleSave() {
-  emit("save", {
-    name: localName.value,
-    description: localDescription.value,
-  });
-  emit("update:open", false);
+	emit("save", {
+		name: localName.value,
+		description: localDescription.value,
+	});
+	emit("update:open", false);
 }
 </script>
 

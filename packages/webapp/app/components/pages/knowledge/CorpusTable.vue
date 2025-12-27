@@ -1,80 +1,80 @@
 <script setup lang="ts">
 import {
-  MoreVertical,
-  Pencil,
-  Trash2,
-  CheckCircle2,
-  Clock,
-  XCircle,
-  FileText,
+	MoreVertical,
+	Pencil,
+	Trash2,
+	CheckCircle2,
+	Clock,
+	XCircle,
+	FileText,
 } from "lucide-vue-next";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+	DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { EntityAvatar } from "@/components/common";
 
 export interface CorpusDocument {
-  id: string;
-  name: string;
-  fileSize: string;
-  indexSize: string;
-  avgQuery: string;
-  indexedBy: string;
-  indexedAt: Date;
-  visualSupport: boolean;
-  contentSegmentation: string;
-  status: "indexed" | "processing" | "failed";
+	id: string;
+	name: string;
+	fileSize: string;
+	indexSize: string;
+	avgQuery: string;
+	indexedBy: string;
+	indexedAt: Date;
+	visualSupport: boolean;
+	contentSegmentation: string;
+	status: "indexed" | "processing" | "failed";
 }
 
 interface Props {
-  documents: CorpusDocument[];
+	documents: CorpusDocument[];
 }
 
 interface Emits {
-  (e: "edit", docId: string): void;
-  (e: "delete", docId: string): void;
+	(e: "edit", docId: string): void;
+	(e: "delete", docId: string): void;
 }
 
 defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 function getStatusIcon(status: string) {
-  switch (status) {
-    case "indexed":
-      return CheckCircle2;
-    case "processing":
-      return Clock;
-    case "failed":
-      return XCircle;
-    default:
-      return FileText;
-  }
+	switch (status) {
+		case "indexed":
+			return CheckCircle2;
+		case "processing":
+			return Clock;
+		case "failed":
+			return XCircle;
+		default:
+			return FileText;
+	}
 }
 
 function getStatusColor(status: string) {
-  switch (status) {
-    case "indexed":
-      return "text-neutral-600 dark:text-neutral-400";
-    case "processing":
-      return "text-neutral-600 dark:text-neutral-400";
-    case "failed":
-      return "text-neutral-600 dark:text-neutral-400";
-    default:
-      return "text-neutral-400";
-  }
+	switch (status) {
+		case "indexed":
+			return "text-neutral-600 dark:text-neutral-400";
+		case "processing":
+			return "text-neutral-600 dark:text-neutral-400";
+		case "failed":
+			return "text-neutral-600 dark:text-neutral-400";
+		default:
+			return "text-neutral-400";
+	}
 }
 </script>
 

@@ -1,121 +1,121 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
-	FileText,
-	ZoomIn,
-	ZoomOut,
-	X,
-	Split,
-	Merge,
-	Edit3,
-	FileOutput,
-	Loader2,
+  FileText,
+  ZoomIn,
+  ZoomOut,
+  X,
+  Split,
+  Merge,
+  Edit3,
+  FileOutput,
+  Loader2,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tools, Layers, ZoomControls } from "~/components/pages/studio";
+import { Tools, Layers, ZoomControls } from "~/components/pages/documents";
 
 definePageMeta({
-	pageName: "Documents",
+  pageName: "Documents",
 });
 
 const selectedTool = ref<string>("highlight");
 const zoomLevel = ref(100);
 
 interface OpenFile {
-	id: string;
-	name: string;
-	status: "unsaved" | "loading" | "saved";
+  id: string;
+  name: string;
+  status: "unsaved" | "loading" | "saved";
 }
 
 const openFiles = ref<OpenFile[]>([
-	{ id: "1", name: "contract_final.pdf", status: "unsaved" },
-	{ id: "2", name: "invoice_2024_q1_financial_report.pdf", status: "loading" },
-	{ id: "3", name: "report.pdf", status: "saved" },
+  { id: "1", name: "contract_final.pdf", status: "unsaved" },
+  { id: "2", name: "invoice_2024_q1_financial_report.pdf", status: "loading" },
+  { id: "3", name: "report.pdf", status: "saved" },
 ]);
 
 const activeFileId = ref("1");
 
 const layers = ref([
-	{ id: "1", name: "Split Operation", icon: Split, page: 1 },
-	{ id: "2", name: "Edit Annotation", icon: Edit3, page: 2 },
-	{ id: "3", name: "Extract Data", icon: FileOutput, page: 3 },
-	{ id: "4", name: "Merge Pages", icon: Merge, page: 4 },
+  { id: "1", name: "Split Operation", icon: Split, page: 1 },
+  { id: "2", name: "Edit Annotation", icon: Edit3, page: 2 },
+  { id: "3", name: "Extract Data", icon: FileOutput, page: 3 },
+  { id: "4", name: "Merge Pages", icon: Merge, page: 4 },
 ]);
 
 function selectTool(toolId: string) {
-	selectedTool.value = toolId;
-	console.log("Selected tool:", toolId);
+  selectedTool.value = toolId;
+  console.log("Selected tool:", toolId);
 }
 
 function rotate() {
-	console.log("Rotating document");
+  console.log("Rotating document");
 }
 
 function saveAsPdf() {
-	console.log("Saving as PDF");
+  console.log("Saving as PDF");
 }
 
 function saveAsDoc() {
-	console.log("Saving as DOC");
+  console.log("Saving as DOC");
 }
 
 function deleteLayer(layerId: string) {
-	const index = layers.value.findIndex((l) => l.id === layerId);
-	if (index !== -1) {
-		layers.value.splice(index, 1);
-	}
+  const index = layers.value.findIndex((l) => l.id === layerId);
+  if (index !== -1) {
+    layers.value.splice(index, 1);
+  }
 }
 
 function selectLayer(layerId: string) {
-	console.log("Selected layer:", layerId);
+  console.log("Selected layer:", layerId);
 }
 
 function zoomIn() {
-	if (zoomLevel.value < 200) {
-		zoomLevel.value += 10;
-	}
+  if (zoomLevel.value < 200) {
+    zoomLevel.value += 10;
+  }
 }
 
 function zoomOut() {
-	if (zoomLevel.value > 50) {
-		zoomLevel.value -= 10;
-	}
+  if (zoomLevel.value > 50) {
+    zoomLevel.value -= 10;
+  }
 }
 
 function undo() {
-	console.log("Undo");
+  console.log("Undo");
 }
 
 function redo() {
-	console.log("Redo");
+  console.log("Redo");
 }
 
 function selectFile(fileId: string) {
-	activeFileId.value = fileId;
+  activeFileId.value = fileId;
 }
 
 function closeFile(fileId: string) {
-	const index = openFiles.value.findIndex((f) => f.id === fileId);
-	if (index !== -1) {
-		openFiles.value.splice(index, 1);
-		if (activeFileId.value === fileId && openFiles.value.length > 0) {
-			activeFileId.value = openFiles.value[0].id;
-		}
-	}
+  const index = openFiles.value.findIndex((f) => f.id === fileId);
+  if (index !== -1) {
+    openFiles.value.splice(index, 1);
+    if (activeFileId.value === fileId && openFiles.value.length > 0) {
+      activeFileId.value = openFiles.value[0].id;
+    }
+  }
 }
 
 function getStatusColor(status: string) {
-	switch (status) {
-		case "unsaved":
-			return "bg-neutral-400";
-		case "loading":
-			return "";
-		case "saved":
-			return "hidden";
-		default:
-			return "bg-neutral-400";
-	}
+  switch (status) {
+    case "unsaved":
+      return "bg-neutral-400";
+    case "loading":
+      return "";
+    case "saved":
+      return "hidden";
+    default:
+      return "bg-neutral-400";
+  }
 }
 </script>
 

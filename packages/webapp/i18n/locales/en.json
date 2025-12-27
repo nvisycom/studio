@@ -1,231 +1,238 @@
 {
-	"common": {
-		"service": "Nvisy"
-	},
-	"home": {
-		"title": "Welcome to Nvisy",
-		"description": "Building innovative solutions for the modern web."
-	},
-	"members": {
-		"page": {
-			"title": "Members",
-			"description": "Manage your team members and invitations",
-			"tabs": {
-				"teamMembers": "Team Members",
-				"pendingInvites": "Pending Invites"
-			}
-		},
-		"forms": {
-			"invite": {
-				"title": "Invite Members",
-				"description": "Send invitations to new team members",
-				"emailPlaceholder": "email{'@'}example.com",
-				"button": "Send Invite",
-				"copyLink": "Copy Invite Link"
-			},
-			"search": {
-				"placeholder": "Search members..."
-			}
-		},
-		"table": {
-			"headers": {
-				"member": "Member",
-				"invite": "Invite",
-				"role": "Role",
-				"twoFA": "2FA",
-				"joined": "Joined",
-				"invited": "Invited"
-			},
-			"actions": {
-				"delete": "Delete",
-				"deleteSelected": "Delete Selected",
-				"cancel": "Cancel",
-				"cancelSelected": "Cancel Selected"
-			},
-			"status": {
-				"enabled": "Enabled",
-				"disabled": "Disabled",
-				"pending": "Pending invitation"
-			},
-			"empty": {
-				"noMembers": "No members found",
-				"noMembersDescription": "No members match your current filters. Try adjusting your search criteria.",
-				"noPendingInvites": "No pending invites",
-				"noPendingInvitesDescription": "No pending invitations match your current filters."
-			}
-		},
-		"messages": {
-			"inviteFooter": "Invited members will receive an email with instructions to join your project.",
-			"reviewFooter": "Project owners cannot be removed. Transfer ownership first to remove the current owner."
-		},
-		"roles": {
-			"owner": "Owner",
-			"editor": "Editor",
-			"member": "Member"
-		},
-		"filters": {
-			"sortBy": "Sort by",
-			"anyRole": "Any Role",
-			"any2FA": "Any 2FA",
-			"enabled2FA": "2FA Enabled",
-			"disabled2FA": "2FA Disabled",
-			"sorting": {
-				"nameAsc": "Name (A-Z)",
-				"nameDesc": "Name (Z-A)",
-				"dateNewest": "Date (Newest)",
-				"dateOldest": "Date (Oldest)"
-			}
-		}
-	},
-	"integrations": {
-		"page": {
-			"title": "Active Integrations",
-			"description": "Manage your currently connected integrations",
-			"libraryTitle": "Integrations Library",
-			"libraryDescription": "Connect Nvisy with your favorite tools and services"
-		},
-		"sections": {
-			"connectedServices": {
-				"title": "Connected Services",
-				"description": "{count} integration currently active | {count} integrations currently active",
-				"noIntegrationsTitle": "No active integrations yet",
-				"noIntegrationsDescription": "Get started by browsing our integration library"
-			},
-			"webhooks": {
-				"title": "Webhook Endpoints",
-				"description": "{count} webhook configured | {count} webhooks configured",
-				"noWebhooksTitle": "No webhooks configured",
-				"noWebhooksDescription": "Create your first webhook to start receiving real-time notifications"
-			}
-		},
-		"actions": {
-			"explore": "Explore Integrations",
-			"browse": "Browse Library",
-			"connect": "Connect",
-			"disconnect": "Disconnect",
-			"configure": "Configure",
-			"visitWebsite": "Visit Website",
-			"notifyMe": "Notify Me",
-			"createWebhook": "Create Webhook",
-			"editWebhook": "Edit Webhook",
-			"deleteWebhook": "Delete Webhook",
-			"testWebhook": "Test Webhook",
-			"back": "Back"
-		},
-		"status": {
-			"active": "Active",
-			"inactive": "Inactive",
-			"available": "Available",
-			"comingSoon": "Coming Soon",
-			"connected": "Connected",
-			"disconnected": "Disconnected"
-		},
-		"categories": {
-			"fileStorage": "File Storage",
-			"automation": "Automation",
-			"anyTag": "Any Tag",
-			"tags": "Tags"
-		},
-		"table": {
-			"headers": {
-				"name": "Name",
-				"url": "URL",
-				"status": "Status",
-				"events": "Events",
-				"created": "Created",
-				"lastDelivery": "Last Delivery",
-				"connectedAt": "Connected"
-			},
-			"actions": {
-				"edit": "Edit",
-				"delete": "Delete",
-				"test": "Test",
-				"configure": "Configure",
-				"disconnect": "Disconnect"
-			}
-		},
-		"forms": {
-			"search": {
-				"placeholder": "Search integrations...",
-				"webhookSearch": "Search webhooks..."
-			},
-			"webhook": {
-				"nameLabel": "Webhook Name",
-				"namePlaceholder": "Enter webhook name",
-				"urlLabel": "Endpoint URL",
-				"urlPlaceholder": "https://example.com/webhook",
-				"activeLabel": "Active",
-				"eventsLabel": "Events to Subscribe",
-				"eventsDescription": "Select which events should trigger this webhook"
-			}
-		},
-		"dialogs": {
-			"configure": {
-				"title": "Configure {name}",
-				"nameLabel": "Integration Name",
-				"descriptionLabel": "Description",
-				"activeLabel": "Active",
-				"save": "Save Changes",
-				"cancel": "Cancel"
-			},
-			"disconnect": {
-				"title": "Disconnect {name}",
-				"description": "Are you sure you want to disconnect this integration? This action cannot be undone.",
-				"warningTitle": "Consider disabling instead",
-				"warningDescription": "You can disable this integration to pause workflows without losing your configuration and data. Disconnecting will permanently delete everything.",
-				"confirmationLabel": "Type {name} to confirm",
-				"confirmationPlaceholder": "Enter integration name",
-				"confirm": "Disconnect Permanently",
-				"cancel": "Cancel"
-			},
-			"createWebhook": {
-				"title": "Create Webhook",
-				"save": "Create Webhook"
-			},
-			"editWebhook": {
-				"title": "Edit Webhook",
-				"save": "Save Changes"
-			},
-			"deleteWebhook": {
-				"title": "Delete Webhook",
-				"description": "Are you sure you want to delete this webhook? This action cannot be undone.",
-				"confirm": "Delete",
-				"cancel": "Cancel"
-			}
-		},
-		"events": {
-			"documents": {
-				"name": "Documents",
-				"documentsUploaded": "Document Uploaded",
-				"documentsUploadedDesc": "When a new document is uploaded to your project",
-				"documentsDownloaded": "Document Downloaded",
-				"documentsDownloadedDesc": "When a document is downloaded from your project",
-				"documentsRedacted": "Document Redacted",
-				"documentsRedactedDesc": "When a document is successfully redacted",
-				"documentsVerified": "Document Verified",
-				"documentsVerifiedDesc": "When a document passes verification checks"
-			},
-			"integrations": {
-				"name": "Integrations",
-				"integrationTriggered": "Integration Triggered",
-				"integrationTriggeredDesc": "When an integration workflow is started",
-				"integrationSucceeded": "Integration Succeeded",
-				"integrationSucceededDesc": "When an integration completes successfully",
-				"integrationFailed": "Integration Failed",
-				"integrationFailedDesc": "When an integration encounters errors or failures"
-			}
-		},
-		"messages": {
-			"integrationFooter": "Learn more about integrations in our",
-			"webhookFooter": "Learn more about webhooks in our",
-			"documentation": "documentation"
-		},
-		"time": {
-			"justNow": "Just now",
-			"hoursAgo": "{hours}h ago",
-			"daysAgo": "{days}d ago",
-			"weeksAgo": "{weeks}w ago",
-			"monthsAgo": "{months}m ago"
-		}
-	}
+  "common": {
+    "service": "Nvisy"
+  },
+  "home": {
+    "title": "Welcome to Nvisy",
+    "description": "Building innovative solutions for the modern web."
+  },
+  "members": {
+    "page": {
+      "title": "Members",
+      "description": "Manage your team members and invitations",
+      "tabs": {
+        "teamMembers": "Team Members",
+        "pendingInvites": "Pending Invites"
+      }
+    },
+    "forms": {
+      "invite": {
+        "title": "Invite Members",
+        "description": "Send invitations to new team members",
+        "emailPlaceholder": "email{'@'}example.com",
+        "button": "Send Invite",
+        "copyLink": "Copy Invite Link",
+        "expiry": {
+          "label": "Expires In",
+          "never": "Never",
+          "24hours": "In 24 Hours",
+          "7days": "In 7 Days",
+          "30days": "In 30 Days"
+        }
+      },
+      "search": {
+        "placeholder": "Search members..."
+      }
+    },
+    "table": {
+      "headers": {
+        "member": "Member",
+        "invite": "Invite",
+        "role": "Role",
+        "twoFA": "2FA",
+        "joined": "Joined",
+        "invited": "Invited"
+      },
+      "actions": {
+        "delete": "Delete",
+        "deleteSelected": "Delete Selected",
+        "cancel": "Cancel",
+        "cancelSelected": "Cancel Selected"
+      },
+      "status": {
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "pending": "Pending invitation"
+      },
+      "empty": {
+        "noMembers": "No members found",
+        "noMembersDescription": "No members match your current filters. Try adjusting your search criteria.",
+        "noPendingInvites": "No pending invites",
+        "noPendingInvitesDescription": "No pending invitations match your current filters."
+      }
+    },
+    "messages": {
+      "inviteFooter": "Invited members will receive an email with instructions to join your project.",
+      "reviewFooter": "Project owners cannot be removed. Transfer ownership first to remove the current owner."
+    },
+    "roles": {
+      "owner": "Owner",
+      "editor": "Editor",
+      "member": "Member"
+    },
+    "filters": {
+      "sortBy": "Sort by",
+      "anyRole": "Any Role",
+      "any2FA": "Any 2FA",
+      "enabled2FA": "2FA Enabled",
+      "disabled2FA": "2FA Disabled",
+      "sorting": {
+        "nameAsc": "Name (A-Z)",
+        "nameDesc": "Name (Z-A)",
+        "dateNewest": "Date (Newest)",
+        "dateOldest": "Date (Oldest)"
+      }
+    }
+  },
+  "integrations": {
+    "page": {
+      "title": "Active Integrations",
+      "description": "Manage your currently connected integrations",
+      "libraryTitle": "Integrations Library",
+      "libraryDescription": "Connect Nvisy with your favorite tools and services"
+    },
+    "sections": {
+      "connectedServices": {
+        "title": "Connected Services",
+        "description": "{count} integration currently active | {count} integrations currently active",
+        "noIntegrationsTitle": "No active integrations yet",
+        "noIntegrationsDescription": "Get started by browsing our integration library"
+      },
+      "webhooks": {
+        "title": "Webhook Endpoints",
+        "description": "{count} webhook configured | {count} webhooks configured",
+        "noWebhooksTitle": "No webhooks configured",
+        "noWebhooksDescription": "Create your first webhook to start receiving real-time notifications"
+      }
+    },
+    "actions": {
+      "explore": "Explore Integrations",
+      "browse": "Browse Library",
+      "connect": "Connect",
+      "disconnect": "Disconnect",
+      "configure": "Configure",
+      "visitWebsite": "Visit Website",
+      "notifyMe": "Notify Me",
+      "createWebhook": "Create Webhook",
+      "editWebhook": "Edit Webhook",
+      "deleteWebhook": "Delete Webhook",
+      "testWebhook": "Test Webhook",
+      "back": "Back"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "available": "Available",
+      "comingSoon": "Coming Soon",
+      "connected": "Connected",
+      "disconnected": "Disconnected"
+    },
+    "categories": {
+      "fileStorage": "File Storage",
+      "automation": "Automation",
+      "anyTag": "Any Tag",
+      "tags": "Tags"
+    },
+    "table": {
+      "headers": {
+        "name": "Name",
+        "url": "URL",
+        "status": "Status",
+        "events": "Events",
+        "created": "Created",
+        "lastDelivery": "Last Delivery",
+        "connectedAt": "Connected"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "test": "Test",
+        "configure": "Configure",
+        "disconnect": "Disconnect"
+      }
+    },
+    "forms": {
+      "search": {
+        "placeholder": "Search integrations...",
+        "webhookSearch": "Search webhooks..."
+      },
+      "webhook": {
+        "nameLabel": "Webhook Name",
+        "namePlaceholder": "Enter webhook name",
+        "urlLabel": "Endpoint URL",
+        "urlPlaceholder": "https://example.com/webhook",
+        "activeLabel": "Active",
+        "eventsLabel": "Events to Subscribe",
+        "eventsDescription": "Select which events should trigger this webhook"
+      }
+    },
+    "dialogs": {
+      "configure": {
+        "title": "Configure {name}",
+        "nameLabel": "Integration Name",
+        "descriptionLabel": "Description",
+        "activeLabel": "Active",
+        "save": "Save Changes",
+        "cancel": "Cancel"
+      },
+      "disconnect": {
+        "title": "Disconnect {name}",
+        "description": "Are you sure you want to disconnect this integration? This action cannot be undone.",
+        "warningTitle": "Consider disabling instead",
+        "warningDescription": "You can disable this integration to pause workflows without losing your configuration and data. Disconnecting will permanently delete everything.",
+        "confirmationLabel": "Type {name} to confirm",
+        "confirmationPlaceholder": "Enter integration name",
+        "confirm": "Disconnect Permanently",
+        "cancel": "Cancel"
+      },
+      "createWebhook": {
+        "title": "Create Webhook",
+        "save": "Create Webhook"
+      },
+      "editWebhook": {
+        "title": "Edit Webhook",
+        "save": "Save Changes"
+      },
+      "deleteWebhook": {
+        "title": "Delete Webhook",
+        "description": "Are you sure you want to delete this webhook? This action cannot be undone.",
+        "confirm": "Delete",
+        "cancel": "Cancel"
+      }
+    },
+    "events": {
+      "documents": {
+        "name": "Documents",
+        "documentsUploaded": "Document Uploaded",
+        "documentsUploadedDesc": "When a new document is uploaded to your project",
+        "documentsDownloaded": "Document Downloaded",
+        "documentsDownloadedDesc": "When a document is downloaded from your project",
+        "documentsRedacted": "Document Redacted",
+        "documentsRedactedDesc": "When a document is successfully redacted",
+        "documentsVerified": "Document Verified",
+        "documentsVerifiedDesc": "When a document passes verification checks"
+      },
+      "integrations": {
+        "name": "Integrations",
+        "integrationTriggered": "Integration Triggered",
+        "integrationTriggeredDesc": "When an integration workflow is started",
+        "integrationSucceeded": "Integration Succeeded",
+        "integrationSucceededDesc": "When an integration completes successfully",
+        "integrationFailed": "Integration Failed",
+        "integrationFailedDesc": "When an integration encounters errors or failures"
+      }
+    },
+    "messages": {
+      "integrationFooter": "Learn more about integrations in our",
+      "webhookFooter": "Learn more about webhooks in our",
+      "documentation": "documentation"
+    },
+    "time": {
+      "justNow": "Just now",
+      "hoursAgo": "{hours}h ago",
+      "daysAgo": "{days}d ago",
+      "weeksAgo": "{weeks}w ago",
+      "monthsAgo": "{months}m ago"
+    }
+  }
 }

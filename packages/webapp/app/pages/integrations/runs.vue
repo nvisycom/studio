@@ -1,60 +1,60 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import {
-  Search,
-  ChevronDown,
-  ArrowLeft,
-  Eye,
-  Copy,
-  Check,
-  MoreHorizontal,
+	Search,
+	ChevronDown,
+	ArrowLeft,
+	Eye,
+	Copy,
+	Check,
+	MoreHorizontal,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Spinner } from "@/components/ui/spinner";
 import { RunDetailsModal } from "~/components/pages/integrations";
 
 definePageMeta({
-  pageName: "Integrations",
+	pageName: "Integrations",
 });
 
 interface IntegrationRun {
-  id: string;
-  integration: string;
-  name: string;
-  statusCode: number;
-  startedAt: Date;
-  duration: string;
+	id: string;
+	integration: string;
+	name: string;
+	statusCode: number;
+	startedAt: Date;
+	duration: string;
 }
 
 const searchQuery = ref("");
@@ -65,161 +65,161 @@ const isViewDetailsModalOpen = ref(false);
 const selectedRunForDetails = ref<IntegrationRun | null>(null);
 
 const runs = ref<IntegrationRun[]>([
-  {
-    id: "1",
-    integration: "Dropbox",
-    name: "Sync documents",
-    statusCode: 200,
-    startedAt: new Date("2024-01-20T10:30:00"),
-    duration: "2m 15s",
-  },
-  {
-    id: "2",
-    integration: "Google Drive",
-    name: "Import files",
-    statusCode: 102,
-    startedAt: new Date("2024-01-20T10:25:00"),
-    duration: "5m 12s",
-  },
-  {
-    id: "3",
-    integration: "Slack",
-    name: "Send notification",
-    statusCode: 200,
-    startedAt: new Date("2024-01-20T09:15:00"),
-    duration: "0m 3s",
-  },
-  {
-    id: "4",
-    integration: "AWS S3",
-    name: "Upload backup",
-    statusCode: 500,
-    startedAt: new Date("2024-01-20T08:45:00"),
-    duration: "1m 32s",
-  },
-  {
-    id: "5",
-    integration: "Dropbox",
-    name: "Download files",
-    statusCode: 201,
-    startedAt: new Date("2024-01-19T16:20:00"),
-    duration: "3m 8s",
-  },
+	{
+		id: "1",
+		integration: "Dropbox",
+		name: "Sync documents",
+		statusCode: 200,
+		startedAt: new Date("2024-01-20T10:30:00"),
+		duration: "2m 15s",
+	},
+	{
+		id: "2",
+		integration: "Google Drive",
+		name: "Import files",
+		statusCode: 102,
+		startedAt: new Date("2024-01-20T10:25:00"),
+		duration: "5m 12s",
+	},
+	{
+		id: "3",
+		integration: "Slack",
+		name: "Send notification",
+		statusCode: 200,
+		startedAt: new Date("2024-01-20T09:15:00"),
+		duration: "0m 3s",
+	},
+	{
+		id: "4",
+		integration: "AWS S3",
+		name: "Upload backup",
+		statusCode: 500,
+		startedAt: new Date("2024-01-20T08:45:00"),
+		duration: "1m 32s",
+	},
+	{
+		id: "5",
+		integration: "Dropbox",
+		name: "Download files",
+		statusCode: 201,
+		startedAt: new Date("2024-01-19T16:20:00"),
+		duration: "3m 8s",
+	},
 ]);
 
 const statusFilters = [
-  { label: "All Status", value: "all" },
-  { label: "1xx - Informational", value: "1xx" },
-  { label: "2xx - Success", value: "2xx" },
-  { label: "3xx - Redirection", value: "3xx" },
-  { label: "4xx - Client Error", value: "4xx" },
-  { label: "5xx - Server Error", value: "5xx" },
+	{ label: "All Status", value: "all" },
+	{ label: "1xx - Informational", value: "1xx" },
+	{ label: "2xx - Success", value: "2xx" },
+	{ label: "3xx - Redirection", value: "3xx" },
+	{ label: "4xx - Client Error", value: "4xx" },
+	{ label: "5xx - Server Error", value: "5xx" },
 ];
 
 const filteredRuns = computed(() => {
-  let filtered = runs.value;
+	let filtered = runs.value;
 
-  if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(
-      (run) =>
-        run.integration.toLowerCase().includes(query) ||
-        run.name.toLowerCase().includes(query),
-    );
-  }
+	if (searchQuery.value.trim()) {
+		const query = searchQuery.value.toLowerCase();
+		filtered = filtered.filter(
+			(run) =>
+				run.integration.toLowerCase().includes(query) ||
+				run.name.toLowerCase().includes(query),
+		);
+	}
 
-  if (statusFilter.value !== "all") {
-    const statusCode = statusFilter.value.charAt(0);
-    filtered = filtered.filter(
-      (run) => Math.floor(run.statusCode / 100).toString() === statusCode,
-    );
-  }
+	if (statusFilter.value !== "all") {
+		const statusCode = statusFilter.value.charAt(0);
+		filtered = filtered.filter(
+			(run) => Math.floor(run.statusCode / 100).toString() === statusCode,
+		);
+	}
 
-  return filtered.sort((a, b) => b.startedAt.getTime() - a.startedAt.getTime());
+	return filtered.sort((a, b) => b.startedAt.getTime() - a.startedAt.getTime());
 });
 
 function getStatusCodeColor(statusCode: number): string {
-  if (statusCode >= 100 && statusCode < 200) {
-    return "text-blue-600 dark:text-blue-400";
-  } else if (statusCode >= 200 && statusCode < 300) {
-    return "text-green-600 dark:text-green-400";
-  } else if (statusCode >= 300 && statusCode < 400) {
-    return "text-yellow-600 dark:text-yellow-400";
-  } else if (statusCode >= 400 && statusCode < 500) {
-    return "text-orange-600 dark:text-orange-400";
-  } else if (statusCode >= 500) {
-    return "text-red-600 dark:text-red-400";
-  }
-  return "text-neutral-600 dark:text-neutral-400";
+	if (statusCode >= 100 && statusCode < 200) {
+		return "text-blue-600 dark:text-blue-400";
+	} else if (statusCode >= 200 && statusCode < 300) {
+		return "text-green-600 dark:text-green-400";
+	} else if (statusCode >= 300 && statusCode < 400) {
+		return "text-yellow-600 dark:text-yellow-400";
+	} else if (statusCode >= 400 && statusCode < 500) {
+		return "text-orange-600 dark:text-orange-400";
+	} else if (statusCode >= 500) {
+		return "text-red-600 dark:text-red-400";
+	}
+	return "text-neutral-600 dark:text-neutral-400";
 }
 
 function toggleRunSelection(runId: string) {
-  if (selectedRuns.value.has(runId)) {
-    selectedRuns.value.delete(runId);
-  } else {
-    selectedRuns.value.add(runId);
-  }
+	if (selectedRuns.value.has(runId)) {
+		selectedRuns.value.delete(runId);
+	} else {
+		selectedRuns.value.add(runId);
+	}
 }
 
 function toggleAllRuns() {
-  if (selectedRuns.value.size === filteredRuns.value.length) {
-    selectedRuns.value.clear();
-  } else {
-    selectedRuns.value = new Set(filteredRuns.value.map((run) => run.id));
-  }
+	if (selectedRuns.value.size === filteredRuns.value.length) {
+		selectedRuns.value.clear();
+	} else {
+		selectedRuns.value = new Set(filteredRuns.value.map((run) => run.id));
+	}
 }
 
 const allSelected = computed(
-  () =>
-    filteredRuns.value.length > 0 &&
-    selectedRuns.value.size === filteredRuns.value.length,
+	() =>
+		filteredRuns.value.length > 0 &&
+		selectedRuns.value.size === filteredRuns.value.length,
 );
 
 const logsCopied = ref(false);
 
 function copyDetails() {
-  const selectedRunsData = runs.value.filter((run) =>
-    selectedRuns.value.has(run.id),
-  );
-  console.log("Copy details:", selectedRunsData);
+	const selectedRunsData = runs.value.filter((run) =>
+		selectedRuns.value.has(run.id),
+	);
+	console.log("Copy details:", selectedRunsData);
 }
 
 function copyLogs() {
-  const selectedRunsData = runs.value.filter((run) =>
-    selectedRuns.value.has(run.id),
-  );
-  console.log("Copy logs:", selectedRunsData);
-  logsCopied.value = true;
-  setTimeout(() => {
-    logsCopied.value = false;
-  }, 2000);
+	const selectedRunsData = runs.value.filter((run) =>
+		selectedRuns.value.has(run.id),
+	);
+	console.log("Copy logs:", selectedRunsData);
+	logsCopied.value = true;
+	setTimeout(() => {
+		logsCopied.value = false;
+	}, 2000);
 }
 
 function viewRunDetails(run: IntegrationRun) {
-  selectedRunForDetails.value = run;
-  isViewDetailsModalOpen.value = true;
+	selectedRunForDetails.value = run;
+	isViewDetailsModalOpen.value = true;
 }
 
 function copyRunDetails(run: IntegrationRun) {
-  console.log("Copy run details:", run);
+	console.log("Copy run details:", run);
 }
 
 function formatDate(date: Date): string {
-  const now = new Date();
-  const diff = now.getTime() - date.getTime();
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+	const now = new Date();
+	const diff = now.getTime() - date.getTime();
+	const hours = Math.floor(diff / (1000 * 60 * 60));
+	const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-  if (hours < 1) return "Just now";
-  if (hours < 24) return `${hours}h ago`;
-  if (days === 1) return "Yesterday";
-  if (days < 7) return `${days}d ago`;
+	if (hours < 1) return "Just now";
+	if (hours < 24) return `${hours}h ago`;
+	if (days === 1) return "Yesterday";
+	if (days < 7) return `${days}d ago`;
 
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+	return date.toLocaleDateString("en-US", {
+		month: "short",
+		day: "numeric",
+		year: "numeric",
+	});
 }
 </script>
 

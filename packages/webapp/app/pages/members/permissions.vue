@@ -34,10 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  EditRoleDialog,
-  DeleteRoleDialog,
-} from "@/components/pages/members/permissions";
+import { EditRoleDialog, DeleteRoleDialog } from "@/components/pages/members";
 
 definePageMeta({
   pageName: "Members",

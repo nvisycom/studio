@@ -1,30 +1,30 @@
 <script setup lang="ts">
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 interface Props {
-  open: boolean;
-  roleName: string;
+	open: boolean;
+	roleName: string;
 }
 
 interface Emits {
-  (e: "update:open", value: boolean): void;
-  (e: "confirm"): void;
+	(e: "update:open", value: boolean): void;
+	(e: "confirm"): void;
 }
 
 defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 function handleConfirm() {
-  emit("confirm");
-  emit("update:open", false);
+	emit("confirm");
+	emit("update:open", false);
 }
 </script>
 
