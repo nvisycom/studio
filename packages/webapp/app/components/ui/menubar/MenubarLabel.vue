@@ -6,7 +6,7 @@ import { MenubarLabel } from "reka-ui";
 import { cn } from "@/utils/shadcn";
 
 const props = defineProps<
-  MenubarLabelProps & { class?: HTMLAttributes["class"]; inset?: boolean }
+	MenubarLabelProps & { class?: HTMLAttributes["class"]; inset?: boolean }
 >();
 const delegatedProps = reactiveOmit(props, "class", "inset");
 </script>

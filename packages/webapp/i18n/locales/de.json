@@ -1,238 +1,238 @@
 {
-  "common": {
-    "service": "Nvisy"
-  },
-  "home": {
-    "title": "Willkommen bei Nvisy",
-    "description": "Innovative Lösungen für das moderne Web entwickeln."
-  },
-  "members": {
-    "page": {
-      "title": "Mitglieder",
-      "description": "Verwalten Sie Ihre Teammitglieder und Einladungen",
-      "tabs": {
-        "teamMembers": "Teammitglieder",
-        "pendingInvites": "Ausstehende Einladungen"
-      }
-    },
-    "forms": {
-      "invite": {
-        "title": "Mitglieder Einladen",
-        "description": "Senden Sie Einladungen an neue Teammitglieder",
-        "emailPlaceholder": "email{'@'}beispiel.com",
-        "button": "Einladung Senden",
-        "copyLink": "Einladungslink Kopieren",
-        "expiry": {
-          "label": "Läuft ab in",
-          "never": "Nie",
-          "24hours": "In 24 Stunden",
-          "7days": "In 7 Tagen",
-          "30days": "In 30 Tagen"
-        }
-      },
-      "search": {
-        "placeholder": "Mitglieder suchen..."
-      }
-    },
-    "table": {
-      "headers": {
-        "member": "Mitglied",
-        "invite": "Einladung",
-        "role": "Rolle",
-        "twoFA": "2FA",
-        "joined": "Beigetreten",
-        "invited": "Eingeladen"
-      },
-      "actions": {
-        "delete": "Löschen",
-        "deleteSelected": "Ausgewählte Löschen",
-        "cancel": "Abbrechen",
-        "cancelSelected": "Ausgewählte Abbrechen"
-      },
-      "status": {
-        "enabled": "Aktiviert",
-        "disabled": "Deaktiviert",
-        "pending": "Ausstehende Einladung"
-      },
-      "empty": {
-        "noMembers": "Keine Mitglieder gefunden",
-        "noMembersDescription": "Keine Mitglieder entsprechen Ihren aktuellen Filtern. Versuchen Sie, Ihre Suchkriterien anzupassen.",
-        "noPendingInvites": "Keine ausstehenden Einladungen",
-        "noPendingInvitesDescription": "Keine ausstehenden Einladungen entsprechen Ihren aktuellen Filtern."
-      }
-    },
-    "messages": {
-      "inviteFooter": "Eingeladene Mitglieder erhalten eine E-Mail mit Anweisungen zum Beitritt zu Ihrem Projekt.",
-      "reviewFooter": "Projekteigentümer können nicht entfernt werden. Übertragen Sie zunächst das Eigentum, um den aktuellen Eigentümer zu entfernen."
-    },
-    "roles": {
-      "owner": "Eigentümer",
-      "editor": "Bearbeiter",
-      "member": "Mitglied"
-    },
-    "filters": {
-      "sortBy": "Sortieren nach",
-      "anyRole": "Jede Rolle",
-      "any2FA": "Beliebige 2FA",
-      "enabled2FA": "2FA Aktiviert",
-      "disabled2FA": "2FA Deaktiviert",
-      "sorting": {
-        "nameAsc": "Name (A-Z)",
-        "nameDesc": "Name (Z-A)",
-        "dateNewest": "Datum (Neueste)",
-        "dateOldest": "Datum (Älteste)"
-      }
-    }
-  },
-  "integrations": {
-    "page": {
-      "title": "Aktive Integrationen",
-      "description": "Verwalten Sie Ihre derzeit verbundenen Integrationen",
-      "libraryTitle": "Integrationsbibliothek",
-      "libraryDescription": "Verbinden Sie Nvisy mit Ihren bevorzugten Tools und Diensten"
-    },
-    "sections": {
-      "connectedServices": {
-        "title": "Verbundene Dienste",
-        "description": "{count} Integration derzeit aktiv | {count} Integrationen derzeit aktiv",
-        "noIntegrationsTitle": "Noch keine aktiven Integrationen",
-        "noIntegrationsDescription": "Beginnen Sie, indem Sie unsere Integrationsbibliothek durchsuchen"
-      },
-      "webhooks": {
-        "title": "Webhook-Endpunkte",
-        "description": "{count} Webhook konfiguriert | {count} Webhooks konfiguriert",
-        "noWebhooksTitle": "Keine Webhooks konfiguriert",
-        "noWebhooksDescription": "Erstellen Sie Ihren ersten Webhook, um Echtzeit-Benachrichtigungen zu erhalten"
-      }
-    },
-    "actions": {
-      "explore": "Integrationen Erkunden",
-      "browse": "Bibliothek Durchsuchen",
-      "connect": "Verbinden",
-      "disconnect": "Trennen",
-      "configure": "Konfigurieren",
-      "visitWebsite": "Website Besuchen",
-      "notifyMe": "Benachrichtigen",
-      "createWebhook": "Webhook Erstellen",
-      "editWebhook": "Webhook Bearbeiten",
-      "deleteWebhook": "Webhook Löschen",
-      "testWebhook": "Webhook Testen",
-      "back": "Zurück"
-    },
-    "status": {
-      "active": "Aktiv",
-      "inactive": "Inaktiv",
-      "available": "Verfügbar",
-      "comingSoon": "Bald Verfügbar",
-      "connected": "Verbunden",
-      "disconnected": "Getrennt"
-    },
-    "categories": {
-      "fileStorage": "Dateispeicher",
-      "automation": "Automatisierung",
-      "anyTag": "Beliebiges Tag",
-      "tags": "Tags"
-    },
-    "table": {
-      "headers": {
-        "name": "Name",
-        "url": "URL",
-        "status": "Status",
-        "events": "Ereignisse",
-        "created": "Erstellt",
-        "lastDelivery": "Letzte Zustellung",
-        "connectedAt": "Verbunden Am"
-      },
-      "actions": {
-        "edit": "Bearbeiten",
-        "delete": "Löschen",
-        "test": "Testen",
-        "configure": "Konfigurieren",
-        "disconnect": "Trennen"
-      }
-    },
-    "forms": {
-      "search": {
-        "placeholder": "Integrationen suchen...",
-        "webhookSearch": "Webhooks suchen..."
-      },
-      "webhook": {
-        "nameLabel": "Webhook-Name",
-        "namePlaceholder": "Webhook-Namen eingeben",
-        "urlLabel": "Endpunkt-URL",
-        "urlPlaceholder": "https://beispiel.com/webhook",
-        "activeLabel": "Aktiv",
-        "eventsLabel": "Zu abonnierende Ereignisse",
-        "eventsDescription": "Wählen Sie aus, welche Ereignisse diesen Webhook auslösen sollen"
-      }
-    },
-    "dialogs": {
-      "configure": {
-        "title": "{name} Konfigurieren",
-        "nameLabel": "Integrationsname",
-        "descriptionLabel": "Beschreibung",
-        "activeLabel": "Aktiv",
-        "save": "Änderungen Speichern",
-        "cancel": "Abbrechen"
-      },
-      "disconnect": {
-        "title": "{name} Trennen",
-        "description": "Sind Sie sicher, dass Sie diese Integration trennen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-        "warningTitle": "Erwägen Sie stattdessen eine Deaktivierung",
-        "warningDescription": "Sie können diese Integration deaktivieren, um Workflows zu pausieren, ohne Ihre Konfiguration und Daten zu verlieren. Das Trennen wird alles dauerhaft löschen.",
-        "confirmationLabel": "Geben Sie {name} ein, um zu bestätigen",
-        "confirmationPlaceholder": "Integrationsnamen eingeben",
-        "confirm": "Dauerhaft Trennen",
-        "cancel": "Abbrechen"
-      },
-      "createWebhook": {
-        "title": "Webhook Erstellen",
-        "save": "Webhook Erstellen"
-      },
-      "editWebhook": {
-        "title": "Webhook Bearbeiten",
-        "save": "Änderungen Speichern"
-      },
-      "deleteWebhook": {
-        "title": "Webhook Löschen",
-        "description": "Sind Sie sicher, dass Sie diesen Webhook löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-        "confirm": "Löschen",
-        "cancel": "Abbrechen"
-      }
-    },
-    "events": {
-      "documents": {
-        "name": "Dokumente",
-        "documentsUploaded": "Dokument Hochgeladen",
-        "documentsUploadedDesc": "Wenn ein neues Dokument in Ihr Projekt hochgeladen wird",
-        "documentsDownloaded": "Dokument Heruntergeladen",
-        "documentsDownloadedDesc": "Wenn ein Dokument aus Ihrem Projekt heruntergeladen wird",
-        "documentsRedacted": "Dokument Geschwärzt",
-        "documentsRedactedDesc": "Wenn ein Dokument erfolgreich geschwärzt wurde",
-        "documentsVerified": "Dokument Verifiziert",
-        "documentsVerifiedDesc": "Wenn ein Dokument die Verifikationsprüfungen besteht"
-      },
-      "integrations": {
-        "name": "Integrationen",
-        "integrationTriggered": "Integration Ausgelöst",
-        "integrationTriggeredDesc": "Wenn ein Integrations-Workflow gestartet wird",
-        "integrationSucceeded": "Integration Erfolgreich",
-        "integrationSucceededDesc": "Wenn eine Integration erfolgreich abgeschlossen wird",
-        "integrationFailed": "Integration Fehlgeschlagen",
-        "integrationFailedDesc": "Wenn eine Integration auf Fehler oder Ausfälle stößt"
-      }
-    },
-    "messages": {
-      "integrationFooter": "Erfahren Sie mehr über Integrationen in unserer",
-      "webhookFooter": "Erfahren Sie mehr über Webhooks in unserer",
-      "documentation": "Dokumentation"
-    },
-    "time": {
-      "justNow": "Gerade eben",
-      "hoursAgo": "vor {hours}h",
-      "daysAgo": "vor {days}d",
-      "weeksAgo": "vor {weeks}w",
-      "monthsAgo": "vor {months}m"
-    }
-  }
+	"common": {
+		"service": "Nvisy"
+	},
+	"home": {
+		"title": "Willkommen bei Nvisy",
+		"description": "Innovative Lösungen für das moderne Web entwickeln."
+	},
+	"members": {
+		"page": {
+			"title": "Mitglieder",
+			"description": "Verwalten Sie Ihre Teammitglieder und Einladungen",
+			"tabs": {
+				"teamMembers": "Teammitglieder",
+				"pendingInvites": "Ausstehende Einladungen"
+			}
+		},
+		"forms": {
+			"invite": {
+				"title": "Mitglieder Einladen",
+				"description": "Senden Sie Einladungen an neue Teammitglieder",
+				"emailPlaceholder": "email{'@'}beispiel.com",
+				"button": "Einladung Senden",
+				"copyLink": "Einladungslink Kopieren",
+				"expiry": {
+					"label": "Läuft ab in",
+					"never": "Nie",
+					"24hours": "In 24 Stunden",
+					"7days": "In 7 Tagen",
+					"30days": "In 30 Tagen"
+				}
+			},
+			"search": {
+				"placeholder": "Mitglieder suchen..."
+			}
+		},
+		"table": {
+			"headers": {
+				"member": "Mitglied",
+				"invite": "Einladung",
+				"role": "Rolle",
+				"twoFA": "2FA",
+				"joined": "Beigetreten",
+				"invited": "Eingeladen"
+			},
+			"actions": {
+				"delete": "Löschen",
+				"deleteSelected": "Ausgewählte Löschen",
+				"cancel": "Abbrechen",
+				"cancelSelected": "Ausgewählte Abbrechen"
+			},
+			"status": {
+				"enabled": "Aktiviert",
+				"disabled": "Deaktiviert",
+				"pending": "Ausstehende Einladung"
+			},
+			"empty": {
+				"noMembers": "Keine Mitglieder gefunden",
+				"noMembersDescription": "Keine Mitglieder entsprechen Ihren aktuellen Filtern. Versuchen Sie, Ihre Suchkriterien anzupassen.",
+				"noPendingInvites": "Keine ausstehenden Einladungen",
+				"noPendingInvitesDescription": "Keine ausstehenden Einladungen entsprechen Ihren aktuellen Filtern."
+			}
+		},
+		"messages": {
+			"inviteFooter": "Eingeladene Mitglieder erhalten eine E-Mail mit Anweisungen zum Beitritt zu Ihrem Projekt.",
+			"reviewFooter": "Projekteigentümer können nicht entfernt werden. Übertragen Sie zunächst das Eigentum, um den aktuellen Eigentümer zu entfernen."
+		},
+		"roles": {
+			"owner": "Eigentümer",
+			"editor": "Bearbeiter",
+			"member": "Mitglied"
+		},
+		"filters": {
+			"sortBy": "Sortieren nach",
+			"anyRole": "Jede Rolle",
+			"any2FA": "Beliebige 2FA",
+			"enabled2FA": "2FA Aktiviert",
+			"disabled2FA": "2FA Deaktiviert",
+			"sorting": {
+				"nameAsc": "Name (A-Z)",
+				"nameDesc": "Name (Z-A)",
+				"dateNewest": "Datum (Neueste)",
+				"dateOldest": "Datum (Älteste)"
+			}
+		}
+	},
+	"integrations": {
+		"page": {
+			"title": "Aktive Integrationen",
+			"description": "Verwalten Sie Ihre derzeit verbundenen Integrationen",
+			"libraryTitle": "Integrationsbibliothek",
+			"libraryDescription": "Verbinden Sie Nvisy mit Ihren bevorzugten Tools und Diensten"
+		},
+		"sections": {
+			"connectedServices": {
+				"title": "Verbundene Dienste",
+				"description": "{count} Integration derzeit aktiv | {count} Integrationen derzeit aktiv",
+				"noIntegrationsTitle": "Noch keine aktiven Integrationen",
+				"noIntegrationsDescription": "Beginnen Sie, indem Sie unsere Integrationsbibliothek durchsuchen"
+			},
+			"webhooks": {
+				"title": "Webhook-Endpunkte",
+				"description": "{count} Webhook konfiguriert | {count} Webhooks konfiguriert",
+				"noWebhooksTitle": "Keine Webhooks konfiguriert",
+				"noWebhooksDescription": "Erstellen Sie Ihren ersten Webhook, um Echtzeit-Benachrichtigungen zu erhalten"
+			}
+		},
+		"actions": {
+			"explore": "Integrationen Erkunden",
+			"browse": "Bibliothek Durchsuchen",
+			"connect": "Verbinden",
+			"disconnect": "Trennen",
+			"configure": "Konfigurieren",
+			"visitWebsite": "Website Besuchen",
+			"notifyMe": "Benachrichtigen",
+			"createWebhook": "Webhook Erstellen",
+			"editWebhook": "Webhook Bearbeiten",
+			"deleteWebhook": "Webhook Löschen",
+			"testWebhook": "Webhook Testen",
+			"back": "Zurück"
+		},
+		"status": {
+			"active": "Aktiv",
+			"inactive": "Inaktiv",
+			"available": "Verfügbar",
+			"comingSoon": "Bald Verfügbar",
+			"connected": "Verbunden",
+			"disconnected": "Getrennt"
+		},
+		"categories": {
+			"fileStorage": "Dateispeicher",
+			"automation": "Automatisierung",
+			"anyTag": "Beliebiges Tag",
+			"tags": "Tags"
+		},
+		"table": {
+			"headers": {
+				"name": "Name",
+				"url": "URL",
+				"status": "Status",
+				"events": "Ereignisse",
+				"created": "Erstellt",
+				"lastDelivery": "Letzte Zustellung",
+				"connectedAt": "Verbunden Am"
+			},
+			"actions": {
+				"edit": "Bearbeiten",
+				"delete": "Löschen",
+				"test": "Testen",
+				"configure": "Konfigurieren",
+				"disconnect": "Trennen"
+			}
+		},
+		"forms": {
+			"search": {
+				"placeholder": "Integrationen suchen...",
+				"webhookSearch": "Webhooks suchen..."
+			},
+			"webhook": {
+				"nameLabel": "Webhook-Name",
+				"namePlaceholder": "Webhook-Namen eingeben",
+				"urlLabel": "Endpunkt-URL",
+				"urlPlaceholder": "https://beispiel.com/webhook",
+				"activeLabel": "Aktiv",
+				"eventsLabel": "Zu abonnierende Ereignisse",
+				"eventsDescription": "Wählen Sie aus, welche Ereignisse diesen Webhook auslösen sollen"
+			}
+		},
+		"dialogs": {
+			"configure": {
+				"title": "{name} Konfigurieren",
+				"nameLabel": "Integrationsname",
+				"descriptionLabel": "Beschreibung",
+				"activeLabel": "Aktiv",
+				"save": "Änderungen Speichern",
+				"cancel": "Abbrechen"
+			},
+			"disconnect": {
+				"title": "{name} Trennen",
+				"description": "Sind Sie sicher, dass Sie diese Integration trennen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+				"warningTitle": "Erwägen Sie stattdessen eine Deaktivierung",
+				"warningDescription": "Sie können diese Integration deaktivieren, um Workflows zu pausieren, ohne Ihre Konfiguration und Daten zu verlieren. Das Trennen wird alles dauerhaft löschen.",
+				"confirmationLabel": "Geben Sie {name} ein, um zu bestätigen",
+				"confirmationPlaceholder": "Integrationsnamen eingeben",
+				"confirm": "Dauerhaft Trennen",
+				"cancel": "Abbrechen"
+			},
+			"createWebhook": {
+				"title": "Webhook Erstellen",
+				"save": "Webhook Erstellen"
+			},
+			"editWebhook": {
+				"title": "Webhook Bearbeiten",
+				"save": "Änderungen Speichern"
+			},
+			"deleteWebhook": {
+				"title": "Webhook Löschen",
+				"description": "Sind Sie sicher, dass Sie diesen Webhook löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+				"confirm": "Löschen",
+				"cancel": "Abbrechen"
+			}
+		},
+		"events": {
+			"documents": {
+				"name": "Dokumente",
+				"documentsUploaded": "Dokument Hochgeladen",
+				"documentsUploadedDesc": "Wenn ein neues Dokument in Ihr Projekt hochgeladen wird",
+				"documentsDownloaded": "Dokument Heruntergeladen",
+				"documentsDownloadedDesc": "Wenn ein Dokument aus Ihrem Projekt heruntergeladen wird",
+				"documentsRedacted": "Dokument Geschwärzt",
+				"documentsRedactedDesc": "Wenn ein Dokument erfolgreich geschwärzt wurde",
+				"documentsVerified": "Dokument Verifiziert",
+				"documentsVerifiedDesc": "Wenn ein Dokument die Verifikationsprüfungen besteht"
+			},
+			"integrations": {
+				"name": "Integrationen",
+				"integrationTriggered": "Integration Ausgelöst",
+				"integrationTriggeredDesc": "Wenn ein Integrations-Workflow gestartet wird",
+				"integrationSucceeded": "Integration Erfolgreich",
+				"integrationSucceededDesc": "Wenn eine Integration erfolgreich abgeschlossen wird",
+				"integrationFailed": "Integration Fehlgeschlagen",
+				"integrationFailedDesc": "Wenn eine Integration auf Fehler oder Ausfälle stößt"
+			}
+		},
+		"messages": {
+			"integrationFooter": "Erfahren Sie mehr über Integrationen in unserer",
+			"webhookFooter": "Erfahren Sie mehr über Webhooks in unserer",
+			"documentation": "Dokumentation"
+		},
+		"time": {
+			"justNow": "Gerade eben",
+			"hoursAgo": "vor {hours}h",
+			"daysAgo": "vor {days}d",
+			"weeksAgo": "vor {weeks}w",
+			"monthsAgo": "vor {months}m"
+		}
+	}
 }

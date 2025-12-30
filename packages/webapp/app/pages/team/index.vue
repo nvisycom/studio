@@ -4,31 +4,31 @@ import { Search, Copy, Check, ChevronDown } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  MembersTable,
-  InvitesTable,
-  DeleteMemberModal,
-  DeleteMultipleMembersModal,
-  CancelInviteModal,
-  CancelMultipleInvitesModal,
+	MembersTable,
+	InvitesTable,
+	DeleteMemberModal,
+	DeleteMultipleMembersModal,
+	CancelInviteModal,
+	CancelMultipleInvitesModal,
 } from "~/components/pages/members";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 definePageMeta({
-  pageCategory: "Team",
+	pageCategory: "Team",
 });
 
 const { t } = useI18n();
@@ -37,23 +37,23 @@ const { t } = useI18n();
  * Team member data structure
  */
 interface TeamMember {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  joinedDate: Date;
-  twoFAEnabled: boolean;
+	id: string;
+	name: string;
+	email: string;
+	role: string;
+	joinedDate: Date;
+	twoFAEnabled: boolean;
 }
 
 /**
  * Pending invitation data structure
  */
 interface PendingInvite {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  invitedDate: Date;
+	id: string;
+	name: string;
+	email: string;
+	role: string;
+	invitedDate: Date;
 }
 
 // Form State
@@ -80,152 +80,152 @@ const isCancelInviteDialogOpen = ref<boolean>(false);
 const isCancelMultipleInvitesDialogOpen = ref<boolean>(false);
 
 const roles = computed(() => [
-  { value: "member", label: t("members.roles.member") },
-  { value: "owner", label: t("members.roles.owner") },
+	{ value: "member", label: t("members.roles.member") },
+	{ value: "owner", label: t("members.roles.owner") },
 ]);
 
 const roleFilters = computed(() => [
-  { value: "anyRole", label: t("members.filters.anyRole") },
-  { value: "owner", label: t("members.roles.owner") },
-  { value: "member", label: t("members.roles.member") },
+	{ value: "anyRole", label: t("members.filters.anyRole") },
+	{ value: "owner", label: t("members.roles.owner") },
+	{ value: "member", label: t("members.roles.member") },
 ]);
 
 const twoFAFilters = computed(() => [
-  { value: "any2FA", label: t("members.filters.any2FA") },
-  { value: "disabled", label: t("members.filters.disabled2FA") },
-  { value: "enabled", label: t("members.filters.enabled2FA") },
+	{ value: "any2FA", label: t("members.filters.any2FA") },
+	{ value: "disabled", label: t("members.filters.disabled2FA") },
+	{ value: "enabled", label: t("members.filters.enabled2FA") },
 ]);
 
 const sortingOptions = computed(() => [
-  { label: t("members.filters.sorting.nameAsc"), value: "name-asc" },
-  { label: t("members.filters.sorting.nameDesc"), value: "name-desc" },
-  { label: t("members.filters.sorting.dateNewest"), value: "date-desc" },
-  { label: t("members.filters.sorting.dateOldest"), value: "date-asc" },
+	{ label: t("members.filters.sorting.nameAsc"), value: "name-asc" },
+	{ label: t("members.filters.sorting.nameDesc"), value: "name-desc" },
+	{ label: t("members.filters.sorting.dateNewest"), value: "date-desc" },
+	{ label: t("members.filters.sorting.dateOldest"), value: "date-asc" },
 ]);
 
 const inviteExpiryOptions = computed(() => [
-  { label: t("members.forms.invite.expiry.never"), value: "never" },
-  { label: t("members.forms.invite.expiry.24hours"), value: "24h" },
-  { label: t("members.forms.invite.expiry.7days"), value: "7d" },
-  { label: t("members.forms.invite.expiry.30days"), value: "30d" },
+	{ label: t("members.forms.invite.expiry.never"), value: "never" },
+	{ label: t("members.forms.invite.expiry.24hours"), value: "24h" },
+	{ label: t("members.forms.invite.expiry.7days"), value: "7d" },
+	{ label: t("members.forms.invite.expiry.30days"), value: "30d" },
 ]);
 
 // Mock data
 const teamMembers = [
-  {
-    id: "1",
-    name: "John Doe",
-    email: "john@example.com",
-    role: "owner",
-    joinedDate: new Date("2023-01-15"),
-    twoFAEnabled: true,
-  },
-  {
-    id: "2",
-    name: "Alice Smith",
-    email: "alice@example.com",
-    role: "member",
-    joinedDate: new Date("2023-03-22"),
-    twoFAEnabled: false,
-  },
-  {
-    id: "3",
-    name: "Bob Wilson",
-    email: "bob@example.com",
-    role: "member",
-    joinedDate: new Date("2023-05-10"),
-    twoFAEnabled: true,
-  },
+	{
+		id: "1",
+		name: "John Doe",
+		email: "john@example.com",
+		role: "owner",
+		joinedDate: new Date("2023-01-15"),
+		twoFAEnabled: true,
+	},
+	{
+		id: "2",
+		name: "Alice Smith",
+		email: "alice@example.com",
+		role: "member",
+		joinedDate: new Date("2023-03-22"),
+		twoFAEnabled: false,
+	},
+	{
+		id: "3",
+		name: "Bob Wilson",
+		email: "bob@example.com",
+		role: "member",
+		joinedDate: new Date("2023-05-10"),
+		twoFAEnabled: true,
+	},
 ];
 
 const pendingInvites = [
-  {
-    id: "1",
-    name: "Charlie Brown",
-    email: "charlie@example.com",
-    role: "member",
-    invitedDate: new Date("2023-12-01"),
-  },
-  {
-    id: "2",
-    name: "Diana Prince",
-    email: "diana@example.com",
-    role: "member",
-    invitedDate: new Date("2023-12-03"),
-  },
+	{
+		id: "1",
+		name: "Charlie Brown",
+		email: "charlie@example.com",
+		role: "member",
+		invitedDate: new Date("2023-12-01"),
+	},
+	{
+		id: "2",
+		name: "Diana Prince",
+		email: "diana@example.com",
+		role: "member",
+		invitedDate: new Date("2023-12-03"),
+	},
 ];
 
 // Computed filtered data
 const filteredMembers = computed(() => {
-  let filtered = teamMembers.filter((member) => {
-    const matchesSearch =
-      member.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      member.email.toLowerCase().includes(searchQuery.value.toLowerCase());
-    const matchesRole =
-      selectedRoleFilter.value === "anyRole" ||
-      member.role.toLowerCase() === selectedRoleFilter.value;
-    const matches2FA =
-      selected2FAFilter.value === "any2FA" ||
-      (selected2FAFilter.value === "enabled" && member.twoFAEnabled) ||
-      (selected2FAFilter.value === "disabled" && !member.twoFAEnabled);
+	let filtered = teamMembers.filter((member) => {
+		const matchesSearch =
+			member.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+			member.email.toLowerCase().includes(searchQuery.value.toLowerCase());
+		const matchesRole =
+			selectedRoleFilter.value === "anyRole" ||
+			member.role.toLowerCase() === selectedRoleFilter.value;
+		const matches2FA =
+			selected2FAFilter.value === "any2FA" ||
+			(selected2FAFilter.value === "enabled" && member.twoFAEnabled) ||
+			(selected2FAFilter.value === "disabled" && !member.twoFAEnabled);
 
-    return matchesSearch && matchesRole && matches2FA;
-  });
+		return matchesSearch && matchesRole && matches2FA;
+	});
 
-  // Sort the results
-  if (selectedSorting.value === "name-asc") {
-    filtered.sort((a, b) => a.name.localeCompare(b.name));
-  } else if (selectedSorting.value === "name-desc") {
-    filtered.sort((a, b) => b.name.localeCompare(a.name));
-  } else if (selectedSorting.value === "date-asc") {
-    filtered.sort((a, b) => a.joinedDate.getTime() - b.joinedDate.getTime());
-  } else if (selectedSorting.value === "date-desc") {
-    filtered.sort((a, b) => b.joinedDate.getTime() - a.joinedDate.getTime());
-  }
+	// Sort the results
+	if (selectedSorting.value === "name-asc") {
+		filtered.sort((a, b) => a.name.localeCompare(b.name));
+	} else if (selectedSorting.value === "name-desc") {
+		filtered.sort((a, b) => b.name.localeCompare(a.name));
+	} else if (selectedSorting.value === "date-asc") {
+		filtered.sort((a, b) => a.joinedDate.getTime() - b.joinedDate.getTime());
+	} else if (selectedSorting.value === "date-desc") {
+		filtered.sort((a, b) => b.joinedDate.getTime() - a.joinedDate.getTime());
+	}
 
-  return filtered;
+	return filtered;
 });
 
 const filteredInvites = computed(() => {
-  let filtered = pendingInvites.filter((invite) => {
-    const matchesSearch =
-      invite.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      invite.email.toLowerCase().includes(searchQuery.value.toLowerCase());
-    const matchesRole =
-      selectedRoleFilter.value === "anyRole" ||
-      invite.role.toLowerCase() === selectedRoleFilter.value;
+	let filtered = pendingInvites.filter((invite) => {
+		const matchesSearch =
+			invite.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+			invite.email.toLowerCase().includes(searchQuery.value.toLowerCase());
+		const matchesRole =
+			selectedRoleFilter.value === "anyRole" ||
+			invite.role.toLowerCase() === selectedRoleFilter.value;
 
-    return matchesSearch && matchesRole;
-  });
+		return matchesSearch && matchesRole;
+	});
 
-  // Sort the results
-  if (selectedSorting.value === "name-asc") {
-    filtered.sort((a, b) => a.email.localeCompare(b.email));
-  } else if (selectedSorting.value === "name-desc") {
-    filtered.sort((a, b) => b.email.localeCompare(a.email));
-  } else if (selectedSorting.value === "date-asc") {
-    filtered.sort((a, b) => a.invitedDate.getTime() - b.invitedDate.getTime());
-  } else {
-    filtered.sort((a, b) => b.invitedDate.getTime() - a.invitedDate.getTime());
-  }
+	// Sort the results
+	if (selectedSorting.value === "name-asc") {
+		filtered.sort((a, b) => a.email.localeCompare(b.email));
+	} else if (selectedSorting.value === "name-desc") {
+		filtered.sort((a, b) => b.email.localeCompare(a.email));
+	} else if (selectedSorting.value === "date-asc") {
+		filtered.sort((a, b) => a.invitedDate.getTime() - b.invitedDate.getTime());
+	} else {
+		filtered.sort((a, b) => b.invitedDate.getTime() - a.invitedDate.getTime());
+	}
 
-  return filtered;
+	return filtered;
 });
 
 // Computed for selection
 const allMembersSelected = computed(
-  () =>
-    filteredMembers.value.length > 0 &&
-    filteredMembers.value.filter((m) => m.role !== "Owner").length > 0 &&
-    filteredMembers.value
-      .filter((m) => m.role !== "Owner")
-      .every((m) => selectedMembers.value.has(m.id)),
+	() =>
+		filteredMembers.value.length > 0 &&
+		filteredMembers.value.filter((m) => m.role !== "Owner").length > 0 &&
+		filteredMembers.value
+			.filter((m) => m.role !== "Owner")
+			.every((m) => selectedMembers.value.has(m.id)),
 );
 
 const allInvitesSelected = computed(
-  () =>
-    filteredInvites.value.length > 0 &&
-    filteredInvites.value.every((i) => selectedInvites.value.has(i.id)),
+	() =>
+		filteredInvites.value.length > 0 &&
+		filteredInvites.value.every((i) => selectedInvites.value.has(i.id)),
 );
 
 // ===== Invite Functions =====
@@ -234,29 +234,29 @@ const allInvitesSelected = computed(
  * Send an invitation email to a new team member
  */
 function sendInvite(): void {
-  if (!inviteEmail.value.trim()) return;
+	if (!inviteEmail.value.trim()) return;
 
-  console.log(
-    "Sending invite to:",
-    inviteEmail.value,
-    "with role:",
-    selectedRole.value,
-  );
-  inviteEmail.value = "";
-  selectedRole.value = "Member";
+	console.log(
+		"Sending invite to:",
+		inviteEmail.value,
+		"with role:",
+		selectedRole.value,
+	);
+	inviteEmail.value = "";
+	selectedRole.value = "Member";
 }
 
 /**
  * Copy the invitation link to clipboard with selected expiry
  */
 function copyInviteLink(): void {
-  // In a real implementation, this would generate a link with the appropriate expiry
-  const inviteLink = `https://app.nvisy.com/invite/abc123def456?expires=${selectedExpiry.value}`;
-  navigator.clipboard.writeText(inviteLink);
-  copiedInviteLink.value = true;
-  setTimeout(() => {
-    copiedInviteLink.value = false;
-  }, 2000);
+	// In a real implementation, this would generate a link with the appropriate expiry
+	const inviteLink = `https://app.nvisy.com/invite/abc123def456?expires=${selectedExpiry.value}`;
+	navigator.clipboard.writeText(inviteLink);
+	copiedInviteLink.value = true;
+	setTimeout(() => {
+		copiedInviteLink.value = false;
+	}, 2000);
 }
 
 // ===== Member Deletion Functions =====
@@ -266,37 +266,37 @@ function copyInviteLink(): void {
  * @param memberId - ID of the member to delete
  */
 function openDeleteMemberDialog(memberId: string): void {
-  const member = teamMembers.find((m) => m.id === memberId);
-  if (member) {
-    memberToDelete.value = member;
-    isDeleteMemberDialogOpen.value = true;
-  }
+	const member = teamMembers.find((m) => m.id === memberId);
+	if (member) {
+		memberToDelete.value = member;
+		isDeleteMemberDialogOpen.value = true;
+	}
 }
 
 /**
  * Confirm and execute member deletion
  */
 function deleteMember(): void {
-  if (!memberToDelete.value) return;
-  console.log("Deleting member:", memberToDelete.value.id);
-  isDeleteMemberDialogOpen.value = false;
-  memberToDelete.value = null;
+	if (!memberToDelete.value) return;
+	console.log("Deleting member:", memberToDelete.value.id);
+	isDeleteMemberDialogOpen.value = false;
+	memberToDelete.value = null;
 }
 
 /**
  * Open the dialog for deleting multiple members
  */
 function openDeleteMultipleMembersDialog(): void {
-  isDeleteMultipleMembersDialogOpen.value = true;
+	isDeleteMultipleMembersDialogOpen.value = true;
 }
 
 /**
  * Confirm and execute bulk member deletion
  */
 function deleteSelectedMembers(): void {
-  console.log("Deleting members:", Array.from(selectedMembers.value));
-  selectedMembers.value = new Set();
-  isDeleteMultipleMembersDialogOpen.value = false;
+	console.log("Deleting members:", Array.from(selectedMembers.value));
+	selectedMembers.value = new Set();
+	isDeleteMultipleMembersDialogOpen.value = false;
 }
 
 // ===== Invite Cancellation Functions =====
@@ -306,37 +306,37 @@ function deleteSelectedMembers(): void {
  * @param inviteId - ID of the invitation to cancel
  */
 function openCancelInviteDialog(inviteId: string): void {
-  const invite = pendingInvites.find((i) => i.id === inviteId);
-  if (invite) {
-    inviteToCancel.value = invite;
-    isCancelInviteDialogOpen.value = true;
-  }
+	const invite = pendingInvites.find((i) => i.id === inviteId);
+	if (invite) {
+		inviteToCancel.value = invite;
+		isCancelInviteDialogOpen.value = true;
+	}
 }
 
 /**
  * Confirm and execute invitation cancellation
  */
 function cancelInvite(): void {
-  if (!inviteToCancel.value) return;
-  console.log("Canceling invite:", inviteToCancel.value.id);
-  isCancelInviteDialogOpen.value = false;
-  inviteToCancel.value = null;
+	if (!inviteToCancel.value) return;
+	console.log("Canceling invite:", inviteToCancel.value.id);
+	isCancelInviteDialogOpen.value = false;
+	inviteToCancel.value = null;
 }
 
 /**
  * Open the dialog for canceling multiple invitations
  */
 function openCancelMultipleInvitesDialog(): void {
-  isCancelMultipleInvitesDialogOpen.value = true;
+	isCancelMultipleInvitesDialogOpen.value = true;
 }
 
 /**
  * Confirm and execute bulk invitation cancellation
  */
 function cancelSelectedInvites(): void {
-  console.log("Canceling invites:", Array.from(selectedInvites.value));
-  selectedInvites.value = new Set();
-  isCancelMultipleInvitesDialogOpen.value = false;
+	console.log("Canceling invites:", Array.from(selectedInvites.value));
+	selectedInvites.value = new Set();
+	isCancelMultipleInvitesDialogOpen.value = false;
 }
 
 // ===== Selection Functions =====
@@ -345,13 +345,13 @@ function cancelSelectedInvites(): void {
  * Toggle selection for all non-owner members
  */
 function toggleSelectAllMembers(): void {
-  if (allMembersSelected.value) {
-    selectedMembers.value = new Set();
-  } else {
-    selectedMembers.value = new Set(
-      filteredMembers.value.filter((m) => m.role !== "Owner").map((m) => m.id),
-    );
-  }
+	if (allMembersSelected.value) {
+		selectedMembers.value = new Set();
+	} else {
+		selectedMembers.value = new Set(
+			filteredMembers.value.filter((m) => m.role !== "Owner").map((m) => m.id),
+		);
+	}
 }
 
 /**
@@ -359,18 +359,18 @@ function toggleSelectAllMembers(): void {
  * @param memberId - ID of the member to toggle
  */
 function toggleMember(memberId: string): void {
-  const newSet = new Set(selectedMembers.value);
-  newSet.has(memberId) ? newSet.delete(memberId) : newSet.add(memberId);
-  selectedMembers.value = newSet;
+	const newSet = new Set(selectedMembers.value);
+	newSet.has(memberId) ? newSet.delete(memberId) : newSet.add(memberId);
+	selectedMembers.value = newSet;
 }
 
 /**
  * Toggle selection for all invitations
  */
 function toggleSelectAllInvites(): void {
-  selectedInvites.value = allInvitesSelected.value
-    ? new Set()
-    : new Set(filteredInvites.value.map((i) => i.id));
+	selectedInvites.value = allInvitesSelected.value
+		? new Set()
+		: new Set(filteredInvites.value.map((i) => i.id));
 }
 
 /**
@@ -378,9 +378,9 @@ function toggleSelectAllInvites(): void {
  * @param inviteId - ID of the invitation to toggle
  */
 function toggleInvite(inviteId: string): void {
-  const newSet = new Set(selectedInvites.value);
-  newSet.has(inviteId) ? newSet.delete(inviteId) : newSet.add(inviteId);
-  selectedInvites.value = newSet;
+	const newSet = new Set(selectedInvites.value);
+	newSet.has(inviteId) ? newSet.delete(inviteId) : newSet.add(inviteId);
+	selectedInvites.value = newSet;
 }
 
 // ===== Filter Functions =====
@@ -390,7 +390,7 @@ function toggleInvite(inviteId: string): void {
  * @param role - The role to select
  */
 function selectRole(role: string): void {
-  selectedRole.value = role;
+	selectedRole.value = role;
 }
 
 /**
@@ -398,7 +398,7 @@ function selectRole(role: string): void {
  * @param role - The role filter to apply
  */
 function selectRoleFilter(role: string): void {
-  selectedRoleFilter.value = role;
+	selectedRoleFilter.value = role;
 }
 
 /**
@@ -406,7 +406,7 @@ function selectRoleFilter(role: string): void {
  * @param filter - The 2FA filter to apply
  */
 function select2FAFilter(filter: string): void {
-  selected2FAFilter.value = filter;
+	selected2FAFilter.value = filter;
 }
 
 /**
@@ -414,7 +414,7 @@ function select2FAFilter(filter: string): void {
  * @param sorting - The sorting option to apply
  */
 function selectSorting(sorting: string): void {
-  selectedSorting.value = sorting;
+	selectedSorting.value = sorting;
 }
 </script>
 

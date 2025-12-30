@@ -6,11 +6,11 @@ import { RangeCalendarHeading, useForwardProps } from "reka-ui";
 import { cn } from "@/utils/shadcn";
 
 const props = defineProps<
-  RangeCalendarHeadingProps & { class?: HTMLAttributes["class"] }
+	RangeCalendarHeadingProps & { class?: HTMLAttributes["class"] }
 >();
 
 defineSlots<{
-  default: (props: { headingValue: string }) => any;
+	default: (props: { headingValue: string }) => any;
 }>();
 
 const delegatedProps = reactiveOmit(props, "class");

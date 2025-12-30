@@ -2,19 +2,19 @@
 import { ref } from "vue";
 import { Check, Sparkles, Building2, ExternalLink } from "lucide-vue-next";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 
 definePageMeta({
-  pageCategory: "Billing",
+	pageCategory: "Billing",
 });
 
 // Current plan
@@ -22,108 +22,108 @@ const currentPlan = ref("free");
 
 // Plans data
 const plans = [
-  {
-    id: "free",
-    name: "Free",
-    price: 0,
-    description: "For individuals and small teams getting started",
-    features: [
-      "Up to 3 team members",
-      "100 documents",
-      "1 GB storage",
-      "Basic analytics",
-      "Community support",
-    ],
-    cta: "Current Plan",
-    popular: false,
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    price: 49,
-    description: "For growing teams that need more power",
-    features: [
-      "Up to 20 team members",
-      "Unlimited documents",
-      "50 GB storage",
-      "Advanced analytics",
-      "Priority support",
-      "API access",
-      "Custom integrations",
-    ],
-    cta: "Upgrade to Pro",
-    popular: true,
-  },
-  {
-    id: "enterprise",
-    name: "Enterprise",
-    price: null,
-    description: "For large organizations with custom needs",
-    features: [
-      "Unlimited team members",
-      "Unlimited documents",
-      "Unlimited storage",
-      "Enterprise analytics",
-      "Dedicated support",
-      "SSO & SAML",
-      "Custom contracts",
-      "SLA guarantees",
-    ],
-    cta: "Contact Sales",
-    popular: false,
-  },
+	{
+		id: "free",
+		name: "Free",
+		price: 0,
+		description: "For individuals and small teams getting started",
+		features: [
+			"Up to 3 team members",
+			"100 documents",
+			"1 GB storage",
+			"Basic analytics",
+			"Community support",
+		],
+		cta: "Current Plan",
+		popular: false,
+	},
+	{
+		id: "pro",
+		name: "Pro",
+		price: 49,
+		description: "For growing teams that need more power",
+		features: [
+			"Up to 20 team members",
+			"Unlimited documents",
+			"50 GB storage",
+			"Advanced analytics",
+			"Priority support",
+			"API access",
+			"Custom integrations",
+		],
+		cta: "Upgrade to Pro",
+		popular: true,
+	},
+	{
+		id: "enterprise",
+		name: "Enterprise",
+		price: null,
+		description: "For large organizations with custom needs",
+		features: [
+			"Unlimited team members",
+			"Unlimited documents",
+			"Unlimited storage",
+			"Enterprise analytics",
+			"Dedicated support",
+			"SSO & SAML",
+			"Custom contracts",
+			"SLA guarantees",
+		],
+		cta: "Contact Sales",
+		popular: false,
+	},
 ];
 
 // Add-ons data
 const addons = ref([
-  {
-    id: "webhooks",
-    name: "Webhooks",
-    description: "Real-time event notifications to your endpoints",
-    price: 19,
-    enabled: false,
-    alpha: false,
-    docUrl: "https://docs.nvisy.com/webhooks",
-    docLabel: "Read webhooks docs",
-  },
-  {
-    id: "ai-insights",
-    name: "AI Insights",
-    description: "Advanced AI-powered analytics and recommendations",
-    price: 29,
-    enabled: false,
-    alpha: true,
-    docUrl: "https://docs.nvisy.com/ai-insights",
-    docLabel: "Read AI Insights docs",
-  },
-  {
-    id: "on-premise",
-    name: "On-Premise Runtimes",
-    description: "Run processing on your own infrastructure",
-    price: 99,
-    enabled: false,
-    alpha: true,
-    docUrl: "https://docs.nvisy.com/on-premise",
-    docLabel: "Read On-Premise docs",
-  },
+	{
+		id: "webhooks",
+		name: "Webhooks",
+		description: "Real-time event notifications to your endpoints",
+		price: 19,
+		enabled: false,
+		alpha: false,
+		docUrl: "https://docs.nvisy.com/webhooks",
+		docLabel: "Read webhooks docs",
+	},
+	{
+		id: "ai-insights",
+		name: "AI Insights",
+		description: "Advanced AI-powered analytics and recommendations",
+		price: 29,
+		enabled: false,
+		alpha: true,
+		docUrl: "https://docs.nvisy.com/ai-insights",
+		docLabel: "Read AI Insights docs",
+	},
+	{
+		id: "on-premise",
+		name: "On-Premise Runtimes",
+		description: "Run processing on your own infrastructure",
+		price: 99,
+		enabled: false,
+		alpha: true,
+		docUrl: "https://docs.nvisy.com/on-premise",
+		docLabel: "Read On-Premise docs",
+	},
 ]);
 
 function selectPlan(planId: string) {
-  if (planId === "enterprise") {
-    // Open contact sales
-    window.open("https://nvisy.com/contact", "_blank");
-  } else if (planId !== currentPlan.value) {
-    // Handle plan upgrade/downgrade
-    console.log("Switching to plan:", planId);
-  }
+	if (planId === "enterprise") {
+		// Open contact sales
+		window.open("https://nvisy.com/contact", "_blank");
+	} else if (planId !== currentPlan.value) {
+		// Handle plan upgrade/downgrade
+		console.log("Switching to plan:", planId);
+	}
 }
 
 function toggleAddon(addonId: string) {
-  const addon = addons.value.find((a) => a.id === addonId);
-  if (addon) {
-    addon.enabled = !addon.enabled;
-    console.log("Toggling addon:", addonId, addon.enabled);
-  }
+	const addon = addons.value.find((a) => a.id === addonId);
+	if (addon) {
+		addon.enabled = !addon.enabled;
+		console.log("Toggling addon:", addonId, addon.enabled);
+	}
 }
 </script>
 

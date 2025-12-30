@@ -5,53 +5,53 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
 interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  timestamp: Date;
+	id: string;
+	role: "user" | "assistant";
+	content: string;
+	timestamp: Date;
 }
 
 const isOpen = ref(false);
 const messageInput = ref("");
 const messages = ref<Message[]>([
-  {
-    id: "1",
-    role: "assistant",
-    content: "Hello! I'm here to help. What can I assist you with today?",
-    timestamp: new Date(),
-  },
+	{
+		id: "1",
+		role: "assistant",
+		content: "Hello! I'm here to help. What can I assist you with today?",
+		timestamp: new Date(),
+	},
 ]);
 
 function toggleChat() {
-  isOpen.value = !isOpen.value;
+	isOpen.value = !isOpen.value;
 }
 
 function sendMessage() {
-  if (!messageInput.value.trim()) return;
+	if (!messageInput.value.trim()) return;
 
-  messages.value.push({
-    id: Date.now().toString(),
-    role: "user",
-    content: messageInput.value,
-    timestamp: new Date(),
-  });
+	messages.value.push({
+		id: Date.now().toString(),
+		role: "user",
+		content: messageInput.value,
+		timestamp: new Date(),
+	});
 
-  // Simulate assistant response
-  setTimeout(() => {
-    messages.value.push({
-      id: (Date.now() + 1).toString(),
-      role: "assistant",
-      content:
-        "I'm processing your question. In a real implementation, this would connect to a help system or support API.",
-      timestamp: new Date(),
-    });
-  }, 500);
+	// Simulate assistant response
+	setTimeout(() => {
+		messages.value.push({
+			id: (Date.now() + 1).toString(),
+			role: "assistant",
+			content:
+				"I'm processing your question. In a real implementation, this would connect to a help system or support API.",
+			timestamp: new Date(),
+		});
+	}, 500);
 
-  messageInput.value = "";
+	messageInput.value = "";
 }
 
 defineExpose({
-  toggleChat,
+	toggleChat,
 });
 </script>
 

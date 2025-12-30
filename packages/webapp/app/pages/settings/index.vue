@@ -7,16 +7,16 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 
 definePageMeta({
-  pageCategory: "Settings",
+	pageCategory: "Settings",
 });
 
 // Reactive data
@@ -26,36 +26,36 @@ const copiedWorkspaceId = ref(false);
 
 // Functions
 function copyWorkspaceId() {
-  navigator.clipboard.writeText(workspaceId.value);
-  copiedWorkspaceId.value = true;
-  setTimeout(() => {
-    copiedWorkspaceId.value = false;
-  }, 2000);
+	navigator.clipboard.writeText(workspaceId.value);
+	copiedWorkspaceId.value = true;
+	setTimeout(() => {
+		copiedWorkspaceId.value = false;
+	}, 2000);
 }
 
 function saveWorkspaceName() {
-  console.log("Saving workspace name:", workspaceName.value);
+	console.log("Saving workspace name:", workspaceName.value);
 }
 
 function uploadAvatar() {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "image/*";
-  input.onchange = (e) => {
-    const file = (e.target as HTMLInputElement)?.files?.[0];
-    if (file) {
-      console.log("Uploading avatar:", file.name);
-    }
-  };
-  input.click();
+	const input = document.createElement("input");
+	input.type = "file";
+	input.accept = "image/*";
+	input.onchange = (e) => {
+		const file = (e.target as HTMLInputElement)?.files?.[0];
+		if (file) {
+			console.log("Uploading avatar:", file.name);
+		}
+	};
+	input.click();
 }
 
 function leaveWorkspace() {
-  console.log("Leaving workspace");
+	console.log("Leaving workspace");
 }
 
 function deleteWorkspace() {
-  console.log("Deleting workspace");
+	console.log("Deleting workspace");
 }
 </script>
 

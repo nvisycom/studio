@@ -3,28 +3,28 @@ import type { Component } from "vue";
 import { ChevronsUpDown, Plus, LayoutGrid } from "lucide-vue-next";
 import { ref } from "vue";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuShortcut,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	useSidebar,
 } from "@/components/ui/sidebar";
 import CreateWorkspaceModal from "./CreateWorkspaceModal.vue";
 
 const props = defineProps<{
-  workspaces: {
-    name: string;
-    logo: Component;
-    plan: string;
-  }[];
+	workspaces: {
+		name: string;
+		logo: Component;
+		plan: string;
+	}[];
 }>();
 
 const { isMobile } = useSidebar();

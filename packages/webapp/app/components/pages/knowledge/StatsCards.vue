@@ -3,15 +3,15 @@ import { HardDrive, Zap, Files } from "lucide-vue-next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface Props {
-  totalSize: string;
-  totalDocumentsSize: string;
-  indexSize: string;
-  totalDocuments: number;
-  totalSegments: number;
-  avgSegmentSize: string;
-  avgResponseTime: number;
-  p95ResponseTime: number;
-  cacheHitRate: number;
+	totalSize: string;
+	totalDocumentsSize: string;
+	indexSize: string;
+	totalDocuments: number;
+	totalSegments: number;
+	avgSegmentSize: string;
+	avgResponseTime: number;
+	p95ResponseTime: number;
+	cacheHitRate: number;
 }
 
 defineProps<Props>();

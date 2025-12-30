@@ -3,7 +3,7 @@ import type { HTMLAttributes } from "vue";
 import { cn } from "@/utils/shadcn";
 
 defineProps<{
-  class?: HTMLAttributes["class"];
+	class?: HTMLAttributes["class"];
 }>();
 </script>
 

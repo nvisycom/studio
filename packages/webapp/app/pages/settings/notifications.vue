@@ -1,155 +1,155 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Switch from "@/components/ui/switch/Switch.vue";
 import Checkbox from "@/components/ui/checkbox/Checkbox.vue";
 
 definePageMeta({
-  pageCategory: "Settings",
+	pageCategory: "Settings",
 });
 
 // Reactive data
 const webNotifications = ref(true); // Always true, read-only
 
 const notificationCategories = ref({
-  // Documents
-  documentsRedacted: { web: true, email: true },
-  documentsVerified: { web: true, email: true },
+	// Documents
+	documentsRedacted: { web: true, email: true },
+	documentsVerified: { web: true, email: true },
 
-  // Team Members
-  memberJoined: { web: true, email: true },
-  memberRoleChanged: { web: true, email: true },
-  memberLeftOrKicked: { web: true, email: true },
+	// Team Members
+	memberJoined: { web: true, email: true },
+	memberRoleChanged: { web: true, email: true },
+	memberLeftOrKicked: { web: true, email: true },
 
-  // Integrations
-  integrationConnected: { web: true, email: true },
-  integrationDisconnected: { web: true, email: true },
-  integrationFailure: { web: true, email: true },
+	// Integrations
+	integrationConnected: { web: true, email: true },
+	integrationDisconnected: { web: true, email: true },
+	integrationFailure: { web: true, email: true },
 
-  // Billing
-  billingUpcomingPayment: { web: true, email: true },
-  billingPlanUpdated: { web: true, email: true },
+	// Billing
+	billingUpcomingPayment: { web: true, email: true },
+	billingPlanUpdated: { web: true, email: true },
 
-  // Security
-  security2faChanges: { web: true, email: true },
-  securitySuspiciousActivity: { web: true, email: true },
+	// Security
+	security2faChanges: { web: true, email: true },
+	securitySuspiciousActivity: { web: true, email: true },
 });
 
 const categories = [
-  {
-    id: "documents",
-    name: "Documents",
-    notifications: [
-      {
-        key: "documentsRedacted",
-        name: "Document Redacted",
-        description: "Documents are successfully redacted",
-      },
-      {
-        key: "documentsVerified",
-        name: "Document Verified",
-        description: "Documents pass verification checks",
-      },
-    ],
-  },
-  {
-    id: "members",
-    name: "Team Members",
-    notifications: [
-      {
-        key: "memberJoined",
-        name: "Member Joined",
-        description: "New members join your workspace",
-      },
-      {
-        key: "memberRoleChanged",
-        name: "Role Changed",
-        description: "Member roles are updated",
-      },
-      {
-        key: "memberLeftOrKicked",
-        name: "Member Left or Kicked",
-        description: "Members leave or are removed from the workspace",
-      },
-    ],
-  },
-  {
-    id: "integrations",
-    name: "Integrations",
-    notifications: [
-      {
-        key: "integrationConnected",
-        name: "Integration Connected",
-        description: "New integrations are connected to your workspace",
-      },
-      {
-        key: "integrationDisconnected",
-        name: "Integration Disconnected",
-        description: "Integrations are disconnected",
-      },
-      {
-        key: "integrationFailure",
-        name: "Integration Failure",
-        description: "Integrations encounter errors or failures",
-      },
-    ],
-  },
-  {
-    id: "billing",
-    name: "Billing",
-    notifications: [
-      {
-        key: "billingUpcomingPayment",
-        name: "Upcoming Payment",
-        description: "Payment due date is approaching",
-      },
-      {
-        key: "billingPlanUpdated",
-        name: "Plan Updated",
-        description: "Subscription plan is modified",
-      },
-    ],
-  },
-  {
-    id: "security",
-    name: "Security",
-    notifications: [
-      {
-        key: "security2faChanges",
-        name: "2FA Changes",
-        description: "Two-factor authentication settings are modified",
-      },
-      {
-        key: "securitySuspiciousActivity",
-        name: "Suspicious Activity",
-        description: "Unusual or potentially malicious activity is detected",
-      },
-    ],
-  },
+	{
+		id: "documents",
+		name: "Documents",
+		notifications: [
+			{
+				key: "documentsRedacted",
+				name: "Document Redacted",
+				description: "Documents are successfully redacted",
+			},
+			{
+				key: "documentsVerified",
+				name: "Document Verified",
+				description: "Documents pass verification checks",
+			},
+		],
+	},
+	{
+		id: "members",
+		name: "Team Members",
+		notifications: [
+			{
+				key: "memberJoined",
+				name: "Member Joined",
+				description: "New members join your workspace",
+			},
+			{
+				key: "memberRoleChanged",
+				name: "Role Changed",
+				description: "Member roles are updated",
+			},
+			{
+				key: "memberLeftOrKicked",
+				name: "Member Left or Kicked",
+				description: "Members leave or are removed from the workspace",
+			},
+		],
+	},
+	{
+		id: "integrations",
+		name: "Integrations",
+		notifications: [
+			{
+				key: "integrationConnected",
+				name: "Integration Connected",
+				description: "New integrations are connected to your workspace",
+			},
+			{
+				key: "integrationDisconnected",
+				name: "Integration Disconnected",
+				description: "Integrations are disconnected",
+			},
+			{
+				key: "integrationFailure",
+				name: "Integration Failure",
+				description: "Integrations encounter errors or failures",
+			},
+		],
+	},
+	{
+		id: "billing",
+		name: "Billing",
+		notifications: [
+			{
+				key: "billingUpcomingPayment",
+				name: "Upcoming Payment",
+				description: "Payment due date is approaching",
+			},
+			{
+				key: "billingPlanUpdated",
+				name: "Plan Updated",
+				description: "Subscription plan is modified",
+			},
+		],
+	},
+	{
+		id: "security",
+		name: "Security",
+		notifications: [
+			{
+				key: "security2faChanges",
+				name: "2FA Changes",
+				description: "Two-factor authentication settings are modified",
+			},
+			{
+				key: "securitySuspiciousActivity",
+				name: "Suspicious Activity",
+				description: "Unusual or potentially malicious activity is detected",
+			},
+		],
+	},
 ];
 
 // Functions
 function saveNotificationCategories() {
-  console.log("Saving notification categories:", notificationCategories.value);
+	console.log("Saving notification categories:", notificationCategories.value);
 }
 
 function updateNotificationSetting(
-  key: string,
-  channel: "web" | "email",
-  value: boolean,
+	key: string,
+	channel: "web" | "email",
+	value: boolean,
 ) {
-  const setting = (notificationCategories.value as any)[key];
-  if (setting) {
-    setting[channel] = value;
-  }
+	const setting = (notificationCategories.value as any)[key];
+	if (setting) {
+		setting[channel] = value;
+	}
 }
 </script>
 

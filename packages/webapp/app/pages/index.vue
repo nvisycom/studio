@@ -1,29 +1,29 @@
 <script setup lang="ts">
 import {
-  FileText,
-  MessageSquare,
-  Users,
-  BarChart3,
-  ArrowRight,
-  Upload,
-  Sparkles,
-  Clock,
-  TrendingUp,
-  CreditCard,
-  Database,
+	FileText,
+	MessageSquare,
+	Users,
+	BarChart3,
+	ArrowRight,
+	Upload,
+	Sparkles,
+	Clock,
+	TrendingUp,
+	CreditCard,
+	Database,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 
 definePageMeta({
-  pageCategory: "Overview",
+	pageCategory: "Overview",
 });
 
 // Credits data
@@ -40,95 +40,95 @@ const storagePercentage = (storageUsed / storageTotal) * 100;
 
 // Quick stats
 const stats = [
-  {
-    title: "Documents",
-    value: "1,284",
-    change: "+12%",
-    trend: "up",
-    icon: FileText,
-  },
-  {
-    title: "AI Queries",
-    value: "3,429",
-    change: "+8%",
-    trend: "up",
-    icon: MessageSquare,
-  },
-  {
-    title: "Team Members",
-    value: "12",
-    change: "+2",
-    trend: "up",
-    icon: Users,
-  },
+	{
+		title: "Documents",
+		value: "1,284",
+		change: "+12%",
+		trend: "up",
+		icon: FileText,
+	},
+	{
+		title: "AI Queries",
+		value: "3,429",
+		change: "+8%",
+		trend: "up",
+		icon: MessageSquare,
+	},
+	{
+		title: "Team Members",
+		value: "12",
+		change: "+2",
+		trend: "up",
+		icon: Users,
+	},
 ];
 
 // Recent activity
 const recentActivity = [
-  {
-    id: 1,
-    action: "Document uploaded",
-    item: "contract_final_v3.pdf",
-    user: "John Doe",
-    time: "2 hours ago",
-  },
-  {
-    id: 2,
-    action: "AI query",
-    item: "Summarize Q4 report",
-    user: "Jane Smith",
-    time: "3 hours ago",
-  },
-  {
-    id: 3,
-    action: "Document edited",
-    item: "employee_handbook.docx",
-    user: "Bob Johnson",
-    time: "5 hours ago",
-  },
-  {
-    id: 4,
-    action: "New member joined",
-    item: "Alice Brown",
-    user: "System",
-    time: "1 day ago",
-  },
+	{
+		id: 1,
+		action: "Document uploaded",
+		item: "contract_final_v3.pdf",
+		user: "John Doe",
+		time: "2 hours ago",
+	},
+	{
+		id: 2,
+		action: "AI query",
+		item: "Summarize Q4 report",
+		user: "Jane Smith",
+		time: "3 hours ago",
+	},
+	{
+		id: 3,
+		action: "Document edited",
+		item: "employee_handbook.docx",
+		user: "Bob Johnson",
+		time: "5 hours ago",
+	},
+	{
+		id: 4,
+		action: "New member joined",
+		item: "Alice Brown",
+		user: "System",
+		time: "1 day ago",
+	},
 ];
 
 // Quick actions
 const quickActions = [
-  {
-    title: "Upload Files",
-    description: "Add new files to your knowledge base",
-    icon: Upload,
-    href: "/knowledge/files",
-    color: "text-blue-600 dark:text-blue-400",
-    bg: "bg-blue-100 dark:bg-blue-900/30",
-  },
-  {
-    title: "Ask AI",
-    description: "Query your documents with AI",
-    icon: Sparkles,
-    href: "/knowledge",
-    color: "text-purple-600 dark:text-purple-400",
-    bg: "bg-purple-100 dark:bg-purple-900/30",
-  },
-  {
-    title: "View Analytics",
-    description: "Monitor usage and performance",
-    icon: BarChart3,
-    href: "/analytics",
-    color: "text-green-600 dark:text-green-400",
-    bg: "bg-green-100 dark:bg-green-900/30",
-  },
-  {
-    title: "Team",
-    description: "Invite and manage team members",
-    icon: Users,
-    href: "/team",
-    color: "text-orange-600 dark:text-orange-400",
-    bg: "bg-orange-100 dark:bg-orange-900/30",
-  },
+	{
+		title: "Upload Files",
+		description: "Add new files to your knowledge base",
+		icon: Upload,
+		href: "/knowledge/files",
+		color: "text-blue-600 dark:text-blue-400",
+		bg: "bg-blue-100 dark:bg-blue-900/30",
+	},
+	{
+		title: "Ask AI",
+		description: "Query your documents with AI",
+		icon: Sparkles,
+		href: "/knowledge",
+		color: "text-purple-600 dark:text-purple-400",
+		bg: "bg-purple-100 dark:bg-purple-900/30",
+	},
+	{
+		title: "View Analytics",
+		description: "Monitor usage and performance",
+		icon: BarChart3,
+		href: "/analytics",
+		color: "text-green-600 dark:text-green-400",
+		bg: "bg-green-100 dark:bg-green-900/30",
+	},
+	{
+		title: "Team",
+		description: "Invite and manage team members",
+		icon: Users,
+		href: "/team",
+		color: "text-orange-600 dark:text-orange-400",
+		bg: "bg-orange-100 dark:bg-orange-900/30",
+	},
 ];
 </script>
 

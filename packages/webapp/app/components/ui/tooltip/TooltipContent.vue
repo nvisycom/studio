@@ -3,22 +3,22 @@ import type { TooltipContentEmits, TooltipContentProps } from "reka-ui";
 import type { HTMLAttributes } from "vue";
 import { reactiveOmit } from "@vueuse/core";
 import {
-  TooltipArrow,
-  TooltipContent,
-  TooltipPortal,
-  useForwardPropsEmits,
+	TooltipArrow,
+	TooltipContent,
+	TooltipPortal,
+	useForwardPropsEmits,
 } from "reka-ui";
 import { cn } from "@/utils/shadcn";
 
 defineOptions({
-  inheritAttrs: false,
+	inheritAttrs: false,
 });
 
 const props = withDefaults(
-  defineProps<TooltipContentProps & { class?: HTMLAttributes["class"] }>(),
-  {
-    sideOffset: 4,
-  },
+	defineProps<TooltipContentProps & { class?: HTMLAttributes["class"] }>(),
+	{
+		sideOffset: 4,
+	},
 );
 
 const emits = defineEmits<TooltipContentEmits>();

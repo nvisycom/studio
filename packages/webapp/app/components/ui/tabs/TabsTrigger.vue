@@ -6,7 +6,7 @@ import { TabsTrigger, useForwardProps } from "reka-ui";
 import { cn } from "@/utils/shadcn";
 
 const props = defineProps<
-  TabsTriggerProps & { class?: HTMLAttributes["class"] }
+	TabsTriggerProps & { class?: HTMLAttributes["class"] }
 >();
 
 const delegatedProps = reactiveOmit(props, "class");

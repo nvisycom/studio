@@ -6,7 +6,7 @@ import { DialogDescription } from "reka-ui";
 import { cn } from "@/utils/shadcn";
 
 const props = defineProps<
-  DialogDescriptionProps & { class?: HTMLAttributes["class"] }
+	DialogDescriptionProps & { class?: HTMLAttributes["class"] }
 >();
 
 const delegatedProps = reactiveOmit(props, "class");

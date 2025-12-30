@@ -2,37 +2,37 @@
 import { AlertCircle } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
 } from "@/components/ui/dialog";
 
 /**
  * Component props interface
  */
 interface Props {
-  /** Controls dialog visibility */
-  open?: boolean;
-  /** Number of members to be deleted */
-  count?: number;
+	/** Controls dialog visibility */
+	open?: boolean;
+	/** Number of members to be deleted */
+	count?: number;
 }
 
 /**
  * Component emits interface
  */
 interface Emits {
-  /** Emitted when dialog visibility changes */
-  (e: "update:open", value: boolean): void;
-  /** Emitted when user confirms bulk deletion */
-  (e: "confirm"): void;
+	/** Emitted when dialog visibility changes */
+	(e: "update:open", value: boolean): void;
+	/** Emitted when user confirms bulk deletion */
+	(e: "confirm"): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  open: false,
-  count: 0,
+	open: false,
+	count: 0,
 });
 
 const emit = defineEmits<Emits>();
@@ -42,21 +42,21 @@ const emit = defineEmits<Emits>();
  * @param open - New visibility state
  */
 function handleOpenChange(open: boolean): void {
-  emit("update:open", open);
+	emit("update:open", open);
 }
 
 /**
  * Confirm bulk member deletion
  */
 function confirm(): void {
-  emit("confirm");
+	emit("confirm");
 }
 
 /**
  * Cancel the deletion and close dialog
  */
 function cancel(): void {
-  emit("update:open", false);
+	emit("update:open", false);
 }
 </script>
 

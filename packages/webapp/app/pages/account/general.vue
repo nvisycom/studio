@@ -6,22 +6,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 definePageMeta({
-  pageCategory: "Settings",
+	pageCategory: "Settings",
 });
 
 // User data
@@ -34,90 +34,90 @@ const timezone = ref("America/New_York");
 
 // Common timezones
 const timezones = [
-  { label: "(UTC-12:00) International Date Line West", value: "Etc/GMT+12" },
-  { label: "(UTC-11:00) Midway Island, Samoa", value: "Pacific/Midway" },
-  { label: "(UTC-10:00) Hawaii", value: "Pacific/Honolulu" },
-  { label: "(UTC-09:00) Alaska", value: "America/Anchorage" },
-  {
-    label: "(UTC-08:00) Pacific Time (US & Canada)",
-    value: "America/Los_Angeles",
-  },
-  { label: "(UTC-07:00) Mountain Time (US & Canada)", value: "America/Denver" },
-  { label: "(UTC-06:00) Central Time (US & Canada)", value: "America/Chicago" },
-  {
-    label: "(UTC-05:00) Eastern Time (US & Canada)",
-    value: "America/New_York",
-  },
-  { label: "(UTC-04:00) Atlantic Time (Canada)", value: "America/Halifax" },
-  {
-    label: "(UTC-03:00) Buenos Aires, Georgetown",
-    value: "America/Argentina/Buenos_Aires",
-  },
-  { label: "(UTC-02:00) Mid-Atlantic", value: "Atlantic/South_Georgia" },
-  { label: "(UTC-01:00) Azores", value: "Atlantic/Azores" },
-  { label: "(UTC+00:00) London, Dublin, Lisbon", value: "Europe/London" },
-  { label: "(UTC+01:00) Berlin, Paris, Rome, Madrid", value: "Europe/Paris" },
-  { label: "(UTC+02:00) Cairo, Helsinki, Kyiv", value: "Europe/Helsinki" },
-  { label: "(UTC+03:00) Moscow, Istanbul, Riyadh", value: "Europe/Moscow" },
-  { label: "(UTC+04:00) Dubai, Baku", value: "Asia/Dubai" },
-  { label: "(UTC+05:00) Karachi, Tashkent", value: "Asia/Karachi" },
-  { label: "(UTC+05:30) Mumbai, Kolkata, New Delhi", value: "Asia/Kolkata" },
-  { label: "(UTC+06:00) Dhaka, Almaty", value: "Asia/Dhaka" },
-  { label: "(UTC+07:00) Bangkok, Hanoi, Jakarta", value: "Asia/Bangkok" },
-  {
-    label: "(UTC+08:00) Beijing, Hong Kong, Singapore",
-    value: "Asia/Shanghai",
-  },
-  { label: "(UTC+09:00) Tokyo, Seoul", value: "Asia/Tokyo" },
-  { label: "(UTC+10:00) Sydney, Melbourne", value: "Australia/Sydney" },
-  { label: "(UTC+11:00) Solomon Islands", value: "Pacific/Guadalcanal" },
-  { label: "(UTC+12:00) Auckland, Fiji", value: "Pacific/Auckland" },
+	{ label: "(UTC-12:00) International Date Line West", value: "Etc/GMT+12" },
+	{ label: "(UTC-11:00) Midway Island, Samoa", value: "Pacific/Midway" },
+	{ label: "(UTC-10:00) Hawaii", value: "Pacific/Honolulu" },
+	{ label: "(UTC-09:00) Alaska", value: "America/Anchorage" },
+	{
+		label: "(UTC-08:00) Pacific Time (US & Canada)",
+		value: "America/Los_Angeles",
+	},
+	{ label: "(UTC-07:00) Mountain Time (US & Canada)", value: "America/Denver" },
+	{ label: "(UTC-06:00) Central Time (US & Canada)", value: "America/Chicago" },
+	{
+		label: "(UTC-05:00) Eastern Time (US & Canada)",
+		value: "America/New_York",
+	},
+	{ label: "(UTC-04:00) Atlantic Time (Canada)", value: "America/Halifax" },
+	{
+		label: "(UTC-03:00) Buenos Aires, Georgetown",
+		value: "America/Argentina/Buenos_Aires",
+	},
+	{ label: "(UTC-02:00) Mid-Atlantic", value: "Atlantic/South_Georgia" },
+	{ label: "(UTC-01:00) Azores", value: "Atlantic/Azores" },
+	{ label: "(UTC+00:00) London, Dublin, Lisbon", value: "Europe/London" },
+	{ label: "(UTC+01:00) Berlin, Paris, Rome, Madrid", value: "Europe/Paris" },
+	{ label: "(UTC+02:00) Cairo, Helsinki, Kyiv", value: "Europe/Helsinki" },
+	{ label: "(UTC+03:00) Moscow, Istanbul, Riyadh", value: "Europe/Moscow" },
+	{ label: "(UTC+04:00) Dubai, Baku", value: "Asia/Dubai" },
+	{ label: "(UTC+05:00) Karachi, Tashkent", value: "Asia/Karachi" },
+	{ label: "(UTC+05:30) Mumbai, Kolkata, New Delhi", value: "Asia/Kolkata" },
+	{ label: "(UTC+06:00) Dhaka, Almaty", value: "Asia/Dhaka" },
+	{ label: "(UTC+07:00) Bangkok, Hanoi, Jakarta", value: "Asia/Bangkok" },
+	{
+		label: "(UTC+08:00) Beijing, Hong Kong, Singapore",
+		value: "Asia/Shanghai",
+	},
+	{ label: "(UTC+09:00) Tokyo, Seoul", value: "Asia/Tokyo" },
+	{ label: "(UTC+10:00) Sydney, Melbourne", value: "Australia/Sydney" },
+	{ label: "(UTC+11:00) Solomon Islands", value: "Pacific/Guadalcanal" },
+	{ label: "(UTC+12:00) Auckland, Fiji", value: "Pacific/Auckland" },
 ] as const;
 
 // Get initials from display name
 function getInitials(name: string): string {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
+	return name
+		.split(" ")
+		.map((n) => n[0])
+		.join("")
+		.toUpperCase()
+		.slice(0, 2);
 }
 
 // Get timezone label
 function getTimezoneLabel(value: string): string {
-  const tz = timezones.find((t) => t.value === value);
-  return tz?.label || value;
+	const tz = timezones.find((t) => t.value === value);
+	return tz?.label || value;
 }
 
 // Functions
 function uploadAvatar() {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "image/*";
-  input.onchange = (e) => {
-    const file = (e.target as HTMLInputElement)?.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        avatarUrl.value = event.target?.result as string;
-      };
-      reader.readAsDataURL(file);
-      console.log("Uploading avatar:", file.name);
-    }
-  };
-  input.click();
+	const input = document.createElement("input");
+	input.type = "file";
+	input.accept = "image/*";
+	input.onchange = (e) => {
+		const file = (e.target as HTMLInputElement)?.files?.[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = (event) => {
+				avatarUrl.value = event.target?.result as string;
+			};
+			reader.readAsDataURL(file);
+			console.log("Uploading avatar:", file.name);
+		}
+	};
+	input.click();
 }
 
 function saveProfile() {
-  console.log("Saving profile:", {
-    displayName: displayName.value,
-    companyName: companyName.value,
-  });
+	console.log("Saving profile:", {
+		displayName: displayName.value,
+		companyName: companyName.value,
+	});
 }
 
 function saveTimezone() {
-  console.log("Saving timezone:", timezone.value);
+	console.log("Saving timezone:", timezone.value);
 }
 </script>
 

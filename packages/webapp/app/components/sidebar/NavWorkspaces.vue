@@ -2,28 +2,28 @@
 import type { LucideIcon } from "lucide-vue-next";
 import { Folder, Forward, MoreHorizontal, Trash2 } from "lucide-vue-next";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuAction,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
+	SidebarGroup,
+	SidebarGroupLabel,
+	SidebarMenu,
+	SidebarMenuAction,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	useSidebar,
 } from "@/components/ui/sidebar";
 
 defineProps<{
-  workspaces: {
-    name: string;
-    url: string;
-    icon: LucideIcon;
-  }[];
+	workspaces: {
+		name: string;
+		url: string;
+		icon: LucideIcon;
+	}[];
 }>();
 
 const { isMobile } = useSidebar();

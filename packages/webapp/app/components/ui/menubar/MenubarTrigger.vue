@@ -6,7 +6,7 @@ import { MenubarTrigger, useForwardProps } from "reka-ui";
 import { cn } from "@/utils/shadcn";
 
 const props = defineProps<
-  MenubarTriggerProps & { class?: HTMLAttributes["class"] }
+	MenubarTriggerProps & { class?: HTMLAttributes["class"] }
 >();
 
 const delegatedProps = reactiveOmit(props, "class");

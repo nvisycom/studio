@@ -3,27 +3,27 @@ import { computed } from "vue";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StudioFileTabs from "./StudioFileTabs.vue";
 import {
-  Settings,
-  Key,
-  User,
-  Bell,
-  BarChart3,
-  Cpu,
-  FileSearch,
-  Plug,
-  Library,
-  MessageSquare,
-  Database,
-  PlayCircle,
-  FolderOpen,
-  PenTool,
+	Settings,
+	Key,
+	User,
+	Bell,
+	BarChart3,
+	Cpu,
+	FileSearch,
+	Plug,
+	Library,
+	MessageSquare,
+	Database,
+	PlayCircle,
+	FolderOpen,
+	PenTool,
 } from "lucide-vue-next";
 
 const route = useRoute();
 
 // Check if current route should show tabs
 const showIntegrationTabs = computed(() =>
-  route.path.startsWith("/integrations"),
+	route.path.startsWith("/integrations"),
 );
 
 const showFilesTabs = computed(() => route.path.startsWith("/files"));
@@ -37,59 +37,59 @@ const showAnalyticsTabs = computed(() => route.path.startsWith("/analytics"));
 const showKnowledgeTabs = computed(() => route.path.startsWith("/knowledge"));
 
 const currentIntegrationTab = computed(() =>
-  route.path === "/integrations/explore" ? "library" : "active",
+	route.path === "/integrations/explore" ? "library" : "active",
 );
 
 const currentSettingsTab = computed(() => {
-  if (route.path === "/settings/notifications") return "notifications";
-  return "general";
+	if (route.path === "/settings/notifications") return "notifications";
+	return "general";
 });
 
 const currentAccountTab = computed(() => {
-  if (route.path === "/account/tokens") return "tokens";
-  if (route.path === "/account/general") return "general";
-  return "general";
+	if (route.path === "/account/tokens") return "tokens";
+	if (route.path === "/account/general") return "general";
+	return "general";
 });
 
 const currentAnalyticsTab = computed(() => {
-  if (route.path === "/analytics/ai") return "ai";
-  if (route.path.startsWith("/analytics/logs")) return "logs";
-  return "overview";
+	if (route.path === "/analytics/ai") return "ai";
+	if (route.path.startsWith("/analytics/logs")) return "logs";
+	return "overview";
 });
 
 const currentIntegrationTabValue = computed(() => {
-  if (route.path === "/integrations/explore") return "explore";
-  if (route.path === "/integrations/runs") return "runs";
-  return "connections";
+	if (route.path === "/integrations/explore") return "explore";
+	if (route.path === "/integrations/runs") return "runs";
+	return "connections";
 });
 
 const currentKnowledgeTab = computed(() => {
-  if (route.path === "/knowledge/corpus") return "corpus";
-  return "chat";
+	if (route.path === "/knowledge/corpus") return "corpus";
+	return "chat";
 });
 
 const currentFilesTab = computed(() => {
-  if (route.path === "/files/studio") return "studio";
-  return "files";
+	if (route.path === "/files/studio") return "studio";
+	return "files";
 });
 
 const isStudioPage = computed(() => route.path === "/files/studio");
 
 // Computed to check if any tabs are visible
 const hasVisibleTabs = computed(() => {
-  return (
-    showIntegrationTabs.value ||
-    showFilesTabs.value ||
-    showSettingsTabs.value ||
-    showAccountTabs.value ||
-    showAnalyticsTabs.value ||
-    showKnowledgeTabs.value
-  );
+	return (
+		showIntegrationTabs.value ||
+		showFilesTabs.value ||
+		showSettingsTabs.value ||
+		showAccountTabs.value ||
+		showAnalyticsTabs.value ||
+		showKnowledgeTabs.value
+	);
 });
 
 // Expose for parent component
 defineExpose({
-  hasVisibleTabs,
+	hasVisibleTabs,
 });
 </script>
 

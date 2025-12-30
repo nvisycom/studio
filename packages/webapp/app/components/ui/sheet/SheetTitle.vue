@@ -6,7 +6,7 @@ import { DialogTitle } from "reka-ui";
 import { cn } from "@/utils/shadcn";
 
 const props = defineProps<
-  DialogTitleProps & { class?: HTMLAttributes["class"] }
+	DialogTitleProps & { class?: HTMLAttributes["class"] }
 >();
 
 const delegatedProps = reactiveOmit(props, "class");

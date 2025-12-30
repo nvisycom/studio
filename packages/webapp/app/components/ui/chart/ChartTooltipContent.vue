@@ -5,52 +5,52 @@ import { computed } from "vue";
 import { cn } from "@/utils/shadcn";
 
 const props = withDefaults(
-  defineProps<{
-    hideLabel?: boolean;
-    hideIndicator?: boolean;
-    indicator?: "line" | "dot" | "dashed";
-    nameKey?: string;
-    labelKey?: string;
-    labelFormatter?: (d: number | Date) => string;
-    payload?: Record<string, any>;
-    config?: ChartConfig;
-    class?: HTMLAttributes["class"];
-    color?: string;
-    x?: number | Date;
-  }>(),
-  {
-    payload: () => ({}),
-    config: () => ({}),
-    indicator: "dot",
-  },
+	defineProps<{
+		hideLabel?: boolean;
+		hideIndicator?: boolean;
+		indicator?: "line" | "dot" | "dashed";
+		nameKey?: string;
+		labelKey?: string;
+		labelFormatter?: (d: number | Date) => string;
+		payload?: Record<string, any>;
+		config?: ChartConfig;
+		class?: HTMLAttributes["class"];
+		color?: string;
+		x?: number | Date;
+	}>(),
+	{
+		payload: () => ({}),
+		config: () => ({}),
+		indicator: "dot",
+	},
 );
 
 // TODO: currently we use `createElement` and `render` to render the
 // const chartContext = useChart(null)
 
 const payload = computed(() => {
-  return Object.entries(props.payload)
-    .map(([key, value]) => {
-      // const key = `${props.nameKey || item.name || item.dataKey || "value"}`
-      const itemConfig = props.config[key];
-      const indicatorColor = props.config[key]?.color ?? props.payload.fill;
+	return Object.entries(props.payload)
+		.map(([key, value]) => {
+			// const key = `${props.nameKey || item.name || item.dataKey || "value"}`
+			const itemConfig = props.config[key];
+			const indicatorColor = props.config[key]?.color ?? props.payload.fill;
 
-      return { key, value, itemConfig, indicatorColor };
-    })
-    .filter((i) => i.itemConfig);
+			return { key, value, itemConfig, indicatorColor };
+		})
+		.filter((i) => i.itemConfig);
 });
 
 const nestLabel = computed(
-  () => Object.keys(props.payload).length === 1 && props.indicator !== "dot",
+	() => Object.keys(props.payload).length === 1 && props.indicator !== "dot",
 );
 const tooltipLabel = computed(() => {
-  if (props.hideLabel) return null;
-  if (props.labelFormatter && props.x !== undefined) {
-    return props.labelFormatter(props.x);
-  }
-  return props.labelKey
-    ? props.config[props.labelKey]?.label || props.payload[props.labelKey]
-    : props.x;
+	if (props.hideLabel) return null;
+	if (props.labelFormatter && props.x !== undefined) {
+		return props.labelFormatter(props.x);
+	}
+	return props.labelKey
+		? props.config[props.labelKey]?.label || props.payload[props.labelKey]
+		: props.x;
 });
 </script>
 

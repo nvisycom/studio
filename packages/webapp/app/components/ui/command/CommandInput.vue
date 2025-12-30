@@ -8,13 +8,13 @@ import { cn } from "@/utils/shadcn";
 import { useCommand } from ".";
 
 defineOptions({
-  inheritAttrs: false,
+	inheritAttrs: false,
 });
 
 const props = defineProps<
-  ListboxFilterProps & {
-    class?: HTMLAttributes["class"];
-  }
+	ListboxFilterProps & {
+		class?: HTMLAttributes["class"];
+	}
 >();
 
 const delegatedProps = reactiveOmit(props, "class");

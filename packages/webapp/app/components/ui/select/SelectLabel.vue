@@ -5,7 +5,7 @@ import { SelectLabel } from "reka-ui";
 import { cn } from "@/utils/shadcn";
 
 const props = defineProps<
-  SelectLabelProps & { class?: HTMLAttributes["class"] }
+	SelectLabelProps & { class?: HTMLAttributes["class"] }
 >();
 </script>
 

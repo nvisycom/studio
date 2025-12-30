@@ -6,11 +6,11 @@ import { MenubarItem, useForwardPropsEmits } from "reka-ui";
 import { cn } from "@/utils/shadcn";
 
 const props = defineProps<
-  MenubarItemProps & {
-    class?: HTMLAttributes["class"];
-    inset?: boolean;
-    variant?: "default" | "destructive";
-  }
+	MenubarItemProps & {
+		class?: HTMLAttributes["class"];
+		inset?: boolean;
+		variant?: "default" | "destructive";
+	}
 >();
 
 const emits = defineEmits<MenubarItemEmits>();

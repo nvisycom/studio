@@ -2,12 +2,12 @@
 import { ref, computed, watch } from "vue";
 import { Plus } from "lucide-vue-next";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,54 +28,54 @@ const maxStorageGb = ref<string>("");
 const enableComments = ref(true);
 
 const isFormValid = computed(() => {
-  const nameValid = displayName.value.trim().length >= 3;
-  const membersValid = !maxMembers.value || parseInt(maxMembers.value) >= 1;
-  return nameValid && membersValid;
+	const nameValid = displayName.value.trim().length >= 3;
+	const membersValid = !maxMembers.value || parseInt(maxMembers.value) >= 1;
+	return nameValid && membersValid;
 });
 
 function resetForm() {
-  displayName.value = "";
-  description.value = "";
-  keepForDays.value = "";
-  autoCleanup.value = true;
-  requireApproval.value = false;
-  maxMembers.value = "";
-  maxStorageGb.value = "";
-  enableComments.value = true;
+	displayName.value = "";
+	description.value = "";
+	keepForDays.value = "";
+	autoCleanup.value = true;
+	requireApproval.value = false;
+	maxMembers.value = "";
+	maxStorageGb.value = "";
+	enableComments.value = true;
 }
 
 // Reset form when modal closes
 watch(open, (isOpen) => {
-  if (!isOpen) {
-    resetForm();
-  }
+	if (!isOpen) {
+		resetForm();
+	}
 });
 
 function createWorkspace() {
-  // Convert days to seconds (1 day = 86400 seconds)
-  const keepForSec = keepForDays.value
-    ? parseInt(keepForDays.value) * 86400
-    : undefined;
-  // Convert GB to MB (1 GB = 1024 MB)
-  const maxStorageMb = maxStorageGb.value
-    ? parseInt(maxStorageGb.value) * 1024
-    : undefined;
+	// Convert days to seconds (1 day = 86400 seconds)
+	const keepForSec = keepForDays.value
+		? parseInt(keepForDays.value) * 86400
+		: undefined;
+	// Convert GB to MB (1 GB = 1024 MB)
+	const maxStorageMb = maxStorageGb.value
+		? parseInt(maxStorageGb.value) * 1024
+		: undefined;
 
-  const workspaceData = {
-    display_name: displayName.value.trim(),
-    description: description.value.trim() || undefined,
-    keep_for_sec: keepForSec,
-    auto_cleanup: autoCleanup.value,
-    require_approval: requireApproval.value,
-    max_members: maxMembers.value ? parseInt(maxMembers.value) : undefined,
-    max_storage: maxStorageMb,
-    enable_comments: enableComments.value,
-  };
+	const workspaceData = {
+		display_name: displayName.value.trim(),
+		description: description.value.trim() || undefined,
+		keep_for_sec: keepForSec,
+		auto_cleanup: autoCleanup.value,
+		require_approval: requireApproval.value,
+		max_members: maxMembers.value ? parseInt(maxMembers.value) : undefined,
+		max_storage: maxStorageMb,
+		enable_comments: enableComments.value,
+	};
 
-  console.log("Creating workspace:", workspaceData);
-  // TODO: Implement actual API call
+	console.log("Creating workspace:", workspaceData);
+	// TODO: Implement actual API call
 
-  open.value = false;
+	open.value = false;
 }
 </script>
 

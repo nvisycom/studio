@@ -5,10 +5,10 @@ import { Primitive } from "reka-ui";
 import { cn } from "@/utils/shadcn";
 
 const props = withDefaults(
-  defineProps<PrimitiveProps & { class?: HTMLAttributes["class"] }>(),
-  {
-    as: "a",
-  },
+	defineProps<PrimitiveProps & { class?: HTMLAttributes["class"] }>(),
+	{
+		as: "a",
+	},
 );
 </script>
 
