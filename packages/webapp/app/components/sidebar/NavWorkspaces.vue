@@ -2,28 +2,28 @@
 import type { LucideIcon } from "lucide-vue-next";
 import { Folder, Forward, MoreHorizontal, Trash2 } from "lucide-vue-next";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-	SidebarGroup,
-	SidebarGroupLabel,
-	SidebarMenu,
-	SidebarMenuAction,
-	SidebarMenuButton,
-	SidebarMenuItem,
-	useSidebar,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuAction,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 defineProps<{
-	projects: {
-		name: string;
-		url: string;
-		icon: LucideIcon;
-	}[];
+  workspaces: {
+    name: string;
+    url: string;
+    icon: LucideIcon;
+  }[];
 }>();
 
 const { isMobile } = useSidebar();
@@ -33,7 +33,7 @@ const { isMobile } = useSidebar();
   <SidebarGroup class="group-data-[collapsible=icon]:hidden">
     <SidebarGroupLabel class="uppercase">Recent</SidebarGroupLabel>
     <SidebarMenu>
-      <SidebarMenuItem v-for="item in projects" :key="item.name">
+      <SidebarMenuItem v-for="item in workspaces" :key="item.name">
         <SidebarMenuButton as-child>
           <NuxtLink :to="item.url">
             <component :is="item.icon" />
@@ -54,16 +54,16 @@ const { isMobile } = useSidebar();
           >
             <DropdownMenuItem>
               <Folder class="text-muted-foreground" />
-              <span>View Project</span>
+              <span>View Workspace</span>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Forward class="text-muted-foreground" />
-              <span>Share Project</span>
+              <span>Share Workspace</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <Trash2 class="text-muted-foreground" />
-              <span>Delete Project</span>
+              <span>Delete Workspace</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

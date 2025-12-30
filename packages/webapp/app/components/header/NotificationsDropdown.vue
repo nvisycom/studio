@@ -60,7 +60,7 @@ const notificationsTab = ref("inbox");
                   <p
                     class="text-sm font-light text-neutral-600 dark:text-neutral-400 mt-1"
                   >
-                    API Documentation v2.4 has been uploaded to your project
+                    API Documentation v2.4 has been uploaded to your workspace
                   </p>
                   <p
                     class="text-sm font-light text-neutral-500 dark:text-neutral-500 mt-2"

@@ -2,7 +2,6 @@
 import { ref } from "vue";
 import type { SidebarProps } from "@/components/ui/sidebar";
 import {
-  FileText,
   Puzzle,
   Settings,
   Users,
@@ -11,15 +10,16 @@ import {
   AudioWaveform,
   Command,
   BarChart3,
-  FileSearch,
-  Brain,
   MessagesSquare,
+  LayoutDashboard,
+  Sparkles,
+  FolderOpen,
+  FileSearch,
   Compass,
-  PenTool,
 } from "lucide-vue-next";
 import NavMain from "@/components/sidebar/NavMain.vue";
 import NavUser from "@/components/sidebar/NavUser.vue";
-import ProjectSwitcher from "@/components/sidebar/ProjectSwitcher.vue";
+import WorkspaceSwitcher from "@/components/sidebar/WorkspaceSwitcher.vue";
 import HelpChat from "@/components/help/HelpChat.vue";
 import {
   Sidebar,
@@ -30,6 +30,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
@@ -43,6 +44,7 @@ const props = withDefaults(defineProps<SidebarProps>(), {
   collapsible: "icon",
 });
 
+const { state } = useSidebar();
 const helpChatRef = ref();
 
 // Sample data
@@ -52,7 +54,7 @@ const data = {
     email: "john@example.com",
     avatar: "",
   },
-  projects: [
+  workspaces: [
     {
       name: "Production App",
       logo: GalleryVerticalEnd,
@@ -69,28 +71,27 @@ const data = {
       plan: "Free",
     },
   ],
+  navDashboard: {
+    title: "Dashboard",
+    url: "/",
+    icon: LayoutDashboard,
+  },
   navWorkspace: [
     {
-      title: "Documents",
-      url: "/",
-      icon: FileText,
-      isActive: false,
-    },
-    {
-      title: "Studio",
-      url: "/studio",
-      icon: PenTool,
+      title: "Files",
+      url: "/files",
+      icon: FolderOpen,
       isActive: false,
     },
     {
       title: "Knowledge",
       url: "/knowledge",
-      icon: Brain,
+      icon: Sparkles,
       isActive: false,
     },
     {
-      title: "Members",
-      url: "/members",
+      title: "Team",
+      url: "/team",
       icon: Users,
       isActive: false,
     },
@@ -133,9 +134,20 @@ function openHelpChat() {
 <template>
   <Sidebar v-bind="props">
     <SidebarHeader>
-      <ProjectSwitcher :projects="data.projects" />
+      <WorkspaceSwitcher :workspaces="data.workspaces" />
     </SidebarHeader>
     <SidebarContent>
+      <!-- Overview - hidden when sidebar is collapsed -->
+      <SidebarMenu v-if="state === 'expanded'" class="px-2 pt-2">
+        <SidebarMenuItem>
+          <SidebarMenuButton as-child>
+            <NuxtLink to="/">
+              <LayoutDashboard />
+              <span>Overview</span>
+            </NuxtLink>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
       <NavMain :items="data.navWorkspace" label="Workspace" />
       <NavMain :items="data.navAutomation" label="Automation" />
       <NavMain :items="data.navObservability" label="Observability" />

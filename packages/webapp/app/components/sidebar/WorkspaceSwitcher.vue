@@ -17,10 +17,10 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import CreateProjectModal from "./CreateProjectModal.vue";
+import CreateWorkspaceModal from "./CreateWorkspaceModal.vue";
 
 const props = defineProps<{
-  projects: {
+  workspaces: {
     name: string;
     logo: Component;
     plan: string;
@@ -28,8 +28,8 @@ const props = defineProps<{
 }>();
 
 const { isMobile } = useSidebar();
-const activeProject = ref(props.projects[0]);
-const isCreateProjectModalOpen = ref(false);
+const activeWorkspace = ref(props.workspaces[0]);
+const isCreateWorkspaceModalOpen = ref(false);
 </script>
 
 <template>
@@ -44,14 +44,14 @@ const isCreateProjectModalOpen = ref(false);
             <div
               class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground"
             >
-              <component :is="activeProject.logo" class="size-4" />
+              <component :is="activeWorkspace.logo" class="size-4" />
             </div>
             <div class="grid flex-1 text-left text-sm leading-tight">
               <span class="truncate font-medium">
-                {{ activeProject.name }}
+                {{ activeWorkspace.name }}
               </span>
               <span class="truncate text-sm font-light">{{
-                activeProject.plan
+                activeWorkspace.plan
               }}</span>
             </div>
             <ChevronsUpDown class="ml-auto" />
@@ -64,23 +64,23 @@ const isCreateProjectModalOpen = ref(false);
           :side-offset="4"
         >
           <DropdownMenuItem
-            v-for="(project, index) in projects"
-            :key="project.name"
+            v-for="(workspace, index) in workspaces"
+            :key="workspace.name"
             class="gap-2 p-2"
-            @click="activeProject = project"
+            @click="activeWorkspace = workspace"
           >
             <div
               class="flex size-6 items-center justify-center rounded-sm border"
             >
-              <component :is="project.logo" class="size-4 shrink-0" />
+              <component :is="workspace.logo" class="size-4 shrink-0" />
             </div>
-            {{ project.name }}
+            {{ workspace.name }}
             <DropdownMenuShortcut>⌘{{ index + 1 }}</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             class="gap-2 p-2"
-            @click="isCreateProjectModalOpen = true"
+            @click="isCreateWorkspaceModalOpen = true"
           >
             <div
               class="flex size-6 items-center justify-center rounded-md border bg-background"
@@ -93,6 +93,6 @@ const isCreateProjectModalOpen = ref(false);
       </DropdownMenu>
     </SidebarMenuItem>
 
-    <CreateProjectModal v-model:open="isCreateProjectModalOpen" />
+    <CreateWorkspaceModal v-model:open="isCreateWorkspaceModalOpen" />
   </SidebarMenu>
 </template>

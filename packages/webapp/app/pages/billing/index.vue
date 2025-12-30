@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { ChevronDown } from "lucide-vue-next";
+import { ref } from "vue";
+import { Check, Sparkles, Building2, ExternalLink } from "lucide-vue-next";
 import {
   Card,
   CardContent,
@@ -9,372 +9,316 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Button from "@/components/ui/button/Button.vue";
-import Switch from "@/components/ui/switch/Switch.vue";
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-  TableCell,
-} from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 
 definePageMeta({
   pageCategory: "Billing",
 });
 
-// Reactive data
-const selectedLanguage = ref("en");
+// Current plan
+const currentPlan = ref("free");
 
-// Using i18n languages
-const { locales } = useI18n();
-const availableLanguages = computed(() => locales.value);
+// Plans data
+const plans = [
+  {
+    id: "free",
+    name: "Free",
+    price: 0,
+    description: "For individuals and small teams getting started",
+    features: [
+      "Up to 3 team members",
+      "100 documents",
+      "1 GB storage",
+      "Basic analytics",
+      "Community support",
+    ],
+    cta: "Current Plan",
+    popular: false,
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    price: 49,
+    description: "For growing teams that need more power",
+    features: [
+      "Up to 20 team members",
+      "Unlimited documents",
+      "50 GB storage",
+      "Advanced analytics",
+      "Priority support",
+      "API access",
+      "Custom integrations",
+    ],
+    cta: "Upgrade to Pro",
+    popular: true,
+  },
+  {
+    id: "enterprise",
+    name: "Enterprise",
+    price: null,
+    description: "For large organizations with custom needs",
+    features: [
+      "Unlimited team members",
+      "Unlimited documents",
+      "Unlimited storage",
+      "Enterprise analytics",
+      "Dedicated support",
+      "SSO & SAML",
+      "Custom contracts",
+      "SLA guarantees",
+    ],
+    cta: "Contact Sales",
+    popular: false,
+  },
+];
 
-// Addon settings with pricing
+// Add-ons data
 const addons = ref([
   {
-    id: "aiAssistant",
-    name: "AI Assistant",
-    description: "Intelligent document analysis and suggestions",
-    price: 15,
-    category: "Documents",
+    id: "webhooks",
+    name: "Webhooks",
+    description: "Real-time event notifications to your endpoints",
+    price: 19,
     enabled: false,
+    alpha: false,
+    docUrl: "https://docs.nvisy.com/webhooks",
+    docLabel: "Read webhooks docs",
   },
   {
-    id: "onPremiseProcessing",
-    name: "On-Premise Processing",
-    description: "Process documents on your own infrastructure",
-    price: 25,
-    category: "Documents",
-    enabled: false,
-  },
-  {
-    id: "aiInsights",
+    id: "ai-insights",
     name: "AI Insights",
-    description: "Advanced analytics powered by artificial intelligence",
-    price: 20,
-    category: "Analytics",
-    enabled: true,
+    description: "Advanced AI-powered analytics and recommendations",
+    price: 29,
+    enabled: false,
+    alpha: true,
+    docUrl: "https://docs.nvisy.com/ai-insights",
+    docLabel: "Read AI Insights docs",
   },
   {
-    id: "advancedAnalytics",
-    name: "Advanced Analytics",
-    description: "Detailed reporting and usage statistics",
-    price: 10,
-    category: "Analytics",
+    id: "on-premise",
+    name: "On-Premise Runtimes",
+    description: "Run processing on your own infrastructure",
+    price: 99,
     enabled: false,
+    alpha: true,
+    docUrl: "https://docs.nvisy.com/on-premise",
+    docLabel: "Read On-Premise docs",
   },
 ]);
 
-// Plan usage data
-const planUsage = {
-  documentsUsed: 20,
-  documentsLimit: 50,
-  currentPlan: "Basic",
-};
-
-// Functions
-function changePlan() {
-  console.log("Opening plan change dialog");
-}
-
-function saveInvoiceLanguage() {
-  console.log("Saving invoice language:", selectedLanguage.value);
-}
-
-function selectLanguage(language: string) {
-  selectedLanguage.value = language;
+function selectPlan(planId: string) {
+  if (planId === "enterprise") {
+    // Open contact sales
+    window.open("https://nvisy.com/contact", "_blank");
+  } else if (planId !== currentPlan.value) {
+    // Handle plan upgrade/downgrade
+    console.log("Switching to plan:", planId);
+  }
 }
 
 function toggleAddon(addonId: string) {
   const addon = addons.value.find((a) => a.id === addonId);
   if (addon) {
     addon.enabled = !addon.enabled;
+    console.log("Toggling addon:", addonId, addon.enabled);
   }
 }
 </script>
 
 <template>
-  <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
-    <div class="max-w-4xl mx-auto w-full">
-      <div class="space-y-6">
-        <!-- Plan -->
-        <Card
-          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-          id="billing-plan"
-        >
-          <CardHeader>
-            <CardTitle>Plan</CardTitle>
-            <CardDescription
-              >Your current subscription plan and usage</CardDescription
+  <div class="flex flex-1 flex-col gap-6 p-4 pt-4 pb-6">
+    <div class="max-w-6xl mx-auto w-full">
+      <!-- Plans Section -->
+      <div class="mb-10">
+        <div class="mb-6">
+          <h2 class="text-xl font-medium text-neutral-900 dark:text-white">
+            Plans
+          </h2>
+          <p class="text-sm font-light text-neutral-600 dark:text-neutral-400">
+            Choose the plan that works best for your team
+          </p>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-3">
+          <Card
+            v-for="plan in plans"
+            :key="plan.id"
+            class="relative flex flex-col"
+            :class="[
+              plan.popular ? 'border-primary ring-1 ring-primary' : '',
+              currentPlan === plan.id
+                ? 'bg-neutral-50 dark:bg-neutral-900'
+                : '',
+            ]"
+          >
+            <!-- Popular badge -->
+            <Badge
+              v-if="plan.popular"
+              class="absolute -top-3 left-1/2 -translate-x-1/2"
             >
-          </CardHeader>
-          <CardContent>
-            <div class="p-6 bg-white dark:bg-black space-y-6">
-              <div class="grid grid-cols-2 gap-8">
-                <div class="space-y-2">
+              <Sparkles :size="12" class="mr-1" />
+              Most Popular
+            </Badge>
+
+            <CardHeader>
+              <CardTitle class="text-lg">{{ plan.name }}</CardTitle>
+              <CardDescription>{{ plan.description }}</CardDescription>
+            </CardHeader>
+
+            <CardContent class="flex-1">
+              <!-- Price -->
+              <div class="mb-6">
+                <template v-if="plan.price !== null">
                   <span
-                    class="font-medium text-lg text-neutral-900 dark:text-white"
-                    >{{ planUsage.currentPlan }} Plan</span
+                    class="text-3xl font-medium text-neutral-900 dark:text-white"
                   >
-                  <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                    {{
-                      planUsage.currentPlan === "Basic"
-                        ? "Perfect for getting started"
-                        : "Everything you need for professional projects"
-                    }}
-                  </p>
-                  <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                    Next billing: January 15, 2024
-                  </p>
-                </div>
-                <div class="flex items-start justify-end">
-                  <span
-                    class="text-2xl font-medium text-neutral-900 dark:text-white"
-                  >
-                    ${{ planUsage.currentPlan === "Basic" ? "29" : "49"
-                    }}<span
-                      class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
-                      >/mo</span
-                    >
+                    ${{ plan.price }}
                   </span>
-                </div>
-              </div>
-
-              <!-- Document Usage Slider -->
-              <div>
-                <div class="mb-2">
                   <span
-                    class="text-sm font-medium text-neutral-900 dark:text-white"
-                    >Document Redactions</span
+                    class="text-sm font-light text-neutral-600 dark:text-neutral-400"
                   >
-                </div>
-                <div class="space-y-2">
-                  <input
-                    type="range"
-                    :min="10"
-                    :max="50"
-                    :step="10"
-                    :value="planUsage.documentsUsed"
-                    class="w-full h-2 bg-neutral-200 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer slider"
-                  />
-                  <div
-                    class="flex justify-between text-xs text-neutral-600 dark:text-neutral-400"
+                    /month
+                  </span>
+                </template>
+                <template v-else>
+                  <span
+                    class="text-xl font-medium text-neutral-900 dark:text-white"
                   >
-                    <span>Min: 10</span>
-                    <span>Current: {{ planUsage.documentsUsed }}</span>
-                    <span>Max: 50</span>
-                  </div>
-                </div>
+                    Custom Pricing
+                  </span>
+                </template>
               </div>
 
-              <!-- Enabled Add-ons -->
-              <div
-                v-if="addons.some((a) => a.enabled)"
-                class="border-t border-neutral-200 dark:border-neutral-700 pt-4"
-              >
-                <h4
-                  class="text-sm font-medium text-neutral-900 dark:text-white mb-3"
+              <!-- Features -->
+              <ul class="space-y-3">
+                <li
+                  v-for="feature in plan.features"
+                  :key="feature"
+                  class="flex items-start gap-2 text-sm"
                 >
-                  Active Add-ons
-                </h4>
-                <div class="space-y-2">
-                  <div
-                    v-for="addon in addons.filter((a) => a.enabled)"
-                    :key="addon.id"
-                    class="flex justify-between items-center"
+                  <Check :size="16" class="text-green-500 mt-0.5 shrink-0" />
+                  <span class="text-neutral-700 dark:text-neutral-300">{{
+                    feature
+                  }}</span>
+                </li>
+              </ul>
+            </CardContent>
+
+            <CardFooter>
+              <Button
+                class="w-full"
+                :variant="
+                  currentPlan === plan.id
+                    ? 'outline'
+                    : plan.popular
+                      ? 'default'
+                      : 'outline'
+                "
+                :disabled="currentPlan === plan.id"
+                @click="selectPlan(plan.id)"
+              >
+                <template v-if="currentPlan === plan.id">
+                  <Check :size="16" class="mr-2" />
+                  Current Plan
+                </template>
+                <template v-else-if="plan.id === 'enterprise'">
+                  <Building2 :size="16" class="mr-2" />
+                  Contact Sales
+                </template>
+                <template v-else>
+                  {{ plan.cta }}
+                </template>
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
+
+      <!-- Add-ons Section -->
+      <div>
+        <div class="mb-6">
+          <h2 class="text-xl font-medium text-neutral-900 dark:text-white">
+            Add-ons
+          </h2>
+          <p class="text-sm font-light text-neutral-600 dark:text-neutral-400">
+            Enhance your workspace with additional features
+          </p>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-3">
+          <Card
+            v-for="addon in addons"
+            :key="addon.id"
+            class="flex flex-col"
+            :class="addon.enabled ? 'border-primary bg-primary/5' : ''"
+          >
+            <CardHeader class="pb-3">
+              <div class="flex items-center justify-between">
+                <CardTitle class="text-lg font-light flex items-center gap-2">
+                  {{ addon.name }}
+                  <Badge v-if="addon.alpha" variant="secondary" class="text-xs">
+                    ALPHA
+                  </Badge>
+                </CardTitle>
+                <Switch
+                  :checked="addon.enabled"
+                  @update:checked="toggleAddon(addon.id)"
+                />
+              </div>
+              <CardDescription>
+                {{ addon.description }}
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent class="flex-1 pt-0 pb-3">
+              <div class="flex items-baseline gap-1">
+                <span
+                  class="text-2xl font-medium text-neutral-900 dark:text-white"
+                >
+                  ${{ addon.price }}
+                </span>
+                <span
+                  class="text-sm font-light text-neutral-600 dark:text-neutral-400"
+                >
+                  /month
+                </span>
+              </div>
+            </CardContent>
+
+            <CardFooter class="pt-0">
+              <div class="w-full">
+                <div
+                  class="border-t border-neutral-200 dark:border-neutral-800 pt-3"
+                >
+                  <a
+                    :href="addon.docUrl"
+                    target="_blank"
+                    class="text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white flex items-center gap-1.5 transition-colors"
                   >
-                    <span
-                      class="text-sm text-neutral-700 dark:text-neutral-300"
-                      >{{ addon.name }}</span
-                    >
-                    <span
-                      class="text-sm font-medium text-neutral-900 dark:text-white"
-                    >
-                      ${{ addon.price }}/mo
-                    </span>
-                  </div>
-                  <div
-                    class="pt-2 border-t border-neutral-200 dark:border-neutral-600 flex justify-between items-center"
-                  >
-                    <span
-                      class="text-sm font-medium text-neutral-900 dark:text-white"
-                      >Total Add-ons:</span
-                    >
-                    <span
-                      class="text-sm font-medium text-neutral-900 dark:text-white"
-                    >
-                      ${{
-                        addons
-                          .filter((a) => a.enabled)
-                          .reduce((sum, addon) => sum + addon.price, 0)
-                      }}/mo
-                    </span>
-                  </div>
+                    {{ addon.docLabel }}
+                    <ExternalLink :size="14" />
+                  </a>
                 </div>
               </div>
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
 
-              <div class="flex items-center gap-2 pt-2">
-                <Button variant="outline" size="sm" @click="changePlan">
-                  Change Plan
-                </Button>
-                <Button variant="default" size="sm" @click="changePlan">
-                  {{
-                    planUsage.currentPlan === "Basic"
-                      ? "Upgrade to Pro"
-                      : "Upgrade to Business"
-                  }}
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+      <!-- Footer note -->
+      <div class="mt-8 text-center">
+        <p class="text-sm text-neutral-500 dark:text-neutral-400">
+          All payments are securely processed through Stripe.
+          <a
+            href="https://nvisy.com/pricing"
+            target="_blank"
+            class="text-primary hover:underline"
           >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Changes take effect immediately.
-              <a
-                href="https://nvisy.com/pricing"
-                target="_blank"
-                class="text-blue-600 dark:text-blue-400 hover:underline"
-                >Learn more about pricing here</a
-              >
-            </p>
-          </CardFooter>
-        </Card>
-
-        <!-- Add-Ons -->
-        <Card
-          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-          id="billing-addons"
-        >
-          <CardHeader>
-            <CardTitle>Add-Ons</CardTitle>
-            <CardDescription
-              >Enhance your project with additional features</CardDescription
-            >
-          </CardHeader>
-          <CardContent>
-            <div class="space-y-6">
-              <div
-                v-for="category in ['Documents', 'Analytics']"
-                :key="category"
-              >
-                <h4
-                  class="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3"
-                >
-                  {{ category }}
-                </h4>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Feature</TableHead>
-                      <TableHead class="text-right w-32">Price</TableHead>
-                      <TableHead class="w-16"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow
-                      v-for="addon in addons.filter(
-                        (a) => a.category === category,
-                      )"
-                      :key="addon.id"
-                    >
-                      <TableCell>
-                        <div>
-                          <p
-                            class="font-medium text-neutral-900 dark:text-white"
-                          >
-                            {{ addon.name }}
-                          </p>
-                          <p
-                            class="text-sm text-neutral-600 dark:text-neutral-400 mt-1"
-                          >
-                            {{ addon.description }}
-                          </p>
-                        </div>
-                      </TableCell>
-                      <TableCell class="text-right pr-6">
-                        <span
-                          class="font-medium text-neutral-900 dark:text-white"
-                        >
-                          ${{ addon.price
-                          }}<span
-                            class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
-                            >/mo</span
-                          >
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <Switch
-                          :checked="addon.enabled"
-                          @update:checked="toggleAddon(addon.id)"
-                        />
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
-          >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Add-ons will be prorated and appear on your next invoice.
-            </p>
-          </CardFooter>
-        </Card>
-
-        <!-- Invoice Language -->
-        <Card
-          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-          id="billing-language"
-        >
-          <CardHeader>
-            <CardTitle>Invoice Language</CardTitle>
-            <CardDescription
-              >Language for invoices and billing communications</CardDescription
-            >
-          </CardHeader>
-          <CardContent>
-            <DropdownMenu>
-              <DropdownMenuTrigger as-child>
-                <Button variant="outline" class="w-48 justify-between">
-                  {{
-                    availableLanguages.find((l) => l.code === selectedLanguage)
-                      ?.name || "Select language"
-                  }}
-                  <ChevronDown :size="16" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuItem
-                  v-for="language in availableLanguages"
-                  :key="language.code"
-                  @click="selectLanguage(language.code)"
-                >
-                  {{ language.name }}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </CardContent>
-          <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
-          >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Choose the language for your invoices and billing communications.
-            </p>
-            <Button size="sm" @click="saveInvoiceLanguage"> Save </Button>
-          </CardFooter>
-        </Card>
+            View full pricing details
+          </a>
+        </p>
       </div>
     </div>
   </div>

@@ -1,599 +1,343 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
 import {
-  Search,
-  Plus,
   FileText,
-  Download,
-  Eye,
-  Trash2,
-  MoreVertical,
-  ChevronDown,
-  File,
+  MessageSquare,
+  Users,
+  BarChart3,
+  ArrowRight,
   Upload,
-  FileArchive,
-  Pencil,
+  Sparkles,
+  Clock,
+  TrendingUp,
+  CreditCard,
+  Database,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Switch } from "@/components/ui/switch";
-import EntityAvatar from "@/components/common/EntityAvatar.vue";
+import { Progress } from "@/components/ui/progress";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from "@/components/ui/empty";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 definePageMeta({
-  pageCategory: "Documents",
+  pageCategory: "Overview",
 });
 
-interface Document {
-  id: number;
-  icon: string;
-  originalName: string;
-  size: string;
-  uploadedAt: string;
-  uploadedBy: string;
-  tags: string[];
-  verified: boolean;
-  indexed: boolean;
-  version: number;
-  format: string;
-}
+// Credits data
+const creditsUsed = 15000;
+const creditsTotal = 20000;
+const creditsRemaining = creditsTotal - creditsUsed;
+const creditsPercentage = (creditsUsed / creditsTotal) * 100;
 
-const searchQuery = ref("");
-const filterFormat = ref("any");
-const selectedSorting = ref("date-desc");
-const fileInputRef = ref<HTMLInputElement | null>(null);
-const selectedDocuments = ref<Set<number>>(new Set());
+// Storage data (in GB)
+const storageUsed = 45.2;
+const storageTotal = 100;
+const storageRemaining = storageTotal - storageUsed;
+const storagePercentage = (storageUsed / storageTotal) * 100;
 
-const documents = ref<Document[]>([
+// Quick stats
+const stats = [
+  {
+    title: "Documents",
+    value: "1,284",
+    change: "+12%",
+    trend: "up",
+    icon: FileText,
+  },
+  {
+    title: "AI Queries",
+    value: "3,429",
+    change: "+8%",
+    trend: "up",
+    icon: MessageSquare,
+  },
+  {
+    title: "Team Members",
+    value: "12",
+    change: "+2",
+    trend: "up",
+    icon: Users,
+  },
+];
+
+// Recent activity
+const recentActivity = [
   {
     id: 1,
-    icon: "pdf",
-    originalName: "contract_final_v3.pdf",
-    size: "2.4 MB",
-    uploadedAt: "2024-01-20 10:30",
-    uploadedBy: "John Doe",
-    tags: ["Contract", "Legal"],
-    verified: false,
-    indexed: true,
-    version: 3,
-    format: "pdf",
+    action: "Document uploaded",
+    item: "contract_final_v3.pdf",
+    user: "John Doe",
+    time: "2 hours ago",
   },
   {
     id: 2,
-    icon: "pdf",
-    originalName: "financial_report_2024.pdf",
-    size: "1.8 MB",
-    uploadedAt: "2024-01-20 09:15",
-    uploadedBy: "Jane Smith",
-    tags: ["Finance", "Report"],
-    verified: false,
-    indexed: true,
-    version: 1,
-    format: "pdf",
+    action: "AI query",
+    item: "Summarize Q4 report",
+    user: "Jane Smith",
+    time: "3 hours ago",
   },
   {
     id: 3,
-    icon: "pdf",
-    originalName: "legal_document.pdf",
-    size: "3.2 MB",
-    uploadedAt: "2024-01-19 14:20",
-    uploadedBy: "Bob Johnson",
-    tags: ["Legal"],
-    verified: false,
-    indexed: true,
-    version: 1,
-    format: "pdf",
+    action: "Document edited",
+    item: "employee_handbook.docx",
+    user: "Bob Johnson",
+    time: "5 hours ago",
   },
   {
     id: 4,
-    icon: "doc",
-    originalName: "employee_records.docx",
-    size: "890 KB",
-    uploadedAt: "2024-01-19 11:45",
-    uploadedBy: "Alice Brown",
-    tags: ["HR", "Records"],
-    verified: false,
-    indexed: true,
-    version: 2,
-    format: "doc",
+    action: "New member joined",
+    item: "Alice Brown",
+    user: "System",
+    time: "1 day ago",
   },
-  {
-    id: 5,
-    icon: "txt",
-    originalName: "meeting_notes.txt",
-    size: "45 KB",
-    uploadedAt: "2024-01-18 16:00",
-    uploadedBy: "John Doe",
-    tags: ["Meeting", "Notes"],
-    verified: false,
-    indexed: true,
-    version: 1,
-    format: "text",
-  },
-  {
-    id: 6,
-    icon: "pdf",
-    originalName: "proposal_draft.pdf",
-    size: "4.1 MB",
-    uploadedAt: "2024-01-18 09:30",
-    uploadedBy: "Jane Smith",
-    tags: ["Proposal", "Sales"],
-    verified: false,
-    indexed: true,
-    version: 2,
-    format: "pdf",
-  },
-]);
-
-const formatFilters = [
-  { label: "Any Format", value: "any" },
-  { label: ".pdf", value: "pdf" },
-  { label: ".doc / .docx", value: "doc" },
-  { label: ".txt", value: "text" },
 ];
 
-const sortingOptions = [
-  { label: "Date (Newest)", value: "date-desc" },
-  { label: "Date (Oldest)", value: "date-asc" },
-  { label: "Name (A-Z)", value: "name-asc" },
-  { label: "Name (Z-A)", value: "name-desc" },
-  { label: "Size (Largest)", value: "size-desc" },
-  { label: "Size (Smallest)", value: "size-asc" },
+// Quick actions
+const quickActions = [
+  {
+    title: "Upload Files",
+    description: "Add new files to your knowledge base",
+    icon: Upload,
+    href: "/knowledge/files",
+    color: "text-blue-600 dark:text-blue-400",
+    bg: "bg-blue-100 dark:bg-blue-900/30",
+  },
+  {
+    title: "Ask AI",
+    description: "Query your documents with AI",
+    icon: Sparkles,
+    href: "/knowledge",
+    color: "text-purple-600 dark:text-purple-400",
+    bg: "bg-purple-100 dark:bg-purple-900/30",
+  },
+  {
+    title: "View Analytics",
+    description: "Monitor usage and performance",
+    icon: BarChart3,
+    href: "/analytics",
+    color: "text-green-600 dark:text-green-400",
+    bg: "bg-green-100 dark:bg-green-900/30",
+  },
+  {
+    title: "Team",
+    description: "Invite and manage team members",
+    icon: Users,
+    href: "/team",
+    color: "text-orange-600 dark:text-orange-400",
+    bg: "bg-orange-100 dark:bg-orange-900/30",
+  },
 ];
-
-const filteredDocuments = computed(() => {
-  let filtered = documents.value;
-
-  // Apply search filter
-  if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(
-      (doc) =>
-        doc.originalName.toLowerCase().includes(query) ||
-        doc.uploadedBy.toLowerCase().includes(query) ||
-        doc.tags.some((tag) => tag.toLowerCase().includes(query)),
-    );
-  }
-
-  // Apply format filter
-  if (filterFormat.value !== "any") {
-    filtered = filtered.filter((doc) => doc.format === filterFormat.value);
-  }
-
-  // Sort the results
-  filtered = [...filtered].sort((a, b) => {
-    switch (selectedSorting.value) {
-      case "date-asc":
-        return (
-          new Date(a.uploadedAt).getTime() - new Date(b.uploadedAt).getTime()
-        );
-      case "date-desc":
-        return (
-          new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
-        );
-      case "name-asc":
-        return a.originalName.localeCompare(b.originalName);
-      case "name-desc":
-        return b.originalName.localeCompare(a.originalName);
-      case "size-asc":
-        return parseFloat(a.size) - parseFloat(b.size);
-      case "size-desc":
-        return parseFloat(b.size) - parseFloat(a.size);
-      default:
-        return 0;
-    }
-  });
-
-  return filtered;
-});
-
-function viewDocument(docId: number) {
-  console.log("Viewing document:", docId);
-}
-
-function downloadDocument(docId: number) {
-  console.log("Downloading document:", docId);
-}
-
-function deleteDocument(docId: number) {
-  console.log("Deleting document:", docId);
-}
-
-function handleUploadClick() {
-  fileInputRef.value?.click();
-}
-
-function handleFileChange(event: Event) {
-  const target = event.target as HTMLInputElement;
-  const files = target.files;
-  if (files && files.length > 0) {
-    console.log(
-      "Uploading files:",
-      Array.from(files).map((f) => f.name),
-    );
-    // Here you would implement the actual upload logic
-    // For now, just log the file names
-  }
-}
-
-function selectFormatFilter(value: string) {
-  filterFormat.value = value;
-}
-
-function selectSorting(value: string) {
-  selectedSorting.value = value;
-}
-
-function getFileIcon(format: string) {
-  return FileText;
-}
-
-function formatDate(dateStr: string): string {
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diff = now.getTime() - date.getTime();
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-  if (hours < 1) return "Just now";
-  if (hours < 24) return `${hours}h ago`;
-  if (days === 1) return "Yesterday";
-  if (days < 7) return `${days}d ago`;
-
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-function getFormatColor(format: string): string {
-  switch (format) {
-    case "pdf":
-      return "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300";
-    case "doc":
-      return "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300";
-    case "text":
-      return "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300";
-    default:
-      return "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300";
-  }
-}
-
-function toggleDocument(docId: number) {
-  const newSet = new Set(selectedDocuments.value);
-  if (newSet.has(docId)) {
-    newSet.delete(docId);
-  } else {
-    newSet.add(docId);
-  }
-  selectedDocuments.value = newSet;
-}
-
-function downloadSelectedAsZip() {
-  console.log(
-    "Downloading selected documents as ZIP:",
-    Array.from(selectedDocuments.value),
-  );
-}
-
-function downloadSelectedAsTar() {
-  console.log(
-    "Downloading selected documents as TAR:",
-    Array.from(selectedDocuments.value),
-  );
-}
-
-function editSelectedDocuments() {
-  console.log(
-    "Editing selected documents:",
-    Array.from(selectedDocuments.value),
-  );
-}
-
-function editDocument(docId: number) {
-  console.log("Editing document:", docId);
-}
-
-function toggleSelectAll() {
-  if (selectedDocuments.value.size === filteredDocuments.value.length) {
-    selectedDocuments.value = new Set();
-  } else {
-    selectedDocuments.value = new Set(filteredDocuments.value.map((d) => d.id));
-  }
-}
-
-const allSelected = computed(() => {
-  return (
-    filteredDocuments.value.length > 0 &&
-    selectedDocuments.value.size === filteredDocuments.value.length
-  );
-});
 </script>
 
 <template>
-  <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-0">
+  <div class="flex flex-1 flex-col gap-6 p-4 pt-4 pb-6">
     <div class="max-w-7xl mx-auto w-full">
-      <!-- Upload and Download Actions -->
-      <div class="flex justify-end items-center gap-2 mb-4">
-        <input
-          ref="fileInputRef"
-          type="file"
-          multiple
-          accept=".pdf,.doc,.docx,.txt"
-          class="hidden"
-          @change="handleFileChange"
-        />
-        <div class="flex items-center">
-          <Button
-            @click="downloadSelectedAsZip"
-            :disabled="selectedDocuments.size === 0"
-            class="rounded-r-none"
+      <!-- Welcome Section -->
+      <div class="mb-8">
+        <h1 class="text-2xl font-medium text-neutral-900 dark:text-white">
+          Welcome back
+        </h1>
+        <p class="text-base font-light text-neutral-600 dark:text-neutral-400">
+          Here's what's happening in your workspace
+        </p>
+      </div>
+
+      <!-- Credits & Storage Cards -->
+      <div class="grid gap-4 md:grid-cols-2 mb-6">
+        <!-- Credits Card -->
+        <Card>
+          <CardHeader
+            class="flex flex-row items-center justify-between space-y-0 pb-2"
           >
-            <Download :size="16" class="mr-2" />
-            Download
-          </Button>
-          <div
-            class="h-8 w-px bg-neutral-200 dark:bg-neutral-700"
-            :class="selectedDocuments.size === 0 ? 'opacity-50' : 'opacity-100'"
-          ></div>
-          <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <Button
-                :disabled="selectedDocuments.size === 0"
-                class="rounded-l-none px-2"
-              >
-                <ChevronDown :size="16" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem @click="downloadSelectedAsZip">
-                <FileArchive :size="16" class="mr-2" />
-                Download as .zip
-              </DropdownMenuItem>
-              <DropdownMenuItem @click="downloadSelectedAsTar">
-                <FileArchive :size="16" class="mr-2" />
-                Download as .tar
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-        <Button
-          @click="editSelectedDocuments"
-          :disabled="selectedDocuments.size === 0"
-          class="flex items-center gap-2"
-        >
-          <Pencil :size="16" />
-          Edit
-        </Button>
-        <Button @click="handleUploadClick" class="flex items-center gap-2">
-          <Upload :size="16" />
-          Upload
-        </Button>
-      </div>
-
-      <!-- Search and Filters -->
-      <div
-        class="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center mb-6"
-      >
-        <div class="relative flex-1">
-          <Search
-            :size="16"
-            class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
-          />
-          <Input
-            v-model="searchQuery"
-            placeholder="Search by name..."
-            class="pl-10"
-          />
-        </div>
-
-        <!-- Format Filter -->
-        <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button variant="outline" class="justify-between min-w-[160px]">
-              {{
-                formatFilters.find((f) => f.value === filterFormat)?.label ||
-                "Any Format"
-              }}
-              <ChevronDown :size="16" class="ml-2" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" class="w-[160px]">
-            <DropdownMenuItem
-              v-for="filter in formatFilters"
-              :key="filter.value"
-              @click="selectFormatFilter(filter.value)"
+            <CardTitle
+              class="text-sm font-medium text-neutral-600 dark:text-neutral-400"
+              >Credits</CardTitle
             >
-              {{ filter.label }}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <!-- Sorting -->
-        <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button variant="outline" class="justify-between min-w-[180px]">
-              {{
-                sortingOptions.find((o) => o.value === selectedSorting)
-                  ?.label || "Sort by"
-              }}
-              <ChevronDown :size="16" class="ml-2" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" class="w-[180px]">
-            <DropdownMenuItem
-              v-for="option in sortingOptions"
-              :key="option.value"
-              @click="selectSorting(option.value)"
-            >
-              {{ option.label }}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      <!-- Documents Table -->
-      <div
-        v-if="filteredDocuments.length > 0"
-        class="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden"
-      >
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead class="w-12">
-                <Checkbox
-                  :model-value="allSelected"
-                  @update:model-value="toggleSelectAll"
-                />
-              </TableHead>
-              <TableHead class="w-12"></TableHead>
-              <TableHead>Original Name</TableHead>
-              <TableHead>Size</TableHead>
-              <TableHead>Author</TableHead>
-              <TableHead>Tags</TableHead>
-              <TableHead class="w-[80px]">Indexed</TableHead>
-              <TableHead class="w-12"></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow
-              v-for="doc in filteredDocuments"
-              :key="doc.id"
-              class="hover:bg-neutral-50 dark:hover:bg-neutral-900"
-            >
-              <TableCell>
-                <Checkbox
-                  :model-value="selectedDocuments.has(doc.id)"
-                  @update:model-value="toggleDocument(doc.id)"
-                />
-              </TableCell>
-              <TableCell>
-                <div
-                  class="w-8 h-8 rounded flex items-center justify-center"
-                  :class="getFormatColor(doc.format)"
-                >
-                  <component :is="getFileIcon(doc.format)" :size="16" />
+            <CreditCard class="h-4 w-4 text-neutral-500" />
+          </CardHeader>
+          <CardContent>
+            <div class="space-y-2">
+              <div class="flex items-baseline justify-between">
+                <div class="text-2xl font-medium">
+                  {{ creditsUsed.toLocaleString() }}
                 </div>
-              </TableCell>
-              <TableCell>
-                <p class="font-medium text-neutral-900 dark:text-white">
-                  {{ doc.originalName }}
+                <div class="text-sm text-neutral-600 dark:text-neutral-400">
+                  of {{ creditsTotal.toLocaleString() }}
+                </div>
+              </div>
+              <Progress :model-value="creditsPercentage" class="h-2" />
+              <div class="flex items-center justify-between">
+                <p class="text-xs text-neutral-600 dark:text-neutral-400">
+                  {{ creditsRemaining.toLocaleString() }} credits remaining
                 </p>
-              </TableCell>
-              <TableCell>
-                <span class="text-sm text-neutral-600 dark:text-neutral-400">
-                  {{ doc.size }}
-                </span>
-              </TableCell>
-              <TableCell>
-                <div class="inline-flex items-center gap-2">
-                  <EntityAvatar :name="doc.uploadedBy" size="sm" />
-                  <div class="flex flex-col">
-                    <span class="text-sm font-medium">{{
-                      doc.uploadedBy
-                    }}</span>
-                    <span
-                      class="text-xs text-neutral-500 dark:text-neutral-400"
+                <Button
+                  as-child
+                  variant="link"
+                  class="h-auto p-0 text-xs text-blue-600 dark:text-blue-400"
+                >
+                  <NuxtLink to="/billing">View Plan</NuxtLink>
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <!-- Storage Card -->
+        <Card>
+          <CardHeader
+            class="flex flex-row items-center justify-between space-y-0 pb-2"
+          >
+            <CardTitle
+              class="text-sm font-medium text-neutral-600 dark:text-neutral-400"
+              >Storage</CardTitle
+            >
+            <Database class="h-4 w-4 text-neutral-500" />
+          </CardHeader>
+          <CardContent>
+            <div class="space-y-2">
+              <div class="flex items-baseline justify-between">
+                <div class="text-2xl font-medium">{{ storageUsed }} GB</div>
+                <div class="text-sm text-neutral-600 dark:text-neutral-400">
+                  of {{ storageTotal }} GB
+                </div>
+              </div>
+              <Progress :model-value="storagePercentage" class="h-2" />
+              <div class="flex items-center justify-between">
+                <p class="text-xs text-neutral-600 dark:text-neutral-400">
+                  {{ storageRemaining.toFixed(1) }} GB remaining
+                </p>
+                <Button
+                  as-child
+                  variant="link"
+                  class="h-auto p-0 text-xs text-blue-600 dark:text-blue-400"
+                >
+                  <NuxtLink to="/billing">View Plan</NuxtLink>
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid gap-4 md:grid-cols-3 mb-8">
+        <Card v-for="stat in stats" :key="stat.title">
+          <CardHeader
+            class="flex flex-row items-center justify-between space-y-0 pb-2"
+          >
+            <CardTitle
+              class="text-sm font-medium text-neutral-600 dark:text-neutral-400"
+            >
+              {{ stat.title }}
+            </CardTitle>
+            <component :is="stat.icon" class="h-4 w-4 text-neutral-500" />
+          </CardHeader>
+          <CardContent>
+            <div class="text-2xl font-medium">{{ stat.value }}</div>
+            <p
+              class="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1"
+            >
+              <TrendingUp
+                v-if="stat.trend === 'up'"
+                class="h-3 w-3 text-green-500"
+              />
+              <span
+                :class="
+                  stat.trend === 'up'
+                    ? 'text-green-600 dark:text-green-400'
+                    : ''
+                "
+              >
+                {{ stat.change }}
+              </span>
+              <span class="text-neutral-400">from last month</span>
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <!-- Main Content Grid -->
+      <div class="grid gap-6 lg:grid-cols-3">
+        <!-- Quick Actions -->
+        <div class="lg:col-span-2">
+          <h2 class="text-lg font-medium mb-4">Quick Actions</h2>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <Card
+              v-for="action in quickActions"
+              :key="action.title"
+              class="group cursor-pointer hover:border-neutral-300 dark:hover:border-neutral-700 transition-colors"
+              as-child
+            >
+              <NuxtLink :to="action.href">
+                <CardHeader class="pb-2">
+                  <div class="flex items-center gap-3">
+                    <div class="p-2 rounded-lg" :class="action.bg">
+                      <component
+                        :is="action.icon"
+                        class="h-5 w-5"
+                        :class="action.color"
+                      />
+                    </div>
+                    <div class="flex-1">
+                      <CardTitle
+                        class="text-base font-medium flex items-center gap-2"
+                      >
+                        {{ action.title }}
+                        <ArrowRight
+                          class="h-4 w-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all"
+                        />
+                      </CardTitle>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription>{{ action.description }}</CardDescription>
+                </CardContent>
+              </NuxtLink>
+            </Card>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div>
+          <h2 class="text-lg font-medium mb-4">Recent Activity</h2>
+          <Card>
+            <CardContent class="p-0">
+              <div class="divide-y divide-neutral-200 dark:divide-neutral-800">
+                <div
+                  v-for="activity in recentActivity"
+                  :key="activity.id"
+                  class="p-4 flex items-start gap-3"
+                >
+                  <div
+                    class="p-1.5 rounded-full bg-neutral-100 dark:bg-neutral-800"
+                  >
+                    <Clock class="h-3 w-3 text-neutral-500" />
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p
+                      class="text-sm font-medium text-neutral-900 dark:text-white"
                     >
-                      {{ doc.uploadedAt }}
-                    </span>
+                      {{ activity.action }}
+                    </p>
+                    <p
+                      class="text-sm text-neutral-600 dark:text-neutral-400 truncate"
+                    >
+                      {{ activity.item }}
+                    </p>
+                    <p class="text-xs text-neutral-400 mt-1">
+                      {{ activity.time }}
+                    </p>
                   </div>
                 </div>
-              </TableCell>
-              <TableCell>
-                <div class="flex flex-wrap gap-1">
-                  <Badge
-                    v-for="tag in doc.tags"
-                    :key="tag"
-                    variant="outline"
-                    class="text-xs"
-                  >
-                    {{ tag }}
-                  </Badge>
-                </div>
-              </TableCell>
-              <TableCell>
-                <Switch :checked="doc.indexed" disabled />
-              </TableCell>
-              <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger as-child>
-                    <Button variant="ghost" size="icon" class="h-8 w-8">
-                      <MoreVertical :size="16" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem @click="viewDocument(doc.id)">
-                      <Eye :size="16" class="mr-2" />
-                      View
-                    </DropdownMenuItem>
-                    <DropdownMenuItem @click="editDocument(doc.id)">
-                      <Pencil :size="16" class="mr-2" />
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem @click="downloadDocument(doc.id)">
-                      <Download :size="16" class="mr-2" />
-                      Download
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      @click="deleteDocument(doc.id)"
-                      class="text-red-600 dark:text-red-400"
-                    >
-                      <Trash2 :size="16" class="mr-2" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-
-      <!-- Empty State -->
-      <Empty v-else class="py-12">
-        <EmptyHeader>
-          <EmptyTitle>No documents found</EmptyTitle>
-          <EmptyDescription>
-            {{
-              searchQuery || filterFormat !== "any"
-                ? "Try adjusting your search or filters"
-                : "Upload your first document to get started"
-            }}
-          </EmptyDescription>
-        </EmptyHeader>
-        <EmptyContent v-if="!searchQuery && filterFormat === 'any'">
-          <Button @click="handleUploadClick" class="flex items-center gap-2">
-            <Upload :size="16" />
-            Upload
-          </Button>
-        </EmptyContent>
-      </Empty>
     </div>
   </div>
 </template>

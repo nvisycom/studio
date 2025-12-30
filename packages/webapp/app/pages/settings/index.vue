@@ -16,38 +16,25 @@ import {
 } from "@/components/ui/card";
 
 definePageMeta({
-	pageCategory: "Settings",
+  pageCategory: "Settings",
 });
 
 // Reactive data
-const projectName = ref("My Awesome Project");
-const projectUrl = ref("my-awesome-project");
-const copiedProjectId = ref(false);
-const copiedProjectUrl = ref(false);
+const workspaceName = ref("My Awesome Workspace");
+const workspaceId = ref("a1b2c3d4-e5f6-7890-abcd-ef1234567890");
+const copiedWorkspaceId = ref(false);
 
 // Functions
-function copyProjectId() {
-  navigator.clipboard.writeText("proj_1a2b3c4d5e6f");
-  copiedProjectId.value = true;
+function copyWorkspaceId() {
+  navigator.clipboard.writeText(workspaceId.value);
+  copiedWorkspaceId.value = true;
   setTimeout(() => {
-    copiedProjectId.value = false;
+    copiedWorkspaceId.value = false;
   }, 2000);
 }
 
-function copyProjectUrl() {
-  navigator.clipboard.writeText(`https://app.nvisy.com/${projectUrl.value}`);
-  copiedProjectUrl.value = true;
-  setTimeout(() => {
-    copiedProjectUrl.value = false;
-  }, 2000);
-}
-
-function saveProjectName() {
-  console.log("Saving project name:", projectName.value);
-}
-
-function saveProjectUrl() {
-  console.log("Saving project URL:", projectUrl.value);
+function saveWorkspaceName() {
+  console.log("Saving workspace name:", workspaceName.value);
 }
 
 function uploadAvatar() {
@@ -63,12 +50,12 @@ function uploadAvatar() {
   input.click();
 }
 
-function leaveProject() {
-  console.log("Leaving project");
+function leaveWorkspace() {
+  console.log("Leaving workspace");
 }
 
-function deleteProject() {
-  console.log("Deleting project");
+function deleteWorkspace() {
+  console.log("Deleting workspace");
 }
 </script>
 
@@ -76,186 +63,117 @@ function deleteProject() {
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="max-w-4xl mx-auto w-full">
       <div class="space-y-6">
-        <!-- Project Name -->
+        <!-- Workspace Avatar -->
         <Card
           class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
         >
-          <CardHeader>
-            <CardTitle>Project Name</CardTitle>
-            <CardDescription
-              >The name of your project as it appears across the
-              platform</CardDescription
-            >
-          </CardHeader>
           <CardContent>
-            <div class="space-y-2">
-              <Label for="projectName">Project Name</Label>
-              <Input
-                id="projectName"
-                v-model="projectName"
-                placeholder="My Project"
-                class="max-w-md"
-              />
-            </div>
-          </CardContent>
-          <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
-          >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Please use 32 characters at maximum.
-            </p>
-            <Button size="sm" @click="saveProjectName"> Save </Button>
-          </CardFooter>
-        </Card>
-
-        <!-- Project URL -->
-        <Card
-          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-        >
-          <CardHeader>
-            <CardTitle>Project URL</CardTitle>
-            <CardDescription>The URL slug for your project</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div class="space-y-2">
-              <Label for="projectUrl">URL Slug</Label>
-              <div class="flex items-center gap-2 max-w-lg">
-                <div class="flex items-center flex-1">
-                  <Input
-                    model-value="app.nvisy.com/"
-                    readonly
-                    class="w-32 bg-neutral-100 dark:bg-neutral-800 border-neutral-300 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 rounded-r-none border-r-0"
-                  />
-                  <Input
-                    id="projectUrl"
-                    v-model="projectUrl"
-                    placeholder="my-project"
-                    class="flex-1 rounded-l-none"
-                  />
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  @click="copyProjectUrl"
-                  class="flex items-center justify-center w-10 h-10 p-0"
-                >
-                  <Check
-                    v-if="copiedProjectUrl"
-                    :size="16"
-                    class="text-green-500"
-                  />
-                  <Copy v-else :size="16" />
-                </Button>
+            <div class="flex items-start justify-between">
+              <div class="space-y-1">
+                <Label>Avatar</Label>
+                <p class="text-sm text-neutral-500 dark:text-neutral-400">
+                  Click to upload. Recommended: 256x256px. PNG, JPG, or SVG.
+                </p>
               </div>
-            </div>
-          </CardContent>
-          <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
-          >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Only lowercase letters, numbers, and hyphens are allowed.
-            </p>
-            <Button size="sm" @click="saveProjectUrl"> Save </Button>
-          </CardFooter>
-        </Card>
-
-        <!-- Project Avatar -->
-        <Card
-          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-        >
-          <CardHeader>
-            <CardTitle>Project Avatar</CardTitle>
-            <CardDescription
-              >Project avatar image. Click on the avatar to upload a new
-              image.</CardDescription
-            >
-          </CardHeader>
-          <CardContent>
-            <button
-              @click="uploadAvatar"
-              class="group relative hover:opacity-80 transition-opacity cursor-pointer"
-            >
-              <Avatar class="size-24">
-                <AvatarFallback
-                  class="bg-gradient-to-br from-blue-500 to-purple-600"
-                >
-                </AvatarFallback>
-              </Avatar>
-              <div
-                class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
+              <button
+                @click="uploadAvatar"
+                class="group relative hover:opacity-80 transition-opacity cursor-pointer block"
               >
-                <Upload :size="24" class="text-white" />
-              </div>
-            </button>
+                <Avatar class="size-16">
+                  <AvatarFallback
+                    class="bg-gradient-to-br from-blue-500 to-purple-600"
+                  >
+                  </AvatarFallback>
+                </Avatar>
+                <div
+                  class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
+                >
+                  <Upload :size="20" class="text-white" />
+                </div>
+              </button>
+            </div>
           </CardContent>
           <CardFooter
             class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
           >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Recommended size: 256x256px. Supports PNG, JPG, and SVG formats.
+            <p class="text-sm text-neutral-500 dark:text-neutral-400">
+              Your workspace avatar will be visible to all team members.
             </p>
           </CardFooter>
         </Card>
 
-        <!-- Project ID -->
+        <!-- Workspace Info Card -->
         <Card
           class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
         >
-          <CardHeader>
-            <CardTitle>Project ID</CardTitle>
-            <CardDescription
-              >Unique identifier for this project</CardDescription
-            >
-          </CardHeader>
-          <CardContent>
+          <CardContent class="space-y-6">
+            <!-- Workspace Name -->
             <div class="space-y-2">
-              <Label for="projectId">Project ID</Label>
+              <Label for="workspaceName">Workspace Name</Label>
+              <Input
+                id="workspaceName"
+                v-model="workspaceName"
+                placeholder="My Workspace"
+                class="max-w-md"
+              />
+              <p class="text-sm text-neutral-500 dark:text-neutral-400">
+                The name of your workspace as it appears across the platform.
+              </p>
+            </div>
+
+            <!-- Workspace ID -->
+            <div class="space-y-2">
+              <Label for="workspaceId">Workspace ID</Label>
               <div class="flex gap-2 max-w-md">
                 <Input
-                  id="projectId"
-                  model-value="proj_1a2b3c4d5e6f"
+                  id="workspaceId"
+                  :model-value="workspaceId"
                   readonly
                   class="flex-1 font-mono text-sm bg-neutral-100 dark:bg-neutral-800 border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300"
                 />
                 <Button
                   variant="outline"
                   size="sm"
-                  @click="copyProjectId"
+                  @click="copyWorkspaceId"
                   class="flex items-center justify-center w-10 h-10 p-0"
                 >
                   <Check
-                    v-if="copiedProjectId"
+                    v-if="copiedWorkspaceId"
                     :size="16"
                     class="text-green-500"
                   />
                   <Copy v-else :size="16" />
                 </Button>
               </div>
+              <p class="text-sm text-neutral-500 dark:text-neutral-400">
+                Unique identifier used in API calls.
+              </p>
             </div>
           </CardContent>
           <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
           >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              This is your project's unique identifier used in API calls.
+            <p class="text-sm text-neutral-500 dark:text-neutral-400">
+              Changes will apply to all team members.
             </p>
+            <Button size="sm" @click="saveWorkspaceName"> Save </Button>
           </CardFooter>
         </Card>
 
-        <!-- Leave Project -->
+        <!-- Leave Workspace -->
         <Card
           class="py-0 pt-6 border border-red-600 dark:border-red-800 rounded-xl"
         >
           <CardHeader>
-            <CardTitle>Leave Project</CardTitle>
+            <CardTitle>Leave Workspace</CardTitle>
             <CardDescription
-              >Remove yourself from this project. You won't be able to access it
-              anymore.</CardDescription
+              >Remove yourself from this workspace. You won't be able to access
+              it anymore.</CardDescription
             >
           </CardHeader>
           <CardContent>
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              This action will remove you from the project immediately.
+              This action will remove you from the workspace immediately.
             </p>
           </CardContent>
           <CardFooter
@@ -263,23 +181,23 @@ function deleteProject() {
           >
             <p class="text-sm text-red-600 dark:text-red-400">
               This action cannot be undone. You'll need to be re-invited to
-              access this project.
+              access this workspace.
             </p>
-            <Button size="sm" variant="destructive" @click="leaveProject">
-              Leave Project
+            <Button size="sm" variant="destructive" @click="leaveWorkspace">
+              Leave Workspace
             </Button>
           </CardFooter>
         </Card>
 
-        <!-- Delete Project -->
+        <!-- Delete Workspace -->
         <Card
           class="py-0 pt-6 border border-red-600 dark:border-red-800 rounded-xl"
         >
           <CardHeader>
-            <CardTitle>Delete Project</CardTitle>
+            <CardTitle>Delete Workspace</CardTitle>
             <CardDescription
-              >Permanently delete this project and all of its data. This action
-              cannot be undone.</CardDescription
+              >Permanently delete this workspace and all of its data. This
+              action cannot be undone.</CardDescription
             >
           </CardHeader>
           <CardContent>
@@ -295,8 +213,8 @@ function deleteProject() {
               This will permanently delete everything. This action is
               irreversible.
             </p>
-            <Button size="sm" variant="destructive" @click="deleteProject">
-              Delete Project
+            <Button size="sm" variant="destructive" @click="deleteWorkspace">
+              Delete Workspace
             </Button>
           </CardFooter>
         </Card>

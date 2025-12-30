@@ -2,37 +2,37 @@
 import { AlertCircle } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 
 /**
  * Component props interface
  */
 interface Props {
-	/** Controls dialog visibility */
-	open?: boolean;
-	/** Number of members to be deleted */
-	count?: number;
+  /** Controls dialog visibility */
+  open?: boolean;
+  /** Number of members to be deleted */
+  count?: number;
 }
 
 /**
  * Component emits interface
  */
 interface Emits {
-	/** Emitted when dialog visibility changes */
-	(e: "update:open", value: boolean): void;
-	/** Emitted when user confirms bulk deletion */
-	(e: "confirm"): void;
+  /** Emitted when dialog visibility changes */
+  (e: "update:open", value: boolean): void;
+  /** Emitted when user confirms bulk deletion */
+  (e: "confirm"): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	open: false,
-	count: 0,
+  open: false,
+  count: 0,
 });
 
 const emit = defineEmits<Emits>();
@@ -42,21 +42,21 @@ const emit = defineEmits<Emits>();
  * @param open - New visibility state
  */
 function handleOpenChange(open: boolean): void {
-	emit("update:open", open);
+  emit("update:open", open);
 }
 
 /**
  * Confirm bulk member deletion
  */
 function confirm(): void {
-	emit("confirm");
+  emit("confirm");
 }
 
 /**
  * Cancel the deletion and close dialog
  */
 function cancel(): void {
-	emit("update:open", false);
+  emit("update:open", false);
 }
 </script>
 
@@ -71,29 +71,29 @@ function cancel(): void {
           <DialogTitle>Delete Multiple Members</DialogTitle>
         </div>
         <DialogDescription>
-          Are you sure you want to delete {{ count }} {{ count === 1 ? 'member' : 'members' }} from your team?
-          This action cannot be undone.
+          Are you sure you want to delete {{ count }}
+          {{ count === 1 ? "member" : "members" }} from your team? This action
+          cannot be undone.
         </DialogDescription>
       </DialogHeader>
 
       <!-- Warning message -->
       <div class="py-4">
-        <div class="p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+        <div
+          class="p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800"
+        >
           <p class="text-sm text-amber-900 dark:text-amber-100">
-            <span class="font-medium">Warning:</span> Deleting these members will immediately revoke their access to the project and all associated resources.
+            <span class="font-medium">Warning:</span> Deleting these members
+            will immediately revoke their access to the workspace and all
+            associated resources.
           </p>
         </div>
       </div>
 
       <DialogFooter>
-        <Button variant="outline" @click="cancel">
-          Cancel
-        </Button>
-        <Button
-          variant="destructive"
-          @click="confirm"
-        >
-          Delete {{ count }} {{ count === 1 ? 'Member' : 'Members' }}
+        <Button variant="outline" @click="cancel"> Cancel </Button>
+        <Button variant="destructive" @click="confirm">
+          Delete {{ count }} {{ count === 1 ? "Member" : "Members" }}
         </Button>
       </DialogFooter>
     </DialogContent>

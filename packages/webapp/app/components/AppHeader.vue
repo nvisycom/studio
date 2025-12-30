@@ -5,6 +5,13 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import {
   HeaderTabs,
   FeedbackModal,
   NotificationsDropdown,
@@ -16,6 +23,14 @@ const route = useRoute();
 const pageCategory = computed(
   () => route.meta.pageCategory as string | undefined,
 );
+
+// Ref to HeaderTabs component
+const headerTabsRef = ref<InstanceType<typeof HeaderTabs> | null>(null);
+
+// Check if header tabs are visible
+const hasVisibleTabs = computed(() => {
+  return headerTabsRef.value?.hasVisibleTabs ?? false;
+});
 
 // Modal states
 const isFeedbackModalOpen = ref(false);
@@ -32,10 +47,19 @@ function openFeedbackModal() {
     <div class="flex items-center gap-2 px-4">
       <SidebarTrigger class="-ml-1" />
       <Separator orientation="vertical" class="mr-2 h-4" />
-      <h1 v-if="pageCategory" class="text-lg font-medium mr-4">
-        {{ pageCategory }}
-      </h1>
-      <HeaderTabs />
+      <Breadcrumb v-if="pageCategory">
+        <BreadcrumbList class="flex items-center">
+          <BreadcrumbItem class="flex items-center">
+            <BreadcrumbPage
+              class="text-base font-light text-neutral-500 dark:text-neutral-400 leading-none"
+            >
+              {{ pageCategory }}
+            </BreadcrumbPage>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator v-if="hasVisibleTabs" />
+        </BreadcrumbList>
+      </Breadcrumb>
+      <HeaderTabs ref="headerTabsRef" />
     </div>
     <div class="flex items-center gap-2 px-4">
       <NotificationsDropdown />

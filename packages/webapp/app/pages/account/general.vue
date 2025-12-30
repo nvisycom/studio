@@ -109,12 +109,11 @@ function uploadAvatar() {
   input.click();
 }
 
-function saveDisplayName() {
-  console.log("Saving display name:", displayName.value);
-}
-
-function saveCompanyName() {
-  console.log("Saving company name:", companyName.value);
+function saveProfile() {
+  console.log("Saving profile:", {
+    displayName: displayName.value,
+    companyName: companyName.value,
+  });
 }
 
 function saveTimezone() {
@@ -126,57 +125,53 @@ function saveTimezone() {
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="max-w-4xl mx-auto w-full">
       <div class="space-y-6">
-        <!-- Avatar -->
+        <!-- Avatar Card -->
         <Card
           class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
         >
-          <CardHeader>
-            <CardTitle>Avatar</CardTitle>
-            <CardDescription
-              >Your profile picture. Click on the avatar to upload a new
-              image.</CardDescription
-            >
-          </CardHeader>
           <CardContent>
-            <button
-              @click="uploadAvatar"
-              class="group relative hover:opacity-80 transition-opacity cursor-pointer"
-            >
-              <Avatar class="size-24">
-                <AvatarImage v-if="avatarUrl" :src="avatarUrl" />
-                <AvatarFallback
-                  class="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xl font-medium"
-                >
-                  {{ getInitials(displayName) }}
-                </AvatarFallback>
-              </Avatar>
-              <div
-                class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
-              >
-                <Upload :size="24" class="text-white" />
+            <div class="flex items-start justify-between">
+              <div class="space-y-1">
+                <Label>Avatar</Label>
+                <p class="text-sm text-neutral-500 dark:text-neutral-400">
+                  Click to upload. Recommended: 256x256px. PNG, JPG, or GIF.
+                </p>
               </div>
-            </button>
+              <button
+                @click="uploadAvatar"
+                class="group relative hover:opacity-80 transition-opacity cursor-pointer block"
+              >
+                <Avatar class="size-16">
+                  <AvatarImage v-if="avatarUrl" :src="avatarUrl" />
+                  <AvatarFallback
+                    class="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xl font-medium"
+                  >
+                    {{ getInitials(displayName) }}
+                  </AvatarFallback>
+                </Avatar>
+                <div
+                  class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
+                >
+                  <Upload :size="20" class="text-white" />
+                </div>
+              </button>
+            </div>
           </CardContent>
           <CardFooter
             class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
           >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Recommended size: 256x256px. Supports PNG, JPG, and GIF formats.
+            <p class="text-sm text-neutral-500 dark:text-neutral-400">
+              Your profile picture will be visible to other team members.
             </p>
           </CardFooter>
         </Card>
 
-        <!-- Display Name -->
+        <!-- Profile Info Card -->
         <Card
           class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
         >
-          <CardHeader>
-            <CardTitle>Display Name</CardTitle>
-            <CardDescription
-              >Your name as it appears across the platform</CardDescription
-            >
-          </CardHeader>
-          <CardContent>
+          <CardContent class="space-y-6">
+            <!-- Display Name -->
             <div class="space-y-2">
               <Label for="displayName">Display Name</Label>
               <Input
@@ -185,29 +180,12 @@ function saveTimezone() {
                 placeholder="John Doe"
                 class="max-w-md"
               />
+              <p class="text-sm text-neutral-500 dark:text-neutral-400">
+                Your name as it appears across the platform. Max 64 characters.
+              </p>
             </div>
-          </CardContent>
-          <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
-          >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Please use 64 characters at maximum.
-            </p>
-            <Button size="sm" @click="saveDisplayName"> Save </Button>
-          </CardFooter>
-        </Card>
 
-        <!-- Company Name -->
-        <Card
-          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-        >
-          <CardHeader>
-            <CardTitle>Company Name</CardTitle>
-            <CardDescription
-              >The company or organization you represent</CardDescription
-            >
-          </CardHeader>
-          <CardContent>
+            <!-- Company Name -->
             <div class="space-y-2">
               <Label for="companyName">Company Name</Label>
               <Input
@@ -216,30 +194,12 @@ function saveTimezone() {
                 placeholder="Acme Inc."
                 class="max-w-md"
               />
+              <p class="text-sm text-neutral-500 dark:text-neutral-400">
+                May be displayed on documents and invoices.
+              </p>
             </div>
-          </CardContent>
-          <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
-          >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              This may be displayed on documents and invoices.
-            </p>
-            <Button size="sm" @click="saveCompanyName"> Save </Button>
-          </CardFooter>
-        </Card>
 
-        <!-- Email Address -->
-        <Card
-          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-        >
-          <CardHeader>
-            <CardTitle>Email Address</CardTitle>
-            <CardDescription
-              >Your primary email address for account
-              communications</CardDescription
-            >
-          </CardHeader>
-          <CardContent>
+            <!-- Email Address -->
             <div class="space-y-2">
               <Label for="email">Email Address</Label>
               <Input
@@ -249,28 +209,25 @@ function saveTimezone() {
                 readonly
                 class="max-w-md bg-neutral-100 dark:bg-neutral-800 border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300"
               />
+              <p class="text-sm text-neutral-500 dark:text-neutral-400">
+                To change your email address, please contact support.
+              </p>
             </div>
           </CardContent>
           <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
           >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              To change your email address, please contact support.
+            <p class="text-sm text-neutral-500 dark:text-neutral-400">
+              This information will be used across all your workspaces.
             </p>
+            <Button size="sm" @click="saveProfile"> Save </Button>
           </CardFooter>
         </Card>
 
-        <!-- Timezone -->
+        <!-- Timezone Card -->
         <Card
           class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
         >
-          <CardHeader>
-            <CardTitle>Timezone</CardTitle>
-            <CardDescription
-              >Your preferred timezone for displaying dates and
-              times</CardDescription
-            >
-          </CardHeader>
           <CardContent>
             <div class="space-y-2">
               <Label for="timezone">Timezone</Label>
@@ -300,13 +257,16 @@ function saveTimezone() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+              <p class="text-sm text-neutral-500 dark:text-neutral-400">
+                All timestamps will be displayed in this timezone.
+              </p>
             </div>
           </CardContent>
           <CardFooter
             class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
           >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              All timestamps will be displayed in this timezone.
+            <p class="text-sm text-neutral-500 dark:text-neutral-400">
+              Changes will take effect immediately.
             </p>
             <Button size="sm" @click="saveTimezone"> Save </Button>
           </CardFooter>

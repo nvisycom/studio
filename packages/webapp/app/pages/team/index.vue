@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 definePageMeta({
-  pageCategory: "Members",
+  pageCategory: "Team",
 });
 
 const { t } = useI18n();
@@ -81,14 +81,12 @@ const isCancelMultipleInvitesDialogOpen = ref<boolean>(false);
 
 const roles = computed(() => [
   { value: "member", label: t("members.roles.member") },
-  { value: "editor", label: t("members.roles.editor") },
   { value: "owner", label: t("members.roles.owner") },
 ]);
 
 const roleFilters = computed(() => [
   { value: "anyRole", label: t("members.filters.anyRole") },
   { value: "owner", label: t("members.roles.owner") },
-  { value: "editor", label: t("members.roles.editor") },
   { value: "member", label: t("members.roles.member") },
 ]);
 
@@ -126,7 +124,7 @@ const teamMembers = [
     id: "2",
     name: "Alice Smith",
     email: "alice@example.com",
-    role: "editor",
+    role: "member",
     joinedDate: new Date("2023-03-22"),
     twoFAEnabled: false,
   },
@@ -152,7 +150,7 @@ const pendingInvites = [
     id: "2",
     name: "Diana Prince",
     email: "diana@example.com",
-    role: "editor",
+    role: "member",
     invitedDate: new Date("2023-12-03"),
   },
 ];

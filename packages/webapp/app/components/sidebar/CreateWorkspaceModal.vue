@@ -51,7 +51,7 @@ watch(open, (isOpen) => {
   }
 });
 
-function createProject() {
+function createWorkspace() {
   // Convert days to seconds (1 day = 86400 seconds)
   const keepForSec = keepForDays.value
     ? parseInt(keepForDays.value) * 86400
@@ -61,7 +61,7 @@ function createProject() {
     ? parseInt(maxStorageGb.value) * 1024
     : undefined;
 
-  const projectData = {
+  const workspaceData = {
     display_name: displayName.value.trim(),
     description: description.value.trim() || undefined,
     keep_for_sec: keepForSec,
@@ -72,7 +72,7 @@ function createProject() {
     enable_comments: enableComments.value,
   };
 
-  console.log("Creating workspace:", projectData);
+  console.log("Creating workspace:", workspaceData);
   // TODO: Implement actual API call
 
   open.value = false;
@@ -196,7 +196,7 @@ function createProject() {
 
       <DialogFooter>
         <Button variant="outline" @click="open = false"> Cancel </Button>
-        <Button @click="createProject" :disabled="!isFormValid">
+        <Button @click="createWorkspace" :disabled="!isFormValid">
           <Plus :size="16" class="mr-2" />
           Create Workspace
         </Button>
