@@ -1,256 +1,180 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import {
-	Key,
-	Copy,
-	Check,
-	ChevronDown,
-	MoreHorizontal,
-	Trash2,
-	Calendar,
-} from "lucide-vue-next";
+import type { ApiToken, ApiTokenWithJWT, TokenExpiration } from "@nvisy/sdk";
+import { Key, ChevronDown, Loader2 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
 import {
-	Empty,
-	EmptyHeader,
-	EmptyTitle,
-	EmptyDescription,
+  Empty,
+  EmptyHeader,
+  EmptyTitle,
+  EmptyDescription,
 } from "@/components/ui/empty";
 import {
-	TokensTable,
-	TokenCreatedModal,
-	DeleteTokenModal,
-	DeleteMultipleTokensModal,
-	RenameTokenModal,
+  TokensTable,
+  TokenCreatedModal,
+  DeleteTokenModal,
+  DeleteMultipleTokensModal,
+  RenameTokenModal,
 } from "@/components/tokens";
 
 definePageMeta({
-	pageCategory: "Settings",
+  pageCategory: "Settings",
 });
 
-interface Token {
-	id: string;
-	name: string;
-	service: string;
-	browser: string;
-	os: string;
-	authMethod: string;
-	scope: string[];
-	createdAt: Date;
-	expiresAt: Date | null;
-	lastUsed: Date | null;
-	token?: string;
-}
+// Use the API tokens composable
+const {
+  tokens,
+  isLoading,
+  error,
+  createTokenAsync,
+  isCreating,
+  updateTokenAsync,
+  revokeTokenAsync,
+  isRevoking,
+} = useApiTokens();
 
 // Form state
 const tokenName = ref("");
-const tokenExpiration = ref("90");
+const tokenExpiration = ref<TokenExpiration>("in90Days");
 
 // Modal state
 const newTokenGenerated = ref<string | null>(null);
 const isTokenCreatedModalOpen = ref(false);
-const tokenToDelete = ref<Token | null>(null);
+const tokenToDelete = ref<ApiToken | null>(null);
 const isDeleteDialogOpen = ref(false);
 const isDeleteMultipleDialogOpen = ref(false);
-const tokenToRename = ref<Token | null>(null);
+const tokenToRename = ref<ApiToken | null>(null);
 const isRenameDialogOpen = ref(false);
 
 // Selection state
 const selectedTokens = ref<Set<string>>(new Set());
-const copiedTokenId = ref<string | null>(null);
 
 // Constants
 const expirations = [
-	{ label: "30 days", value: "30" },
-	{ label: "90 days", value: "90" },
-	{ label: "1 year", value: "365" },
-	{ label: "Never", value: "never" },
+  { label: "7 days", value: "in7Days" as TokenExpiration },
+  { label: "30 days", value: "in30Days" as TokenExpiration },
+  { label: "90 days", value: "in90Days" as TokenExpiration },
+  { label: "1 year", value: "in1Year" as TokenExpiration },
+  { label: "Never", value: "never" as TokenExpiration },
 ] as const;
 
-// Mock data
-const tokens = ref<Token[]>([
-	{
-		id: "1",
-		name: "Nvisy from Chrome on Windows",
-		service: "Nvisy",
-		browser: "Chrome",
-		os: "Windows",
-		authMethod: "OAuth",
-		scope: ["read", "write"],
-		createdAt: new Date("2024-01-15"),
-		expiresAt: new Date("2025-01-15"),
-		lastUsed: new Date("2024-10-10"),
-		token: "nvisy_prod_abc123def456",
-	},
-	{
-		id: "2",
-		name: "Nvisy from Safari on Mac OS",
-		service: "Nvisy",
-		browser: "Safari",
-		os: "Mac OS",
-		authMethod: "API Key",
-		scope: ["read", "write", "admin"],
-		createdAt: new Date("2024-03-20"),
-		expiresAt: null,
-		lastUsed: new Date("2024-10-11"),
-		token: "nvisy_cicd_xyz789ghi012",
-	},
-	{
-		id: "3",
-		name: "Nvisy from Firefox on Linux",
-		service: "Nvisy",
-		browser: "Firefox",
-		os: "Linux",
-		authMethod: "OAuth",
-		scope: ["read"],
-		createdAt: new Date("2024-08-05"),
-		expiresAt: new Date("2024-11-05"),
-		lastUsed: null,
-		token: "nvisy_dev_jkl345mno678",
-	},
-]);
-
 // Token creation
-function createToken() {
-	if (!tokenName.value.trim()) return;
+async function createToken() {
+  if (!tokenName.value.trim()) return;
 
-	const expiresAt =
-		tokenExpiration.value === "never"
-			? null
-			: new Date(
-					Date.now() +
-						Number.parseInt(tokenExpiration.value) * 24 * 60 * 60 * 1000,
-				);
+  try {
+    const result = await createTokenAsync({
+      name: tokenName.value,
+      expires: tokenExpiration.value,
+    });
 
-	const newToken: Token = {
-		id: Date.now().toString(),
-		name: tokenName.value,
-		service: "Nvisy",
-		browser: "Chrome",
-		os: "Mac OS",
-		authMethod: "API Key",
-		scope: ["read", "write"],
-		createdAt: new Date(),
-		expiresAt,
-		lastUsed: null,
-		token: `nvisy_${Math.random().toString(36).substring(2)}`,
-	};
+    // The result contains the JWT token (only shown once)
+    newTokenGenerated.value = (result as ApiTokenWithJWT).token || null;
+    isTokenCreatedModalOpen.value = true;
 
-	tokens.value.unshift(newToken);
-	newTokenGenerated.value = newToken.token || null;
-	isTokenCreatedModalOpen.value = true;
-
-	// Reset form
-	tokenName.value = "";
-	tokenExpiration.value = "90";
+    // Reset form
+    tokenName.value = "";
+    tokenExpiration.value = "in90Days";
+  } catch (err) {
+    console.error("Failed to create token:", err);
+  }
 }
 
 function closeTokenCreatedModal() {
-	isTokenCreatedModalOpen.value = false;
-	newTokenGenerated.value = null;
+  isTokenCreatedModalOpen.value = false;
+  newTokenGenerated.value = null;
 }
 
-// Token deletion
-function openDeleteDialog(token: Token) {
-	tokenToDelete.value = token;
-	isDeleteDialogOpen.value = true;
+// Token deletion (revocation)
+function openDeleteDialog(token: ApiToken) {
+  tokenToDelete.value = token;
+  isDeleteDialogOpen.value = true;
 }
 
-function deleteToken() {
-	if (!tokenToDelete.value) return;
+async function deleteToken() {
+  if (!tokenToDelete.value) return;
 
-	tokens.value = tokens.value.filter((t) => t.id !== tokenToDelete.value?.id);
-	isDeleteDialogOpen.value = false;
-	tokenToDelete.value = null;
+  try {
+    await revokeTokenAsync(tokenToDelete.value.id);
+    isDeleteDialogOpen.value = false;
+    tokenToDelete.value = null;
+  } catch (err) {
+    console.error("Failed to revoke token:", err);
+  }
 }
 
 function openDeleteMultipleDialog() {
-	isDeleteMultipleDialogOpen.value = true;
+  isDeleteMultipleDialogOpen.value = true;
 }
 
-function deleteSelectedTokens() {
-	tokens.value = tokens.value.filter((t) => !selectedTokens.value.has(t.id));
-	selectedTokens.value = new Set();
-	isDeleteMultipleDialogOpen.value = false;
-}
-
-// Clipboard
-async function copyToken(token: string, tokenId: string) {
-	try {
-		await navigator.clipboard.writeText(token);
-		copiedTokenId.value = tokenId;
-		setTimeout(() => {
-			copiedTokenId.value = null;
-		}, 2000);
-	} catch (err) {
-		console.error("Failed to copy token:", err);
-	}
+async function deleteSelectedTokens() {
+  try {
+    // Revoke all selected tokens by their IDs
+    await Promise.all(
+      Array.from(selectedTokens.value).map((tokenId) =>
+        revokeTokenAsync(tokenId),
+      ),
+    );
+    selectedTokens.value = new Set();
+    isDeleteMultipleDialogOpen.value = false;
+  } catch (err) {
+    console.error("Failed to revoke tokens:", err);
+  }
 }
 
 // Computed
 const allSelected = computed(
-	() =>
-		tokens.value.length > 0 &&
-		selectedTokens.value.size === tokens.value.length,
+  () =>
+    (tokens.value?.length ?? 0) > 0 &&
+    selectedTokens.value.size === (tokens.value?.length ?? 0),
 );
 
-// Utilities
-function formatDate(date: Date | null): string {
-	if (!date) return "Never";
-	return new Intl.DateTimeFormat("en-US", {
-		year: "numeric",
-		month: "short",
-		day: "numeric",
-	}).format(date);
-}
-
 function toggleSelectAll() {
-	selectedTokens.value = allSelected.value
-		? new Set()
-		: new Set(tokens.value.map((t) => t.id));
+  selectedTokens.value = allSelected.value
+    ? new Set()
+    : new Set(tokens.value?.map((t) => t.id) ?? []);
 }
 
 function toggleToken(tokenId: string) {
-	const newSet = new Set(selectedTokens.value);
-	newSet.has(tokenId) ? newSet.delete(tokenId) : newSet.add(tokenId);
-	selectedTokens.value = newSet;
+  const newSet = new Set(selectedTokens.value);
+  newSet.has(tokenId) ? newSet.delete(tokenId) : newSet.add(tokenId);
+  selectedTokens.value = newSet;
 }
 
 // Token rename
-function openRenameDialog(token: Token) {
-	tokenToRename.value = token;
-	isRenameDialogOpen.value = true;
+function openRenameDialog(token: ApiToken) {
+  tokenToRename.value = token;
+  isRenameDialogOpen.value = true;
 }
 
-function renameToken(newName: string) {
-	if (!tokenToRename.value) return;
+async function renameToken(newName: string) {
+  if (!tokenToRename.value) return;
 
-	const tokenIndex = tokens.value.findIndex(
-		(t) => t.id === tokenToRename.value?.id,
-	);
-	if (tokenIndex !== -1) {
-		tokens.value[tokenIndex].name = newName;
-	}
-
-	isRenameDialogOpen.value = false;
-	tokenToRename.value = null;
+  try {
+    await updateTokenAsync({
+      tokenId: tokenToRename.value.id,
+      updates: { name: newName },
+    });
+    isRenameDialogOpen.value = false;
+    tokenToRename.value = null;
+  } catch (err) {
+    console.error("Failed to rename token:", err);
+  }
 }
 </script>
 
@@ -308,8 +232,12 @@ function renameToken(newName: string) {
           <p class="text-sm text-neutral-600 dark:text-neutral-400">
             Store your token securely. It won't be shown again.
           </p>
-          <Button @click="createToken" :disabled="!tokenName.trim()">
-            <Key :size="16" class="mr-2" />
+          <Button
+            @click="createToken"
+            :disabled="!tokenName.trim() || isCreating"
+          >
+            <Loader2 v-if="isCreating" :size="16" class="mr-2 animate-spin" />
+            <Key v-else :size="16" class="mr-2" />
             Generate Token
           </Button>
         </CardFooter>
@@ -320,13 +248,24 @@ function renameToken(newName: string) {
         <CardHeader>
           <CardTitle>Active Tokens</CardTitle>
           <CardDescription>
-            {{ tokens.length }}
-            {{ tokens.length === 1 ? "token" : "tokens" }} in use
+            {{ tokens?.length ?? 0 }}
+            {{ (tokens?.length ?? 0) === 1 ? "token" : "tokens" }} in use
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <!-- Loading State -->
+          <div v-if="isLoading" class="flex items-center justify-center py-12">
+            <Loader2 :size="32" class="animate-spin text-neutral-400" />
+          </div>
+
+          <!-- Error State -->
+          <div v-else-if="error" class="text-center py-12 text-red-500">
+            <p>Failed to load tokens: {{ error.message }}</p>
+          </div>
+
+          <!-- Tokens Table -->
           <TokensTable
-            v-if="tokens.length > 0"
+            v-else-if="tokens && tokens.length > 0"
             :tokens="tokens"
             :selected-tokens="selectedTokens"
             :all-selected="allSelected"
@@ -336,6 +275,8 @@ function renameToken(newName: string) {
             @delete-selected="openDeleteMultipleDialog"
             @rename-token="openRenameDialog"
           />
+
+          <!-- Empty State -->
           <Empty v-else>
             <EmptyHeader>
               <Key :size="48" class="mx-auto text-neutral-400 mb-4" />

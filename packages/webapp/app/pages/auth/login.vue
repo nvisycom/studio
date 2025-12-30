@@ -5,73 +5,66 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 
 definePageMeta({
-	layout: "auth",
+  layout: "auth",
 });
+
+const { loginAsync, isLoggingIn, loginError } = useAuth();
 
 // Form state
 const email = ref("");
 const password = ref("");
 const rememberMe = ref(false);
 const showPassword = ref(false);
-const isLoading = ref(false);
 
 /**
  * Handle login form submission
  */
 async function handleLogin(): Promise<void> {
-	isLoading.value = true;
+  try {
+    await loginAsync({
+      emailAddress: email.value,
+      password: password.value,
+      rememberMe: rememberMe.value,
+    });
 
-	try {
-		// TODO: Implement actual login logic
-		console.log("Logging in with:", {
-			email: email.value,
-			password: password.value,
-			rememberMe: rememberMe.value,
-		});
-
-		// Simulate API call
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		// Redirect to dashboard
-		navigateTo("/");
-	} catch (error) {
-		console.error("Login error:", error);
-	} finally {
-		isLoading.value = false;
-	}
+    // Redirect to dashboard
+    navigateTo("/");
+  } catch (error) {
+    console.error("Login error:", error);
+  }
 }
 
 /**
  * Toggle password visibility
  */
 function togglePasswordVisibility(): void {
-	showPassword.value = !showPassword.value;
+  showPassword.value = !showPassword.value;
 }
 
 /**
  * Handle Google login
  */
 async function handleGoogleLogin(): Promise<void> {
-	console.log("Google login");
-	// TODO: Implement Google OAuth
+  console.log("Google login");
+  // TODO: Implement Google OAuth
 }
 
 /**
  * Handle Microsoft login
  */
 async function handleMicrosoftLogin(): Promise<void> {
-	console.log("Microsoft login");
-	// TODO: Implement Microsoft OAuth
+  console.log("Microsoft login");
+  // TODO: Implement Microsoft OAuth
 }
 </script>
 
@@ -181,10 +174,33 @@ async function handleMicrosoftLogin(): Promise<void> {
             </Label>
           </div>
 
+          <!-- Error Message -->
+          <div
+            v-if="loginError"
+            class="p-3 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 rounded-md"
+          >
+            <p>{{ loginError.message || "An error occurred during login" }}</p>
+            <p
+              v-if="loginError.suggestion"
+              class="mt-1 text-red-500 dark:text-red-300"
+            >
+              {{ loginError.suggestion }}
+            </p>
+            <ul
+              v-if="loginError.validation?.length"
+              class="mt-2 list-disc list-inside space-y-1"
+            >
+              <li v-for="err in loginError.validation" :key="err.field">
+                <span class="font-medium">{{ err.field }}:</span>
+                {{ err.message }}
+              </li>
+            </ul>
+          </div>
+
           <!-- Submit Button -->
-          <Button type="submit" class="w-full h-10" :disabled="isLoading">
+          <Button type="submit" class="w-full h-10" :disabled="isLoggingIn">
             <span
-              v-if="!isLoading"
+              v-if="!isLoggingIn"
               class="flex items-center justify-center gap-2"
             >
               Sign in

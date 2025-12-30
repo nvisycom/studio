@@ -2,65 +2,73 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-	compatibilityDate: "2025-07-15",
-	devtools: { enabled: true },
-	telemetry: { enabled: false },
+  compatibilityDate: "2025-07-15",
+  devtools: { enabled: true },
+  telemetry: { enabled: false },
+  ssr: false, // SPA mode
 
-	// hooks: {
-	//   "prerender:routes"({ routes }) {
-	//     routes.clear();
-	//   },
-	// },
+  runtimeConfig: {
+    public: {
+      nvisyApiUrl:
+        process.env.NODE_ENV === "development"
+          ? "http://127.0.0.1:8080/"
+          : "https://api.nvisy.com/",
+    },
+  },
 
-	nitro: {
-		prerender: {
-			crawlLinks: false,
-			// ignore: ignoredNitroRoutes,
-			routes: ["/"],
-		},
-	},
+  // hooks: {
+  //   "prerender:routes"({ routes }) {
+  //     routes.clear();
+  //   },
+  // },
 
-	css: ["~/assets/css/fonts.css", "~/assets/css/tailwind.css"],
+  nitro: {
+    prerender: {
+      crawlLinks: false,
+      // ignore: ignoredNitroRoutes,
+      routes: ["/"],
+    },
+  },
 
-	modules: [
-		"shadcn-nuxt",
-		"@pinia/colada-nuxt",
-		"@pinia/nuxt",
-		"@nuxtjs/color-mode",
-		"@nuxtjs/device",
-		"@nuxtjs/i18n",
-		// "nuxt-og-image",
-		// "nuxt-schema-org",
-	],
+  css: ["~/assets/css/fonts.css", "~/assets/css/tailwind.css"],
 
-	vite: {
-		plugins: [tailwindcss()],
-	},
+  modules: [
+    "shadcn-nuxt",
+    "@pinia/colada-nuxt",
+    "@pinia/nuxt",
+    "@nuxtjs/color-mode",
+    "@nuxtjs/device",
+    "@nuxtjs/i18n",
+  ],
 
-	colorMode: {
-		classSuffix: "",
-		storage: "cookie",
-		preference: "system",
-		fallback: "light",
-	},
+  vite: {
+    plugins: [tailwindcss()],
+  },
 
-	i18n: {
-		strategy: "no_prefix",
-		detectBrowserLanguage: {
-			useCookie: true,
-			cookieKey: "i18n_redirected",
-			redirectOn: "root",
-		},
+  colorMode: {
+    classSuffix: "",
+    storage: "cookie",
+    preference: "system",
+    fallback: "light",
+  },
 
-		locales: [
-			{ code: "en", name: "English", file: "en.json" },
-			{ code: "de", name: "Deutsch", file: "de.json" },
-		],
-		defaultLocale: "en",
+  i18n: {
+    strategy: "no_prefix",
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: "i18n_redirected",
+      redirectOn: "root",
+    },
 
-		compilation: {
-			strictMessage: true,
-			escapeHtml: true,
-		},
-	},
+    locales: [
+      { code: "en", name: "English", file: "en.json" },
+      { code: "de", name: "Deutsch", file: "de.json" },
+    ],
+    defaultLocale: "en",
+
+    compilation: {
+      strictMessage: true,
+      escapeHtml: true,
+    },
+  },
 });
