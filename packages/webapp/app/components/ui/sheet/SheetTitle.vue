@@ -6,7 +6,7 @@ import { DialogTitle } from "reka-ui";
 import { cn } from "@/utils/shadcn";
 
 const props = defineProps<
-	DialogTitleProps & { class?: HTMLAttributes["class"] }
+  DialogTitleProps & { class?: HTMLAttributes["class"] }
 >();
 
 const delegatedProps = reactiveOmit(props, "class");
@@ -15,7 +15,7 @@ const delegatedProps = reactiveOmit(props, "class");
 <template>
   <DialogTitle
     data-slot="sheet-title"
-    :class="cn('text-foreground font-semibold', props.class)"
+    :class="cn('text-foreground text-lg font-medium', props.class)"
     v-bind="delegatedProps"
   >
     <slot />

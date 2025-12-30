@@ -23,7 +23,7 @@ import ErrorRateChart from "~/components/pages/analytics/ErrorRateChart.vue";
 import ResponseTimeChart from "~/components/pages/analytics/ResponseTimeChart.vue";
 
 definePageMeta({
-	pageName: "Analytics",
+	pageCategory: "Analytics",
 });
 
 // Date range for analytics

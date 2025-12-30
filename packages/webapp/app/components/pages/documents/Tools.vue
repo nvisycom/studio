@@ -1,77 +1,77 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
-	FileText,
-	Split,
-	Merge,
-	FileOutput,
-	Save,
-	ChevronDown,
-	Highlighter,
-	MessageSquare,
-	FileInput,
+  FileText,
+  Split,
+  Merge,
+  FileOutput,
+  Save,
+  ChevronDown,
+  Highlighter,
+  MessageSquare,
+  FileInput,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 interface Tool {
-	id: string;
-	name: string;
-	icon: any;
+  id: string;
+  name: string;
+  icon: any;
 }
 
 interface Props {
-	selectedTool?: string;
+  selectedTool?: string;
 }
 
 interface Emits {
-	(e: "selectTool", toolId: string): void;
-	(e: "rotate"): void;
-	(e: "saveAsPdf"): void;
-	(e: "saveAsDoc"): void;
+  (e: "selectTool", toolId: string): void;
+  (e: "rotate"): void;
+  (e: "saveAsPdf"): void;
+  (e: "saveAsDoc"): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	selectedTool: "highlight",
+  selectedTool: "highlight",
 });
 
 const emit = defineEmits<Emits>();
 
 // Modification tools - modify existing file
 const modifyTools: Tool[] = [
-	{ id: "highlight", name: "Highlight", icon: Highlighter },
-	{ id: "annotate", name: "Annotate", icon: MessageSquare },
+  { id: "highlight", name: "Highlight", icon: Highlighter },
+  { id: "annotate", name: "Annotate", icon: MessageSquare },
 ];
 
 // Creation tools - create new files
 const createTools: Tool[] = [
-	{ id: "split", name: "Split", icon: Split },
-	{ id: "merge", name: "Merge", icon: Merge },
-	{ id: "insert", name: "Insert", icon: FileInput },
-	{ id: "extract", name: "Extract", icon: FileOutput },
-	{ id: "summarize", name: "Summarize", icon: FileText },
+  { id: "split", name: "Split", icon: Split },
+  { id: "merge", name: "Merge", icon: Merge },
+  { id: "insert", name: "Insert", icon: FileInput },
+  { id: "extract", name: "Extract", icon: FileOutput },
+  { id: "summarize", name: "Summarize", icon: FileText },
 ];
 
 function selectTool(toolId: string) {
-	emit("selectTool", toolId);
+  emit("selectTool", toolId);
 }
 
 function rotate() {
-	emit("rotate");
+  emit("rotate");
 }
 
 function saveAsPdf() {
-	emit("saveAsPdf");
+  emit("saveAsPdf");
 }
 
 function saveAsDoc() {
-	emit("saveAsDoc");
+  emit("saveAsDoc");
 }
 </script>
 
@@ -81,7 +81,7 @@ function saveAsDoc() {
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           <Edit3 :size="16" />
-          <h3 class="font-semibold text-sm">Tools</h3>
+          <h3 class="font-medium text-sm">Tools</h3>
         </div>
         <div class="flex items-center gap-1">
           <div class="flex items-center">
@@ -133,7 +133,7 @@ function saveAsDoc() {
             @click="selectTool(tool.id)"
           >
             <component :is="tool.icon" :size="14" class="mr-1.5" />
-            <span class="text-xs">{{ tool.name }}</span>
+            <span class="text-sm font-light">{{ tool.name }}</span>
           </Button>
         </div>
       </div>
@@ -155,7 +155,7 @@ function saveAsDoc() {
             @click="selectTool(tool.id)"
           >
             <component :is="tool.icon" :size="14" class="mr-1.5" />
-            <span class="text-xs">{{ tool.name }}</span>
+            <span class="text-sm font-light">{{ tool.name }}</span>
           </Button>
         </div>
       </div>

@@ -5,21 +5,23 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import {
-	HeaderTabs,
-	FeedbackModal,
-	NotificationsDropdown,
+  HeaderTabs,
+  FeedbackModal,
+  NotificationsDropdown,
 } from "@/components/header";
 
 const route = useRoute();
 
-// Get page name from route meta
-const pageName = computed(() => route.meta.pageName as string | undefined);
+// Get page category from route meta
+const pageCategory = computed(
+  () => route.meta.pageCategory as string | undefined,
+);
 
 // Modal states
 const isFeedbackModalOpen = ref(false);
 
 function openFeedbackModal() {
-	isFeedbackModalOpen.value = true;
+  isFeedbackModalOpen.value = true;
 }
 </script>
 
@@ -30,7 +32,9 @@ function openFeedbackModal() {
     <div class="flex items-center gap-2 px-4">
       <SidebarTrigger class="-ml-1" />
       <Separator orientation="vertical" class="mr-2 h-4" />
-      <h1 v-if="pageName" class="text-lg font-semibold mr-4">{{ pageName }}</h1>
+      <h1 v-if="pageCategory" class="text-lg font-medium mr-4">
+        {{ pageCategory }}
+      </h1>
       <HeaderTabs />
     </div>
     <div class="flex items-center gap-2 px-4">

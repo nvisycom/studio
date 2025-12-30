@@ -44,7 +44,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 
 definePageMeta({
-	pageName: "Pipelines",
+	pageCategory: "Pipelines",
 });
 
 interface Pipeline {

@@ -3,41 +3,46 @@ import { computed } from "vue";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StudioFileTabs from "./StudioFileTabs.vue";
 import {
-	Settings,
-	Key,
-	Bell,
-	Shield,
-	BarChart3,
-	Cpu,
-	FileSearch,
-	Plug,
-	Library,
-	Receipt,
-	FileText,
-	Workflow,
-	PenTool,
-	LayoutTemplate,
-	FolderOpen,
-	Users,
-	ShieldCheck,
-	MessageSquare,
-	Database,
-	CreditCard,
-	PlayCircle,
+  Settings,
+  Key,
+  User,
+  Bell,
+  Shield,
+  BarChart3,
+  Cpu,
+  FileSearch,
+  Plug,
+  Library,
+  Receipt,
+  FileText,
+  Workflow,
+  PenTool,
+  LayoutTemplate,
+  FolderOpen,
+  Users,
+  ShieldCheck,
+  MessageSquare,
+  Database,
+  CreditCard,
+  PlayCircle,
 } from "lucide-vue-next";
 
 const route = useRoute();
 
 // Check if current route should show tabs
 const showIntegrationTabs = computed(() =>
-	route.path.startsWith("/integrations"),
+  route.path.startsWith("/integrations"),
 );
 
 const showPipelinesTabs = computed(() => route.path.startsWith("/pipelines"));
 
-const showDocumentsTabs = computed(() => route.path.startsWith("/documents"));
+const showDocumentsTabs = computed(
+  () => route.path === "/" || route.path.startsWith("/studio"),
+);
 
 const showSettingsTabs = computed(() => route.path.startsWith("/settings"));
+
+const showAccountTabs = computed(() => route.path.startsWith("/account"));
 
 const showAnalyticsTabs = computed(() => route.path.startsWith("/analytics"));
 
@@ -48,50 +53,55 @@ const showMembersTabs = computed(() => route.path.startsWith("/members"));
 const showKnowledgeTabs = computed(() => route.path.startsWith("/knowledge"));
 
 const currentIntegrationTab = computed(() =>
-	route.path === "/integrations/explore" ? "library" : "active",
+  route.path === "/integrations/explore" ? "library" : "active",
 );
 
 const currentMembersTab = computed(() => {
-	if (route.path === "/members/permissions") return "permissions";
-	return "members";
+  if (route.path === "/members/permissions") return "permissions";
+  return "members";
 });
 
 const currentPipelinesTab = computed(() =>
-	route.path === "/pipelines/templates" ? "templates" : "pipelines",
+  route.path === "/pipelines/templates" ? "templates" : "pipelines",
 );
 
 const currentDocumentsTab = computed(() => {
-	if (route.path === "/documents/studio") return "studio";
-	return "files";
+  if (route.path.startsWith("/studio")) return "studio";
+  return "files";
 });
 
 const currentSettingsTab = computed(() => {
-	if (route.path === "/settings/tokens") return "tokens";
-	if (route.path === "/settings/notifications") return "notifications";
-	if (route.path === "/settings/security") return "security";
-	return "general";
+  if (route.path === "/settings/notifications") return "notifications";
+  if (route.path === "/settings/security") return "security";
+  return "general";
+});
+
+const currentAccountTab = computed(() => {
+  if (route.path === "/account/tokens") return "tokens";
+  if (route.path === "/account/general") return "general";
+  return "general";
 });
 
 const currentAnalyticsTab = computed(() => {
-	if (route.path === "/analytics/ai") return "ai";
-	if (route.path.startsWith("/analytics/logs")) return "logs";
-	return "overview";
+  if (route.path === "/analytics/ai") return "ai";
+  if (route.path.startsWith("/analytics/logs")) return "logs";
+  return "overview";
 });
 
 const currentBillingTab = computed(() => {
-	if (route.path.startsWith("/billing/invoices")) return "invoices";
-	if (route.path.startsWith("/billing/method")) return "method";
-	return "plan";
+  if (route.path.startsWith("/billing/invoices")) return "invoices";
+  if (route.path.startsWith("/billing/method")) return "method";
+  return "plan";
 });
 
 const currentIntegrationTabValue = computed(() => {
-	if (route.path === "/integrations/explore") return "explore";
-	if (route.path === "/integrations/runs") return "runs";
-	return "connections";
+  if (route.path === "/integrations/explore") return "explore";
+  if (route.path === "/integrations/runs") return "runs";
+  return "connections";
 });
 
 const currentKnowledgeTab = computed(() =>
-	route.path === "/knowledge/corpus" ? "corpus" : "chat",
+  route.path === "/knowledge/corpus" ? "corpus" : "chat",
 );
 </script>
 
@@ -140,17 +150,16 @@ const currentKnowledgeTab = computed(() =>
 
   <!-- Documents Tabs -->
   <template v-else-if="showDocumentsTabs">
-    <!-- Main Documents Tabs (Files/Studio) -->
     <Tabs :model-value="currentDocumentsTab">
       <TabsList>
         <TabsTrigger value="files" as-child>
-          <NuxtLink to="/documents" class="flex items-center gap-2">
+          <NuxtLink to="/" class="flex items-center gap-2">
             <FolderOpen :size="16" />
             Files
           </NuxtLink>
         </TabsTrigger>
         <TabsTrigger value="studio" as-child>
-          <NuxtLink to="/documents/studio" class="flex items-center gap-2">
+          <NuxtLink to="/studio" class="flex items-center gap-2">
             <PenTool :size="16" />
             Studio
           </NuxtLink>
@@ -160,7 +169,7 @@ const currentKnowledgeTab = computed(() =>
 
     <!-- Studio File Tabs -->
     <div
-      v-if="route.path === '/documents/studio'"
+      v-if="route.path.startsWith('/studio')"
       class="flex items-center gap-1 ml-2"
     >
       <StudioFileTabs />
@@ -203,19 +212,13 @@ const currentKnowledgeTab = computed(() =>
     </TabsList>
   </Tabs>
 
-  <!-- Settings Tabs -->
+  <!-- Settings Tabs (Project Settings) -->
   <Tabs v-else-if="showSettingsTabs" :model-value="currentSettingsTab">
     <TabsList>
       <TabsTrigger value="general" as-child>
         <NuxtLink to="/settings" class="flex items-center gap-2">
           <Settings :size="16" />
           General
-        </NuxtLink>
-      </TabsTrigger>
-      <TabsTrigger value="tokens" as-child>
-        <NuxtLink to="/settings/tokens" class="flex items-center gap-2">
-          <Key :size="16" />
-          Tokens
         </NuxtLink>
       </TabsTrigger>
       <TabsTrigger value="notifications" as-child>
@@ -228,6 +231,24 @@ const currentKnowledgeTab = computed(() =>
         <NuxtLink to="/settings/security" class="flex items-center gap-2">
           <Shield :size="16" />
           Security
+        </NuxtLink>
+      </TabsTrigger>
+    </TabsList>
+  </Tabs>
+
+  <!-- Account Tabs (User Account Settings) -->
+  <Tabs v-else-if="showAccountTabs" :model-value="currentAccountTab">
+    <TabsList>
+      <TabsTrigger value="general" as-child>
+        <NuxtLink to="/account/general" class="flex items-center gap-2">
+          <User :size="16" />
+          General
+        </NuxtLink>
+      </TabsTrigger>
+      <TabsTrigger value="tokens" as-child>
+        <NuxtLink to="/account/tokens" class="flex items-center gap-2">
+          <Key :size="16" />
+          Tokens
         </NuxtLink>
       </TabsTrigger>
     </TabsList>

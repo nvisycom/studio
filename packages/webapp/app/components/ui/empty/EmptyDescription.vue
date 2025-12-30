@@ -3,17 +3,19 @@ import type { HTMLAttributes } from "vue";
 import { cn } from "@/utils/shadcn";
 
 defineProps<{
-	class?: HTMLAttributes["class"];
+  class?: HTMLAttributes["class"];
 }>();
 </script>
 
 <template>
   <p
     data-slot="empty-description"
-    :class="cn(
-      'text-muted-foreground [&>a:hover]:text-primary text-sm/relaxed [&>a]:underline [&>a]:underline-offset-4',
-      $attrs.class ?? '',
-    )"
+    :class="
+      cn(
+        'text-muted-foreground [&>a:hover]:text-primary text-sm/relaxed font-light [&>a]:underline [&>a]:underline-offset-4',
+        $attrs.class ?? '',
+      )
+    "
   >
     <slot />
   </p>

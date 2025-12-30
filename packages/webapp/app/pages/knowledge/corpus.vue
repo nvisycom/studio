@@ -27,7 +27,7 @@ import {
 import type { CorpusDocument } from "@/components/pages/knowledge/CorpusTable.vue";
 
 definePageMeta({
-	pageName: "Knowledge",
+	pageCategory: "Knowledge",
 });
 
 const searchQuery = ref("");

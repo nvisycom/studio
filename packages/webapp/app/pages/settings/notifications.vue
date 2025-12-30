@@ -13,7 +13,7 @@ import Switch from "@/components/ui/switch/Switch.vue";
 import Checkbox from "@/components/ui/checkbox/Checkbox.vue";
 
 definePageMeta({
-	pageName: "Settings",
+	pageCategory: "Settings",
 });
 
 // Reactive data

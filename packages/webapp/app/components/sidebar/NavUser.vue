@@ -1,37 +1,39 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
-	ChevronsUpDown,
-	LogOut,
-	Command,
-	Moon,
-	Sun,
-	Home,
-	ExternalLink,
+  ChevronsUpDown,
+  LogOut,
+  Command,
+  Moon,
+  Sun,
+  Home,
+  ExternalLink,
+  User,
+  Key,
 } from "lucide-vue-next";
 import { EntityAvatar } from "@/components/common";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuGroup,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
-	useSidebar,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import CommandMenu from "@/components/CommandMenu.vue";
 
 const props = defineProps<{
-	user: {
-		name: string;
-		email: string;
-		avatar: string;
-	};
+  user: {
+    name: string;
+    email: string;
+    avatar: string;
+  };
 }>();
 
 const { isMobile } = useSidebar();
@@ -40,11 +42,11 @@ const isCommandMenuOpen = ref(false);
 const colorMode = useColorMode();
 
 function openCommandMenu() {
-	isCommandMenuOpen.value = true;
+  isCommandMenuOpen.value = true;
 }
 
 function toggleTheme() {
-	colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
+  colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
 }
 </script>
 
@@ -59,8 +61,8 @@ function toggleTheme() {
           >
             <EntityAvatar :src="user.avatar" :name="user.name" size="md" />
             <div class="grid flex-1 text-left text-sm leading-tight">
-              <span class="truncate font-semibold">{{ user.name }}</span>
-              <span class="truncate text-xs">{{ user.email }}</span>
+              <span class="truncate font-medium">{{ user.name }}</span>
+              <span class="truncate text-sm font-light">{{ user.email }}</span>
             </div>
             <ChevronsUpDown class="ml-auto size-4" />
           </SidebarMenuButton>
@@ -72,11 +74,32 @@ function toggleTheme() {
           :side-offset="4"
         >
           <DropdownMenuGroup>
+            <DropdownMenuItem as-child>
+              <NuxtLink
+                to="/account/general"
+                class="cursor-pointer flex items-center"
+              >
+                <User />
+                Account Settings
+              </NuxtLink>
+            </DropdownMenuItem>
+            <DropdownMenuItem as-child>
+              <NuxtLink
+                to="/account/tokens"
+                class="cursor-pointer flex items-center"
+              >
+                <Key />
+                API Tokens
+              </NuxtLink>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
             <DropdownMenuItem @click="openCommandMenu" class="cursor-pointer">
               <Command />
               Command Menu
               <span
-                class="ml-auto text-xs text-neutral-500 dark:text-neutral-400"
+                class="ml-auto text-sm font-light text-neutral-500 dark:text-neutral-400"
                 >⌘K</span
               >
             </DropdownMenuItem>

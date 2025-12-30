@@ -4,85 +4,85 @@ import { Download } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 
 definePageMeta({
-	pageName: "Billing",
+  pageCategory: "Billing",
 });
 
 // Invoices data
 const invoices = ref([
-	{
-		id: "INV-2024-001",
-		date: "2024-01-20",
-		amount: 29.0,
-		status: "paid",
-		description: "Pro Plan - Monthly",
-		paymentMethod: "Visa •••• 4242",
-	},
-	{
-		id: "INV-2023-012",
-		date: "2023-12-20",
-		amount: 29.0,
-		status: "paid",
-		description: "Pro Plan - Monthly",
-		paymentMethod: "Visa •••• 4242",
-	},
-	{
-		id: "INV-2023-011",
-		date: "2023-11-20",
-		amount: 29.0,
-		status: "paid",
-		description: "Pro Plan - Monthly",
-		paymentMethod: "Visa •••• 4242",
-	},
-	{
-		id: "INV-2023-010",
-		date: "2023-10-20",
-		amount: 29.0,
-		status: "paid",
-		description: "Pro Plan - Monthly",
-		paymentMethod: "Visa •••• 4242",
-	},
-	{
-		id: "INV-2023-009",
-		date: "2023-09-20",
-		amount: 29.0,
-		status: "paid",
-		description: "Pro Plan - Monthly",
-		paymentMethod: "Visa •••• 4242",
-	},
+  {
+    id: "INV-2024-001",
+    date: "2024-01-20",
+    amount: 29.0,
+    status: "paid",
+    description: "Pro Plan - Monthly",
+    paymentMethod: "Visa •••• 4242",
+  },
+  {
+    id: "INV-2023-012",
+    date: "2023-12-20",
+    amount: 29.0,
+    status: "paid",
+    description: "Pro Plan - Monthly",
+    paymentMethod: "Visa •••• 4242",
+  },
+  {
+    id: "INV-2023-011",
+    date: "2023-11-20",
+    amount: 29.0,
+    status: "paid",
+    description: "Pro Plan - Monthly",
+    paymentMethod: "Visa •••• 4242",
+  },
+  {
+    id: "INV-2023-010",
+    date: "2023-10-20",
+    amount: 29.0,
+    status: "paid",
+    description: "Pro Plan - Monthly",
+    paymentMethod: "Visa •••• 4242",
+  },
+  {
+    id: "INV-2023-009",
+    date: "2023-09-20",
+    amount: 29.0,
+    status: "paid",
+    description: "Pro Plan - Monthly",
+    paymentMethod: "Visa •••• 4242",
+  },
 ]);
 
 function downloadInvoice(invoiceId: string) {
-	console.log("Downloading invoice:", invoiceId);
+  console.log("Downloading invoice:", invoiceId);
 }
 
 function getStatusClass(status: string) {
-	switch (status) {
-		case "paid":
-			return "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300";
-		case "pending":
-			return "bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300";
-		case "failed":
-			return "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300";
-		default:
-			return "";
-	}
+  switch (status) {
+    case "paid":
+      return "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300";
+    case "pending":
+      return "bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300";
+    case "failed":
+      return "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300";
+    default:
+      return "";
+  }
 }
 </script>
 
@@ -120,7 +120,7 @@ function getStatusClass(status: string) {
                   }}
                 </TableCell>
                 <TableCell>{{ invoice.description }}</TableCell>
-                <TableCell class="font-semibold">
+                <TableCell class="font-medium">
                   ${{ invoice.amount.toFixed(2) }}
                 </TableCell>
                 <TableCell>

@@ -1,66 +1,66 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 
 interface IntegrationRun {
-	id: string;
-	integration: string;
-	name: string;
-	statusCode: number;
-	startedAt: Date;
-	duration: string;
+  id: string;
+  integration: string;
+  name: string;
+  statusCode: number;
+  startedAt: Date;
+  duration: string;
 }
 
 interface Props {
-	open?: boolean;
-	run: IntegrationRun | null;
+  open?: boolean;
+  run: IntegrationRun | null;
 }
 
 interface Emits {
-	(e: "update:open", value: boolean): void;
+  (e: "update:open", value: boolean): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	open: false,
+  open: false,
 });
 
 const emit = defineEmits<Emits>();
 
 function handleOpenChange(open: boolean) {
-	emit("update:open", open);
+  emit("update:open", open);
 }
 
 function getStatusCodeColor(statusCode: number): string {
-	if (statusCode >= 100 && statusCode < 200) {
-		return "text-blue-600 dark:text-blue-400";
-	} else if (statusCode >= 200 && statusCode < 300) {
-		return "text-green-600 dark:text-green-400";
-	} else if (statusCode >= 300 && statusCode < 400) {
-		return "text-yellow-600 dark:text-yellow-400";
-	} else if (statusCode >= 400 && statusCode < 500) {
-		return "text-orange-600 dark:text-orange-400";
-	} else if (statusCode >= 500) {
-		return "text-red-600 dark:text-red-400";
-	}
-	return "text-neutral-600 dark:text-neutral-400";
+  if (statusCode >= 100 && statusCode < 200) {
+    return "text-blue-600 dark:text-blue-400";
+  } else if (statusCode >= 200 && statusCode < 300) {
+    return "text-green-600 dark:text-green-400";
+  } else if (statusCode >= 300 && statusCode < 400) {
+    return "text-yellow-600 dark:text-yellow-400";
+  } else if (statusCode >= 400 && statusCode < 500) {
+    return "text-orange-600 dark:text-orange-400";
+  } else if (statusCode >= 500) {
+    return "text-red-600 dark:text-red-400";
+  }
+  return "text-neutral-600 dark:text-neutral-400";
 }
 
 function formatDateTime(date: Date): string {
-	return date.toLocaleString("en-US", {
-		month: "short",
-		day: "numeric",
-		year: "numeric",
-		hour: "2-digit",
-		minute: "2-digit",
-		second: "2-digit",
-	});
+  return date.toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
 }
 </script>
 
@@ -109,7 +109,7 @@ function formatDateTime(date: Date): string {
               </p>
               <span
                 :class="getStatusCodeColor(run.statusCode)"
-                class="font-mono text-sm font-semibold"
+                class="font-mono text-sm font-medium"
               >
                 {{ run.statusCode }}
               </span>

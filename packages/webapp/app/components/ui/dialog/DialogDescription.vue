@@ -6,7 +6,7 @@ import { DialogDescription, useForwardProps } from "reka-ui";
 import { cn } from "@/utils/shadcn";
 
 const props = defineProps<
-	DialogDescriptionProps & { class?: HTMLAttributes["class"] }
+  DialogDescriptionProps & { class?: HTMLAttributes["class"] }
 >();
 
 const delegatedProps = reactiveOmit(props, "class");
@@ -18,7 +18,7 @@ const forwardedProps = useForwardProps(delegatedProps);
   <DialogDescription
     data-slot="dialog-description"
     v-bind="forwardedProps"
-    :class="cn('text-muted-foreground text-sm', props.class)"
+    :class="cn('text-muted-foreground text-sm font-light', props.class)"
   >
     <slot />
   </DialogDescription>

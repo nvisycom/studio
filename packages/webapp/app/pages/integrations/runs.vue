@@ -44,7 +44,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { RunDetailsModal } from "~/components/pages/integrations";
 
 definePageMeta({
-	pageName: "Integrations",
+	pageCategory: "Integrations",
 });
 
 interface IntegrationRun {

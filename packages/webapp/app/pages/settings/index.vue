@@ -5,17 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 
 definePageMeta({
-	pageName: "Settings",
+	pageCategory: "Settings",
 });
 
 // Reactive data
@@ -26,48 +27,48 @@ const copiedProjectUrl = ref(false);
 
 // Functions
 function copyProjectId() {
-	navigator.clipboard.writeText("proj_1a2b3c4d5e6f");
-	copiedProjectId.value = true;
-	setTimeout(() => {
-		copiedProjectId.value = false;
-	}, 2000);
+  navigator.clipboard.writeText("proj_1a2b3c4d5e6f");
+  copiedProjectId.value = true;
+  setTimeout(() => {
+    copiedProjectId.value = false;
+  }, 2000);
 }
 
 function copyProjectUrl() {
-	navigator.clipboard.writeText(`https://app.nvisy.com/${projectUrl.value}`);
-	copiedProjectUrl.value = true;
-	setTimeout(() => {
-		copiedProjectUrl.value = false;
-	}, 2000);
+  navigator.clipboard.writeText(`https://app.nvisy.com/${projectUrl.value}`);
+  copiedProjectUrl.value = true;
+  setTimeout(() => {
+    copiedProjectUrl.value = false;
+  }, 2000);
 }
 
 function saveProjectName() {
-	console.log("Saving project name:", projectName.value);
+  console.log("Saving project name:", projectName.value);
 }
 
 function saveProjectUrl() {
-	console.log("Saving project URL:", projectUrl.value);
+  console.log("Saving project URL:", projectUrl.value);
 }
 
 function uploadAvatar() {
-	const input = document.createElement("input");
-	input.type = "file";
-	input.accept = "image/*";
-	input.onchange = (e) => {
-		const file = (e.target as HTMLInputElement)?.files?.[0];
-		if (file) {
-			console.log("Uploading avatar:", file.name);
-		}
-	};
-	input.click();
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+  input.onchange = (e) => {
+    const file = (e.target as HTMLInputElement)?.files?.[0];
+    if (file) {
+      console.log("Uploading avatar:", file.name);
+    }
+  };
+  input.click();
 }
 
 function leaveProject() {
-	console.log("Leaving project");
+  console.log("Leaving project");
 }
 
 function deleteProject() {
-	console.log("Deleting project");
+  console.log("Deleting project");
 }
 </script>
 

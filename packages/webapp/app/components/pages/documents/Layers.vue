@@ -1,61 +1,61 @@
 <script setup lang="ts">
 import {
-	Layers,
-	Undo,
-	Redo,
-	X,
-	Split,
-	Edit3,
-	FileOutput,
-	Merge,
+  Layers,
+  Undo,
+  Redo,
+  X,
+  Split,
+  Edit3,
+  FileOutput,
+  Merge,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 
 interface Layer {
-	id: string;
-	name: string;
-	icon: any;
-	page: number;
+  id: string;
+  name: string;
+  icon: any;
+  page: number;
 }
 
 interface Props {
-	layers?: Layer[];
+  layers?: Layer[];
 }
 
 interface Emits {
-	(e: "undo"): void;
-	(e: "redo"): void;
-	(e: "deleteLayer", layerId: string): void;
-	(e: "selectLayer", layerId: string): void;
+  (e: "undo"): void;
+  (e: "redo"): void;
+  (e: "deleteLayer", layerId: string): void;
+  (e: "selectLayer", layerId: string): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	layers: () => [
-		{ id: "1", name: "Split Operation", icon: Split, page: 1 },
-		{ id: "2", name: "Edit Annotation", icon: Edit3, page: 2 },
-		{ id: "3", name: "Extract Data", icon: FileOutput, page: 3 },
-		{ id: "4", name: "Merge Pages", icon: Merge, page: 4 },
-	],
+  layers: () => [
+    { id: "1", name: "Split Operation", icon: Split, page: 1 },
+    { id: "2", name: "Edit Annotation", icon: Edit3, page: 2 },
+    { id: "3", name: "Extract Data", icon: FileOutput, page: 3 },
+    { id: "4", name: "Merge Pages", icon: Merge, page: 4 },
+  ],
 });
 
 const emit = defineEmits<Emits>();
 
 function undo() {
-	emit("undo");
+  emit("undo");
 }
 
 function redo() {
-	emit("redo");
+  emit("redo");
 }
 
 function deleteLayer(layerId: string) {
-	emit("deleteLayer", layerId);
+  emit("deleteLayer", layerId);
 }
 
 function selectLayer(layerId: string) {
-	emit("selectLayer", layerId);
+  emit("selectLayer", layerId);
 }
 </script>
 
@@ -65,23 +65,13 @@ function selectLayer(layerId: string) {
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           <Layers :size="16" />
-          <h3 class="font-semibold text-sm">Layers</h3>
+          <h3 class="font-medium text-sm">Layers</h3>
         </div>
         <div class="flex items-center gap-1">
-          <Button
-            variant="outline"
-            size="sm"
-            class="h-7 w-7 p-0"
-            @click="undo"
-          >
+          <Button variant="outline" size="sm" class="h-7 w-7 p-0" @click="undo">
             <Undo :size="14" />
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            class="h-7 w-7 p-0"
-            @click="redo"
-          >
+          <Button variant="outline" size="sm" class="h-7 w-7 p-0" @click="redo">
             <Redo :size="14" />
           </Button>
         </div>
@@ -98,7 +88,7 @@ function selectLayer(layerId: string) {
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <component :is="layer.icon" :size="13" />
-              <span class="text-xs">{{ layer.name }}</span>
+              <span class="text-sm font-light">{{ layer.name }}</span>
             </div>
             <div class="flex items-center gap-2">
               <Badge variant="secondary" class="text-[10px] px-1.5 py-0">

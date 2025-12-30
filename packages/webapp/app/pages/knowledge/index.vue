@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { MessageInput, ChatMessage } from "@/components/pages/knowledge";
 
 definePageMeta({
-	pageName: "Knowledge",
+	pageCategory: "Knowledge",
 });
 
 interface Message {

@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 definePageMeta({
-	pageName: "Billing",
+	pageCategory: "Billing",
 });
 
 // Reactive data

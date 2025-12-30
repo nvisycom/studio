@@ -57,7 +57,7 @@ import {
 } from "@/components/ui/popover";
 
 definePageMeta({
-	pageName: "Analytics",
+	pageCategory: "Analytics",
 });
 
 // Filters

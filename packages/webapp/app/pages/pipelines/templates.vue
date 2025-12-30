@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/card";
 
 definePageMeta({
-	pageName: "Pipelines",
+	pageCategory: "Pipelines",
 });
 
 interface PipelineTemplate {

@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 
 definePageMeta({
-	pageName: "Settings",
+	pageCategory: "Settings",
 });
 
 // IP Address Visibility
@@ -30,22 +30,22 @@ const samlCertificate = ref("");
 
 // Functions
 function saveIpVisibility() {
-	console.log("Saving IP visibility settings:", {
-		dashboard: showIpInDashboard.value,
-		logs: showIpInLogs.value,
-	});
+  console.log("Saving IP visibility settings:", {
+    dashboard: showIpInDashboard.value,
+    logs: showIpInLogs.value,
+  });
 }
 
 function save2FAEnforcement() {
-	console.log("Saving 2FA enforcement:", enforce2FA.value);
+  console.log("Saving 2FA enforcement:", enforce2FA.value);
 }
 
 function saveSamlSettings() {
-	console.log("Saving SAML settings:", {
-		enabled: samlEnabled.value,
-		entityId: samlEntityId.value,
-		ssoUrl: samlSsoUrl.value,
-	});
+  console.log("Saving SAML settings:", {
+    enabled: samlEnabled.value,
+    entityId: samlEntityId.value,
+    ssoUrl: samlSsoUrl.value,
+  });
 }
 </script>
 
@@ -56,7 +56,6 @@ function saveSamlSettings() {
         <!-- IP Address Visibility -->
         <Card
           class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-          id="ip-address-visibility"
         >
           <CardHeader>
             <CardTitle>IP Address Visibility</CardTitle>
@@ -99,8 +98,7 @@ function saveSamlSettings() {
           >
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
               Under some laws, IP addresses are considered personal information
-              and may be subject to privacy regulations. Hiding IP addresses
-              improves privacy but may limit troubleshooting capabilities.
+              and may be subject to privacy regulations.
             </p>
             <Button size="sm" @click="saveIpVisibility"> Save </Button>
           </CardFooter>
@@ -109,7 +107,6 @@ function saveSamlSettings() {
         <!-- Two-Factor Authentication Enforcement -->
         <Card
           class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-          id="two-factor-authentication-enforcement"
         >
           <CardHeader>
             <CardTitle>Two-Factor Authentication Enforcement</CardTitle>
@@ -134,7 +131,6 @@ function saveSamlSettings() {
           >
             <p class="text-sm text-neutral-600 dark:text-neutral-400">
               Enabling 2FA enforcement significantly improves account security.
-              Members without 2FA will be prompted to set it up.
               <NuxtLink
                 to="/members"
                 class="inline-flex items-center gap-1 text-neutral-900 dark:text-white hover:underline font-medium"
@@ -148,7 +144,6 @@ function saveSamlSettings() {
         <!-- SAML Single Sign-On -->
         <Card
           class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-          id="saml-single-sign-on"
         >
           <CardHeader>
             <CardTitle>SAML Single Sign-On</CardTitle>

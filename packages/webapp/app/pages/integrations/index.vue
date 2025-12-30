@@ -29,7 +29,7 @@ import {
 } from "~/components/pages/integrations";
 
 definePageMeta({
-	pageName: "Integrations",
+	pageCategory: "Integrations",
 });
 
 // Mock active integrations

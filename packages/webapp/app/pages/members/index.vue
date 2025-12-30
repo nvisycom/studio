@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 definePageMeta({
-  pageName: "Members",
+  pageCategory: "Members",
 });
 
 const { t } = useI18n();

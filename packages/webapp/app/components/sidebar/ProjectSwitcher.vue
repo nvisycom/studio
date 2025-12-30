@@ -3,31 +3,33 @@ import type { Component } from "vue";
 import { ChevronsUpDown, Plus, LayoutGrid } from "lucide-vue-next";
 import { ref } from "vue";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuShortcut,
-	DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
-	useSidebar,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
+import CreateProjectModal from "./CreateProjectModal.vue";
 
 const props = defineProps<{
-	projects: {
-		name: string;
-		logo: Component;
-		plan: string;
-	}[];
+  projects: {
+    name: string;
+    logo: Component;
+    plan: string;
+  }[];
 }>();
 
 const { isMobile } = useSidebar();
 const activeProject = ref(props.projects[0]);
+const isCreateProjectModalOpen = ref(false);
 </script>
 
 <template>
@@ -45,10 +47,12 @@ const activeProject = ref(props.projects[0]);
               <component :is="activeProject.logo" class="size-4" />
             </div>
             <div class="grid flex-1 text-left text-sm leading-tight">
-              <span class="truncate font-semibold">
+              <span class="truncate font-medium">
                 {{ activeProject.name }}
               </span>
-              <span class="truncate text-xs">{{ activeProject.plan }}</span>
+              <span class="truncate text-sm font-light">{{
+                activeProject.plan
+              }}</span>
             </div>
             <ChevronsUpDown class="ml-auto" />
           </SidebarMenuButton>
@@ -59,9 +63,6 @@ const activeProject = ref(props.projects[0]);
           :side="isMobile ? 'bottom' : 'right'"
           :side-offset="4"
         >
-          <DropdownMenuLabel class="text-xs text-muted-foreground">
-            Projects
-          </DropdownMenuLabel>
           <DropdownMenuItem
             v-for="(project, index) in projects"
             :key="project.name"
@@ -77,18 +78,21 @@ const activeProject = ref(props.projects[0]);
             <DropdownMenuShortcut>⌘{{ index + 1 }}</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem class="gap-2 p-2">
+          <DropdownMenuItem
+            class="gap-2 p-2"
+            @click="isCreateProjectModalOpen = true"
+          >
             <div
               class="flex size-6 items-center justify-center rounded-md border bg-background"
             >
               <Plus class="size-4" />
             </div>
-            <div class="font-medium text-muted-foreground">
-              Add project
-            </div>
+            <div class="font-normal text-muted-foreground">Add workspace</div>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </SidebarMenuItem>
+
+    <CreateProjectModal v-model:open="isCreateProjectModalOpen" />
   </SidebarMenu>
 </template>

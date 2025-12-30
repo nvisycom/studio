@@ -16,7 +16,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tools, Layers, ZoomControls } from "~/components/pages/documents";
 
 definePageMeta({
-	pageName: "Documents",
+	pageCategory: "Documents",
 });
 
 const selectedTool = ref<string>("highlight");

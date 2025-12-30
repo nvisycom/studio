@@ -3,14 +3,14 @@ import type { HTMLAttributes } from "vue";
 import { cn } from "@/utils/shadcn";
 
 const props = defineProps<{
-	class?: HTMLAttributes["class"];
+  class?: HTMLAttributes["class"];
 }>();
 </script>
 
 <template>
   <h3
     data-slot="card-title"
-    :class="cn('leading-none font-semibold', props.class)"
+    :class="cn('text-base leading-none font-medium', props.class)"
   >
     <slot />
   </h3>

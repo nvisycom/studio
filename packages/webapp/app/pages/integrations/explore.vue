@@ -19,7 +19,7 @@ import {
 import { IntegrationCard } from "~/components/pages/integrations";
 
 definePageMeta({
-	pageName: "Integrations",
+	pageCategory: "Integrations",
 });
 
 /**

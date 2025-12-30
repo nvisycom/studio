@@ -8,10 +8,10 @@ import { cn } from "@/utils/shadcn";
 import { provideCommandGroupContext, useCommand } from ".";
 
 const props = defineProps<
-	ListboxGroupProps & {
-		class?: HTMLAttributes["class"];
-		heading?: string;
-	}
+  ListboxGroupProps & {
+    class?: HTMLAttributes["class"];
+    heading?: string;
+  }
 >();
 
 const delegatedProps = reactiveOmit(props, "class");
@@ -20,15 +20,15 @@ const { allGroups, filterState } = useCommand();
 const id = useId();
 
 const isRender = computed(() =>
-	!filterState.search ? true : filterState.filtered.groups.has(id),
+  !filterState.search ? true : filterState.filtered.groups.has(id),
 );
 
 provideCommandGroupContext({ id });
 onMounted(() => {
-	if (!allGroups.value.has(id)) allGroups.value.set(id, new Set());
+  if (!allGroups.value.has(id)) allGroups.value.set(id, new Set());
 });
 onUnmounted(() => {
-	allGroups.value.delete(id);
+  allGroups.value.delete(id);
 });
 </script>
 
@@ -40,7 +40,10 @@ onUnmounted(() => {
     :class="cn('text-foreground overflow-hidden p-1', props.class)"
     :hidden="isRender ? undefined : true"
   >
-    <ListboxGroupLabel v-if="heading" class="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+    <ListboxGroupLabel
+      v-if="heading"
+      class="px-2 py-1.5 text-sm font-normal text-muted-foreground"
+    >
       {{ heading }}
     </ListboxGroupLabel>
     <slot />
