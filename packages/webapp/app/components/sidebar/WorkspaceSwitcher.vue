@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { ChevronsUpDown, Plus, Layers } from "lucide-vue-next";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuShortcut,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	useSidebar,
 } from "@/components/ui/sidebar";
 import { EntityAvatar } from "@/components/common";
 import CreateWorkspaceModal from "./CreateWorkspaceModal.vue";
@@ -22,17 +22,17 @@ const { isMobile } = useSidebar();
 
 // Use the workspaces composable
 const {
-  workspaces,
-  currentWorkspace,
-  currentWorkspaceId,
-  selectWorkspace,
-  isLoading,
+	workspaces,
+	currentWorkspace,
+	currentWorkspaceId,
+	selectWorkspace,
+	isLoading,
 } = useWorkspaces();
 
 const isCreateWorkspaceModalOpen = ref(false);
 
 function handleSelectWorkspace(workspaceId: string) {
-  selectWorkspace(workspaceId);
+	selectWorkspace(workspaceId);
 }
 </script>
 

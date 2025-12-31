@@ -3,27 +3,27 @@ import type { Invite } from "@nvisy/sdk";
 import { AlertCircle } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
 } from "@/components/ui/dialog";
 
 interface Props {
-  open?: boolean;
-  invite?: Invite | null;
+	open?: boolean;
+	invite?: Invite | null;
 }
 
 interface Emits {
-  (e: "update:open", value: boolean): void;
-  (e: "confirm"): void;
+	(e: "update:open", value: boolean): void;
+	(e: "confirm"): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  open: false,
-  invite: null,
+	open: false,
+	invite: null,
 });
 
 const emit = defineEmits<Emits>();
@@ -31,15 +31,15 @@ const emit = defineEmits<Emits>();
 const { t } = useI18n();
 
 function handleOpenChange(open: boolean): void {
-  emit("update:open", open);
+	emit("update:open", open);
 }
 
 function confirm(): void {
-  emit("confirm");
+	emit("confirm");
 }
 
 function cancel(): void {
-  emit("update:open", false);
+	emit("update:open", false);
 }
 </script>
 

@@ -2,7 +2,7 @@
 import { WithWorkspace, WithoutWorkspace } from "@/components/pages/overview";
 
 definePageMeta({
-  pageCategory: "Overview",
+	pageCategory: "Overview",
 });
 
 // Workspace state

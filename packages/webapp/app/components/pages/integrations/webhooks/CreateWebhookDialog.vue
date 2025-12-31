@@ -6,50 +6,50 @@ import Button from "@/components/ui/button/Button.vue";
 import Checkbox from "@/components/ui/checkbox/Checkbox.vue";
 import Switch from "@/components/ui/switch/Switch.vue";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
 } from "@/components/ui/dialog";
 
 const { t } = useI18n();
 
 interface WebhookEvent {
-  key: string;
-  name: string;
-  description: string;
+	key: string;
+	name: string;
+	description: string;
 }
 
 interface EventCategory {
-  id: string;
-  name: string;
-  events: WebhookEvent[];
+	id: string;
+	name: string;
+	events: WebhookEvent[];
 }
 
 interface WebhookData {
-  name: string;
-  url: string;
-  active: boolean;
-  events: Record<string, boolean>;
+	name: string;
+	url: string;
+	active: boolean;
+	events: Record<string, boolean>;
 }
 
 interface Props {
-  open?: boolean;
-  eventCategories: EventCategory[];
-  isLoading?: boolean;
+	open?: boolean;
+	eventCategories: EventCategory[];
+	isLoading?: boolean;
 }
 
 interface Emits {
-  (e: "update:open", value: boolean): void;
-  (e: "create", webhook: WebhookData): void;
+	(e: "update:open", value: boolean): void;
+	(e: "create", webhook: WebhookData): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  open: false,
-  isLoading: false,
+	open: false,
+	isLoading: false,
 });
 
 const emit = defineEmits<Emits>();
@@ -62,13 +62,13 @@ const webhookEvents = ref<Record<string, boolean>>({});
 
 // Initialize events from categories
 function initializeEvents() {
-  const events: Record<string, boolean> = {};
-  props.eventCategories.forEach((category) => {
-    category.events.forEach((event) => {
-      events[event.key] = true;
-    });
-  });
-  webhookEvents.value = events;
+	const events: Record<string, boolean> = {};
+	props.eventCategories.forEach((category) => {
+		category.events.forEach((event) => {
+			events[event.key] = true;
+		});
+	});
+	webhookEvents.value = events;
 }
 
 // Initialize on mount
@@ -76,45 +76,45 @@ initializeEvents();
 
 // Computed validation
 const hasSelectedEvents = computed(() => {
-  return Object.values(webhookEvents.value).some(Boolean);
+	return Object.values(webhookEvents.value).some(Boolean);
 });
 
 const isFormValid = computed(() => {
-  return (
-    webhookUrl.value.trim().length > 0 &&
-    webhookName.value.trim().length > 0 &&
-    hasSelectedEvents.value
-  );
+	return (
+		webhookUrl.value.trim().length > 0 &&
+		webhookName.value.trim().length > 0 &&
+		hasSelectedEvents.value
+	);
 });
 
 // Functions
 function handleOpenChange(open: boolean) {
-  emit("update:open", open);
+	emit("update:open", open);
 }
 
 function resetForm() {
-  webhookName.value = "";
-  webhookUrl.value = "";
-  webhookActive.value = true;
-  initializeEvents();
+	webhookName.value = "";
+	webhookUrl.value = "";
+	webhookActive.value = true;
+	initializeEvents();
 }
 
 function saveWebhook() {
-  if (!isFormValid.value) return;
+	if (!isFormValid.value) return;
 
-  const webhookData: WebhookData = {
-    name: webhookName.value,
-    url: webhookUrl.value,
-    active: webhookActive.value,
-    events: { ...webhookEvents.value },
-  };
+	const webhookData: WebhookData = {
+		name: webhookName.value,
+		url: webhookUrl.value,
+		active: webhookActive.value,
+		events: { ...webhookEvents.value },
+	};
 
-  emit("create", webhookData);
+	emit("create", webhookData);
 }
 
 function cancel() {
-  resetForm();
-  emit("update:open", false);
+	resetForm();
+	emit("update:open", false);
 }
 </script>
 

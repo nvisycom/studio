@@ -3,17 +3,17 @@ import { ref, computed, watch } from "vue";
 import { Layers, Loader2, ChevronDown } from "lucide-vue-next";
 import type { CreateWorkspace } from "@nvisy/sdk";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,53 +40,53 @@ const enableComments = ref(true);
 const advancedOpen = ref(false);
 
 const isFormValid = computed(() => {
-  return displayName.value.trim().length >= 3;
+	return displayName.value.trim().length >= 3;
 });
 
 function resetForm() {
-  displayName.value = "";
-  description.value = "";
-  keepForDays.value = "";
-  autoCleanup.value = true;
-  requireApproval.value = false;
-  maxStorageGb.value = "";
-  enableComments.value = true;
-  advancedOpen.value = false;
+	displayName.value = "";
+	description.value = "";
+	keepForDays.value = "";
+	autoCleanup.value = true;
+	requireApproval.value = false;
+	maxStorageGb.value = "";
+	enableComments.value = true;
+	advancedOpen.value = false;
 }
 
 // Reset form when modal closes
 watch(open, (isOpen) => {
-  if (!isOpen) {
-    resetForm();
-  }
+	if (!isOpen) {
+		resetForm();
+	}
 });
 
 async function createWorkspace() {
-  // Convert days to seconds (1 day = 86400 seconds)
-  const keepForSec = keepForDays.value
-    ? parseInt(keepForDays.value) * 86400
-    : undefined;
-  // Convert GB to MB (1 GB = 1024 MB)
-  const maxStorageMb = maxStorageGb.value
-    ? parseInt(maxStorageGb.value) * 1024
-    : undefined;
+	// Convert days to seconds (1 day = 86400 seconds)
+	const keepForSec = keepForDays.value
+		? parseInt(keepForDays.value) * 86400
+		: undefined;
+	// Convert GB to MB (1 GB = 1024 MB)
+	const maxStorageMb = maxStorageGb.value
+		? parseInt(maxStorageGb.value) * 1024
+		: undefined;
 
-  const workspaceData: CreateWorkspace = {
-    displayName: displayName.value.trim(),
-    description: description.value.trim() || undefined,
-    keepForSec: keepForSec,
-    autoCleanup: autoCleanup.value,
-    requireApproval: requireApproval.value,
-    maxStorage: maxStorageMb,
-    enableComments: enableComments.value,
-  };
+	const workspaceData: CreateWorkspace = {
+		displayName: displayName.value.trim(),
+		description: description.value.trim() || undefined,
+		keepForSec: keepForSec,
+		autoCleanup: autoCleanup.value,
+		requireApproval: requireApproval.value,
+		maxStorage: maxStorageMb,
+		enableComments: enableComments.value,
+	};
 
-  try {
-    await createWorkspaceAsync(workspaceData);
-    open.value = false;
-  } catch (error) {
-    console.error("Failed to create workspace:", error);
-  }
+	try {
+		await createWorkspaceAsync(workspaceData);
+		open.value = false;
+	} catch (error) {
+		console.error("Failed to create workspace:", error);
+	}
 }
 </script>
 

@@ -1,60 +1,60 @@
 <script setup lang="ts">
 import type {
-  Member,
-  Invite,
-  InviteExpiration,
-  WorkspaceRole,
+	Member,
+	Invite,
+	InviteExpiration,
+	WorkspaceRole,
 } from "@nvisy/sdk";
 import { Search, Copy, Check, ChevronDown, Loader2 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  MembersTable,
-  InvitesTable,
-  DeleteMemberModal,
-  DeleteMultipleMembersModal,
-  CancelInviteModal,
-  CancelMultipleInvitesModal,
+	MembersTable,
+	InvitesTable,
+	DeleteMemberModal,
+	DeleteMultipleMembersModal,
+	CancelInviteModal,
+	CancelMultipleInvitesModal,
 } from "~/components/pages/members";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 definePageMeta({
-  pageCategory: "Team",
+	pageCategory: "Team",
 });
 
 const { t } = useI18n();
 
 // Use SDK composables
 const {
-  members,
-  isLoading: isLoadingMembers,
-  removeMemberAsync,
-  isRemoving,
+	members,
+	isLoading: isLoadingMembers,
+	removeMemberAsync,
+	isRemoving,
 } = useMembers();
 
 const {
-  invites,
-  isLoading: isLoadingInvites,
-  sendInviteAsync,
-  isSending,
-  cancelInviteAsync,
-  isCanceling,
-  generateCodeAsync,
-  isGenerating,
+	invites,
+	isLoading: isLoadingInvites,
+	sendInviteAsync,
+	isSending,
+	cancelInviteAsync,
+	isCanceling,
+	generateCodeAsync,
+	isGenerating,
 } = useInvites();
 
 // Form State
@@ -81,313 +81,313 @@ const isCancelInviteDialogOpen = ref<boolean>(false);
 const isCancelMultipleInvitesDialogOpen = ref<boolean>(false);
 
 const roles = computed(() => [
-  { value: "guest" as WorkspaceRole, label: t("members.roles.guest") },
-  { value: "member" as WorkspaceRole, label: t("members.roles.member") },
-  { value: "owner" as WorkspaceRole, label: t("members.roles.owner") },
+	{ value: "guest" as WorkspaceRole, label: t("members.roles.guest") },
+	{ value: "member" as WorkspaceRole, label: t("members.roles.member") },
+	{ value: "owner" as WorkspaceRole, label: t("members.roles.owner") },
 ]);
 
 const roleFilters = computed(() => [
-  { value: "anyRole", label: t("members.filters.anyRole") },
-  { value: "owner", label: t("members.roles.owner") },
-  { value: "member", label: t("members.roles.member") },
-  { value: "guest", label: t("members.roles.guest") },
+	{ value: "anyRole", label: t("members.filters.anyRole") },
+	{ value: "owner", label: t("members.roles.owner") },
+	{ value: "member", label: t("members.roles.member") },
+	{ value: "guest", label: t("members.roles.guest") },
 ]);
 
 const twoFAFilters = computed(() => [
-  { value: "any2FA", label: t("members.filters.any2FA") },
-  { value: "disabled", label: t("members.filters.disabled2FA") },
-  { value: "enabled", label: t("members.filters.enabled2FA") },
+	{ value: "any2FA", label: t("members.filters.any2FA") },
+	{ value: "disabled", label: t("members.filters.disabled2FA") },
+	{ value: "enabled", label: t("members.filters.enabled2FA") },
 ]);
 
 const sortingOptions = computed(() => [
-  { label: t("members.filters.sorting.nameAsc"), value: "name-asc" },
-  { label: t("members.filters.sorting.nameDesc"), value: "name-desc" },
-  { label: t("members.filters.sorting.dateNewest"), value: "date-desc" },
-  { label: t("members.filters.sorting.dateOldest"), value: "date-asc" },
+	{ label: t("members.filters.sorting.nameAsc"), value: "name-asc" },
+	{ label: t("members.filters.sorting.nameDesc"), value: "name-desc" },
+	{ label: t("members.filters.sorting.dateNewest"), value: "date-desc" },
+	{ label: t("members.filters.sorting.dateOldest"), value: "date-asc" },
 ]);
 
 const inviteExpiryOptions = computed(() => [
-  {
-    label: t("members.forms.invite.expiry.never"),
-    value: "never" as InviteExpiration,
-  },
-  {
-    label: t("members.forms.invite.expiry.24hours"),
-    value: "in24Hours" as InviteExpiration,
-  },
-  {
-    label: t("members.forms.invite.expiry.7days"),
-    value: "in7Days" as InviteExpiration,
-  },
-  {
-    label: t("members.forms.invite.expiry.30days"),
-    value: "in30Days" as InviteExpiration,
-  },
+	{
+		label: t("members.forms.invite.expiry.never"),
+		value: "never" as InviteExpiration,
+	},
+	{
+		label: t("members.forms.invite.expiry.24hours"),
+		value: "in24Hours" as InviteExpiration,
+	},
+	{
+		label: t("members.forms.invite.expiry.7days"),
+		value: "in7Days" as InviteExpiration,
+	},
+	{
+		label: t("members.forms.invite.expiry.30days"),
+		value: "in30Days" as InviteExpiration,
+	},
 ]);
 
 // Computed filtered data
 const filteredMembers = computed(() => {
-  if (!members.value) return [];
+	if (!members.value) return [];
 
-  let filtered = members.value.filter((member) => {
-    const matchesSearch =
-      member.displayName
-        .toLowerCase()
-        .includes(searchQuery.value.toLowerCase()) ||
-      member.emailAddress
-        .toLowerCase()
-        .includes(searchQuery.value.toLowerCase());
-    const matchesRole =
-      selectedRoleFilter.value === "anyRole" ||
-      member.memberRole === selectedRoleFilter.value;
+	let filtered = members.value.filter((member) => {
+		const matchesSearch =
+			member.displayName
+				.toLowerCase()
+				.includes(searchQuery.value.toLowerCase()) ||
+			member.emailAddress
+				.toLowerCase()
+				.includes(searchQuery.value.toLowerCase());
+		const matchesRole =
+			selectedRoleFilter.value === "anyRole" ||
+			member.memberRole === selectedRoleFilter.value;
 
-    return matchesSearch && matchesRole;
-  });
+		return matchesSearch && matchesRole;
+	});
 
-  // Sort the results
-  if (selectedSorting.value === "name-asc") {
-    filtered.sort((a, b) => a.displayName.localeCompare(b.displayName));
-  } else if (selectedSorting.value === "name-desc") {
-    filtered.sort((a, b) => b.displayName.localeCompare(a.displayName));
-  } else if (selectedSorting.value === "date-asc") {
-    filtered.sort(
-      (a, b) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-    );
-  } else if (selectedSorting.value === "date-desc") {
-    filtered.sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
-  }
+	// Sort the results
+	if (selectedSorting.value === "name-asc") {
+		filtered.sort((a, b) => a.displayName.localeCompare(b.displayName));
+	} else if (selectedSorting.value === "name-desc") {
+		filtered.sort((a, b) => b.displayName.localeCompare(a.displayName));
+	} else if (selectedSorting.value === "date-asc") {
+		filtered.sort(
+			(a, b) =>
+				new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+		);
+	} else if (selectedSorting.value === "date-desc") {
+		filtered.sort(
+			(a, b) =>
+				new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+		);
+	}
 
-  return filtered;
+	return filtered;
 });
 
 // Filter to only pending invites
 const pendingInvites = computed(() => {
-  if (!invites.value) return [];
-  return invites.value.filter((invite) => invite.inviteStatus === "pending");
+	if (!invites.value) return [];
+	return invites.value.filter((invite) => invite.inviteStatus === "pending");
 });
 
 const filteredInvites = computed(() => {
-  let filtered = pendingInvites.value.filter((invite) => {
-    const email = invite.emailAddress ?? "";
-    const matchesSearch = email
-      .toLowerCase()
-      .includes(searchQuery.value.toLowerCase());
-    const matchesRole =
-      selectedRoleFilter.value === "anyRole" ||
-      invite.invitedRole === selectedRoleFilter.value;
+	let filtered = pendingInvites.value.filter((invite) => {
+		const email = invite.emailAddress ?? "";
+		const matchesSearch = email
+			.toLowerCase()
+			.includes(searchQuery.value.toLowerCase());
+		const matchesRole =
+			selectedRoleFilter.value === "anyRole" ||
+			invite.invitedRole === selectedRoleFilter.value;
 
-    return matchesSearch && matchesRole;
-  });
+		return matchesSearch && matchesRole;
+	});
 
-  // Sort the results
-  if (selectedSorting.value === "name-asc") {
-    filtered.sort((a, b) =>
-      (a.emailAddress ?? "").localeCompare(b.emailAddress ?? ""),
-    );
-  } else if (selectedSorting.value === "name-desc") {
-    filtered.sort((a, b) =>
-      (b.emailAddress ?? "").localeCompare(a.emailAddress ?? ""),
-    );
-  } else if (selectedSorting.value === "date-asc") {
-    filtered.sort(
-      (a, b) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-    );
-  } else {
-    filtered.sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
-  }
+	// Sort the results
+	if (selectedSorting.value === "name-asc") {
+		filtered.sort((a, b) =>
+			(a.emailAddress ?? "").localeCompare(b.emailAddress ?? ""),
+		);
+	} else if (selectedSorting.value === "name-desc") {
+		filtered.sort((a, b) =>
+			(b.emailAddress ?? "").localeCompare(a.emailAddress ?? ""),
+		);
+	} else if (selectedSorting.value === "date-asc") {
+		filtered.sort(
+			(a, b) =>
+				new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+		);
+	} else {
+		filtered.sort(
+			(a, b) =>
+				new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+		);
+	}
 
-  return filtered;
+	return filtered;
 });
 
 // Computed for selection
 const selectableMembers = computed(() =>
-  filteredMembers.value.filter((m) => m.memberRole !== "owner"),
+	filteredMembers.value.filter((m) => m.memberRole !== "owner"),
 );
 
 const allMembersSelected = computed(
-  () =>
-    selectableMembers.value.length > 0 &&
-    selectableMembers.value.every((m) =>
-      selectedMembers.value.has(m.accountId),
-    ),
+	() =>
+		selectableMembers.value.length > 0 &&
+		selectableMembers.value.every((m) =>
+			selectedMembers.value.has(m.accountId),
+		),
 );
 
 const allInvitesSelected = computed(
-  () =>
-    filteredInvites.value.length > 0 &&
-    filteredInvites.value.every((i) => selectedInvites.value.has(i.inviteId)),
+	() =>
+		filteredInvites.value.length > 0 &&
+		filteredInvites.value.every((i) => selectedInvites.value.has(i.inviteId)),
 );
 
 // ===== Invite Functions =====
 
 async function sendInvite(): Promise<void> {
-  if (!inviteEmail.value.trim()) return;
+	if (!inviteEmail.value.trim()) return;
 
-  try {
-    await sendInviteAsync({
-      inviteeEmail: inviteEmail.value,
-      invitedRole: selectedRole.value,
-      expires: selectedExpiry.value,
-    });
-    inviteEmail.value = "";
-    selectedRole.value = "member";
-  } catch (err) {
-    console.error("Failed to send invite:", err);
-  }
+	try {
+		await sendInviteAsync({
+			inviteeEmail: inviteEmail.value,
+			invitedRole: selectedRole.value,
+			expires: selectedExpiry.value,
+		});
+		inviteEmail.value = "";
+		selectedRole.value = "member";
+	} catch (err) {
+		console.error("Failed to send invite:", err);
+	}
 }
 
 async function copyInviteLink(): Promise<void> {
-  try {
-    const result = await generateCodeAsync({
-      invitedRole: selectedRole.value,
-      expires: selectedExpiry.value,
-    });
-    const baseUrl = window.location.origin;
-    const inviteUrl = `${baseUrl}/invite/${result.inviteCode}`;
-    await navigator.clipboard.writeText(inviteUrl);
-    copiedInviteLink.value = true;
-    setTimeout(() => {
-      copiedInviteLink.value = false;
-    }, 2000);
-  } catch (err) {
-    console.error("Failed to generate invite link:", err);
-  }
+	try {
+		const result = await generateCodeAsync({
+			invitedRole: selectedRole.value,
+			expires: selectedExpiry.value,
+		});
+		const baseUrl = window.location.origin;
+		const inviteUrl = `${baseUrl}/invite/${result.inviteCode}`;
+		await navigator.clipboard.writeText(inviteUrl);
+		copiedInviteLink.value = true;
+		setTimeout(() => {
+			copiedInviteLink.value = false;
+		}, 2000);
+	} catch (err) {
+		console.error("Failed to generate invite link:", err);
+	}
 }
 
 // ===== Member Deletion Functions =====
 
 function openDeleteMemberDialog(memberId: string): void {
-  const member = members.value?.find((m) => m.accountId === memberId);
-  if (member) {
-    memberToDelete.value = member;
-    isDeleteMemberDialogOpen.value = true;
-  }
+	const member = members.value?.find((m) => m.accountId === memberId);
+	if (member) {
+		memberToDelete.value = member;
+		isDeleteMemberDialogOpen.value = true;
+	}
 }
 
 async function deleteMember(): Promise<void> {
-  if (!memberToDelete.value) return;
+	if (!memberToDelete.value) return;
 
-  try {
-    await removeMemberAsync(memberToDelete.value.accountId);
-    isDeleteMemberDialogOpen.value = false;
-    memberToDelete.value = null;
-  } catch (err) {
-    console.error("Failed to remove member:", err);
-  }
+	try {
+		await removeMemberAsync(memberToDelete.value.accountId);
+		isDeleteMemberDialogOpen.value = false;
+		memberToDelete.value = null;
+	} catch (err) {
+		console.error("Failed to remove member:", err);
+	}
 }
 
 function openDeleteMultipleMembersDialog(): void {
-  isDeleteMultipleMembersDialogOpen.value = true;
+	isDeleteMultipleMembersDialogOpen.value = true;
 }
 
 async function deleteSelectedMembers(): Promise<void> {
-  try {
-    await Promise.all(
-      Array.from(selectedMembers.value).map((accountId) =>
-        removeMemberAsync(accountId),
-      ),
-    );
-    selectedMembers.value = new Set();
-    isDeleteMultipleMembersDialogOpen.value = false;
-  } catch (err) {
-    console.error("Failed to remove members:", err);
-  }
+	try {
+		await Promise.all(
+			Array.from(selectedMembers.value).map((accountId) =>
+				removeMemberAsync(accountId),
+			),
+		);
+		selectedMembers.value = new Set();
+		isDeleteMultipleMembersDialogOpen.value = false;
+	} catch (err) {
+		console.error("Failed to remove members:", err);
+	}
 }
 
 // ===== Invite Cancellation Functions =====
 
 function openCancelInviteDialog(inviteId: string): void {
-  const invite = invites.value?.find((i) => i.inviteId === inviteId);
-  if (invite) {
-    inviteToCancel.value = invite;
-    isCancelInviteDialogOpen.value = true;
-  }
+	const invite = invites.value?.find((i) => i.inviteId === inviteId);
+	if (invite) {
+		inviteToCancel.value = invite;
+		isCancelInviteDialogOpen.value = true;
+	}
 }
 
 async function cancelInvite(): Promise<void> {
-  if (!inviteToCancel.value) return;
+	if (!inviteToCancel.value) return;
 
-  try {
-    await cancelInviteAsync(inviteToCancel.value.inviteId);
-    isCancelInviteDialogOpen.value = false;
-    inviteToCancel.value = null;
-  } catch (err) {
-    console.error("Failed to cancel invite:", err);
-  }
+	try {
+		await cancelInviteAsync(inviteToCancel.value.inviteId);
+		isCancelInviteDialogOpen.value = false;
+		inviteToCancel.value = null;
+	} catch (err) {
+		console.error("Failed to cancel invite:", err);
+	}
 }
 
 function openCancelMultipleInvitesDialog(): void {
-  isCancelMultipleInvitesDialogOpen.value = true;
+	isCancelMultipleInvitesDialogOpen.value = true;
 }
 
 async function cancelSelectedInvites(): Promise<void> {
-  try {
-    await Promise.all(
-      Array.from(selectedInvites.value).map((inviteId) =>
-        cancelInviteAsync(inviteId),
-      ),
-    );
-    selectedInvites.value = new Set();
-    isCancelMultipleInvitesDialogOpen.value = false;
-  } catch (err) {
-    console.error("Failed to cancel invites:", err);
-  }
+	try {
+		await Promise.all(
+			Array.from(selectedInvites.value).map((inviteId) =>
+				cancelInviteAsync(inviteId),
+			),
+		);
+		selectedInvites.value = new Set();
+		isCancelMultipleInvitesDialogOpen.value = false;
+	} catch (err) {
+		console.error("Failed to cancel invites:", err);
+	}
 }
 
 // ===== Selection Functions =====
 
 function toggleSelectAllMembers(): void {
-  if (allMembersSelected.value) {
-    selectedMembers.value = new Set();
-  } else {
-    selectedMembers.value = new Set(
-      selectableMembers.value.map((m) => m.accountId),
-    );
-  }
+	if (allMembersSelected.value) {
+		selectedMembers.value = new Set();
+	} else {
+		selectedMembers.value = new Set(
+			selectableMembers.value.map((m) => m.accountId),
+		);
+	}
 }
 
 function toggleMember(memberId: string): void {
-  const newSet = new Set(selectedMembers.value);
-  newSet.has(memberId) ? newSet.delete(memberId) : newSet.add(memberId);
-  selectedMembers.value = newSet;
+	const newSet = new Set(selectedMembers.value);
+	newSet.has(memberId) ? newSet.delete(memberId) : newSet.add(memberId);
+	selectedMembers.value = newSet;
 }
 
 function toggleSelectAllInvites(): void {
-  selectedInvites.value = allInvitesSelected.value
-    ? new Set()
-    : new Set(filteredInvites.value.map((i) => i.inviteId));
+	selectedInvites.value = allInvitesSelected.value
+		? new Set()
+		: new Set(filteredInvites.value.map((i) => i.inviteId));
 }
 
 function toggleInvite(inviteId: string): void {
-  const newSet = new Set(selectedInvites.value);
-  newSet.has(inviteId) ? newSet.delete(inviteId) : newSet.add(inviteId);
-  selectedInvites.value = newSet;
+	const newSet = new Set(selectedInvites.value);
+	newSet.has(inviteId) ? newSet.delete(inviteId) : newSet.add(inviteId);
+	selectedInvites.value = newSet;
 }
 
 // ===== Filter Functions =====
 
 function selectRole(role: WorkspaceRole): void {
-  selectedRole.value = role;
+	selectedRole.value = role;
 }
 
 function selectRoleFilter(role: string): void {
-  selectedRoleFilter.value = role;
+	selectedRoleFilter.value = role;
 }
 
 function select2FAFilter(filter: string): void {
-  selected2FAFilter.value = filter;
+	selected2FAFilter.value = filter;
 }
 
 function selectSorting(sorting: string): void {
-  selectedSorting.value = sorting;
+	selectedSorting.value = sorting;
 }
 </script>
 

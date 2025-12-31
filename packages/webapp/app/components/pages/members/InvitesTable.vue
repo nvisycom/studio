@@ -5,37 +5,37 @@ import { Button } from "@/components/ui/button";
 import { EntityAvatar } from "@/components/common";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
+	Empty,
+	EmptyDescription,
+	EmptyHeader,
+	EmptyTitle,
 } from "@/components/ui/empty";
 
 interface Props {
-  invites: Invite[];
-  selectedInvites?: Set<string>;
-  allSelected?: boolean;
+	invites: Invite[];
+	selectedInvites?: Set<string>;
+	allSelected?: boolean;
 }
 
 interface Emits {
-  (e: "cancel", inviteId: string): void;
-  (e: "toggleSelectAll"): void;
-  (e: "toggleInvite", inviteId: string): void;
-  (e: "cancelSelected"): void;
+	(e: "cancel", inviteId: string): void;
+	(e: "toggleSelectAll"): void;
+	(e: "toggleInvite", inviteId: string): void;
+	(e: "cancelSelected"): void;
 }
 
 const props = defineProps<Props>();
@@ -44,21 +44,21 @@ const emit = defineEmits<Emits>();
 const { t } = useI18n();
 
 function formatDate(date: string): string {
-  return new Date(date).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+	return new Date(date).toLocaleDateString("en-US", {
+		year: "numeric",
+		month: "short",
+		day: "numeric",
+	});
 }
 
 function getDisplayName(invite: Invite): string {
-  if (invite.emailAddress) {
-    return invite.emailAddress;
-  }
-  if (invite.inviteToken) {
-    return `${invite.inviteToken.slice(0, 8)}...`;
-  }
-  return t("members.table.status.pending");
+	if (invite.emailAddress) {
+		return invite.emailAddress;
+	}
+	if (invite.inviteToken) {
+		return `${invite.inviteToken.slice(0, 8)}...`;
+	}
+	return t("members.table.status.pending");
 }
 </script>
 

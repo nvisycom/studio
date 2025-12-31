@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { Upload, ChevronDown } from "lucide-vue-next";
+import { Upload, ChevronDown, Loader2, Eye, EyeOff } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,13 +23,38 @@ definePageMeta({
 	pageCategory: "Settings",
 });
 
-// User data
-const avatarUrl = ref("");
-const displayName = ref("John Doe");
-const companyName = ref("Acme Inc.");
+const { account, isLoading, updateAccountAsync, isUpdating } = useAccount();
 
-const email = ref("john@example.com");
+// Form state
+const avatarUrl = ref("");
+const displayName = ref("");
+const companyName = ref("");
+const email = ref("");
 const timezone = ref("America/New_York");
+
+// Password fields
+const currentPassword = ref("");
+const newPassword = ref("");
+const confirmPassword = ref("");
+const showCurrentPassword = ref(false);
+const showNewPassword = ref(false);
+const showConfirmPassword = ref(false);
+const passwordError = ref("");
+const passwordSuccess = ref(false);
+const isUpdatingPassword = ref(false);
+
+// Initialize form from account data
+watch(
+	account,
+	(acc) => {
+		if (acc) {
+			displayName.value = acc.displayName || "";
+			companyName.value = acc.companyName || "";
+			email.value = acc.emailAddress || "";
+		}
+	},
+	{ immediate: true },
+);
 
 // Common timezones
 const timezones = [
@@ -109,11 +133,54 @@ function uploadAvatar() {
 	input.click();
 }
 
-function saveProfile() {
-	console.log("Saving profile:", {
-		displayName: displayName.value,
-		companyName: companyName.value,
-	});
+async function saveProfile() {
+	try {
+		await updateAccountAsync({
+			displayName: displayName.value,
+			companyName: companyName.value || null,
+		});
+	} catch (err) {
+		console.error("Failed to save profile:", err);
+	}
+}
+
+async function savePassword() {
+	passwordError.value = "";
+	passwordSuccess.value = false;
+
+	if (!newPassword.value) {
+		passwordError.value = "New password is required";
+		return;
+	}
+
+	if (newPassword.value.length < 8) {
+		passwordError.value = "Password must be at least 8 characters";
+		return;
+	}
+
+	if (newPassword.value !== confirmPassword.value) {
+		passwordError.value = "Passwords do not match";
+		return;
+	}
+
+	isUpdatingPassword.value = true;
+	try {
+		await updateAccountAsync({
+			password: newPassword.value,
+		});
+		passwordSuccess.value = true;
+		currentPassword.value = "";
+		newPassword.value = "";
+		confirmPassword.value = "";
+		setTimeout(() => {
+			passwordSuccess.value = false;
+		}, 3000);
+	} catch (err) {
+		console.error("Failed to update password:", err);
+		passwordError.value = "Failed to update password. Please try again.";
+	} finally {
+		isUpdatingPassword.value = false;
+	}
 }
 
 function saveTimezone() {
@@ -124,7 +191,12 @@ function saveTimezone() {
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="max-w-4xl mx-auto w-full">
-      <div class="space-y-6">
+      <!-- Loading State -->
+      <div v-if="isLoading" class="flex items-center justify-center py-12">
+        <Loader2 :size="32" class="animate-spin text-neutral-400" />
+      </div>
+
+      <div v-else class="space-y-6">
         <!-- Avatar Card -->
         <Card
           class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
@@ -198,7 +270,25 @@ function saveTimezone() {
                 May be displayed on documents and invoices.
               </p>
             </div>
+          </CardContent>
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
+          >
+            <p class="text-sm text-neutral-500 dark:text-neutral-400">
+              This information will be used across all your workspaces.
+            </p>
+            <Button size="sm" @click="saveProfile" :disabled="isUpdating">
+              <Loader2 v-if="isUpdating" :size="16" class="mr-2 animate-spin" />
+              Save
+            </Button>
+          </CardFooter>
+        </Card>
 
+        <!-- Email & Password Card -->
+        <Card
+          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+        >
+          <CardContent class="space-y-6">
             <!-- Email Address -->
             <div class="space-y-2">
               <Label for="email">Email Address</Label>
@@ -213,14 +303,118 @@ function saveTimezone() {
                 To change your email address, please contact support.
               </p>
             </div>
+
+            <!-- Password Update Section -->
+            <div class="border-t pt-6 space-y-4">
+              <div>
+                <Label class="text-sm font-medium">Change Password</Label>
+                <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                  Update your password to keep your account secure.
+                </p>
+              </div>
+
+              <!-- Current Password -->
+              <div class="space-y-2">
+                <Label for="currentPassword">Current Password</Label>
+                <div class="relative max-w-md">
+                  <Input
+                    id="currentPassword"
+                    v-model="currentPassword"
+                    :type="showCurrentPassword ? 'text' : 'password'"
+                    placeholder="Enter current password"
+                    class="pr-10"
+                  />
+                  <button
+                    type="button"
+                    @click="showCurrentPassword = !showCurrentPassword"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
+                  >
+                    <EyeOff v-if="showCurrentPassword" :size="16" />
+                    <Eye v-else :size="16" />
+                  </button>
+                </div>
+              </div>
+
+              <!-- New Password -->
+              <div class="space-y-2">
+                <Label for="newPassword">New Password</Label>
+                <div class="relative max-w-md">
+                  <Input
+                    id="newPassword"
+                    v-model="newPassword"
+                    :type="showNewPassword ? 'text' : 'password'"
+                    placeholder="Enter new password"
+                    class="pr-10"
+                  />
+                  <button
+                    type="button"
+                    @click="showNewPassword = !showNewPassword"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
+                  >
+                    <EyeOff v-if="showNewPassword" :size="16" />
+                    <Eye v-else :size="16" />
+                  </button>
+                </div>
+                <p class="text-sm text-neutral-500 dark:text-neutral-400">
+                  Minimum 8 characters.
+                </p>
+              </div>
+
+              <!-- Confirm Password -->
+              <div class="space-y-2">
+                <Label for="confirmPassword">Confirm New Password</Label>
+                <div class="relative max-w-md">
+                  <Input
+                    id="confirmPassword"
+                    v-model="confirmPassword"
+                    :type="showConfirmPassword ? 'text' : 'password'"
+                    placeholder="Confirm new password"
+                    class="pr-10"
+                  />
+                  <button
+                    type="button"
+                    @click="showConfirmPassword = !showConfirmPassword"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
+                  >
+                    <EyeOff v-if="showConfirmPassword" :size="16" />
+                    <Eye v-else :size="16" />
+                  </button>
+                </div>
+              </div>
+
+              <!-- Error/Success Messages -->
+              <p
+                v-if="passwordError"
+                class="text-sm text-red-600 dark:text-red-400"
+              >
+                {{ passwordError }}
+              </p>
+              <p
+                v-if="passwordSuccess"
+                class="text-sm text-green-600 dark:text-green-400"
+              >
+                Password updated successfully.
+              </p>
+            </div>
           </CardContent>
           <CardFooter
             class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
           >
             <p class="text-sm text-neutral-500 dark:text-neutral-400">
-              This information will be used across all your workspaces.
+              You'll need to sign in again after changing your password.
             </p>
-            <Button size="sm" @click="saveProfile"> Save </Button>
+            <Button
+              size="sm"
+              @click="savePassword"
+              :disabled="isUpdatingPassword || !newPassword"
+            >
+              <Loader2
+                v-if="isUpdatingPassword"
+                :size="16"
+                class="mr-2 animate-spin"
+              />
+              Update Password
+            </Button>
           </CardFooter>
         </Card>
 

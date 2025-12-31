@@ -1,55 +1,55 @@
 <script setup lang="ts">
 import {
-  ExternalLink,
-  Webhook as WebhookIcon,
-  Loader2,
-  Plug,
-  PlugZap,
+	ExternalLink,
+	Webhook as WebhookIcon,
+	Loader2,
+	Plug,
+	PlugZap,
 } from "lucide-vue-next";
 import type { Integration, Webhook, UpdateIntegration } from "@nvisy/sdk";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 
 import {
-  WebhooksTable,
-  ConfigureIntegrationDialog,
-  DisconnectIntegrationDialog,
-  CreateWebhookDialog,
-  DeleteWebhookDialog,
-  EditWebhookDialog,
-  IntegrationsTable,
+	WebhooksTable,
+	ConfigureIntegrationDialog,
+	DisconnectIntegrationDialog,
+	CreateWebhookDialog,
+	DeleteWebhookDialog,
+	EditWebhookDialog,
+	IntegrationsTable,
 } from "~/components/pages/integrations";
 
 const { t } = useI18n();
 
 definePageMeta({
-  pageCategory: "Integrations",
+	pageCategory: "Integrations",
 });
 
 // Use SDK composables
 const {
-  integrations,
-  isLoading: isLoadingIntegrations,
-  updateIntegrationAsync,
-  deleteIntegrationAsync,
-  isUpdating,
-  isDeleting,
+	integrations,
+	isLoading: isLoadingIntegrations,
+	updateIntegrationAsync,
+	deleteIntegrationAsync,
+	isUpdating,
+	isDeleting,
 } = useIntegrations();
 
 const {
-  webhooks,
-  isLoading: isLoadingWebhooks,
-  createWebhookAsync,
-  updateWebhookAsync,
-  deleteWebhookAsync,
-  isCreating: isCreatingWebhook,
+	webhooks,
+	isLoading: isLoadingWebhooks,
+	createWebhookAsync,
+	updateWebhookAsync,
+	deleteWebhookAsync,
+	isCreating: isCreatingWebhook,
 } = useWebhooks();
 
 // Integration dialogs
@@ -58,45 +58,45 @@ const isDisconnectIntegrationDialogOpen = ref(false);
 const selectedIntegration = ref<Integration | null>(null);
 
 function openConfigureIntegrationDialog(integrationId: string) {
-  const integration = integrations.value?.find(
-    (i) => i.integrationId === integrationId,
-  );
-  if (integration) {
-    selectedIntegration.value = integration;
-    isConfigureIntegrationDialogOpen.value = true;
-  }
+	const integration = integrations.value?.find(
+		(i) => i.integrationId === integrationId,
+	);
+	if (integration) {
+		selectedIntegration.value = integration;
+		isConfigureIntegrationDialogOpen.value = true;
+	}
 }
 
 function openDisconnectIntegrationDialog(integrationId: string) {
-  const integration = integrations.value?.find(
-    (i) => i.integrationId === integrationId,
-  );
-  if (integration) {
-    selectedIntegration.value = integration;
-    isDisconnectIntegrationDialogOpen.value = true;
-  }
+	const integration = integrations.value?.find(
+		(i) => i.integrationId === integrationId,
+	);
+	if (integration) {
+		selectedIntegration.value = integration;
+		isDisconnectIntegrationDialogOpen.value = true;
+	}
 }
 
 async function handleUpdateIntegration(updates: UpdateIntegration) {
-  if (!selectedIntegration.value) return;
-  try {
-    await updateIntegrationAsync({
-      integrationId: selectedIntegration.value.integrationId,
-      updates,
-    });
-    isConfigureIntegrationDialogOpen.value = false;
-  } catch (error) {
-    console.error("Failed to update integration:", error);
-  }
+	if (!selectedIntegration.value) return;
+	try {
+		await updateIntegrationAsync({
+			integrationId: selectedIntegration.value.integrationId,
+			updates,
+		});
+		isConfigureIntegrationDialogOpen.value = false;
+	} catch (error) {
+		console.error("Failed to update integration:", error);
+	}
 }
 
 async function handleDisconnectIntegration(integrationId: string) {
-  try {
-    await deleteIntegrationAsync(integrationId);
-    isDisconnectIntegrationDialogOpen.value = false;
-  } catch (error) {
-    console.error("Failed to disconnect integration:", error);
-  }
+	try {
+		await deleteIntegrationAsync(integrationId);
+		isDisconnectIntegrationDialogOpen.value = false;
+	} catch (error) {
+		console.error("Failed to disconnect integration:", error);
+	}
 }
 
 // Webhooks
@@ -106,132 +106,132 @@ const isDeleteDialogOpen = ref(false);
 const selectedWebhook = ref<Webhook | null>(null);
 
 const eventCategories = [
-  {
-    id: "documents",
-    name: t("integrations.events.documents.name"),
-    events: [
-      {
-        key: "documents.uploaded",
-        name: t("integrations.events.documents.documentsUploaded"),
-        description: t("integrations.events.documents.documentsUploadedDesc"),
-      },
-      {
-        key: "documents.downloaded",
-        name: t("integrations.events.documents.documentsDownloaded"),
-        description: t("integrations.events.documents.documentsDownloadedDesc"),
-      },
-      {
-        key: "documents.redacted",
-        name: t("integrations.events.documents.documentsRedacted"),
-        description: t("integrations.events.documents.documentsRedactedDesc"),
-      },
-      {
-        key: "documents.verified",
-        name: t("integrations.events.documents.documentsVerified"),
-        description: t("integrations.events.documents.documentsVerifiedDesc"),
-      },
-    ],
-  },
-  {
-    id: "integrations",
-    name: t("integrations.events.integrations.name"),
-    events: [
-      {
-        key: "integrations.triggered",
-        name: t("integrations.events.integrations.integrationTriggered"),
-        description: t(
-          "integrations.events.integrations.integrationTriggeredDesc",
-        ),
-      },
-      {
-        key: "integrations.succeeded",
-        name: t("integrations.events.integrations.integrationSucceeded"),
-        description: t(
-          "integrations.events.integrations.integrationSucceededDesc",
-        ),
-      },
-      {
-        key: "integrations.failed",
-        name: t("integrations.events.integrations.integrationFailed"),
-        description: t(
-          "integrations.events.integrations.integrationFailedDesc",
-        ),
-      },
-    ],
-  },
+	{
+		id: "documents",
+		name: t("integrations.events.documents.name"),
+		events: [
+			{
+				key: "documents.uploaded",
+				name: t("integrations.events.documents.documentsUploaded"),
+				description: t("integrations.events.documents.documentsUploadedDesc"),
+			},
+			{
+				key: "documents.downloaded",
+				name: t("integrations.events.documents.documentsDownloaded"),
+				description: t("integrations.events.documents.documentsDownloadedDesc"),
+			},
+			{
+				key: "documents.redacted",
+				name: t("integrations.events.documents.documentsRedacted"),
+				description: t("integrations.events.documents.documentsRedactedDesc"),
+			},
+			{
+				key: "documents.verified",
+				name: t("integrations.events.documents.documentsVerified"),
+				description: t("integrations.events.documents.documentsVerifiedDesc"),
+			},
+		],
+	},
+	{
+		id: "integrations",
+		name: t("integrations.events.integrations.name"),
+		events: [
+			{
+				key: "integrations.triggered",
+				name: t("integrations.events.integrations.integrationTriggered"),
+				description: t(
+					"integrations.events.integrations.integrationTriggeredDesc",
+				),
+			},
+			{
+				key: "integrations.succeeded",
+				name: t("integrations.events.integrations.integrationSucceeded"),
+				description: t(
+					"integrations.events.integrations.integrationSucceededDesc",
+				),
+			},
+			{
+				key: "integrations.failed",
+				name: t("integrations.events.integrations.integrationFailed"),
+				description: t(
+					"integrations.events.integrations.integrationFailedDesc",
+				),
+			},
+		],
+	},
 ];
 
 async function handleCreateWebhook(webhookData: {
-  name: string;
-  url: string;
-  active: boolean;
-  events: Record<string, boolean>;
+	name: string;
+	url: string;
+	active: boolean;
+	events: Record<string, boolean>;
 }) {
-  const events = Object.entries(webhookData.events)
-    .filter(([_, enabled]) => enabled)
-    .map(([key]) => key);
+	const events = Object.entries(webhookData.events)
+		.filter(([_, enabled]) => enabled)
+		.map(([key]) => key);
 
-  try {
-    await createWebhookAsync({
-      displayName: webhookData.name,
-      url: webhookData.url,
-      description: "",
-      events,
-    });
-    isCreateDialogOpen.value = false;
-  } catch (error) {
-    console.error("Failed to create webhook:", error);
-  }
+	try {
+		await createWebhookAsync({
+			displayName: webhookData.name,
+			url: webhookData.url,
+			description: "",
+			events,
+		});
+		isCreateDialogOpen.value = false;
+	} catch (error) {
+		console.error("Failed to create webhook:", error);
+	}
 }
 
 async function handleUpdateWebhook(webhookData: {
-  name: string;
-  url: string;
-  active: boolean;
-  events: Record<string, boolean>;
+	name: string;
+	url: string;
+	active: boolean;
+	events: Record<string, boolean>;
 }) {
-  if (!selectedWebhook.value) return;
+	if (!selectedWebhook.value) return;
 
-  const events = Object.entries(webhookData.events)
-    .filter(([_, enabled]) => enabled)
-    .map(([key]) => key);
+	const events = Object.entries(webhookData.events)
+		.filter(([_, enabled]) => enabled)
+		.map(([key]) => key);
 
-  try {
-    await updateWebhookAsync({
-      webhookId: selectedWebhook.value.webhookId,
-      updates: {
-        displayName: webhookData.name,
-        url: webhookData.url,
-        events,
-      },
-    });
-    isEditDialogOpen.value = false;
-  } catch (error) {
-    console.error("Failed to update webhook:", error);
-  }
+	try {
+		await updateWebhookAsync({
+			webhookId: selectedWebhook.value.webhookId,
+			updates: {
+				displayName: webhookData.name,
+				url: webhookData.url,
+				events,
+			},
+		});
+		isEditDialogOpen.value = false;
+	} catch (error) {
+		console.error("Failed to update webhook:", error);
+	}
 }
 
 async function handleDeleteWebhook(webhookId: string) {
-  try {
-    await deleteWebhookAsync(webhookId);
-    isDeleteDialogOpen.value = false;
-  } catch (error) {
-    console.error("Failed to delete webhook:", error);
-  }
+	try {
+		await deleteWebhookAsync(webhookId);
+		isDeleteDialogOpen.value = false;
+	} catch (error) {
+		console.error("Failed to delete webhook:", error);
+	}
 }
 
 function openEditDialog(webhook: Webhook) {
-  selectedWebhook.value = webhook;
-  isEditDialogOpen.value = true;
+	selectedWebhook.value = webhook;
+	isEditDialogOpen.value = true;
 }
 
 function openDeleteDialog(webhook: Webhook) {
-  selectedWebhook.value = webhook;
-  isDeleteDialogOpen.value = true;
+	selectedWebhook.value = webhook;
+	isDeleteDialogOpen.value = true;
 }
 
 function testWebhook(webhook: Webhook) {
-  console.log("Testing webhook:", webhook);
+	console.log("Testing webhook:", webhook);
 }
 </script>
 

@@ -5,37 +5,37 @@ import { Button } from "@/components/ui/button";
 import { EntityAvatar } from "@/components/common";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
+	Empty,
+	EmptyDescription,
+	EmptyHeader,
+	EmptyTitle,
 } from "@/components/ui/empty";
 
 interface Props {
-  members: Member[];
-  selectedMembers?: Set<string>;
-  allSelected?: boolean;
+	members: Member[];
+	selectedMembers?: Set<string>;
+	allSelected?: boolean;
 }
 
 interface Emits {
-  (e: "remove", memberId: string): void;
-  (e: "toggleSelectAll"): void;
-  (e: "toggleMember", memberId: string): void;
-  (e: "deleteSelected"): void;
+	(e: "remove", memberId: string): void;
+	(e: "toggleSelectAll"): void;
+	(e: "toggleMember", memberId: string): void;
+	(e: "deleteSelected"): void;
 }
 
 const props = defineProps<Props>();
@@ -44,11 +44,11 @@ const emit = defineEmits<Emits>();
 const { t } = useI18n();
 
 function formatDate(date: string): string {
-  return new Date(date).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+	return new Date(date).toLocaleDateString("en-US", {
+		year: "numeric",
+		month: "short",
+		day: "numeric",
+	});
 }
 </script>
 

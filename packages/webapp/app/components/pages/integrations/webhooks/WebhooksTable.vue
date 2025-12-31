@@ -4,63 +4,63 @@ import { MoreHorizontal, Edit, Play, Trash2 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+	DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
 const { t } = useI18n();
 
 const props = defineProps<{
-  webhooks: Webhook[];
+	webhooks: Webhook[];
 }>();
 
 const emit = defineEmits<{
-  (e: "edit", webhook: Webhook): void;
-  (e: "delete", webhook: Webhook): void;
-  (e: "test", webhook: Webhook): void;
+	(e: "edit", webhook: Webhook): void;
+	(e: "delete", webhook: Webhook): void;
+	(e: "test", webhook: Webhook): void;
 }>();
 
 function formatDate(dateString: string | null | undefined): string {
-  if (!dateString) return t("integrations.time.justNow");
+	if (!dateString) return t("integrations.time.justNow");
 
-  const date = new Date(dateString);
-  const now = new Date();
-  const diff = now.getTime() - date.getTime();
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const weeks = Math.floor(days / 7);
-  const months = Math.floor(days / 30);
+	const date = new Date(dateString);
+	const now = new Date();
+	const diff = now.getTime() - date.getTime();
+	const hours = Math.floor(diff / (1000 * 60 * 60));
+	const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+	const weeks = Math.floor(days / 7);
+	const months = Math.floor(days / 30);
 
-  if (hours < 1) return t("integrations.time.justNow");
-  if (hours < 24) return t("integrations.time.hoursAgo", { hours });
-  if (days === 1) return t("integrations.time.daysAgo", { days: 1 });
-  if (days < 7) return t("integrations.time.daysAgo", { days });
-  if (weeks === 1) return t("integrations.time.weeksAgo", { weeks: 1 });
-  if (weeks < 4) return t("integrations.time.weeksAgo", { weeks });
-  if (months === 1) return t("integrations.time.monthsAgo", { months: 1 });
-  return t("integrations.time.monthsAgo", { months });
+	if (hours < 1) return t("integrations.time.justNow");
+	if (hours < 24) return t("integrations.time.hoursAgo", { hours });
+	if (days === 1) return t("integrations.time.daysAgo", { days: 1 });
+	if (days < 7) return t("integrations.time.daysAgo", { days });
+	if (weeks === 1) return t("integrations.time.weeksAgo", { weeks: 1 });
+	if (weeks < 4) return t("integrations.time.weeksAgo", { weeks });
+	if (months === 1) return t("integrations.time.monthsAgo", { months: 1 });
+	return t("integrations.time.monthsAgo", { months });
 }
 
 function formatUrl(url: string): string {
-  try {
-    const urlObj = new URL(url);
-    const domain = urlObj.hostname;
-    const path = urlObj.pathname !== "/" ? urlObj.pathname : "";
-    return domain + path;
-  } catch {
-    return url;
-  }
+	try {
+		const urlObj = new URL(url);
+		const domain = urlObj.hostname;
+		const path = urlObj.pathname !== "/" ? urlObj.pathname : "";
+		return domain + path;
+	} catch {
+		return url;
+	}
 }
 </script>
 

@@ -7,51 +7,51 @@ import Button from "@/components/ui/button/Button.vue";
 import Checkbox from "@/components/ui/checkbox/Checkbox.vue";
 import Switch from "@/components/ui/switch/Switch.vue";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
 } from "@/components/ui/dialog";
 
 const { t } = useI18n();
 
 interface WebhookEvent {
-  key: string;
-  name: string;
-  description: string;
+	key: string;
+	name: string;
+	description: string;
 }
 
 interface EventCategory {
-  id: string;
-  name: string;
-  events: WebhookEvent[];
+	id: string;
+	name: string;
+	events: WebhookEvent[];
 }
 
 interface WebhookData {
-  name: string;
-  url: string;
-  active: boolean;
-  events: Record<string, boolean>;
+	name: string;
+	url: string;
+	active: boolean;
+	events: Record<string, boolean>;
 }
 
 interface Props {
-  open?: boolean;
-  webhook?: Webhook | null;
-  eventCategories: EventCategory[];
-  isLoading?: boolean;
+	open?: boolean;
+	webhook?: Webhook | null;
+	eventCategories: EventCategory[];
+	isLoading?: boolean;
 }
 
 interface Emits {
-  (e: "update:open", value: boolean): void;
-  (e: "update", webhook: WebhookData): void;
+	(e: "update:open", value: boolean): void;
+	(e: "update", webhook: WebhookData): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  open: false,
-  webhook: null,
-  isLoading: false,
+	open: false,
+	webhook: null,
+	isLoading: false,
 });
 
 const emit = defineEmits<Emits>();
@@ -64,88 +64,88 @@ const webhookEvents = ref<Record<string, boolean>>({});
 
 // Computed validation
 const hasSelectedEvents = computed(() => {
-  return Object.values(webhookEvents.value).some(Boolean);
+	return Object.values(webhookEvents.value).some(Boolean);
 });
 
 const isFormValid = computed(() => {
-  return (
-    webhookUrl.value.trim().length > 0 &&
-    webhookName.value.trim().length > 0 &&
-    hasSelectedEvents.value
-  );
+	return (
+		webhookUrl.value.trim().length > 0 &&
+		webhookName.value.trim().length > 0 &&
+		hasSelectedEvents.value
+	);
 });
 
 // Watch for webhook prop changes to populate form
 watch(
-  () => props.webhook,
-  (newWebhook) => {
-    if (newWebhook && props.open) {
-      populateForm(newWebhook);
-    }
-  },
-  { immediate: true },
+	() => props.webhook,
+	(newWebhook) => {
+		if (newWebhook && props.open) {
+			populateForm(newWebhook);
+		}
+	},
+	{ immediate: true },
 );
 
 watch(
-  () => props.open,
-  (isOpen) => {
-    if (isOpen && props.webhook) {
-      populateForm(props.webhook);
-    }
-  },
+	() => props.open,
+	(isOpen) => {
+		if (isOpen && props.webhook) {
+			populateForm(props.webhook);
+		}
+	},
 );
 
 // Functions
 function populateForm(webhook: Webhook) {
-  webhookName.value = webhook.displayName;
-  webhookUrl.value = webhook.url;
-  webhookActive.value = webhook.status === "active";
+	webhookName.value = webhook.displayName;
+	webhookUrl.value = webhook.url;
+	webhookActive.value = webhook.status === "active";
 
-  // Initialize all events to false
-  const events: Record<string, boolean> = {};
-  props.eventCategories.forEach((category) => {
-    category.events.forEach((event) => {
-      events[event.key] = false;
-    });
-  });
+	// Initialize all events to false
+	const events: Record<string, boolean> = {};
+	props.eventCategories.forEach((category) => {
+		category.events.forEach((event) => {
+			events[event.key] = false;
+		});
+	});
 
-  // Set selected events to true
-  webhook.events.forEach((eventKey) => {
-    if (events.hasOwnProperty(eventKey)) {
-      events[eventKey] = true;
-    }
-  });
+	// Set selected events to true
+	webhook.events.forEach((eventKey) => {
+		if (events.hasOwnProperty(eventKey)) {
+			events[eventKey] = true;
+		}
+	});
 
-  webhookEvents.value = events;
+	webhookEvents.value = events;
 }
 
 function handleOpenChange(open: boolean) {
-  emit("update:open", open);
+	emit("update:open", open);
 }
 
 function resetForm() {
-  webhookName.value = "";
-  webhookUrl.value = "";
-  webhookActive.value = true;
-  webhookEvents.value = {};
+	webhookName.value = "";
+	webhookUrl.value = "";
+	webhookActive.value = true;
+	webhookEvents.value = {};
 }
 
 function updateWebhook() {
-  if (!isFormValid.value || !props.webhook) return;
+	if (!isFormValid.value || !props.webhook) return;
 
-  const webhookData: WebhookData = {
-    name: webhookName.value,
-    url: webhookUrl.value,
-    active: webhookActive.value,
-    events: { ...webhookEvents.value },
-  };
+	const webhookData: WebhookData = {
+		name: webhookName.value,
+		url: webhookUrl.value,
+		active: webhookActive.value,
+		events: { ...webhookEvents.value },
+	};
 
-  emit("update", webhookData);
+	emit("update", webhookData);
 }
 
 function cancel() {
-  resetForm();
-  emit("update:open", false);
+	resetForm();
+	emit("update:open", false);
 }
 </script>
 

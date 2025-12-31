@@ -2,43 +2,43 @@
 import { ref, computed } from "vue";
 import type { IntegrationRun } from "@nvisy/sdk";
 import {
-  Search,
-  ArrowLeft,
-  Eye,
-  Copy,
-  Check,
-  MoreHorizontal,
-  Loader2,
+	Search,
+	ArrowLeft,
+	Eye,
+	Copy,
+	Check,
+	MoreHorizontal,
+	Loader2,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Spinner } from "@/components/ui/spinner";
@@ -47,7 +47,7 @@ import { RunDetailsModal } from "~/components/pages/integrations";
 const { t } = useI18n();
 
 definePageMeta({
-  pageCategory: "Integrations",
+	pageCategory: "Integrations",
 });
 
 // Use SDK composable
@@ -62,116 +62,116 @@ const isViewDetailsModalOpen = ref(false);
 const selectedRunForDetails = ref<IntegrationRun | null>(null);
 
 const filteredRuns = computed(() => {
-  let filtered = runs.value ?? [];
+	let filtered = runs.value ?? [];
 
-  if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter((run) => {
-      const integration = integrations.value?.find(
-        (i) => i.integrationId === run.integrationId,
-      );
-      return (
-        integration?.integrationName.toLowerCase().includes(query) ||
-        run.id.toLowerCase().includes(query)
-      );
-    });
-  }
+	if (searchQuery.value.trim()) {
+		const query = searchQuery.value.toLowerCase();
+		filtered = filtered.filter((run) => {
+			const integration = integrations.value?.find(
+				(i) => i.integrationId === run.integrationId,
+			);
+			return (
+				integration?.integrationName.toLowerCase().includes(query) ||
+				run.id.toLowerCase().includes(query)
+			);
+		});
+	}
 
-  if (statusFilter.value !== "all") {
-    filtered = filtered.filter((run) => {
-      const statusCode = run.statusCode ?? 0;
-      const statusPrefix = statusFilter.value.charAt(0);
-      return Math.floor(statusCode / 100).toString() === statusPrefix;
-    });
-  }
+	if (statusFilter.value !== "all") {
+		filtered = filtered.filter((run) => {
+			const statusCode = run.statusCode ?? 0;
+			const statusPrefix = statusFilter.value.charAt(0);
+			return Math.floor(statusCode / 100).toString() === statusPrefix;
+		});
+	}
 
-  return filtered.sort(
-    (a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
-  );
+	return filtered.sort(
+		(a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
+	);
 });
 
 function getIntegrationName(integrationId: string | null | undefined): string {
-  if (!integrationId) return t("integrations.runs.unknown");
-  const integration = integrations.value?.find(
-    (i) => i.integrationId === integrationId,
-  );
-  return integration?.integrationName ?? t("integrations.runs.unknown");
+	if (!integrationId) return t("integrations.runs.unknown");
+	const integration = integrations.value?.find(
+		(i) => i.integrationId === integrationId,
+	);
+	return integration?.integrationName ?? t("integrations.runs.unknown");
 }
 
 function toggleRunSelection(runId: string) {
-  if (selectedRuns.value.has(runId)) {
-    selectedRuns.value.delete(runId);
-  } else {
-    selectedRuns.value.add(runId);
-  }
+	if (selectedRuns.value.has(runId)) {
+		selectedRuns.value.delete(runId);
+	} else {
+		selectedRuns.value.add(runId);
+	}
 }
 
 function toggleAllRuns() {
-  if (selectedRuns.value.size === filteredRuns.value.length) {
-    selectedRuns.value.clear();
-  } else {
-    selectedRuns.value = new Set(filteredRuns.value.map((run) => run.id));
-  }
+	if (selectedRuns.value.size === filteredRuns.value.length) {
+		selectedRuns.value.clear();
+	} else {
+		selectedRuns.value = new Set(filteredRuns.value.map((run) => run.id));
+	}
 }
 
 const allSelected = computed(
-  () =>
-    filteredRuns.value.length > 0 &&
-    selectedRuns.value.size === filteredRuns.value.length,
+	() =>
+		filteredRuns.value.length > 0 &&
+		selectedRuns.value.size === filteredRuns.value.length,
 );
 
 const logsCopied = ref(false);
 
 function copyLogs() {
-  const selectedRunsData = (runs.value ?? []).filter((run) =>
-    selectedRuns.value.has(run.id),
-  );
-  console.log("Copy logs:", selectedRunsData);
-  logsCopied.value = true;
-  setTimeout(() => {
-    logsCopied.value = false;
-  }, 2000);
+	const selectedRunsData = (runs.value ?? []).filter((run) =>
+		selectedRuns.value.has(run.id),
+	);
+	console.log("Copy logs:", selectedRunsData);
+	logsCopied.value = true;
+	setTimeout(() => {
+		logsCopied.value = false;
+	}, 2000);
 }
 
 function viewRunDetails(run: IntegrationRun) {
-  selectedRunForDetails.value = run;
-  isViewDetailsModalOpen.value = true;
+	selectedRunForDetails.value = run;
+	isViewDetailsModalOpen.value = true;
 }
 
 function copyRunDetails(run: IntegrationRun) {
-  console.log("Copy run details:", run);
+	console.log("Copy run details:", run);
 }
 
 function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diff = now.getTime() - date.getTime();
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+	const date = new Date(dateString);
+	const now = new Date();
+	const diff = now.getTime() - date.getTime();
+	const hours = Math.floor(diff / (1000 * 60 * 60));
+	const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-  if (hours < 1) return t("integrations.time.justNow");
-  if (hours < 24) return t("integrations.time.hoursAgo", { hours });
-  if (days === 1) return t("integrations.time.daysAgo", { days: 1 });
-  if (days < 7) return t("integrations.time.daysAgo", { days });
+	if (hours < 1) return t("integrations.time.justNow");
+	if (hours < 24) return t("integrations.time.hoursAgo", { hours });
+	if (days === 1) return t("integrations.time.daysAgo", { days: 1 });
+	if (days < 7) return t("integrations.time.daysAgo", { days });
 
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+	return date.toLocaleDateString("en-US", {
+		month: "short",
+		day: "numeric",
+		year: "numeric",
+	});
 }
 
 function formatDuration(
-  startedAt: string,
-  completedAt: string | null | undefined,
+	startedAt: string,
+	completedAt: string | null | undefined,
 ): string {
-  if (!completedAt) return "-";
-  const start = new Date(startedAt).getTime();
-  const end = new Date(completedAt).getTime();
-  const diff = end - start;
-  const minutes = Math.floor(diff / 60000);
-  const seconds = Math.floor((diff % 60000) / 1000);
-  return `${minutes}m ${seconds}s`;
+	if (!completedAt) return "-";
+	const start = new Date(startedAt).getTime();
+	const end = new Date(completedAt).getTime();
+	const diff = end - start;
+	const minutes = Math.floor(diff / 60000);
+	const seconds = Math.floor((diff % 60000) / 1000);
+	return `${minutes}m ${seconds}s`;
 }
 </script>
 

@@ -60,6 +60,8 @@ export function useAuth() {
 			: null,
 	);
 
+	const userFirstName = computed(() => user.value?.name?.split(" ")[0] || "");
+
 	const loginMutation = useMutation({
 		mutation: async (credentials: Login) => {
 			return await sdkLogin(credentials, {
@@ -101,6 +103,7 @@ export function useAuth() {
 	return {
 		// State
 		user,
+		userFirstName,
 		isAuthenticated,
 		authToken: readonly(authToken),
 

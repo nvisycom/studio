@@ -2,44 +2,44 @@
 import type { LucideIcon } from "lucide-vue-next";
 import { ChevronRight } from "lucide-vue-next";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
+	SidebarGroup,
+	SidebarGroupLabel,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	SidebarMenuSub,
+	SidebarMenuSubButton,
+	SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 
 interface NavSubItem {
-  title: string;
-  url: string;
+	title: string;
+	url: string;
 }
 
 interface NavItem {
-  title: string;
-  url: string;
-  icon?: LucideIcon;
-  isActive?: boolean;
-  items?: NavSubItem[];
+	title: string;
+	url: string;
+	icon?: LucideIcon;
+	isActive?: boolean;
+	items?: NavSubItem[];
 }
 
 const props = withDefaults(
-  defineProps<{
-    items: NavItem[];
-    label?: string;
-    disabled?: boolean;
-  }>(),
-  {
-    label: "Platform",
-    disabled: false,
-  },
+	defineProps<{
+		items: NavItem[];
+		label?: string;
+		disabled?: boolean;
+	}>(),
+	{
+		label: "Platform",
+		disabled: false,
+	},
 );
 </script>
 

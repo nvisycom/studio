@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -7,21 +6,55 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Bell } from "lucide-vue-next";
+import { Bell, Loader2, Inbox } from "lucide-vue-next";
 
 const notificationsTab = ref("inbox");
+const isOpen = ref(false);
+
+const { notifications, unreadCount, isLoading, fetchNotifications } =
+	useNotifications();
+
+// Fetch notifications when dropdown opens
+watch(isOpen, (open) => {
+	if (open) {
+		fetchNotifications();
+	}
+});
+
+function formatRelativeTime(dateString: string): string {
+	const date = new Date(dateString);
+	const now = new Date();
+	const diffMs = now.getTime() - date.getTime();
+	const diffMins = Math.floor(diffMs / 60000);
+	const diffHours = Math.floor(diffMs / 3600000);
+	const diffDays = Math.floor(diffMs / 86400000);
+
+	if (diffMins < 1) return "Just now";
+	if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? "s" : ""} ago`;
+	if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+	if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+
+	return date.toLocaleDateString("en-US", {
+		month: "short",
+		day: "numeric",
+	});
+}
 </script>
 
 <template>
-  <DropdownMenu>
+  <DropdownMenu v-model:open="isOpen">
     <DropdownMenuTrigger as-child>
       <Button
         variant="ghost"
         size="sm"
-        class="h-8 w-8 p-0"
+        class="h-8 w-8 p-0 relative"
         title="Notifications"
       >
         <Bell :size="16" />
+        <span
+          v-if="unreadCount > 0"
+          class="absolute -top-0.5 -right-0.5 size-2 bg-red-500 rounded-full"
+        />
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end" class="w-[400px] p-0">
@@ -35,19 +68,21 @@ const notificationsTab = ref("inbox");
           Stay updated with your latest notifications
         </p>
       </div>
-      <Tabs v-model="notificationsTab" class="w-full">
-        <div class="px-4 pt-3">
-          <TabsList class="grid w-full grid-cols-2">
-            <TabsTrigger value="inbox">Inbox</TabsTrigger>
-            <TabsTrigger value="archive">Archive</TabsTrigger>
-          </TabsList>
-        </div>
-        <TabsContent
-          value="inbox"
-          class="mt-0 p-3 max-h-[400px] overflow-y-auto"
-        >
-          <div class="space-y-2">
+
+      <!-- Loading State -->
+      <div v-if="isLoading" class="flex items-center justify-center py-12">
+        <Loader2 :size="24" class="animate-spin text-neutral-400" />
+      </div>
+
+      <template v-else>
+        <div class="p-3 max-h-[400px] overflow-y-auto">
+          <div
+            v-if="notifications && notifications.length > 0"
+            class="space-y-2"
+          >
             <div
+              v-for="notification in notifications"
+              :key="notification.id"
               class="p-3 rounded-lg border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors"
             >
               <div class="flex items-start justify-between gap-3">
@@ -55,95 +90,30 @@ const notificationsTab = ref("inbox");
                   <p
                     class="font-normal text-sm text-neutral-900 dark:text-white"
                   >
-                    New document uploaded
+                    {{ notification.title }}
                   </p>
                   <p
                     class="text-sm font-light text-neutral-600 dark:text-neutral-400 mt-1"
                   >
-                    API Documentation v2.4 has been uploaded to your workspace
+                    {{ notification.message }}
                   </p>
                   <p
                     class="text-sm font-light text-neutral-500 dark:text-neutral-500 mt-2"
                   >
-                    2 minutes ago
+                    {{ formatRelativeTime(notification.createdAt) }}
                   </p>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  class="shrink-0 text-xs h-auto py-1 px-2"
-                  >Mark as read</Button
-                >
-              </div>
-            </div>
-            <div
-              class="p-3 rounded-lg border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors"
-            >
-              <div class="flex items-start justify-between gap-3">
-                <div class="flex-1 min-w-0">
-                  <p
-                    class="font-normal text-sm text-neutral-900 dark:text-white"
-                  >
-                    Integration connected
-                  </p>
-                  <p
-                    class="text-sm font-light text-neutral-600 dark:text-neutral-400 mt-1"
-                  >
-                    GitHub integration has been successfully connected
-                  </p>
-                  <p
-                    class="text-sm font-light text-neutral-500 dark:text-neutral-500 mt-2"
-                  >
-                    1 hour ago
-                  </p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  class="shrink-0 text-xs h-auto py-1 px-2"
-                  >Mark as read</Button
-                >
-              </div>
-            </div>
-            <div
-              class="p-3 rounded-lg border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors"
-            >
-              <div class="flex items-start justify-between gap-3">
-                <div class="flex-1 min-w-0">
-                  <p
-                    class="font-normal text-sm text-neutral-900 dark:text-white"
-                  >
-                    Team member joined
-                  </p>
-                  <p
-                    class="text-sm font-light text-neutral-600 dark:text-neutral-400 mt-1"
-                  >
-                    Jane Smith has joined your team
-                  </p>
-                  <p
-                    class="text-sm font-light text-neutral-500 dark:text-neutral-500 mt-2"
-                  >
-                    3 hours ago
-                  </p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  class="shrink-0 text-xs h-auto py-1 px-2"
-                  >Mark as read</Button
-                >
               </div>
             </div>
           </div>
-        </TabsContent>
-        <TabsContent value="archive" class="mt-0 p-3">
-          <div class="text-center py-12">
+          <div v-else class="text-center py-12">
+            <Inbox :size="32" class="mx-auto text-neutral-400 mb-3" />
             <p class="text-sm text-neutral-500 dark:text-neutral-400">
-              No archived notifications
+              No notifications
             </p>
           </div>
-        </TabsContent>
-      </Tabs>
+        </div>
+      </template>
     </DropdownMenuContent>
   </DropdownMenu>
 </template>
