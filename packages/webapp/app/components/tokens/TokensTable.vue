@@ -1,20 +1,21 @@
 <script setup lang="ts">
 import type { ApiToken } from "@nvisy/sdk";
 import { MoreHorizontal, Trash2, Edit, Key } from "lucide-vue-next";
+
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
@@ -23,53 +24,59 @@ import { Badge } from "@/components/ui/badge";
 const truncateId = (id: string): string => id.slice(0, 8);
 
 interface Props {
-  tokens: ApiToken[];
-  selectedTokens: Set<string>;
-  allSelected: boolean;
+	tokens: ApiToken[];
+	selectedTokens: Set<string>;
+	allSelected: boolean;
+	currentTokenId?: string | null;
 }
 
 interface Emits {
-  (e: "toggleSelectAll"): void;
-  (e: "toggleToken", tokenId: string): void;
-  (e: "deleteToken", token: ApiToken): void;
-  (e: "deleteSelected"): void;
-  (e: "renameToken", token: ApiToken): void;
+	(e: "toggleSelectAll"): void;
+	(e: "toggleToken", tokenId: string): void;
+	(e: "deleteToken", token: ApiToken): void;
+	(e: "deleteSelected"): void;
+	(e: "renameToken", token: ApiToken): void;
 }
 
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
+const { t } = useI18n();
+
 // Helper functions
 const isTokenSelected = (tokenId: string): boolean =>
-  props.selectedTokens.has(tokenId);
+	props.selectedTokens.has(tokenId);
+
+const isCurrentToken = (tokenId: string): boolean =>
+	props.currentTokenId === tokenId;
 
 const formatDate = (date: string | null | undefined): string => {
-  if (!date) return "Never";
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "2-digit",
-  }).format(new Date(date));
+	if (!date) return t("tokens.table.info.never");
+	return new Intl.DateTimeFormat("en-GB", {
+		day: "2-digit",
+		month: "2-digit",
+		year: "2-digit",
+	}).format(new Date(date));
 };
 
 const getSessionTypeColor = (type: string): string => {
-  const colors: Record<string, string> = {
-    web: "bg-blue-500",
-    mobile: "bg-green-500",
-    api: "bg-purple-500",
-    cli: "bg-orange-500",
-  };
-  return colors[type.toLowerCase()] || "bg-neutral-500";
+	const colors: Record<string, string> = {
+		web: "bg-blue-500",
+		mobile: "bg-green-500",
+		api: "bg-purple-500",
+		cli: "bg-orange-500",
+	};
+	return colors[type.toLowerCase()] || "bg-neutral-500";
 };
 
 const getSessionTypeInitial = (type: string): string => {
-  const initials: Record<string, string> = {
-    web: "W",
-    mobile: "M",
-    api: "A",
-    cli: "C",
-  };
-  return initials[type.toLowerCase()] || "T";
+	const initials: Record<string, string> = {
+		web: "W",
+		mobile: "M",
+		api: "A",
+		cli: "C",
+	};
+	return initials[type.toLowerCase()] || "T";
 };
 </script>
 
@@ -83,8 +90,12 @@ const getSessionTypeInitial = (type: string): string => {
             @update:model-value="emit('toggleSelectAll')"
           />
         </TableHead>
-        <TableHead>Name</TableHead>
-        <TableHead>Last Used</TableHead>
+        <TableHead class="uppercase text-xs font-light tracking-wider">{{
+          t("tokens.table.headers.name")
+        }}</TableHead>
+        <TableHead class="uppercase text-xs font-light tracking-wider">{{
+          t("tokens.table.headers.lastUsed")
+        }}</TableHead>
         <TableHead class="w-[50px]">
           <DropdownMenu>
             <DropdownMenuTrigger as-child>
@@ -103,7 +114,8 @@ const getSessionTypeInitial = (type: string): string => {
                 :disabled="selectedTokens.size === 0"
               >
                 <Trash2 :size="16" class="mr-2" />
-                Revoke Selected{{
+                {{ t("tokens.table.actions.revokeSelected")
+                }}{{
                   selectedTokens.size > 0 ? ` (${selectedTokens.size})` : ""
                 }}
               </DropdownMenuItem>
@@ -117,10 +129,11 @@ const getSessionTypeInitial = (type: string): string => {
         <TableCell>
           <Checkbox
             :model-value="isTokenSelected(token.id)"
+            :disabled="isCurrentToken(token.id)"
             @update:model-value="emit('toggleToken', token.id)"
           />
         </TableCell>
-        <TableCell class="font-medium">
+        <TableCell class="font-normal">
           <div class="flex items-center gap-3">
             <!-- Token Icon with Session Type Badge -->
             <div class="relative">
@@ -146,24 +159,33 @@ const getSessionTypeInitial = (type: string): string => {
               <div class="flex items-center gap-2">
                 <span>{{ token.name }}</span>
                 <Badge
-                  v-if="token.isExpired"
+                  v-if="isCurrentToken(token.id)"
+                  variant="secondary"
+                  class="text-xs"
+                >
+                  {{ t("tokens.table.badges.current") }}
+                </Badge>
+                <Badge
+                  v-else-if="token.isExpired"
                   variant="destructive"
                   class="text-xs"
                 >
-                  Expired
+                  {{ t("tokens.table.badges.expired") }}
                 </Badge>
               </div>
               <div class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
                 <span class="font-mono">{{ truncateId(token.id) }}</span>
                 <span class="mx-1">·</span>
-                Created {{ formatDate(token.issuedAt) }}
+                {{ t("tokens.table.info.created") }}
+                {{ formatDate(token.issuedAt) }}
                 <span class="mx-1">·</span>
-                Expires {{ formatDate(token.expiredAt) }}
+                {{ t("tokens.table.info.expires") }}
+                {{ formatDate(token.expiredAt) }}
               </div>
             </div>
           </div>
         </TableCell>
-        <TableCell class="text-neutral-600 dark:text-neutral-400">
+        <TableCell class="font-light text-neutral-600 dark:text-neutral-400">
           {{ formatDate(token.lastUsedAt) }}
         </TableCell>
         <TableCell>
@@ -174,19 +196,21 @@ const getSessionTypeInitial = (type: string): string => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                v-if="token.sessionType === 'api'"
-                @click="emit('renameToken', token)"
-              >
+              <DropdownMenuItem @click="emit('renameToken', token)">
                 <Edit :size="16" class="mr-2" />
-                Rename
+                {{ t("tokens.table.actions.rename") }}
               </DropdownMenuItem>
               <DropdownMenuItem
+                v-if="!isCurrentToken(token.id)"
                 @click="emit('deleteToken', token)"
                 class="text-red-600 dark:text-red-400"
               >
                 <Trash2 :size="16" class="mr-2" />
-                Revoke
+                {{ t("tokens.table.actions.revoke") }}
+              </DropdownMenuItem>
+              <DropdownMenuItem v-else disabled class="text-neutral-400">
+                <Trash2 :size="16" class="mr-2" />
+                {{ t("tokens.table.actions.cannotRevoke") }}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

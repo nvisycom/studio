@@ -23,6 +23,8 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
+const { t } = useI18n();
+
 function closeModal() {
 	emit("update:open", false);
 }
@@ -37,18 +39,18 @@ function confirmDelete() {
   <Dialog :open="open" @update:open="closeModal">
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>Delete Tokens</DialogTitle>
+        <DialogTitle>{{ t("tokens.modals.deleteMultiple.title") }}</DialogTitle>
         <DialogDescription>
-          Are you sure you want to delete {{ count }} {{ count === 1 ? 'token' : 'tokens' }}? This action cannot be undone.
+          {{ t("tokens.modals.deleteMultiple.description", count) }}
         </DialogDescription>
       </DialogHeader>
       <DialogFooter>
         <Button @click="closeModal" variant="outline">
-          Cancel
+          {{ t("tokens.modals.deleteMultiple.cancelButton") }}
         </Button>
         <Button @click="confirmDelete" variant="destructive">
           <Trash2 :size="16" class="mr-2" />
-          Delete {{ count }} {{ count === 1 ? 'Token' : 'Tokens' }}
+          {{ t("tokens.modals.deleteMultiple.confirmButton") }} ({{ count }})
         </Button>
       </DialogFooter>
     </DialogContent>

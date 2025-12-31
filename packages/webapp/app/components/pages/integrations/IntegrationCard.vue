@@ -4,43 +4,43 @@ import { ExternalLink } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 
 /**
  * Integration data structure
  */
 interface Integration {
-	id: number;
-	name: string;
-	description: string;
-	icon: any;
-	color: string;
-	status: "available" | "coming-soon";
-	category: string;
-	tags: string[];
-	isExternal?: boolean;
-	externalUrl?: string;
+  id: number;
+  name: string;
+  description: string;
+  icon: any;
+  color: string;
+  status: "available" | "coming-soon";
+  category: string;
+  tags: string[];
+  isExternal?: boolean;
+  externalUrl?: string;
 }
 
 /**
  * Component props interface
  */
 interface Props {
-	integration: Integration;
+  integration: Integration;
 }
 
 /**
  * Component emits interface
  */
 interface Emits {
-	(e: "connect", id: number): void;
-	(e: "notifyMe", id: number): void;
+  (e: "connect", id: number): void;
+  (e: "notifyMe", id: number): void;
 }
 
 const props = defineProps<Props>();
@@ -63,8 +63,12 @@ const emit = defineEmits<Emits>();
             <component :is="integration.icon" :size="24" class="text-white" />
           </div>
           <div>
-            <CardTitle class="text-lg">{{ integration.name }}</CardTitle>
-            <p class="text-xs text-neutral-600 dark:text-neutral-400 mt-1">
+            <CardTitle class="text-lg font-normal">{{
+              integration.name
+            }}</CardTitle>
+            <p
+              class="text-xs font-light text-neutral-600 dark:text-neutral-400 mt-1"
+            >
               {{ integration.category }}
             </p>
           </div>

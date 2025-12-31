@@ -1,65 +1,66 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { Search, Copy, Check, ChevronDown } from "lucide-vue-next";
+import type {
+  Member,
+  Invite,
+  InviteExpiration,
+  WorkspaceRole,
+} from "@nvisy/sdk";
+import { Search, Copy, Check, ChevronDown, Loader2 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-	MembersTable,
-	InvitesTable,
-	DeleteMemberModal,
-	DeleteMultipleMembersModal,
-	CancelInviteModal,
-	CancelMultipleInvitesModal,
+  MembersTable,
+  InvitesTable,
+  DeleteMemberModal,
+  DeleteMultipleMembersModal,
+  CancelInviteModal,
+  CancelMultipleInvitesModal,
 } from "~/components/pages/members";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 definePageMeta({
-	pageCategory: "Team",
+  pageCategory: "Team",
 });
 
 const { t } = useI18n();
 
-/**
- * Team member data structure
- */
-interface TeamMember {
-	id: string;
-	name: string;
-	email: string;
-	role: string;
-	joinedDate: Date;
-	twoFAEnabled: boolean;
-}
+// Use SDK composables
+const {
+  members,
+  isLoading: isLoadingMembers,
+  removeMemberAsync,
+  isRemoving,
+} = useMembers();
 
-/**
- * Pending invitation data structure
- */
-interface PendingInvite {
-	id: string;
-	name: string;
-	email: string;
-	role: string;
-	invitedDate: Date;
-}
+const {
+  invites,
+  isLoading: isLoadingInvites,
+  sendInviteAsync,
+  isSending,
+  cancelInviteAsync,
+  isCanceling,
+  generateCodeAsync,
+  isGenerating,
+} = useInvites();
 
 // Form State
 const inviteEmail = ref<string>("");
-const selectedRole = ref<string>("member");
-const selectedExpiry = ref<string>("never");
+const selectedRole = ref<WorkspaceRole>("member");
+const selectedExpiry = ref<InviteExpiration>("never");
 const activeTab = ref<string>("members");
 const searchQuery = ref<string>("");
 const selectedRoleFilter = ref<string>("anyRole");
@@ -72,349 +73,321 @@ const selectedMembers = ref<Set<string>>(new Set());
 const selectedInvites = ref<Set<string>>(new Set());
 
 // Modal State
-const memberToDelete = ref<TeamMember | null>(null);
+const memberToDelete = ref<Member | null>(null);
 const isDeleteMemberDialogOpen = ref<boolean>(false);
 const isDeleteMultipleMembersDialogOpen = ref<boolean>(false);
-const inviteToCancel = ref<PendingInvite | null>(null);
+const inviteToCancel = ref<Invite | null>(null);
 const isCancelInviteDialogOpen = ref<boolean>(false);
 const isCancelMultipleInvitesDialogOpen = ref<boolean>(false);
 
 const roles = computed(() => [
-	{ value: "member", label: t("members.roles.member") },
-	{ value: "owner", label: t("members.roles.owner") },
+  { value: "guest" as WorkspaceRole, label: t("members.roles.guest") },
+  { value: "member" as WorkspaceRole, label: t("members.roles.member") },
+  { value: "owner" as WorkspaceRole, label: t("members.roles.owner") },
 ]);
 
 const roleFilters = computed(() => [
-	{ value: "anyRole", label: t("members.filters.anyRole") },
-	{ value: "owner", label: t("members.roles.owner") },
-	{ value: "member", label: t("members.roles.member") },
+  { value: "anyRole", label: t("members.filters.anyRole") },
+  { value: "owner", label: t("members.roles.owner") },
+  { value: "member", label: t("members.roles.member") },
+  { value: "guest", label: t("members.roles.guest") },
 ]);
 
 const twoFAFilters = computed(() => [
-	{ value: "any2FA", label: t("members.filters.any2FA") },
-	{ value: "disabled", label: t("members.filters.disabled2FA") },
-	{ value: "enabled", label: t("members.filters.enabled2FA") },
+  { value: "any2FA", label: t("members.filters.any2FA") },
+  { value: "disabled", label: t("members.filters.disabled2FA") },
+  { value: "enabled", label: t("members.filters.enabled2FA") },
 ]);
 
 const sortingOptions = computed(() => [
-	{ label: t("members.filters.sorting.nameAsc"), value: "name-asc" },
-	{ label: t("members.filters.sorting.nameDesc"), value: "name-desc" },
-	{ label: t("members.filters.sorting.dateNewest"), value: "date-desc" },
-	{ label: t("members.filters.sorting.dateOldest"), value: "date-asc" },
+  { label: t("members.filters.sorting.nameAsc"), value: "name-asc" },
+  { label: t("members.filters.sorting.nameDesc"), value: "name-desc" },
+  { label: t("members.filters.sorting.dateNewest"), value: "date-desc" },
+  { label: t("members.filters.sorting.dateOldest"), value: "date-asc" },
 ]);
 
 const inviteExpiryOptions = computed(() => [
-	{ label: t("members.forms.invite.expiry.never"), value: "never" },
-	{ label: t("members.forms.invite.expiry.24hours"), value: "24h" },
-	{ label: t("members.forms.invite.expiry.7days"), value: "7d" },
-	{ label: t("members.forms.invite.expiry.30days"), value: "30d" },
+  {
+    label: t("members.forms.invite.expiry.never"),
+    value: "never" as InviteExpiration,
+  },
+  {
+    label: t("members.forms.invite.expiry.24hours"),
+    value: "in24Hours" as InviteExpiration,
+  },
+  {
+    label: t("members.forms.invite.expiry.7days"),
+    value: "in7Days" as InviteExpiration,
+  },
+  {
+    label: t("members.forms.invite.expiry.30days"),
+    value: "in30Days" as InviteExpiration,
+  },
 ]);
-
-// Mock data
-const teamMembers = [
-	{
-		id: "1",
-		name: "John Doe",
-		email: "john@example.com",
-		role: "owner",
-		joinedDate: new Date("2023-01-15"),
-		twoFAEnabled: true,
-	},
-	{
-		id: "2",
-		name: "Alice Smith",
-		email: "alice@example.com",
-		role: "member",
-		joinedDate: new Date("2023-03-22"),
-		twoFAEnabled: false,
-	},
-	{
-		id: "3",
-		name: "Bob Wilson",
-		email: "bob@example.com",
-		role: "member",
-		joinedDate: new Date("2023-05-10"),
-		twoFAEnabled: true,
-	},
-];
-
-const pendingInvites = [
-	{
-		id: "1",
-		name: "Charlie Brown",
-		email: "charlie@example.com",
-		role: "member",
-		invitedDate: new Date("2023-12-01"),
-	},
-	{
-		id: "2",
-		name: "Diana Prince",
-		email: "diana@example.com",
-		role: "member",
-		invitedDate: new Date("2023-12-03"),
-	},
-];
 
 // Computed filtered data
 const filteredMembers = computed(() => {
-	let filtered = teamMembers.filter((member) => {
-		const matchesSearch =
-			member.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-			member.email.toLowerCase().includes(searchQuery.value.toLowerCase());
-		const matchesRole =
-			selectedRoleFilter.value === "anyRole" ||
-			member.role.toLowerCase() === selectedRoleFilter.value;
-		const matches2FA =
-			selected2FAFilter.value === "any2FA" ||
-			(selected2FAFilter.value === "enabled" && member.twoFAEnabled) ||
-			(selected2FAFilter.value === "disabled" && !member.twoFAEnabled);
+  if (!members.value) return [];
 
-		return matchesSearch && matchesRole && matches2FA;
-	});
+  let filtered = members.value.filter((member) => {
+    const matchesSearch =
+      member.displayName
+        .toLowerCase()
+        .includes(searchQuery.value.toLowerCase()) ||
+      member.emailAddress
+        .toLowerCase()
+        .includes(searchQuery.value.toLowerCase());
+    const matchesRole =
+      selectedRoleFilter.value === "anyRole" ||
+      member.memberRole === selectedRoleFilter.value;
 
-	// Sort the results
-	if (selectedSorting.value === "name-asc") {
-		filtered.sort((a, b) => a.name.localeCompare(b.name));
-	} else if (selectedSorting.value === "name-desc") {
-		filtered.sort((a, b) => b.name.localeCompare(a.name));
-	} else if (selectedSorting.value === "date-asc") {
-		filtered.sort((a, b) => a.joinedDate.getTime() - b.joinedDate.getTime());
-	} else if (selectedSorting.value === "date-desc") {
-		filtered.sort((a, b) => b.joinedDate.getTime() - a.joinedDate.getTime());
-	}
+    return matchesSearch && matchesRole;
+  });
 
-	return filtered;
+  // Sort the results
+  if (selectedSorting.value === "name-asc") {
+    filtered.sort((a, b) => a.displayName.localeCompare(b.displayName));
+  } else if (selectedSorting.value === "name-desc") {
+    filtered.sort((a, b) => b.displayName.localeCompare(a.displayName));
+  } else if (selectedSorting.value === "date-asc") {
+    filtered.sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+    );
+  } else if (selectedSorting.value === "date-desc") {
+    filtered.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+  }
+
+  return filtered;
+});
+
+// Filter to only pending invites
+const pendingInvites = computed(() => {
+  if (!invites.value) return [];
+  return invites.value.filter((invite) => invite.inviteStatus === "pending");
 });
 
 const filteredInvites = computed(() => {
-	let filtered = pendingInvites.filter((invite) => {
-		const matchesSearch =
-			invite.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-			invite.email.toLowerCase().includes(searchQuery.value.toLowerCase());
-		const matchesRole =
-			selectedRoleFilter.value === "anyRole" ||
-			invite.role.toLowerCase() === selectedRoleFilter.value;
+  let filtered = pendingInvites.value.filter((invite) => {
+    const email = invite.emailAddress ?? "";
+    const matchesSearch = email
+      .toLowerCase()
+      .includes(searchQuery.value.toLowerCase());
+    const matchesRole =
+      selectedRoleFilter.value === "anyRole" ||
+      invite.invitedRole === selectedRoleFilter.value;
 
-		return matchesSearch && matchesRole;
-	});
+    return matchesSearch && matchesRole;
+  });
 
-	// Sort the results
-	if (selectedSorting.value === "name-asc") {
-		filtered.sort((a, b) => a.email.localeCompare(b.email));
-	} else if (selectedSorting.value === "name-desc") {
-		filtered.sort((a, b) => b.email.localeCompare(a.email));
-	} else if (selectedSorting.value === "date-asc") {
-		filtered.sort((a, b) => a.invitedDate.getTime() - b.invitedDate.getTime());
-	} else {
-		filtered.sort((a, b) => b.invitedDate.getTime() - a.invitedDate.getTime());
-	}
+  // Sort the results
+  if (selectedSorting.value === "name-asc") {
+    filtered.sort((a, b) =>
+      (a.emailAddress ?? "").localeCompare(b.emailAddress ?? ""),
+    );
+  } else if (selectedSorting.value === "name-desc") {
+    filtered.sort((a, b) =>
+      (b.emailAddress ?? "").localeCompare(a.emailAddress ?? ""),
+    );
+  } else if (selectedSorting.value === "date-asc") {
+    filtered.sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+    );
+  } else {
+    filtered.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+  }
 
-	return filtered;
+  return filtered;
 });
 
 // Computed for selection
+const selectableMembers = computed(() =>
+  filteredMembers.value.filter((m) => m.memberRole !== "owner"),
+);
+
 const allMembersSelected = computed(
-	() =>
-		filteredMembers.value.length > 0 &&
-		filteredMembers.value.filter((m) => m.role !== "Owner").length > 0 &&
-		filteredMembers.value
-			.filter((m) => m.role !== "Owner")
-			.every((m) => selectedMembers.value.has(m.id)),
+  () =>
+    selectableMembers.value.length > 0 &&
+    selectableMembers.value.every((m) =>
+      selectedMembers.value.has(m.accountId),
+    ),
 );
 
 const allInvitesSelected = computed(
-	() =>
-		filteredInvites.value.length > 0 &&
-		filteredInvites.value.every((i) => selectedInvites.value.has(i.id)),
+  () =>
+    filteredInvites.value.length > 0 &&
+    filteredInvites.value.every((i) => selectedInvites.value.has(i.inviteId)),
 );
 
 // ===== Invite Functions =====
 
-/**
- * Send an invitation email to a new team member
- */
-function sendInvite(): void {
-	if (!inviteEmail.value.trim()) return;
+async function sendInvite(): Promise<void> {
+  if (!inviteEmail.value.trim()) return;
 
-	console.log(
-		"Sending invite to:",
-		inviteEmail.value,
-		"with role:",
-		selectedRole.value,
-	);
-	inviteEmail.value = "";
-	selectedRole.value = "Member";
+  try {
+    await sendInviteAsync({
+      inviteeEmail: inviteEmail.value,
+      invitedRole: selectedRole.value,
+      expires: selectedExpiry.value,
+    });
+    inviteEmail.value = "";
+    selectedRole.value = "member";
+  } catch (err) {
+    console.error("Failed to send invite:", err);
+  }
 }
 
-/**
- * Copy the invitation link to clipboard with selected expiry
- */
-function copyInviteLink(): void {
-	// In a real implementation, this would generate a link with the appropriate expiry
-	const inviteLink = `https://app.nvisy.com/invite/abc123def456?expires=${selectedExpiry.value}`;
-	navigator.clipboard.writeText(inviteLink);
-	copiedInviteLink.value = true;
-	setTimeout(() => {
-		copiedInviteLink.value = false;
-	}, 2000);
+async function copyInviteLink(): Promise<void> {
+  try {
+    const result = await generateCodeAsync({
+      invitedRole: selectedRole.value,
+      expires: selectedExpiry.value,
+    });
+    const baseUrl = window.location.origin;
+    const inviteUrl = `${baseUrl}/invite/${result.inviteCode}`;
+    await navigator.clipboard.writeText(inviteUrl);
+    copiedInviteLink.value = true;
+    setTimeout(() => {
+      copiedInviteLink.value = false;
+    }, 2000);
+  } catch (err) {
+    console.error("Failed to generate invite link:", err);
+  }
 }
 
 // ===== Member Deletion Functions =====
 
-/**
- * Open the delete dialog for a specific member
- * @param memberId - ID of the member to delete
- */
 function openDeleteMemberDialog(memberId: string): void {
-	const member = teamMembers.find((m) => m.id === memberId);
-	if (member) {
-		memberToDelete.value = member;
-		isDeleteMemberDialogOpen.value = true;
-	}
+  const member = members.value?.find((m) => m.accountId === memberId);
+  if (member) {
+    memberToDelete.value = member;
+    isDeleteMemberDialogOpen.value = true;
+  }
 }
 
-/**
- * Confirm and execute member deletion
- */
-function deleteMember(): void {
-	if (!memberToDelete.value) return;
-	console.log("Deleting member:", memberToDelete.value.id);
-	isDeleteMemberDialogOpen.value = false;
-	memberToDelete.value = null;
+async function deleteMember(): Promise<void> {
+  if (!memberToDelete.value) return;
+
+  try {
+    await removeMemberAsync(memberToDelete.value.accountId);
+    isDeleteMemberDialogOpen.value = false;
+    memberToDelete.value = null;
+  } catch (err) {
+    console.error("Failed to remove member:", err);
+  }
 }
 
-/**
- * Open the dialog for deleting multiple members
- */
 function openDeleteMultipleMembersDialog(): void {
-	isDeleteMultipleMembersDialogOpen.value = true;
+  isDeleteMultipleMembersDialogOpen.value = true;
 }
 
-/**
- * Confirm and execute bulk member deletion
- */
-function deleteSelectedMembers(): void {
-	console.log("Deleting members:", Array.from(selectedMembers.value));
-	selectedMembers.value = new Set();
-	isDeleteMultipleMembersDialogOpen.value = false;
+async function deleteSelectedMembers(): Promise<void> {
+  try {
+    await Promise.all(
+      Array.from(selectedMembers.value).map((accountId) =>
+        removeMemberAsync(accountId),
+      ),
+    );
+    selectedMembers.value = new Set();
+    isDeleteMultipleMembersDialogOpen.value = false;
+  } catch (err) {
+    console.error("Failed to remove members:", err);
+  }
 }
 
 // ===== Invite Cancellation Functions =====
 
-/**
- * Open the cancel dialog for a specific invitation
- * @param inviteId - ID of the invitation to cancel
- */
 function openCancelInviteDialog(inviteId: string): void {
-	const invite = pendingInvites.find((i) => i.id === inviteId);
-	if (invite) {
-		inviteToCancel.value = invite;
-		isCancelInviteDialogOpen.value = true;
-	}
+  const invite = invites.value?.find((i) => i.inviteId === inviteId);
+  if (invite) {
+    inviteToCancel.value = invite;
+    isCancelInviteDialogOpen.value = true;
+  }
 }
 
-/**
- * Confirm and execute invitation cancellation
- */
-function cancelInvite(): void {
-	if (!inviteToCancel.value) return;
-	console.log("Canceling invite:", inviteToCancel.value.id);
-	isCancelInviteDialogOpen.value = false;
-	inviteToCancel.value = null;
+async function cancelInvite(): Promise<void> {
+  if (!inviteToCancel.value) return;
+
+  try {
+    await cancelInviteAsync(inviteToCancel.value.inviteId);
+    isCancelInviteDialogOpen.value = false;
+    inviteToCancel.value = null;
+  } catch (err) {
+    console.error("Failed to cancel invite:", err);
+  }
 }
 
-/**
- * Open the dialog for canceling multiple invitations
- */
 function openCancelMultipleInvitesDialog(): void {
-	isCancelMultipleInvitesDialogOpen.value = true;
+  isCancelMultipleInvitesDialogOpen.value = true;
 }
 
-/**
- * Confirm and execute bulk invitation cancellation
- */
-function cancelSelectedInvites(): void {
-	console.log("Canceling invites:", Array.from(selectedInvites.value));
-	selectedInvites.value = new Set();
-	isCancelMultipleInvitesDialogOpen.value = false;
+async function cancelSelectedInvites(): Promise<void> {
+  try {
+    await Promise.all(
+      Array.from(selectedInvites.value).map((inviteId) =>
+        cancelInviteAsync(inviteId),
+      ),
+    );
+    selectedInvites.value = new Set();
+    isCancelMultipleInvitesDialogOpen.value = false;
+  } catch (err) {
+    console.error("Failed to cancel invites:", err);
+  }
 }
 
 // ===== Selection Functions =====
 
-/**
- * Toggle selection for all non-owner members
- */
 function toggleSelectAllMembers(): void {
-	if (allMembersSelected.value) {
-		selectedMembers.value = new Set();
-	} else {
-		selectedMembers.value = new Set(
-			filteredMembers.value.filter((m) => m.role !== "Owner").map((m) => m.id),
-		);
-	}
+  if (allMembersSelected.value) {
+    selectedMembers.value = new Set();
+  } else {
+    selectedMembers.value = new Set(
+      selectableMembers.value.map((m) => m.accountId),
+    );
+  }
 }
 
-/**
- * Toggle selection for a specific member
- * @param memberId - ID of the member to toggle
- */
 function toggleMember(memberId: string): void {
-	const newSet = new Set(selectedMembers.value);
-	newSet.has(memberId) ? newSet.delete(memberId) : newSet.add(memberId);
-	selectedMembers.value = newSet;
+  const newSet = new Set(selectedMembers.value);
+  newSet.has(memberId) ? newSet.delete(memberId) : newSet.add(memberId);
+  selectedMembers.value = newSet;
 }
 
-/**
- * Toggle selection for all invitations
- */
 function toggleSelectAllInvites(): void {
-	selectedInvites.value = allInvitesSelected.value
-		? new Set()
-		: new Set(filteredInvites.value.map((i) => i.id));
+  selectedInvites.value = allInvitesSelected.value
+    ? new Set()
+    : new Set(filteredInvites.value.map((i) => i.inviteId));
 }
 
-/**
- * Toggle selection for a specific invitation
- * @param inviteId - ID of the invitation to toggle
- */
 function toggleInvite(inviteId: string): void {
-	const newSet = new Set(selectedInvites.value);
-	newSet.has(inviteId) ? newSet.delete(inviteId) : newSet.add(inviteId);
-	selectedInvites.value = newSet;
+  const newSet = new Set(selectedInvites.value);
+  newSet.has(inviteId) ? newSet.delete(inviteId) : newSet.add(inviteId);
+  selectedInvites.value = newSet;
 }
 
 // ===== Filter Functions =====
 
-/**
- * Update the selected role for new invitations
- * @param role - The role to select
- */
-function selectRole(role: string): void {
-	selectedRole.value = role;
+function selectRole(role: WorkspaceRole): void {
+  selectedRole.value = role;
 }
 
-/**
- * Update the role filter
- * @param role - The role filter to apply
- */
 function selectRoleFilter(role: string): void {
-	selectedRoleFilter.value = role;
+  selectedRoleFilter.value = role;
 }
 
-/**
- * Update the 2FA filter
- * @param filter - The 2FA filter to apply
- */
 function select2FAFilter(filter: string): void {
-	selected2FAFilter.value = filter;
+  selected2FAFilter.value = filter;
 }
 
-/**
- * Update the sorting option
- * @param sorting - The sorting option to apply
- */
 function selectSorting(sorting: string): void {
-	selectedSorting.value = sorting;
+  selectedSorting.value = sorting;
 }
 </script>
 
@@ -428,20 +401,25 @@ function selectSorting(sorting: string): void {
         <CardHeader>
           <div class="flex items-center justify-between">
             <div>
-              <CardTitle>{{ t("members.forms.invite.title") }}</CardTitle>
+              <CardTitle
+                class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
+                >{{ t("members.forms.invite.title") }}</CardTitle
+              >
               <CardDescription>{{
                 t("members.forms.invite.description")
               }}</CardDescription>
             </div>
             <div class="flex items-center gap-3">
-              <span class="text-sm text-neutral-600 dark:text-neutral-400">
+              <span
+                class="text-sm font-light text-neutral-600 dark:text-neutral-400"
+              >
                 {{ t("members.forms.invite.expiry.label") }}
               </span>
               <DropdownMenu>
                 <DropdownMenuTrigger as-child>
                   <Button
                     variant="outline"
-                    class="flex items-center gap-2 min-w-32 justify-between"
+                    class="flex items-center gap-2 min-w-32 justify-between font-normal"
                   >
                     {{
                       inviteExpiryOptions.find(
@@ -463,7 +441,10 @@ function selectSorting(sorting: string): void {
               </DropdownMenu>
               <DropdownMenu>
                 <DropdownMenuTrigger as-child>
-                  <Button variant="outline" class="w-32 justify-between">
+                  <Button
+                    variant="outline"
+                    class="w-32 justify-between font-normal"
+                  >
                     {{ roles.find((r) => r.value === selectedRole)?.label }}
                     <ChevronDown :size="16" />
                   </Button>
@@ -481,10 +462,12 @@ function selectSorting(sorting: string): void {
               <Button
                 variant="outline"
                 @click="copyInviteLink"
-                class="flex items-center gap-2"
+                :disabled="isGenerating"
+                class="flex items-center gap-2 font-normal"
               >
+                <Loader2 v-if="isGenerating" :size="16" class="animate-spin" />
                 <Check
-                  v-if="copiedInviteLink"
+                  v-else-if="copiedInviteLink"
                   :size="16"
                   class="text-green-500"
                 />
@@ -503,7 +486,11 @@ function selectSorting(sorting: string): void {
               class="flex-1"
               @keyup.enter="sendInvite"
             />
-            <Button @click="sendInvite" :disabled="!inviteEmail.trim()">
+            <Button
+              @click="sendInvite"
+              :disabled="!inviteEmail.trim() || isSending"
+            >
+              <Loader2 v-if="isSending" :size="16" class="mr-2 animate-spin" />
               {{ t("members.forms.invite.button") }}
             </Button>
           </div>
@@ -511,7 +498,7 @@ function selectSorting(sorting: string): void {
         <CardFooter
           class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
         >
-          <p class="text-sm text-neutral-600 dark:text-neutral-400">
+          <p class="text-sm font-light text-neutral-600 dark:text-neutral-400">
             {{ t("members.messages.inviteFooter") }}
           </p>
         </CardFooter>
@@ -560,7 +547,7 @@ function selectSorting(sorting: string): void {
               <DropdownMenuTrigger as-child>
                 <Button
                   variant="outline"
-                  class="justify-between min-w-32 border-neutral-300 dark:border-neutral-700"
+                  class="justify-between min-w-32 border-neutral-300 dark:border-neutral-700 font-normal"
                 >
                   {{
                     roleFilters.find((f) => f.value === selectedRoleFilter)
@@ -580,8 +567,8 @@ function selectSorting(sorting: string): void {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <!-- 2FA Filter (only for members tab) -->
-            <DropdownMenu v-if="activeTab === 'members'">
+            <!-- 2FA Filter (only for members tab) - hidden for now as API doesn't support it yet -->
+            <!-- <DropdownMenu v-if="activeTab === 'members'">
               <DropdownMenuTrigger as-child>
                 <Button
                   variant="outline"
@@ -603,14 +590,14 @@ function selectSorting(sorting: string): void {
                   {{ filter.label }}
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> -->
 
             <!-- Sorting -->
             <DropdownMenu>
               <DropdownMenuTrigger as-child>
                 <Button
                   variant="outline"
-                  class="justify-between min-w-32 border-neutral-300 dark:border-neutral-700"
+                  class="justify-between min-w-32 border-neutral-300 dark:border-neutral-700 font-normal"
                 >
                   {{
                     sortingOptions.find((o) => o.value === selectedSorting)
@@ -635,7 +622,16 @@ function selectSorting(sorting: string): void {
           <Tabs v-model="activeTab" class="w-full">
             <!-- Members Tab -->
             <TabsContent value="members">
+              <!-- Loading State -->
+              <div
+                v-if="isLoadingMembers"
+                class="flex items-center justify-center py-12"
+              >
+                <Loader2 :size="32" class="animate-spin text-neutral-400" />
+              </div>
+
               <MembersTable
+                v-else
                 :members="filteredMembers"
                 :selected-members="selectedMembers"
                 :all-selected="allMembersSelected"
@@ -648,7 +644,16 @@ function selectSorting(sorting: string): void {
 
             <!-- Pending Invites Tab -->
             <TabsContent value="invites">
+              <!-- Loading State -->
+              <div
+                v-if="isLoadingInvites"
+                class="flex items-center justify-center py-12"
+              >
+                <Loader2 :size="32" class="animate-spin text-neutral-400" />
+              </div>
+
               <InvitesTable
+                v-else
                 :invites="filteredInvites"
                 :selected-invites="selectedInvites"
                 :all-selected="allInvitesSelected"
@@ -663,7 +668,7 @@ function selectSorting(sorting: string): void {
         <CardFooter
           class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
         >
-          <p class="text-sm text-neutral-600 dark:text-neutral-400">
+          <p class="text-sm font-light text-neutral-600 dark:text-neutral-400">
             {{ t("members.messages.reviewFooter") }}
           </p>
         </CardFooter>

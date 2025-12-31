@@ -1,48 +1,36 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
+import type { Integration, UpdateIntegration } from "@nvisy/sdk";
+import { Loader2 } from "lucide-vue-next";
 import Input from "@/components/ui/input/Input.vue";
 import Button from "@/components/ui/button/Button.vue";
 import Switch from "@/components/ui/switch/Switch.vue";
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
-import type { LucideIcon } from "lucide-vue-next";
 
-interface Integration {
-	id: number;
-	name: string;
-	description: string;
-	icon: LucideIcon;
-	color: string;
-	status: string;
-	connectedAt: string;
-}
-
-interface IntegrationData {
-	name: string;
-	description: string;
-	active: boolean;
-	// Add any other integration-specific configuration fields
-}
+const { t } = useI18n();
 
 interface Props {
-	open?: boolean;
-	integration?: Integration | null;
+  open?: boolean;
+  integration?: Integration | null;
+  isLoading?: boolean;
 }
 
 interface Emits {
-	(e: "update:open", value: boolean): void;
-	(e: "update", integration: IntegrationData): void;
+  (e: "update:open", value: boolean): void;
+  (e: "update", updates: UpdateIntegration): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	open: false,
-	integration: null,
+  open: false,
+  integration: null,
+  isLoading: false,
 });
 
 const emit = defineEmits<Emits>();
@@ -54,65 +42,64 @@ const integrationActive = ref(true);
 
 // Computed validation
 const isFormValid = computed(() => {
-	return (
-		integrationName.value.trim().length > 0 &&
-		integrationDescription.value.trim().length > 0
-	);
+  return (
+    integrationName.value.trim().length > 0 &&
+    integrationDescription.value.trim().length > 0
+  );
 });
 
 // Watch for integration prop changes to populate form
 watch(
-	() => props.integration,
-	(newIntegration) => {
-		if (newIntegration && props.open) {
-			populateForm(newIntegration);
-		}
-	},
-	{ immediate: true },
+  () => props.integration,
+  (newIntegration) => {
+    if (newIntegration && props.open) {
+      populateForm(newIntegration);
+    }
+  },
+  { immediate: true },
 );
 
 watch(
-	() => props.open,
-	(isOpen) => {
-		if (isOpen && props.integration) {
-			populateForm(props.integration);
-		}
-	},
+  () => props.open,
+  (isOpen) => {
+    if (isOpen && props.integration) {
+      populateForm(props.integration);
+    }
+  },
 );
 
 // Functions
 function populateForm(integration: Integration) {
-	integrationName.value = integration.name;
-	integrationDescription.value = integration.description;
-	integrationActive.value = integration.status === "active";
+  integrationName.value = integration.integrationName;
+  integrationDescription.value = integration.description;
+  integrationActive.value = integration.isActive;
 }
 
 function handleOpenChange(open: boolean) {
-	emit("update:open", open);
+  emit("update:open", open);
 }
 
 function resetForm() {
-	integrationName.value = "";
-	integrationDescription.value = "";
-	integrationActive.value = true;
+  integrationName.value = "";
+  integrationDescription.value = "";
+  integrationActive.value = true;
 }
 
 function updateIntegration() {
-	if (!isFormValid.value || !props.integration) return;
+  if (!isFormValid.value || !props.integration) return;
 
-	const integrationData: IntegrationData = {
-		name: integrationName.value,
-		description: integrationDescription.value,
-		active: integrationActive.value,
-	};
+  const updates: UpdateIntegration = {
+    integrationName: integrationName.value,
+    description: integrationDescription.value,
+    isActive: integrationActive.value,
+  };
 
-	emit("update", integrationData);
-	emit("update:open", false);
+  emit("update", updates);
 }
 
 function cancel() {
-	resetForm();
-	emit("update:open", false);
+  resetForm();
+  emit("update:open", false);
 }
 </script>
 
@@ -120,33 +107,43 @@ function cancel() {
   <Dialog :open="open" @update:open="handleOpenChange">
     <DialogContent class="max-w-2xl">
       <DialogHeader>
-        <DialogTitle>Configure Integration</DialogTitle>
+        <DialogTitle>{{
+          t("integrations.dialogs.configure.title", {
+            name: integration?.integrationName,
+          })
+        }}</DialogTitle>
         <DialogDescription>
-          Update the integration settings and configuration.
+          {{ t("integrations.dialogs.configure.description") }}
         </DialogDescription>
       </DialogHeader>
 
       <div class="space-y-6 py-6">
         <!-- Integration Name -->
         <div>
-          <label class="block text-sm font-medium text-neutral-900 dark:text-white mb-2">
-            Integration Name
+          <label
+            class="block text-sm font-medium text-neutral-900 dark:text-white mb-2"
+          >
+            {{ t("integrations.dialogs.configure.nameLabel") }}
           </label>
           <Input
             v-model="integrationName"
-            placeholder="My Integration"
+            :placeholder="t('integrations.dialogs.configure.namePlaceholder')"
             class="text-neutral-900 dark:text-white"
           />
         </div>
 
         <!-- Integration Description -->
         <div>
-          <label class="block text-sm font-medium text-neutral-900 dark:text-white mb-2">
-            Description
+          <label
+            class="block text-sm font-medium text-neutral-900 dark:text-white mb-2"
+          >
+            {{ t("integrations.dialogs.configure.descriptionLabel") }}
           </label>
           <Input
             v-model="integrationDescription"
-            placeholder="What does this integration do?"
+            :placeholder="
+              t('integrations.dialogs.configure.descriptionPlaceholder')
+            "
             class="text-neutral-900 dark:text-white"
           />
         </div>
@@ -154,29 +151,29 @@ function cancel() {
         <!-- Active Switch -->
         <div class="flex items-center justify-between">
           <div>
-            <p class="font-medium text-neutral-900 dark:text-white">Active</p>
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Enable this integration to sync data and automate workflows
+            <p class="font-medium text-neutral-900 dark:text-white">
+              {{ t("integrations.dialogs.configure.activeLabel") }}
+            </p>
+            <p
+              class="text-sm font-light text-neutral-600 dark:text-neutral-400"
+            >
+              {{ t("integrations.dialogs.configure.activeDescription") }}
             </p>
           </div>
           <Switch v-model:checked="integrationActive" />
         </div>
-
-        <!-- Additional integration-specific settings can be added here -->
       </div>
 
       <DialogFooter>
-        <Button
-          variant="outline"
-          @click="cancel"
-        >
-          Cancel
+        <Button variant="outline" @click="cancel">
+          {{ t("integrations.dialogs.configure.cancel") }}
         </Button>
         <Button
           @click="updateIntegration"
-          :disabled="!isFormValid"
+          :disabled="!isFormValid || isLoading"
         >
-          Update Integration
+          <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
+          {{ t("integrations.dialogs.configure.save") }}
         </Button>
       </DialogFooter>
     </DialogContent>

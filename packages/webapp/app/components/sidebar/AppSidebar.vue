@@ -6,9 +6,6 @@ import {
   Settings,
   Users,
   CreditCard,
-  GalleryVerticalEnd,
-  AudioWaveform,
-  Command,
   BarChart3,
   MessagesSquare,
   LayoutDashboard,
@@ -50,31 +47,18 @@ const helpChatRef = ref();
 // Get authenticated user data
 const { user } = useAuth();
 
+// Check if workspace is selected
+const { currentWorkspaceId } = useWorkspaces();
+const hasWorkspace = computed(() => !!currentWorkspaceId.value);
+
 const userData = computed(() => ({
   name: user.value?.name || "Guest",
   email: user.value?.email || "",
   avatar: "",
 }));
 
-// Sample data
+// Navigation data
 const data = {
-  workspaces: [
-    {
-      name: "Production App",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Staging",
-      logo: AudioWaveform,
-      plan: "Pro",
-    },
-    {
-      name: "Development",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
   navDashboard: {
     title: "Dashboard",
     url: "/",
@@ -138,13 +122,13 @@ function openHelpChat() {
 <template>
   <Sidebar v-bind="props">
     <SidebarHeader>
-      <WorkspaceSwitcher :workspaces="data.workspaces" />
+      <WorkspaceSwitcher />
     </SidebarHeader>
     <SidebarContent>
-      <!-- Overview - hidden when sidebar is collapsed -->
-      <SidebarMenu v-if="state === 'expanded'" class="px-2 pt-2">
+      <!-- Overview - only visible when workspace is selected -->
+      <SidebarMenu v-if="hasWorkspace" class="px-2 pt-2">
         <SidebarMenuItem>
-          <SidebarMenuButton as-child>
+          <SidebarMenuButton as-child :tooltip="'Overview'">
             <NuxtLink to="/">
               <LayoutDashboard />
               <span>Overview</span>
@@ -152,26 +136,50 @@ function openHelpChat() {
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
-      <NavMain :items="data.navWorkspace" label="Workspace" />
-      <NavMain :items="data.navAutomation" label="Automation" />
-      <NavMain :items="data.navObservability" label="Observability" />
+      <NavMain
+        :items="data.navWorkspace"
+        label="Workspace"
+        :disabled="!hasWorkspace"
+      />
+      <NavMain
+        :items="data.navAutomation"
+        label="Automation"
+        :disabled="!hasWorkspace"
+      />
+      <NavMain
+        :items="data.navObservability"
+        label="Observability"
+        :disabled="!hasWorkspace"
+      />
     </SidebarContent>
     <SidebarFooter>
       <SidebarMenu>
-        <SidebarMenuItem>
+        <SidebarMenuItem
+          :class="{ 'opacity-50 pointer-events-none': !hasWorkspace }"
+        >
           <SidebarMenuButton as-child>
-            <NuxtLink to="/billing">
+            <NuxtLink v-if="hasWorkspace" to="/billing">
               <CreditCard />
               <span>Billing</span>
             </NuxtLink>
+            <span v-else class="flex items-center gap-2 cursor-not-allowed">
+              <CreditCard />
+              <span>Billing</span>
+            </span>
           </SidebarMenuButton>
         </SidebarMenuItem>
-        <SidebarMenuItem>
+        <SidebarMenuItem
+          :class="{ 'opacity-50 pointer-events-none': !hasWorkspace }"
+        >
           <SidebarMenuButton as-child>
-            <NuxtLink to="/settings">
+            <NuxtLink v-if="hasWorkspace" to="/settings">
               <Settings />
               <span>Settings</span>
             </NuxtLink>
+            <span v-else class="flex items-center gap-2 cursor-not-allowed">
+              <Settings />
+              <span>Settings</span>
+            </span>
           </SidebarMenuButton>
         </SidebarMenuItem>
         <SidebarMenuItem>

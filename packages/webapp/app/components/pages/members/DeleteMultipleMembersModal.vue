@@ -2,61 +2,43 @@
 import { AlertCircle } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 
-/**
- * Component props interface
- */
 interface Props {
-	/** Controls dialog visibility */
-	open?: boolean;
-	/** Number of members to be deleted */
-	count?: number;
+  open?: boolean;
+  count?: number;
 }
 
-/**
- * Component emits interface
- */
 interface Emits {
-	/** Emitted when dialog visibility changes */
-	(e: "update:open", value: boolean): void;
-	/** Emitted when user confirms bulk deletion */
-	(e: "confirm"): void;
+  (e: "update:open", value: boolean): void;
+  (e: "confirm"): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	open: false,
-	count: 0,
+  open: false,
+  count: 0,
 });
 
 const emit = defineEmits<Emits>();
 
-/**
- * Handle dialog visibility change
- * @param open - New visibility state
- */
+const { t } = useI18n();
+
 function handleOpenChange(open: boolean): void {
-	emit("update:open", open);
+  emit("update:open", open);
 }
 
-/**
- * Confirm bulk member deletion
- */
 function confirm(): void {
-	emit("confirm");
+  emit("confirm");
 }
 
-/**
- * Cancel the deletion and close dialog
- */
 function cancel(): void {
-	emit("update:open", false);
+  emit("update:open", false);
 }
 </script>
 
@@ -68,12 +50,12 @@ function cancel(): void {
           <div class="p-2 rounded-full bg-red-100 dark:bg-red-900/20">
             <AlertCircle :size="20" class="text-red-600 dark:text-red-400" />
           </div>
-          <DialogTitle>Delete Multiple Members</DialogTitle>
+          <DialogTitle>{{
+            t("members.modals.deleteMultiple.title")
+          }}</DialogTitle>
         </div>
         <DialogDescription>
-          Are you sure you want to delete {{ count }}
-          {{ count === 1 ? "member" : "members" }} from your team? This action
-          cannot be undone.
+          {{ t("members.modals.deleteMultiple.description", count) }}
         </DialogDescription>
       </DialogHeader>
 
@@ -83,17 +65,20 @@ function cancel(): void {
           class="p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800"
         >
           <p class="text-sm text-amber-900 dark:text-amber-100">
-            <span class="font-medium">Warning:</span> Deleting these members
-            will immediately revoke their access to the workspace and all
-            associated resources.
+            <span class="font-medium"
+              >{{ t("members.modals.deleteMultiple.warningTitle") }}:</span
+            >
+            {{ t("members.modals.deleteMultiple.warningDescription") }}
           </p>
         </div>
       </div>
 
       <DialogFooter>
-        <Button variant="outline" @click="cancel"> Cancel </Button>
+        <Button variant="outline" @click="cancel">
+          {{ t("members.modals.deleteMultiple.cancelButton") }}
+        </Button>
         <Button variant="destructive" @click="confirm">
-          Delete {{ count }} {{ count === 1 ? "Member" : "Members" }}
+          {{ t("members.modals.deleteMultiple.confirmButton") }} ({{ count }})
         </Button>
       </DialogFooter>
     </DialogContent>

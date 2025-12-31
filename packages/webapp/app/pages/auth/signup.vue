@@ -1,29 +1,29 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
-  ArrowRight,
-  ExternalLink,
-  User,
+	Mail,
+	Lock,
+	Eye,
+	EyeOff,
+	ArrowRight,
+	ExternalLink,
+	User,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 
 definePageMeta({
-  layout: "auth",
+	layout: "auth",
 });
 
 const { signupAsync, isSigningUp, signupError } = useAuth();
@@ -40,49 +40,49 @@ const termsError = ref(false);
  * Handle signup form submission
  */
 async function handleSignup(): Promise<void> {
-  console.log("agreeToTerms:", agreeToTerms.value, typeof agreeToTerms.value);
-  if (agreeToTerms.value !== true) {
-    termsError.value = true;
-    return;
-  }
-  termsError.value = false;
+	console.log("agreeToTerms:", agreeToTerms.value, typeof agreeToTerms.value);
+	if (agreeToTerms.value !== true) {
+		termsError.value = true;
+		return;
+	}
+	termsError.value = false;
 
-  try {
-    await signupAsync({
-      displayName: displayName.value,
-      emailAddress: email.value,
-      password: password.value,
-      rememberMe: true,
-    });
+	try {
+		await signupAsync({
+			displayName: displayName.value,
+			emailAddress: email.value,
+			password: password.value,
+			rememberMe: true,
+		});
 
-    // Redirect to dashboard or onboarding
-    navigateTo("/");
-  } catch (error) {
-    console.error("Signup error:", error);
-  }
+		// Redirect to dashboard or onboarding
+		navigateTo("/");
+	} catch (error) {
+		console.error("Signup error:", error);
+	}
 }
 
 /**
  * Toggle password visibility
  */
 function togglePasswordVisibility(): void {
-  showPassword.value = !showPassword.value;
+	showPassword.value = !showPassword.value;
 }
 
 /**
  * Handle Google signup
  */
 async function handleGoogleSignup(): Promise<void> {
-  console.log("Google signup");
-  // TODO: Implement Google OAuth
+	console.log("Google signup");
+	// TODO: Implement Google OAuth
 }
 
 /**
  * Handle Microsoft signup
  */
 async function handleMicrosoftSignup(): Promise<void> {
-  console.log("Microsoft signup");
-  // TODO: Implement Microsoft OAuth
+	console.log("Microsoft signup");
+	// TODO: Implement Microsoft OAuth
 }
 </script>
 

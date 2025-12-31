@@ -1,71 +1,45 @@
 <script setup lang="ts">
+import type { Invite } from "@nvisy/sdk";
 import { AlertCircle } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 
-/**
- * Pending invitation data structure
- */
-interface Invite {
-	id: string;
-	email: string;
-	role: string;
-}
-
-/**
- * Component props interface
- */
 interface Props {
-	/** Controls dialog visibility */
-	open?: boolean;
-	/** The invitation to be canceled */
-	invite?: Invite | null;
+  open?: boolean;
+  invite?: Invite | null;
 }
 
-/**
- * Component emits interface
- */
 interface Emits {
-	/** Emitted when dialog visibility changes */
-	(e: "update:open", value: boolean): void;
-	/** Emitted when user confirms cancellation */
-	(e: "confirm"): void;
+  (e: "update:open", value: boolean): void;
+  (e: "confirm"): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	open: false,
-	invite: null,
+  open: false,
+  invite: null,
 });
 
 const emit = defineEmits<Emits>();
 
-/**
- * Handle dialog visibility change
- * @param open - New visibility state
- */
+const { t } = useI18n();
+
 function handleOpenChange(open: boolean): void {
-	emit("update:open", open);
+  emit("update:open", open);
 }
 
-/**
- * Confirm invitation cancellation
- */
 function confirm(): void {
-	emit("confirm");
+  emit("confirm");
 }
 
-/**
- * Cancel the action and close dialog
- */
 function cancel(): void {
-	emit("update:open", false);
+  emit("update:open", false);
 }
 </script>
 
@@ -77,35 +51,44 @@ function cancel(): void {
           <div class="p-2 rounded-full bg-red-100 dark:bg-red-900/20">
             <AlertCircle :size="20" class="text-red-600 dark:text-red-400" />
           </div>
-          <DialogTitle>Cancel Invitation</DialogTitle>
+          <DialogTitle>{{
+            t("members.modals.cancelInvite.title")
+          }}</DialogTitle>
         </div>
         <DialogDescription>
-          Are you sure you want to cancel the invitation for <strong>{{ invite?.email }}</strong>?
-          They will not be able to join using the current invitation link.
+          {{
+            t("members.modals.cancelInvite.description", {
+              email: invite?.emailAddress ?? t("members.table.status.pending"),
+            })
+          }}
         </DialogDescription>
       </DialogHeader>
 
       <!-- Invitation details preview -->
       <div class="py-4">
-        <div class="p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800">
+        <div
+          class="p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
+        >
           <p class="text-sm text-neutral-900 dark:text-white font-medium mb-1">
-            {{ invite?.email }}
+            {{ invite?.emailAddress ?? t("members.table.status.pending") }}
           </p>
           <p class="text-xs text-neutral-500 dark:text-neutral-500">
-            Role: {{ invite?.role }}
+            {{ t("members.modals.cancelInvite.role") }}:
+            {{
+              invite?.invitedRole
+                ? t(`members.roles.${invite.invitedRole}`)
+                : ""
+            }}
           </p>
         </div>
       </div>
 
       <DialogFooter>
         <Button variant="outline" @click="cancel">
-          Keep Invitation
+          {{ t("members.modals.cancelInvite.keepButton") }}
         </Button>
-        <Button
-          variant="destructive"
-          @click="confirm"
-        >
-          Cancel
+        <Button variant="destructive" @click="confirm">
+          {{ t("members.modals.cancelInvite.confirmButton") }}
         </Button>
       </DialogFooter>
     </DialogContent>

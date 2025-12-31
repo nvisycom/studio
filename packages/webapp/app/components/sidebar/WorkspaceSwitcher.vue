@@ -1,35 +1,39 @@
 <script setup lang="ts">
-import type { Component } from "vue";
-import { ChevronsUpDown, Plus, LayoutGrid } from "lucide-vue-next";
-import { ref } from "vue";
+import { ChevronsUpDown, Plus, Layers } from "lucide-vue-next";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuShortcut,
-	DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
-	useSidebar,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
+import { EntityAvatar } from "@/components/common";
 import CreateWorkspaceModal from "./CreateWorkspaceModal.vue";
 
-const props = defineProps<{
-	workspaces: {
-		name: string;
-		logo: Component;
-		plan: string;
-	}[];
-}>();
-
+const { t } = useI18n();
 const { isMobile } = useSidebar();
-const activeWorkspace = ref(props.workspaces[0]);
+
+// Use the workspaces composable
+const {
+  workspaces,
+  currentWorkspace,
+  currentWorkspaceId,
+  selectWorkspace,
+  isLoading,
+} = useWorkspaces();
+
 const isCreateWorkspaceModalOpen = ref(false);
+
+function handleSelectWorkspace(workspaceId: string) {
+  selectWorkspace(workspaceId);
+}
 </script>
 
 <template>
@@ -41,18 +45,29 @@ const isCreateWorkspaceModalOpen = ref(false);
             size="lg"
             class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
           >
+            <EntityAvatar
+              v-if="currentWorkspace"
+              :name="currentWorkspace.displayName"
+              size="md"
+              fallback-from="#6366F1"
+              fallback-to="#8B5CF6"
+            />
             <div
+              v-else
               class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground"
             >
-              <component :is="activeWorkspace.logo" class="size-4" />
+              <Layers class="size-4" />
             </div>
             <div class="grid flex-1 text-left text-sm leading-tight">
               <span class="truncate font-medium">
-                {{ activeWorkspace.name }}
+                {{ currentWorkspace?.displayName ?? t("workspace.select") }}
               </span>
-              <span class="truncate text-sm font-light">{{
-                activeWorkspace.plan
-              }}</span>
+              <span
+                v-if="currentWorkspace?.description"
+                class="truncate text-sm font-light"
+              >
+                {{ currentWorkspace.description }}
+              </span>
             </div>
             <ChevronsUpDown class="ml-auto" />
           </SidebarMenuButton>
@@ -65,19 +80,25 @@ const isCreateWorkspaceModalOpen = ref(false);
         >
           <DropdownMenuItem
             v-for="(workspace, index) in workspaces"
-            :key="workspace.name"
+            :key="workspace.workspaceId"
             class="gap-2 p-2"
-            @click="activeWorkspace = workspace"
+            :class="{
+              'bg-accent': workspace.workspaceId === currentWorkspaceId,
+            }"
+            @click="handleSelectWorkspace(workspace.workspaceId)"
           >
-            <div
-              class="flex size-6 items-center justify-center rounded-sm border"
-            >
-              <component :is="workspace.logo" class="size-4 shrink-0" />
-            </div>
-            {{ workspace.name }}
-            <DropdownMenuShortcut>⌘{{ index + 1 }}</DropdownMenuShortcut>
+            <EntityAvatar
+              :name="workspace.displayName"
+              size="sm"
+              fallback-from="#6366F1"
+              fallback-to="#8B5CF6"
+            />
+            <span class="truncate">{{ workspace.displayName }}</span>
+            <DropdownMenuShortcut v-if="index < 9">
+              ⌘{{ index + 1 }}
+            </DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator v-if="workspaces && workspaces.length > 0" />
           <DropdownMenuItem
             class="gap-2 p-2"
             @click="isCreateWorkspaceModalOpen = true"
@@ -87,7 +108,9 @@ const isCreateWorkspaceModalOpen = ref(false);
             >
               <Plus class="size-4" />
             </div>
-            <div class="font-normal text-muted-foreground">Add workspace</div>
+            <div class="font-normal text-muted-foreground">
+              {{ t("workspace.addWorkspace") }}
+            </div>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -24,6 +24,8 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
+const { t } = useI18n();
+
 const copied = ref(false);
 
 async function copyToken() {
@@ -50,10 +52,9 @@ function closeModal() {
   <Dialog :open="open" @update:open="closeModal">
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>Token Created</DialogTitle>
+        <DialogTitle>{{ t("tokens.modals.created.title") }}</DialogTitle>
         <DialogDescription>
-          Please copy your token and store it in a safe place.
-          For security reasons we cannot show it again.
+          {{ t("tokens.modals.created.description") }}
         </DialogDescription>
       </DialogHeader>
 
@@ -78,7 +79,9 @@ function closeModal() {
       </div>
 
       <DialogFooter>
-        <Button @click="closeModal">Done</Button>
+        <Button @click="closeModal">{{
+          t("tokens.modals.created.doneButton")
+        }}</Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>

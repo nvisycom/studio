@@ -5,17 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 
 definePageMeta({
-  layout: "auth",
+	layout: "auth",
 });
 
 const { loginAsync, isLoggingIn, loginError } = useAuth();
@@ -30,41 +30,41 @@ const showPassword = ref(false);
  * Handle login form submission
  */
 async function handleLogin(): Promise<void> {
-  try {
-    await loginAsync({
-      emailAddress: email.value,
-      password: password.value,
-      rememberMe: rememberMe.value,
-    });
+	try {
+		await loginAsync({
+			emailAddress: email.value,
+			password: password.value,
+			rememberMe: rememberMe.value,
+		});
 
-    // Redirect to dashboard
-    navigateTo("/");
-  } catch (error) {
-    console.error("Login error:", error);
-  }
+		// Redirect to dashboard
+		navigateTo("/");
+	} catch (error) {
+		console.error("Login error:", error);
+	}
 }
 
 /**
  * Toggle password visibility
  */
 function togglePasswordVisibility(): void {
-  showPassword.value = !showPassword.value;
+	showPassword.value = !showPassword.value;
 }
 
 /**
  * Handle Google login
  */
 async function handleGoogleLogin(): Promise<void> {
-  console.log("Google login");
-  // TODO: Implement Google OAuth
+	console.log("Google login");
+	// TODO: Implement Google OAuth
 }
 
 /**
  * Handle Microsoft login
  */
 async function handleMicrosoftLogin(): Promise<void> {
-  console.log("Microsoft login");
-  // TODO: Implement Microsoft OAuth
+	console.log("Microsoft login");
+	// TODO: Implement Microsoft OAuth
 }
 </script>
 

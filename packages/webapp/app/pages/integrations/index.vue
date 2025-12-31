@@ -1,452 +1,496 @@
 <script setup lang="ts">
-import { ref } from "vue";
-const { t } = useI18n();
-import { Github, Slack, Database, ExternalLink, Plus } from "lucide-vue-next";
+import {
+  ExternalLink,
+  Webhook as WebhookIcon,
+  Loader2,
+  Plug,
+  PlugZap,
+} from "lucide-vue-next";
+import type { Integration, Webhook, UpdateIntegration } from "@nvisy/sdk";
 import { Button } from "@/components/ui/button";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
+
 import {
-	Empty,
-	EmptyContent,
-	EmptyDescription,
-	EmptyHeader,
-	EmptyTitle,
-} from "@/components/ui/empty";
-import {
-	WebhooksTable,
-	ConfigureIntegrationDialog,
-	DisconnectIntegrationDialog,
-	CreateWebhookDialog,
-	DeleteWebhookDialog,
-	EditWebhookDialog,
-	IntegrationsTable,
+  WebhooksTable,
+  ConfigureIntegrationDialog,
+  DisconnectIntegrationDialog,
+  CreateWebhookDialog,
+  DeleteWebhookDialog,
+  EditWebhookDialog,
+  IntegrationsTable,
 } from "~/components/pages/integrations";
 
+const { t } = useI18n();
+
 definePageMeta({
-	pageCategory: "Integrations",
+  pageCategory: "Integrations",
 });
 
-// Mock active integrations
-const activeIntegrations = ref([
-	{
-		id: 1,
-		name: "GitHub",
-		description: "Repository sync enabled",
-		icon: Github,
-		color: "bg-gray-900",
-		status: "active",
-		connectedAt: "2 weeks ago",
-	},
-	{
-		id: 2,
-		name: "Slack",
-		description: "Workspace: Acme Inc",
-		icon: Slack,
-		color: "bg-purple-600",
-		status: "active",
-		connectedAt: "1 month ago",
-	},
-	{
-		id: 3,
-		name: "PostgreSQL",
-		description: "Database: production",
-		icon: Database,
-		color: "bg-blue-600",
-		status: "active",
-		connectedAt: "3 days ago",
-	},
-]);
+// Use SDK composables
+const {
+  integrations,
+  isLoading: isLoadingIntegrations,
+  updateIntegrationAsync,
+  deleteIntegrationAsync,
+  isUpdating,
+  isDeleting,
+} = useIntegrations();
+
+const {
+  webhooks,
+  isLoading: isLoadingWebhooks,
+  createWebhookAsync,
+  updateWebhookAsync,
+  deleteWebhookAsync,
+  isCreating: isCreatingWebhook,
+} = useWebhooks();
 
 // Integration dialogs
 const isConfigureIntegrationDialogOpen = ref(false);
 const isDisconnectIntegrationDialogOpen = ref(false);
-const selectedIntegration = ref<(typeof activeIntegrations.value)[0] | null>(
-	null,
-);
+const selectedIntegration = ref<Integration | null>(null);
 
-function openConfigureIntegrationDialog(id: number) {
-	const integration = activeIntegrations.value.find((i) => i.id === id);
-	if (integration) {
-		selectedIntegration.value = integration;
-		isConfigureIntegrationDialogOpen.value = true;
-	}
+function openConfigureIntegrationDialog(integrationId: string) {
+  const integration = integrations.value?.find(
+    (i) => i.integrationId === integrationId,
+  );
+  if (integration) {
+    selectedIntegration.value = integration;
+    isConfigureIntegrationDialogOpen.value = true;
+  }
 }
 
-function openDisconnectIntegrationDialog(id: number) {
-	const integration = activeIntegrations.value.find((i) => i.id === id);
-	if (integration) {
-		selectedIntegration.value = integration;
-		isDisconnectIntegrationDialogOpen.value = true;
-	}
+function openDisconnectIntegrationDialog(integrationId: string) {
+  const integration = integrations.value?.find(
+    (i) => i.integrationId === integrationId,
+  );
+  if (integration) {
+    selectedIntegration.value = integration;
+    isDisconnectIntegrationDialogOpen.value = true;
+  }
 }
 
-function handleUpdateIntegration(integrationData: any) {
-	if (!selectedIntegration.value) return;
-
-	const integrationIndex = activeIntegrations.value.findIndex(
-		(i) => i.id === selectedIntegration.value?.id,
-	);
-	if (integrationIndex !== -1) {
-		const integration = activeIntegrations.value[integrationIndex];
-		if (integration) {
-			integration.name = integrationData.name;
-			integration.description = integrationData.description;
-			integration.status = integrationData.active ? "active" : "inactive";
-		}
-	}
-
-	console.log("Updated integration:", selectedIntegration.value);
+async function handleUpdateIntegration(updates: UpdateIntegration) {
+  if (!selectedIntegration.value) return;
+  try {
+    await updateIntegrationAsync({
+      integrationId: selectedIntegration.value.integrationId,
+      updates,
+    });
+    isConfigureIntegrationDialogOpen.value = false;
+  } catch (error) {
+    console.error("Failed to update integration:", error);
+  }
 }
 
-function handleDisconnectIntegration(integrationId: number) {
-	activeIntegrations.value = activeIntegrations.value.filter(
-		(i) => i.id !== integrationId,
-	);
-	console.log("Disconnected integration:", integrationId);
+async function handleDisconnectIntegration(integrationId: string) {
+  try {
+    await deleteIntegrationAsync(integrationId);
+    isDisconnectIntegrationDialogOpen.value = false;
+  } catch (error) {
+    console.error("Failed to disconnect integration:", error);
+  }
 }
 
 // Webhooks
-interface Webhook {
-	id: string;
-	name: string;
-	url: string;
-	status: "active" | "inactive";
-	events: string[];
-	createdAt: Date;
-	lastDelivery: Date;
-}
-
-interface WebhookData {
-	name: string;
-	url: string;
-	active: boolean;
-	events: Record<string, boolean>;
-}
-
 const isCreateDialogOpen = ref(false);
 const isEditDialogOpen = ref(false);
 const isDeleteDialogOpen = ref(false);
 const selectedWebhook = ref<Webhook | null>(null);
 
 const eventCategories = [
-	{
-		id: "documents",
-		name: "Documents",
-		events: [
-			{
-				key: "documentsUploaded",
-				name: "Document Uploaded",
-				description: "When a new document is uploaded to your workspace",
-			},
-			{
-				key: "documentsDownloaded",
-				name: "Document Downloaded",
-				description: "When a document is downloaded from your workspace",
-			},
-			{
-				key: "documentsRedacted",
-				name: "Document Redacted",
-				description: "When a document is successfully redacted",
-			},
-			{
-				key: "documentsVerified",
-				name: "Document Verified",
-				description: "When a document passes verification checks",
-			},
-		],
-	},
-	{
-		id: "integrations",
-		name: "Integrations",
-		events: [
-			{
-				key: "integrationTriggered",
-				name: "Integration Triggered",
-				description: "When an integration workflow is started",
-			},
-			{
-				key: "integrationSucceeded",
-				name: "Integration Succeeded",
-				description: "When an integration completes successfully",
-			},
-			{
-				key: "integrationFailed",
-				name: "Integration Failed",
-				description: "When an integration encounters errors or failures",
-			},
-		],
-	},
+  {
+    id: "documents",
+    name: t("integrations.events.documents.name"),
+    events: [
+      {
+        key: "documents.uploaded",
+        name: t("integrations.events.documents.documentsUploaded"),
+        description: t("integrations.events.documents.documentsUploadedDesc"),
+      },
+      {
+        key: "documents.downloaded",
+        name: t("integrations.events.documents.documentsDownloaded"),
+        description: t("integrations.events.documents.documentsDownloadedDesc"),
+      },
+      {
+        key: "documents.redacted",
+        name: t("integrations.events.documents.documentsRedacted"),
+        description: t("integrations.events.documents.documentsRedactedDesc"),
+      },
+      {
+        key: "documents.verified",
+        name: t("integrations.events.documents.documentsVerified"),
+        description: t("integrations.events.documents.documentsVerifiedDesc"),
+      },
+    ],
+  },
+  {
+    id: "integrations",
+    name: t("integrations.events.integrations.name"),
+    events: [
+      {
+        key: "integrations.triggered",
+        name: t("integrations.events.integrations.integrationTriggered"),
+        description: t(
+          "integrations.events.integrations.integrationTriggeredDesc",
+        ),
+      },
+      {
+        key: "integrations.succeeded",
+        name: t("integrations.events.integrations.integrationSucceeded"),
+        description: t(
+          "integrations.events.integrations.integrationSucceededDesc",
+        ),
+      },
+      {
+        key: "integrations.failed",
+        name: t("integrations.events.integrations.integrationFailed"),
+        description: t(
+          "integrations.events.integrations.integrationFailedDesc",
+        ),
+      },
+    ],
+  },
 ];
 
-const existingWebhooks = ref<Webhook[]>([
-	{
-		id: "1",
-		name: "Production API",
-		url: "https://api.production.com/webhooks",
-		status: "active",
-		events: ["documentsUploaded", "documentsRedacted", "integrationFailed"],
-		createdAt: new Date("2024-01-10"),
-		lastDelivery: new Date("2024-01-20"),
-	},
-	{
-		id: "2",
-		name: "Slack Notifications",
-		url: "https://hooks.slack.com/services/xxx/yyy/zzz",
-		status: "active",
-		events: ["integrationFailed", "documentsVerified"],
-		createdAt: new Date("2024-01-15"),
-		lastDelivery: new Date("2024-01-19"),
-	},
-	{
-		id: "3",
-		name: "Analytics Webhook",
-		url: "https://analytics.myapp.com/webhook",
-		status: "inactive",
-		events: ["documentsUploaded", "documentsDownloaded"],
-		createdAt: new Date("2024-01-05"),
-		lastDelivery: new Date("2024-01-18"),
-	},
-]);
+async function handleCreateWebhook(webhookData: {
+  name: string;
+  url: string;
+  active: boolean;
+  events: Record<string, boolean>;
+}) {
+  const events = Object.entries(webhookData.events)
+    .filter(([_, enabled]) => enabled)
+    .map(([key]) => key);
 
-function handleCreateWebhook(webhookData: WebhookData) {
-	const newWebhook: Webhook = {
-		id: Date.now().toString(),
-		name: webhookData.name,
-		url: webhookData.url,
-		status: webhookData.active ? "active" : "inactive",
-		events: Object.entries(webhookData.events)
-			.filter(([_, enabled]) => enabled)
-			.map(([key, _]) => key),
-		createdAt: new Date(),
-		lastDelivery: new Date(),
-	};
-
-	existingWebhooks.value.push(newWebhook);
-	console.log("Created webhook:", newWebhook);
+  try {
+    await createWebhookAsync({
+      displayName: webhookData.name,
+      url: webhookData.url,
+      description: "",
+      events,
+    });
+    isCreateDialogOpen.value = false;
+  } catch (error) {
+    console.error("Failed to create webhook:", error);
+  }
 }
 
-function handleUpdateWebhook(webhookData: WebhookData) {
-	if (!selectedWebhook.value) return;
+async function handleUpdateWebhook(webhookData: {
+  name: string;
+  url: string;
+  active: boolean;
+  events: Record<string, boolean>;
+}) {
+  if (!selectedWebhook.value) return;
 
-	const webhookIndex = existingWebhooks.value.findIndex(
-		(w) => w.id === selectedWebhook.value?.id,
-	);
-	if (webhookIndex !== -1) {
-		const webhook = existingWebhooks.value[webhookIndex];
-		if (webhook) {
-			webhook.name = webhookData.name;
-			webhook.url = webhookData.url;
-			webhook.status = webhookData.active ? "active" : "inactive";
-			webhook.events = Object.entries(webhookData.events)
-				.filter(([_, enabled]) => enabled)
-				.map(([key, _]) => key);
-		}
-	}
+  const events = Object.entries(webhookData.events)
+    .filter(([_, enabled]) => enabled)
+    .map(([key]) => key);
 
-	console.log("Updated webhook:", selectedWebhook.value);
+  try {
+    await updateWebhookAsync({
+      webhookId: selectedWebhook.value.webhookId,
+      updates: {
+        displayName: webhookData.name,
+        url: webhookData.url,
+        events,
+      },
+    });
+    isEditDialogOpen.value = false;
+  } catch (error) {
+    console.error("Failed to update webhook:", error);
+  }
 }
 
-function handleDeleteWebhook(webhookId: string) {
-	existingWebhooks.value = existingWebhooks.value.filter(
-		(w) => w.id !== webhookId,
-	);
-	console.log("Deleted webhook:", webhookId);
+async function handleDeleteWebhook(webhookId: string) {
+  try {
+    await deleteWebhookAsync(webhookId);
+    isDeleteDialogOpen.value = false;
+  } catch (error) {
+    console.error("Failed to delete webhook:", error);
+  }
 }
 
 function openEditDialog(webhook: Webhook) {
-	selectedWebhook.value = webhook;
-	isEditDialogOpen.value = true;
+  selectedWebhook.value = webhook;
+  isEditDialogOpen.value = true;
 }
 
 function openDeleteDialog(webhook: Webhook) {
-	selectedWebhook.value = webhook;
-	isDeleteDialogOpen.value = true;
+  selectedWebhook.value = webhook;
+  isDeleteDialogOpen.value = true;
 }
 
 function testWebhook(webhook: Webhook) {
-	console.log("Testing webhook:", webhook);
+  console.log("Testing webhook:", webhook);
 }
 </script>
 
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="max-w-4xl mx-auto w-full">
-      <!-- Active Integrations -->
-      <Card
-        v-if="activeIntegrations.length > 0"
-        class="mb-8 py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+      <!-- Loading State -->
+      <div
+        v-if="isLoadingIntegrations || isLoadingWebhooks"
+        class="flex items-center justify-center py-12"
       >
-        <CardHeader>
-          <div class="flex items-center justify-between">
-            <div>
-              <CardTitle>{{
-                t("integrations.sections.connectedServices.title")
-              }}</CardTitle>
-              <CardDescription>{{
-                t("integrations.sections.connectedServices.description", {
-                  count: activeIntegrations.length,
-                })
-              }}</CardDescription>
-            </div>
-            <div class="flex items-center gap-2">
-              <Button as-child variant="outline">
-                <NuxtLink to="/integrations/explore">
-                  {{ t("integrations.actions.explore") }}
-                </NuxtLink>
-              </Button>
-              <Button as-child variant="outline">
-                <NuxtLink to="/integrations/runs"> View Runs </NuxtLink>
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <IntegrationsTable
-            :integrations="activeIntegrations"
-            @configure="openConfigureIntegrationDialog"
-            @disconnect="openDisconnectIntegrationDialog"
-          />
-        </CardContent>
-        <CardFooter
-          class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+        <Loader2 class="h-8 w-8 animate-spin text-neutral-400" />
+      </div>
+
+      <template v-else>
+        <!-- Active Integrations -->
+        <Card
+          v-if="integrations && integrations.length > 0"
+          class="mb-8 py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
         >
-          <p class="text-sm text-neutral-600 dark:text-neutral-400">
-            {{ t("integrations.messages.integrationFooter") }}
-            <a
-              href="https://docs.nvisy.com/integrations"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-1 text-neutral-900 dark:text-white hover:underline font-medium"
-            >
-              {{ t("integrations.messages.documentation") }}
-              <ExternalLink :size="12" />
-            </a>
-          </p>
-        </CardFooter>
-      </Card>
-
-      <Card
-        v-else
-        class="mb-8 pt-6 py-0 rounded-xl border-neutral-200 dark:border-neutral-800"
-      >
-        <CardContent class="py-12">
-          <div class="text-center">
-            <p class="text-neutral-600 dark:text-neutral-400 mb-4">
-              {{
-                t("integrations.sections.connectedServices.noIntegrationsTitle")
-              }}
-            </p>
-            <Button as-child>
-              <NuxtLink to="/integrations/explore">
-                {{ t("integrations.actions.browse") }}
-              </NuxtLink>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <!-- Webhook Endpoints Section -->
-      <Card
-        class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-      >
-        <CardHeader>
-          <div class="flex items-center justify-between">
-            <div>
-              <CardTitle>{{
-                t("integrations.sections.webhooks.title")
-              }}</CardTitle>
-              <CardDescription>{{
-                t("integrations.sections.webhooks.description", {
-                  count: existingWebhooks.length,
-                })
-              }}</CardDescription>
+          <CardHeader>
+            <div class="flex items-center justify-between">
+              <div>
+                <CardTitle
+                  class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
+                  >{{
+                    t("integrations.sections.connectedServices.title")
+                  }}</CardTitle
+                >
+                <CardDescription class="font-light">{{
+                  t("integrations.sections.connectedServices.description", {
+                    count: integrations.length,
+                  })
+                }}</CardDescription>
+              </div>
+              <div class="flex items-center gap-2">
+                <Button as-child variant="outline">
+                  <NuxtLink to="/integrations/explore">
+                    {{ t("integrations.actions.explore") }}
+                  </NuxtLink>
+                </Button>
+                <Button as-child variant="outline">
+                  <NuxtLink to="/integrations/runs">
+                    {{ t("integrations.actions.viewRuns") }}
+                  </NuxtLink>
+                </Button>
+              </div>
             </div>
-            <CreateWebhookDialog
-              v-model:open="isCreateDialogOpen"
-              :event-categories="eventCategories"
-              @create="handleCreateWebhook"
+          </CardHeader>
+          <CardContent>
+            <IntegrationsTable
+              :integrations="integrations"
+              @configure="openConfigureIntegrationDialog"
+              @disconnect="openDisconnectIntegrationDialog"
             />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div v-if="existingWebhooks.length > 0">
-            <WebhooksTable
-              :webhooks="existingWebhooks"
-              @edit="openEditDialog"
-              @delete="openDeleteDialog"
-              @test="testWebhook"
-            />
-          </div>
-
-          <Empty v-else>
-            <EmptyHeader>
-              <EmptyTitle>{{
-                t("integrations.sections.webhooks.noWebhooksTitle")
-              }}</EmptyTitle>
-              <EmptyDescription>
-                {{ t("integrations.sections.webhooks.noWebhooksDescription") }}
-              </EmptyDescription>
-            </EmptyHeader>
-            <EmptyContent>
-              <Button
-                @click="isCreateDialogOpen = true"
-                class="flex items-center gap-2"
+          </CardContent>
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+          >
+            <p
+              class="text-sm font-light text-neutral-600 dark:text-neutral-400"
+            >
+              {{ t("integrations.messages.integrationFooter") }}
+              <a
+                href="https://docs.nvisy.com/integrations"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1 text-neutral-900 dark:text-white hover:underline font-medium"
               >
-                <Plus :size="16" />
-                {{ t("integrations.actions.createWebhook") }}
-              </Button>
-            </EmptyContent>
-          </Empty>
-        </CardContent>
-        <CardFooter
-          class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+                {{ t("integrations.messages.documentation") }}
+                <ExternalLink :size="12" />
+              </a>
+            </p>
+          </CardFooter>
+        </Card>
+
+        <Card
+          v-else
+          class="mb-8 py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
         >
-          <p class="text-sm text-neutral-600 dark:text-neutral-400">
-            {{ t("integrations.messages.webhookFooter") }}
-            <a
-              href="https://docs.nvisy.com/webhooks"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-1 text-neutral-900 dark:text-white hover:underline font-medium"
+          <CardHeader>
+            <div class="flex items-center justify-between">
+              <div>
+                <CardTitle
+                  class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
+                  >{{
+                    t("integrations.sections.connectedServices.title")
+                  }}</CardTitle
+                >
+                <CardDescription class="font-light">{{
+                  t("integrations.sections.connectedServices.description", {
+                    count: 0,
+                  })
+                }}</CardDescription>
+              </div>
+              <div class="flex items-center gap-2">
+                <Button as-child variant="outline">
+                  <NuxtLink to="/integrations/explore">
+                    <PlugZap :size="16" class="mr-2" />
+                    {{ t("integrations.actions.explore") }}
+                  </NuxtLink>
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent class="py-12">
+            <div class="text-center">
+              <div
+                class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
+              >
+                <Plug class="h-6 w-6 text-neutral-400 dark:text-neutral-500" />
+              </div>
+              <p
+                class="font-normal text-neutral-700 dark:text-neutral-300 mb-1"
+              >
+                {{
+                  t(
+                    "integrations.sections.connectedServices.noIntegrationsTitle",
+                  )
+                }}
+              </p>
+              <p
+                class="font-light text-sm text-neutral-500 dark:text-neutral-400"
+              >
+                {{
+                  t(
+                    "integrations.sections.connectedServices.noIntegrationsDescription",
+                  )
+                }}
+              </p>
+            </div>
+          </CardContent>
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+          >
+            <p
+              class="text-sm font-light text-neutral-600 dark:text-neutral-400"
             >
-              {{ t("integrations.messages.documentation") }}
-              <ExternalLink :size="12" />
-            </a>
-          </p>
-        </CardFooter>
-      </Card>
+              {{ t("integrations.messages.integrationFooter") }}
+              <a
+                href="https://docs.nvisy.com/integrations"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1 text-neutral-900 dark:text-white hover:underline font-medium"
+              >
+                {{ t("integrations.messages.documentation") }}
+                <ExternalLink :size="12" />
+              </a>
+            </p>
+          </CardFooter>
+        </Card>
 
-      <!-- Dialogs -->
-      <ConfigureIntegrationDialog
-        v-model:open="isConfigureIntegrationDialogOpen"
-        :integration="selectedIntegration"
-        @update="handleUpdateIntegration"
-      />
+        <!-- Webhook Endpoints Section -->
+        <Card
+          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+        >
+          <CardHeader>
+            <div class="flex items-center justify-between">
+              <div>
+                <CardTitle
+                  class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
+                  >{{ t("integrations.sections.webhooks.title") }}</CardTitle
+                >
+                <CardDescription class="font-light">{{
+                  t("integrations.sections.webhooks.description", {
+                    count: webhooks?.length ?? 0,
+                  })
+                }}</CardDescription>
+              </div>
+              <CreateWebhookDialog
+                v-model:open="isCreateDialogOpen"
+                :event-categories="eventCategories"
+                :is-loading="isCreatingWebhook"
+                @create="handleCreateWebhook"
+              />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div v-if="webhooks && webhooks.length > 0">
+              <WebhooksTable
+                :webhooks="webhooks"
+                @edit="openEditDialog"
+                @delete="openDeleteDialog"
+                @test="testWebhook"
+              />
+            </div>
 
-      <DisconnectIntegrationDialog
-        v-model:open="isDisconnectIntegrationDialogOpen"
-        :integration="selectedIntegration"
-        @disconnect="handleDisconnectIntegration"
-      />
+            <div v-else class="py-12">
+              <div class="text-center">
+                <div
+                  class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
+                >
+                  <WebhookIcon
+                    class="h-6 w-6 text-neutral-400 dark:text-neutral-500"
+                  />
+                </div>
+                <p
+                  class="font-normal text-neutral-700 dark:text-neutral-300 mb-1"
+                >
+                  {{ t("integrations.sections.webhooks.noWebhooksTitle") }}
+                </p>
+                <p
+                  class="font-light text-sm text-neutral-500 dark:text-neutral-400"
+                >
+                  {{
+                    t("integrations.sections.webhooks.noWebhooksDescription")
+                  }}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter
+            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+          >
+            <p
+              class="text-sm font-light text-neutral-600 dark:text-neutral-400"
+            >
+              {{ t("integrations.messages.webhookFooter") }}
+              <a
+                href="https://docs.nvisy.com/webhooks"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1 text-neutral-900 dark:text-white hover:underline font-medium"
+              >
+                {{ t("integrations.messages.documentation") }}
+                <ExternalLink :size="12" />
+              </a>
+            </p>
+          </CardFooter>
+        </Card>
 
-      <EditWebhookDialog
-        v-model:open="isEditDialogOpen"
-        :webhook="selectedWebhook"
-        :event-categories="eventCategories"
-        @update="handleUpdateWebhook"
-      />
+        <!-- Dialogs -->
+        <ConfigureIntegrationDialog
+          v-model:open="isConfigureIntegrationDialogOpen"
+          :integration="selectedIntegration"
+          :is-loading="isUpdating"
+          @update="handleUpdateIntegration"
+        />
 
-      <DeleteWebhookDialog
-        v-model:open="isDeleteDialogOpen"
-        :webhook="selectedWebhook"
-        @delete="handleDeleteWebhook"
-      />
+        <DisconnectIntegrationDialog
+          v-model:open="isDisconnectIntegrationDialogOpen"
+          :integration="selectedIntegration"
+          :is-loading="isDeleting"
+          @disconnect="handleDisconnectIntegration"
+        />
+
+        <EditWebhookDialog
+          v-model:open="isEditDialogOpen"
+          :webhook="selectedWebhook"
+          :event-categories="eventCategories"
+          @update="handleUpdateWebhook"
+        />
+
+        <DeleteWebhookDialog
+          v-model:open="isDeleteDialogOpen"
+          :webhook="selectedWebhook"
+          @delete="handleDeleteWebhook"
+        />
+      </template>
     </div>
   </div>
 </template>

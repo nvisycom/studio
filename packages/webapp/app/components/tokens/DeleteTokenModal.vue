@@ -3,34 +3,36 @@ import type { ApiToken } from "@nvisy/sdk";
 import { Trash2 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
 } from "@/components/ui/dialog";
 
 interface Props {
-  open: boolean;
-  token: ApiToken | null;
+	open: boolean;
+	token: ApiToken | null;
 }
 
 interface Emits {
-  (e: "update:open", value: boolean): void;
-  (e: "confirm"): void;
+	(e: "update:open", value: boolean): void;
+	(e: "confirm"): void;
 }
 
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
+const { t } = useI18n();
+
 function closeModal() {
-  emit("update:open", false);
+	emit("update:open", false);
 }
 
 function confirmDelete() {
-  emit("confirm");
-  closeModal();
+	emit("confirm");
+	closeModal();
 }
 </script>
 
@@ -38,18 +40,18 @@ function confirmDelete() {
   <Dialog :open="open" @update:open="closeModal">
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>Revoke Token</DialogTitle>
+        <DialogTitle>{{ t("tokens.modals.delete.title") }}</DialogTitle>
         <DialogDescription>
-          Are you sure you want to revoke "{{ token?.name }}"? This action
-          cannot be undone and any applications using this token will lose
-          access.
+          {{ t("tokens.modals.delete.description", { name: token?.name }) }}
         </DialogDescription>
       </DialogHeader>
       <DialogFooter>
-        <Button @click="closeModal" variant="outline"> Cancel </Button>
+        <Button @click="closeModal" variant="outline">
+          {{ t("tokens.modals.delete.cancelButton") }}
+        </Button>
         <Button @click="confirmDelete" variant="destructive">
           <Trash2 :size="16" class="mr-2" />
-          Revoke Token
+          {{ t("tokens.modals.delete.confirmButton") }}
         </Button>
       </DialogFooter>
     </DialogContent>

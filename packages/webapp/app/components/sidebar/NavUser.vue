@@ -1,39 +1,39 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
-  ChevronsUpDown,
-  LogOut,
-  Command,
-  Moon,
-  Sun,
-  Home,
-  ExternalLink,
-  User,
-  Key,
+	ChevronsUpDown,
+	LogOut,
+	Command,
+	Moon,
+	Sun,
+	Home,
+	ExternalLink,
+	User,
+	Key,
 } from "lucide-vue-next";
 import { EntityAvatar } from "@/components/common";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuGroup,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	useSidebar,
 } from "@/components/ui/sidebar";
 import CommandMenu from "@/components/CommandMenu.vue";
 
 const props = defineProps<{
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
+	user: {
+		name: string;
+		email: string;
+		avatar: string;
+	};
 }>();
 
 const { isMobile } = useSidebar();
@@ -43,15 +43,15 @@ const isCommandMenuOpen = ref(false);
 const colorMode = useColorMode();
 
 function openCommandMenu() {
-  isCommandMenuOpen.value = true;
+	isCommandMenuOpen.value = true;
 }
 
 function toggleTheme() {
-  colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
+	colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
 }
 
 function handleLogout() {
-  logout();
+	logout();
 }
 </script>
 

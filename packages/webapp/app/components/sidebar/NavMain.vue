@@ -2,47 +2,49 @@
 import type { LucideIcon } from "lucide-vue-next";
 import { ChevronRight } from "lucide-vue-next";
 import {
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
-	SidebarGroup,
-	SidebarGroupLabel,
-	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
-	SidebarMenuSub,
-	SidebarMenuSubButton,
-	SidebarMenuSubItem,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 
 interface NavSubItem {
-	title: string;
-	url: string;
+  title: string;
+  url: string;
 }
 
 interface NavItem {
-	title: string;
-	url: string;
-	icon?: LucideIcon;
-	isActive?: boolean;
-	items?: NavSubItem[];
+  title: string;
+  url: string;
+  icon?: LucideIcon;
+  isActive?: boolean;
+  items?: NavSubItem[];
 }
 
-withDefaults(
-	defineProps<{
-		items: NavItem[];
-		label?: string;
-	}>(),
-	{
-		label: "Platform",
-	},
+const props = withDefaults(
+  defineProps<{
+    items: NavItem[];
+    label?: string;
+    disabled?: boolean;
+  }>(),
+  {
+    label: "Platform",
+    disabled: false,
+  },
 );
 </script>
 
 <template>
-  <SidebarGroup>
+  <SidebarGroup :class="{ 'opacity-50 pointer-events-none': disabled }">
     <SidebarGroupLabel v-if="label" class="uppercase">{{
       label
     }}</SidebarGroupLabel>
@@ -56,7 +58,7 @@ withDefaults(
       >
         <SidebarMenuItem>
           <CollapsibleTrigger v-if="item.items" as-child>
-            <SidebarMenuButton :tooltip="item.title">
+            <SidebarMenuButton :tooltip="item.title" :disabled="disabled">
               <component :is="item.icon" v-if="item.icon" />
               <span>{{ item.title }}</span>
               <ChevronRight
@@ -65,10 +67,14 @@ withDefaults(
             </SidebarMenuButton>
           </CollapsibleTrigger>
           <SidebarMenuButton v-else :tooltip="item.title" as-child>
-            <NuxtLink :to="item.url">
+            <NuxtLink v-if="!disabled" :to="item.url">
               <component :is="item.icon" v-if="item.icon" />
               <span>{{ item.title }}</span>
             </NuxtLink>
+            <span v-else class="flex items-center gap-2 cursor-not-allowed">
+              <component :is="item.icon" v-if="item.icon" />
+              <span>{{ item.title }}</span>
+            </span>
           </SidebarMenuButton>
           <CollapsibleContent v-if="item.items">
             <SidebarMenuSub>
@@ -77,9 +83,12 @@ withDefaults(
                 :key="subItem.title"
               >
                 <SidebarMenuSubButton as-child>
-                  <NuxtLink :to="subItem.url">
+                  <NuxtLink v-if="!disabled" :to="subItem.url">
                     <span>{{ subItem.title }}</span>
                   </NuxtLink>
+                  <span v-else class="cursor-not-allowed">
+                    {{ subItem.title }}
+                  </span>
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
             </SidebarMenuSub>

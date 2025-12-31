@@ -5,48 +5,56 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Empty,
-  EmptyHeader,
-  EmptyTitle,
-  EmptyDescription,
+	Empty,
+	EmptyHeader,
+	EmptyTitle,
+	EmptyDescription,
 } from "@/components/ui/empty";
 import {
-  TokensTable,
-  TokenCreatedModal,
-  DeleteTokenModal,
-  DeleteMultipleTokensModal,
-  RenameTokenModal,
+	TokensTable,
+	TokenCreatedModal,
+	DeleteTokenModal,
+	DeleteMultipleTokensModal,
+	RenameTokenModal,
 } from "@/components/tokens";
 
 definePageMeta({
-  pageCategory: "Settings",
+	pageCategory: "Settings",
 });
+
+const { t } = useI18n();
 
 // Use the API tokens composable
 const {
-  tokens,
-  isLoading,
-  error,
-  createTokenAsync,
-  isCreating,
-  updateTokenAsync,
-  revokeTokenAsync,
-  isRevoking,
+	tokens,
+	isLoading,
+	error,
+	createTokenAsync,
+	isCreating,
+	updateTokenAsync,
+	revokeTokenAsync,
+	isRevoking,
 } = useApiTokens();
+
+// Get current auth token to identify active session
+const { authToken } = useAuth();
+
+// Get the current session's token ID
+const currentTokenId = computed(() => authToken.value?.tokenId ?? null);
 
 // Form state
 const tokenName = ref("");
@@ -65,116 +73,126 @@ const isRenameDialogOpen = ref(false);
 const selectedTokens = ref<Set<string>>(new Set());
 
 // Constants
-const expirations = [
-  { label: "7 days", value: "in7Days" as TokenExpiration },
-  { label: "30 days", value: "in30Days" as TokenExpiration },
-  { label: "90 days", value: "in90Days" as TokenExpiration },
-  { label: "1 year", value: "in1Year" as TokenExpiration },
-  { label: "Never", value: "never" as TokenExpiration },
-] as const;
+const expirations = computed(() => [
+	{ label: t("tokens.expiration.7days"), value: "in7Days" as TokenExpiration },
+	{
+		label: t("tokens.expiration.30days"),
+		value: "in30Days" as TokenExpiration,
+	},
+	{
+		label: t("tokens.expiration.90days"),
+		value: "in90Days" as TokenExpiration,
+	},
+	{ label: t("tokens.expiration.1year"), value: "in1Year" as TokenExpiration },
+	{ label: t("tokens.expiration.never"), value: "never" as TokenExpiration },
+]);
 
 // Token creation
 async function createToken() {
-  if (!tokenName.value.trim()) return;
+	if (!tokenName.value.trim()) return;
 
-  try {
-    const result = await createTokenAsync({
-      name: tokenName.value,
-      expires: tokenExpiration.value,
-    });
+	try {
+		const result = await createTokenAsync({
+			name: tokenName.value,
+			expires: tokenExpiration.value,
+		});
 
-    // The result contains the JWT token (only shown once)
-    newTokenGenerated.value = (result as ApiTokenWithJWT).token || null;
-    isTokenCreatedModalOpen.value = true;
+		// The result contains the JWT token (only shown once)
+		newTokenGenerated.value = (result as ApiTokenWithJWT).token || null;
+		isTokenCreatedModalOpen.value = true;
 
-    // Reset form
-    tokenName.value = "";
-    tokenExpiration.value = "in90Days";
-  } catch (err) {
-    console.error("Failed to create token:", err);
-  }
+		// Reset form
+		tokenName.value = "";
+		tokenExpiration.value = "in90Days";
+	} catch (err) {
+		console.error("Failed to create token:", err);
+	}
 }
 
 function closeTokenCreatedModal() {
-  isTokenCreatedModalOpen.value = false;
-  newTokenGenerated.value = null;
+	isTokenCreatedModalOpen.value = false;
+	newTokenGenerated.value = null;
 }
 
 // Token deletion (revocation)
 function openDeleteDialog(token: ApiToken) {
-  tokenToDelete.value = token;
-  isDeleteDialogOpen.value = true;
+	tokenToDelete.value = token;
+	isDeleteDialogOpen.value = true;
 }
 
 async function deleteToken() {
-  if (!tokenToDelete.value) return;
+	if (!tokenToDelete.value) return;
 
-  try {
-    await revokeTokenAsync(tokenToDelete.value.id);
-    isDeleteDialogOpen.value = false;
-    tokenToDelete.value = null;
-  } catch (err) {
-    console.error("Failed to revoke token:", err);
-  }
+	try {
+		await revokeTokenAsync(tokenToDelete.value.id);
+		isDeleteDialogOpen.value = false;
+		tokenToDelete.value = null;
+	} catch (err) {
+		console.error("Failed to revoke token:", err);
+	}
 }
 
 function openDeleteMultipleDialog() {
-  isDeleteMultipleDialogOpen.value = true;
+	isDeleteMultipleDialogOpen.value = true;
 }
 
 async function deleteSelectedTokens() {
-  try {
-    // Revoke all selected tokens by their IDs
-    await Promise.all(
-      Array.from(selectedTokens.value).map((tokenId) =>
-        revokeTokenAsync(tokenId),
-      ),
-    );
-    selectedTokens.value = new Set();
-    isDeleteMultipleDialogOpen.value = false;
-  } catch (err) {
-    console.error("Failed to revoke tokens:", err);
-  }
+	try {
+		// Revoke all selected tokens by their IDs
+		await Promise.all(
+			Array.from(selectedTokens.value).map((tokenId) =>
+				revokeTokenAsync(tokenId),
+			),
+		);
+		selectedTokens.value = new Set();
+		isDeleteMultipleDialogOpen.value = false;
+	} catch (err) {
+		console.error("Failed to revoke tokens:", err);
+	}
 }
 
 // Computed
+const selectableTokens = computed(
+	() => tokens.value?.filter((t) => t.id !== currentTokenId.value) ?? [],
+);
+
 const allSelected = computed(
-  () =>
-    (tokens.value?.length ?? 0) > 0 &&
-    selectedTokens.value.size === (tokens.value?.length ?? 0),
+	() =>
+		selectableTokens.value.length > 0 &&
+		selectedTokens.value.size === selectableTokens.value.length,
 );
 
 function toggleSelectAll() {
-  selectedTokens.value = allSelected.value
-    ? new Set()
-    : new Set(tokens.value?.map((t) => t.id) ?? []);
+	selectedTokens.value = allSelected.value
+		? new Set()
+		: new Set(selectableTokens.value.map((t) => t.id));
 }
 
 function toggleToken(tokenId: string) {
-  const newSet = new Set(selectedTokens.value);
-  newSet.has(tokenId) ? newSet.delete(tokenId) : newSet.add(tokenId);
-  selectedTokens.value = newSet;
+	const newSet = new Set(selectedTokens.value);
+	newSet.has(tokenId) ? newSet.delete(tokenId) : newSet.add(tokenId);
+	selectedTokens.value = newSet;
 }
 
 // Token rename
 function openRenameDialog(token: ApiToken) {
-  tokenToRename.value = token;
-  isRenameDialogOpen.value = true;
+	tokenToRename.value = token;
+	isRenameDialogOpen.value = true;
 }
 
 async function renameToken(newName: string) {
-  if (!tokenToRename.value) return;
+	if (!tokenToRename.value) return;
 
-  try {
-    await updateTokenAsync({
-      tokenId: tokenToRename.value.id,
-      updates: { name: newName },
-    });
-    isRenameDialogOpen.value = false;
-    tokenToRename.value = null;
-  } catch (err) {
-    console.error("Failed to rename token:", err);
-  }
+	try {
+		await updateTokenAsync({
+			tokenId: tokenToRename.value.id,
+			updates: { name: newName },
+		});
+		isRenameDialogOpen.value = false;
+		tokenToRename.value = null;
+	} catch (err) {
+		console.error("Failed to rename token:", err);
+	}
 }
 </script>
 
@@ -184,25 +202,31 @@ async function renameToken(newName: string) {
       <!-- Create Token Section -->
       <Card class="mb-8 py-0 pt-6 rounded-xl">
         <CardHeader>
-          <CardTitle>Create New Token</CardTitle>
-          <CardDescription
-            >Generate a new API token for accessing your
-            account</CardDescription
+          <CardTitle
+            class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
+            >{{ t("tokens.create.title") }}</CardTitle
           >
+          <CardDescription>{{
+            t("tokens.create.description")
+          }}</CardDescription>
         </CardHeader>
         <CardContent>
           <div class="flex gap-4">
             <div class="space-y-2 flex-1">
-              <Label for="tokenName">Token Name</Label>
+              <Label for="tokenName" class="font-light">{{
+                t("tokens.create.nameLabel")
+              }}</Label>
               <Input
                 id="tokenName"
                 v-model="tokenName"
-                placeholder="e.g., Production API"
+                :placeholder="t('tokens.create.namePlaceholder')"
               />
             </div>
 
             <div class="space-y-2 flex-1">
-              <Label for="tokenExpiration">Expiration</Label>
+              <Label for="tokenExpiration" class="font-light">{{
+                t("tokens.create.expirationLabel")
+              }}</Label>
               <DropdownMenu>
                 <DropdownMenuTrigger as-child>
                   <Button variant="outline" class="w-full justify-between">
@@ -229,8 +253,8 @@ async function renameToken(newName: string) {
         <CardFooter
           class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
         >
-          <p class="text-sm text-neutral-600 dark:text-neutral-400">
-            Store your token securely. It won't be shown again.
+          <p class="text-sm font-light text-neutral-600 dark:text-neutral-400">
+            {{ t("tokens.create.footer") }}
           </p>
           <Button
             @click="createToken"
@@ -238,7 +262,7 @@ async function renameToken(newName: string) {
           >
             <Loader2 v-if="isCreating" :size="16" class="mr-2 animate-spin" />
             <Key v-else :size="16" class="mr-2" />
-            Generate Token
+            {{ t("tokens.create.button") }}
           </Button>
         </CardFooter>
       </Card>
@@ -246,10 +270,18 @@ async function renameToken(newName: string) {
       <!-- Active Tokens -->
       <Card class="overflow-hidden py-0 pt-6 rounded-xl">
         <CardHeader>
-          <CardTitle>Active Tokens</CardTitle>
+          <CardTitle
+            class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
+            >{{ t("tokens.list.title") }}</CardTitle
+          >
           <CardDescription>
-            {{ tokens?.length ?? 0 }}
-            {{ (tokens?.length ?? 0) === 1 ? "token" : "tokens" }} in use
+            {{
+              t(
+                "tokens.list.description",
+                { count: tokens?.length ?? 0 },
+                tokens?.length ?? 0,
+              )
+            }}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -269,6 +301,7 @@ async function renameToken(newName: string) {
             :tokens="tokens"
             :selected-tokens="selectedTokens"
             :all-selected="allSelected"
+            :current-token-id="currentTokenId"
             @toggle-select-all="toggleSelectAll"
             @toggle-token="toggleToken"
             @delete-token="openDeleteDialog"
@@ -280,10 +313,9 @@ async function renameToken(newName: string) {
           <Empty v-else>
             <EmptyHeader>
               <Key :size="48" class="mx-auto text-neutral-400 mb-4" />
-              <EmptyTitle>No tokens found</EmptyTitle>
+              <EmptyTitle>{{ t("tokens.empty.title") }}</EmptyTitle>
               <EmptyDescription>
-                Create your first API token to get started with programmatic
-                access.
+                {{ t("tokens.empty.description") }}
               </EmptyDescription>
             </EmptyHeader>
           </Empty>
@@ -291,9 +323,8 @@ async function renameToken(newName: string) {
         <CardFooter
           class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
         >
-          <p class="text-sm text-neutral-600 dark:text-neutral-400">
-            Tokens provide access to your account. Keep them secure and rotate
-            them regularly.
+          <p class="text-sm font-light text-neutral-600 dark:text-neutral-400">
+            {{ t("tokens.list.footer") }}
           </p>
         </CardFooter>
       </Card>
