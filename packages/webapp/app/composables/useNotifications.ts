@@ -1,5 +1,5 @@
 import { useQuery } from "@pinia/colada";
-import type { Notification } from "@nvisy/sdk";
+import type { Notification } from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for notification operations
@@ -14,7 +14,7 @@ export function useNotifications() {
 		query: async () => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			return await client.notifications.getUnreadStatus();
+			return await client.notifications.getUnreadNotificationsStatus();
 		},
 		enabled: () => !!authToken.value?.apiToken,
 	});
@@ -25,7 +25,7 @@ export function useNotifications() {
 		query: async () => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			return await client.notifications.list();
+			return await client.notifications.listNotifications();
 		},
 		enabled: false, // Don't auto-fetch, marks as read
 	});

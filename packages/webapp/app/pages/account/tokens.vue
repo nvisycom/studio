@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import type { ApiToken, ApiTokenWithJWT, TokenExpiration } from "@nvisy/sdk";
+import type {
+	ApiToken,
+	ApiTokenWithJWT,
+	TokenExpiration,
+} from "@nvisy/sdk/datatypes";
 import { Key, ChevronDown, Loader2 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

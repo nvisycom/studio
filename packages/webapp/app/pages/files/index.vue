@@ -39,7 +39,7 @@ import {
 	EmptyHeader,
 	EmptyTitle,
 } from "@/components/ui/empty";
-import type { File as NvisyFile } from "@nvisy/sdk";
+import type { File as NvisyFile } from "@nvisy/sdk/datatypes";
 
 definePageMeta({
 	pageCategory: "Files",

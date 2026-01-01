@@ -1,41 +1,41 @@
 <script setup lang="ts">
-import type { Member } from "@nvisy/sdk";
-import { Users, MoreHorizontal, Trash2 } from "lucide-vue-next";
+import type { Invite } from "@nvisy/sdk/datatypes";
+import { Mail, MoreHorizontal, X } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { EntityAvatar } from "@/components/common";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-	Empty,
-	EmptyDescription,
-	EmptyHeader,
-	EmptyTitle,
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
 } from "@/components/ui/empty";
 
 interface Props {
-	members: Member[];
-	selectedMembers?: Set<string>;
-	allSelected?: boolean;
+  invites: Invite[];
+  selectedInvites?: Set<string>;
+  allSelected?: boolean;
 }
 
 interface Emits {
-	(e: "remove", memberId: string): void;
-	(e: "toggleSelectAll"): void;
-	(e: "toggleMember", memberId: string): void;
-	(e: "deleteSelected"): void;
+  (e: "cancel", inviteId: string): void;
+  (e: "toggleSelectAll"): void;
+  (e: "toggleInvite", inviteId: string): void;
+  (e: "cancelSelected"): void;
 }
 
 const props = defineProps<Props>();
@@ -44,16 +44,26 @@ const emit = defineEmits<Emits>();
 const { t } = useI18n();
 
 function formatDate(date: string): string {
-	return new Date(date).toLocaleDateString("en-US", {
-		year: "numeric",
-		month: "short",
-		day: "numeric",
-	});
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+function getDisplayName(invite: Invite): string {
+  if (invite.emailAddress) {
+    return invite.emailAddress;
+  }
+  if (invite.inviteToken) {
+    return `${invite.inviteToken.slice(0, 8)}...`;
+  }
+  return t("members.table.status.pending");
 }
 </script>
 
 <template>
-  <div v-if="members.length > 0">
+  <div v-if="invites.length > 0">
     <Table>
       <TableHeader>
         <TableRow>
@@ -65,13 +75,16 @@ function formatDate(date: string): string {
             />
           </TableHead>
           <TableHead class="uppercase text-xs font-light tracking-wider">{{
-            t("members.table.headers.member")
+            t("members.table.headers.invite")
           }}</TableHead>
           <TableHead class="uppercase text-xs font-light tracking-wider">{{
             t("members.table.headers.role")
           }}</TableHead>
           <TableHead class="uppercase text-xs font-light tracking-wider">{{
-            t("members.table.headers.joined")
+            t("members.table.headers.invited")
+          }}</TableHead>
+          <TableHead class="uppercase text-xs font-light tracking-wider">{{
+            t("members.table.headers.expires")
           }}</TableHead>
           <TableHead class="w-[50px]">
             <DropdownMenu>
@@ -79,22 +92,22 @@ function formatDate(date: string): string {
                 <Button
                   variant="ghost"
                   class="h-8 w-8 p-0"
-                  :disabled="!selectedMembers || selectedMembers.size === 0"
+                  :disabled="!selectedInvites || selectedInvites.size === 0"
                 >
                   <MoreHorizontal :size="16" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
-                  @click="emit('deleteSelected')"
+                  @click="emit('cancelSelected')"
                   class="text-red-600 dark:text-red-400 cursor-pointer"
-                  :disabled="!selectedMembers || selectedMembers.size === 0"
+                  :disabled="!selectedInvites || selectedInvites.size === 0"
                 >
-                  <Trash2 :size="16" class="mr-2" />
-                  {{ t("members.table.actions.deleteSelected")
+                  <X :size="16" class="mr-2" />
+                  {{ t("members.table.actions.cancelSelected")
                   }}{{
-                    selectedMembers && selectedMembers.size > 0
-                      ? ` (${selectedMembers.size})`
+                    selectedInvites && selectedInvites.size > 0
+                      ? ` (${selectedInvites.size})`
                       : ""
                   }}
                 </DropdownMenuItem>
@@ -105,27 +118,29 @@ function formatDate(date: string): string {
       </TableHeader>
       <TableBody>
         <TableRow
-          v-for="member in members"
-          :key="member.accountId"
+          v-for="invite in invites"
+          :key="invite.inviteId"
           class="border-b border-neutral-200 dark:border-neutral-800"
         >
           <TableCell>
             <Checkbox
-              :model-value="selectedMembers?.has(member.accountId) || false"
-              @update:model-value="emit('toggleMember', member.accountId)"
-              :disabled="member.memberRole === 'owner'"
+              :model-value="selectedInvites?.has(invite.inviteId) || false"
+              @update:model-value="emit('toggleInvite', invite.inviteId)"
               class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
             />
           </TableCell>
           <TableCell>
             <div class="flex items-center gap-3">
-              <EntityAvatar :name="member.displayName" size="md" />
+              <EntityAvatar :name="getDisplayName(invite)" size="md" />
               <div>
                 <p class="font-normal text-neutral-900 dark:text-white">
-                  {{ member.displayName }}
+                  {{ getDisplayName(invite) }}
                 </p>
-                <p class="text-xs text-neutral-600 dark:text-neutral-400">
-                  {{ member.emailAddress }}
+                <p
+                  v-if="!invite.emailAddress && invite.inviteToken"
+                  class="text-xs text-neutral-500 dark:text-neutral-400"
+                >
+                  {{ t("members.table.status.pending") }}
                 </p>
               </div>
             </div>
@@ -134,35 +149,35 @@ function formatDate(date: string): string {
             <span
               class="text-xs text-neutral-700 dark:text-neutral-300 px-2 py-1 bg-neutral-200 dark:bg-neutral-800 rounded"
             >
-              {{ t(`members.roles.${member.memberRole}`) }}
+              {{ t(`members.roles.${invite.invitedRole}`) }}
             </span>
           </TableCell>
           <TableCell>
             <span
               class="text-xs font-light text-neutral-600 dark:text-neutral-400"
-              >{{ formatDate(member.createdAt) }}</span
+              >{{ formatDate(invite.createdAt) }}</span
+            >
+          </TableCell>
+          <TableCell>
+            <span
+              class="text-xs font-light text-neutral-600 dark:text-neutral-400"
+              >{{ formatDate(invite.expiresAt) }}</span
             >
           </TableCell>
           <TableCell>
             <DropdownMenu>
               <DropdownMenuTrigger as-child>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  class="h-8 w-8 p-0"
-                  :disabled="member.memberRole === 'owner'"
-                >
+                <Button variant="ghost" size="sm" class="h-8 w-8 p-0">
                   <MoreHorizontal :size="16" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
-                  @click="emit('remove', member.accountId)"
-                  :disabled="member.memberRole === 'owner'"
+                  @click="emit('cancel', invite.inviteId)"
                   class="text-red-600 dark:text-red-400 cursor-pointer"
                 >
-                  <Trash2 :size="14" class="mr-2" />
-                  {{ t("members.table.actions.delete") }}
+                  <X :size="14" class="mr-2" />
+                  {{ t("members.table.actions.cancel") }}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -173,10 +188,10 @@ function formatDate(date: string): string {
   </div>
   <Empty v-else>
     <EmptyHeader>
-      <Users :size="48" class="mx-auto text-neutral-400 mb-4" />
-      <EmptyTitle>{{ t("members.table.empty.noMembers") }}</EmptyTitle>
+      <Mail :size="48" class="mx-auto text-neutral-400 mb-4" />
+      <EmptyTitle>{{ t("members.table.empty.noPendingInvites") }}</EmptyTitle>
       <EmptyDescription>
-        {{ t("members.table.empty.noMembersDescription") }}
+        {{ t("members.table.empty.noPendingInvitesDescription") }}
       </EmptyDescription>
     </EmptyHeader>
   </Empty>

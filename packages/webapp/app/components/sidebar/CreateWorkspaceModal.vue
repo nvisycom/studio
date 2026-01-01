@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import { Layers, Loader2, ChevronDown } from "lucide-vue-next";
-import type { CreateWorkspace } from "@nvisy/sdk";
+import type { CreateWorkspace } from "@nvisy/sdk/datatypes";
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import {
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,63 +30,48 @@ const { createWorkspaceAsync, isCreating, createError } = useWorkspaces();
 // Form state
 const displayName = ref("");
 const description = ref("");
-const keepForDays = ref<string>("");
 const autoCleanup = ref(true);
 const requireApproval = ref(false);
-const maxStorageGb = ref<string>("");
 const enableComments = ref(true);
 
 // Advanced settings
 const advancedOpen = ref(false);
 
 const isFormValid = computed(() => {
-	return displayName.value.trim().length >= 3;
+  return displayName.value.trim().length >= 3;
 });
 
 function resetForm() {
-	displayName.value = "";
-	description.value = "";
-	keepForDays.value = "";
-	autoCleanup.value = true;
-	requireApproval.value = false;
-	maxStorageGb.value = "";
-	enableComments.value = true;
-	advancedOpen.value = false;
+  displayName.value = "";
+  description.value = "";
+  autoCleanup.value = true;
+  requireApproval.value = false;
+  enableComments.value = true;
+  advancedOpen.value = false;
 }
 
 // Reset form when modal closes
 watch(open, (isOpen) => {
-	if (!isOpen) {
-		resetForm();
-	}
+  if (!isOpen) {
+    resetForm();
+  }
 });
 
 async function createWorkspace() {
-	// Convert days to seconds (1 day = 86400 seconds)
-	const keepForSec = keepForDays.value
-		? parseInt(keepForDays.value) * 86400
-		: undefined;
-	// Convert GB to MB (1 GB = 1024 MB)
-	const maxStorageMb = maxStorageGb.value
-		? parseInt(maxStorageGb.value) * 1024
-		: undefined;
+  const workspaceData: CreateWorkspace = {
+    displayName: displayName.value.trim(),
+    description: description.value.trim() || undefined,
+    autoCleanup: autoCleanup.value,
+    requireApproval: requireApproval.value,
+    enableComments: enableComments.value,
+  };
 
-	const workspaceData: CreateWorkspace = {
-		displayName: displayName.value.trim(),
-		description: description.value.trim() || undefined,
-		keepForSec: keepForSec,
-		autoCleanup: autoCleanup.value,
-		requireApproval: requireApproval.value,
-		maxStorage: maxStorageMb,
-		enableComments: enableComments.value,
-	};
-
-	try {
-		await createWorkspaceAsync(workspaceData);
-		open.value = false;
-	} catch (error) {
-		console.error("Failed to create workspace:", error);
-	}
+  try {
+    await createWorkspaceAsync(workspaceData);
+    open.value = false;
+  } catch (error) {
+    console.error("Failed to create workspace:", error);
+  }
 }
 </script>
 
@@ -152,36 +137,6 @@ async function createWorkspace() {
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent class="pt-4 space-y-5">
-            <!-- File Retention & Storage Limit -->
-            <div class="grid grid-cols-2 gap-4">
-              <div class="grid gap-2">
-                <Label for="keep-for">{{
-                  t("workspace.create.retentionLabel")
-                }}</Label>
-                <Input
-                  id="keep-for"
-                  v-model="keepForDays"
-                  type="number"
-                  min="1"
-                  :placeholder="t('workspace.create.unlimited')"
-                />
-              </div>
-
-              <div class="grid gap-2">
-                <Label for="max-storage">{{
-                  t("workspace.create.storageLabel")
-                }}</Label>
-                <Input
-                  id="max-storage"
-                  v-model="maxStorageGb"
-                  type="number"
-                  min="1"
-                  max="1024"
-                  :placeholder="t('workspace.create.unlimited')"
-                />
-              </div>
-            </div>
-
             <!-- Toggle Options -->
             <div class="space-y-4">
               <div class="flex items-center justify-between">

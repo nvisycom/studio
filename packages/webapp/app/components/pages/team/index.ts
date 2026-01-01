@@ -4,3 +4,5 @@ export { default as DeleteMemberModal } from "./DeleteMemberModal.vue";
 export { default as DeleteMultipleMembersModal } from "./DeleteMultipleMembersModal.vue";
 export { default as CancelInviteModal } from "./CancelInviteModal.vue";
 export { default as CancelMultipleInvitesModal } from "./CancelMultipleInvitesModal.vue";
+export { default as InviteMembersCard } from "./InviteMembersCard.vue";
+export { default as TeamListCard } from "./TeamListCard.vue";

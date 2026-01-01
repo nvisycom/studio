@@ -1,36 +1,35 @@
 <script setup lang="ts">
-import { ref, watch, computed } from "vue";
-import type { Integration } from "@nvisy/sdk";
+import type { Integration } from "@nvisy/sdk/datatypes";
 import { AlertCircle, Loader2 } from "lucide-vue-next";
-import Button from "@/components/ui/button/Button.vue";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 
 const { t } = useI18n();
 
 interface Props {
-	open?: boolean;
-	integration?: Integration | null;
-	isLoading?: boolean;
+  open?: boolean;
+  integration?: Integration | null;
+  isLoading?: boolean;
 }
 
 interface Emits {
-	(e: "update:open", value: boolean): void;
-	(e: "disconnect", integrationId: string): void;
+  (e: "update:open", value: boolean): void;
+  (e: "disconnect", integrationId: string): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	open: false,
-	integration: null,
-	isLoading: false,
+  open: false,
+  integration: null,
+  isLoading: false,
 });
 
 const emit = defineEmits<Emits>();
@@ -39,29 +38,29 @@ const confirmationInput = ref("");
 
 // Watch for dialog open/close to reset input
 watch(
-	() => props.open,
-	(isOpen) => {
-		if (!isOpen) {
-			confirmationInput.value = "";
-		}
-	},
+  () => props.open,
+  (isOpen) => {
+    if (!isOpen) {
+      confirmationInput.value = "";
+    }
+  },
 );
 
 const canDisconnect = computed(() => {
-	return confirmationInput.value === props.integration?.integrationName;
+  return confirmationInput.value === props.integration?.integrationName;
 });
 
 function handleOpenChange(open: boolean) {
-	emit("update:open", open);
+  emit("update:open", open);
 }
 
 function confirmDisconnect() {
-	if (!props.integration || !canDisconnect.value) return;
-	emit("disconnect", props.integration.integrationId);
+  if (!props.integration || !canDisconnect.value) return;
+  emit("disconnect", props.integration.integrationId);
 }
 
 function cancel() {
-	emit("update:open", false);
+  emit("update:open", false);
 }
 </script>
 

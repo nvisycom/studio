@@ -1,35 +1,34 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
-import type { Webhook } from "@nvisy/sdk";
+import type { Webhook } from "@nvisy/sdk/datatypes";
 import { Loader2 } from "lucide-vue-next";
-import Input from "@/components/ui/input/Input.vue";
-import Button from "@/components/ui/button/Button.vue";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 
 const { t } = useI18n();
 
 interface Props {
-	open?: boolean;
-	webhook?: Webhook | null;
-	isLoading?: boolean;
+  open?: boolean;
+  webhook?: Webhook | null;
+  isLoading?: boolean;
 }
 
 interface Emits {
-	(e: "update:open", value: boolean): void;
-	(e: "delete", webhookId: string): void;
+  (e: "update:open", value: boolean): void;
+  (e: "delete", webhookId: string): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	open: false,
-	webhook: null,
-	isLoading: false,
+  open: false,
+  webhook: null,
+  isLoading: false,
 });
 
 const emit = defineEmits<Emits>();
@@ -39,32 +38,32 @@ const confirmationText = ref("");
 
 // Computed validation
 const isConfirmationValid = computed(() => {
-	return confirmationText.value === props.webhook?.displayName;
+  return confirmationText.value === props.webhook?.displayName;
 });
 
 // Watch for dialog open/close to reset form
 watch(
-	() => props.open,
-	(isOpen) => {
-		if (!isOpen) {
-			confirmationText.value = "";
-		}
-	},
+  () => props.open,
+  (isOpen) => {
+    if (!isOpen) {
+      confirmationText.value = "";
+    }
+  },
 );
 
 // Functions
 function handleOpenChange(open: boolean) {
-	emit("update:open", open);
+  emit("update:open", open);
 }
 
 function confirmDelete() {
-	if (!isConfirmationValid.value || !props.webhook) return;
-	emit("delete", props.webhook.webhookId);
+  if (!isConfirmationValid.value || !props.webhook) return;
+  emit("delete", props.webhook.webhookId);
 }
 
 function cancel() {
-	confirmationText.value = "";
-	emit("update:open", false);
+  confirmationText.value = "";
+  emit("update:open", false);
 }
 </script>
 

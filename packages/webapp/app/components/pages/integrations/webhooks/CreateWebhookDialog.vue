@@ -1,55 +1,66 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { Webhook, Loader2 } from "lucide-vue-next";
-import Input from "@/components/ui/input/Input.vue";
-import Button from "@/components/ui/button/Button.vue";
-import Checkbox from "@/components/ui/checkbox/Checkbox.vue";
-import Switch from "@/components/ui/switch/Switch.vue";
+import { Webhook, Loader2, Plus, X } from "lucide-vue-next";
+import type { WebhookEvent } from "@nvisy/sdk/datatypes";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 
 const { t } = useI18n();
 
-interface WebhookEvent {
-	key: string;
-	name: string;
-	description: string;
-}
+// All available webhook events from SDK
+const WEBHOOK_EVENTS: WebhookEvent[] = [
+  "document:created",
+  "document:updated",
+  "document:deleted",
+  "file:created",
+  "file:updated",
+  "file:deleted",
+  "member:added",
+  "member:updated",
+  "member:deleted",
+  "integration:created",
+  "integration:updated",
+  "integration:deleted",
+  "integration:synced",
+];
 
-interface EventCategory {
-	id: string;
-	name: string;
-	events: WebhookEvent[];
-}
-
-interface WebhookData {
-	name: string;
-	url: string;
-	active: boolean;
-	events: Record<string, boolean>;
+interface Header {
+  key: string;
+  value: string;
 }
 
 interface Props {
-	open?: boolean;
-	eventCategories: EventCategory[];
-	isLoading?: boolean;
+  open?: boolean;
+  isLoading?: boolean;
 }
 
 interface Emits {
-	(e: "update:open", value: boolean): void;
-	(e: "create", webhook: WebhookData): void;
+  (e: "update:open", value: boolean): void;
+  (
+    e: "create",
+    data: {
+      displayName: string;
+      url: string;
+      status: "active" | "paused";
+      events: WebhookEvent[];
+      headers: Record<string, string>;
+    },
+  ): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	open: false,
-	isLoading: false,
+  open: false,
+  isLoading: false,
 });
 
 const emit = defineEmits<Emits>();
@@ -58,63 +69,101 @@ const emit = defineEmits<Emits>();
 const webhookName = ref("");
 const webhookUrl = ref("");
 const webhookActive = ref(true);
-const webhookEvents = ref<Record<string, boolean>>({});
+const webhookEvents = ref<Record<WebhookEvent, boolean>>(
+  Object.fromEntries(WEBHOOK_EVENTS.map((e) => [e, false])) as Record<
+    WebhookEvent,
+    boolean
+  >,
+);
+const webhookHeaders = ref<Header[]>([]);
+const urlError = ref("");
 
-// Initialize events from categories
-function initializeEvents() {
-	const events: Record<string, boolean> = {};
-	props.eventCategories.forEach((category) => {
-		category.events.forEach((event) => {
-			events[event.key] = true;
-		});
-	});
-	webhookEvents.value = events;
+// URL validation
+function isValidUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "https:" || parsed.protocol === "http:";
+  } catch {
+    return false;
+  }
 }
 
-// Initialize on mount
-initializeEvents();
+function validateUrl() {
+  if (webhookUrl.value.trim() && !isValidUrl(webhookUrl.value)) {
+    urlError.value = t("integrations.forms.webhook.urlError");
+  } else {
+    urlError.value = "";
+  }
+}
+
+// Header management
+function addHeader() {
+  webhookHeaders.value.push({ key: "", value: "" });
+}
+
+function removeHeader(index: number) {
+  webhookHeaders.value.splice(index, 1);
+}
 
 // Computed validation
-const hasSelectedEvents = computed(() => {
-	return Object.values(webhookEvents.value).some(Boolean);
+const selectedEvents = computed(() =>
+  WEBHOOK_EVENTS.filter((e) => webhookEvents.value[e]),
+);
+
+const headersObject = computed(() => {
+  const headers: Record<string, string> = {};
+  for (const header of webhookHeaders.value) {
+    if (header.key.trim()) {
+      headers[header.key.trim()] = header.value;
+    }
+  }
+  return headers;
 });
 
 const isFormValid = computed(() => {
-	return (
-		webhookUrl.value.trim().length > 0 &&
-		webhookName.value.trim().length > 0 &&
-		hasSelectedEvents.value
-	);
+  const urlValid =
+    webhookUrl.value.trim().length > 0 && isValidUrl(webhookUrl.value);
+  return (
+    urlValid &&
+    webhookName.value.trim().length > 0 &&
+    selectedEvents.value.length > 0
+  );
 });
 
 // Functions
 function handleOpenChange(open: boolean) {
-	emit("update:open", open);
+  if (!open) {
+    resetForm();
+  }
+  emit("update:open", open);
 }
 
 function resetForm() {
-	webhookName.value = "";
-	webhookUrl.value = "";
-	webhookActive.value = true;
-	initializeEvents();
+  webhookName.value = "";
+  webhookUrl.value = "";
+  webhookActive.value = true;
+  webhookEvents.value = Object.fromEntries(
+    WEBHOOK_EVENTS.map((e) => [e, false]),
+  ) as Record<WebhookEvent, boolean>;
+  webhookHeaders.value = [];
+  urlError.value = "";
 }
 
 function saveWebhook() {
-	if (!isFormValid.value) return;
+  if (!isFormValid.value) return;
 
-	const webhookData: WebhookData = {
-		name: webhookName.value,
-		url: webhookUrl.value,
-		active: webhookActive.value,
-		events: { ...webhookEvents.value },
-	};
-
-	emit("create", webhookData);
+  emit("create", {
+    displayName: webhookName.value,
+    url: webhookUrl.value,
+    status: webhookActive.value ? "active" : "paused",
+    events: selectedEvents.value,
+    headers: headersObject.value,
+  });
 }
 
 function cancel() {
-	resetForm();
-	emit("update:open", false);
+  resetForm();
+  emit("update:open", false);
 }
 </script>
 
@@ -127,7 +176,7 @@ function cancel() {
       </Button>
     </DialogTrigger>
 
-    <DialogContent class="max-w-2xl">
+    <DialogContent class="max-w-2xl max-h-[90vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>{{
           t("integrations.dialogs.createWebhook.title")
@@ -164,7 +213,14 @@ function cancel() {
             type="url"
             :placeholder="t('integrations.forms.webhook.urlPlaceholder')"
             class="text-neutral-900 dark:text-white"
+            @blur="validateUrl"
           />
+          <p
+            v-if="urlError"
+            class="mt-1 text-sm text-red-600 dark:text-red-400"
+          >
+            {{ urlError }}
+          </p>
         </div>
 
         <!-- Active Switch -->
@@ -179,36 +235,80 @@ function cancel() {
               {{ t("integrations.forms.webhook.activeDescription") }}
             </p>
           </div>
-          <Switch v-model:checked="webhookActive" />
+          <Switch v-model="webhookActive" />
+        </div>
+
+        <!-- Custom Headers -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label
+              class="block text-sm font-medium text-neutral-900 dark:text-white"
+            >
+              {{ t("integrations.forms.webhook.headersLabel") }}
+            </label>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              @click="addHeader"
+            >
+              <Plus :size="14" class="mr-1" />
+              {{ t("integrations.forms.webhook.addHeader") }}
+            </Button>
+          </div>
+          <div v-if="webhookHeaders.length > 0" class="space-y-2">
+            <div
+              v-for="(header, index) in webhookHeaders"
+              :key="index"
+              class="flex items-center gap-2"
+            >
+              <Input
+                v-model="header.key"
+                :placeholder="
+                  t('integrations.forms.webhook.headerKeyPlaceholder')
+                "
+                class="flex-1 font-mono text-sm"
+              />
+              <Input
+                v-model="header.value"
+                :placeholder="
+                  t('integrations.forms.webhook.headerValuePlaceholder')
+                "
+                class="flex-1 font-mono text-sm"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                @click="removeHeader(index)"
+              >
+                <X :size="16" />
+              </Button>
+            </div>
+          </div>
+          <p v-else class="text-sm text-neutral-500 dark:text-neutral-400">
+            {{ t("integrations.forms.webhook.noHeaders") }}
+          </p>
         </div>
 
         <!-- Webhook Events -->
         <div>
-          <div class="space-y-4 max-h-60 overflow-y-auto">
-            <div v-for="category in eventCategories" :key="category.id">
-              <div
-                class="pb-2 border-b border-neutral-300 dark:border-neutral-600 mb-3"
+          <h4 class="text-sm font-medium text-neutral-900 dark:text-white mb-4">
+            {{ t("integrations.forms.webhook.eventsLabel") }}
+          </h4>
+          <div class="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto">
+            <div
+              v-for="event in WEBHOOK_EVENTS"
+              :key="event"
+              class="flex items-center gap-2"
+            >
+              <Checkbox :id="event" v-model="webhookEvents[event]" />
+              <label
+                :for="event"
+                class="text-sm font-mono text-neutral-900 dark:text-white cursor-pointer"
               >
-                <h5
-                  class="text-sm font-medium text-neutral-900 dark:text-white"
-                >
-                  {{ category.name }}
-                </h5>
-              </div>
-              <div class="grid grid-cols-2 gap-x-6 gap-y-3">
-                <div
-                  v-for="event in category.events"
-                  :key="event.key"
-                  class="flex items-center gap-2"
-                >
-                  <Checkbox v-model:checked="webhookEvents[event.key]" />
-                  <label
-                    class="text-sm font-normal text-neutral-900 dark:text-white cursor-pointer"
-                  >
-                    {{ event.name }}
-                  </label>
-                </div>
-              </div>
+                {{ event }}
+              </label>
             </div>
           </div>
         </div>

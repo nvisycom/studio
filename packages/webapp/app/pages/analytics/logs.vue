@@ -4,60 +4,60 @@ import type { DateRange } from "reka-ui";
 import type { Ref } from "vue";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import {
-	Download,
-	Upload,
-	Search,
-	Filter,
-	AlertCircle,
-	Info,
-	XCircle,
-	Calendar,
+  Download,
+  Upload,
+  Search,
+  Filter,
+  AlertCircle,
+  Info,
+  XCircle,
+  Calendar,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { RangeCalendar } from "@/components/ui/range-calendar";
 import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover";
 
 definePageMeta({
-	pageCategory: "Analytics",
+  pageCategory: "Analytics",
 });
 
 // Filters
@@ -74,155 +74,155 @@ const isExportModalOpen = ref(false);
 const start = today(getLocalTimeZone());
 const end = start.add({ days: 7 });
 const exportDateRange = ref({
-	start,
-	end,
+  start,
+  end,
 }) as Ref<DateRange>;
 const isCalendarOpen = ref(false);
 const exportEventTypes = ref({
-	info: true,
-	warning: true,
-	error: true,
+  info: true,
+  warning: true,
+  error: true,
 });
 
 const formattedExportDateRange = computed(() => {
-	if (!exportDateRange.value.start || !exportDateRange.value.end) {
-		return "Select date range";
-	}
+  if (!exportDateRange.value.start || !exportDateRange.value.end) {
+    return "Select date range";
+  }
 
-	const startDate = new Date(
-		exportDateRange.value.start.year,
-		exportDateRange.value.start.month - 1,
-		exportDateRange.value.start.day,
-	);
-	const endDate = new Date(
-		exportDateRange.value.end.year,
-		exportDateRange.value.end.month - 1,
-		exportDateRange.value.end.day,
-	);
+  const startDate = new Date(
+    exportDateRange.value.start.year,
+    exportDateRange.value.start.month - 1,
+    exportDateRange.value.start.day,
+  );
+  const endDate = new Date(
+    exportDateRange.value.end.year,
+    exportDateRange.value.end.month - 1,
+    exportDateRange.value.end.day,
+  );
 
-	const formatter = new Intl.DateTimeFormat("en-US", {
-		month: "short",
-		day: "numeric",
-		year: "numeric",
-	});
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 
-	return `${formatter.format(startDate)} - ${formatter.format(endDate)}`;
+  return `${formatter.format(startDate)} - ${formatter.format(endDate)}`;
 });
 
 // Mock log data
 const logs = ref([
-	{
-		id: "1",
-		timestamp: new Date(Date.now() - 5 * 60000),
-		level: "info",
-		message: "API request processed successfully",
-		endpoint: "/api/documents/analyze",
-		duration: "245ms",
-		status: 200,
-	},
-	{
-		id: "2",
-		timestamp: new Date(Date.now() - 12 * 60000),
-		level: "warning",
-		message: "Rate limit approaching threshold",
-		endpoint: "/api/documents/process",
-		duration: "89ms",
-		status: 429,
-	},
-	{
-		id: "3",
-		timestamp: new Date(Date.now() - 18 * 60000),
-		level: "error",
-		message: "Failed to process document: Invalid format",
-		endpoint: "/api/documents/upload",
-		duration: "12ms",
-		status: 400,
-	},
-	{
-		id: "4",
-		timestamp: new Date(Date.now() - 25 * 60000),
-		level: "info",
-		message: "User authentication successful",
-		endpoint: "/api/auth/login",
-		duration: "156ms",
-		status: 200,
-	},
-	{
-		id: "5",
-		timestamp: new Date(Date.now() - 32 * 60000),
-		level: "info",
-		message: "Integration sync completed",
-		endpoint: "/api/integrations/sync",
-		duration: "3.2s",
-		status: 200,
-	},
-	{
-		id: "6",
-		timestamp: new Date(Date.now() - 45 * 60000),
-		level: "info",
-		message: "Document processing initiated",
-		endpoint: "/api/documents/process",
-		duration: "67ms",
-		status: 202,
-	},
+  {
+    id: "1",
+    timestamp: new Date(Date.now() - 5 * 60000),
+    level: "info",
+    message: "API request processed successfully",
+    endpoint: "/api/documents/analyze",
+    duration: "245ms",
+    status: 200,
+  },
+  {
+    id: "2",
+    timestamp: new Date(Date.now() - 12 * 60000),
+    level: "warning",
+    message: "Rate limit approaching threshold",
+    endpoint: "/api/documents/process",
+    duration: "89ms",
+    status: 429,
+  },
+  {
+    id: "3",
+    timestamp: new Date(Date.now() - 18 * 60000),
+    level: "error",
+    message: "Failed to process document: Invalid format",
+    endpoint: "/api/documents/upload",
+    duration: "12ms",
+    status: 400,
+  },
+  {
+    id: "4",
+    timestamp: new Date(Date.now() - 25 * 60000),
+    level: "info",
+    message: "User authentication successful",
+    endpoint: "/api/auth/login",
+    duration: "156ms",
+    status: 200,
+  },
+  {
+    id: "5",
+    timestamp: new Date(Date.now() - 32 * 60000),
+    level: "info",
+    message: "Integration sync completed",
+    endpoint: "/api/integrations/sync",
+    duration: "3.2s",
+    status: 200,
+  },
+  {
+    id: "6",
+    timestamp: new Date(Date.now() - 45 * 60000),
+    level: "info",
+    message: "Document processing initiated",
+    endpoint: "/api/documents/process",
+    duration: "67ms",
+    status: 202,
+  },
 ]);
 
 const filteredLogs = computed(() => {
-	let filtered = logs.value;
+  let filtered = logs.value;
 
-	if (logLevel.value !== "all") {
-		filtered = filtered.filter((log) => log.level === logLevel.value);
-	}
+  if (logLevel.value !== "all") {
+    filtered = filtered.filter((log) => log.level === logLevel.value);
+  }
 
-	if (searchQuery.value) {
-		const query = searchQuery.value.toLowerCase();
-		filtered = filtered.filter(
-			(log) =>
-				log.message.toLowerCase().includes(query) ||
-				log.endpoint.toLowerCase().includes(query),
-		);
-	}
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(
+      (log) =>
+        log.message.toLowerCase().includes(query) ||
+        log.endpoint.toLowerCase().includes(query),
+    );
+  }
 
-	return filtered;
+  return filtered;
 });
 
 function getLevelIcon(level: string) {
-	switch (level) {
-		case "error":
-			return XCircle;
-		case "warning":
-			return AlertCircle;
-		default:
-			return Info;
-	}
+  switch (level) {
+    case "error":
+      return XCircle;
+    case "warning":
+      return AlertCircle;
+    default:
+      return Info;
+  }
 }
 
 function formatTimestamp(date: Date) {
-	return new Intl.DateTimeFormat("en-US", {
-		hour: "2-digit",
-		minute: "2-digit",
-		second: "2-digit",
-		hour12: false,
-	}).format(date);
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).format(date);
 }
 
 function openExportModal() {
-	isExportModalOpen.value = true;
+  isExportModalOpen.value = true;
 }
 
 function handleExport(format: "csv" | "json") {
-	console.log("Exporting logs:", {
-		format,
-		dateRange: exportDateRange.value,
-		eventTypes: exportEventTypes.value,
-	});
-	// TODO: Implement actual export functionality
-	isExportModalOpen.value = false;
+  console.log("Exporting logs:", {
+    format,
+    dateRange: exportDateRange.value,
+    eventTypes: exportEventTypes.value,
+  });
+  // TODO: Implement actual export functionality
+  isExportModalOpen.value = false;
 }
 
 function importLogs() {
-	console.log("Importing logs");
-	// TODO: Implement actual import functionality
+  console.log("Importing logs");
+  // TODO: Implement actual import functionality
 }
 </script>
 
@@ -398,7 +398,7 @@ function importLogs() {
                 <PopoverTrigger as-child>
                   <Button
                     variant="outline"
-                    class="w-full justify-start text-left font-normal"
+                    class="w-full justify-start text-left font-light"
                   >
                     <Calendar :size="16" class="mr-2" />
                     {{ formattedExportDateRange }}

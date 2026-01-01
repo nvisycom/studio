@@ -3,7 +3,7 @@ import type {
 	Integration,
 	CreateIntegration,
 	UpdateIntegration,
-} from "@nvisy/sdk";
+} from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for integration operations
@@ -19,7 +19,7 @@ export function useIntegrations() {
 			const client = $nvisyClient.value;
 			const workspaceId = currentWorkspaceId.value;
 			if (!client || !workspaceId) throw new Error("Not authenticated");
-			return await client.integrations.list(workspaceId);
+			return await client.integrations.listIntegrations(workspaceId);
 		},
 		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceId.value,
 	});
@@ -29,7 +29,10 @@ export function useIntegrations() {
 			const client = $nvisyClient.value;
 			const workspaceId = currentWorkspaceId.value;
 			if (!client || !workspaceId) throw new Error("Not authenticated");
-			return await client.integrations.create(workspaceId, integration);
+			return await client.integrations.createIntegration(
+				workspaceId,
+				integration,
+			);
 		},
 		onSuccess() {
 			integrationsQuery.refresh();
@@ -46,7 +49,10 @@ export function useIntegrations() {
 		}) => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			return await client.integrations.update(integrationId, updates);
+			return await client.integrations.updateIntegration(
+				integrationId,
+				updates,
+			);
 		},
 		onSuccess() {
 			integrationsQuery.refresh();
@@ -57,7 +63,7 @@ export function useIntegrations() {
 		mutation: async (integrationId: string) => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			await client.integrations.delete(integrationId);
+			await client.integrations.deleteIntegration(integrationId);
 		},
 		onSuccess() {
 			integrationsQuery.refresh();

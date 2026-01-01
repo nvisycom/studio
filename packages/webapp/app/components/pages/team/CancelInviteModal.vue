@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Invite } from "@nvisy/sdk";
+import type { Invite } from "@nvisy/sdk/datatypes";
 import { AlertCircle } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import {

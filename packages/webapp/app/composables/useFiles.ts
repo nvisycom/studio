@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "@pinia/colada";
-import type { File, UpdateFile } from "@nvisy/sdk";
+import type { File, UpdateFile } from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for file operations
@@ -18,7 +18,7 @@ export function useFiles(workspaceId?: MaybeRef<string | null>) {
 		query: async () => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			return await client.files.list(effectiveWorkspaceId.value);
+			return await client.files.listFiles(effectiveWorkspaceId.value);
 		},
 		enabled: () => !!effectiveWorkspaceId.value && !!authToken.value?.apiToken,
 	});
@@ -33,7 +33,7 @@ export function useFiles(workspaceId?: MaybeRef<string | null>) {
 		}) => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			return await client.files.update(fileId, updates);
+			return await client.files.updateFile(fileId, updates);
 		},
 		onSuccess() {
 			filesQuery.refresh();
@@ -44,7 +44,7 @@ export function useFiles(workspaceId?: MaybeRef<string | null>) {
 		mutation: async (fileId: string) => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			await client.files.delete(fileId);
+			await client.files.deleteFile(fileId);
 		},
 		onSuccess() {
 			filesQuery.refresh();
@@ -54,7 +54,7 @@ export function useFiles(workspaceId?: MaybeRef<string | null>) {
 	async function downloadFile(fileId: string, fileName: string) {
 		const client = $nvisyClient.value;
 		if (!client) throw new Error("Not authenticated");
-		const response = await client.files.download(fileId);
+		const response = await client.files.downloadFile(fileId);
 		const blob = await response.blob();
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement("a");
@@ -69,7 +69,7 @@ export function useFiles(workspaceId?: MaybeRef<string | null>) {
 		if (!client) throw new Error("Not authenticated");
 		const wId = effectiveWorkspaceId.value;
 		if (!wId) throw new Error("No workspace selected");
-		const response = await client.files.downloadArchive(wId, {
+		const response = await client.files.downloadFilesArchive(wId, {
 			fileIds,
 			format,
 		});

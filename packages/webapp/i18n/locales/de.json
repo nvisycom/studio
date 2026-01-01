@@ -1,485 +1,526 @@
 {
-	"common": {
-		"service": "Nvisy"
-	},
-	"overview": {
-		"welcome": {
-			"title": "Willkommen bei Nvisy",
-			"description": "Erstellen Sie Ihren ersten Arbeitsbereich, um Dokumente zu organisieren, mit Ihrem Team zusammenzuarbeiten und KI-gestützte Einblicke zu nutzen.",
-			"createWorkspace": "Arbeitsbereich Erstellen",
-			"setupProfile": "Profil Einrichten"
-		},
-		"actions": {
-			"learnMore": "Mehr erfahren",
-			"setupProfile": {
-				"time": "2 Minuten",
-				"title": "Profil Einrichten",
-				"description": "Vervollständigen Sie Ihr Profil, um Ihre Erfahrung zu personalisieren und Ihrem Team zu helfen, Sie zu identifizieren.",
-				"button": "Profil Einrichten"
-			},
-			"createWorkspace": {
-				"time": "2 Minuten",
-				"title": "Arbeitsbereich Erstellen",
-				"description": "Arbeitsbereiche helfen Ihnen, Dokumente zu organisieren, Teamzugriff zu verwalten und Projekte getrennt zu halten.",
-				"button": "Arbeitsbereich Erstellen"
-			},
-			"apiTokens": {
-				"time": "1 Minute",
-				"title": "API-Token Generieren",
-				"description": "Erstellen Sie einen API-Token, um Nvisy in Ihre Anwendungen zu integrieren und Workflows zu automatisieren.",
-				"button": "Token Erstellen"
-			}
-		},
-		"features": {
-			"sectionTitle": "Was Sie Tun Können",
-			"documentManagement": {
-				"title": "Dokumentenverwaltung",
-				"description": "Laden Sie Dokumente hoch, organisieren und verwalten Sie diese in einem sicheren, zentralen Arbeitsbereich."
-			},
-			"aiPowered": {
-				"title": "KI-gestützte Einblicke",
-				"description": "Extrahieren Sie Informationen, fassen Sie Inhalte zusammen und erhalten Sie Antworten aus Ihren Dokumenten mit KI."
-			},
-			"teamCollaboration": {
-				"title": "Team-Zusammenarbeit",
-				"description": "Laden Sie Teammitglieder ein, weisen Sie Rollen zu und arbeiten Sie nahtlos zusammen."
-			},
-			"secureCompliant": {
-				"title": "Sicher & Konform",
-				"description": "Sicherheit auf Unternehmensniveau mit Verschlüsselung und Compliance-Kontrollen."
-			}
-		},
-		"resources": {
-			"sectionTitle": "Ressourcen",
-			"documentation": {
-				"title": "Dokumentation",
-				"description": "Erfahren Sie, wie Sie loslegen und alle Funktionen erkunden"
-			},
-			"apiReference": {
-				"title": "API-Referenz",
-				"description": "Integrieren Sie Nvisy in Ihre Anwendungen"
-			},
-			"quickStart": {
-				"title": "Schnellstart",
-				"description": "Starten Sie in wenigen Minuten"
-			},
-			"support": {
-				"title": "Support",
-				"description": "Erhalten Sie Hilfe von unserem Team"
-			}
-		}
-	},
-	"workspace": {
-		"select": "Arbeitsbereich Auswählen",
-		"addWorkspace": "Arbeitsbereich Hinzufügen",
-		"create": {
-			"title": "Neuen Arbeitsbereich Erstellen",
-			"description": "Richten Sie einen neuen Arbeitsbereich ein, um Ihre Dokumente und Workflows zu organisieren.",
-			"nameLabel": "Name des Arbeitsbereichs",
-			"namePlaceholder": "Mein Arbeitsbereich",
-			"descriptionLabel": "Beschreibung",
-			"descriptionPlaceholder": "Kurze Beschreibung Ihres Arbeitsbereichs...",
-			"descriptionHint": "Optional, max. 200 Zeichen",
-			"retentionLabel": "Dateispeicherung (Tage)",
-			"storageLabel": "Speicherlimit (GB)",
-			"unlimited": "Unbegrenzt",
-			"advancedSettings": "Erweiterte Einstellungen",
-			"error": "Arbeitsbereich konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
-			"autoCleanupLabel": "Automatische Bereinigung",
-			"autoCleanupDescription": "Verarbeitete Dateien nach Ablauf automatisch löschen",
-			"requireApprovalLabel": "Genehmigung Erforderlich",
-			"requireApprovalDescription": "Verarbeitete Dateien erfordern Genehmigung, bevor sie sichtbar sind",
-			"enableCommentsLabel": "Kommentare Aktivieren",
-			"enableCommentsDescription": "Teammitgliedern erlauben, Dokumente zu kommentieren",
-			"cancelButton": "Abbrechen",
-			"submitButton": "Arbeitsbereich Erstellen"
-		}
-	},
-	"home": {
-		"title": "Willkommen bei Nvisy",
-		"description": "Innovative Lösungen für das moderne Web entwickeln."
-	},
-	"members": {
-		"page": {
-			"title": "Mitglieder",
-			"description": "Verwalten Sie Ihre Teammitglieder und Einladungen",
-			"tabs": {
-				"teamMembers": "Teammitglieder",
-				"pendingInvites": "Ausstehende Einladungen"
-			}
-		},
-		"forms": {
-			"invite": {
-				"title": "Mitglieder Einladen",
-				"description": "Senden Sie Einladungen an neue Teammitglieder",
-				"emailPlaceholder": "email{'@'}beispiel.com",
-				"button": "Einladung Senden",
-				"copyLink": "Einladungslink Kopieren",
-				"expiry": {
-					"label": "Läuft ab in",
-					"never": "Nie",
-					"24hours": "In 24 Stunden",
-					"7days": "In 7 Tagen",
-					"30days": "In 30 Tagen"
-				}
-			},
-			"search": {
-				"placeholder": "Mitglieder suchen..."
-			}
-		},
-		"table": {
-			"headers": {
-				"member": "Mitglied",
-				"invite": "Einladung",
-				"role": "Rolle",
-				"twoFA": "2FA",
-				"joined": "Beigetreten",
-				"invited": "Eingeladen"
-			},
-			"actions": {
-				"delete": "Löschen",
-				"deleteSelected": "Ausgewählte Löschen",
-				"cancel": "Abbrechen",
-				"cancelSelected": "Ausgewählte Abbrechen"
-			},
-			"status": {
-				"enabled": "Aktiviert",
-				"disabled": "Deaktiviert",
-				"pending": "Ausstehende Einladung"
-			},
-			"empty": {
-				"noMembers": "Keine Mitglieder gefunden",
-				"noMembersDescription": "Keine Mitglieder entsprechen Ihren aktuellen Filtern. Versuchen Sie, Ihre Suchkriterien anzupassen.",
-				"noPendingInvites": "Keine ausstehenden Einladungen",
-				"noPendingInvitesDescription": "Keine ausstehenden Einladungen entsprechen Ihren aktuellen Filtern."
-			}
-		},
-		"messages": {
-			"inviteFooter": "Eingeladene Mitglieder erhalten eine E-Mail mit Anweisungen zum Beitritt zu Ihrem Projekt.",
-			"reviewFooter": "Projekteigentümer können nicht entfernt werden. Übertragen Sie zunächst das Eigentum, um den aktuellen Eigentümer zu entfernen."
-		},
-		"roles": {
-			"owner": "Eigentümer",
-			"member": "Mitglied",
-			"guest": "Gast"
-		},
-		"filters": {
-			"sortBy": "Sortieren nach",
-			"anyRole": "Jede Rolle",
-			"any2FA": "Beliebige 2FA",
-			"enabled2FA": "2FA Aktiviert",
-			"disabled2FA": "2FA Deaktiviert",
-			"sorting": {
-				"nameAsc": "Name (A-Z)",
-				"nameDesc": "Name (Z-A)",
-				"dateNewest": "Datum (Neueste)",
-				"dateOldest": "Datum (Älteste)"
-			}
-		},
-		"modals": {
-			"delete": {
-				"title": "Mitglied Löschen",
-				"description": "Sind Sie sicher, dass Sie {name} aus Ihrem Team löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-				"role": "Rolle",
-				"cancelButton": "Abbrechen",
-				"confirmButton": "Mitglied Löschen"
-			},
-			"deleteMultiple": {
-				"title": "Mitglieder Löschen",
-				"description": "Sind Sie sicher, dass Sie {count} Mitglied aus Ihrem Team löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden. | Sind Sie sicher, dass Sie {count} Mitglieder aus Ihrem Team löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-				"warningTitle": "Warnung",
-				"warningDescription": "Das Löschen dieser Mitglieder wird ihren Zugriff auf den Arbeitsbereich und alle zugehörigen Ressourcen sofort widerrufen.",
-				"cancelButton": "Abbrechen",
-				"confirmButton": "Mitglieder Löschen"
-			},
-			"cancelInvite": {
-				"title": "Einladung Abbrechen",
-				"description": "Sind Sie sicher, dass Sie die Einladung für {email} abbrechen möchten? Sie können nicht mehr über den aktuellen Einladungslink beitreten.",
-				"role": "Rolle",
-				"keepButton": "Einladung Behalten",
-				"confirmButton": "Einladung Abbrechen"
-			},
-			"cancelMultiple": {
-				"title": "Einladungen Abbrechen",
-				"description": "Sind Sie sicher, dass Sie {count} Einladung abbrechen möchten? Die Einladungslinks werden nicht mehr gültig sein. | Sind Sie sicher, dass Sie {count} Einladungen abbrechen möchten? Die Einladungslinks werden nicht mehr gültig sein.",
-				"noteTitle": "Hinweis",
-				"noteDescription": "Sie können später jederzeit neue Einladungen an diese E-Mail-Adressen senden.",
-				"keepButton": "Behalten",
-				"confirmButton": "Einladungen Abbrechen"
-			}
-		}
-	},
-	"tokens": {
-		"page": {
-			"title": "API-Tokens",
-			"description": "Verwalten Sie Ihre API-Tokens und Zugangsdaten"
-		},
-		"create": {
-			"title": "Neuen Token Erstellen",
-			"description": "Generieren Sie einen neuen API-Token für den Zugriff auf Ihr Konto",
-			"nameLabel": "Token-Name",
-			"namePlaceholder": "z.B. Produktions-API",
-			"expirationLabel": "Ablauf",
-			"button": "Token Generieren",
-			"footer": "Bewahren Sie Ihren Token sicher auf. Er wird nicht erneut angezeigt."
-		},
-		"expiration": {
-			"7days": "7 Tage",
-			"30days": "30 Tage",
-			"90days": "90 Tage",
-			"1year": "1 Jahr",
-			"never": "Nie"
-		},
-		"list": {
-			"title": "Aktive Tokens",
-			"description": "{count} Token in Verwendung | {count} Tokens in Verwendung",
-			"footer": "Tokens ermöglichen Zugriff auf Ihr Konto. Bewahren Sie sie sicher auf und rotieren Sie sie regelmäßig."
-		},
-		"table": {
-			"headers": {
-				"name": "Name",
-				"lastUsed": "Zuletzt Verwendet"
-			},
-			"info": {
-				"created": "Erstellt",
-				"expires": "Läuft ab",
-				"never": "Nie"
-			},
-			"badges": {
-				"current": "Aktuell",
-				"expired": "Abgelaufen"
-			},
-			"actions": {
-				"rename": "Umbenennen",
-				"revoke": "Widerrufen",
-				"revokeSelected": "Ausgewählte Widerrufen",
-				"cannotRevoke": "Aktuelle Sitzung kann nicht widerrufen werden"
-			}
-		},
-		"empty": {
-			"title": "Keine Tokens gefunden",
-			"description": "Erstellen Sie Ihren ersten API-Token, um mit dem programmatischen Zugriff zu beginnen."
-		},
-		"modals": {
-			"created": {
-				"title": "Token Erstellt",
-				"description": "Kopieren Sie jetzt Ihren neuen API-Token. Sie können ihn nicht erneut sehen.",
-				"copyButton": "Token Kopieren",
-				"copied": "Kopiert!",
-				"doneButton": "Fertig"
-			},
-			"rename": {
-				"title": "Token Umbenennen",
-				"description": "Geben Sie einen neuen Namen für diesen Token ein.",
-				"nameLabel": "Token-Name",
-				"cancelButton": "Abbrechen",
-				"saveButton": "Speichern"
-			},
-			"delete": {
-				"title": "Token Widerrufen",
-				"description": "Sind Sie sicher, dass Sie den Token \"{name}\" widerrufen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-				"cancelButton": "Abbrechen",
-				"confirmButton": "Token Widerrufen"
-			},
-			"deleteMultiple": {
-				"title": "Tokens Widerrufen",
-				"description": "Sind Sie sicher, dass Sie {count} Token widerrufen möchten? Diese Aktion kann nicht rückgängig gemacht werden. | Sind Sie sicher, dass Sie {count} Tokens widerrufen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-				"cancelButton": "Abbrechen",
-				"confirmButton": "Tokens Widerrufen"
-			}
-		}
-	},
-	"integrations": {
-		"page": {
-			"title": "Aktive Integrationen",
-			"description": "Verwalten Sie Ihre derzeit verbundenen Integrationen",
-			"libraryTitle": "Integrationsbibliothek",
-			"libraryDescription": "Verbinden Sie Nvisy mit Ihren bevorzugten Tools und Diensten"
-		},
-		"sections": {
-			"connectedServices": {
-				"title": "Verbundene Dienste",
-				"description": "{count} Integration derzeit aktiv | {count} Integrationen derzeit aktiv",
-				"noIntegrationsTitle": "Noch keine aktiven Integrationen",
-				"noIntegrationsDescription": "Beginnen Sie, indem Sie unsere Integrationsbibliothek durchsuchen"
-			},
-			"webhooks": {
-				"title": "Webhook-Endpunkte",
-				"description": "{count} Webhook konfiguriert | {count} Webhooks konfiguriert",
-				"noWebhooksTitle": "Keine Webhooks konfiguriert",
-				"noWebhooksDescription": "Erstellen Sie Ihren ersten Webhook, um Echtzeit-Benachrichtigungen zu erhalten"
-			}
-		},
-		"actions": {
-			"explore": "Integrationen Erkunden",
-			"browse": "Bibliothek Durchsuchen",
-			"connect": "Verbinden",
-			"disconnect": "Trennen",
-			"configure": "Konfigurieren",
-			"visitWebsite": "Website Besuchen",
-			"notifyMe": "Benachrichtigen",
-			"createWebhook": "Webhook Erstellen",
-			"editWebhook": "Webhook Bearbeiten",
-			"deleteWebhook": "Webhook Löschen",
-			"testWebhook": "Webhook Testen",
-			"back": "Zurück",
-			"viewRuns": "Ausführungen Anzeigen"
-		},
-		"status": {
-			"active": "Aktiv",
-			"inactive": "Inaktiv",
-			"available": "Verfügbar",
-			"comingSoon": "Bald Verfügbar",
-			"connected": "Verbunden",
-			"disconnected": "Getrennt"
-		},
-		"categories": {
-			"fileStorage": "Dateispeicher",
-			"automation": "Automatisierung",
-			"anyTag": "Beliebiges Tag",
-			"tags": "Tags"
-		},
-		"table": {
-			"headers": {
-				"name": "Name",
-				"url": "URL",
-				"status": "Status",
-				"events": "Ereignisse",
-				"created": "Erstellt",
-				"lastDelivery": "Letzte Zustellung",
-				"connectedAt": "Verbunden Am"
-			},
-			"actions": {
-				"edit": "Bearbeiten",
-				"delete": "Löschen",
-				"test": "Testen",
-				"configure": "Konfigurieren",
-				"disconnect": "Trennen"
-			}
-		},
-		"forms": {
-			"search": {
-				"placeholder": "Integrationen suchen...",
-				"webhookSearch": "Webhooks suchen..."
-			},
-			"webhook": {
-				"nameLabel": "Webhook-Name",
-				"namePlaceholder": "Webhook-Namen eingeben",
-				"urlLabel": "Endpunkt-URL",
-				"urlPlaceholder": "https://beispiel.com/webhook",
-				"activeLabel": "Aktiv",
-				"activeDescription": "Diesen Webhook aktivieren, um Ereignisse zu empfangen",
-				"eventsLabel": "Zu abonnierende Ereignisse",
-				"eventsDescription": "Wählen Sie aus, welche Ereignisse diesen Webhook auslösen sollen"
-			}
-		},
-		"dialogs": {
-			"configure": {
-				"title": "{name} Konfigurieren",
-				"description": "Aktualisieren Sie die Integrationseinstellungen und Konfiguration.",
-				"nameLabel": "Integrationsname",
-				"namePlaceholder": "Meine Integration",
-				"descriptionLabel": "Beschreibung",
-				"descriptionPlaceholder": "Was macht diese Integration?",
-				"activeLabel": "Aktiv",
-				"activeDescription": "Diese Integration aktivieren, um Daten zu synchronisieren und Workflows zu automatisieren",
-				"save": "Änderungen Speichern",
-				"cancel": "Abbrechen"
-			},
-			"disconnect": {
-				"title": "{name} Trennen",
-				"description": "Sind Sie sicher, dass Sie diese Integration trennen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-				"warningTitle": "Erwägen Sie stattdessen eine Deaktivierung",
-				"warningDescription": "Sie können diese Integration deaktivieren, um Workflows zu pausieren, ohne Ihre Konfiguration und Daten zu verlieren. Das Trennen wird alles dauerhaft löschen.",
-				"confirmationLabel": "Geben Sie {name} ein, um zu bestätigen",
-				"confirmationPlaceholder": "Integrationsnamen eingeben",
-				"confirm": "Dauerhaft Trennen",
-				"cancel": "Abbrechen"
-			},
-			"createWebhook": {
-				"title": "Webhook Erstellen",
-				"description": "Konfigurieren Sie einen neuen Webhook-Endpunkt, um Echtzeit-Benachrichtigungen über Ereignisse in Ihrem Arbeitsbereich zu erhalten.",
-				"save": "Webhook Erstellen",
-				"cancel": "Abbrechen"
-			},
-			"editWebhook": {
-				"title": "Webhook Bearbeiten",
-				"description": "Aktualisieren Sie die Webhook-Endpunkt-Konfiguration.",
-				"save": "Änderungen Speichern",
-				"cancel": "Abbrechen"
-			},
-			"deleteWebhook": {
-				"title": "Webhook Löschen",
-				"description": "Diese Aktion kann nicht rückgängig gemacht werden. Dies wird den Webhook dauerhaft löschen und alle Ereigniszustellungen stoppen.",
-				"confirmLabel": "Bitte geben Sie den Webhook-Namen zur Bestätigung ein:",
-				"warningTitle": "Warnung:",
-				"warningDescription": "Das Löschen dieses Webhooks stoppt sofort alle Ereigniszustellungen an diesen Endpunkt.",
-				"confirm": "Webhook Löschen",
-				"cancel": "Abbrechen"
-			}
-		},
-		"events": {
-			"documents": {
-				"name": "Dokumente",
-				"documentsUploaded": "Dokument Hochgeladen",
-				"documentsUploadedDesc": "Wenn ein neues Dokument in Ihr Projekt hochgeladen wird",
-				"documentsDownloaded": "Dokument Heruntergeladen",
-				"documentsDownloadedDesc": "Wenn ein Dokument aus Ihrem Projekt heruntergeladen wird",
-				"documentsRedacted": "Dokument Geschwärzt",
-				"documentsRedactedDesc": "Wenn ein Dokument erfolgreich geschwärzt wurde",
-				"documentsVerified": "Dokument Verifiziert",
-				"documentsVerifiedDesc": "Wenn ein Dokument die Verifikationsprüfungen besteht"
-			},
-			"integrations": {
-				"name": "Integrationen",
-				"integrationTriggered": "Integration Ausgelöst",
-				"integrationTriggeredDesc": "Wenn ein Integrations-Workflow gestartet wird",
-				"integrationSucceeded": "Integration Erfolgreich",
-				"integrationSucceededDesc": "Wenn eine Integration erfolgreich abgeschlossen wird",
-				"integrationFailed": "Integration Fehlgeschlagen",
-				"integrationFailedDesc": "Wenn eine Integration auf Fehler oder Ausfälle stößt"
-			}
-		},
-		"messages": {
-			"integrationFooter": "Erfahren Sie mehr über Integrationen in unserer",
-			"webhookFooter": "Erfahren Sie mehr über Webhooks in unserer",
-			"documentation": "Dokumentation"
-		},
-		"time": {
-			"justNow": "Gerade eben",
-			"hoursAgo": "vor {hours}h",
-			"daysAgo": "vor {days}d",
-			"weeksAgo": "vor {weeks}w",
-			"monthsAgo": "vor {months}m"
-		},
-		"runs": {
-			"title": "Integrationsausführungen",
-			"backToConnections": "Zurück zu Verbindungen",
-			"searchPlaceholder": "Ausführungen suchen...",
-			"status": "Status",
-			"allStatus": "Alle Status",
-			"informational": "Informativ",
-			"success": "Erfolg",
-			"redirection": "Weiterleitung",
-			"clientError": "Client-Fehler",
-			"serverError": "Server-Fehler",
-			"period": "Zeitraum",
-			"lastHour": "Letzte Stunde",
-			"last24Hours": "Letzte 24 Stunden",
-			"last7Days": "Letzte 7 Tage",
-			"last30Days": "Letzte 30 Tage",
-			"runsFound": "Ausführung gefunden | Ausführungen gefunden",
-			"selected": "ausgewählt",
-			"copyLogs": "Logs Kopieren",
-			"copied": "Kopiert!",
-			"name": "Name",
-			"integration": "Integration",
-			"statusHeader": "Status",
-			"started": "Gestartet",
-			"duration": "Dauer",
-			"viewDetails": "Details Anzeigen",
-			"noRunsFound": "Keine Ausführungen gefunden, die Ihren Filtern entsprechen",
-			"unknown": "Unbekannt"
-		}
-	}
+  "common": {
+    "service": "Nvisy",
+    "time": {
+      "justNow": "Gerade eben",
+      "never": "Nie",
+      "hoursAgo": "vor {hours}h",
+      "daysAgo": "vor {days}d",
+      "weeksAgo": "vor {weeks}w",
+      "monthsAgo": "vor {months}m"
+    }
+  },
+  "overview": {
+    "welcome": {
+      "title": "Willkommen bei Nvisy",
+      "description": "Erstellen Sie Ihren ersten Arbeitsbereich, um Dokumente zu organisieren, mit Ihrem Team zusammenzuarbeiten und KI-gestützte Einblicke zu nutzen.",
+      "createWorkspace": "Arbeitsbereich Erstellen",
+      "setupProfile": "Profil Einrichten"
+    },
+    "actions": {
+      "learnMore": "Mehr erfahren",
+      "setupProfile": {
+        "time": "2 Minuten",
+        "title": "Profil Einrichten",
+        "description": "Vervollständigen Sie Ihr Profil, um Ihre Erfahrung zu personalisieren und Ihrem Team zu helfen, Sie zu identifizieren.",
+        "button": "Profil Einrichten"
+      },
+      "createWorkspace": {
+        "time": "2 Minuten",
+        "title": "Arbeitsbereich Erstellen",
+        "description": "Arbeitsbereiche helfen Ihnen, Dokumente zu organisieren, Teamzugriff zu verwalten und Projekte getrennt zu halten.",
+        "button": "Arbeitsbereich Erstellen"
+      },
+      "apiTokens": {
+        "time": "1 Minute",
+        "title": "API-Token Generieren",
+        "description": "Erstellen Sie einen API-Token, um Nvisy in Ihre Anwendungen zu integrieren und Workflows zu automatisieren.",
+        "button": "Token Erstellen"
+      }
+    },
+    "features": {
+      "sectionTitle": "Was Sie Tun Können",
+      "documentManagement": {
+        "title": "Dokumentenverwaltung",
+        "description": "Laden Sie Dokumente hoch, organisieren und verwalten Sie diese in einem sicheren, zentralen Arbeitsbereich."
+      },
+      "aiPowered": {
+        "title": "KI-gestützte Einblicke",
+        "description": "Extrahieren Sie Informationen, fassen Sie Inhalte zusammen und erhalten Sie Antworten aus Ihren Dokumenten mit KI."
+      },
+      "teamCollaboration": {
+        "title": "Team-Zusammenarbeit",
+        "description": "Laden Sie Teammitglieder ein, weisen Sie Rollen zu und arbeiten Sie nahtlos zusammen."
+      },
+      "secureCompliant": {
+        "title": "Sicher & Konform",
+        "description": "Sicherheit auf Unternehmensniveau mit Verschlüsselung und Compliance-Kontrollen."
+      }
+    },
+    "resources": {
+      "sectionTitle": "Ressourcen",
+      "documentation": {
+        "title": "Dokumentation",
+        "description": "Erfahren Sie, wie Sie loslegen und alle Funktionen erkunden"
+      },
+      "apiReference": {
+        "title": "API-Referenz",
+        "description": "Integrieren Sie Nvisy in Ihre Anwendungen"
+      },
+      "quickStart": {
+        "title": "Schnellstart",
+        "description": "Starten Sie in wenigen Minuten"
+      },
+      "support": {
+        "title": "Support",
+        "description": "Erhalten Sie Hilfe von unserem Team"
+      }
+    }
+  },
+  "workspace": {
+    "select": "Arbeitsbereich Auswählen",
+    "addWorkspace": "Arbeitsbereich Hinzufügen",
+    "create": {
+      "title": "Neuen Arbeitsbereich Erstellen",
+      "description": "Richten Sie einen neuen Arbeitsbereich ein, um Ihre Dokumente und Workflows zu organisieren.",
+      "nameLabel": "Name des Arbeitsbereichs",
+      "namePlaceholder": "Mein Arbeitsbereich",
+      "descriptionLabel": "Beschreibung",
+      "descriptionPlaceholder": "Kurze Beschreibung Ihres Arbeitsbereichs...",
+      "descriptionHint": "Optional, max. 200 Zeichen",
+      "retentionLabel": "Dateispeicherung (Tage)",
+      "storageLabel": "Speicherlimit (GB)",
+      "unlimited": "Unbegrenzt",
+      "advancedSettings": "Erweiterte Einstellungen",
+      "error": "Arbeitsbereich konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
+      "autoCleanupLabel": "Automatische Bereinigung",
+      "autoCleanupDescription": "Verarbeitete Dateien nach Ablauf automatisch löschen",
+      "requireApprovalLabel": "Genehmigung Erforderlich",
+      "requireApprovalDescription": "Verarbeitete Dateien erfordern Genehmigung, bevor sie sichtbar sind",
+      "enableCommentsLabel": "Kommentare Aktivieren",
+      "enableCommentsDescription": "Teammitgliedern erlauben, Dokumente zu kommentieren",
+      "cancelButton": "Abbrechen",
+      "submitButton": "Arbeitsbereich Erstellen"
+    }
+  },
+  "home": {
+    "title": "Willkommen bei Nvisy",
+    "description": "Innovative Lösungen für das moderne Web entwickeln."
+  },
+  "members": {
+    "page": {
+      "title": "Mitglieder",
+      "description": "Verwalten Sie Ihre Teammitglieder und Einladungen",
+      "tabs": {
+        "teamMembers": "Teammitglieder",
+        "pendingInvites": "Ausstehende Einladungen"
+      }
+    },
+    "forms": {
+      "invite": {
+        "title": "Mitglieder Einladen",
+        "description": "Senden Sie Einladungen an neue Teammitglieder",
+        "emailPlaceholder": "email{'@'}beispiel.com",
+        "button": "Einladung Senden",
+        "copyLink": "Einladungslink Kopieren",
+        "expiry": {
+          "label": "Läuft ab in",
+          "never": "Nie",
+          "24hours": "In 24 Stunden",
+          "7days": "In 7 Tagen",
+          "30days": "In 30 Tagen"
+        }
+      },
+      "search": {
+        "placeholder": "Mitglieder suchen..."
+      }
+    },
+    "table": {
+      "headers": {
+        "member": "Mitglied",
+        "invite": "Einladung",
+        "role": "Rolle",
+        "twoFA": "2FA",
+        "joined": "Beigetreten",
+        "invited": "Eingeladen",
+        "expires": "Läuft ab"
+      },
+      "actions": {
+        "delete": "Löschen",
+        "deleteSelected": "Ausgewählte Löschen",
+        "cancel": "Abbrechen",
+        "cancelSelected": "Ausgewählte Abbrechen"
+      },
+      "status": {
+        "enabled": "Aktiviert",
+        "disabled": "Deaktiviert",
+        "pending": "Ausstehende Einladung"
+      },
+      "empty": {
+        "noMembers": "Keine Mitglieder gefunden",
+        "noMembersDescription": "Keine Mitglieder entsprechen Ihren aktuellen Filtern. Versuchen Sie, Ihre Suchkriterien anzupassen.",
+        "noPendingInvites": "Keine ausstehenden Einladungen",
+        "noPendingInvitesDescription": "Keine ausstehenden Einladungen entsprechen Ihren aktuellen Filtern."
+      }
+    },
+    "messages": {
+      "inviteFooter": "Eingeladene Mitglieder erhalten eine E-Mail mit Anweisungen zum Beitritt zu Ihrem Projekt.",
+      "reviewFooter": "Projekteigentümer können nicht entfernt werden. Übertragen Sie zunächst das Eigentum, um den aktuellen Eigentümer zu entfernen.",
+      "inviteSent": "Einladung erfolgreich gesendet",
+      "linkCopied": "Einladungslink in die Zwischenablage kopiert",
+      "memberRemoved": "Mitglied erfolgreich entfernt",
+      "membersRemoved": "Mitglieder erfolgreich entfernt",
+      "inviteCanceled": "Einladung erfolgreich storniert",
+      "invitesCanceled": "Einladungen erfolgreich storniert"
+    },
+    "errors": {
+      "inviteFailed": "Einladung konnte nicht gesendet werden",
+      "linkFailed": "Einladungslink konnte nicht generiert werden",
+      "removeFailed": "Mitglied konnte nicht entfernt werden",
+      "cancelFailed": "Einladung konnte nicht storniert werden"
+    },
+    "roles": {
+      "owner": "Eigentümer",
+      "admin": "Administrator",
+      "member": "Mitglied",
+      "guest": "Gast"
+    },
+    "filters": {
+      "sortBy": "Sortieren nach",
+      "anyRole": "Jede Rolle",
+      "any2FA": "Beliebige 2FA",
+      "enabled2FA": "2FA Aktiviert",
+      "disabled2FA": "2FA Deaktiviert",
+      "sorting": {
+        "nameAsc": "Name (A-Z)",
+        "nameDesc": "Name (Z-A)",
+        "dateNewest": "Datum (Neueste)",
+        "dateOldest": "Datum (Älteste)"
+      }
+    },
+    "modals": {
+      "delete": {
+        "title": "Mitglied Löschen",
+        "description": "Sind Sie sicher, dass Sie {name} aus Ihrem Team löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+        "role": "Rolle",
+        "cancelButton": "Abbrechen",
+        "confirmButton": "Mitglied Löschen"
+      },
+      "deleteMultiple": {
+        "title": "Mitglieder Löschen",
+        "description": "Sind Sie sicher, dass Sie {count} Mitglied aus Ihrem Team löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden. | Sind Sie sicher, dass Sie {count} Mitglieder aus Ihrem Team löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+        "warningTitle": "Warnung",
+        "warningDescription": "Das Löschen dieser Mitglieder wird ihren Zugriff auf den Arbeitsbereich und alle zugehörigen Ressourcen sofort widerrufen.",
+        "cancelButton": "Abbrechen",
+        "confirmButton": "Mitglieder Löschen"
+      },
+      "cancelInvite": {
+        "title": "Einladung Abbrechen",
+        "description": "Sind Sie sicher, dass Sie die Einladung für {email} abbrechen möchten? Sie können nicht mehr über den aktuellen Einladungslink beitreten.",
+        "role": "Rolle",
+        "keepButton": "Einladung Behalten",
+        "confirmButton": "Einladung Abbrechen"
+      },
+      "cancelMultiple": {
+        "title": "Einladungen Abbrechen",
+        "description": "Sind Sie sicher, dass Sie {count} Einladung abbrechen möchten? Die Einladungslinks werden nicht mehr gültig sein. | Sind Sie sicher, dass Sie {count} Einladungen abbrechen möchten? Die Einladungslinks werden nicht mehr gültig sein.",
+        "noteTitle": "Hinweis",
+        "noteDescription": "Sie können später jederzeit neue Einladungen an diese E-Mail-Adressen senden.",
+        "keepButton": "Behalten",
+        "confirmButton": "Einladungen Abbrechen"
+      }
+    }
+  },
+  "tokens": {
+    "page": {
+      "title": "API-Tokens",
+      "description": "Verwalten Sie Ihre API-Tokens und Zugangsdaten"
+    },
+    "create": {
+      "title": "Neuen Token Erstellen",
+      "description": "Generieren Sie einen neuen API-Token für den Zugriff auf Ihr Konto",
+      "nameLabel": "Token-Name",
+      "namePlaceholder": "z.B. Produktions-API",
+      "expirationLabel": "Ablauf",
+      "button": "Token Generieren",
+      "footer": "Bewahren Sie Ihren Token sicher auf. Er wird nicht erneut angezeigt."
+    },
+    "expiration": {
+      "7days": "7 Tage",
+      "30days": "30 Tage",
+      "90days": "90 Tage",
+      "1year": "1 Jahr",
+      "never": "Nie"
+    },
+    "list": {
+      "title": "Aktive Tokens",
+      "description": "{count} Token in Verwendung | {count} Tokens in Verwendung",
+      "footer": "Tokens ermöglichen Zugriff auf Ihr Konto. Bewahren Sie sie sicher auf und rotieren Sie sie regelmäßig."
+    },
+    "table": {
+      "headers": {
+        "name": "Name",
+        "lastUsed": "Zuletzt Verwendet"
+      },
+      "info": {
+        "created": "Erstellt",
+        "expires": "Läuft ab",
+        "never": "Nie"
+      },
+      "badges": {
+        "current": "Aktuell",
+        "expired": "Abgelaufen"
+      },
+      "actions": {
+        "rename": "Umbenennen",
+        "revoke": "Widerrufen",
+        "revokeSelected": "Ausgewählte Widerrufen",
+        "cannotRevoke": "Aktuelle Sitzung kann nicht widerrufen werden"
+      }
+    },
+    "empty": {
+      "title": "Keine Tokens gefunden",
+      "description": "Erstellen Sie Ihren ersten API-Token, um mit dem programmatischen Zugriff zu beginnen."
+    },
+    "modals": {
+      "created": {
+        "title": "Token Erstellt",
+        "description": "Kopieren Sie jetzt Ihren neuen API-Token. Sie können ihn nicht erneut sehen.",
+        "copyButton": "Token Kopieren",
+        "copied": "Kopiert!",
+        "doneButton": "Fertig"
+      },
+      "rename": {
+        "title": "Token Umbenennen",
+        "description": "Geben Sie einen neuen Namen für diesen Token ein.",
+        "nameLabel": "Token-Name",
+        "cancelButton": "Abbrechen",
+        "saveButton": "Speichern"
+      },
+      "delete": {
+        "title": "Token Widerrufen",
+        "description": "Sind Sie sicher, dass Sie den Token \"{name}\" widerrufen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+        "cancelButton": "Abbrechen",
+        "confirmButton": "Token Widerrufen"
+      },
+      "deleteMultiple": {
+        "title": "Tokens Widerrufen",
+        "description": "Sind Sie sicher, dass Sie {count} Token widerrufen möchten? Diese Aktion kann nicht rückgängig gemacht werden. | Sind Sie sicher, dass Sie {count} Tokens widerrufen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+        "cancelButton": "Abbrechen",
+        "confirmButton": "Tokens Widerrufen"
+      }
+    }
+  },
+  "integrations": {
+    "page": {
+      "title": "Aktive Integrationen",
+      "description": "Verwalten Sie Ihre derzeit verbundenen Integrationen",
+      "libraryTitle": "Integrationsbibliothek",
+      "libraryDescription": "Verbinden Sie Nvisy mit Ihren bevorzugten Tools und Diensten"
+    },
+    "sections": {
+      "connectedServices": {
+        "title": "Verbundene Dienste",
+        "description": "{count} Integration derzeit aktiv | {count} Integrationen derzeit aktiv",
+        "noIntegrationsTitle": "Noch keine aktiven Integrationen",
+        "noIntegrationsDescription": "Beginnen Sie, indem Sie unsere Integrationsbibliothek durchsuchen"
+      },
+      "webhooks": {
+        "title": "Webhook-Endpunkte",
+        "description": "{count} Webhook konfiguriert | {count} Webhooks konfiguriert",
+        "noWebhooksTitle": "Keine Webhooks konfiguriert",
+        "noWebhooksDescription": "Erstellen Sie Ihren ersten Webhook, um Echtzeit-Benachrichtigungen zu erhalten"
+      }
+    },
+    "actions": {
+      "explore": "Integrationen Erkunden",
+      "browse": "Bibliothek Durchsuchen",
+      "connect": "Verbinden",
+      "disconnect": "Trennen",
+      "configure": "Konfigurieren",
+      "visitWebsite": "Website Besuchen",
+      "notifyMe": "Benachrichtigen",
+      "createWebhook": "Webhook Erstellen",
+      "editWebhook": "Webhook Bearbeiten",
+      "deleteWebhook": "Webhook Löschen",
+      "testWebhook": "Webhook Testen",
+      "back": "Zurück",
+      "viewRuns": "Ausführungen Anzeigen"
+    },
+    "status": {
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "available": "Verfügbar",
+      "comingSoon": "Bald Verfügbar",
+      "connected": "Verbunden",
+      "disconnected": "Getrennt"
+    },
+    "categories": {
+      "fileStorage": "Dateispeicher",
+      "automation": "Automatisierung",
+      "anyTag": "Beliebiges Tag",
+      "tags": "Tags"
+    },
+    "table": {
+      "headers": {
+        "name": "Name",
+        "url": "URL",
+        "status": "Status",
+        "events": "Ereignisse",
+        "created": "Erstellt",
+        "lastDelivery": "Letzte Zustellung",
+        "connectedAt": "Verbunden Am"
+      },
+      "actions": {
+        "edit": "Bearbeiten",
+        "delete": "Löschen",
+        "test": "Testen",
+        "configure": "Konfigurieren",
+        "disconnect": "Trennen"
+      },
+      "eventsCount": "{count} Ereignis | {count} Ereignisse"
+    },
+    "forms": {
+      "search": {
+        "placeholder": "Integrationen suchen...",
+        "webhookSearch": "Webhooks suchen..."
+      },
+      "webhook": {
+        "nameLabel": "Webhook-Name",
+        "namePlaceholder": "Webhook-Namen eingeben",
+        "urlLabel": "Endpunkt-URL",
+        "urlPlaceholder": "https://beispiel.com/webhook",
+        "urlError": "Bitte geben Sie eine gültige URL ein (http:// oder https://)",
+        "activeLabel": "Aktiv",
+        "activeDescription": "Diesen Webhook aktivieren, um Ereignisse zu empfangen",
+        "eventsLabel": "Zu abonnierende Ereignisse",
+        "eventsDescription": "Wählen Sie aus, welche Ereignisse diesen Webhook auslösen sollen",
+        "headersLabel": "Benutzerdefinierte Header",
+        "headersDescription": "Fügen Sie benutzerdefinierte HTTP-Header hinzu, die in Webhook-Anfragen enthalten sein sollen",
+        "addHeader": "Header Hinzufügen",
+        "headerKeyPlaceholder": "Header-Name",
+        "headerValuePlaceholder": "Header-Wert",
+        "noHeaders": "Keine benutzerdefinierten Header konfiguriert"
+      }
+    },
+    "dialogs": {
+      "configure": {
+        "title": "{name} Konfigurieren",
+        "description": "Aktualisieren Sie die Integrationseinstellungen und Konfiguration.",
+        "nameLabel": "Integrationsname",
+        "namePlaceholder": "Meine Integration",
+        "descriptionLabel": "Beschreibung",
+        "descriptionPlaceholder": "Was macht diese Integration?",
+        "activeLabel": "Aktiv",
+        "activeDescription": "Diese Integration aktivieren, um Daten zu synchronisieren und Workflows zu automatisieren",
+        "save": "Änderungen Speichern",
+        "cancel": "Abbrechen"
+      },
+      "disconnect": {
+        "title": "{name} Trennen",
+        "description": "Sind Sie sicher, dass Sie diese Integration trennen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+        "warningTitle": "Erwägen Sie stattdessen eine Deaktivierung",
+        "warningDescription": "Sie können diese Integration deaktivieren, um Workflows zu pausieren, ohne Ihre Konfiguration und Daten zu verlieren. Das Trennen wird alles dauerhaft löschen.",
+        "confirmationLabel": "Geben Sie {name} ein, um zu bestätigen",
+        "confirmationPlaceholder": "Integrationsnamen eingeben",
+        "confirm": "Dauerhaft Trennen",
+        "cancel": "Abbrechen"
+      },
+      "createWebhook": {
+        "title": "Webhook Erstellen",
+        "description": "Konfigurieren Sie einen neuen Webhook-Endpunkt, um Echtzeit-Benachrichtigungen über Ereignisse in Ihrem Arbeitsbereich zu erhalten.",
+        "save": "Webhook Erstellen",
+        "cancel": "Abbrechen"
+      },
+      "editWebhook": {
+        "title": "Webhook Bearbeiten",
+        "description": "Aktualisieren Sie die Webhook-Endpunkt-Konfiguration.",
+        "save": "Änderungen Speichern",
+        "cancel": "Abbrechen"
+      },
+      "deleteWebhook": {
+        "title": "Webhook Löschen",
+        "description": "Diese Aktion kann nicht rückgängig gemacht werden. Dies wird den Webhook dauerhaft löschen und alle Ereigniszustellungen stoppen.",
+        "confirmLabel": "Bitte geben Sie den Webhook-Namen zur Bestätigung ein:",
+        "warningTitle": "Warnung:",
+        "warningDescription": "Das Löschen dieses Webhooks stoppt sofort alle Ereigniszustellungen an diesen Endpunkt.",
+        "confirm": "Webhook Löschen",
+        "cancel": "Abbrechen"
+      }
+    },
+    "events": {
+      "documents": {
+        "name": "Dokumente",
+        "documentsUploaded": "Dokument Hochgeladen",
+        "documentsUploadedDesc": "Wenn ein neues Dokument in Ihr Projekt hochgeladen wird",
+        "documentsDownloaded": "Dokument Heruntergeladen",
+        "documentsDownloadedDesc": "Wenn ein Dokument aus Ihrem Projekt heruntergeladen wird",
+        "documentsRedacted": "Dokument Geschwärzt",
+        "documentsRedactedDesc": "Wenn ein Dokument erfolgreich geschwärzt wurde",
+        "documentsVerified": "Dokument Verifiziert",
+        "documentsVerifiedDesc": "Wenn ein Dokument die Verifikationsprüfungen besteht"
+      },
+      "integrations": {
+        "name": "Integrationen",
+        "integrationTriggered": "Integration Ausgelöst",
+        "integrationTriggeredDesc": "Wenn ein Integrations-Workflow gestartet wird",
+        "integrationSucceeded": "Integration Erfolgreich",
+        "integrationSucceededDesc": "Wenn eine Integration erfolgreich abgeschlossen wird",
+        "integrationFailed": "Integration Fehlgeschlagen",
+        "integrationFailedDesc": "Wenn eine Integration auf Fehler oder Ausfälle stößt"
+      }
+    },
+    "messages": {
+      "integrationFooter": "Erfahren Sie mehr über Integrationen in unserer",
+      "webhookFooter": "Erfahren Sie mehr über Webhooks in unserer",
+      "documentation": "Dokumentation"
+    },
+    "toast": {
+      "integrationUpdated": "Integration erfolgreich aktualisiert",
+      "integrationUpdateFailed": "Integration konnte nicht aktualisiert werden",
+      "integrationDisconnected": "Integration getrennt",
+      "integrationDisconnectFailed": "Integration konnte nicht getrennt werden",
+      "webhookCreated": "Webhook erfolgreich erstellt",
+      "webhookCreateFailed": "Webhook konnte nicht erstellt werden",
+      "webhookUpdated": "Webhook erfolgreich aktualisiert",
+      "webhookUpdateFailed": "Webhook konnte nicht aktualisiert werden",
+      "webhookDeleted": "Webhook erfolgreich gelöscht",
+      "webhookDeleteFailed": "Webhook konnte nicht gelöscht werden",
+      "webhookActivated": "Webhook aktiviert",
+      "webhookDeactivated": "Webhook deaktiviert",
+      "webhookTestSent": "Testereignis an Webhook gesendet",
+      "webhookTestSuccess": "Webhook-Test erfolgreich",
+      "webhookTestSuccessDescription": "Antwort {statusCode} in {responseTimeMs}ms erhalten",
+      "webhookTestFailed": "Webhook-Test fehlgeschlagen"
+    },
+    "runs": {
+      "title": "Integrationsausführungen",
+      "backToConnections": "Zurück zu Verbindungen",
+      "searchPlaceholder": "Ausführungen suchen...",
+      "status": "Status",
+      "allStatus": "Alle Status",
+      "informational": "Informativ",
+      "success": "Erfolg",
+      "redirection": "Weiterleitung",
+      "clientError": "Client-Fehler",
+      "serverError": "Server-Fehler",
+      "period": "Zeitraum",
+      "lastHour": "Letzte Stunde",
+      "last24Hours": "Letzte 24 Stunden",
+      "last7Days": "Letzte 7 Tage",
+      "last30Days": "Letzte 30 Tage",
+      "runsFound": "Ausführung gefunden | Ausführungen gefunden",
+      "selected": "ausgewählt",
+      "copyLogs": "Logs Kopieren",
+      "copied": "Kopiert!",
+      "name": "Name",
+      "integration": "Integration",
+      "statusHeader": "Status",
+      "started": "Gestartet",
+      "duration": "Dauer",
+      "viewDetails": "Details Anzeigen",
+      "noRunsFound": "Keine Ausführungen gefunden, die Ihren Filtern entsprechen",
+      "unknown": "Unbekannt"
+    }
+  }
 }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import type { IntegrationRun } from "@nvisy/sdk";
+import type { IntegrationRun } from "@nvisy/sdk/datatypes";
 import {
 	Search,
 	ArrowLeft,

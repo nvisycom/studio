@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ApiToken } from "@nvisy/sdk";
+import type { ApiToken } from "@nvisy/sdk/datatypes";
 import { Trash2 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import {

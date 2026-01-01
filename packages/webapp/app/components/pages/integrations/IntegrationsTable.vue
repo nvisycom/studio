@@ -1,79 +1,63 @@
 <script setup lang="ts">
-import type { Integration } from "@nvisy/sdk";
+import type { Integration } from "@nvisy/sdk/datatypes";
 import {
-	MoreHorizontal,
-	Edit,
-	Trash2,
-	HardDrive,
-	Webhook,
-	Box,
+  MoreHorizontal,
+  Edit,
+  Trash2,
+  HardDrive,
+  Webhook,
+  Box,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-	DropdownMenuSeparator,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { formatRelativeTime } from "@/utils/date";
 
 const { t } = useI18n();
 
-const props = defineProps<{
-	integrations: Integration[];
+defineProps<{
+  integrations: Integration[];
 }>();
 
 const emit = defineEmits<{
-	(e: "configure", integrationId: string): void;
-	(e: "disconnect", integrationId: string): void;
+  (e: "configure", integrationId: string): void;
+  (e: "disconnect", integrationId: string): void;
 }>();
 
 function getIntegrationIcon(type: string) {
-	switch (type) {
-		case "storage":
-			return HardDrive;
-		case "webhook":
-			return Webhook;
-		default:
-			return Box;
-	}
+  switch (type) {
+    case "storage":
+      return HardDrive;
+    case "webhook":
+      return Webhook;
+    default:
+      return Box;
+  }
 }
 
 function getIntegrationColor(type: string): string {
-	switch (type) {
-		case "storage":
-			return "bg-blue-600";
-		case "webhook":
-			return "bg-purple-600";
-		default:
-			return "bg-gray-600";
-	}
-}
-
-function formatDate(dateString: string): string {
-	const date = new Date(dateString);
-	const now = new Date();
-	const diff = now.getTime() - date.getTime();
-	const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-	const weeks = Math.floor(days / 7);
-	const months = Math.floor(days / 30);
-
-	if (days === 0) return t("integrations.time.justNow");
-	if (days === 1) return t("integrations.time.daysAgo", { days: 1 });
-	if (days < 7) return t("integrations.time.daysAgo", { days });
-	if (weeks === 1) return t("integrations.time.weeksAgo", { weeks: 1 });
-	if (weeks < 4) return t("integrations.time.weeksAgo", { weeks });
-	if (months === 1) return t("integrations.time.monthsAgo", { months: 1 });
-	return t("integrations.time.monthsAgo", { months });
+  switch (type) {
+    case "storage":
+      return "bg-blue-600";
+    case "webhook":
+      return "bg-purple-600";
+    default:
+      return "bg-gray-600";
+  }
 }
 </script>
 
@@ -97,6 +81,7 @@ function formatDate(dateString: string): string {
       <TableRow
         v-for="integration in integrations"
         :key="integration.integrationId"
+        class="hover:bg-neutral-50 dark:hover:bg-neutral-900"
       >
         <TableCell>
           <div class="flex items-center gap-3">
@@ -125,12 +110,18 @@ function formatDate(dateString: string): string {
           </div>
         </TableCell>
         <TableCell>
-          <Switch :checked="integration.isActive" disabled />
+          <Badge :variant="integration.isActive ? 'default' : 'secondary'">
+            {{
+              integration.isActive
+                ? t("integrations.status.active")
+                : t("integrations.status.inactive")
+            }}
+          </Badge>
         </TableCell>
         <TableCell>
           <span
             class="text-sm font-light text-neutral-600 dark:text-neutral-400"
-            >{{ formatDate(integration.createdAt) }}</span
+            >{{ formatRelativeTime(integration.createdAt, t) }}</span
           >
         </TableCell>
         <TableCell>

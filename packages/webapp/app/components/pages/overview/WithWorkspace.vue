@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import {
-	Upload,
-	Sparkles,
-	Users,
-	BarChart3,
-	ArrowRight,
-	CreditCard,
-	Database,
+  Upload,
+  Sparkles,
+  Users,
+  BarChart3,
+  ArrowRight,
+  CreditCard,
+  Database,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const { userFirstName } = useAuth();
+const { firstName } = useAccount();
 
 // Usage data
 const creditsUsed = 15000;
@@ -27,30 +27,30 @@ const storagePercentage = (storageUsed / storageTotal) * 100;
 
 // Quick actions
 const quickActions = [
-	{
-		title: "Upload Files",
-		description: "Add documents to your knowledge base",
-		icon: Upload,
-		href: "/files",
-	},
-	{
-		title: "Ask AI",
-		description: "Query your documents",
-		icon: Sparkles,
-		href: "/knowledge",
-	},
-	{
-		title: "Manage Team",
-		description: "Invite members",
-		icon: Users,
-		href: "/team",
-	},
-	{
-		title: "View Analytics",
-		description: "Monitor usage",
-		icon: BarChart3,
-		href: "/analytics",
-	},
+  {
+    title: "Upload Files",
+    description: "Add documents to your knowledge base",
+    icon: Upload,
+    href: "/files",
+  },
+  {
+    title: "Ask AI",
+    description: "Query your documents",
+    icon: Sparkles,
+    href: "/knowledge",
+  },
+  {
+    title: "Manage Team",
+    description: "Invite members",
+    icon: Users,
+    href: "/team",
+  },
+  {
+    title: "View Analytics",
+    description: "Monitor usage",
+    icon: BarChart3,
+    href: "/analytics",
+  },
 ];
 </script>
 
@@ -61,7 +61,7 @@ const quickActions = [
       <h1
         class="text-4xl font-light text-neutral-800 dark:text-neutral-200 mb-3 tracking-tight"
       >
-        Welcome back<span v-if="userFirstName">, {{ userFirstName }}</span
+        Welcome back<span v-if="firstName">, {{ firstName }}</span
         >!
       </h1>
       <p class="text-lg font-light text-neutral-500 dark:text-neutral-400">

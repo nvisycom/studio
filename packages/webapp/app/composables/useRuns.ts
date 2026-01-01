@@ -1,5 +1,5 @@
 import { useQuery } from "@pinia/colada";
-import type { IntegrationRun } from "@nvisy/sdk";
+import type { IntegrationRun } from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for integration run operations
@@ -15,7 +15,7 @@ export function useRuns() {
 			const client = $nvisyClient.value;
 			const workspaceId = currentWorkspaceId.value;
 			if (!client || !workspaceId) throw new Error("Not authenticated");
-			return await client.runs.list(workspaceId);
+			return await client.runs.listRuns(workspaceId);
 		},
 		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceId.value,
 	});
@@ -23,7 +23,7 @@ export function useRuns() {
 	async function getRun(runId: string): Promise<IntegrationRun> {
 		const client = $nvisyClient.value;
 		if (!client) throw new Error("Not authenticated");
-		return await client.runs.get(runId);
+		return await client.runs.getRun(runId);
 	}
 
 	return {

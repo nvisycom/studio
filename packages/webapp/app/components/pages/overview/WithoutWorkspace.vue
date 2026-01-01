@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import CreateWorkspaceModal from "@/components/sidebar/CreateWorkspaceModal.vue";
 
 const { t } = useI18n();
-const { userFirstName } = useAuth();
+const { firstName } = useAccount();
 
 const isCreateWorkspaceModalOpen = ref(false);
 </script>
@@ -17,7 +17,7 @@ const isCreateWorkspaceModalOpen = ref(false);
         class="text-4xl font-light text-neutral-800 dark:text-neutral-200 mb-4 tracking-tight"
       >
         {{ t("overview.welcome.title")
-        }}<span v-if="userFirstName">, {{ userFirstName }}</span
+        }}<span v-if="firstName">, {{ firstName }}</span
         >!
       </h1>
       <p

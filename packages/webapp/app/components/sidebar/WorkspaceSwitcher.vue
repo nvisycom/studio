@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { ChevronsUpDown, Plus, Layers } from "lucide-vue-next";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuShortcut,
-	DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
-	useSidebar,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { EntityAvatar } from "@/components/common";
 import CreateWorkspaceModal from "./CreateWorkspaceModal.vue";
@@ -22,17 +22,17 @@ const { isMobile } = useSidebar();
 
 // Use the workspaces composable
 const {
-	workspaces,
-	currentWorkspace,
-	currentWorkspaceId,
-	selectWorkspace,
-	isLoading,
+  workspaces,
+  currentWorkspace,
+  currentWorkspaceId,
+  selectWorkspace,
+  isLoading,
 } = useWorkspaces();
 
 const isCreateWorkspaceModalOpen = ref(false);
 
 function handleSelectWorkspace(workspaceId: string) {
-	selectWorkspace(workspaceId);
+  selectWorkspace(workspaceId);
 }
 </script>
 
@@ -49,8 +49,6 @@ function handleSelectWorkspace(workspaceId: string) {
               v-if="currentWorkspace"
               :name="currentWorkspace.displayName"
               size="md"
-              fallback-from="#6366F1"
-              fallback-to="#8B5CF6"
             />
             <div
               v-else
@@ -81,22 +79,25 @@ function handleSelectWorkspace(workspaceId: string) {
           <DropdownMenuItem
             v-for="(workspace, index) in workspaces"
             :key="workspace.workspaceId"
-            class="gap-2 p-2"
-            :class="{
-              'bg-accent': workspace.workspaceId === currentWorkspaceId,
-            }"
+            class="flex items-center gap-2 px-2 py-1 mb-1.5 rounded-md cursor-pointer"
+            :class="
+              workspace.workspaceId === currentWorkspaceId ? 'bg-accent' : ''
+            "
             @click="handleSelectWorkspace(workspace.workspaceId)"
           >
-            <EntityAvatar
-              :name="workspace.displayName"
-              size="sm"
-              fallback-from="#6366F1"
-              fallback-to="#8B5CF6"
-            />
-            <span class="truncate">{{ workspace.displayName }}</span>
-            <DropdownMenuShortcut v-if="index < 9">
+            <EntityAvatar :name="workspace.displayName" size="sm" />
+            <div class="flex flex-col flex-1 min-w-0">
+              <span class="truncate text-sm">{{ workspace.displayName }}</span>
+              <span class="text-xs font-light text-muted-foreground">
+                {{ t(`members.roles.${workspace.memberRole}`) }}
+              </span>
+            </div>
+            <span
+              v-if="index < 9"
+              class="ml-auto text-xs tracking-widest text-muted-foreground"
+            >
               ⌘{{ index + 1 }}
-            </DropdownMenuShortcut>
+            </span>
           </DropdownMenuItem>
           <DropdownMenuSeparator v-if="workspaces && workspaces.length > 0" />
           <DropdownMenuItem

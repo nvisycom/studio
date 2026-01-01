@@ -1,93 +1,144 @@
 import { useQuery, useMutation } from "@pinia/colada";
 import type {
-	Webhook,
-	WebhookWithSecret,
-	CreateWebhook,
-	UpdateWebhook,
-} from "@nvisy/sdk";
+  Webhook,
+  CreateWebhook,
+  UpdateWebhook,
+} from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for webhook operations
  */
 export function useWebhooks() {
-	const { $nvisyClient } = useNuxtApp();
-	const { authToken } = useAuth();
-	const { currentWorkspaceId } = useWorkspaces();
+  const { $nvisyClient } = useNuxtApp();
+  const { authToken } = useAuth();
+  const { currentWorkspaceId } = useWorkspaces();
 
-	const webhooksQuery = useQuery({
-		key: () => ["webhooks", currentWorkspaceId.value],
-		query: async () => {
-			const client = $nvisyClient.value;
-			const workspaceId = currentWorkspaceId.value;
-			if (!client || !workspaceId) throw new Error("Not authenticated");
-			return await client.webhooks.list(workspaceId);
-		},
-		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceId.value,
-	});
+  // Local state for optimistic updates
+  const optimisticUpdates = ref<
+    Record<string, Partial<Webhook> | UpdateWebhook>
+  >({});
 
-	const createWebhookMutation = useMutation({
-		mutation: async (webhook: CreateWebhook) => {
-			const client = $nvisyClient.value;
-			const workspaceId = currentWorkspaceId.value;
-			if (!client || !workspaceId) throw new Error("Not authenticated");
-			return await client.webhooks.create(workspaceId, webhook);
-		},
-		onSuccess() {
-			webhooksQuery.refresh();
-		},
-	});
+  const webhooksQuery = useQuery({
+    key: () => ["webhooks", currentWorkspaceId.value],
+    query: async () => {
+      const client = $nvisyClient.value;
+      const workspaceId = currentWorkspaceId.value;
+      if (!client || !workspaceId) throw new Error("Not authenticated");
+      return await client.webhooks.listWebhooks(workspaceId);
+    },
+    enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceId.value,
+  });
 
-	const updateWebhookMutation = useMutation({
-		mutation: async ({
-			webhookId,
-			updates,
-		}: {
-			webhookId: string;
-			updates: UpdateWebhook;
-		}) => {
-			const client = $nvisyClient.value;
-			if (!client) throw new Error("Not authenticated");
-			return await client.webhooks.update(webhookId, updates);
-		},
-		onSuccess() {
-			webhooksQuery.refresh();
-		},
-	});
+  // Computed that applies optimistic updates on top of query data
+  const webhooks = computed(() => {
+    const data = webhooksQuery.data.value;
+    if (!data) return data;
+    return data.map((w) => ({
+      ...w,
+      ...optimisticUpdates.value[w.webhookId],
+    }));
+  });
 
-	const deleteWebhookMutation = useMutation({
-		mutation: async (webhookId: string) => {
-			const client = $nvisyClient.value;
-			if (!client) throw new Error("Not authenticated");
-			await client.webhooks.delete(webhookId);
-		},
-		onSuccess() {
-			webhooksQuery.refresh();
-		},
-	});
+  const createWebhookMutation = useMutation({
+    mutation: async (webhook: CreateWebhook) => {
+      const client = $nvisyClient.value;
+      const workspaceId = currentWorkspaceId.value;
+      if (!client || !workspaceId) throw new Error("Not authenticated");
+      return await client.webhooks.createWebhook(workspaceId, webhook);
+    },
+    onSuccess() {
+      webhooksQuery.refresh();
+    },
+  });
 
-	return {
-		// Query state
-		webhooks: webhooksQuery.data,
-		isLoading: webhooksQuery.isLoading,
-		error: webhooksQuery.error,
-		refresh: webhooksQuery.refresh,
+  const updateWebhookMutation = useMutation({
+    mutation: async ({
+      webhookId,
+      updates,
+    }: {
+      webhookId: string;
+      updates: UpdateWebhook;
+    }) => {
+      const client = $nvisyClient.value;
+      if (!client) throw new Error("Not authenticated");
+      return await client.webhooks.updateWebhook(webhookId, updates);
+    },
+    onMutate({ webhookId, updates }) {
+      // Optimistic update
+      optimisticUpdates.value = {
+        ...optimisticUpdates.value,
+        [webhookId]: updates,
+      };
+    },
+    onError(_error, variables) {
+      // Rollback on error
+      const { [variables.webhookId]: _, ...rest } = optimisticUpdates.value;
+      optimisticUpdates.value = rest;
+    },
+    onSettled(data, _error, variables) {
+      // Use the mutation response as source of truth
+      // This avoids race conditions with the list endpoint
+      if (data) {
+        optimisticUpdates.value = {
+          ...optimisticUpdates.value,
+          [variables.webhookId]: data,
+        };
+      } else {
+        // On error, clear the optimistic update
+        const { [variables.webhookId]: _, ...rest } = optimisticUpdates.value;
+        optimisticUpdates.value = rest;
+      }
+    },
+  });
 
-		// Create
-		createWebhook: createWebhookMutation.mutate,
-		createWebhookAsync: createWebhookMutation.mutateAsync,
-		isCreating: createWebhookMutation.isLoading,
-		createError: createWebhookMutation.error,
+  const deleteWebhookMutation = useMutation({
+    mutation: async (webhookId: string) => {
+      const client = $nvisyClient.value;
+      if (!client) throw new Error("Not authenticated");
+      await client.webhooks.deleteWebhook(webhookId);
+    },
+    onSuccess() {
+      webhooksQuery.refresh();
+    },
+  });
 
-		// Update
-		updateWebhook: updateWebhookMutation.mutate,
-		updateWebhookAsync: updateWebhookMutation.mutateAsync,
-		isUpdating: updateWebhookMutation.isLoading,
-		updateError: updateWebhookMutation.error,
+  const testWebhookMutation = useMutation({
+    mutation: async (webhookId: string) => {
+      const client = $nvisyClient.value;
+      if (!client) throw new Error("Not authenticated");
+      return await client.webhooks.testWebhook(webhookId);
+    },
+  });
 
-		// Delete
-		deleteWebhook: deleteWebhookMutation.mutate,
-		deleteWebhookAsync: deleteWebhookMutation.mutateAsync,
-		isDeleting: deleteWebhookMutation.isLoading,
-		deleteError: deleteWebhookMutation.error,
-	};
+  return {
+    // Query state
+    webhooks,
+    isLoading: webhooksQuery.isLoading,
+    error: webhooksQuery.error,
+    refresh: webhooksQuery.refresh,
+
+    // Create
+    createWebhook: createWebhookMutation.mutate,
+    createWebhookAsync: createWebhookMutation.mutateAsync,
+    isCreating: createWebhookMutation.isLoading,
+    createError: createWebhookMutation.error,
+
+    // Update
+    updateWebhook: updateWebhookMutation.mutate,
+    updateWebhookAsync: updateWebhookMutation.mutateAsync,
+    isUpdating: updateWebhookMutation.isLoading,
+    updateError: updateWebhookMutation.error,
+
+    // Delete
+    deleteWebhook: deleteWebhookMutation.mutate,
+    deleteWebhookAsync: deleteWebhookMutation.mutateAsync,
+    isDeleting: deleteWebhookMutation.isLoading,
+    deleteError: deleteWebhookMutation.error,
+
+    // Test
+    testWebhook: testWebhookMutation.mutate,
+    testWebhookAsync: testWebhookMutation.mutateAsync,
+    isTesting: testWebhookMutation.isLoading,
+    testError: testWebhookMutation.error,
+  };
 }

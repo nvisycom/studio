@@ -1,5 +1,9 @@
 import { useQuery, useMutation } from "@pinia/colada";
-import type { ApiToken, CreateApiToken, UpdateApiToken } from "@nvisy/sdk";
+import type {
+	ApiToken,
+	CreateApiToken,
+	UpdateApiToken,
+} from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for API token operations
@@ -13,7 +17,7 @@ export function useApiTokens() {
 		query: async () => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			return await client.apiTokens.list();
+			return await client.apiTokens.listApiTokens();
 		},
 		enabled: () => !!authToken.value?.apiToken,
 	});
@@ -22,7 +26,7 @@ export function useApiTokens() {
 		mutation: async (token: CreateApiToken) => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			return await client.apiTokens.create(token);
+			return await client.apiTokens.createApiToken(token);
 		},
 		onSuccess() {
 			tokensQuery.refresh();
@@ -39,7 +43,7 @@ export function useApiTokens() {
 		}) => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			return await client.apiTokens.update(tokenId, updates);
+			return await client.apiTokens.updateApiToken(tokenId, updates);
 		},
 		onSuccess() {
 			tokensQuery.refresh();
@@ -50,7 +54,7 @@ export function useApiTokens() {
 		mutation: async (tokenId: string) => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			await client.apiTokens.revoke(tokenId);
+			await client.apiTokens.revokeApiToken(tokenId);
 		},
 		onSuccess() {
 			tokensQuery.refresh();
