@@ -9,50 +9,50 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
 definePageMeta({
-  pageCategory: "Settings",
+	pageCategory: "Settings",
 });
 
 const { t } = useI18n();
 const router = useRouter();
 
 function getErrorMessage(err: unknown, fallback: string): string {
-  if (err instanceof NvisyApiError) {
-    return err.message;
-  }
-  if (err instanceof Error) {
-    return err.message;
-  }
-  return fallback;
+	if (err instanceof NvisyApiError) {
+		return err.message;
+	}
+	if (err instanceof Error) {
+		return err.message;
+	}
+	return fallback;
 }
 
 // Composables
 const {
-  currentWorkspace,
-  currentWorkspaceId,
-  isLoading: isLoadingWorkspaces,
-  updateWorkspaceAsync,
-  isUpdating,
-  deleteWorkspaceAsync,
-  isDeleting,
+	currentWorkspace,
+	currentWorkspaceId,
+	isLoading: isLoadingWorkspaces,
+	updateWorkspaceAsync,
+	isUpdating,
+	deleteWorkspaceAsync,
+	isDeleting,
 } = useWorkspaces();
 
 const { leaveAsync, isLeaving } = useMembers();
@@ -72,41 +72,41 @@ const deleteConfirmName = ref("");
 
 // Initialize form from workspace data
 watch(
-  () => currentWorkspace.value,
-  (workspace) => {
-    if (workspace) {
-      // Only initialize if not already set (first load)
-      if (workspaceName.value === null) {
-        workspaceName.value = workspace.displayName;
-      }
-      if (workspaceDescription.value === null) {
-        workspaceDescription.value = workspace.description ?? "";
-      }
-      if (autoCleanup.value === null) {
-        autoCleanup.value = workspace.autoCleanup;
-      }
-      if (requireApproval.value === null) {
-        requireApproval.value = workspace.requireApproval;
-      }
-      if (enableComments.value === null) {
-        enableComments.value = workspace.enableComments;
-      }
-    }
-  },
-  { immediate: true },
+	() => currentWorkspace.value,
+	(workspace) => {
+		if (workspace) {
+			// Only initialize if not already set (first load)
+			if (workspaceName.value === null) {
+				workspaceName.value = workspace.displayName;
+			}
+			if (workspaceDescription.value === null) {
+				workspaceDescription.value = workspace.description ?? "";
+			}
+			if (autoCleanup.value === null) {
+				autoCleanup.value = workspace.autoCleanup;
+			}
+			if (requireApproval.value === null) {
+				requireApproval.value = workspace.requireApproval;
+			}
+			if (enableComments.value === null) {
+				enableComments.value = workspace.enableComments;
+			}
+		}
+	},
+	{ immediate: true },
 );
 
 // Reset form when workspace changes
 watch(
-  () => currentWorkspaceId.value,
-  () => {
-    // Reset to null so the next workspace data triggers re-initialization
-    workspaceName.value = null;
-    workspaceDescription.value = null;
-    autoCleanup.value = null;
-    requireApproval.value = null;
-    enableComments.value = null;
-  },
+	() => currentWorkspaceId.value,
+	() => {
+		// Reset to null so the next workspace data triggers re-initialization
+		workspaceName.value = null;
+		workspaceDescription.value = null;
+		autoCleanup.value = null;
+		requireApproval.value = null;
+		enableComments.value = null;
+	},
 );
 
 // Check if current user is owner
@@ -114,127 +114,127 @@ const isOwner = computed(() => currentWorkspace.value?.memberRole === "owner");
 
 // Check if info has changed
 const hasInfoChanges = computed(() => {
-  if (!currentWorkspace.value || workspaceName.value === null) return false;
-  return (
-    workspaceName.value !== currentWorkspace.value.displayName ||
-    workspaceDescription.value !== (currentWorkspace.value.description ?? "")
-  );
+	if (!currentWorkspace.value || workspaceName.value === null) return false;
+	return (
+		workspaceName.value !== currentWorkspace.value.displayName ||
+		workspaceDescription.value !== (currentWorkspace.value.description ?? "")
+	);
 });
 
 // Check if options have changed
 const hasOptionsChanges = computed(() => {
-  if (!currentWorkspace.value || autoCleanup.value === null) return false;
-  return (
-    autoCleanup.value !== currentWorkspace.value.autoCleanup ||
-    requireApproval.value !== currentWorkspace.value.requireApproval ||
-    enableComments.value !== currentWorkspace.value.enableComments
-  );
+	if (!currentWorkspace.value || autoCleanup.value === null) return false;
+	return (
+		autoCleanup.value !== currentWorkspace.value.autoCleanup ||
+		requireApproval.value !== currentWorkspace.value.requireApproval ||
+		enableComments.value !== currentWorkspace.value.enableComments
+	);
 });
 
 // Functions
 function copyWorkspaceId() {
-  if (!currentWorkspaceId.value) return;
-  navigator.clipboard.writeText(currentWorkspaceId.value);
-  copiedWorkspaceId.value = true;
-  toast.success(t("settings.workspace.messages.idCopied"));
-  setTimeout(() => {
-    copiedWorkspaceId.value = false;
-  }, 2000);
+	if (!currentWorkspaceId.value) return;
+	navigator.clipboard.writeText(currentWorkspaceId.value);
+	copiedWorkspaceId.value = true;
+	toast.success(t("settings.workspace.messages.idCopied"));
+	setTimeout(() => {
+		copiedWorkspaceId.value = false;
+	}, 2000);
 }
 
 async function saveWorkspaceInfo() {
-  const workspaceId = currentWorkspaceId.value;
-  if (!workspaceId) return;
+	const workspaceId = currentWorkspaceId.value;
+	if (!workspaceId) return;
 
-  try {
-    await updateWorkspaceAsync({
-      workspaceId,
-      updates: {
-        displayName: workspaceName.value,
-        description: workspaceDescription.value || null,
-      },
-    });
-    toast.success(t("settings.workspace.messages.saved"));
-  } catch (err) {
-    console.error("Failed to save workspace settings:", err);
-    toast.error(t("settings.workspace.errors.saveFailed"), {
-      description: getErrorMessage(err, t("common.errors.tryAgain")),
-    });
-  }
+	try {
+		await updateWorkspaceAsync({
+			workspaceId,
+			updates: {
+				displayName: workspaceName.value,
+				description: workspaceDescription.value || null,
+			},
+		});
+		toast.success(t("settings.workspace.messages.saved"));
+	} catch (err) {
+		console.error("Failed to save workspace settings:", err);
+		toast.error(t("settings.workspace.errors.saveFailed"), {
+			description: getErrorMessage(err, t("common.errors.tryAgain")),
+		});
+	}
 }
 
 async function saveWorkspaceOptions() {
-  const workspaceId = currentWorkspaceId.value;
-  if (!workspaceId) return;
+	const workspaceId = currentWorkspaceId.value;
+	if (!workspaceId) return;
 
-  try {
-    await updateWorkspaceAsync({
-      workspaceId,
-      updates: {
-        autoCleanup: autoCleanup.value,
-        requireApproval: requireApproval.value,
-        enableComments: enableComments.value,
-      },
-    });
-    toast.success(t("settings.workspace.messages.optionsSaved"));
-  } catch (err) {
-    console.error("Failed to save workspace options:", err);
-    toast.error(t("settings.workspace.errors.saveFailed"), {
-      description: getErrorMessage(err, t("common.errors.tryAgain")),
-    });
-  }
+	try {
+		await updateWorkspaceAsync({
+			workspaceId,
+			updates: {
+				autoCleanup: autoCleanup.value,
+				requireApproval: requireApproval.value,
+				enableComments: enableComments.value,
+			},
+		});
+		toast.success(t("settings.workspace.messages.optionsSaved"));
+	} catch (err) {
+		console.error("Failed to save workspace options:", err);
+		toast.error(t("settings.workspace.errors.saveFailed"), {
+			description: getErrorMessage(err, t("common.errors.tryAgain")),
+		});
+	}
 }
 
 function uploadAvatar() {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "image/*";
-  input.onchange = (e) => {
-    const file = (e.target as HTMLInputElement)?.files?.[0];
-    if (file) {
-      // TODO: Implement avatar upload when API supports it
-      console.log("Uploading avatar:", file.name);
-      toast.info(t("settings.workspace.messages.avatarNotSupported"));
-    }
-  };
-  input.click();
+	const input = document.createElement("input");
+	input.type = "file";
+	input.accept = "image/*";
+	input.onchange = (e) => {
+		const file = (e.target as HTMLInputElement)?.files?.[0];
+		if (file) {
+			// TODO: Implement avatar upload when API supports it
+			console.log("Uploading avatar:", file.name);
+			toast.info(t("settings.workspace.messages.avatarNotSupported"));
+		}
+	};
+	input.click();
 }
 
 async function handleLeaveWorkspace() {
-  try {
-    await leaveAsync();
-    isLeaveDialogOpen.value = false;
-    toast.success(t("settings.workspace.messages.left"));
-    router.push("/overview");
-  } catch (err) {
-    console.error("Failed to leave workspace:", err);
-    toast.error(t("settings.workspace.errors.leaveFailed"), {
-      description: getErrorMessage(err, t("common.errors.tryAgain")),
-    });
-  }
+	try {
+		await leaveAsync();
+		isLeaveDialogOpen.value = false;
+		toast.success(t("settings.workspace.messages.left"));
+		router.push("/overview");
+	} catch (err) {
+		console.error("Failed to leave workspace:", err);
+		toast.error(t("settings.workspace.errors.leaveFailed"), {
+			description: getErrorMessage(err, t("common.errors.tryAgain")),
+		});
+	}
 }
 
 async function handleDeleteWorkspace() {
-  if (!currentWorkspaceId.value) return;
+	if (!currentWorkspaceId.value) return;
 
-  try {
-    await deleteWorkspaceAsync(currentWorkspaceId.value);
-    isDeleteDialogOpen.value = false;
-    deleteConfirmName.value = "";
-    toast.success(t("settings.workspace.messages.deleted"));
-    router.push("/overview");
-  } catch (err) {
-    console.error("Failed to delete workspace:", err);
-    toast.error(t("settings.workspace.errors.deleteFailed"), {
-      description: getErrorMessage(err, t("common.errors.tryAgain")),
-    });
-  }
+	try {
+		await deleteWorkspaceAsync(currentWorkspaceId.value);
+		isDeleteDialogOpen.value = false;
+		deleteConfirmName.value = "";
+		toast.success(t("settings.workspace.messages.deleted"));
+		router.push("/overview");
+	} catch (err) {
+		console.error("Failed to delete workspace:", err);
+		toast.error(t("settings.workspace.errors.deleteFailed"), {
+			description: getErrorMessage(err, t("common.errors.tryAgain")),
+		});
+	}
 }
 
 // Validate delete confirmation
 const canDelete = computed(() => {
-  if (!currentWorkspace.value) return false;
-  return deleteConfirmName.value === currentWorkspace.value.displayName;
+	if (!currentWorkspace.value) return false;
+	return deleteConfirmName.value === currentWorkspace.value.displayName;
 });
 </script>
 

@@ -6,62 +6,62 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
 } from "@/components/ui/dialog";
 
 const { t } = useI18n();
 
 // All available webhook events from SDK
 const WEBHOOK_EVENTS: WebhookEvent[] = [
-  "document:created",
-  "document:updated",
-  "document:deleted",
-  "file:created",
-  "file:updated",
-  "file:deleted",
-  "member:added",
-  "member:updated",
-  "member:deleted",
-  "integration:created",
-  "integration:updated",
-  "integration:deleted",
-  "integration:synced",
-  "integration:desynced",
+	"document:created",
+	"document:updated",
+	"document:deleted",
+	"file:created",
+	"file:updated",
+	"file:deleted",
+	"member:added",
+	"member:updated",
+	"member:deleted",
+	"integration:created",
+	"integration:updated",
+	"integration:deleted",
+	"integration:synced",
+	"integration:desynced",
 ];
 
 interface Header {
-  key: string;
-  value: string;
+	key: string;
+	value: string;
 }
 
 interface Props {
-  open?: boolean;
-  isLoading?: boolean;
+	open?: boolean;
+	isLoading?: boolean;
 }
 
 interface Emits {
-  (e: "update:open", value: boolean): void;
-  (
-    e: "create",
-    data: {
-      displayName: string;
-      url: string;
-      status: "active" | "paused";
-      events: WebhookEvent[];
-      headers: Record<string, string>;
-    },
-  ): void;
+	(e: "update:open", value: boolean): void;
+	(
+		e: "create",
+		data: {
+			displayName: string;
+			url: string;
+			status: "active" | "paused";
+			events: WebhookEvent[];
+			headers: Record<string, string>;
+		},
+	): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  open: false,
-  isLoading: false,
+	open: false,
+	isLoading: false,
 });
 
 const emit = defineEmits<Emits>();
@@ -71,100 +71,100 @@ const webhookName = ref("");
 const webhookUrl = ref("");
 const webhookActive = ref(true);
 const webhookEvents = ref<Record<WebhookEvent, boolean>>(
-  Object.fromEntries(WEBHOOK_EVENTS.map((e) => [e, false])) as Record<
-    WebhookEvent,
-    boolean
-  >,
+	Object.fromEntries(WEBHOOK_EVENTS.map((e) => [e, false])) as Record<
+		WebhookEvent,
+		boolean
+	>,
 );
 const webhookHeaders = ref<Header[]>([]);
 const urlError = ref("");
 
 // URL validation
 function isValidUrl(url: string): boolean {
-  try {
-    const parsed = new URL(url);
-    return parsed.protocol === "https:" || parsed.protocol === "http:";
-  } catch {
-    return false;
-  }
+	try {
+		const parsed = new URL(url);
+		return parsed.protocol === "https:" || parsed.protocol === "http:";
+	} catch {
+		return false;
+	}
 }
 
 function validateUrl() {
-  if (webhookUrl.value.trim() && !isValidUrl(webhookUrl.value)) {
-    urlError.value = t("integrations.forms.webhook.urlError");
-  } else {
-    urlError.value = "";
-  }
+	if (webhookUrl.value.trim() && !isValidUrl(webhookUrl.value)) {
+		urlError.value = t("integrations.forms.webhook.urlError");
+	} else {
+		urlError.value = "";
+	}
 }
 
 // Header management
 function addHeader() {
-  webhookHeaders.value.push({ key: "", value: "" });
+	webhookHeaders.value.push({ key: "", value: "" });
 }
 
 function removeHeader(index: number) {
-  webhookHeaders.value.splice(index, 1);
+	webhookHeaders.value.splice(index, 1);
 }
 
 // Computed validation
 const selectedEvents = computed(() =>
-  WEBHOOK_EVENTS.filter((e) => webhookEvents.value[e]),
+	WEBHOOK_EVENTS.filter((e) => webhookEvents.value[e]),
 );
 
 const headersObject = computed(() => {
-  const headers: Record<string, string> = {};
-  for (const header of webhookHeaders.value) {
-    if (header.key.trim()) {
-      headers[header.key.trim()] = header.value;
-    }
-  }
-  return headers;
+	const headers: Record<string, string> = {};
+	for (const header of webhookHeaders.value) {
+		if (header.key.trim()) {
+			headers[header.key.trim()] = header.value;
+		}
+	}
+	return headers;
 });
 
 const isFormValid = computed(() => {
-  const urlValid =
-    webhookUrl.value.trim().length > 0 && isValidUrl(webhookUrl.value);
-  return (
-    urlValid &&
-    webhookName.value.trim().length > 0 &&
-    selectedEvents.value.length > 0
-  );
+	const urlValid =
+		webhookUrl.value.trim().length > 0 && isValidUrl(webhookUrl.value);
+	return (
+		urlValid &&
+		webhookName.value.trim().length > 0 &&
+		selectedEvents.value.length > 0
+	);
 });
 
 // Functions
 function handleOpenChange(open: boolean) {
-  if (!open) {
-    resetForm();
-  }
-  emit("update:open", open);
+	if (!open) {
+		resetForm();
+	}
+	emit("update:open", open);
 }
 
 function resetForm() {
-  webhookName.value = "";
-  webhookUrl.value = "";
-  webhookActive.value = true;
-  webhookEvents.value = Object.fromEntries(
-    WEBHOOK_EVENTS.map((e) => [e, false]),
-  ) as Record<WebhookEvent, boolean>;
-  webhookHeaders.value = [];
-  urlError.value = "";
+	webhookName.value = "";
+	webhookUrl.value = "";
+	webhookActive.value = true;
+	webhookEvents.value = Object.fromEntries(
+		WEBHOOK_EVENTS.map((e) => [e, false]),
+	) as Record<WebhookEvent, boolean>;
+	webhookHeaders.value = [];
+	urlError.value = "";
 }
 
 function saveWebhook() {
-  if (!isFormValid.value) return;
+	if (!isFormValid.value) return;
 
-  emit("create", {
-    displayName: webhookName.value,
-    url: webhookUrl.value,
-    status: webhookActive.value ? "active" : "paused",
-    events: selectedEvents.value,
-    headers: headersObject.value,
-  });
+	emit("create", {
+		displayName: webhookName.value,
+		url: webhookUrl.value,
+		status: webhookActive.value ? "active" : "paused",
+		events: selectedEvents.value,
+		headers: headersObject.value,
+	});
 }
 
 function cancel() {
-  resetForm();
-  emit("update:open", false);
+	resetForm();
+	emit("update:open", false);
 }
 </script>
 

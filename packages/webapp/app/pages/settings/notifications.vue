@@ -4,36 +4,36 @@ import { NvisyApiError } from "@nvisy/sdk";
 import { Loader2 } from "lucide-vue-next";
 import { toast } from "vue-sonner";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 
 definePageMeta({
-  pageCategory: "Settings",
+	pageCategory: "Settings",
 });
 
 const { t } = useI18n();
 
 function getErrorMessage(err: unknown, fallback: string): string {
-  if (err instanceof NvisyApiError) {
-    return err.message;
-  }
-  if (err instanceof Error) {
-    return err.message;
-  }
-  return fallback;
+	if (err instanceof NvisyApiError) {
+		return err.message;
+	}
+	if (err instanceof Error) {
+		return err.message;
+	}
+	return fallback;
 }
 
 // Composable
 const { settings, isLoading, updateSettingsAsync, isUpdating } =
-  useNotificationSettings();
+	useNotificationSettings();
 
 // Local form state
 const notifyViaEmail = ref(false);
@@ -42,207 +42,207 @@ const emailEvents = ref<NotificationEvent[]>([]);
 
 // Initialize form from settings data
 watch(
-  settings,
-  (s) => {
-    if (s) {
-      notifyViaEmail.value = s.notifyViaEmail;
-      appEvents.value = [...s.notificationEventsApp];
-      emailEvents.value = [...s.notificationEventsEmail];
-    }
-  },
-  { immediate: true },
+	settings,
+	(s) => {
+		if (s) {
+			notifyViaEmail.value = s.notifyViaEmail;
+			appEvents.value = [...s.notificationEventsApp];
+			emailEvents.value = [...s.notificationEventsEmail];
+		}
+	},
+	{ immediate: true },
 );
 
 // Auto-save when email toggle changes
 async function toggleEmailNotifications(value: boolean) {
-  notifyViaEmail.value = value;
-  try {
-    await updateSettingsAsync({
-      notifyViaEmail: value,
-    });
-    toast.success(t("settings.notifications.messages.saved"));
-  } catch (err) {
-    // Revert on error
-    notifyViaEmail.value = !value;
-    console.error("Failed to update email notifications:", err);
-    toast.error(t("settings.notifications.errors.saveFailed"), {
-      description: getErrorMessage(err, t("common.errors.tryAgain")),
-    });
-  }
+	notifyViaEmail.value = value;
+	try {
+		await updateSettingsAsync({
+			notifyViaEmail: value,
+		});
+		toast.success(t("settings.notifications.messages.saved"));
+	} catch (err) {
+		// Revert on error
+		notifyViaEmail.value = !value;
+		console.error("Failed to update email notifications:", err);
+		toast.error(t("settings.notifications.errors.saveFailed"), {
+			description: getErrorMessage(err, t("common.errors.tryAgain")),
+		});
+	}
 }
 
 // Event categories based on NotificationEvent types
 const categories = computed(() => [
-  {
-    id: "comments",
-    name: t("settings.notifications.categories.comments.name"),
-    events: [
-      {
-        event: "comment:mention" as NotificationEvent,
-        name: t("settings.notifications.categories.comments.mention.name"),
-        description: t(
-          "settings.notifications.categories.comments.mention.description",
-        ),
-      },
-      {
-        event: "comment:reply" as NotificationEvent,
-        name: t("settings.notifications.categories.comments.reply.name"),
-        description: t(
-          "settings.notifications.categories.comments.reply.description",
-        ),
-      },
-    ],
-  },
-  {
-    id: "documents",
-    name: t("settings.notifications.categories.documents.name"),
-    events: [
-      {
-        event: "document:uploaded" as NotificationEvent,
-        name: t("settings.notifications.categories.documents.uploaded.name"),
-        description: t(
-          "settings.notifications.categories.documents.uploaded.description",
-        ),
-      },
-      {
-        event: "document:downloaded" as NotificationEvent,
-        name: t("settings.notifications.categories.documents.downloaded.name"),
-        description: t(
-          "settings.notifications.categories.documents.downloaded.description",
-        ),
-      },
-      {
-        event: "document:verified" as NotificationEvent,
-        name: t("settings.notifications.categories.documents.verified.name"),
-        description: t(
-          "settings.notifications.categories.documents.verified.description",
-        ),
-      },
-    ],
-  },
-  {
-    id: "members",
-    name: t("settings.notifications.categories.members.name"),
-    events: [
-      {
-        event: "member:invited" as NotificationEvent,
-        name: t("settings.notifications.categories.members.invited.name"),
-        description: t(
-          "settings.notifications.categories.members.invited.description",
-        ),
-      },
-      {
-        event: "member:joined" as NotificationEvent,
-        name: t("settings.notifications.categories.members.joined.name"),
-        description: t(
-          "settings.notifications.categories.members.joined.description",
-        ),
-      },
-    ],
-  },
-  {
-    id: "integrations",
-    name: t("settings.notifications.categories.integrations.name"),
-    events: [
-      {
-        event: "integration:synced" as NotificationEvent,
-        name: t("settings.notifications.categories.integrations.synced.name"),
-        description: t(
-          "settings.notifications.categories.integrations.synced.description",
-        ),
-      },
-      {
-        event: "integration:desynced" as NotificationEvent,
-        name: t("settings.notifications.categories.integrations.desynced.name"),
-        description: t(
-          "settings.notifications.categories.integrations.desynced.description",
-        ),
-      },
-    ],
-  },
-  {
-    id: "system",
-    name: t("settings.notifications.categories.system.name"),
-    events: [
-      {
-        event: "system:announcement" as NotificationEvent,
-        name: t("settings.notifications.categories.system.announcement.name"),
-        description: t(
-          "settings.notifications.categories.system.announcement.description",
-        ),
-      },
-      {
-        event: "system:report" as NotificationEvent,
-        name: t("settings.notifications.categories.system.report.name"),
-        description: t(
-          "settings.notifications.categories.system.report.description",
-        ),
-      },
-    ],
-  },
+	{
+		id: "comments",
+		name: t("settings.notifications.categories.comments.name"),
+		events: [
+			{
+				event: "comment:mention" as NotificationEvent,
+				name: t("settings.notifications.categories.comments.mention.name"),
+				description: t(
+					"settings.notifications.categories.comments.mention.description",
+				),
+			},
+			{
+				event: "comment:reply" as NotificationEvent,
+				name: t("settings.notifications.categories.comments.reply.name"),
+				description: t(
+					"settings.notifications.categories.comments.reply.description",
+				),
+			},
+		],
+	},
+	{
+		id: "documents",
+		name: t("settings.notifications.categories.documents.name"),
+		events: [
+			{
+				event: "document:uploaded" as NotificationEvent,
+				name: t("settings.notifications.categories.documents.uploaded.name"),
+				description: t(
+					"settings.notifications.categories.documents.uploaded.description",
+				),
+			},
+			{
+				event: "document:downloaded" as NotificationEvent,
+				name: t("settings.notifications.categories.documents.downloaded.name"),
+				description: t(
+					"settings.notifications.categories.documents.downloaded.description",
+				),
+			},
+			{
+				event: "document:verified" as NotificationEvent,
+				name: t("settings.notifications.categories.documents.verified.name"),
+				description: t(
+					"settings.notifications.categories.documents.verified.description",
+				),
+			},
+		],
+	},
+	{
+		id: "members",
+		name: t("settings.notifications.categories.members.name"),
+		events: [
+			{
+				event: "member:invited" as NotificationEvent,
+				name: t("settings.notifications.categories.members.invited.name"),
+				description: t(
+					"settings.notifications.categories.members.invited.description",
+				),
+			},
+			{
+				event: "member:joined" as NotificationEvent,
+				name: t("settings.notifications.categories.members.joined.name"),
+				description: t(
+					"settings.notifications.categories.members.joined.description",
+				),
+			},
+		],
+	},
+	{
+		id: "integrations",
+		name: t("settings.notifications.categories.integrations.name"),
+		events: [
+			{
+				event: "integration:synced" as NotificationEvent,
+				name: t("settings.notifications.categories.integrations.synced.name"),
+				description: t(
+					"settings.notifications.categories.integrations.synced.description",
+				),
+			},
+			{
+				event: "integration:desynced" as NotificationEvent,
+				name: t("settings.notifications.categories.integrations.desynced.name"),
+				description: t(
+					"settings.notifications.categories.integrations.desynced.description",
+				),
+			},
+		],
+	},
+	{
+		id: "system",
+		name: t("settings.notifications.categories.system.name"),
+		events: [
+			{
+				event: "system:announcement" as NotificationEvent,
+				name: t("settings.notifications.categories.system.announcement.name"),
+				description: t(
+					"settings.notifications.categories.system.announcement.description",
+				),
+			},
+			{
+				event: "system:report" as NotificationEvent,
+				name: t("settings.notifications.categories.system.report.name"),
+				description: t(
+					"settings.notifications.categories.system.report.description",
+				),
+			},
+		],
+	},
 ]);
 
 // Check if event settings have changed (email toggle is auto-saved separately)
 const hasEventChanges = computed(() => {
-  if (!settings.value) return false;
+	if (!settings.value) return false;
 
-  const originalAppEvents = settings.value.notificationEventsApp;
-  const originalEmailEvents = settings.value.notificationEventsEmail;
+	const originalAppEvents = settings.value.notificationEventsApp;
+	const originalEmailEvents = settings.value.notificationEventsEmail;
 
-  // Convert current sets to sorted arrays for comparison
-  const currentAppEvents = Array.from(appEvents.value).sort();
-  const currentEmailEvents = Array.from(emailEvents.value).sort();
-  const sortedOriginalApp = [...originalAppEvents].sort();
-  const sortedOriginalEmail = [...originalEmailEvents].sort();
+	// Convert current sets to sorted arrays for comparison
+	const currentAppEvents = Array.from(appEvents.value).sort();
+	const currentEmailEvents = Array.from(emailEvents.value).sort();
+	const sortedOriginalApp = [...originalAppEvents].sort();
+	const sortedOriginalEmail = [...originalEmailEvents].sort();
 
-  if (currentAppEvents.length !== sortedOriginalApp.length) return true;
-  if (currentEmailEvents.length !== sortedOriginalEmail.length) return true;
+	if (currentAppEvents.length !== sortedOriginalApp.length) return true;
+	if (currentEmailEvents.length !== sortedOriginalEmail.length) return true;
 
-  for (let i = 0; i < currentAppEvents.length; i++) {
-    if (currentAppEvents[i] !== sortedOriginalApp[i]) return true;
-  }
-  for (let i = 0; i < currentEmailEvents.length; i++) {
-    if (currentEmailEvents[i] !== sortedOriginalEmail[i]) return true;
-  }
+	for (let i = 0; i < currentAppEvents.length; i++) {
+		if (currentAppEvents[i] !== sortedOriginalApp[i]) return true;
+	}
+	for (let i = 0; i < currentEmailEvents.length; i++) {
+		if (currentEmailEvents[i] !== sortedOriginalEmail[i]) return true;
+	}
 
-  return false;
+	return false;
 });
 
 // Toggle event in an array
 function toggleAppEvent(event: NotificationEvent, value: boolean) {
-  if (value) {
-    if (!appEvents.value.includes(event)) {
-      appEvents.value = [...appEvents.value, event];
-    }
-  } else {
-    appEvents.value = appEvents.value.filter((e) => e !== event);
-  }
+	if (value) {
+		if (!appEvents.value.includes(event)) {
+			appEvents.value = [...appEvents.value, event];
+		}
+	} else {
+		appEvents.value = appEvents.value.filter((e) => e !== event);
+	}
 }
 
 function toggleEmailEvent(event: NotificationEvent, value: boolean) {
-  if (value) {
-    if (!emailEvents.value.includes(event)) {
-      emailEvents.value = [...emailEvents.value, event];
-    }
-  } else {
-    emailEvents.value = emailEvents.value.filter((e) => e !== event);
-  }
+	if (value) {
+		if (!emailEvents.value.includes(event)) {
+			emailEvents.value = [...emailEvents.value, event];
+		}
+	} else {
+		emailEvents.value = emailEvents.value.filter((e) => e !== event);
+	}
 }
 
 // Save event settings
 async function saveEventSettings() {
-  try {
-    await updateSettingsAsync({
-      notificationEventsApp: appEvents.value,
-      notificationEventsEmail: emailEvents.value,
-    });
-    toast.success(t("settings.notifications.messages.saved"));
-  } catch (err) {
-    console.error("Failed to save notification settings:", err);
-    toast.error(t("settings.notifications.errors.saveFailed"), {
-      description: getErrorMessage(err, t("common.errors.tryAgain")),
-    });
-  }
+	try {
+		await updateSettingsAsync({
+			notificationEventsApp: appEvents.value,
+			notificationEventsEmail: emailEvents.value,
+		});
+		toast.success(t("settings.notifications.messages.saved"));
+	} catch (err) {
+		console.error("Failed to save notification settings:", err);
+		toast.error(t("settings.notifications.errors.saveFailed"), {
+			description: getErrorMessage(err, t("common.errors.tryAgain")),
+		});
+	}
 }
 </script>
 

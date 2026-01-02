@@ -1,758 +1,758 @@
 {
-  "common": {
-    "service": "Nvisy",
-    "save": "Save",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "confirm": "Confirm",
-    "errors": {
-      "tryAgain": "Please try again."
-    },
-    "time": {
-      "justNow": "Just now",
-      "never": "Never",
-      "hoursAgo": "{hours}h ago",
-      "daysAgo": "{days}d ago",
-      "weeksAgo": "{weeks}w ago",
-      "monthsAgo": "{months}m ago"
-    }
-  },
-  "settings": {
-    "workspace": {
-      "noWorkspace": "No workspace selected",
-      "avatar": {
-        "label": "Avatar",
-        "description": "Click to upload. Recommended: 256x256px. PNG, JPG, or SVG.",
-        "footer": "Your workspace avatar will be visible to all team members."
-      },
-      "name": {
-        "label": "Workspace Name",
-        "placeholder": "My Workspace",
-        "description": "The name of your workspace as it appears across the platform."
-      },
-      "description": {
-        "label": "Description",
-        "placeholder": "Describe your workspace...",
-        "description": "A brief description of your workspace. Max 500 characters."
-      },
-      "id": {
-        "label": "Workspace ID",
-        "description": "Unique identifier used in API calls."
-      },
-      "info": {
-        "footer": "Changes will apply to all team members."
-      },
-      "options": {
-        "title": "Workspace Options",
-        "description": "Configure how your workspace handles documents and collaboration.",
-        "footer": "These settings affect all documents in this workspace.",
-        "autoCleanup": {
-          "label": "Auto Cleanup",
-          "description": "Automatically delete processed files after their expiration period."
-        },
-        "requireApproval": {
-          "label": "Require Approval",
-          "description": "Processed files must be approved before they become visible to team members."
-        },
-        "enableComments": {
-          "label": "Enable Comments",
-          "description": "Allow team members to add comments on documents."
-        }
-      },
-      "leave": {
-        "title": "Leave Workspace",
-        "description": "Remove yourself from this workspace. You won't be able to access it anymore.",
-        "content": "This action will remove you from the workspace immediately.",
-        "warning": "This action cannot be undone. You'll need to be re-invited to access this workspace.",
-        "button": "Leave Workspace",
-        "dialog": {
-          "title": "Leave Workspace?",
-          "description": "Are you sure you want to leave this workspace? You will lose access to all documents and resources in this workspace."
-        }
-      },
-      "delete": {
-        "title": "Delete Workspace",
-        "description": "Permanently delete this workspace and all of its data. This action cannot be undone.",
-        "content": "This will permanently delete everything including documents, integrations, and configurations.",
-        "warning": "This will permanently delete everything. This action is irreversible.",
-        "button": "Delete Workspace",
-        "dialog": {
-          "title": "Delete Workspace?",
-          "description": "This action cannot be undone. This will permanently delete the workspace \"{name}\" and all associated data.",
-          "confirmLabel": "Type \"{name}\" to confirm:"
-        }
-      },
-      "messages": {
-        "idCopied": "Workspace ID copied to clipboard",
-        "saved": "Workspace settings saved",
-        "optionsSaved": "Workspace options saved",
-        "left": "You have left the workspace",
-        "deleted": "Workspace deleted",
-        "avatarNotSupported": "Avatar upload is not yet supported"
-      },
-      "errors": {
-        "saveFailed": "Failed to save workspace settings",
-        "leaveFailed": "Failed to leave workspace",
-        "deleteFailed": "Failed to delete workspace"
-      }
-    },
-    "notifications": {
-      "noSettings": "Unable to load notification settings",
-      "channels": {
-        "title": "Notification Channels",
-        "description": "Choose where you want to receive notifications",
-        "footer": "Web notifications are always enabled to ensure you don't miss important updates.",
-        "web": {
-          "label": "Web Notifications",
-          "description": "Always enabled for in-app notifications"
-        },
-        "email": {
-          "label": "Email Notifications",
-          "description": "Receive notifications via email"
-        }
-      },
-      "events": {
-        "title": "Notification Events",
-        "description": "Choose which events you want to be notified about",
-        "footer": "Select the events you want to receive notifications for in each channel.",
-        "headers": {
-          "web": "Web",
-          "email": "Email"
-        }
-      },
-      "categories": {
-        "comments": {
-          "name": "Comments",
-          "mention": {
-            "name": "Mentioned in Comment",
-            "description": "When someone mentions you in a comment"
-          },
-          "reply": {
-            "name": "Comment Reply",
-            "description": "When someone replies to your comment"
-          }
-        },
-        "documents": {
-          "name": "Documents",
-          "uploaded": {
-            "name": "Document Uploaded",
-            "description": "When a new document is uploaded"
-          },
-          "downloaded": {
-            "name": "Document Downloaded",
-            "description": "When a document is downloaded"
-          },
-          "verified": {
-            "name": "Document Verified",
-            "description": "When a document is verified"
-          }
-        },
-        "members": {
-          "name": "Team Members",
-          "invited": {
-            "name": "Member Invited",
-            "description": "When a new member is invited"
-          },
-          "joined": {
-            "name": "Member Joined",
-            "description": "When a member accepts the invitation"
-          }
-        },
-        "integrations": {
-          "name": "Integrations",
-          "synced": {
-            "name": "Integration Synced",
-            "description": "When an integration completes a sync"
-          },
-          "desynced": {
-            "name": "Integration Desynced",
-            "description": "When an integration loses sync"
-          }
-        },
-        "system": {
-          "name": "System",
-          "announcement": {
-            "name": "Announcements",
-            "description": "Important system announcements"
-          },
-          "report": {
-            "name": "Reports",
-            "description": "When scheduled reports are ready"
-          }
-        }
-      },
-      "messages": {
-        "saved": "Notification settings saved"
-      },
-      "errors": {
-        "saveFailed": "Failed to save notification settings"
-      }
-    }
-  },
-  "overview": {
-    "welcome": {
-      "title": "Welcome back",
-      "subtitle": "Here's what's happening in {workspace}",
-      "description": "Create your first workspace to start organizing documents, collaborating with your team, and leveraging AI-powered insights.",
-      "createWorkspace": "Create Workspace",
-      "setupProfile": "Setup Profile"
-    },
-    "workspace": {
-      "title": "Workspace",
-      "noDescription": "No description set",
-      "settings": "Settings",
-      "members": "Members",
-      "files": "Files",
-      "yourRole": "Your Role",
-      "created": "Created",
-      "badges": {
-        "autoCleanup": "Auto Cleanup",
-        "requireApproval": "Requires Approval",
-        "commentsEnabled": "Comments Enabled",
-        "defaultSettings": "Default Settings"
-      }
-    },
-    "usage": {
-      "credits": "Credits",
-      "storage": "Storage",
-      "of": "of {total}",
-      "creditsRemaining": "{count} credits remaining",
-      "storageRemaining": "{count} GB remaining",
-      "viewPlan": "View Plan"
-    },
-    "quickActions": {
-      "title": "Quick Actions",
-      "uploadFiles": {
-        "title": "Upload Files",
-        "description": "Add documents to your knowledge base"
-      },
-      "askAI": {
-        "title": "Ask AI",
-        "description": "Query your documents"
-      },
-      "manageTeam": {
-        "title": "Manage Team",
-        "description": "Invite members"
-      },
-      "viewAnalytics": {
-        "title": "View Analytics",
-        "description": "Monitor usage"
-      }
-    },
-    "actions": {
-      "learnMore": "Learn more",
-      "setupProfile": {
-        "time": "2 minutes",
-        "title": "Setup Your Profile",
-        "description": "Complete your profile to personalize your experience and help your team identify you.",
-        "button": "Setup Profile"
-      },
-      "createWorkspace": {
-        "time": "2 minutes",
-        "title": "Create a Workspace",
-        "description": "Workspaces help you organize documents, manage team access, and keep projects separate.",
-        "button": "Create Workspace"
-      },
-      "apiTokens": {
-        "time": "1 minute",
-        "title": "Generate API Token",
-        "description": "Create an API token to integrate Nvisy with your applications and automate workflows.",
-        "button": "Create Token"
-      }
-    },
-    "features": {
-      "sectionTitle": "What You Can Do",
-      "documentManagement": {
-        "title": "Document Management",
-        "description": "Upload, organize, and manage your documents in a secure, centralized workspace."
-      },
-      "aiPowered": {
-        "title": "AI-Powered Insights",
-        "description": "Extract information, summarize content, and get answers from your documents using AI."
-      },
-      "teamCollaboration": {
-        "title": "Team Collaboration",
-        "description": "Invite team members, assign roles, and work together seamlessly."
-      },
-      "secureCompliant": {
-        "title": "Secure & Compliant",
-        "description": "Enterprise-grade security with encryption and compliance controls."
-      }
-    },
-    "resources": {
-      "sectionTitle": "Resources",
-      "documentation": {
-        "title": "Documentation",
-        "description": "Learn how to get started and explore all features"
-      },
-      "apiReference": {
-        "title": "API Reference",
-        "description": "Integrate Nvisy into your applications"
-      },
-      "quickStart": {
-        "title": "Quick Start",
-        "description": "Get up and running in minutes"
-      },
-      "support": {
-        "title": "Support",
-        "description": "Get help from our team"
-      }
-    }
-  },
-  "workspace": {
-    "select": "Select Workspace",
-    "addWorkspace": "Add Workspace",
-    "create": {
-      "title": "Create New Workspace",
-      "description": "Set up a new workspace to organize your documents and workflows.",
-      "nameLabel": "Workspace Name",
-      "namePlaceholder": "My Workspace",
-      "descriptionLabel": "Description",
-      "descriptionPlaceholder": "Brief description of your workspace...",
-      "descriptionHint": "Optional, max 200 characters",
-      "retentionLabel": "File Retention (days)",
-      "storageLabel": "Storage Limit (GB)",
-      "unlimited": "Unlimited",
-      "advancedSettings": "Advanced settings",
-      "error": "Failed to create workspace. Please try again.",
-      "autoCleanupLabel": "Auto Cleanup",
-      "autoCleanupDescription": "Automatically delete processed files after expiration",
-      "requireApprovalLabel": "Require Approval",
-      "requireApprovalDescription": "Processed files require approval before being visible",
-      "enableCommentsLabel": "Enable Comments",
-      "enableCommentsDescription": "Allow team members to comment on documents",
-      "cancelButton": "Cancel",
-      "submitButton": "Create Workspace"
-    }
-  },
-  "home": {
-    "title": "Welcome to Nvisy",
-    "description": "Building innovative solutions for the modern web."
-  },
-  "members": {
-    "page": {
-      "title": "Members",
-      "description": "Manage your team members and invitations",
-      "tabs": {
-        "teamMembers": "Team Members",
-        "pendingInvites": "Pending Invites"
-      }
-    },
-    "forms": {
-      "invite": {
-        "title": "Invite Members",
-        "description": "Send invitations to new team members",
-        "emailPlaceholder": "email{'@'}example.com",
-        "button": "Send Invite",
-        "copyLink": "Copy Invite Link",
-        "expiry": {
-          "label": "Expires In",
-          "never": "Never",
-          "24hours": "In 24 Hours",
-          "7days": "In 7 Days",
-          "30days": "In 30 Days"
-        }
-      },
-      "search": {
-        "placeholder": "Search members..."
-      }
-    },
-    "table": {
-      "headers": {
-        "member": "Member",
-        "invite": "Invite",
-        "role": "Role",
-        "twoFA": "2FA",
-        "joined": "Joined",
-        "invited": "Invited",
-        "expires": "Expires"
-      },
-      "actions": {
-        "delete": "Delete",
-        "deleteSelected": "Delete Selected",
-        "cancel": "Cancel",
-        "cancelSelected": "Cancel Selected"
-      },
-      "status": {
-        "enabled": "Enabled",
-        "disabled": "Disabled",
-        "pending": "Pending invitation",
-        "emailInvite": "Email Invitation",
-        "linkInvite": "Open Invitation"
-      },
-      "empty": {
-        "noMembers": "No members found",
-        "noMembersDescription": "No members match your current filters. Try adjusting your search criteria.",
-        "noPendingInvites": "No pending invites",
-        "noPendingInvitesDescription": "No pending invitations match your current filters."
-      }
-    },
-    "messages": {
-      "inviteFooter": "Invited members will receive an email with instructions to join your project.",
-      "reviewFooter": "Project owners cannot be removed. Transfer ownership first to remove the current owner.",
-      "inviteSent": "Invitation sent successfully",
-      "linkCopied": "Invite link copied to clipboard",
-      "memberRemoved": "Member removed successfully",
-      "membersRemoved": "Members removed successfully",
-      "membersPartiallyRemoved": "Some members could not be removed",
-      "inviteCanceled": "Invitation canceled successfully",
-      "invitesCanceled": "Invitations canceled successfully",
-      "invitesPartiallyCanceled": "Some invitations could not be canceled"
-    },
-    "errors": {
-      "inviteFailed": "Failed to send invitation",
-      "linkFailed": "Failed to generate invite link",
-      "removeFailed": "Failed to remove member",
-      "someRemoveFailed": "{count} member failed to be removed | {count} members failed to be removed",
-      "cancelFailed": "Failed to cancel invitation",
-      "someCancelFailed": "{count} invitation failed to be canceled | {count} invitations failed to be canceled"
-    },
-    "roles": {
-      "owner": "Owner",
-      "admin": "Admin",
-      "member": "Member",
-      "guest": "Guest"
-    },
-    "filters": {
-      "sortBy": "Sort by",
-      "anyRole": "Any Role",
-      "any2FA": "Any 2FA",
-      "enabled2FA": "2FA Enabled",
-      "disabled2FA": "2FA Disabled",
-      "sorting": {
-        "nameAsc": "Name (A-Z)",
-        "nameDesc": "Name (Z-A)",
-        "dateNewest": "Date (Newest)",
-        "dateOldest": "Date (Oldest)"
-      }
-    },
-    "modals": {
-      "delete": {
-        "title": "Delete Member",
-        "description": "Are you sure you want to delete {name} from your team? This action cannot be undone.",
-        "role": "Role",
-        "cancelButton": "Cancel",
-        "confirmButton": "Delete Member"
-      },
-      "deleteMultiple": {
-        "title": "Delete Members",
-        "description": "Are you sure you want to delete {count} member from your team? This action cannot be undone. | Are you sure you want to delete {count} members from your team? This action cannot be undone.",
-        "warningTitle": "Warning",
-        "warningDescription": "Deleting these members will immediately revoke their access to the workspace and all associated resources.",
-        "cancelButton": "Cancel",
-        "confirmButton": "Delete Members"
-      },
-      "cancelInvite": {
-        "title": "Cancel Invitation",
-        "description": "Are you sure you want to cancel this invitation? This action cannot be undone.",
-        "role": "Role",
-        "keepButton": "Keep Invitation",
-        "confirmButton": "Cancel Invitation"
-      },
-      "cancelMultiple": {
-        "title": "Cancel Invitations",
-        "description": "Are you sure you want to cancel {count} invitation? This action cannot be undone. | Are you sure you want to cancel {count} invitations? This action cannot be undone.",
-        "countLabel": "{count} invitation selected | {count} invitations selected",
-        "noteDescription": "You can always create new invitations later.",
-        "keepButton": "Keep",
-        "confirmButton": "Cancel Invitations"
-      }
-    }
-  },
-  "tokens": {
-    "page": {
-      "title": "API Tokens",
-      "description": "Manage your API tokens and access credentials"
-    },
-    "create": {
-      "title": "Create New Token",
-      "description": "Generate a new API token for accessing your account",
-      "nameLabel": "Token Name",
-      "namePlaceholder": "e.g., Production API",
-      "expirationLabel": "Expiration",
-      "button": "Generate Token",
-      "footer": "Store your token securely. It won't be shown again."
-    },
-    "expiration": {
-      "7days": "7 days",
-      "30days": "30 days",
-      "90days": "90 days",
-      "1year": "1 year",
-      "never": "Never"
-    },
-    "list": {
-      "title": "Active Tokens",
-      "description": "{count} token in use | {count} tokens in use",
-      "footer": "Tokens provide access to your account. Keep them secure and rotate them regularly."
-    },
-    "table": {
-      "headers": {
-        "name": "Name",
-        "lastUsed": "Last Used"
-      },
-      "info": {
-        "created": "Created",
-        "expires": "Expires",
-        "never": "Never"
-      },
-      "badges": {
-        "current": "Current",
-        "expired": "Expired"
-      },
-      "actions": {
-        "rename": "Rename",
-        "revoke": "Revoke",
-        "revokeSelected": "Revoke Selected",
-        "cannotRevoke": "Cannot revoke current session"
-      }
-    },
-    "empty": {
-      "title": "No tokens found",
-      "description": "Create your first API token to get started with programmatic access."
-    },
-    "modals": {
-      "created": {
-        "title": "Token Created",
-        "description": "Copy your new API token now. You won't be able to see it again.",
-        "copyButton": "Copy Token",
-        "copied": "Copied!",
-        "doneButton": "Done"
-      },
-      "rename": {
-        "title": "Rename Token",
-        "description": "Enter a new name for this token.",
-        "nameLabel": "Token Name",
-        "cancelButton": "Cancel",
-        "saveButton": "Save"
-      },
-      "delete": {
-        "title": "Revoke Token",
-        "description": "Are you sure you want to revoke the token \"{name}\"? This action cannot be undone.",
-        "lastUsed": "Last used",
-        "never": "Never",
-        "cancelButton": "Cancel",
-        "confirmButton": "Revoke Token"
-      },
-      "deleteMultiple": {
-        "title": "Revoke Tokens",
-        "description": "Are you sure you want to revoke {count} token? This action cannot be undone. | Are you sure you want to revoke {count} tokens? This action cannot be undone.",
-        "warningTitle": "Warning",
-        "warningDescription": "Any applications using these tokens will lose access immediately.",
-        "cancelButton": "Cancel",
-        "confirmButton": "Revoke Tokens"
-      }
-    }
-  },
-  "integrations": {
-    "page": {
-      "title": "Active Integrations",
-      "description": "Manage your currently connected integrations",
-      "libraryTitle": "Integrations Library",
-      "libraryDescription": "Connect Nvisy with your favorite tools and services"
-    },
-    "sections": {
-      "connectedServices": {
-        "title": "Connected Services",
-        "description": "{count} integration currently active | {count} integrations currently active",
-        "noIntegrationsTitle": "No active integrations yet",
-        "noIntegrationsDescription": "Get started by browsing our integration library"
-      },
-      "webhooks": {
-        "title": "Webhook Endpoints",
-        "description": "{count} webhook configured | {count} webhooks configured",
-        "noWebhooksTitle": "No webhooks configured",
-        "noWebhooksDescription": "Create your first webhook to start receiving real-time notifications"
-      }
-    },
-    "actions": {
-      "explore": "Explore Integrations",
-      "browse": "Browse Library",
-      "connect": "Connect",
-      "disconnect": "Disconnect",
-      "configure": "Configure",
-      "visitWebsite": "Visit Website",
-      "notifyMe": "Notify Me",
-      "createWebhook": "Create Webhook",
-      "editWebhook": "Edit Webhook",
-      "deleteWebhook": "Delete Webhook",
-      "testWebhook": "Test Webhook",
-      "back": "Back",
-      "backToConnections": "Back to Connections",
-      "viewRuns": "View Runs"
-    },
-    "status": {
-      "active": "Active",
-      "inactive": "Inactive",
-      "available": "Available",
-      "comingSoon": "Coming Soon",
-      "connected": "Connected",
-      "disconnected": "Disconnected"
-    },
-    "categories": {
-      "fileStorage": "File Storage",
-      "automation": "Automation",
-      "anyTag": "Any Tag",
-      "tags": "Tags"
-    },
-    "table": {
-      "headers": {
-        "name": "Name",
-        "url": "URL",
-        "status": "Status",
-        "events": "Events",
-        "created": "Created",
-        "lastDelivery": "Last Delivery",
-        "connectedAt": "Connected"
-      },
-      "actions": {
-        "edit": "Edit",
-        "delete": "Delete",
-        "test": "Test",
-        "configure": "Configure",
-        "disconnect": "Disconnect"
-      },
-      "eventsCount": "{count} event | {count} events"
-    },
-    "forms": {
-      "search": {
-        "placeholder": "Search integrations...",
-        "webhookSearch": "Search webhooks..."
-      },
-      "webhook": {
-        "nameLabel": "Webhook Name",
-        "namePlaceholder": "Enter webhook name",
-        "urlLabel": "Endpoint URL",
-        "urlPlaceholder": "https://example.com/webhook",
-        "urlError": "Please enter a valid URL (http:// or https://)",
-        "activeLabel": "Active",
-        "activeDescription": "Enable this webhook to receive events",
-        "eventsLabel": "Events to Subscribe",
-        "eventsDescription": "Select which events should trigger this webhook",
-        "headersLabel": "Custom Headers",
-        "headersDescription": "Add custom HTTP headers to include with webhook requests",
-        "addHeader": "Add Header",
-        "headerKeyPlaceholder": "Header name",
-        "headerValuePlaceholder": "Header value",
-        "noHeaders": "No custom headers configured"
-      }
-    },
-    "dialogs": {
-      "configure": {
-        "title": "Configure {name}",
-        "description": "Update the integration settings and configuration.",
-        "nameLabel": "Integration Name",
-        "namePlaceholder": "My Integration",
-        "descriptionLabel": "Description",
-        "descriptionPlaceholder": "What does this integration do?",
-        "activeLabel": "Active",
-        "activeDescription": "Enable this integration to sync data and automate workflows",
-        "save": "Save Changes",
-        "cancel": "Cancel"
-      },
-      "disconnect": {
-        "title": "Disconnect {name}",
-        "description": "Are you sure you want to disconnect this integration? This action cannot be undone.",
-        "provider": "Provider",
-        "warningTitle": "Warning",
-        "warningDescription": "Disconnecting will permanently delete all configuration and data associated with this integration.",
-        "confirm": "Disconnect",
-        "cancel": "Cancel"
-      },
-      "createWebhook": {
-        "title": "Create Webhook",
-        "description": "Configure a new webhook endpoint to receive real-time notifications about events in your workspace.",
-        "save": "Create Webhook",
-        "cancel": "Cancel"
-      },
-      "editWebhook": {
-        "title": "Edit Webhook",
-        "description": "Update the webhook endpoint configuration.",
-        "save": "Save Changes",
-        "cancel": "Cancel"
-      },
-      "deleteWebhook": {
-        "title": "Delete Webhook",
-        "description": "This action cannot be undone. This will permanently delete the webhook and stop all event deliveries.",
-        "confirmLabel": "Please type the webhook name to confirm:",
-        "warningTitle": "Warning:",
-        "warningDescription": "Deleting this webhook will immediately stop all event deliveries to this endpoint.",
-        "confirm": "Delete Webhook",
-        "cancel": "Cancel"
-      }
-    },
-    "events": {
-      "documents": {
-        "name": "Documents",
-        "documentsUploaded": "Document Uploaded",
-        "documentsUploadedDesc": "When a new document is uploaded to your project",
-        "documentsDownloaded": "Document Downloaded",
-        "documentsDownloadedDesc": "When a document is downloaded from your project",
-        "documentsRedacted": "Document Redacted",
-        "documentsRedactedDesc": "When a document is successfully redacted",
-        "documentsVerified": "Document Verified",
-        "documentsVerifiedDesc": "When a document passes verification checks"
-      },
-      "integrations": {
-        "name": "Integrations",
-        "integrationTriggered": "Integration Triggered",
-        "integrationTriggeredDesc": "When an integration workflow is started",
-        "integrationSucceeded": "Integration Succeeded",
-        "integrationSucceededDesc": "When an integration completes successfully",
-        "integrationFailed": "Integration Failed",
-        "integrationFailedDesc": "When an integration encounters errors or failures"
-      }
-    },
-    "messages": {
-      "integrationFooter": "Learn more about integrations in our",
-      "webhookFooter": "Learn more about webhooks in our",
-      "documentation": "documentation"
-    },
-    "toast": {
-      "integrationUpdated": "Integration updated successfully",
-      "integrationUpdateFailed": "Failed to update integration",
-      "integrationDisconnected": "Integration disconnected",
-      "integrationDisconnectFailed": "Failed to disconnect integration",
-      "webhookCreated": "Webhook created successfully",
-      "webhookCreateFailed": "Failed to create webhook",
-      "webhookUpdated": "Webhook updated successfully",
-      "webhookUpdateFailed": "Failed to update webhook",
-      "webhookDeleted": "Webhook deleted successfully",
-      "webhookDeleteFailed": "Failed to delete webhook",
-      "webhookActivated": "Webhook activated",
-      "webhookDeactivated": "Webhook deactivated",
-      "webhookTestSent": "Test event sent to webhook",
-      "webhookTestSuccess": "Webhook test successful",
-      "webhookTestSuccessDescription": "Received {statusCode} response in {responseTimeMs}ms",
-      "webhookTestFailed": "Webhook test failed"
-    },
-    "runs": {
-      "title": "Integration Runs",
-      "backToConnections": "Back to Connections",
-      "searchPlaceholder": "Search runs...",
-      "status": "Status",
-      "allStatus": "All Status",
-      "informational": "Informational",
-      "success": "Success",
-      "redirection": "Redirection",
-      "clientError": "Client Error",
-      "serverError": "Server Error",
-      "period": "Period",
-      "lastHour": "Last hour",
-      "last24Hours": "Last 24 hours",
-      "last7Days": "Last 7 days",
-      "last30Days": "Last 30 days",
-      "runsFound": "run found | runs found",
-      "selected": "selected",
-      "copyLogs": "Copy Logs",
-      "copied": "Copied!",
-      "name": "Name",
-      "integration": "Integration",
-      "statusHeader": "Status",
-      "started": "Started",
-      "duration": "Duration",
-      "viewDetails": "View Details",
-      "noRunsFound": "No runs found matching your filters",
-      "unknown": "Unknown"
-    }
-  }
+	"common": {
+		"service": "Nvisy",
+		"save": "Save",
+		"cancel": "Cancel",
+		"delete": "Delete",
+		"confirm": "Confirm",
+		"errors": {
+			"tryAgain": "Please try again."
+		},
+		"time": {
+			"justNow": "Just now",
+			"never": "Never",
+			"hoursAgo": "{hours}h ago",
+			"daysAgo": "{days}d ago",
+			"weeksAgo": "{weeks}w ago",
+			"monthsAgo": "{months}m ago"
+		}
+	},
+	"settings": {
+		"workspace": {
+			"noWorkspace": "No workspace selected",
+			"avatar": {
+				"label": "Avatar",
+				"description": "Click to upload. Recommended: 256x256px. PNG, JPG, or SVG.",
+				"footer": "Your workspace avatar will be visible to all team members."
+			},
+			"name": {
+				"label": "Workspace Name",
+				"placeholder": "My Workspace",
+				"description": "The name of your workspace as it appears across the platform."
+			},
+			"description": {
+				"label": "Description",
+				"placeholder": "Describe your workspace...",
+				"description": "A brief description of your workspace. Max 500 characters."
+			},
+			"id": {
+				"label": "Workspace ID",
+				"description": "Unique identifier used in API calls."
+			},
+			"info": {
+				"footer": "Changes will apply to all team members."
+			},
+			"options": {
+				"title": "Workspace Options",
+				"description": "Configure how your workspace handles documents and collaboration.",
+				"footer": "These settings affect all documents in this workspace.",
+				"autoCleanup": {
+					"label": "Auto Cleanup",
+					"description": "Automatically delete processed files after their expiration period."
+				},
+				"requireApproval": {
+					"label": "Require Approval",
+					"description": "Processed files must be approved before they become visible to team members."
+				},
+				"enableComments": {
+					"label": "Enable Comments",
+					"description": "Allow team members to add comments on documents."
+				}
+			},
+			"leave": {
+				"title": "Leave Workspace",
+				"description": "Remove yourself from this workspace. You won't be able to access it anymore.",
+				"content": "This action will remove you from the workspace immediately.",
+				"warning": "This action cannot be undone. You'll need to be re-invited to access this workspace.",
+				"button": "Leave Workspace",
+				"dialog": {
+					"title": "Leave Workspace?",
+					"description": "Are you sure you want to leave this workspace? You will lose access to all documents and resources in this workspace."
+				}
+			},
+			"delete": {
+				"title": "Delete Workspace",
+				"description": "Permanently delete this workspace and all of its data. This action cannot be undone.",
+				"content": "This will permanently delete everything including documents, integrations, and configurations.",
+				"warning": "This will permanently delete everything. This action is irreversible.",
+				"button": "Delete Workspace",
+				"dialog": {
+					"title": "Delete Workspace?",
+					"description": "This action cannot be undone. This will permanently delete the workspace \"{name}\" and all associated data.",
+					"confirmLabel": "Type \"{name}\" to confirm:"
+				}
+			},
+			"messages": {
+				"idCopied": "Workspace ID copied to clipboard",
+				"saved": "Workspace settings saved",
+				"optionsSaved": "Workspace options saved",
+				"left": "You have left the workspace",
+				"deleted": "Workspace deleted",
+				"avatarNotSupported": "Avatar upload is not yet supported"
+			},
+			"errors": {
+				"saveFailed": "Failed to save workspace settings",
+				"leaveFailed": "Failed to leave workspace",
+				"deleteFailed": "Failed to delete workspace"
+			}
+		},
+		"notifications": {
+			"noSettings": "Unable to load notification settings",
+			"channels": {
+				"title": "Notification Channels",
+				"description": "Choose where you want to receive notifications",
+				"footer": "Web notifications are always enabled to ensure you don't miss important updates.",
+				"web": {
+					"label": "Web Notifications",
+					"description": "Always enabled for in-app notifications"
+				},
+				"email": {
+					"label": "Email Notifications",
+					"description": "Receive notifications via email"
+				}
+			},
+			"events": {
+				"title": "Notification Events",
+				"description": "Choose which events you want to be notified about",
+				"footer": "Select the events you want to receive notifications for in each channel.",
+				"headers": {
+					"web": "Web",
+					"email": "Email"
+				}
+			},
+			"categories": {
+				"comments": {
+					"name": "Comments",
+					"mention": {
+						"name": "Mentioned in Comment",
+						"description": "When someone mentions you in a comment"
+					},
+					"reply": {
+						"name": "Comment Reply",
+						"description": "When someone replies to your comment"
+					}
+				},
+				"documents": {
+					"name": "Documents",
+					"uploaded": {
+						"name": "Document Uploaded",
+						"description": "When a new document is uploaded"
+					},
+					"downloaded": {
+						"name": "Document Downloaded",
+						"description": "When a document is downloaded"
+					},
+					"verified": {
+						"name": "Document Verified",
+						"description": "When a document is verified"
+					}
+				},
+				"members": {
+					"name": "Team Members",
+					"invited": {
+						"name": "Member Invited",
+						"description": "When a new member is invited"
+					},
+					"joined": {
+						"name": "Member Joined",
+						"description": "When a member accepts the invitation"
+					}
+				},
+				"integrations": {
+					"name": "Integrations",
+					"synced": {
+						"name": "Integration Synced",
+						"description": "When an integration completes a sync"
+					},
+					"desynced": {
+						"name": "Integration Desynced",
+						"description": "When an integration loses sync"
+					}
+				},
+				"system": {
+					"name": "System",
+					"announcement": {
+						"name": "Announcements",
+						"description": "Important system announcements"
+					},
+					"report": {
+						"name": "Reports",
+						"description": "When scheduled reports are ready"
+					}
+				}
+			},
+			"messages": {
+				"saved": "Notification settings saved"
+			},
+			"errors": {
+				"saveFailed": "Failed to save notification settings"
+			}
+		}
+	},
+	"overview": {
+		"welcome": {
+			"title": "Welcome back",
+			"subtitle": "Here's what's happening in {workspace}",
+			"description": "Create your first workspace to start organizing documents, collaborating with your team, and leveraging AI-powered insights.",
+			"createWorkspace": "Create Workspace",
+			"setupProfile": "Setup Profile"
+		},
+		"workspace": {
+			"title": "Workspace",
+			"noDescription": "No description set",
+			"settings": "Settings",
+			"members": "Members",
+			"files": "Files",
+			"yourRole": "Your Role",
+			"created": "Created",
+			"badges": {
+				"autoCleanup": "Auto Cleanup",
+				"requireApproval": "Requires Approval",
+				"commentsEnabled": "Comments Enabled",
+				"defaultSettings": "Default Settings"
+			}
+		},
+		"usage": {
+			"credits": "Credits",
+			"storage": "Storage",
+			"of": "of {total}",
+			"creditsRemaining": "{count} credits remaining",
+			"storageRemaining": "{count} GB remaining",
+			"viewPlan": "View Plan"
+		},
+		"quickActions": {
+			"title": "Quick Actions",
+			"uploadFiles": {
+				"title": "Upload Files",
+				"description": "Add documents to your knowledge base"
+			},
+			"askAI": {
+				"title": "Ask AI",
+				"description": "Query your documents"
+			},
+			"manageTeam": {
+				"title": "Manage Team",
+				"description": "Invite members"
+			},
+			"viewAnalytics": {
+				"title": "View Analytics",
+				"description": "Monitor usage"
+			}
+		},
+		"actions": {
+			"learnMore": "Learn more",
+			"setupProfile": {
+				"time": "2 minutes",
+				"title": "Setup Your Profile",
+				"description": "Complete your profile to personalize your experience and help your team identify you.",
+				"button": "Setup Profile"
+			},
+			"createWorkspace": {
+				"time": "2 minutes",
+				"title": "Create a Workspace",
+				"description": "Workspaces help you organize documents, manage team access, and keep projects separate.",
+				"button": "Create Workspace"
+			},
+			"apiTokens": {
+				"time": "1 minute",
+				"title": "Generate API Token",
+				"description": "Create an API token to integrate Nvisy with your applications and automate workflows.",
+				"button": "Create Token"
+			}
+		},
+		"features": {
+			"sectionTitle": "What You Can Do",
+			"documentManagement": {
+				"title": "Document Management",
+				"description": "Upload, organize, and manage your documents in a secure, centralized workspace."
+			},
+			"aiPowered": {
+				"title": "AI-Powered Insights",
+				"description": "Extract information, summarize content, and get answers from your documents using AI."
+			},
+			"teamCollaboration": {
+				"title": "Team Collaboration",
+				"description": "Invite team members, assign roles, and work together seamlessly."
+			},
+			"secureCompliant": {
+				"title": "Secure & Compliant",
+				"description": "Enterprise-grade security with encryption and compliance controls."
+			}
+		},
+		"resources": {
+			"sectionTitle": "Resources",
+			"documentation": {
+				"title": "Documentation",
+				"description": "Learn how to get started and explore all features"
+			},
+			"apiReference": {
+				"title": "API Reference",
+				"description": "Integrate Nvisy into your applications"
+			},
+			"quickStart": {
+				"title": "Quick Start",
+				"description": "Get up and running in minutes"
+			},
+			"support": {
+				"title": "Support",
+				"description": "Get help from our team"
+			}
+		}
+	},
+	"workspace": {
+		"select": "Select Workspace",
+		"addWorkspace": "Add Workspace",
+		"create": {
+			"title": "Create New Workspace",
+			"description": "Set up a new workspace to organize your documents and workflows.",
+			"nameLabel": "Workspace Name",
+			"namePlaceholder": "My Workspace",
+			"descriptionLabel": "Description",
+			"descriptionPlaceholder": "Brief description of your workspace...",
+			"descriptionHint": "Optional, max 200 characters",
+			"retentionLabel": "File Retention (days)",
+			"storageLabel": "Storage Limit (GB)",
+			"unlimited": "Unlimited",
+			"advancedSettings": "Advanced settings",
+			"error": "Failed to create workspace. Please try again.",
+			"autoCleanupLabel": "Auto Cleanup",
+			"autoCleanupDescription": "Automatically delete processed files after expiration",
+			"requireApprovalLabel": "Require Approval",
+			"requireApprovalDescription": "Processed files require approval before being visible",
+			"enableCommentsLabel": "Enable Comments",
+			"enableCommentsDescription": "Allow team members to comment on documents",
+			"cancelButton": "Cancel",
+			"submitButton": "Create Workspace"
+		}
+	},
+	"home": {
+		"title": "Welcome to Nvisy",
+		"description": "Building innovative solutions for the modern web."
+	},
+	"members": {
+		"page": {
+			"title": "Members",
+			"description": "Manage your team members and invitations",
+			"tabs": {
+				"teamMembers": "Team Members",
+				"pendingInvites": "Pending Invites"
+			}
+		},
+		"forms": {
+			"invite": {
+				"title": "Invite Members",
+				"description": "Send invitations to new team members",
+				"emailPlaceholder": "email{'@'}example.com",
+				"button": "Send Invite",
+				"copyLink": "Copy Invite Link",
+				"expiry": {
+					"label": "Expires In",
+					"never": "Never",
+					"24hours": "In 24 Hours",
+					"7days": "In 7 Days",
+					"30days": "In 30 Days"
+				}
+			},
+			"search": {
+				"placeholder": "Search members..."
+			}
+		},
+		"table": {
+			"headers": {
+				"member": "Member",
+				"invite": "Invite",
+				"role": "Role",
+				"twoFA": "2FA",
+				"joined": "Joined",
+				"invited": "Invited",
+				"expires": "Expires"
+			},
+			"actions": {
+				"delete": "Delete",
+				"deleteSelected": "Delete Selected",
+				"cancel": "Cancel",
+				"cancelSelected": "Cancel Selected"
+			},
+			"status": {
+				"enabled": "Enabled",
+				"disabled": "Disabled",
+				"pending": "Pending invitation",
+				"emailInvite": "Email Invitation",
+				"linkInvite": "Open Invitation"
+			},
+			"empty": {
+				"noMembers": "No members found",
+				"noMembersDescription": "No members match your current filters. Try adjusting your search criteria.",
+				"noPendingInvites": "No pending invites",
+				"noPendingInvitesDescription": "No pending invitations match your current filters."
+			}
+		},
+		"messages": {
+			"inviteFooter": "Invited members will receive an email with instructions to join your project.",
+			"reviewFooter": "Project owners cannot be removed. Transfer ownership first to remove the current owner.",
+			"inviteSent": "Invitation sent successfully",
+			"linkCopied": "Invite link copied to clipboard",
+			"memberRemoved": "Member removed successfully",
+			"membersRemoved": "Members removed successfully",
+			"membersPartiallyRemoved": "Some members could not be removed",
+			"inviteCanceled": "Invitation canceled successfully",
+			"invitesCanceled": "Invitations canceled successfully",
+			"invitesPartiallyCanceled": "Some invitations could not be canceled"
+		},
+		"errors": {
+			"inviteFailed": "Failed to send invitation",
+			"linkFailed": "Failed to generate invite link",
+			"removeFailed": "Failed to remove member",
+			"someRemoveFailed": "{count} member failed to be removed | {count} members failed to be removed",
+			"cancelFailed": "Failed to cancel invitation",
+			"someCancelFailed": "{count} invitation failed to be canceled | {count} invitations failed to be canceled"
+		},
+		"roles": {
+			"owner": "Owner",
+			"admin": "Admin",
+			"member": "Member",
+			"guest": "Guest"
+		},
+		"filters": {
+			"sortBy": "Sort by",
+			"anyRole": "Any Role",
+			"any2FA": "Any 2FA",
+			"enabled2FA": "2FA Enabled",
+			"disabled2FA": "2FA Disabled",
+			"sorting": {
+				"nameAsc": "Name (A-Z)",
+				"nameDesc": "Name (Z-A)",
+				"dateNewest": "Date (Newest)",
+				"dateOldest": "Date (Oldest)"
+			}
+		},
+		"modals": {
+			"delete": {
+				"title": "Delete Member",
+				"description": "Are you sure you want to delete {name} from your team? This action cannot be undone.",
+				"role": "Role",
+				"cancelButton": "Cancel",
+				"confirmButton": "Delete Member"
+			},
+			"deleteMultiple": {
+				"title": "Delete Members",
+				"description": "Are you sure you want to delete {count} member from your team? This action cannot be undone. | Are you sure you want to delete {count} members from your team? This action cannot be undone.",
+				"warningTitle": "Warning",
+				"warningDescription": "Deleting these members will immediately revoke their access to the workspace and all associated resources.",
+				"cancelButton": "Cancel",
+				"confirmButton": "Delete Members"
+			},
+			"cancelInvite": {
+				"title": "Cancel Invitation",
+				"description": "Are you sure you want to cancel this invitation? This action cannot be undone.",
+				"role": "Role",
+				"keepButton": "Keep Invitation",
+				"confirmButton": "Cancel Invitation"
+			},
+			"cancelMultiple": {
+				"title": "Cancel Invitations",
+				"description": "Are you sure you want to cancel {count} invitation? This action cannot be undone. | Are you sure you want to cancel {count} invitations? This action cannot be undone.",
+				"countLabel": "{count} invitation selected | {count} invitations selected",
+				"noteDescription": "You can always create new invitations later.",
+				"keepButton": "Keep",
+				"confirmButton": "Cancel Invitations"
+			}
+		}
+	},
+	"tokens": {
+		"page": {
+			"title": "API Tokens",
+			"description": "Manage your API tokens and access credentials"
+		},
+		"create": {
+			"title": "Create New Token",
+			"description": "Generate a new API token for accessing your account",
+			"nameLabel": "Token Name",
+			"namePlaceholder": "e.g., Production API",
+			"expirationLabel": "Expiration",
+			"button": "Generate Token",
+			"footer": "Store your token securely. It won't be shown again."
+		},
+		"expiration": {
+			"7days": "7 days",
+			"30days": "30 days",
+			"90days": "90 days",
+			"1year": "1 year",
+			"never": "Never"
+		},
+		"list": {
+			"title": "Active Tokens",
+			"description": "{count} token in use | {count} tokens in use",
+			"footer": "Tokens provide access to your account. Keep them secure and rotate them regularly."
+		},
+		"table": {
+			"headers": {
+				"name": "Name",
+				"lastUsed": "Last Used"
+			},
+			"info": {
+				"created": "Created",
+				"expires": "Expires",
+				"never": "Never"
+			},
+			"badges": {
+				"current": "Current",
+				"expired": "Expired"
+			},
+			"actions": {
+				"rename": "Rename",
+				"revoke": "Revoke",
+				"revokeSelected": "Revoke Selected",
+				"cannotRevoke": "Cannot revoke current session"
+			}
+		},
+		"empty": {
+			"title": "No tokens found",
+			"description": "Create your first API token to get started with programmatic access."
+		},
+		"modals": {
+			"created": {
+				"title": "Token Created",
+				"description": "Copy your new API token now. You won't be able to see it again.",
+				"copyButton": "Copy Token",
+				"copied": "Copied!",
+				"doneButton": "Done"
+			},
+			"rename": {
+				"title": "Rename Token",
+				"description": "Enter a new name for this token.",
+				"nameLabel": "Token Name",
+				"cancelButton": "Cancel",
+				"saveButton": "Save"
+			},
+			"delete": {
+				"title": "Revoke Token",
+				"description": "Are you sure you want to revoke the token \"{name}\"? This action cannot be undone.",
+				"lastUsed": "Last used",
+				"never": "Never",
+				"cancelButton": "Cancel",
+				"confirmButton": "Revoke Token"
+			},
+			"deleteMultiple": {
+				"title": "Revoke Tokens",
+				"description": "Are you sure you want to revoke {count} token? This action cannot be undone. | Are you sure you want to revoke {count} tokens? This action cannot be undone.",
+				"warningTitle": "Warning",
+				"warningDescription": "Any applications using these tokens will lose access immediately.",
+				"cancelButton": "Cancel",
+				"confirmButton": "Revoke Tokens"
+			}
+		}
+	},
+	"integrations": {
+		"page": {
+			"title": "Active Integrations",
+			"description": "Manage your currently connected integrations",
+			"libraryTitle": "Integrations Library",
+			"libraryDescription": "Connect Nvisy with your favorite tools and services"
+		},
+		"sections": {
+			"connectedServices": {
+				"title": "Connected Services",
+				"description": "{count} integration currently active | {count} integrations currently active",
+				"noIntegrationsTitle": "No active integrations yet",
+				"noIntegrationsDescription": "Get started by browsing our integration library"
+			},
+			"webhooks": {
+				"title": "Webhook Endpoints",
+				"description": "{count} webhook configured | {count} webhooks configured",
+				"noWebhooksTitle": "No webhooks configured",
+				"noWebhooksDescription": "Create your first webhook to start receiving real-time notifications"
+			}
+		},
+		"actions": {
+			"explore": "Explore Integrations",
+			"browse": "Browse Library",
+			"connect": "Connect",
+			"disconnect": "Disconnect",
+			"configure": "Configure",
+			"visitWebsite": "Visit Website",
+			"notifyMe": "Notify Me",
+			"createWebhook": "Create Webhook",
+			"editWebhook": "Edit Webhook",
+			"deleteWebhook": "Delete Webhook",
+			"testWebhook": "Test Webhook",
+			"back": "Back",
+			"backToConnections": "Back to Connections",
+			"viewRuns": "View Runs"
+		},
+		"status": {
+			"active": "Active",
+			"inactive": "Inactive",
+			"available": "Available",
+			"comingSoon": "Coming Soon",
+			"connected": "Connected",
+			"disconnected": "Disconnected"
+		},
+		"categories": {
+			"fileStorage": "File Storage",
+			"automation": "Automation",
+			"anyTag": "Any Tag",
+			"tags": "Tags"
+		},
+		"table": {
+			"headers": {
+				"name": "Name",
+				"url": "URL",
+				"status": "Status",
+				"events": "Events",
+				"created": "Created",
+				"lastDelivery": "Last Delivery",
+				"connectedAt": "Connected"
+			},
+			"actions": {
+				"edit": "Edit",
+				"delete": "Delete",
+				"test": "Test",
+				"configure": "Configure",
+				"disconnect": "Disconnect"
+			},
+			"eventsCount": "{count} event | {count} events"
+		},
+		"forms": {
+			"search": {
+				"placeholder": "Search integrations...",
+				"webhookSearch": "Search webhooks..."
+			},
+			"webhook": {
+				"nameLabel": "Webhook Name",
+				"namePlaceholder": "Enter webhook name",
+				"urlLabel": "Endpoint URL",
+				"urlPlaceholder": "https://example.com/webhook",
+				"urlError": "Please enter a valid URL (http:// or https://)",
+				"activeLabel": "Active",
+				"activeDescription": "Enable this webhook to receive events",
+				"eventsLabel": "Events to Subscribe",
+				"eventsDescription": "Select which events should trigger this webhook",
+				"headersLabel": "Custom Headers",
+				"headersDescription": "Add custom HTTP headers to include with webhook requests",
+				"addHeader": "Add Header",
+				"headerKeyPlaceholder": "Header name",
+				"headerValuePlaceholder": "Header value",
+				"noHeaders": "No custom headers configured"
+			}
+		},
+		"dialogs": {
+			"configure": {
+				"title": "Configure {name}",
+				"description": "Update the integration settings and configuration.",
+				"nameLabel": "Integration Name",
+				"namePlaceholder": "My Integration",
+				"descriptionLabel": "Description",
+				"descriptionPlaceholder": "What does this integration do?",
+				"activeLabel": "Active",
+				"activeDescription": "Enable this integration to sync data and automate workflows",
+				"save": "Save Changes",
+				"cancel": "Cancel"
+			},
+			"disconnect": {
+				"title": "Disconnect {name}",
+				"description": "Are you sure you want to disconnect this integration? This action cannot be undone.",
+				"provider": "Provider",
+				"warningTitle": "Warning",
+				"warningDescription": "Disconnecting will permanently delete all configuration and data associated with this integration.",
+				"confirm": "Disconnect",
+				"cancel": "Cancel"
+			},
+			"createWebhook": {
+				"title": "Create Webhook",
+				"description": "Configure a new webhook endpoint to receive real-time notifications about events in your workspace.",
+				"save": "Create Webhook",
+				"cancel": "Cancel"
+			},
+			"editWebhook": {
+				"title": "Edit Webhook",
+				"description": "Update the webhook endpoint configuration.",
+				"save": "Save Changes",
+				"cancel": "Cancel"
+			},
+			"deleteWebhook": {
+				"title": "Delete Webhook",
+				"description": "This action cannot be undone. This will permanently delete the webhook and stop all event deliveries.",
+				"confirmLabel": "Please type the webhook name to confirm:",
+				"warningTitle": "Warning:",
+				"warningDescription": "Deleting this webhook will immediately stop all event deliveries to this endpoint.",
+				"confirm": "Delete Webhook",
+				"cancel": "Cancel"
+			}
+		},
+		"events": {
+			"documents": {
+				"name": "Documents",
+				"documentsUploaded": "Document Uploaded",
+				"documentsUploadedDesc": "When a new document is uploaded to your project",
+				"documentsDownloaded": "Document Downloaded",
+				"documentsDownloadedDesc": "When a document is downloaded from your project",
+				"documentsRedacted": "Document Redacted",
+				"documentsRedactedDesc": "When a document is successfully redacted",
+				"documentsVerified": "Document Verified",
+				"documentsVerifiedDesc": "When a document passes verification checks"
+			},
+			"integrations": {
+				"name": "Integrations",
+				"integrationTriggered": "Integration Triggered",
+				"integrationTriggeredDesc": "When an integration workflow is started",
+				"integrationSucceeded": "Integration Succeeded",
+				"integrationSucceededDesc": "When an integration completes successfully",
+				"integrationFailed": "Integration Failed",
+				"integrationFailedDesc": "When an integration encounters errors or failures"
+			}
+		},
+		"messages": {
+			"integrationFooter": "Learn more about integrations in our",
+			"webhookFooter": "Learn more about webhooks in our",
+			"documentation": "documentation"
+		},
+		"toast": {
+			"integrationUpdated": "Integration updated successfully",
+			"integrationUpdateFailed": "Failed to update integration",
+			"integrationDisconnected": "Integration disconnected",
+			"integrationDisconnectFailed": "Failed to disconnect integration",
+			"webhookCreated": "Webhook created successfully",
+			"webhookCreateFailed": "Failed to create webhook",
+			"webhookUpdated": "Webhook updated successfully",
+			"webhookUpdateFailed": "Failed to update webhook",
+			"webhookDeleted": "Webhook deleted successfully",
+			"webhookDeleteFailed": "Failed to delete webhook",
+			"webhookActivated": "Webhook activated",
+			"webhookDeactivated": "Webhook deactivated",
+			"webhookTestSent": "Test event sent to webhook",
+			"webhookTestSuccess": "Webhook test successful",
+			"webhookTestSuccessDescription": "Received {statusCode} response in {responseTimeMs}ms",
+			"webhookTestFailed": "Webhook test failed"
+		},
+		"runs": {
+			"title": "Integration Runs",
+			"backToConnections": "Back to Connections",
+			"searchPlaceholder": "Search runs...",
+			"status": "Status",
+			"allStatus": "All Status",
+			"informational": "Informational",
+			"success": "Success",
+			"redirection": "Redirection",
+			"clientError": "Client Error",
+			"serverError": "Server Error",
+			"period": "Period",
+			"lastHour": "Last hour",
+			"last24Hours": "Last 24 hours",
+			"last7Days": "Last 7 days",
+			"last30Days": "Last 30 days",
+			"runsFound": "run found | runs found",
+			"selected": "selected",
+			"copyLogs": "Copy Logs",
+			"copied": "Copied!",
+			"name": "Name",
+			"integration": "Integration",
+			"statusHeader": "Status",
+			"started": "Started",
+			"duration": "Duration",
+			"viewDetails": "View Details",
+			"noRunsFound": "No runs found matching your filters",
+			"unknown": "Unknown"
+		}
+	}
 }
