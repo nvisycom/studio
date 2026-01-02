@@ -1,7 +1,7 @@
 import { useQuery, useMutation } from "@pinia/colada";
 import type {
   Member,
-  UpdateMemberRole,
+  UpdateMember,
   ListMembersQuery,
 } from "@nvisy/sdk/datatypes";
 
@@ -25,23 +25,19 @@ export function useMembers(query?: Ref<ListMembersQuery>) {
     enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceId.value,
   });
 
-  const updateRoleMutation = useMutation({
+  const updateMemberMutation = useMutation({
     mutation: async ({
       accountId,
-      role,
+      updates,
     }: {
       accountId: string;
-      role: UpdateMemberRole;
+      updates: UpdateMember;
     }) => {
       const client = $nvisyClient.value;
       const workspaceId = currentWorkspaceId.value;
       if (!client) throw new Error("Not authenticated");
       if (!workspaceId) throw new Error("No workspace selected");
-      return await client.members.updateMemberRole(
-        workspaceId,
-        accountId,
-        role,
-      );
+      return await client.members.updateMember(workspaceId, accountId, updates);
     },
     onSuccess() {
       membersQuery.refresh();
@@ -81,11 +77,11 @@ export function useMembers(query?: Ref<ListMembersQuery>) {
     error: membersQuery.error,
     refresh: membersQuery.refresh,
 
-    // Update role
-    updateRole: updateRoleMutation.mutate,
-    updateRoleAsync: updateRoleMutation.mutateAsync,
-    isUpdatingRole: updateRoleMutation.isLoading,
-    updateRoleError: updateRoleMutation.error,
+    // Update member
+    updateMember: updateMemberMutation.mutate,
+    updateMemberAsync: updateMemberMutation.mutateAsync,
+    isUpdatingMember: updateMemberMutation.isLoading,
+    updateMemberError: updateMemberMutation.error,
 
     // Remove member
     removeMember: removeMemberMutation.mutate,

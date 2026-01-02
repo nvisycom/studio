@@ -168,10 +168,10 @@ function notifyMe(id: number) {
       <div
         class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center mb-6"
       >
-        <Button as-child variant="outline">
+        <Button as-child variant="outline" class="font-light">
           <NuxtLink to="/integrations" class="flex items-center gap-2">
             <ArrowLeft :size="16" />
-            Back to Connections
+            {{ t("integrations.actions.backToConnections") }}
           </NuxtLink>
         </Button>
 
@@ -183,7 +183,7 @@ function notifyMe(id: number) {
           <Input
             v-model="searchQuery"
             :placeholder="t('integrations.forms.search.placeholder')"
-            class="pl-10 border-neutral-300 dark:border-neutral-700"
+            class="pl-10 font-light"
           />
         </div>
 
@@ -191,7 +191,7 @@ function notifyMe(id: number) {
           <DropdownMenuTrigger as-child>
             <Button
               variant="outline"
-              class="justify-between min-w-[160px] border-neutral-300 dark:border-neutral-700"
+              class="justify-between min-w-[160px] border-neutral-300 dark:border-neutral-700 font-light"
             >
               <span>
                 {{

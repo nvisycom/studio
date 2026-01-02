@@ -1,57 +1,57 @@
 <script setup lang="ts">
 import type {
-  Member,
-  Invite,
-  MemberSortField,
-  InviteSortField,
-  SortOrder,
-  WorkspaceRole,
+	Member,
+	Invite,
+	MemberSortField,
+	InviteSortField,
+	SortOrder,
+	WorkspaceRole,
 } from "@nvisy/sdk/datatypes";
 import { Search, ChevronDown, Loader2 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MembersTable, InvitesTable } from "~/components/pages/team";
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
 } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 const props = defineProps<{
-  members: Member[];
-  invites: Invite[];
-  isLoadingMembers: boolean;
-  isLoadingInvites: boolean;
-  selectedMembers: Set<string>;
-  selectedInvites: Set<string>;
-  allMembersSelected: boolean;
-  allInvitesSelected: boolean;
+	members: Member[];
+	invites: Invite[];
+	isLoadingMembers: boolean;
+	isLoadingInvites: boolean;
+	selectedMembers: Set<string>;
+	selectedInvites: Set<string>;
+	allMembersSelected: boolean;
+	allInvitesSelected: boolean;
 }>();
 
 const emit = defineEmits<{
-  "update:activeTab": [tab: string];
-  "update:searchQuery": [query: string];
-  "update:roleFilter": [role: WorkspaceRole | null];
-  "update:sorting": [
-    sortBy: MemberSortField | InviteSortField,
-    order: SortOrder,
-  ];
-  removeMember: [memberId: string];
-  cancelInvite: [inviteId: string];
-  toggleSelectAllMembers: [];
-  toggleMember: [memberId: string];
-  deleteSelectedMembers: [];
-  toggleSelectAllInvites: [];
-  toggleInvite: [inviteId: string];
-  cancelSelectedInvites: [];
+	"update:activeTab": [tab: string];
+	"update:searchQuery": [query: string];
+	"update:roleFilter": [role: WorkspaceRole | null];
+	"update:sorting": [
+		sortBy: MemberSortField | InviteSortField,
+		order: SortOrder,
+	];
+	removeMember: [memberId: string];
+	cancelInvite: [inviteId: string];
+	toggleSelectAllMembers: [];
+	toggleMember: [memberId: string];
+	deleteSelectedMembers: [];
+	toggleSelectAllInvites: [];
+	toggleInvite: [inviteId: string];
+	cancelSelectedInvites: [];
 }>();
 
 const { t } = useI18n();
@@ -63,50 +63,50 @@ const selectedSortField = ref<MemberSortField | InviteSortField>("date");
 const selectedSortOrder = ref<SortOrder>("desc");
 
 const roleFilters = computed(() => [
-  { value: null, label: t("members.filters.anyRole") },
-  { value: "owner" as WorkspaceRole, label: t("members.roles.owner") },
-  { value: "admin" as WorkspaceRole, label: t("members.roles.admin") },
-  { value: "member" as WorkspaceRole, label: t("members.roles.member") },
-  { value: "guest" as WorkspaceRole, label: t("members.roles.guest") },
+	{ value: null, label: t("members.filters.anyRole") },
+	{ value: "owner" as WorkspaceRole, label: t("members.roles.owner") },
+	{ value: "admin" as WorkspaceRole, label: t("members.roles.admin") },
+	{ value: "member" as WorkspaceRole, label: t("members.roles.member") },
+	{ value: "guest" as WorkspaceRole, label: t("members.roles.guest") },
 ]);
 
 const sortingOptions = computed(() => [
-  {
-    label: t("members.filters.sorting.nameAsc"),
-    sortBy: "name" as const,
-    order: "asc" as const,
-  },
-  {
-    label: t("members.filters.sorting.nameDesc"),
-    sortBy: "name" as const,
-    order: "desc" as const,
-  },
-  {
-    label: t("members.filters.sorting.dateNewest"),
-    sortBy: "date" as const,
-    order: "desc" as const,
-  },
-  {
-    label: t("members.filters.sorting.dateOldest"),
-    sortBy: "date" as const,
-    order: "asc" as const,
-  },
+	{
+		label: t("members.filters.sorting.nameAsc"),
+		sortBy: "name" as const,
+		order: "asc" as const,
+	},
+	{
+		label: t("members.filters.sorting.nameDesc"),
+		sortBy: "name" as const,
+		order: "desc" as const,
+	},
+	{
+		label: t("members.filters.sorting.dateNewest"),
+		sortBy: "date" as const,
+		order: "desc" as const,
+	},
+	{
+		label: t("members.filters.sorting.dateOldest"),
+		sortBy: "date" as const,
+		order: "asc" as const,
+	},
 ]);
 
 const currentSortLabel = computed(() => {
-  const option = sortingOptions.value.find(
-    (o) =>
-      o.sortBy === selectedSortField.value &&
-      o.order === selectedSortOrder.value,
-  );
-  return option?.label ?? t("members.filters.sortBy");
+	const option = sortingOptions.value.find(
+		(o) =>
+			o.sortBy === selectedSortField.value &&
+			o.order === selectedSortOrder.value,
+	);
+	return option?.label ?? t("members.filters.sortBy");
 });
 
 const currentRoleFilterLabel = computed(() => {
-  const filter = roleFilters.value.find(
-    (f) => f.value === selectedRoleFilter.value,
-  );
-  return filter?.label ?? t("members.filters.anyRole");
+	const filter = roleFilters.value.find(
+		(f) => f.value === selectedRoleFilter.value,
+	);
+	return filter?.label ?? t("members.filters.anyRole");
 });
 
 watch(activeTab, (tab) => emit("update:activeTab", tab));
@@ -114,12 +114,12 @@ watch(searchQuery, (query) => emit("update:searchQuery", query));
 watch(selectedRoleFilter, (role) => emit("update:roleFilter", role));
 
 function selectSorting(
-  sortBy: MemberSortField | InviteSortField,
-  order: SortOrder,
+	sortBy: MemberSortField | InviteSortField,
+	order: SortOrder,
 ) {
-  selectedSortField.value = sortBy;
-  selectedSortOrder.value = order;
-  emit("update:sorting", sortBy, order);
+	selectedSortField.value = sortBy;
+	selectedSortOrder.value = order;
+	emit("update:sorting", sortBy, order);
 }
 </script>
 

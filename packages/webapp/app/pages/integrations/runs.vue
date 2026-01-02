@@ -186,7 +186,7 @@ function formatDuration(
       <template v-else>
         <!-- Search and Filters -->
         <div class="flex items-center gap-3 mb-6 flex-wrap">
-          <Button as-child variant="outline">
+          <Button as-child variant="outline" class="font-light">
             <NuxtLink to="/integrations" class="flex items-center gap-2">
               <ArrowLeft :size="16" />
               {{ t("integrations.runs.backToConnections") }}
@@ -196,18 +196,19 @@ function formatDuration(
           <div class="flex-1 min-w-[200px]">
             <div class="relative">
               <Search
-                class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-neutral-500"
+              :size="16"
+              class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
               />
               <Input
                 v-model="searchQuery"
                 :placeholder="t('integrations.runs.searchPlaceholder')"
-                class="pl-10"
+                class="pl-10 font-light"
               />
             </div>
           </div>
 
           <Select v-model="statusFilter">
-            <SelectTrigger class="w-[150px]">
+            <SelectTrigger class="w-[150px] font-light">
               <SelectValue :placeholder="t('integrations.runs.status')" />
             </SelectTrigger>
             <SelectContent>
@@ -233,7 +234,7 @@ function formatDuration(
           </Select>
 
           <Select v-model="dateRange">
-            <SelectTrigger class="w-[150px]">
+            <SelectTrigger class="w-[150px] font-light">
               <SelectValue :placeholder="t('integrations.runs.period')" />
             </SelectTrigger>
             <SelectContent>
@@ -262,7 +263,7 @@ function formatDuration(
                   class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
                   >{{ t("integrations.runs.title") }}</CardTitle
                 >
-                <CardDescription class="font-light">
+                <CardDescription>
                   {{ filteredRuns.length }}
                   {{
                     t("integrations.runs.runsFound", {
@@ -280,7 +281,7 @@ function formatDuration(
                 size="sm"
                 @click="copyLogs"
                 :disabled="selectedRuns.size === 0"
-                class="flex items-center gap-2"
+                class="flex items-center gap-2 font-light"
               >
                 <Check v-if="logsCopied" :size="16" class="text-green-500" />
                 <Copy v-else :size="16" />

@@ -56,11 +56,7 @@ function cancel(): void {
           }}</DialogTitle>
         </div>
         <DialogDescription>
-          {{
-            t("members.modals.cancelInvite.description", {
-              email: invite?.emailAddress ?? t("members.table.status.pending"),
-            })
-          }}
+          {{ t("members.modals.cancelInvite.description") }}
         </DialogDescription>
       </DialogHeader>
 
@@ -70,7 +66,7 @@ function cancel(): void {
           class="p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
         >
           <p class="text-sm text-neutral-900 dark:text-white font-medium mb-1">
-            {{ invite?.emailAddress ?? t("members.table.status.pending") }}
+            {{ invite?.inviteeEmail ?? t("members.table.status.linkInvite") }}
           </p>
           <p class="text-xs text-neutral-500 dark:text-neutral-500">
             {{ t("members.modals.cancelInvite.role") }}:

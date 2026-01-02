@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ApiToken } from "@nvisy/sdk/datatypes";
-import { Trash2 } from "lucide-vue-next";
+import { AlertCircle } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -21,7 +21,7 @@ interface Emits {
 	(e: "confirm"): void;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
@@ -32,25 +32,43 @@ function closeModal() {
 
 function confirmDelete() {
 	emit("confirm");
-	closeModal();
 }
 </script>
 
 <template>
   <Dialog :open="open" @update:open="closeModal">
-    <DialogContent>
+    <DialogContent class="max-w-md">
       <DialogHeader>
-        <DialogTitle>{{ t("tokens.modals.delete.title") }}</DialogTitle>
+        <div class="flex items-center gap-3 mb-2">
+          <div class="p-2 rounded-full bg-red-100 dark:bg-red-900/20">
+            <AlertCircle :size="20" class="text-red-600 dark:text-red-400" />
+          </div>
+          <DialogTitle>{{ t("tokens.modals.delete.title") }}</DialogTitle>
+        </div>
         <DialogDescription>
           {{ t("tokens.modals.delete.description", { name: token?.name }) }}
         </DialogDescription>
       </DialogHeader>
+
+      <div class="py-4">
+        <div
+          class="p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
+        >
+          <p class="text-sm text-neutral-900 dark:text-white font-medium mb-1">
+            {{ token?.name }}
+          </p>
+          <p class="text-xs text-neutral-500 dark:text-neutral-500">
+            {{ t("tokens.modals.delete.lastUsed") }}:
+            {{ token?.lastUsedAt ?? t("tokens.modals.delete.never") }}
+          </p>
+        </div>
+      </div>
+
       <DialogFooter>
-        <Button @click="closeModal" variant="outline">
+        <Button variant="outline" @click="closeModal">
           {{ t("tokens.modals.delete.cancelButton") }}
         </Button>
-        <Button @click="confirmDelete" variant="destructive">
-          <Trash2 :size="16" class="mr-2" />
+        <Button variant="destructive" @click="confirmDelete">
           {{ t("tokens.modals.delete.confirmButton") }}
         </Button>
       </DialogFooter>

@@ -5,31 +5,31 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
 } from "@/components/ui/dialog";
 
 const { t } = useI18n();
 
 interface Props {
-  open?: boolean;
-  integration?: Integration | null;
-  isLoading?: boolean;
+	open?: boolean;
+	integration?: Integration | null;
+	isLoading?: boolean;
 }
 
 interface Emits {
-  (e: "update:open", value: boolean): void;
-  (e: "update", updates: UpdateIntegration): void;
+	(e: "update:open", value: boolean): void;
+	(e: "update", updates: UpdateIntegration): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  open: false,
-  integration: null,
-  isLoading: false,
+	open: false,
+	integration: null,
+	isLoading: false,
 });
 
 const emit = defineEmits<Emits>();
@@ -41,67 +41,67 @@ const integrationActive = ref(true);
 
 // Computed validation
 const isFormValid = computed(() => {
-  return (
-    integrationName.value.trim().length > 0 &&
-    integrationDescription.value.trim().length > 0
-  );
+	return (
+		integrationName.value.trim().length > 0 &&
+		integrationDescription.value.trim().length > 0
+	);
 });
 
 // Watch for integration prop changes to populate form
 watch(
-  () => props.integration,
-  (newIntegration) => {
-    if (newIntegration && props.open) {
-      populateForm(newIntegration);
-    }
-  },
-  { immediate: true },
+	() => props.integration,
+	(newIntegration) => {
+		if (newIntegration && props.open) {
+			populateForm(newIntegration);
+		}
+	},
+	{ immediate: true },
 );
 
 watch(
-  () => props.open,
-  (isOpen) => {
-    if (isOpen && props.integration) {
-      populateForm(props.integration);
-    }
-  },
+	() => props.open,
+	(isOpen) => {
+		if (isOpen && props.integration) {
+			populateForm(props.integration);
+		}
+	},
 );
 
 // Functions
 function populateForm(integration: Integration) {
-  integrationName.value = integration.integrationName;
-  integrationDescription.value = integration.description;
-  integrationActive.value = integration.isActive;
+	integrationName.value = integration.integrationName;
+	integrationDescription.value = integration.description;
+	integrationActive.value = integration.isActive;
 }
 
 function handleOpenChange(open: boolean) {
-  if (!open) {
-    resetForm();
-  }
-  emit("update:open", open);
+	if (!open) {
+		resetForm();
+	}
+	emit("update:open", open);
 }
 
 function resetForm() {
-  integrationName.value = "";
-  integrationDescription.value = "";
-  integrationActive.value = true;
+	integrationName.value = "";
+	integrationDescription.value = "";
+	integrationActive.value = true;
 }
 
 function updateIntegration() {
-  if (!isFormValid.value || !props.integration) return;
+	if (!isFormValid.value || !props.integration) return;
 
-  const updates: UpdateIntegration = {
-    integrationName: integrationName.value,
-    description: integrationDescription.value,
-    isActive: integrationActive.value,
-  };
+	const updates: UpdateIntegration = {
+		integrationName: integrationName.value,
+		description: integrationDescription.value,
+		isActive: integrationActive.value,
+	};
 
-  emit("update", updates);
+	emit("update", updates);
 }
 
 function cancel() {
-  resetForm();
-  emit("update:open", false);
+	resetForm();
+	emit("update:open", false);
 }
 </script>
 

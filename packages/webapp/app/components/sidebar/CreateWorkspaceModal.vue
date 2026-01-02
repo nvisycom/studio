@@ -148,7 +148,11 @@ async function createWorkspace() {
                     {{ t("workspace.create.autoCleanupDescription") }}
                   </p>
                 </div>
-                <Switch id="auto-cleanup" v-model:checked="autoCleanup" />
+                <Switch
+                  id="auto-cleanup"
+                  :model-value="autoCleanup"
+                  @update:model-value="autoCleanup = $event"
+                />
               </div>
 
               <div class="flex items-center justify-between">
@@ -162,7 +166,8 @@ async function createWorkspace() {
                 </div>
                 <Switch
                   id="require-approval"
-                  v-model:checked="requireApproval"
+                  :model-value="requireApproval"
+                  @update:model-value="requireApproval = $event"
                 />
               </div>
 
@@ -175,7 +180,11 @@ async function createWorkspace() {
                     {{ t("workspace.create.enableCommentsDescription") }}
                   </p>
                 </div>
-                <Switch id="enable-comments" v-model:checked="enableComments" />
+                <Switch
+                  id="enable-comments"
+                  :model-value="enableComments"
+                  @update:model-value="enableComments = $event"
+                />
               </div>
             </div>
           </CollapsibleContent>

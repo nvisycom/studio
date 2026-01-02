@@ -20,7 +20,7 @@ interface Emits {
 	(e: "confirm"): void;
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
 	open: false,
 	count: 0,
 });
@@ -59,15 +59,14 @@ function cancel(): void {
         </DialogDescription>
       </DialogHeader>
 
-      <!-- Information message -->
       <div class="py-4">
         <div
-          class="p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800"
+          class="p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
         >
-          <p class="text-sm text-amber-900 dark:text-amber-100">
-            <span class="font-medium"
-              >{{ t("members.modals.cancelMultiple.noteTitle") }}:</span
-            >
+          <p class="text-sm text-neutral-900 dark:text-white font-medium mb-1">
+            {{ t("members.modals.cancelMultiple.countLabel", count) }}
+          </p>
+          <p class="text-xs text-neutral-500 dark:text-neutral-500">
             {{ t("members.modals.cancelMultiple.noteDescription") }}
           </p>
         </div>
@@ -78,7 +77,7 @@ function cancel(): void {
           {{ t("members.modals.cancelMultiple.keepButton") }}
         </Button>
         <Button variant="destructive" @click="confirm">
-          {{ t("members.modals.cancelMultiple.confirmButton") }} ({{ count }})
+          {{ t("members.modals.cancelMultiple.confirmButton") }}
         </Button>
       </DialogFooter>
     </DialogContent>

@@ -1,38 +1,41 @@
 <script setup lang="ts">
 import { ChevronsUpDown, Plus, Layers } from "lucide-vue-next";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuShortcut,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	useSidebar,
 } from "@/components/ui/sidebar";
 import { EntityAvatar } from "@/components/common";
+import { truncate } from "@/utils/naming";
 import CreateWorkspaceModal from "./CreateWorkspaceModal.vue";
 
 const { t } = useI18n();
 const { isMobile } = useSidebar();
 
+const MAX_NAME_LENGTH = 18;
+
 // Use the workspaces composable
 const {
-  workspaces,
-  currentWorkspace,
-  currentWorkspaceId,
-  selectWorkspace,
-  isLoading,
+	workspaces,
+	currentWorkspace,
+	currentWorkspaceId,
+	selectWorkspace,
+	isLoading,
 } = useWorkspaces();
 
 const isCreateWorkspaceModalOpen = ref(false);
 
 function handleSelectWorkspace(workspaceId: string) {
-  selectWorkspace(workspaceId);
+	selectWorkspace(workspaceId);
 }
 </script>
 
@@ -58,7 +61,11 @@ function handleSelectWorkspace(workspaceId: string) {
             </div>
             <div class="grid flex-1 text-left text-sm leading-tight">
               <span class="truncate font-medium">
-                {{ currentWorkspace?.displayName ?? t("workspace.select") }}
+                {{
+                  currentWorkspace
+                    ? truncate(currentWorkspace.displayName, MAX_NAME_LENGTH)
+                    : t("workspace.select")
+                }}
               </span>
               <span
                 v-if="currentWorkspace?.description"
@@ -87,7 +94,9 @@ function handleSelectWorkspace(workspaceId: string) {
           >
             <EntityAvatar :name="workspace.displayName" size="sm" />
             <div class="flex flex-col flex-1 min-w-0">
-              <span class="truncate text-sm">{{ workspace.displayName }}</span>
+              <span class="truncate text-sm">{{
+                truncate(workspace.displayName, MAX_NAME_LENGTH)
+              }}</span>
               <span class="text-xs font-light text-muted-foreground">
                 {{ t(`members.roles.${workspace.memberRole}`) }}
               </span>

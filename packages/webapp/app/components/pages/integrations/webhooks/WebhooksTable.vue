@@ -4,44 +4,44 @@ import { MoreHorizontal, Edit, Play, Trash2 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+	DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { formatRelativeTime } from "@/utils/date";
 
 const { t } = useI18n();
 
 defineProps<{
-  webhooks: Webhook[];
+	webhooks: Webhook[];
 }>();
 
 const emit = defineEmits<{
-  (e: "edit", webhookId: string): void;
-  (e: "delete", webhookId: string): void;
-  (e: "test", webhookId: string): void;
-  (e: "toggleStatus", webhookId: string, active: boolean): void;
+	(e: "edit", webhookId: string): void;
+	(e: "delete", webhookId: string): void;
+	(e: "test", webhookId: string): void;
+	(e: "toggleStatus", webhookId: string, active: boolean): void;
 }>();
 
 function formatUrl(url: string): string {
-  try {
-    const urlObj = new URL(url);
-    const domain = urlObj.hostname;
-    const path = urlObj.pathname !== "/" ? urlObj.pathname : "";
-    return domain + path;
-  } catch {
-    return url;
-  }
+	try {
+		const urlObj = new URL(url);
+		const domain = urlObj.hostname;
+		const path = urlObj.pathname !== "/" ? urlObj.pathname : "";
+		return domain + path;
+	} catch {
+		return url;
+	}
 }
 </script>
 

@@ -4,61 +4,74 @@ import { Copy, Check, ChevronDown, Loader2, Send } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 const emit = defineEmits<{
-  sendInvite: [email: string, role: WorkspaceRole, expiry: InviteExpiration];
-  copyLink: [role: WorkspaceRole, expiry: InviteExpiration];
+	sendInvite: [email: string, role: WorkspaceRole, expiry: InviteExpiration];
+	copyLink: [role: WorkspaceRole, expiry: InviteExpiration];
 }>();
 
 defineProps<{
-  isSending: boolean;
-  isGenerating: boolean;
-  copiedInviteLink: boolean;
-  inviteSent: boolean;
+	isSending: boolean;
+	isGenerating: boolean;
+	copiedInviteLink: boolean;
+	inviteSent: boolean;
 }>();
 
 const { t } = useI18n();
 
 const inviteEmail = ref("");
 const selectedRole = ref<WorkspaceRole>("member");
-const selectedExpiry = ref<InviteExpiration>("never");
+const selectedExpiry = ref<InviteExpiration>("in7Days");
 
 const roles = computed(() => [
-  { value: "owner" as WorkspaceRole, label: t("members.roles.owner") },
-  { value: "admin" as WorkspaceRole, label: t("members.roles.admin") },
-  { value: "member" as WorkspaceRole, label: t("members.roles.member") },
-  { value: "guest" as WorkspaceRole, label: t("members.roles.guest") },
+	{ value: "owner" as WorkspaceRole, label: t("members.roles.owner") },
+	{ value: "admin" as WorkspaceRole, label: t("members.roles.admin") },
+	{ value: "member" as WorkspaceRole, label: t("members.roles.member") },
+	{ value: "guest" as WorkspaceRole, label: t("members.roles.guest") },
 ]);
 
 const inviteExpiryOptions = computed(() => [
-  { label: t("members.forms.invite.expiry.never"), value: "never" as InviteExpiration },
-  { label: t("members.forms.invite.expiry.24hours"), value: "in24Hours" as InviteExpiration },
-  { label: t("members.forms.invite.expiry.7days"), value: "in7Days" as InviteExpiration },
-  { label: t("members.forms.invite.expiry.30days"), value: "in30Days" as InviteExpiration },
+	{
+		label: t("members.forms.invite.expiry.24hours"),
+		value: "in24Hours" as InviteExpiration,
+	},
+	{
+		label: t("members.forms.invite.expiry.7days"),
+		value: "in7Days" as InviteExpiration,
+	},
+	{
+		label: t("members.forms.invite.expiry.30days"),
+		value: "in30Days" as InviteExpiration,
+	},
 ]);
 
 function handleSendInvite() {
-  if (!inviteEmail.value.trim()) return;
-  emit("sendInvite", inviteEmail.value, selectedRole.value, selectedExpiry.value);
-  inviteEmail.value = "";
-  selectedRole.value = "member";
+	if (!inviteEmail.value.trim()) return;
+	emit(
+		"sendInvite",
+		inviteEmail.value,
+		selectedRole.value,
+		selectedExpiry.value,
+	);
+	inviteEmail.value = "";
+	selectedRole.value = "member";
 }
 
 function handleCopyLink() {
-  emit("copyLink", selectedRole.value, selectedExpiry.value);
+	emit("copyLink", selectedRole.value, selectedExpiry.value);
 }
 </script>
 
@@ -71,7 +84,8 @@ function handleCopyLink() {
         <div>
           <CardTitle
             class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
-          >{{ t("members.forms.invite.title") }}</CardTitle>
+            >{{ t("members.forms.invite.title") }}</CardTitle
+          >
           <CardDescription>{{
             t("members.forms.invite.description")
           }}</CardDescription>
@@ -89,9 +103,8 @@ function handleCopyLink() {
                 class="flex items-center gap-2 min-w-32 justify-between font-light"
               >
                 {{
-                  inviteExpiryOptions.find(
-                    (o) => o.value === selectedExpiry,
-                  )?.label
+                  inviteExpiryOptions.find((o) => o.value === selectedExpiry)
+                    ?.label
                 }}
                 <ChevronDown :size="16" />
               </Button>
@@ -108,10 +121,7 @@ function handleCopyLink() {
           </DropdownMenu>
           <DropdownMenu>
             <DropdownMenuTrigger as-child>
-              <Button
-                variant="outline"
-                class="w-32 justify-between font-light"
-              >
+              <Button variant="outline" class="w-32 justify-between font-light">
                 {{ roles.find((r) => r.value === selectedRole)?.label }}
                 <ChevronDown :size="16" />
               </Button>

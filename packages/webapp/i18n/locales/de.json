@@ -1,6 +1,13 @@
 {
   "common": {
     "service": "Nvisy",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "confirm": "Bestätigen",
+    "errors": {
+      "tryAgain": "Bitte versuchen Sie es erneut."
+    },
     "time": {
       "justNow": "Gerade eben",
       "never": "Nie",
@@ -10,12 +17,227 @@
       "monthsAgo": "vor {months}m"
     }
   },
+  "settings": {
+    "workspace": {
+      "noWorkspace": "Kein Arbeitsbereich ausgewählt",
+      "avatar": {
+        "label": "Avatar",
+        "description": "Zum Hochladen klicken. Empfohlen: 256x256px. PNG, JPG oder SVG.",
+        "footer": "Ihr Arbeitsbereich-Avatar ist für alle Teammitglieder sichtbar."
+      },
+      "name": {
+        "label": "Arbeitsbereichsname",
+        "placeholder": "Mein Arbeitsbereich",
+        "description": "Der Name Ihres Arbeitsbereichs, wie er auf der Plattform angezeigt wird."
+      },
+      "description": {
+        "label": "Beschreibung",
+        "placeholder": "Beschreiben Sie Ihren Arbeitsbereich...",
+        "description": "Eine kurze Beschreibung Ihres Arbeitsbereichs. Maximal 500 Zeichen."
+      },
+      "id": {
+        "label": "Arbeitsbereich-ID",
+        "description": "Eindeutige Kennung für API-Aufrufe."
+      },
+      "info": {
+        "footer": "Änderungen gelten für alle Teammitglieder."
+      },
+      "options": {
+        "title": "Arbeitsbereich-Optionen",
+        "description": "Konfigurieren Sie, wie Ihr Arbeitsbereich Dokumente und Zusammenarbeit handhabt.",
+        "footer": "Diese Einstellungen betreffen alle Dokumente in diesem Arbeitsbereich.",
+        "autoCleanup": {
+          "label": "Automatische Bereinigung",
+          "description": "Verarbeitete Dateien nach Ablauf automatisch löschen."
+        },
+        "requireApproval": {
+          "label": "Genehmigung erforderlich",
+          "description": "Verarbeitete Dateien müssen genehmigt werden, bevor sie für Teammitglieder sichtbar sind."
+        },
+        "enableComments": {
+          "label": "Kommentare aktivieren",
+          "description": "Teammitgliedern erlauben, Kommentare zu Dokumenten hinzuzufügen."
+        }
+      },
+      "leave": {
+        "title": "Arbeitsbereich verlassen",
+        "description": "Entfernen Sie sich aus diesem Arbeitsbereich. Sie können danach nicht mehr darauf zugreifen.",
+        "content": "Diese Aktion entfernt Sie sofort aus dem Arbeitsbereich.",
+        "warning": "Diese Aktion kann nicht rückgängig gemacht werden. Sie müssen erneut eingeladen werden, um auf diesen Arbeitsbereich zuzugreifen.",
+        "button": "Arbeitsbereich verlassen",
+        "dialog": {
+          "title": "Arbeitsbereich verlassen?",
+          "description": "Sind Sie sicher, dass Sie diesen Arbeitsbereich verlassen möchten? Sie verlieren den Zugriff auf alle Dokumente und Ressourcen in diesem Arbeitsbereich."
+        }
+      },
+      "delete": {
+        "title": "Arbeitsbereich löschen",
+        "description": "Löschen Sie diesen Arbeitsbereich und alle seine Daten dauerhaft. Diese Aktion kann nicht rückgängig gemacht werden.",
+        "content": "Dies löscht alles dauerhaft, einschließlich Dokumente, Integrationen und Konfigurationen.",
+        "warning": "Dies löscht alles dauerhaft. Diese Aktion ist unwiderruflich.",
+        "button": "Arbeitsbereich löschen",
+        "dialog": {
+          "title": "Arbeitsbereich löschen?",
+          "description": "Diese Aktion kann nicht rückgängig gemacht werden. Dies löscht den Arbeitsbereich \"{name}\" und alle zugehörigen Daten dauerhaft.",
+          "confirmLabel": "Geben Sie \"{name}\" zur Bestätigung ein:"
+        }
+      },
+      "messages": {
+        "idCopied": "Arbeitsbereich-ID in die Zwischenablage kopiert",
+        "saved": "Arbeitsbereich-Einstellungen gespeichert",
+        "optionsSaved": "Arbeitsbereich-Optionen gespeichert",
+        "left": "Sie haben den Arbeitsbereich verlassen",
+        "deleted": "Arbeitsbereich gelöscht",
+        "avatarNotSupported": "Avatar-Upload wird noch nicht unterstützt"
+      },
+      "errors": {
+        "saveFailed": "Fehler beim Speichern der Arbeitsbereich-Einstellungen",
+        "leaveFailed": "Fehler beim Verlassen des Arbeitsbereichs",
+        "deleteFailed": "Fehler beim Löschen des Arbeitsbereichs"
+      }
+    },
+    "notifications": {
+      "noSettings": "Benachrichtigungseinstellungen konnten nicht geladen werden",
+      "channels": {
+        "title": "Benachrichtigungskanäle",
+        "description": "Wählen Sie, wo Sie Benachrichtigungen erhalten möchten",
+        "footer": "Web-Benachrichtigungen sind immer aktiviert, damit Sie keine wichtigen Updates verpassen.",
+        "web": {
+          "label": "Web-Benachrichtigungen",
+          "description": "Immer aktiviert für In-App-Benachrichtigungen"
+        },
+        "email": {
+          "label": "E-Mail-Benachrichtigungen",
+          "description": "Benachrichtigungen per E-Mail erhalten"
+        }
+      },
+      "events": {
+        "title": "Benachrichtigungsereignisse",
+        "description": "Wählen Sie, über welche Ereignisse Sie benachrichtigt werden möchten",
+        "footer": "Wählen Sie die Ereignisse aus, für die Sie in jedem Kanal Benachrichtigungen erhalten möchten.",
+        "headers": {
+          "web": "Web",
+          "email": "E-Mail"
+        }
+      },
+      "categories": {
+        "comments": {
+          "name": "Kommentare",
+          "mention": {
+            "name": "In Kommentar erwähnt",
+            "description": "Wenn jemand Sie in einem Kommentar erwähnt"
+          },
+          "reply": {
+            "name": "Kommentar-Antwort",
+            "description": "Wenn jemand auf Ihren Kommentar antwortet"
+          }
+        },
+        "documents": {
+          "name": "Dokumente",
+          "uploaded": {
+            "name": "Dokument hochgeladen",
+            "description": "Wenn ein neues Dokument hochgeladen wird"
+          },
+          "downloaded": {
+            "name": "Dokument heruntergeladen",
+            "description": "Wenn ein Dokument heruntergeladen wird"
+          },
+          "verified": {
+            "name": "Dokument verifiziert",
+            "description": "Wenn ein Dokument verifiziert wird"
+          }
+        },
+        "members": {
+          "name": "Teammitglieder",
+          "invited": {
+            "name": "Mitglied eingeladen",
+            "description": "Wenn ein neues Mitglied eingeladen wird"
+          },
+          "joined": {
+            "name": "Mitglied beigetreten",
+            "description": "Wenn ein Mitglied die Einladung annimmt"
+          }
+        },
+        "integrations": {
+          "name": "Integrationen",
+          "synced": {
+            "name": "Integration synchronisiert",
+            "description": "Wenn eine Integration eine Synchronisierung abschließt"
+          },
+          "desynced": {
+            "name": "Integration desynchronisiert",
+            "description": "Wenn eine Integration die Synchronisierung verliert"
+          }
+        },
+        "system": {
+          "name": "System",
+          "announcement": {
+            "name": "Ankündigungen",
+            "description": "Wichtige Systemankündigungen"
+          },
+          "report": {
+            "name": "Berichte",
+            "description": "Wenn geplante Berichte bereit sind"
+          }
+        }
+      },
+      "messages": {
+        "saved": "Benachrichtigungseinstellungen gespeichert"
+      },
+      "errors": {
+        "saveFailed": "Fehler beim Speichern der Benachrichtigungseinstellungen"
+      }
+    }
+  },
   "overview": {
     "welcome": {
-      "title": "Willkommen bei Nvisy",
+      "title": "Willkommen zurück",
+      "subtitle": "Das passiert gerade in {workspace}",
       "description": "Erstellen Sie Ihren ersten Arbeitsbereich, um Dokumente zu organisieren, mit Ihrem Team zusammenzuarbeiten und KI-gestützte Einblicke zu nutzen.",
       "createWorkspace": "Arbeitsbereich Erstellen",
       "setupProfile": "Profil Einrichten"
+    },
+    "workspace": {
+      "title": "Arbeitsbereich",
+      "noDescription": "Keine Beschreibung festgelegt",
+      "settings": "Einstellungen",
+      "members": "Mitglieder",
+      "files": "Dateien",
+      "yourRole": "Ihre Rolle",
+      "created": "Erstellt",
+      "badges": {
+        "autoCleanup": "Auto-Bereinigung",
+        "requireApproval": "Genehmigung erforderlich",
+        "commentsEnabled": "Kommentare aktiviert",
+        "defaultSettings": "Standardeinstellungen"
+      }
+    },
+    "usage": {
+      "credits": "Credits",
+      "storage": "Speicher",
+      "of": "von {total}",
+      "creditsRemaining": "{count} Credits übrig",
+      "storageRemaining": "{count} GB übrig",
+      "viewPlan": "Plan anzeigen"
+    },
+    "quickActions": {
+      "title": "Schnellaktionen",
+      "uploadFiles": {
+        "title": "Dateien hochladen",
+        "description": "Dokumente zur Wissensdatenbank hinzufügen"
+      },
+      "askAI": {
+        "title": "KI fragen",
+        "description": "Dokumente abfragen"
+      },
+      "manageTeam": {
+        "title": "Team verwalten",
+        "description": "Mitglieder einladen"
+      },
+      "viewAnalytics": {
+        "title": "Analysen anzeigen",
+        "description": "Nutzung überwachen"
+      }
     },
     "actions": {
       "learnMore": "Mehr erfahren",
@@ -154,7 +376,9 @@
       "status": {
         "enabled": "Aktiviert",
         "disabled": "Deaktiviert",
-        "pending": "Ausstehende Einladung"
+        "pending": "Ausstehende Einladung",
+        "emailInvite": "E-Mail-Einladung",
+        "linkInvite": "Offene Einladung"
       },
       "empty": {
         "noMembers": "Keine Mitglieder gefunden",
@@ -216,16 +440,16 @@
       },
       "cancelInvite": {
         "title": "Einladung Abbrechen",
-        "description": "Sind Sie sicher, dass Sie die Einladung für {email} abbrechen möchten? Sie können nicht mehr über den aktuellen Einladungslink beitreten.",
+        "description": "Sind Sie sicher, dass Sie diese Einladung abbrechen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
         "role": "Rolle",
         "keepButton": "Einladung Behalten",
         "confirmButton": "Einladung Abbrechen"
       },
       "cancelMultiple": {
         "title": "Einladungen Abbrechen",
-        "description": "Sind Sie sicher, dass Sie {count} Einladung abbrechen möchten? Die Einladungslinks werden nicht mehr gültig sein. | Sind Sie sicher, dass Sie {count} Einladungen abbrechen möchten? Die Einladungslinks werden nicht mehr gültig sein.",
-        "noteTitle": "Hinweis",
-        "noteDescription": "Sie können später jederzeit neue Einladungen an diese E-Mail-Adressen senden.",
+        "description": "Sind Sie sicher, dass Sie {count} Einladung abbrechen möchten? Diese Aktion kann nicht rückgängig gemacht werden. | Sind Sie sicher, dass Sie {count} Einladungen abbrechen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+        "countLabel": "{count} Einladung ausgewählt | {count} Einladungen ausgewählt",
+        "noteDescription": "Sie können später jederzeit neue Einladungen erstellen.",
         "keepButton": "Behalten",
         "confirmButton": "Einladungen Abbrechen"
       }
@@ -300,12 +524,16 @@
       "delete": {
         "title": "Token Widerrufen",
         "description": "Sind Sie sicher, dass Sie den Token \"{name}\" widerrufen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+        "lastUsed": "Zuletzt verwendet",
+        "never": "Nie",
         "cancelButton": "Abbrechen",
         "confirmButton": "Token Widerrufen"
       },
       "deleteMultiple": {
         "title": "Tokens Widerrufen",
         "description": "Sind Sie sicher, dass Sie {count} Token widerrufen möchten? Diese Aktion kann nicht rückgängig gemacht werden. | Sind Sie sicher, dass Sie {count} Tokens widerrufen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+        "warningTitle": "Warnung",
+        "warningDescription": "Alle Anwendungen, die diese Tokens verwenden, verlieren sofort den Zugriff.",
         "cancelButton": "Abbrechen",
         "confirmButton": "Tokens Widerrufen"
       }
@@ -345,6 +573,7 @@
       "deleteWebhook": "Webhook Löschen",
       "testWebhook": "Webhook Testen",
       "back": "Zurück",
+      "backToConnections": "Zurück zu Verbindungen",
       "viewRuns": "Ausführungen Anzeigen"
     },
     "status": {
@@ -419,11 +648,10 @@
       "disconnect": {
         "title": "{name} Trennen",
         "description": "Sind Sie sicher, dass Sie diese Integration trennen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-        "warningTitle": "Erwägen Sie stattdessen eine Deaktivierung",
-        "warningDescription": "Sie können diese Integration deaktivieren, um Workflows zu pausieren, ohne Ihre Konfiguration und Daten zu verlieren. Das Trennen wird alles dauerhaft löschen.",
-        "confirmationLabel": "Geben Sie {name} ein, um zu bestätigen",
-        "confirmationPlaceholder": "Integrationsnamen eingeben",
-        "confirm": "Dauerhaft Trennen",
+        "provider": "Anbieter",
+        "warningTitle": "Warnung",
+        "warningDescription": "Das Trennen wird alle Konfigurationen und Daten, die mit dieser Integration verbunden sind, dauerhaft löschen.",
+        "confirm": "Trennen",
         "cancel": "Abbrechen"
       },
       "createWebhook": {

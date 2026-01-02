@@ -1,63 +1,63 @@
 <script setup lang="ts">
 import type { Integration } from "@nvisy/sdk/datatypes";
 import {
-  MoreHorizontal,
-  Edit,
-  Trash2,
-  HardDrive,
-  Webhook,
-  Box,
+	MoreHorizontal,
+	Edit,
+	Trash2,
+	HardDrive,
+	Webhook,
+	Box,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+	DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { formatRelativeTime } from "@/utils/date";
 
 const { t } = useI18n();
 
 defineProps<{
-  integrations: Integration[];
+	integrations: Integration[];
 }>();
 
 const emit = defineEmits<{
-  (e: "configure", integrationId: string): void;
-  (e: "disconnect", integrationId: string): void;
+	(e: "configure", integrationId: string): void;
+	(e: "disconnect", integrationId: string): void;
 }>();
 
 function getIntegrationIcon(type: string) {
-  switch (type) {
-    case "storage":
-      return HardDrive;
-    case "webhook":
-      return Webhook;
-    default:
-      return Box;
-  }
+	switch (type) {
+		case "storage":
+			return HardDrive;
+		case "webhook":
+			return Webhook;
+		default:
+			return Box;
+	}
 }
 
 function getIntegrationColor(type: string): string {
-  switch (type) {
-    case "storage":
-      return "bg-blue-600";
-    case "webhook":
-      return "bg-purple-600";
-    default:
-      return "bg-gray-600";
-  }
+	switch (type) {
+		case "storage":
+			return "bg-blue-600";
+		case "webhook":
+			return "bg-purple-600";
+		default:
+			return "bg-gray-600";
+	}
 }
 </script>
 

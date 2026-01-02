@@ -32,6 +32,7 @@ const WEBHOOK_EVENTS: WebhookEvent[] = [
   "integration:updated",
   "integration:deleted",
   "integration:synced",
+  "integration:desynced",
 ];
 
 interface Header {
@@ -170,7 +171,11 @@ function cancel() {
 <template>
   <Dialog :open="open" @update:open="handleOpenChange">
     <DialogTrigger as-child>
-      <Button size="sm" class="flex items-center gap-2">
+      <Button
+        variant="outline"
+        size="sm"
+        class="flex items-center gap-2 font-light"
+      >
         <Webhook :size="16" />
         {{ t("integrations.actions.createWebhook") }}
       </Button>
@@ -293,9 +298,6 @@ function cancel() {
 
         <!-- Webhook Events -->
         <div>
-          <h4 class="text-sm font-medium text-neutral-900 dark:text-white mb-4">
-            {{ t("integrations.forms.webhook.eventsLabel") }}
-          </h4>
           <div class="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto">
             <div
               v-for="event in WEBHOOK_EVENTS"
