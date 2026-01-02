@@ -18,12 +18,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from "@/components/ui/empty";
 
 interface Props {
   invites: Invite[];
@@ -51,14 +45,11 @@ function formatDate(date: string): string {
   });
 }
 
-function getDisplayName(invite: Invite): string {
-  if (invite.emailAddress) {
-    return invite.emailAddress;
-  }
+function getInviteCode(invite: Invite): string {
   if (invite.inviteToken) {
     return `${invite.inviteToken.slice(0, 8)}...`;
   }
-  return t("members.table.status.pending");
+  return "";
 }
 </script>
 
@@ -131,16 +122,29 @@ function getDisplayName(invite: Invite): string {
           </TableCell>
           <TableCell>
             <div class="flex items-center gap-3">
-              <EntityAvatar :name="getDisplayName(invite)" size="md" />
+              <EntityAvatar
+                :name="invite.inviteeEmail || getInviteCode(invite)"
+                size="md"
+              />
               <div>
-                <p class="font-normal text-neutral-900 dark:text-white">
-                  {{ getDisplayName(invite) }}
+                <p
+                  v-if="invite.inviteeEmail"
+                  class="font-normal text-neutral-900 dark:text-white"
+                >
+                  {{ invite.inviteeEmail }}
                 </p>
                 <p
-                  v-if="!invite.emailAddress && invite.inviteToken"
-                  class="text-xs text-neutral-500 dark:text-neutral-400"
+                  v-else
+                  class="font-normal text-neutral-900 dark:text-white font-mono"
                 >
-                  {{ t("members.table.status.pending") }}
+                  {{ getInviteCode(invite) }}
+                </p>
+                <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                  {{
+                    invite.inviteeEmail
+                      ? t("members.table.status.emailInvite")
+                      : t("members.table.status.linkInvite")
+                  }}
                 </p>
               </div>
             </div>
@@ -186,13 +190,19 @@ function getDisplayName(invite: Invite): string {
       </TableBody>
     </Table>
   </div>
-  <Empty v-else>
-    <EmptyHeader>
-      <Mail :size="48" class="mx-auto text-neutral-400 mb-4" />
-      <EmptyTitle>{{ t("members.table.empty.noPendingInvites") }}</EmptyTitle>
-      <EmptyDescription>
+  <div v-else class="py-12">
+    <div class="text-center">
+      <div
+        class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
+      >
+        <Mail class="h-6 w-6 text-neutral-400 dark:text-neutral-500" />
+      </div>
+      <p class="font-normal text-neutral-700 dark:text-neutral-300 mb-1">
+        {{ t("members.table.empty.noPendingInvites") }}
+      </p>
+      <p class="font-light text-sm text-neutral-500 dark:text-neutral-400">
         {{ t("members.table.empty.noPendingInvitesDescription") }}
-      </EmptyDescription>
-    </EmptyHeader>
-  </Empty>
+      </p>
+    </div>
+  </div>
 </template>

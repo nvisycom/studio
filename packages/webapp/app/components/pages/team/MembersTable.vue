@@ -18,12 +18,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from "@/components/ui/empty";
 
 interface Props {
   members: Member[];
@@ -190,13 +184,19 @@ function formatDate(date: string): string {
       </TableBody>
     </Table>
   </div>
-  <Empty v-else>
-    <EmptyHeader>
-      <Users :size="48" class="mx-auto text-neutral-400 mb-4" />
-      <EmptyTitle>{{ t("members.table.empty.noMembers") }}</EmptyTitle>
-      <EmptyDescription>
+  <div v-else class="py-12">
+    <div class="text-center">
+      <div
+        class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
+      >
+        <Users class="h-6 w-6 text-neutral-400 dark:text-neutral-500" />
+      </div>
+      <p class="font-normal text-neutral-700 dark:text-neutral-300 mb-1">
+        {{ t("members.table.empty.noMembers") }}
+      </p>
+      <p class="font-light text-sm text-neutral-500 dark:text-neutral-400">
         {{ t("members.table.empty.noMembersDescription") }}
-      </EmptyDescription>
-    </EmptyHeader>
-  </Empty>
+      </p>
+    </div>
+  </div>
 </template>
