@@ -45,20 +45,13 @@ const layers = ref([
 
 function selectTool(toolId: string) {
 	selectedTool.value = toolId;
-	console.log("Selected tool:", toolId);
 }
 
-function rotate() {
-	console.log("Rotating document");
-}
+function rotate() {}
 
-function saveAsPdf() {
-	console.log("Saving as PDF");
-}
+function saveAsPdf() {}
 
-function saveAsDoc() {
-	console.log("Saving as DOC");
-}
+function saveAsDoc() {}
 
 function deleteLayer(layerId: string) {
 	const index = layers.value.findIndex((l) => l.id === layerId);
@@ -67,9 +60,7 @@ function deleteLayer(layerId: string) {
 	}
 }
 
-function selectLayer(layerId: string) {
-	console.log("Selected layer:", layerId);
-}
+function selectLayer(layerId: string) {}
 
 function zoomIn() {
 	if (zoomLevel.value < 200) {
@@ -83,13 +74,9 @@ function zoomOut() {
 	}
 }
 
-function undo() {
-	console.log("Undo");
-}
+function undo() {}
 
-function redo() {
-	console.log("Redo");
-}
+function redo() {}
 
 function selectFile(fileId: string) {
 	activeFileId.value = fileId;

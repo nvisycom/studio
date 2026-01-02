@@ -210,18 +210,12 @@ function openExportModal() {
 	isExportModalOpen.value = true;
 }
 
-function handleExport(format: "csv" | "json") {
-	console.log("Exporting logs:", {
-		format,
-		dateRange: exportDateRange.value,
-		eventTypes: exportEventTypes.value,
-	});
+function handleExport(_format: "csv" | "json") {
 	// TODO: Implement actual export functionality
 	isExportModalOpen.value = false;
 }
 
 function importLogs() {
-	console.log("Importing logs");
 	// TODO: Implement actual import functionality
 }
 </script>

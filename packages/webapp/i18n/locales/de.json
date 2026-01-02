@@ -325,9 +325,93 @@
 			"submitButton": "Arbeitsbereich Erstellen"
 		}
 	},
-	"home": {
-		"title": "Willkommen bei Nvisy",
-		"description": "Innovative Lösungen für das moderne Web entwickeln."
+	"files": {
+		"page": {
+			"title": "Dateien",
+			"description": "Verwalten Sie Ihre hochgeladenen Dateien und Dokumente"
+		},
+		"table": {
+			"headers": {
+				"name": "Name",
+				"size": "Größe",
+				"status": "Status",
+				"updated": "Aktualisiert"
+			},
+			"empty": {
+				"title": "Keine Dateien gefunden",
+				"description": "Laden Sie Ihre erste Datei hoch, um zu beginnen",
+				"filterDescription": "Versuchen Sie, Ihre Suche oder Filter anzupassen"
+			}
+		},
+		"filters": {
+			"search": "Nach Name suchen...",
+			"anyStatus": "Alle Status",
+			"pending": "Ausstehend",
+			"processing": "Verarbeitung",
+			"completed": "Abgeschlossen",
+			"failed": "Fehlgeschlagen"
+		},
+		"sorting": {
+			"dateDesc": "Datum (Neueste)",
+			"dateAsc": "Datum (Älteste)",
+			"nameAsc": "Name (A-Z)",
+			"nameDesc": "Name (Z-A)",
+			"sizeDesc": "Größe (Größte)",
+			"sizeAsc": "Größe (Kleinste)"
+		},
+		"actions": {
+			"upload": "Hochladen",
+			"download": "Herunterladen",
+			"downloadAsZip": "Als .zip herunterladen",
+			"downloadAsTar": "Als .tar herunterladen",
+			"edit": "Bearbeiten",
+			"rename": "Umbenennen",
+			"view": "Ansehen",
+			"delete": "Löschen"
+		},
+		"dialogs": {
+			"delete": {
+				"title": "Datei Löschen",
+				"titleMultiple": "Dateien Löschen",
+				"description": "Sind Sie sicher, dass Sie diese Datei löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+				"descriptionMultiple": "Sind Sie sicher, dass Sie {count} Dateien löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+				"confirm": "Löschen",
+				"cancel": "Abbrechen"
+			},
+			"rename": {
+				"title": "Datei Umbenennen",
+				"nameLabel": "Dateiname",
+				"namePlaceholder": "Dateinamen eingeben",
+				"save": "Speichern",
+				"cancel": "Abbrechen"
+			},
+			"upload": {
+				"title": "Dateien Hochladen",
+				"description": "Ziehen Sie Dateien hierher oder klicken Sie zum Durchsuchen",
+				"dropHint": "Dateien hier ablegen zum Hochladen",
+				"browseButton": "Dateien Durchsuchen",
+				"uploading": "Wird hochgeladen...",
+				"uploaded": "Hochgeladen",
+				"failed": "Fehlgeschlagen",
+				"cancel": "Abbrechen",
+				"done": "Fertig"
+			}
+		},
+		"messages": {
+			"fileDeleted": "Datei erfolgreich gelöscht",
+			"filesDeleted": "Dateien erfolgreich gelöscht",
+			"fileRenamed": "Datei erfolgreich umbenannt",
+			"fileUploaded": "Datei erfolgreich hochgeladen",
+			"filesUploaded": "Dateien erfolgreich hochgeladen",
+			"downloadStarted": "Download gestartet"
+		},
+		"errors": {
+			"deleteFailed": "Datei konnte nicht gelöscht werden",
+			"renameFailed": "Datei konnte nicht umbenannt werden",
+			"uploadFailed": "Datei konnte nicht hochgeladen werden",
+			"downloadFailed": "Datei konnte nicht heruntergeladen werden",
+			"loadFailed": "Dateien konnten nicht geladen werden"
+		}
 	},
 	"members": {
 		"page": {
@@ -371,7 +455,8 @@
 				"delete": "Löschen",
 				"deleteSelected": "Ausgewählte Löschen",
 				"cancel": "Abbrechen",
-				"cancelSelected": "Ausgewählte Abbrechen"
+				"cancelSelected": "Ausgewählte Abbrechen",
+				"copyLink": "Link Kopieren"
 			},
 			"status": {
 				"enabled": "Aktiviert",
@@ -399,6 +484,7 @@
 		},
 		"errors": {
 			"inviteFailed": "Einladung konnte nicht gesendet werden",
+			"linkCopyFailed": "Einladungslink konnte nicht kopiert werden",
 			"linkFailed": "Einladungslink konnte nicht generiert werden",
 			"removeFailed": "Mitglied konnte nicht entfernt werden",
 			"cancelFailed": "Einladung konnte nicht storniert werden"
@@ -568,6 +654,7 @@
 			"configure": "Konfigurieren",
 			"visitWebsite": "Website Besuchen",
 			"notifyMe": "Benachrichtigen",
+			"comingSoon": "Demnächst",
 			"createWebhook": "Webhook Erstellen",
 			"editWebhook": "Webhook Bearbeiten",
 			"deleteWebhook": "Webhook Löschen",
@@ -584,17 +671,127 @@
 			"connected": "Verbunden",
 			"disconnected": "Getrennt"
 		},
-		"categories": {
-			"fileStorage": "Dateispeicher",
-			"automation": "Automatisierung",
-			"anyTag": "Beliebiges Tag",
-			"tags": "Tags"
+		"explore": {
+			"allCategories": "Alle",
+			"available": "verfügbar",
+			"noResults": "Keine Integrationen gefunden",
+			"noResultsHint": "Versuchen Sie, Ihre Suche oder Filter anzupassen",
+			"clearFilters": "Filter zurücksetzen",
+			"categories": {
+				"cloudStorage": {
+					"name": "Cloud-Speicher",
+					"consumer": "Consumer Cloud-Speicher",
+					"enterprise": "Enterprise Cloud-Speicher",
+					"developer": "Entwickler Cloud-Speicher"
+				},
+				"productivity": {
+					"name": "Produktivität & Zusammenarbeit",
+					"messaging": "Messaging & Kommunikation",
+					"knowledge": "Notizen & Wissensdatenbanken",
+					"email": "E-Mail-Plattformen"
+				},
+				"dataAnalytics": {
+					"name": "Daten & Analysen",
+					"warehouses": "Data Warehouses",
+					"bi": "Business Intelligence",
+					"automation": "No-Code Automatisierung"
+				},
+				"ai": {
+					"name": "KI & Erweiterungen",
+					"assistants": "KI-Assistenten"
+				}
+			},
+			"items": {
+				"googleDrive": {
+					"name": "Google Drive",
+					"description": "Dokumente direkt mit Google Drive importieren und exportieren"
+				},
+				"oneDrive": {
+					"name": "OneDrive",
+					"description": "Dateien nahtlos mit Microsoft OneDrive synchronisieren"
+				},
+				"dropbox": {
+					"name": "Dropbox",
+					"description": "Dropbox für einfachen Dateiimport und -export verbinden"
+				},
+				"sharepoint": {
+					"name": "SharePoint",
+					"description": "Enterprise-Dokumentenmanagement mit SharePoint"
+				},
+				"awsS3": {
+					"name": "MinIO / S3-Kompatibel",
+					"description": "Beliebigen S3-kompatiblen Objektspeicher verbinden"
+				},
+				"slack": {
+					"name": "Slack",
+					"description": "Benachrichtigungen senden und Dateien über Slack teilen"
+				},
+				"teams": {
+					"name": "Microsoft Teams",
+					"description": "Mit Microsoft Teams Integration zusammenarbeiten"
+				},
+				"notion": {
+					"name": "Notion",
+					"description": "Dokumente und Daten mit Notion Workspaces synchronisieren"
+				},
+				"zapier": {
+					"name": "Zapier",
+					"description": "Workflows mit Zapiers No-Code-Plattform automatisieren"
+				},
+				"make": {
+					"name": "Make",
+					"description": "Komplexe Automatisierungsszenarien mit Make erstellen"
+				},
+				"n8n": {
+					"name": "n8n",
+					"description": "Benutzerdefinierte Workflows mit n8ns visuellem Editor erstellen"
+				},
+				"chatgpt": {
+					"name": "OpenAI ChatGPT",
+					"description": "Verarbeitung mit OpenAI ChatGPT verbessern"
+				},
+				"claude": {
+					"name": "Anthropic Claude",
+					"description": "Anthropic Claude für intelligente Analyse nutzen"
+				}
+			},
+			"filters": {
+				"allStatus": "Alle Status",
+				"availableOnly": "Nur Verfügbar",
+				"unavailableOnly": "Nur Nicht Verfügbar"
+			},
+			"sorting": {
+				"label": "Sortieren",
+				"nameAsc": "Name (A-Z)",
+				"nameDesc": "Name (Z-A)",
+				"popularity": "Beliebteste"
+			},
+			"badges": {
+				"new": "Neu",
+				"popular": "Beliebt"
+			},
+			"tags": {
+				"fileSync": "Dateisync",
+				"import": "Import",
+				"export": "Export",
+				"notifications": "Benachrichtigungen",
+				"messaging": "Messaging",
+				"collaboration": "Zusammenarbeit",
+				"notes": "Notizen",
+				"database": "Datenbank",
+				"analytics": "Analysen",
+				"automation": "Automatisierung",
+				"noCode": "No-Code",
+				"ai": "KI",
+				"enterprise": "Enterprise",
+				"developer": "Entwickler"
+			}
 		},
 		"table": {
 			"headers": {
 				"name": "Name",
 				"url": "URL",
-				"status": "Status",
+				"enabled": "Aktiviert",
 				"events": "Ereignisse",
 				"created": "Erstellt",
 				"lastDelivery": "Letzte Zustellung",
@@ -620,12 +817,9 @@
 				"urlLabel": "Endpunkt-URL",
 				"urlPlaceholder": "https://beispiel.com/webhook",
 				"urlError": "Bitte geben Sie eine gültige URL ein (http:// oder https://)",
-				"activeLabel": "Aktiv",
-				"activeDescription": "Diesen Webhook aktivieren, um Ereignisse zu empfangen",
-				"eventsLabel": "Zu abonnierende Ereignisse",
-				"eventsDescription": "Wählen Sie aus, welche Ereignisse diesen Webhook auslösen sollen",
+				"enabledLabel": "Aktiviert",
+				"disabledLabel": "Deaktiviert",
 				"headersLabel": "Benutzerdefinierte Header",
-				"headersDescription": "Fügen Sie benutzerdefinierte HTTP-Header hinzu, die in Webhook-Anfragen enthalten sein sollen",
 				"addHeader": "Header Hinzufügen",
 				"headerKeyPlaceholder": "Header-Name",
 				"headerValuePlaceholder": "Header-Wert",
@@ -719,7 +913,8 @@
 			"webhookTestSent": "Testereignis an Webhook gesendet",
 			"webhookTestSuccess": "Webhook-Test erfolgreich",
 			"webhookTestSuccessDescription": "Antwort {statusCode} in {responseTimeMs}ms erhalten",
-			"webhookTestFailed": "Webhook-Test fehlgeschlagen"
+			"webhookTestFailed": "Webhook-Test fehlgeschlagen",
+			"webhookTestFailedDescription": "Antwort {statusCode} erhalten"
 		},
 		"runs": {
 			"title": "Integrationsausführungen",

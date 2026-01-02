@@ -39,8 +39,8 @@ async function handleLogin(): Promise<void> {
 
 		// Redirect to dashboard
 		navigateTo("/");
-	} catch (error) {
-		console.error("Login error:", error);
+	} catch {
+		// Error is handled by the mutation
 	}
 }
 
@@ -55,7 +55,6 @@ function togglePasswordVisibility(): void {
  * Handle Google login
  */
 async function handleGoogleLogin(): Promise<void> {
-	console.log("Google login");
 	// TODO: Implement Google OAuth
 }
 
@@ -63,7 +62,6 @@ async function handleGoogleLogin(): Promise<void> {
  * Handle Microsoft login
  */
 async function handleMicrosoftLogin(): Promise<void> {
-	console.log("Microsoft login");
 	// TODO: Implement Microsoft OAuth
 }
 </script>

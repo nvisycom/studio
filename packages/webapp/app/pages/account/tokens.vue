@@ -108,8 +108,8 @@ async function createToken() {
 		// Reset form
 		tokenName.value = "";
 		tokenExpiration.value = "in90Days";
-	} catch (err) {
-		console.error("Failed to create token:", err);
+	} catch {
+		// Error is handled by the mutation
 	}
 }
 
@@ -131,8 +131,8 @@ async function deleteToken() {
 		await revokeTokenAsync(tokenToDelete.value.id);
 		isDeleteDialogOpen.value = false;
 		tokenToDelete.value = null;
-	} catch (err) {
-		console.error("Failed to revoke token:", err);
+	} catch {
+		// Error is handled by the mutation
 	}
 }
 
@@ -150,8 +150,8 @@ async function deleteSelectedTokens() {
 		);
 		selectedTokens.value = new Set();
 		isDeleteMultipleDialogOpen.value = false;
-	} catch (err) {
-		console.error("Failed to revoke tokens:", err);
+	} catch {
+		// Error is handled by the mutation
 	}
 }
 
@@ -194,8 +194,8 @@ async function renameToken(newName: string) {
 		});
 		isRenameDialogOpen.value = false;
 		tokenToRename.value = null;
-	} catch (err) {
-		console.error("Failed to rename token:", err);
+	} catch {
+		// Error is handled by the mutation
 	}
 }
 </script>

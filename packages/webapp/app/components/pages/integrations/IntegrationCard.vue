@@ -1,29 +1,22 @@
 <script setup lang="ts">
-const { t } = useI18n();
 import { ExternalLink } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+
+const { t } = useI18n();
 
 /**
  * Integration data structure
  */
 interface Integration {
-	id: number;
+	id: string | number;
 	name: string;
 	description: string;
-	icon: any;
-	color: string;
-	status: "available" | "coming-soon";
-	category: string;
-	tags: string[];
+	icon: string;
+	status: "available" | "unavailable";
+	tags?: string[];
+	isNew?: boolean;
+	isPopular?: boolean;
 	isExternal?: boolean;
 	externalUrl?: string;
 }
@@ -39,61 +32,96 @@ interface Props {
  * Component emits interface
  */
 interface Emits {
-	(e: "connect", id: number): void;
-	(e: "notifyMe", id: number): void;
+	(e: "connect", id: string | number): void;
+	(e: "notifyMe", id: string | number): void;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 const emit = defineEmits<Emits>();
 </script>
 
 <template>
   <Card
-    class="overflow-hidden border-neutral-200 dark:border-neutral-800 flex flex-col"
+    :class="[
+      'overflow-hidden border-neutral-200 dark:border-neutral-800 flex flex-col transition-all duration-200',
+      integration.status === 'unavailable'
+        ? 'opacity-50 hover:opacity-70'
+        : 'hover:border-neutral-300 dark:hover:border-neutral-700 hover:shadow-md hover:scale-[1.02]',
+    ]"
   >
-    <CardHeader>
-      <div class="flex items-start justify-between">
-        <div class="flex items-center gap-3">
-          <div
-            :class="[
-              'w-12 h-12 rounded-lg flex items-center justify-center',
-              integration.color,
-            ]"
-          >
-            <component :is="integration.icon" :size="24" class="text-white" />
-          </div>
-          <div>
-            <CardTitle class="text-lg font-normal">{{
-              integration.name
-            }}</CardTitle>
-            <p
-              class="text-xs font-light text-neutral-600 dark:text-neutral-400 mt-1"
-            >
-              {{ integration.category }}
-            </p>
-          </div>
-        </div>
-        <Badge
-          v-if="integration.status === 'coming-soon'"
-          variant="outline"
-          class="bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400"
+    <CardHeader class="pb-2">
+      <!-- Icon and Name Row -->
+      <div class="flex items-center gap-3">
+        <div
+          :class="[
+            'w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-neutral-100 dark:bg-neutral-800',
+            integration.status === 'unavailable' ? 'grayscale' : '',
+          ]"
         >
-          {{ t("integrations.status.comingSoon") }}
-        </Badge>
+          <img
+            :src="integration.icon"
+            :alt="integration.name"
+            class="w-6 h-6 object-contain"
+          />
+        </div>
+        <div class="flex-1 min-w-0">
+          <CardTitle class="text-base font-normal truncate">
+            {{ integration.name }}
+          </CardTitle>
+        </div>
+      </div>
+
+      <!-- Tags Row (including New and Popular) -->
+      <div class="flex flex-wrap gap-1 mt-2">
+        <!-- New badge -->
+        <span
+          v-if="integration.isNew"
+          class="text-[10px] text-white dark:text-neutral-900 bg-neutral-900 dark:bg-white px-1.5 py-0.5 rounded"
+        >
+          {{ t("integrations.explore.badges.new") }}
+        </span>
+        <!-- Popular badge -->
+        <span
+          v-if="integration.isPopular && integration.status === 'available'"
+          class="text-[10px] text-white dark:text-neutral-900 bg-neutral-900 dark:bg-white px-1.5 py-0.5 rounded"
+        >
+          {{ t("integrations.explore.badges.popular") }}
+        </span>
+        <!-- Regular tags -->
+        <template v-if="integration.tags && integration.tags.length > 0">
+          <span
+            v-for="tag in integration.tags.slice(0, 3)"
+            :key="tag"
+            class="text-[10px] text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded"
+          >
+            {{ tag }}
+          </span>
+          <span
+            v-if="integration.tags.length > 3"
+            class="text-[10px] text-neutral-400 dark:text-neutral-500 px-1 py-0.5"
+          >
+            +{{ integration.tags.length - 3 }}
+          </span>
+        </template>
       </div>
     </CardHeader>
-    <CardContent class="flex-1">
-      <CardDescription>
-        {{ integration.description }}
-      </CardDescription>
-    </CardContent>
-    <CardFooter class="pt-4">
+
+    <CardFooter class="pt-2 mt-auto">
+      <!-- Unavailable integration button -->
+      <Button
+        v-if="integration.status === 'unavailable'"
+        variant="outline"
+        class="w-full font-light"
+        disabled
+      >
+        {{ t("integrations.actions.comingSoon") }}
+      </Button>
       <!-- External integration button -->
       <Button
-        v-if="integration.status === 'available' && integration.isExternal"
+        v-else-if="integration.status === 'available' && integration.isExternal"
         as-child
         variant="outline"
-        class="w-full"
+        class="w-full font-light"
       >
         <a
           :href="integration.externalUrl"
@@ -102,7 +130,7 @@ const emit = defineEmits<Emits>();
           class="flex items-center justify-center gap-2"
         >
           {{ t("integrations.actions.visitWebsite") }}
-          <ExternalLink :size="16" />
+          <ExternalLink :size="14" />
         </a>
       </Button>
       <!-- Internal integration button -->
@@ -110,18 +138,9 @@ const emit = defineEmits<Emits>();
         v-else-if="integration.status === 'available'"
         @click="emit('connect', integration.id)"
         variant="outline"
-        class="w-full"
+        class="w-full font-light"
       >
         {{ t("integrations.actions.connect") }}
-      </Button>
-      <!-- Coming soon button -->
-      <Button
-        v-else
-        variant="outline"
-        @click="emit('notifyMe', integration.id)"
-        class="w-full"
-      >
-        {{ t("integrations.actions.notifyMe") }}
       </Button>
     </CardFooter>
   </Card>

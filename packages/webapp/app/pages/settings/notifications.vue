@@ -64,7 +64,6 @@ async function toggleEmailNotifications(value: boolean) {
 	} catch (err) {
 		// Revert on error
 		notifyViaEmail.value = !value;
-		console.error("Failed to update email notifications:", err);
 		toast.error(t("settings.notifications.errors.saveFailed"), {
 			description: getErrorMessage(err, t("common.errors.tryAgain")),
 		});
@@ -238,7 +237,6 @@ async function saveEventSettings() {
 		});
 		toast.success(t("settings.notifications.messages.saved"));
 	} catch (err) {
-		console.error("Failed to save notification settings:", err);
 		toast.error(t("settings.notifications.errors.saveFailed"), {
 			description: getErrorMessage(err, t("common.errors.tryAgain")),
 		});

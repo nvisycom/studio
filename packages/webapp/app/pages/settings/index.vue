@@ -156,7 +156,6 @@ async function saveWorkspaceInfo() {
 		});
 		toast.success(t("settings.workspace.messages.saved"));
 	} catch (err) {
-		console.error("Failed to save workspace settings:", err);
 		toast.error(t("settings.workspace.errors.saveFailed"), {
 			description: getErrorMessage(err, t("common.errors.tryAgain")),
 		});
@@ -178,7 +177,6 @@ async function saveWorkspaceOptions() {
 		});
 		toast.success(t("settings.workspace.messages.optionsSaved"));
 	} catch (err) {
-		console.error("Failed to save workspace options:", err);
 		toast.error(t("settings.workspace.errors.saveFailed"), {
 			description: getErrorMessage(err, t("common.errors.tryAgain")),
 		});
@@ -193,7 +191,6 @@ function uploadAvatar() {
 		const file = (e.target as HTMLInputElement)?.files?.[0];
 		if (file) {
 			// TODO: Implement avatar upload when API supports it
-			console.log("Uploading avatar:", file.name);
 			toast.info(t("settings.workspace.messages.avatarNotSupported"));
 		}
 	};
@@ -205,9 +202,8 @@ async function handleLeaveWorkspace() {
 		await leaveAsync();
 		isLeaveDialogOpen.value = false;
 		toast.success(t("settings.workspace.messages.left"));
-		router.push("/overview");
+		router.push("/");
 	} catch (err) {
-		console.error("Failed to leave workspace:", err);
 		toast.error(t("settings.workspace.errors.leaveFailed"), {
 			description: getErrorMessage(err, t("common.errors.tryAgain")),
 		});
@@ -222,9 +218,8 @@ async function handleDeleteWorkspace() {
 		isDeleteDialogOpen.value = false;
 		deleteConfirmName.value = "";
 		toast.success(t("settings.workspace.messages.deleted"));
-		router.push("/overview");
+		router.push("/");
 	} catch (err) {
-		console.error("Failed to delete workspace:", err);
 		toast.error(t("settings.workspace.errors.deleteFailed"), {
 			description: getErrorMessage(err, t("common.errors.tryAgain")),
 		});

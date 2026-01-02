@@ -23,14 +23,16 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import {
-	WebhooksTable,
 	ConfigureIntegrationDialog,
 	DisconnectIntegrationDialog,
+	IntegrationsTable,
+} from "~/components/pages/integrations";
+import {
+	WebhooksTable,
 	CreateWebhookDialog,
 	DeleteWebhookDialog,
 	EditWebhookDialog,
-	IntegrationsTable,
-} from "~/components/pages/integrations";
+} from "~/components/pages/webhooks";
 
 const { t } = useI18n();
 
@@ -93,7 +95,6 @@ async function handleUpdateIntegration(updates: UpdateIntegration) {
 		isConfigureIntegrationDialogOpen.value = false;
 		toast.success(t("integrations.toast.integrationUpdated"));
 	} catch (error) {
-		console.error("Failed to update integration:", error);
 		toast.error(t("integrations.toast.integrationUpdateFailed"), {
 			description: error instanceof Error ? error.message : undefined,
 		});
@@ -106,7 +107,6 @@ async function handleDisconnectIntegration(integrationId: string) {
 		isDisconnectIntegrationDialogOpen.value = false;
 		toast.success(t("integrations.toast.integrationDisconnected"));
 	} catch (error) {
-		console.error("Failed to disconnect integration:", error);
 		toast.error(t("integrations.toast.integrationDisconnectFailed"), {
 			description: error instanceof Error ? error.message : undefined,
 		});
@@ -142,7 +142,6 @@ async function handleCreateWebhook(data: {
 		isCreateDialogOpen.value = false;
 		toast.success(t("integrations.toast.webhookCreated"));
 	} catch (error) {
-		console.error("Failed to create webhook:", error);
 		toast.error(t("integrations.toast.webhookCreateFailed"), {
 			description: error instanceof Error ? error.message : undefined,
 		});
@@ -172,7 +171,6 @@ async function handleUpdateWebhook(data: {
 		isEditDialogOpen.value = false;
 		toast.success(t("integrations.toast.webhookUpdated"));
 	} catch (error) {
-		console.error("Failed to update webhook:", error);
 		toast.error(t("integrations.toast.webhookUpdateFailed"), {
 			description: error instanceof Error ? error.message : undefined,
 		});
@@ -185,7 +183,6 @@ async function handleDeleteWebhook(webhookId: string) {
 		isDeleteDialogOpen.value = false;
 		toast.success(t("integrations.toast.webhookDeleted"));
 	} catch (error) {
-		console.error("Failed to delete webhook:", error);
 		toast.error(t("integrations.toast.webhookDeleteFailed"), {
 			description: error instanceof Error ? error.message : undefined,
 		});
@@ -222,7 +219,6 @@ async function toggleWebhookStatus(webhookId: string, active: boolean) {
 				: t("integrations.toast.webhookDeactivated"),
 		);
 	} catch (error) {
-		console.error("Failed to toggle webhook status:", error);
 		toast.error(t("integrations.toast.webhookUpdateFailed"), {
 			description: error instanceof Error ? error.message : undefined,
 		});
@@ -235,7 +231,9 @@ async function testWebhook(webhookId: string) {
 
 	try {
 		const result = await testWebhookAsync(webhookId);
-		if (result.success) {
+		const isSuccess = result.statusCode >= 200 && result.statusCode < 300;
+
+		if (isSuccess) {
 			toast.success(t("integrations.toast.webhookTestSuccess"), {
 				description: t("integrations.toast.webhookTestSuccessDescription", {
 					statusCode: result.statusCode,
@@ -244,11 +242,12 @@ async function testWebhook(webhookId: string) {
 			});
 		} else {
 			toast.error(t("integrations.toast.webhookTestFailed"), {
-				description: result.errorMessage || undefined,
+				description: t("integrations.toast.webhookTestFailedDescription", {
+					statusCode: result.statusCode,
+				}),
 			});
 		}
 	} catch (error) {
-		console.error("Failed to test webhook:", error);
 		toast.error(t("integrations.toast.webhookTestFailed"), {
 			description: error instanceof Error ? error.message : undefined,
 		});

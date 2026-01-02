@@ -29,14 +29,12 @@ async function handleForgotPassword(): Promise<void> {
 
 	try {
 		// TODO: Implement actual forgot password logic
-		console.log("Sending reset email to:", email.value);
-
 		// Simulate API call
 		await new Promise((resolve) => setTimeout(resolve, 1000));
 
 		isSubmitted.value = true;
-	} catch (error) {
-		console.error("Forgot password error:", error);
+	} catch {
+		// TODO: Handle error
 	} finally {
 		isLoading.value = false;
 	}

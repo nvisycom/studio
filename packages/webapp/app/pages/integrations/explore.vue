@@ -1,170 +1,358 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-const { t } = useI18n();
 import {
 	Search,
-	ChevronDown,
-	Workflow,
-	HardDrive,
 	ArrowLeft,
+	Cloud,
+	MessageSquare,
+	Database,
+	Bot,
+	Filter,
+	ArrowUpDown,
+	Puzzle,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-	DropdownMenu,
-	DropdownMenuCheckboxItem,
-	DropdownMenuContent,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { IntegrationCard } from "~/components/pages/integrations";
+
+const { t } = useI18n();
 
 definePageMeta({
 	pageCategory: "Integrations",
 });
 
 /**
+ * Tag keys that match the i18n keys
+ */
+type TagKey =
+	| "fileSync"
+	| "import"
+	| "export"
+	| "notifications"
+	| "messaging"
+	| "collaboration"
+	| "notes"
+	| "database"
+	| "analytics"
+	| "automation"
+	| "noCode"
+	| "ai"
+	| "enterprise"
+	| "developer";
+
+/**
  * Integration data structure
  */
 interface Integration {
-	id: number;
-	name: string;
-	description: string;
-	icon: any;
-	color: string;
-	status: "available" | "coming-soon";
+	id: string;
+	nameKey: string;
+	descriptionKey: string;
+	icon: string;
+	status: "available" | "unavailable";
 	category: string;
-	tags: string[];
+	tags: TagKey[];
+	popularity: number;
+	isNew?: boolean;
 	isExternal?: boolean;
 	externalUrl?: string;
 }
 
+interface Category {
+	key: string;
+	nameKey: string;
+	icon: any;
+}
+
 const searchQuery = ref("");
+const selectedCategories = ref<Set<string>>(new Set());
+const statusFilter = ref<"all" | "available" | "unavailable">("all");
+const sortBy = ref<"popularity" | "nameAsc" | "nameDesc">("popularity");
 
-// Tag filters
-const selectedTags = ref({
-	fileStorage: false,
-	automation: false,
-});
+// Category definitions for filters
+const categories = ref<Category[]>([
+	{
+		key: "cloud-storage",
+		nameKey: "integrations.explore.categories.cloudStorage.name",
+		icon: Cloud,
+	},
+	{
+		key: "productivity",
+		nameKey: "integrations.explore.categories.productivity.name",
+		icon: MessageSquare,
+	},
+	{
+		key: "data-analytics",
+		nameKey: "integrations.explore.categories.dataAnalytics.name",
+		icon: Database,
+	},
+	{
+		key: "ai-enhancements",
+		nameKey: "integrations.explore.categories.ai.name",
+		icon: Bot,
+	},
+]);
 
+// All integrations as a flat list (only those with brand icons)
 const integrations = ref<Integration[]>([
-	// File Storage
+	// Cloud Storage
 	{
-		id: 1,
-		name: "Google Drive",
-		description:
-			"Import and export documents directly to and from Google Drive",
-		icon: HardDrive,
-		color: "bg-blue-600",
+		id: "google-drive",
+		nameKey: "integrations.explore.items.googleDrive.name",
+		descriptionKey: "integrations.explore.items.googleDrive.description",
+		icon: "/brand/google-drive.svg",
 		status: "available",
-		category: "File Storage",
-		tags: ["fileStorage"],
+		category: "cloud-storage",
+		tags: ["fileSync", "import", "export"],
+		popularity: 95,
 	},
 	{
-		id: 2,
-		name: "Microsoft OneDrive",
-		description:
-			"Seamlessly import and export files with Microsoft OneDrive integration",
-		icon: HardDrive,
-		color: "bg-sky-600",
+		id: "onedrive",
+		nameKey: "integrations.explore.items.oneDrive.name",
+		descriptionKey: "integrations.explore.items.oneDrive.description",
+		icon: "/brand/microsoft-onedrive.svg",
 		status: "available",
-		category: "File Storage",
-		tags: ["fileStorage"],
+		category: "cloud-storage",
+		tags: ["fileSync", "import", "export", "enterprise"],
+		popularity: 85,
 	},
 	{
-		id: 3,
-		name: "Dropbox",
-		description: "Connect Dropbox for easy file import and export workflows",
-		icon: HardDrive,
-		color: "bg-indigo-600",
-		status: "available",
-		category: "File Storage",
-		tags: ["fileStorage"],
+		id: "dropbox",
+		nameKey: "integrations.explore.items.dropbox.name",
+		descriptionKey: "integrations.explore.items.dropbox.description",
+		icon: "/brand/dropbox.svg",
+		status: "unavailable",
+		category: "cloud-storage",
+		tags: ["fileSync", "import", "export"],
+		popularity: 70,
 	},
-	// Automation
 	{
-		id: 4,
-		name: "Zapier",
-		description: "Automate redaction workflows with Zapier's no-code platform",
-		icon: Workflow,
-		color: "bg-orange-600",
+		id: "aws-s3",
+		nameKey: "integrations.explore.items.awsS3.name",
+		descriptionKey: "integrations.explore.items.awsS3.description",
+		icon: "/brand/minio.svg",
 		status: "available",
-		category: "Automation",
-		tags: ["automation"],
+		category: "cloud-storage",
+		tags: ["fileSync", "developer", "enterprise"],
+		popularity: 80,
+	},
+	// Productivity
+	{
+		id: "slack",
+		nameKey: "integrations.explore.items.slack.name",
+		descriptionKey: "integrations.explore.items.slack.description",
+		icon: "/brand/slack.svg",
+		status: "unavailable",
+		category: "productivity",
+		tags: ["notifications", "messaging", "collaboration"],
+		popularity: 85,
+	},
+	{
+		id: "teams",
+		nameKey: "integrations.explore.items.teams.name",
+		descriptionKey: "integrations.explore.items.teams.description",
+		icon: "/brand/microsoft-teams.svg",
+		status: "unavailable",
+		category: "productivity",
+		tags: ["notifications", "messaging", "collaboration", "enterprise"],
+		popularity: 75,
+	},
+	{
+		id: "notion",
+		nameKey: "integrations.explore.items.notion.name",
+		descriptionKey: "integrations.explore.items.notion.description",
+		icon: "/brand/notion.svg",
+		status: "available",
+		category: "productivity",
+		tags: ["notes", "collaboration", "export"],
+		popularity: 85,
+		isNew: true,
+	},
+	// Data & Analytics
+	{
+		id: "zapier",
+		nameKey: "integrations.explore.items.zapier.name",
+		descriptionKey: "integrations.explore.items.zapier.description",
+		icon: "/brand/zapier.svg",
+		status: "available",
+		category: "data-analytics",
+		tags: ["automation", "noCode"],
+		popularity: 92,
 		isExternal: true,
 		externalUrl: "https://zapier.com",
 	},
 	{
-		id: 5,
-		name: "Make",
-		description:
-			"Build complex automation scenarios with Make (formerly Integromat)",
-		icon: Workflow,
-		color: "bg-fuchsia-600",
-		status: "available",
-		category: "Automation",
-		tags: ["automation"],
+		id: "make",
+		nameKey: "integrations.explore.items.make.name",
+		descriptionKey: "integrations.explore.items.make.description",
+		icon: "/brand/make.svg",
+		status: "unavailable",
+		category: "data-analytics",
+		tags: ["automation", "noCode"],
+		popularity: 68,
 		isExternal: true,
 		externalUrl: "https://www.make.com",
 	},
 	{
-		id: 6,
-		name: "n8n",
-		description: "Create custom automation workflows with n8n's visual editor",
-		icon: Workflow,
-		color: "bg-pink-600",
-		status: "available",
-		category: "Automation",
-		tags: ["automation"],
+		id: "n8n",
+		nameKey: "integrations.explore.items.n8n.name",
+		descriptionKey: "integrations.explore.items.n8n.description",
+		icon: "/brand/n8n.svg",
+		status: "unavailable",
+		category: "data-analytics",
+		tags: ["automation", "developer"],
+		popularity: 58,
 		isExternal: true,
 		externalUrl: "https://n8n.io",
 	},
+	// AI & Enhancements
+	{
+		id: "chatgpt",
+		nameKey: "integrations.explore.items.chatgpt.name",
+		descriptionKey: "integrations.explore.items.chatgpt.description",
+		icon: "/brand/openai.svg",
+		status: "unavailable",
+		category: "ai-enhancements",
+		tags: ["ai", "automation"],
+		popularity: 85,
+	},
+	{
+		id: "claude",
+		nameKey: "integrations.explore.items.claude.name",
+		descriptionKey: "integrations.explore.items.claude.description",
+		icon: "/brand/anthropic.svg",
+		status: "unavailable",
+		category: "ai-enhancements",
+		tags: ["ai", "automation"],
+		popularity: 85,
+	},
 ]);
 
-const filteredIntegrations = computed(() => {
-	let filtered = integrations.value;
-
-	// Apply search filter
-	if (searchQuery.value.trim()) {
-		const query = searchQuery.value.toLowerCase();
-		filtered = filtered.filter(
-			(integration) =>
-				integration.name.toLowerCase().includes(query) ||
-				integration.description.toLowerCase().includes(query) ||
-				integration.category.toLowerCase().includes(query),
-		);
-	}
-
-	// Apply tag filters
-	const activeTags = Object.entries(selectedTags.value)
-		.filter(([_, isSelected]) => isSelected)
-		.map(([tag, _]) => tag);
-
-	if (activeTags.length > 0) {
-		filtered = filtered.filter((integration) =>
-			integration.tags.some((tag) => activeTags.includes(tag)),
-		);
-	}
-
-	return filtered;
-});
-
-const activeTagCount = computed(() => {
-	return Object.values(selectedTags.value).filter((val) => val).length;
-});
-
-function connectIntegration(id: number) {
-	console.log("Connect integration:", id);
+// Get localized name for an integration
+function getIntegrationName(integration: Integration): string {
+	return t(integration.nameKey);
 }
 
-function notifyMe(id: number) {
-	console.log("Notify about integration:", id);
+// Get localized description for an integration
+function getIntegrationDescription(integration: Integration): string {
+	return t(integration.descriptionKey);
+}
+
+// Get localized tag name
+function getTagName(tagKey: TagKey): string {
+	return t(`integrations.explore.tags.${tagKey}`);
+}
+
+// Filter and sort integrations
+const filteredIntegrations = computed(() => {
+	const query = searchQuery.value.toLowerCase().trim();
+
+	let filtered = integrations.value.filter((integration) => {
+		// Category filter (multi-select)
+		if (
+			selectedCategories.value.size > 0 &&
+			!selectedCategories.value.has(integration.category)
+		) {
+			return false;
+		}
+
+		// Status filter
+		if (
+			statusFilter.value === "available" &&
+			integration.status !== "available"
+		) {
+			return false;
+		}
+		if (
+			statusFilter.value === "unavailable" &&
+			integration.status !== "unavailable"
+		) {
+			return false;
+		}
+
+		// Search filter
+		if (query) {
+			const name = getIntegrationName(integration).toLowerCase();
+			const description = getIntegrationDescription(integration).toLowerCase();
+			const tagNames = integration.tags
+				.map((tag) => getTagName(tag).toLowerCase())
+				.join(" ");
+			return (
+				name.includes(query) ||
+				description.includes(query) ||
+				tagNames.includes(query)
+			);
+		}
+
+		return true;
+	});
+
+	// Sort integrations
+	return filtered.sort((a, b) => {
+		// Always put available first
+		if (a.status !== b.status) {
+			return a.status === "available" ? -1 : 1;
+		}
+
+		switch (sortBy.value) {
+			case "nameAsc":
+				return getIntegrationName(a).localeCompare(getIntegrationName(b));
+			case "nameDesc":
+				return getIntegrationName(b).localeCompare(getIntegrationName(a));
+			case "popularity":
+			default:
+				return b.popularity - a.popularity;
+		}
+	});
+});
+
+// Count integrations per category
+function getCategoryCount(categoryKey: string): number {
+	return integrations.value.filter((i) => i.category === categoryKey).length;
+}
+
+// Toggle category selection (multi-select)
+function toggleCategory(key: string) {
+	const newSet = new Set(selectedCategories.value);
+	if (newSet.has(key)) {
+		newSet.delete(key);
+	} else {
+		newSet.add(key);
+	}
+	selectedCategories.value = newSet;
+}
+
+// Clear all category filters
+function clearCategoryFilters() {
+	selectedCategories.value = new Set();
+}
+
+// Clear all filters
+function clearAllFilters() {
+	searchQuery.value = "";
+	selectedCategories.value = new Set();
+	statusFilter.value = "all";
+}
+
+function connectIntegration(_id: string) {
+	// TODO: Implement integration connection
+}
+
+function notifyMe(_id: string) {
+	// TODO: Implement notify me functionality
 }
 </script>
 
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
-    <div class="max-w-4xl mx-auto w-full">
-      <!-- Search and Filters -->
+    <div class="max-w-6xl mx-auto w-full">
+      <!-- Header with Back Button and Search -->
       <div
         class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center mb-6"
       >
@@ -187,49 +375,125 @@ function notifyMe(id: number) {
           />
         </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button
-              variant="outline"
-              class="justify-between min-w-[160px] border-neutral-300 dark:border-neutral-700 font-light"
-            >
-              <span>
-                {{
-                  activeTagCount > 0
-                    ? t("integrations.categories.tags")
-                    : t("integrations.categories.anyTag")
-                }}
-              </span>
-              <div class="flex items-center gap-2">
-                <span
-                  v-if="activeTagCount > 0"
-                  class="px-1.5 py-0.5 text-xs rounded bg-neutral-900 dark:bg-white text-white dark:text-neutral-900"
-                >
-                  {{ activeTagCount }}
-                </span>
-                <ChevronDown :size="16" />
-              </div>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent class="w-56">
-            <DropdownMenuCheckboxItem
-              v-model:checked="selectedTags.fileStorage"
-            >
-              {{ t("integrations.categories.fileStorage") }}
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem v-model:checked="selectedTags.automation">
-              {{ t("integrations.categories.automation") }}
-            </DropdownMenuCheckboxItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Select v-model="statusFilter">
+          <SelectTrigger class="w-[160px] text-sm font-light">
+            <Filter :size="14" class="mr-2 text-neutral-400" />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all" class="text-sm font-light">
+              {{ t("integrations.explore.filters.allStatus") }}
+            </SelectItem>
+            <SelectItem value="available" class="text-sm font-light">
+              {{ t("integrations.explore.filters.availableOnly") }}
+            </SelectItem>
+            <SelectItem value="unavailable" class="text-sm font-light">
+              {{ t("integrations.explore.filters.unavailableOnly") }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select v-model="sortBy">
+          <SelectTrigger class="w-[180px] text-sm font-light">
+            <ArrowUpDown :size="14" class="mr-2 text-neutral-400" />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="popularity" class="text-sm font-light">
+              {{ t("integrations.explore.sorting.popularity") }}
+            </SelectItem>
+            <SelectItem value="nameAsc" class="text-sm font-light">
+              {{ t("integrations.explore.sorting.nameAsc") }}
+            </SelectItem>
+            <SelectItem value="nameDesc" class="text-sm font-light">
+              {{ t("integrations.explore.sorting.nameDesc") }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      <!-- Integrations Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Category Pills (Multi-select) -->
+      <div class="flex flex-wrap gap-2 mb-8">
+        <Button
+          variant="outline"
+          size="sm"
+          :class="[
+            'font-light transition-colors',
+            selectedCategories.size === 0
+              ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border-neutral-900 dark:border-white'
+              : '',
+          ]"
+          @click="clearCategoryFilters"
+        >
+          {{ t("integrations.explore.allCategories") }}
+          <span class="ml-2 text-xs opacity-60">{{ integrations.length }}</span>
+        </Button>
+        <Button
+          v-for="category in categories"
+          :key="category.key"
+          variant="outline"
+          size="sm"
+          :class="[
+            'font-light transition-colors',
+            selectedCategories.has(category.key)
+              ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border-neutral-900 dark:border-white'
+              : '',
+          ]"
+          @click="toggleCategory(category.key)"
+        >
+          <component :is="category.icon" :size="14" class="mr-1.5" />
+          {{ t(category.nameKey) }}
+          <span class="ml-2 text-xs opacity-60">{{
+            getCategoryCount(category.key)
+          }}</span>
+        </Button>
+      </div>
+
+      <!-- No Results -->
+      <div v-if="filteredIntegrations.length === 0" class="py-12 text-center">
+        <div
+          class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
+        >
+          <Puzzle class="h-6 w-6 text-neutral-400 dark:text-neutral-500" />
+        </div>
+        <p class="font-normal text-neutral-700 dark:text-neutral-300 mb-1">
+          {{ t("integrations.explore.noResults") }}
+        </p>
+        <p
+          class="font-light text-sm text-neutral-500 dark:text-neutral-400 mb-4"
+        >
+          {{ t("integrations.explore.noResultsHint") }}
+        </p>
+        <Button
+          v-if="
+            searchQuery || selectedCategories.size > 0 || statusFilter !== 'all'
+          "
+          variant="outline"
+          size="sm"
+          class="font-light"
+          @click="clearAllFilters"
+        >
+          {{ t("integrations.explore.clearFilters") }}
+        </Button>
+      </div>
+
+      <!-- Integration Cards Grid -->
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         <IntegrationCard
           v-for="integration in filteredIntegrations"
           :key="integration.id"
-          :integration="integration"
+          :integration="{
+            id: integration.id,
+            name: getIntegrationName(integration),
+            description: getIntegrationDescription(integration),
+            icon: integration.icon,
+            status: integration.status,
+            tags: integration.tags.map((tag) => getTagName(tag)),
+            isNew: integration.isNew,
+            isPopular: integration.popularity >= 90,
+            isExternal: integration.isExternal,
+            externalUrl: integration.externalUrl,
+          }"
           @connect="connectIntegration"
           @notify-me="notifyMe"
         />

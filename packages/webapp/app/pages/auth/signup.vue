@@ -40,7 +40,6 @@ const termsError = ref(false);
  * Handle signup form submission
  */
 async function handleSignup(): Promise<void> {
-	console.log("agreeToTerms:", agreeToTerms.value, typeof agreeToTerms.value);
 	if (agreeToTerms.value !== true) {
 		termsError.value = true;
 		return;
@@ -57,8 +56,8 @@ async function handleSignup(): Promise<void> {
 
 		// Redirect to dashboard or onboarding
 		navigateTo("/");
-	} catch (error) {
-		console.error("Signup error:", error);
+	} catch {
+		// Error is handled by the mutation
 	}
 }
 
@@ -73,7 +72,6 @@ function togglePasswordVisibility(): void {
  * Handle Google signup
  */
 async function handleGoogleSignup(): Promise<void> {
-	console.log("Google signup");
 	// TODO: Implement Google OAuth
 }
 
@@ -81,7 +79,6 @@ async function handleGoogleSignup(): Promise<void> {
  * Handle Microsoft signup
  */
 async function handleMicrosoftSignup(): Promise<void> {
-	console.log("Microsoft signup");
 	// TODO: Implement Microsoft OAuth
 }
 </script>

@@ -93,24 +93,24 @@ function badResponse(id: string) {
 	}
 }
 
-function tryAgain(id: string) {
-	console.log("Try again:", id);
+function tryAgain(_id: string) {
+	// TODO: Implement retry
 }
 
 function attachFile() {
-	console.log("Attach file");
+	// TODO: Implement attach file
 }
 
 function uploadDocument() {
-	console.log("Upload document");
+	// TODO: Implement upload document
 }
 
 function generateResponse() {
-	console.log("Generate response");
+	// TODO: Implement generate response
 }
 
 function summarize() {
-	console.log("Summarize");
+	// TODO: Implement summarize
 }
 </script>
 

@@ -37,9 +37,7 @@ async function copyToken() {
 		setTimeout(() => {
 			copied.value = false;
 		}, 2000);
-	} catch (err) {
-		console.error("Failed to copy token:", err);
-	}
+	} catch (err) {}
 }
 
 function closeModal() {

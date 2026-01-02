@@ -22,7 +22,12 @@ export function useInvites(query?: Ref<ListInvitesQuery>) {
 			const workspaceId = currentWorkspaceId.value;
 			if (!client) throw new Error("Not authenticated");
 			if (!workspaceId) throw new Error("No workspace selected");
-			return await client.invites.listInvites(workspaceId, query?.value);
+			const result = await client.invites.listInvites(
+				workspaceId,
+				{ limit: 500 },
+				// query?.value,
+			);
+			return result;
 		},
 		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceId.value,
 	});

@@ -127,7 +127,7 @@ function uploadAvatar() {
 				avatarUrl.value = event.target?.result as string;
 			};
 			reader.readAsDataURL(file);
-			console.log("Uploading avatar:", file.name);
+			// TODO: Upload avatar to server
 		}
 	};
 	input.click();
@@ -139,8 +139,8 @@ async function saveProfile() {
 			displayName: displayName.value,
 			companyName: companyName.value,
 		});
-	} catch (err) {
-		console.error("Failed to save profile:", err);
+	} catch {
+		// Error is handled by the mutation
 	}
 }
 
@@ -175,8 +175,7 @@ async function savePassword() {
 		setTimeout(() => {
 			passwordSuccess.value = false;
 		}, 3000);
-	} catch (err) {
-		console.error("Failed to update password:", err);
+	} catch {
 		passwordError.value = "Failed to update password. Please try again.";
 	} finally {
 		isUpdatingPassword.value = false;
@@ -184,7 +183,7 @@ async function savePassword() {
 }
 
 function saveTimezone() {
-	console.log("Saving timezone:", timezone.value);
+	// TODO: Save timezone to server
 }
 </script>
 
@@ -306,13 +305,6 @@ function saveTimezone() {
 
             <!-- Password Update Section -->
             <div class="border-t pt-6 space-y-4">
-              <div>
-                <Label class="text-sm font-medium">Change Password</Label>
-                <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-                  Update your password to keep your account secure.
-                </p>
-              </div>
-
               <!-- Current Password -->
               <div class="space-y-2">
                 <Label for="currentPassword">Current Password</Label>

@@ -113,8 +113,7 @@ function selectPlan(planId: string) {
 		// Open contact sales
 		window.open("https://nvisy.com/contact", "_blank");
 	} else if (planId !== currentPlan.value) {
-		// Handle plan upgrade/downgrade
-		console.log("Switching to plan:", planId);
+		// TODO: Handle plan upgrade/downgrade
 	}
 }
 
@@ -122,7 +121,7 @@ function toggleAddon(addonId: string) {
 	const addon = addons.value.find((a) => a.id === addonId);
 	if (addon) {
 		addon.enabled = !addon.enabled;
-		console.log("Toggling addon:", addonId, addon.enabled);
+		// TODO: Persist addon state
 	}
 }
 </script>

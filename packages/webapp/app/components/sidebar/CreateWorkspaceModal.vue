@@ -69,9 +69,7 @@ async function createWorkspace() {
 	try {
 		await createWorkspaceAsync(workspaceData);
 		open.value = false;
-	} catch (error) {
-		console.error("Failed to create workspace:", error);
-	}
+	} catch (error) {}
 }
 </script>
 

@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "@pinia/colada";
-import type { File, UpdateFile } from "@nvisy/sdk/datatypes";
+import type { File as NvisyFile, UpdateFile } from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for file operations
@@ -45,6 +45,19 @@ export function useFiles(workspaceId?: MaybeRef<string | null>) {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
 			await client.files.deleteFile(fileId);
+		},
+		onSuccess() {
+			filesQuery.refresh();
+		},
+	});
+
+	const uploadFilesMutation = useMutation({
+		mutation: async (files: File[]) => {
+			const client = $nvisyClient.value;
+			if (!client) throw new Error("Not authenticated");
+			const wId = effectiveWorkspaceId.value;
+			if (!wId) throw new Error("No workspace selected");
+			return await client.files.uploadFiles(wId, files);
 		},
 		onSuccess() {
 			filesQuery.refresh();
@@ -99,6 +112,11 @@ export function useFiles(workspaceId?: MaybeRef<string | null>) {
 		deleteFileAsync: deleteFileMutation.mutateAsync,
 		isDeleting: deleteFileMutation.isLoading,
 		deleteError: deleteFileMutation.error,
+
+		uploadFiles: uploadFilesMutation.mutate,
+		uploadFilesAsync: uploadFilesMutation.mutateAsync,
+		isUploading: uploadFilesMutation.isLoading,
+		uploadError: uploadFilesMutation.error,
 
 		// Actions
 		downloadFile,

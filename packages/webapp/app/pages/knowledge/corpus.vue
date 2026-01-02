@@ -104,7 +104,7 @@ const isDeleteDialogOpen = ref(false);
 const selectedDocument = ref<CorpusDocument | null>(null);
 
 function addDocument() {
-	console.log("Adding new document to corpus");
+	// TODO: Implement add document to corpus
 }
 
 function editDocument(docId: string) {

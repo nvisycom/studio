@@ -228,21 +228,6 @@ function cancel() {
           </p>
         </div>
 
-        <!-- Active Switch -->
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="font-medium text-neutral-900 dark:text-white">
-              {{ t("integrations.forms.webhook.activeLabel") }}
-            </p>
-            <p
-              class="text-sm font-light text-neutral-600 dark:text-neutral-400"
-            >
-              {{ t("integrations.forms.webhook.activeDescription") }}
-            </p>
-          </div>
-          <Switch v-model="webhookActive" />
-        </div>
-
         <!-- Custom Headers -->
         <div>
           <div class="flex items-center justify-between mb-2">
@@ -298,7 +283,7 @@ function cancel() {
 
         <!-- Webhook Events -->
         <div>
-          <div class="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto">
+          <div class="grid grid-cols-2 gap-3">
             <div
               v-for="event in WEBHOOK_EVENTS"
               :key="event"
@@ -316,14 +301,28 @@ function cancel() {
         </div>
       </div>
 
-      <DialogFooter>
-        <Button variant="outline" @click="cancel">
-          {{ t("integrations.dialogs.createWebhook.cancel") }}
-        </Button>
-        <Button @click="saveWebhook" :disabled="!isFormValid || isLoading">
-          <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-          {{ t("integrations.dialogs.createWebhook.save") }}
-        </Button>
+      <DialogFooter
+        class="flex items-center justify-between sm:justify-between"
+      >
+        <div class="flex items-center gap-2">
+          <Switch v-model="webhookActive" />
+          <span class="text-sm text-neutral-600 dark:text-neutral-400">
+            {{
+              webhookActive
+                ? t("integrations.forms.webhook.enabledLabel")
+                : t("integrations.forms.webhook.disabledLabel")
+            }}
+          </span>
+        </div>
+        <div class="flex items-center gap-2">
+          <Button variant="outline" @click="cancel">
+            {{ t("integrations.dialogs.createWebhook.cancel") }}
+          </Button>
+          <Button @click="saveWebhook" :disabled="!isFormValid || isLoading">
+            <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
+            {{ t("integrations.dialogs.createWebhook.save") }}
+          </Button>
+        </div>
       </DialogFooter>
     </DialogContent>
   </Dialog>

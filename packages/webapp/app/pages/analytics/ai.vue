@@ -33,12 +33,10 @@ const dateRange = ref("7d");
 const isOnPremise = ref(false); // TODO: Get this from config/environment
 
 function exportAnalytics() {
-	console.log("Exporting AI analytics data for range:", dateRange.value);
 	// TODO: Implement actual export functionality
 }
 
 function importAnalytics() {
-	console.log("Importing AI analytics data");
 	// TODO: Implement actual import functionality
 }
 </script>

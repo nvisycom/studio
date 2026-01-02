@@ -91,7 +91,6 @@ function navigateTo(href: string) {
 
 function logout() {
 	// TODO: Implement logout logic
-	console.log("Logging out...");
 	isOpen.value = false;
 }
 

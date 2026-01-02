@@ -53,7 +53,7 @@ function formatUrl(url: string): string {
           t("integrations.table.headers.name")
         }}</TableHead>
         <TableHead class="uppercase text-xs font-light tracking-wider">{{
-          t("integrations.table.headers.status")
+          t("integrations.table.headers.enabled")
         }}</TableHead>
         <TableHead class="uppercase text-xs font-light tracking-wider">{{
           t("integrations.table.headers.events")

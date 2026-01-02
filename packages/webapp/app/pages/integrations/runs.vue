@@ -123,10 +123,7 @@ const allSelected = computed(
 const logsCopied = ref(false);
 
 function copyLogs() {
-	const selectedRunsData = (runs.value ?? []).filter((run) =>
-		selectedRuns.value.has(run.id),
-	);
-	console.log("Copy logs:", selectedRunsData);
+	// TODO: Implement copy logs to clipboard
 	logsCopied.value = true;
 	setTimeout(() => {
 		logsCopied.value = false;
@@ -138,8 +135,8 @@ function viewRunDetails(run: IntegrationRun) {
 	isViewDetailsModalOpen.value = true;
 }
 
-function copyRunDetails(run: IntegrationRun) {
-	console.log("Copy run details:", run);
+function copyRunDetails(_run: IntegrationRun) {
+	// TODO: Implement copy run details to clipboard
 }
 
 function formatDate(dateString: string): string {
@@ -196,8 +193,8 @@ function formatDuration(
           <div class="flex-1 min-w-[200px]">
             <div class="relative">
               <Search
-              :size="16"
-              class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                :size="16"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
               />
               <Input
                 v-model="searchQuery"
@@ -208,46 +205,46 @@ function formatDuration(
           </div>
 
           <Select v-model="statusFilter">
-            <SelectTrigger class="w-[150px] font-light">
+            <SelectTrigger class="w-[150px] text-sm font-light">
               <SelectValue :placeholder="t('integrations.runs.status')" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{{
+              <SelectItem value="all" class="text-sm font-light">{{
                 t("integrations.runs.allStatus")
               }}</SelectItem>
-              <SelectItem value="1xx"
+              <SelectItem value="1xx" class="text-sm font-light"
                 >1xx - {{ t("integrations.runs.informational") }}</SelectItem
               >
-              <SelectItem value="2xx"
+              <SelectItem value="2xx" class="text-sm font-light"
                 >2xx - {{ t("integrations.runs.success") }}</SelectItem
               >
-              <SelectItem value="3xx"
+              <SelectItem value="3xx" class="text-sm font-light"
                 >3xx - {{ t("integrations.runs.redirection") }}</SelectItem
               >
-              <SelectItem value="4xx"
+              <SelectItem value="4xx" class="text-sm font-light"
                 >4xx - {{ t("integrations.runs.clientError") }}</SelectItem
               >
-              <SelectItem value="5xx"
+              <SelectItem value="5xx" class="text-sm font-light"
                 >5xx - {{ t("integrations.runs.serverError") }}</SelectItem
               >
             </SelectContent>
           </Select>
 
           <Select v-model="dateRange">
-            <SelectTrigger class="w-[150px] font-light">
+            <SelectTrigger class="w-[150px] text-sm font-light">
               <SelectValue :placeholder="t('integrations.runs.period')" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="1h">{{
+              <SelectItem value="1h" class="text-sm font-light">{{
                 t("integrations.runs.lastHour")
               }}</SelectItem>
-              <SelectItem value="24h">{{
+              <SelectItem value="24h" class="text-sm font-light">{{
                 t("integrations.runs.last24Hours")
               }}</SelectItem>
-              <SelectItem value="7d">{{
+              <SelectItem value="7d" class="text-sm font-light">{{
                 t("integrations.runs.last7Days")
               }}</SelectItem>
-              <SelectItem value="30d">{{
+              <SelectItem value="30d" class="text-sm font-light">{{
                 t("integrations.runs.last30Days")
               }}</SelectItem>
             </SelectContent>

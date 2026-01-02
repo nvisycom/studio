@@ -76,15 +76,12 @@ async function handleResetPassword(): Promise<void> {
 
 	try {
 		// TODO: Implement actual reset password logic
-		console.log("Resetting password with token:", token.value);
-		console.log("New password:", password.value);
-
 		// Simulate API call
 		await new Promise((resolve) => setTimeout(resolve, 1000));
 
 		isSuccess.value = true;
-	} catch (error) {
-		console.error("Reset password error:", error);
+	} catch {
+		// TODO: Handle error
 	} finally {
 		isLoading.value = false;
 	}

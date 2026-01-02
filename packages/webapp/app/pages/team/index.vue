@@ -145,9 +145,7 @@ async function handleSendInvite(
 			inviteSent.value = false;
 		}, 2000);
 	} catch (err) {
-		console.error("Failed to send invite:", err);
 		const errorMessage = getErrorMessage(err, t("members.errors.inviteFailed"));
-		console.error("Error message for toast:", errorMessage);
 		toast.error(t("members.errors.inviteFailed"), {
 			description: errorMessage,
 		});
@@ -169,7 +167,6 @@ async function handleCopyLink(role: WorkspaceRole, expiry: InviteExpiration) {
 			copiedInviteLink.value = false;
 		}, 2000);
 	} catch (err) {
-		console.error("Failed to generate invite link:", err);
 		toast.error(getErrorMessage(err, t("members.errors.linkFailed")));
 	}
 }
@@ -193,7 +190,6 @@ async function deleteMember() {
 		memberToDelete.value = null;
 		toast.success(t("members.messages.memberRemoved"));
 	} catch (err) {
-		console.error("Failed to remove member:", err);
 		toast.error(getErrorMessage(err, t("members.errors.removeFailed")));
 	}
 }
@@ -247,7 +243,6 @@ async function cancelInvite() {
 		inviteToCancel.value = null;
 		toast.success(t("members.messages.inviteCanceled"));
 	} catch (err) {
-		console.error("Failed to cancel invite:", err);
 		toast.error(getErrorMessage(err, t("members.errors.cancelFailed")));
 	}
 }

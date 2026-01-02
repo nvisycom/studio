@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Invite } from "@nvisy/sdk/datatypes";
-import { Mail, MoreHorizontal, X } from "lucide-vue-next";
+import { Mail, MoreHorizontal, X, Copy } from "lucide-vue-next";
+import { toast } from "vue-sonner";
 import { Button } from "@/components/ui/button";
 import { EntityAvatar } from "@/components/common";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -50,6 +51,17 @@ function getInviteCode(invite: Invite): string {
 		return `${invite.inviteToken.slice(0, 8)}...`;
 	}
 	return "";
+}
+
+async function copyInviteLink(invite: Invite) {
+	if (!invite.inviteToken) return;
+	try {
+		const inviteLink = `${window.location.origin}/join/${invite.inviteToken}`;
+		await navigator.clipboard.writeText(inviteLink);
+		toast.success(t("members.messages.linkCopied"));
+	} catch {
+		toast.error(t("members.errors.linkCopyFailed"));
+	}
 }
 </script>
 
@@ -176,6 +188,14 @@ function getInviteCode(invite: Invite): string {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  v-if="invite.inviteToken"
+                  @click="copyInviteLink(invite)"
+                  class="cursor-pointer"
+                >
+                  <Copy :size="14" class="mr-2" />
+                  {{ t("members.table.actions.copyLink") }}
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   @click="emit('cancel', invite.inviteId)"
                   class="text-red-600 dark:text-red-400 cursor-pointer"

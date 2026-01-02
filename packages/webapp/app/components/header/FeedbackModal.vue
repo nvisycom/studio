@@ -56,13 +56,11 @@ function closeModal(): void {
 
 function submitFeedback(): void {
 	// TODO: Implement feedback submission
-	console.log("Submitting feedback:", feedbackForm.value);
 
 	toast("Feedback submitted", {
 		description: "Thank you for your feedback! \nWe'll review it shortly.",
 		action: {
 			label: "Undo",
-			onClick: () => console.log("Undo"),
 		},
 	});
 
