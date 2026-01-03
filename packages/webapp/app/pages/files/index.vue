@@ -3,48 +3,30 @@ import { ref, computed } from "vue";
 import {
 	Search,
 	FileText,
-	FileImage,
-	FileCode,
-	FileSpreadsheet,
-	Download,
-	Eye,
-	Trash2,
-	MoreHorizontal,
 	ChevronDown,
 	Upload,
-	FileArchive,
-	Pencil,
 	Loader2,
-	File as FileIcon,
 	Filter,
-	ArrowUpDown,
-	X,
+	List,
+	LayoutGrid,
 } from "lucide-vue-next";
 import { toast } from "vue-sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-	DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
-import {
 	DeleteFileDialog,
-	RenameFileDialog,
+	EditFileDialog,
+	FilesGridView,
+	FilesTableView,
 	UploadFilesDialog,
 } from "~/components/pages/files";
-import type { File as NvisyFile } from "@nvisy/sdk/datatypes";
+import type { File as NvisyFile, UpdateFile } from "@nvisy/sdk/datatypes";
 
 const { t } = useI18n();
 
@@ -52,7 +34,6 @@ definePageMeta({
 	pageCategory: "Files",
 });
 
-// API composables
 const {
 	files,
 	isLoading,
@@ -64,22 +45,52 @@ const {
 	uploadFilesAsync,
 	downloadFile,
 	downloadMultiple,
-	refresh,
+	loadMore,
+	hasMore,
+	isLoadingMore,
 } = useFiles();
 
-// Local state
 const searchQuery = ref("");
 const filterStatus = ref("any");
-const selectedSorting = ref("date-desc");
-const selectedFiles = ref<Set<string>>(new Set());
+const viewMode = ref<"list" | "grid">("list");
+const isDraggingOver = ref(false);
 
-// Dialog states
 const deleteDialogOpen = ref(false);
-const renameDialogOpen = ref(false);
+const editDialogOpen = ref(false);
 const uploadDialogOpen = ref(false);
 const fileToDelete = ref<NvisyFile | null>(null);
-const fileToRename = ref<NvisyFile | null>(null);
-const filesToDeleteMultiple = ref<string[]>([]);
+const fileToEdit = ref<NvisyFile | null>(null);
+const selectedFiles = ref<Set<string>>(new Set());
+
+const selectedFilesCount = computed(() => selectedFiles.value.size);
+const hasSelection = computed(() => selectedFilesCount.value > 0);
+const allSelected = computed(
+	() =>
+		filteredFiles.value.length > 0 &&
+		filteredFiles.value.every((f) => selectedFiles.value.has(f.fileId)),
+);
+
+function toggleSelectAll() {
+	if (allSelected.value) {
+		selectedFiles.value = new Set();
+	} else {
+		selectedFiles.value = new Set(filteredFiles.value.map((f) => f.fileId));
+	}
+}
+
+function toggleFileSelection(fileId: string) {
+	const newSet = new Set(selectedFiles.value);
+	if (newSet.has(fileId)) {
+		newSet.delete(fileId);
+	} else {
+		newSet.add(fileId);
+	}
+	selectedFiles.value = newSet;
+}
+
+function clearSelection() {
+	selectedFiles.value = new Set();
+}
 
 const statusFilters = computed(() => [
 	{ label: t("files.filters.anyStatus"), value: "any" },
@@ -89,19 +100,9 @@ const statusFilters = computed(() => [
 	{ label: t("files.filters.failed"), value: "failed" },
 ]);
 
-const sortingOptions = computed(() => [
-	{ label: t("files.sorting.dateDesc"), value: "date-desc" },
-	{ label: t("files.sorting.dateAsc"), value: "date-asc" },
-	{ label: t("files.sorting.nameAsc"), value: "name-asc" },
-	{ label: t("files.sorting.nameDesc"), value: "name-desc" },
-	{ label: t("files.sorting.sizeDesc"), value: "size-desc" },
-	{ label: t("files.sorting.sizeAsc"), value: "size-asc" },
-]);
-
 const filteredFiles = computed(() => {
 	let filtered = files.value || [];
 
-	// Apply search filter
 	if (searchQuery.value.trim()) {
 		const query = searchQuery.value.toLowerCase();
 		filtered = filtered.filter((file) =>
@@ -109,83 +110,16 @@ const filteredFiles = computed(() => {
 		);
 	}
 
-	// Apply status filter
 	if (filterStatus.value !== "any") {
 		filtered = filtered.filter((file) => file.status === filterStatus.value);
 	}
 
-	// Sort the results
-	filtered = [...filtered].sort((a, b) => {
-		switch (selectedSorting.value) {
-			case "date-asc":
-				return (
-					new Date(a.updatedAt || 0).getTime() -
-					new Date(b.updatedAt || 0).getTime()
-				);
-			case "date-desc":
-				return (
-					new Date(b.updatedAt || 0).getTime() -
-					new Date(a.updatedAt || 0).getTime()
-				);
-			case "name-asc":
-				return a.displayName.localeCompare(b.displayName);
-			case "name-desc":
-				return b.displayName.localeCompare(a.displayName);
-			case "size-asc":
-				return a.fileSize - b.fileSize;
-			case "size-desc":
-				return b.fileSize - a.fileSize;
-			default:
-				return 0;
-		}
-	});
-
 	return filtered;
-});
-
-const allSelected = computed(() => {
-	return (
-		filteredFiles.value.length > 0 &&
-		selectedFiles.value.size === filteredFiles.value.length
-	);
 });
 
 const hasFilters = computed(() => {
 	return searchQuery.value.trim() || filterStatus.value !== "any";
 });
-
-// File type icon helper
-function getFileIcon(fileName: string) {
-	const ext = fileName.split(".").pop()?.toLowerCase();
-	switch (ext) {
-		case "pdf":
-		case "doc":
-		case "docx":
-		case "txt":
-		case "md":
-			return FileText;
-		case "png":
-		case "jpg":
-		case "jpeg":
-		case "gif":
-		case "svg":
-		case "webp":
-			return FileImage;
-		case "json":
-		case "xml":
-		case "html":
-		case "css":
-		case "js":
-		case "ts":
-			return FileCode;
-		case "csv":
-		case "xlsx":
-		case "xls":
-			return FileSpreadsheet;
-		default:
-			return FileIcon;
-	}
-}
 
 function viewFile(fileId: string) {
 	navigateTo(`/files/studio?id=${fileId}`);
@@ -200,17 +134,23 @@ async function handleDownloadFile(file: NvisyFile) {
 	}
 }
 
-// Delete single file
-function openDeleteDialog(file: NvisyFile) {
-	fileToDelete.value = file;
-	filesToDeleteMultiple.value = [];
+async function handleBulkDownload(format: "zip" | "tar") {
+	if (!hasSelection.value) return;
+	try {
+		await downloadMultiple(Array.from(selectedFiles.value), format);
+		toast.success(t("files.messages.downloadStarted"));
+	} catch {
+		toast.error(t("files.errors.downloadFailed"));
+	}
+}
+
+function openDeleteDialog(file?: NvisyFile) {
+	fileToDelete.value = file || null;
 	deleteDialogOpen.value = true;
 }
 
-// Delete multiple files
-function openDeleteMultipleDialog() {
+function openBulkDeleteDialog() {
 	fileToDelete.value = null;
-	filesToDeleteMultiple.value = Array.from(selectedFiles.value);
 	deleteDialogOpen.value = true;
 }
 
@@ -219,45 +159,42 @@ async function confirmDelete() {
 		if (fileToDelete.value) {
 			await deleteFileAsync(fileToDelete.value.fileId);
 			toast.success(t("files.messages.fileDeleted"));
-		} else if (filesToDeleteMultiple.value.length > 0) {
-			for (const fileId of filesToDeleteMultiple.value) {
+		} else if (hasSelection.value) {
+			for (const fileId of Array.from(selectedFiles.value)) {
 				await deleteFileAsync(fileId);
 			}
 			toast.success(t("files.messages.filesDeleted"));
-			selectedFiles.value = new Set();
+			clearSelection();
 		}
 	} catch {
 		toast.error(t("files.errors.deleteFailed"));
 	} finally {
 		deleteDialogOpen.value = false;
 		fileToDelete.value = null;
-		filesToDeleteMultiple.value = [];
 	}
 }
 
-// Rename file
-function openRenameDialog(file: NvisyFile) {
-	fileToRename.value = file;
-	renameDialogOpen.value = true;
+function openEditDialog(file: NvisyFile) {
+	fileToEdit.value = file;
+	editDialogOpen.value = true;
 }
 
-async function confirmRename(newName: string) {
-	if (!fileToRename.value) return;
+async function confirmEdit(data: UpdateFile) {
+	if (!fileToEdit.value) return;
 	try {
 		await updateFileAsync({
-			fileId: fileToRename.value.fileId,
-			updates: { displayName: newName },
+			fileId: fileToEdit.value.fileId,
+			updates: data,
 		});
-		toast.success(t("files.messages.fileRenamed"));
+		toast.success(t("files.messages.fileUpdated"));
 	} catch {
-		toast.error(t("files.errors.renameFailed"));
+		toast.error(t("files.errors.updateFailed"));
 	} finally {
-		renameDialogOpen.value = false;
-		fileToRename.value = null;
+		editDialogOpen.value = false;
+		fileToEdit.value = null;
 	}
 }
 
-// Upload
 function openUploadDialog() {
 	uploadDialogOpen.value = true;
 }
@@ -265,107 +202,102 @@ function openUploadDialog() {
 function handleUploadComplete() {
 	toast.success(t("files.messages.filesUploaded"));
 	uploadDialogOpen.value = false;
+	isDraggingOver.value = false;
+}
+
+function handleDragEnter(e: DragEvent) {
+	e.preventDefault();
+	if (e.dataTransfer?.types.includes("Files")) {
+		isDraggingOver.value = true;
+	}
+}
+
+function handleDragOver(e: DragEvent) {
+	e.preventDefault();
+}
+
+function handleDragLeave(e: DragEvent) {
+	e.preventDefault();
+	const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+	if (
+		e.clientX <= rect.left ||
+		e.clientX >= rect.right ||
+		e.clientY <= rect.top ||
+		e.clientY >= rect.bottom
+	) {
+		isDraggingOver.value = false;
+	}
+}
+
+async function handleDrop(e: DragEvent) {
+	e.preventDefault();
+	isDraggingOver.value = false;
+
+	const droppedFiles = e.dataTransfer?.files;
+	if (droppedFiles && droppedFiles.length > 0) {
+		try {
+			await uploadFilesAsync(Array.from(droppedFiles));
+			toast.success(t("files.messages.filesUploaded"));
+		} catch {
+			toast.error(t("files.errors.uploadFailed"));
+		}
+	}
 }
 
 function selectStatusFilter(value: string) {
 	filterStatus.value = value;
 }
 
-function selectSorting(value: string) {
-	selectedSorting.value = value;
-}
-
-function formatFileSize(bytes: number): string {
-	if (bytes === 0) return "0 B";
-	const k = 1024;
-	const sizes = ["B", "KB", "MB", "GB"];
-	const i = Math.floor(Math.log(bytes) / Math.log(k));
-	return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
-}
-
-function formatDate(dateStr: string | null | undefined): string {
-	if (!dateStr) return "—";
-	const date = new Date(dateStr);
-	const now = new Date();
-	const diff = now.getTime() - date.getTime();
-	const hours = Math.floor(diff / (1000 * 60 * 60));
-	const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-	if (hours < 1) return t("common.time.justNow");
-	if (hours < 24) return t("common.time.hoursAgo", { hours });
-	if (days < 7) return t("common.time.daysAgo", { days });
-	if (days < 30)
-		return t("common.time.weeksAgo", { weeks: Math.floor(days / 7) });
-
-	return date.toLocaleDateString("en-US", {
-		month: "short",
-		day: "numeric",
-		year: "numeric",
-	});
-}
-
-function getStatusClasses(status: string): string {
-	switch (status) {
-		case "completed":
-			return "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400";
-		case "processing":
-			return "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400";
-		case "pending":
-			return "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400";
-		case "failed":
-			return "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400";
-		default:
-			return "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300";
-	}
-}
-
-function toggleFile(fileId: string) {
-	const newSet = new Set(selectedFiles.value);
-	if (newSet.has(fileId)) {
-		newSet.delete(fileId);
-	} else {
-		newSet.add(fileId);
-	}
-	selectedFiles.value = newSet;
-}
-
-function toggleSelectAll() {
-	if (selectedFiles.value.size === filteredFiles.value.length) {
-		selectedFiles.value = new Set();
-	} else {
-		selectedFiles.value = new Set(filteredFiles.value.map((f) => f.fileId));
-	}
-}
-
-async function downloadSelectedAsZip() {
-	try {
-		await downloadMultiple(Array.from(selectedFiles.value), "zip");
-		toast.success(t("files.messages.downloadStarted"));
-		selectedFiles.value = new Set();
-	} catch {
-		toast.error(t("files.errors.downloadFailed"));
-	}
-}
-
-async function downloadSelectedAsTar() {
-	try {
-		await downloadMultiple(Array.from(selectedFiles.value), "tar");
-		toast.success(t("files.messages.downloadStarted"));
-		selectedFiles.value = new Set();
-	} catch {
-		toast.error(t("files.errors.downloadFailed"));
-	}
-}
-
 function clearFilters() {
 	searchQuery.value = "";
 	filterStatus.value = "any";
 }
+
+function handleLoadMore() {
+	if (hasMore.value && !isLoadingMore.value) {
+		loadMore();
+	}
+}
+
+function handleGridScroll(event: Event) {
+	const target = event.target as HTMLElement;
+	const { scrollTop, scrollHeight, clientHeight } = target;
+	const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+	if (distanceFromBottom < 100) {
+		handleLoadMore();
+	}
+}
 </script>
 
 <template>
-  <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
-    <div class="max-w-7xl mx-auto w-full">
+  <div
+    class="flex flex-col gap-4 p-4 pt-4 pb-6 relative h-[calc(100vh-8rem)]"
+    @dragenter="handleDragEnter"
+    @dragover="handleDragOver"
+    @dragleave="handleDragLeave"
+    @drop="handleDrop"
+  >
+    <!-- Drag overlay -->
+    <Transition
+      enter-active-class="transition-opacity duration-200"
+      leave-active-class="transition-opacity duration-200"
+      enter-from-class="opacity-0"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="isDraggingOver"
+        class="absolute inset-0 z-50 flex items-center justify-center bg-primary/10 backdrop-blur-sm border-2 border-dashed border-primary rounded-lg m-2"
+      >
+        <div class="text-center">
+          <Upload :size="48" class="mx-auto mb-4 text-primary" />
+          <p class="text-lg font-normal text-primary">
+            {{ t("files.dialogs.upload.dropHint") }}
+          </p>
+        </div>
+      </div>
+    </Transition>
+
+    <div class="max-w-7xl mx-auto w-full flex flex-col flex-1 min-h-0">
       <!-- Loading State -->
       <div v-if="isLoading" class="flex justify-center items-center py-12">
         <Loader2 :size="32" class="animate-spin text-neutral-400" />
@@ -382,74 +314,19 @@ function clearFilters() {
       </div>
 
       <template v-else>
-        <!-- Header Actions -->
-        <div class="flex justify-end items-center gap-2 mb-4">
-          <!-- Bulk Download -->
-          <div class="flex items-center">
-            <Button
-              @click="downloadSelectedAsZip"
-              :disabled="selectedFiles.size === 0"
-              variant="outline"
-              class="rounded-r-none font-light"
-            >
-              <Download :size="16" class="mr-2" />
-              {{ t("files.actions.download") }}
-            </Button>
-            <div
-              class="h-8 w-px bg-neutral-200 dark:bg-neutral-700"
-              :class="selectedFiles.size === 0 ? 'opacity-50' : 'opacity-100'"
-            ></div>
-            <DropdownMenu>
-              <DropdownMenuTrigger as-child>
-                <Button
-                  :disabled="selectedFiles.size === 0"
-                  variant="outline"
-                  class="rounded-l-none px-2"
-                >
-                  <ChevronDown :size="16" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  @click="downloadSelectedAsZip"
-                  class="cursor-pointer"
-                >
-                  <FileArchive :size="16" class="mr-2" />
-                  {{ t("files.actions.downloadAsZip") }}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  @click="downloadSelectedAsTar"
-                  class="cursor-pointer"
-                >
-                  <FileArchive :size="16" class="mr-2" />
-                  {{ t("files.actions.downloadAsTar") }}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
-          <!-- Bulk Delete -->
-          <Button
-            @click="openDeleteMultipleDialog"
-            :disabled="selectedFiles.size === 0"
-            variant="outline"
-            class="font-light"
-          >
-            <Trash2 :size="16" class="mr-2" />
-            {{ t("files.actions.delete") }}
-          </Button>
-
-          <!-- Upload -->
-          <Button @click="openUploadDialog" class="font-light">
-            <Upload :size="16" class="mr-2" />
-            {{ t("files.actions.upload") }}
-          </Button>
-        </div>
-
-        <!-- Search and Filters -->
+        <!-- Search, Filters, and Actions -->
         <div
           class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center mb-6"
         >
+          <Button
+            variant="outline"
+            @click="openUploadDialog"
+            class="font-light"
+          >
+            <Upload :size="16" class="mr-2" />
+            {{ t("files.actions.upload") }}
+          </Button>
+
           <div class="relative flex-1">
             <Search
               :size="16"
@@ -462,7 +339,6 @@ function clearFilters() {
             />
           </div>
 
-          <!-- Status Filter -->
           <DropdownMenu>
             <DropdownMenuTrigger as-child>
               <Button
@@ -489,161 +365,63 @@ function clearFilters() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <!-- Sorting -->
-          <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <Button
-                variant="outline"
-                class="justify-between min-w-[180px] font-light"
-              >
-                <ArrowUpDown :size="14" class="mr-2 text-neutral-400" />
-                {{
-                  sortingOptions.find((o) => o.value === selectedSorting)
-                    ?.label || t("files.sorting.dateDesc")
-                }}
-                <ChevronDown :size="16" class="ml-2" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" class="w-[180px]">
-              <DropdownMenuItem
-                v-for="option in sortingOptions"
-                :key="option.value"
-                @click="selectSorting(option.value)"
-                class="cursor-pointer font-light"
-              >
-                {{ option.label }}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <!-- View Toggle -->
+          <div class="flex items-center border rounded-md">
+            <Button
+              variant="ghost"
+              size="sm"
+              class="rounded-r-none px-3"
+              :class="{ 'bg-muted': viewMode === 'list' }"
+              @click="viewMode = 'list'"
+            >
+              <List :size="16" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              class="rounded-l-none px-3"
+              :class="{ 'bg-muted': viewMode === 'grid' }"
+              @click="viewMode = 'grid'"
+            >
+              <LayoutGrid :size="16" />
+            </Button>
+          </div>
         </div>
 
-        <!-- Files Table -->
-        <div v-if="filteredFiles.length > 0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead class="w-[50px]">
-                  <Checkbox
-                    :model-value="allSelected"
-                    @update:model-value="toggleSelectAll"
-                    class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                  />
-                </TableHead>
-                <TableHead class="uppercase text-xs font-light tracking-wider">
-                  {{ t("files.table.headers.name") }}
-                </TableHead>
-                <TableHead class="uppercase text-xs font-light tracking-wider">
-                  {{ t("files.table.headers.size") }}
-                </TableHead>
-                <TableHead class="uppercase text-xs font-light tracking-wider">
-                  {{ t("files.table.headers.status") }}
-                </TableHead>
-                <TableHead class="uppercase text-xs font-light tracking-wider">
-                  {{ t("files.table.headers.updated") }}
-                </TableHead>
-                <TableHead class="w-[50px]"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow
-                v-for="file in filteredFiles"
-                :key="file.fileId"
-                class="border-b border-neutral-200 dark:border-neutral-800"
-              >
-                <TableCell>
-                  <Checkbox
-                    :model-value="selectedFiles.has(file.fileId)"
-                    @update:model-value="toggleFile(file.fileId)"
-                    class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                  />
-                </TableCell>
-                <TableCell>
-                  <div class="flex items-center gap-3">
-                    <div
-                      class="w-8 h-8 rounded flex items-center justify-center bg-neutral-100 dark:bg-neutral-800"
-                    >
-                      <component
-                        :is="getFileIcon(file.displayName)"
-                        :size="16"
-                        class="text-neutral-600 dark:text-neutral-400"
-                      />
-                    </div>
-                    <p class="font-normal text-neutral-900 dark:text-white">
-                      {{ file.displayName }}
-                    </p>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <span
-                    class="text-sm font-light text-neutral-600 dark:text-neutral-400"
-                  >
-                    {{ formatFileSize(file.fileSize) }}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <span
-                    :class="[
-                      'text-xs px-2 py-1 rounded capitalize',
-                      getStatusClasses(file.status),
-                    ]"
-                  >
-                    {{ t(`files.filters.${file.status}`) }}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <span
-                    class="text-sm font-light text-neutral-600 dark:text-neutral-400"
-                  >
-                    {{ formatDate(file.updatedAt) }}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger as-child>
-                      <Button variant="ghost" size="sm" class="h-8 w-8 p-0">
-                        <MoreHorizontal :size="16" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        @click="viewFile(file.fileId)"
-                        class="cursor-pointer"
-                      >
-                        <Eye :size="14" class="mr-2" />
-                        {{ t("files.actions.view") }}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        @click="openRenameDialog(file)"
-                        class="cursor-pointer"
-                      >
-                        <Pencil :size="14" class="mr-2" />
-                        {{ t("files.actions.rename") }}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        @click="handleDownloadFile(file)"
-                        class="cursor-pointer"
-                      >
-                        <Download :size="14" class="mr-2" />
-                        {{ t("files.actions.download") }}
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        @click="openDeleteDialog(file)"
-                        class="text-red-600 dark:text-red-400 cursor-pointer"
-                      >
-                        <Trash2 :size="14" class="mr-2" />
-                        {{ t("files.actions.delete") }}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </div>
+        <!-- List View (Data Table) -->
+        <FilesTableView
+          v-if="filteredFiles.length > 0 && viewMode === 'list'"
+          :files="filteredFiles"
+          :selected-files="selectedFiles"
+          :all-selected="allSelected"
+          :has-selection="hasSelection"
+          :selected-count="selectedFilesCount"
+          @toggle-select-all="toggleSelectAll"
+          @toggle-selection="toggleFileSelection"
+          @view="viewFile"
+          @edit="openEditDialog"
+          @download="handleDownloadFile"
+          @delete="openDeleteDialog"
+          @bulk-download="handleBulkDownload"
+          @bulk-delete="openBulkDeleteDialog"
+          @load-more="handleLoadMore"
+        />
+
+        <!-- Grid View -->
+        <FilesGridView
+          v-else-if="filteredFiles.length > 0 && viewMode === 'grid'"
+          :files="filteredFiles"
+          :selected-files="selectedFiles"
+          @toggle-selection="toggleFileSelection"
+          @view="viewFile"
+          @edit="openEditDialog"
+          @download="handleDownloadFile"
+          @delete="openDeleteDialog"
+          @scroll="handleGridScroll"
+        />
 
         <!-- Empty State -->
-        <div v-else class="py-12 text-center">
+        <div v-else class="py-12 text-center flex-1">
           <div
             class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
           >
@@ -668,7 +446,7 @@ function clearFilters() {
             class="font-light"
             @click="clearFilters"
           >
-            {{ t("integrations.explore.clearFilters") }}
+            {{ t("files.actions.clearFilters") }}
           </Button>
           <Button v-else @click="openUploadDialog" size="sm" class="font-light">
             <Upload :size="16" class="mr-2" />
@@ -682,16 +460,16 @@ function clearFilters() {
     <DeleteFileDialog
       v-model:open="deleteDialogOpen"
       :file-name="fileToDelete?.displayName"
-      :file-count="filesToDeleteMultiple.length || 1"
+      :file-count="fileToDelete ? 1 : selectedFilesCount"
       :is-deleting="isDeleting"
       @confirm="confirmDelete"
     />
 
-    <RenameFileDialog
-      v-model:open="renameDialogOpen"
-      :file-name="fileToRename?.displayName || ''"
-      :is-renaming="isUpdating"
-      @confirm="confirmRename"
+    <EditFileDialog
+      v-model:open="editDialogOpen"
+      :file="fileToEdit"
+      :is-loading="isUpdating"
+      @update="confirmEdit"
     />
 
     <UploadFilesDialog

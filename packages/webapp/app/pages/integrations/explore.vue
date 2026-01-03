@@ -10,6 +10,7 @@ import {
 	Filter,
 	ArrowUpDown,
 	Puzzle,
+	Code,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,7 +46,8 @@ type TagKey =
 	| "noCode"
 	| "ai"
 	| "enterprise"
-	| "developer";
+	| "developer"
+	| "sdk";
 
 /**
  * Integration data structure
@@ -54,6 +56,7 @@ interface Integration {
 	id: string;
 	nameKey: string;
 	descriptionKey: string;
+	shortDescriptionKey?: string;
 	icon: string;
 	status: "available" | "unavailable";
 	category: string;
@@ -97,6 +100,11 @@ const categories = ref<Category[]>([
 		nameKey: "integrations.explore.categories.ai.name",
 		icon: Bot,
 	},
+	{
+		key: "sdk",
+		nameKey: "integrations.explore.categories.sdk.name",
+		icon: Code,
+	},
 ]);
 
 // All integrations as a flat list (only those with brand icons)
@@ -106,7 +114,7 @@ const integrations = ref<Integration[]>([
 		id: "google-drive",
 		nameKey: "integrations.explore.items.googleDrive.name",
 		descriptionKey: "integrations.explore.items.googleDrive.description",
-		icon: "/brand/google-drive.svg",
+		icon: "/integration/google-drive.svg",
 		status: "available",
 		category: "cloud-storage",
 		tags: ["fileSync", "import", "export"],
@@ -116,7 +124,7 @@ const integrations = ref<Integration[]>([
 		id: "onedrive",
 		nameKey: "integrations.explore.items.oneDrive.name",
 		descriptionKey: "integrations.explore.items.oneDrive.description",
-		icon: "/brand/microsoft-onedrive.svg",
+		icon: "/integration/microsoft-onedrive.svg",
 		status: "available",
 		category: "cloud-storage",
 		tags: ["fileSync", "import", "export", "enterprise"],
@@ -126,7 +134,7 @@ const integrations = ref<Integration[]>([
 		id: "dropbox",
 		nameKey: "integrations.explore.items.dropbox.name",
 		descriptionKey: "integrations.explore.items.dropbox.description",
-		icon: "/brand/dropbox.svg",
+		icon: "/integration/dropbox.svg",
 		status: "unavailable",
 		category: "cloud-storage",
 		tags: ["fileSync", "import", "export"],
@@ -136,7 +144,8 @@ const integrations = ref<Integration[]>([
 		id: "aws-s3",
 		nameKey: "integrations.explore.items.awsS3.name",
 		descriptionKey: "integrations.explore.items.awsS3.description",
-		icon: "/brand/minio.svg",
+		shortDescriptionKey: "integrations.explore.items.awsS3.shortDescription",
+		icon: "/integration/minio.svg",
 		status: "available",
 		category: "cloud-storage",
 		tags: ["fileSync", "developer", "enterprise"],
@@ -147,7 +156,7 @@ const integrations = ref<Integration[]>([
 		id: "slack",
 		nameKey: "integrations.explore.items.slack.name",
 		descriptionKey: "integrations.explore.items.slack.description",
-		icon: "/brand/slack.svg",
+		icon: "/integration/slack.svg",
 		status: "unavailable",
 		category: "productivity",
 		tags: ["notifications", "messaging", "collaboration"],
@@ -157,7 +166,7 @@ const integrations = ref<Integration[]>([
 		id: "teams",
 		nameKey: "integrations.explore.items.teams.name",
 		descriptionKey: "integrations.explore.items.teams.description",
-		icon: "/brand/microsoft-teams.svg",
+		icon: "/integration/microsoft-teams.svg",
 		status: "unavailable",
 		category: "productivity",
 		tags: ["notifications", "messaging", "collaboration", "enterprise"],
@@ -167,22 +176,32 @@ const integrations = ref<Integration[]>([
 		id: "notion",
 		nameKey: "integrations.explore.items.notion.name",
 		descriptionKey: "integrations.explore.items.notion.description",
-		icon: "/brand/notion.svg",
+		icon: "/integration/notion.svg",
 		status: "available",
 		category: "productivity",
 		tags: ["notes", "collaboration", "export"],
 		popularity: 85,
 		isNew: true,
 	},
+	{
+		id: "discord",
+		nameKey: "integrations.explore.items.discord.name",
+		descriptionKey: "integrations.explore.items.discord.description",
+		icon: "/integration/discord.svg",
+		status: "unavailable",
+		category: "productivity",
+		tags: ["notifications", "messaging", "collaboration"],
+		popularity: 80,
+	},
 	// Data & Analytics
 	{
 		id: "zapier",
 		nameKey: "integrations.explore.items.zapier.name",
 		descriptionKey: "integrations.explore.items.zapier.description",
-		icon: "/brand/zapier.svg",
+		icon: "/integration/zapier.svg",
 		status: "available",
 		category: "data-analytics",
-		tags: ["automation", "noCode"],
+		tags: ["automation", "noCode", "developer"],
 		popularity: 92,
 		isExternal: true,
 		externalUrl: "https://zapier.com",
@@ -191,7 +210,7 @@ const integrations = ref<Integration[]>([
 		id: "make",
 		nameKey: "integrations.explore.items.make.name",
 		descriptionKey: "integrations.explore.items.make.description",
-		icon: "/brand/make.svg",
+		icon: "/integration/make.svg",
 		status: "unavailable",
 		category: "data-analytics",
 		tags: ["automation", "noCode"],
@@ -203,10 +222,10 @@ const integrations = ref<Integration[]>([
 		id: "n8n",
 		nameKey: "integrations.explore.items.n8n.name",
 		descriptionKey: "integrations.explore.items.n8n.description",
-		icon: "/brand/n8n.svg",
+		icon: "/integration/n8n.svg",
 		status: "unavailable",
 		category: "data-analytics",
-		tags: ["automation", "developer"],
+		tags: ["automation", "noCode", "developer"],
 		popularity: 58,
 		isExternal: true,
 		externalUrl: "https://n8n.io",
@@ -216,7 +235,7 @@ const integrations = ref<Integration[]>([
 		id: "chatgpt",
 		nameKey: "integrations.explore.items.chatgpt.name",
 		descriptionKey: "integrations.explore.items.chatgpt.description",
-		icon: "/brand/openai.svg",
+		icon: "/integration/openai.svg",
 		status: "unavailable",
 		category: "ai-enhancements",
 		tags: ["ai", "automation"],
@@ -226,11 +245,38 @@ const integrations = ref<Integration[]>([
 		id: "claude",
 		nameKey: "integrations.explore.items.claude.name",
 		descriptionKey: "integrations.explore.items.claude.description",
-		icon: "/brand/anthropic.svg",
+		icon: "/integration/anthropic.svg",
 		status: "unavailable",
 		category: "ai-enhancements",
 		tags: ["ai", "automation"],
 		popularity: 85,
+	},
+	// SDKs
+	{
+		id: "javascript-sdk",
+		nameKey: "integrations.explore.items.javascriptSdk.name",
+		descriptionKey: "integrations.explore.items.javascriptSdk.description",
+		shortDescriptionKey:
+			"integrations.explore.items.javascriptSdk.shortDescription",
+		icon: "/integration/javascript.svg",
+		status: "available",
+		category: "sdk",
+		tags: ["sdk", "developer"],
+		popularity: 85,
+		isExternal: true,
+		externalUrl: "https://www.npmjs.com/package/@nvisy/sdk",
+	},
+	{
+		id: "python-sdk",
+		nameKey: "integrations.explore.items.pythonSdk.name",
+		descriptionKey: "integrations.explore.items.pythonSdk.description",
+		shortDescriptionKey:
+			"integrations.explore.items.pythonSdk.shortDescription",
+		icon: "/integration/python.svg",
+		status: "unavailable",
+		category: "sdk",
+		tags: ["sdk", "developer"],
+		popularity: 88,
 	},
 ]);
 
@@ -242,6 +288,15 @@ function getIntegrationName(integration: Integration): string {
 // Get localized description for an integration
 function getIntegrationDescription(integration: Integration): string {
 	return t(integration.descriptionKey);
+}
+
+// Get localized short description for an integration
+function getIntegrationShortDescription(
+	integration: Integration,
+): string | undefined {
+	return integration.shortDescriptionKey
+		? t(integration.shortDescriptionKey)
+		: undefined;
 }
 
 // Get localized tag name
@@ -486,6 +541,7 @@ function notifyMe(_id: string) {
             id: integration.id,
             name: getIntegrationName(integration),
             description: getIntegrationDescription(integration),
+            shortDescription: getIntegrationShortDescription(integration),
             icon: integration.icon,
             status: integration.status,
             tags: integration.tags.map((tag) => getTagName(tag)),

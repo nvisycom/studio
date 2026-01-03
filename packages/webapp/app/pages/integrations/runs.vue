@@ -174,7 +174,7 @@ function formatDuration(
 
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
-    <div class="max-w-4xl mx-auto w-full">
+    <div class="max-w-6xl mx-auto w-full">
       <!-- Loading State -->
       <div v-if="isLoading" class="flex items-center justify-center py-12">
         <Loader2 class="h-8 w-8 animate-spin text-neutral-400" />

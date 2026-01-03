@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Member } from "@nvisy/sdk/datatypes";
-import { Users, MoreHorizontal, Trash2 } from "lucide-vue-next";
+import { Users, MoreHorizontal, Trash2, UserCog } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { EntityAvatar } from "@/components/common";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -27,6 +27,7 @@ interface Props {
 
 interface Emits {
 	(e: "remove", memberId: string): void;
+	(e: "edit", memberId: string): void;
 	(e: "toggleSelectAll"): void;
 	(e: "toggleMember", memberId: string): void;
 	(e: "deleteSelected"): void;
@@ -58,18 +59,22 @@ function formatDate(date: string): string {
               class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
             />
           </TableHead>
-          <TableHead class="uppercase text-xs font-light tracking-wider">{{
-            t("members.table.headers.member")
-          }}</TableHead>
-          <TableHead class="uppercase text-xs font-light tracking-wider">{{
-            t("members.table.headers.role")
-          }}</TableHead>
-          <TableHead class="uppercase text-xs font-light tracking-wider">{{
-            t("members.table.headers.twoFA")
-          }}</TableHead>
-          <TableHead class="uppercase text-xs font-light tracking-wider">{{
-            t("members.table.headers.joined")
-          }}</TableHead>
+          <TableHead
+            class="uppercase text-xs font-light tracking-wider min-w-[280px]"
+            >{{ t("members.table.headers.member") }}</TableHead
+          >
+          <TableHead
+            class="uppercase text-xs font-light tracking-wider w-[140px]"
+            >{{ t("members.table.headers.role") }}</TableHead
+          >
+          <TableHead
+            class="uppercase text-xs font-light tracking-wider w-[160px]"
+            >{{ t("members.table.headers.twoFA") }}</TableHead
+          >
+          <TableHead
+            class="uppercase text-xs font-light tracking-wider w-[160px]"
+            >{{ t("members.table.headers.joined") }}</TableHead
+          >
           <TableHead class="w-[50px]">
             <DropdownMenu>
               <DropdownMenuTrigger as-child>
@@ -169,6 +174,14 @@ function formatDate(date: string): string {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  @click="emit('edit', member.accountId)"
+                  :disabled="member.memberRole === 'owner'"
+                  class="cursor-pointer"
+                >
+                  <UserCog :size="14" class="mr-2" />
+                  {{ t("members.table.actions.edit") }}
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   @click="emit('remove', member.accountId)"
                   :disabled="member.memberRole === 'owner'"

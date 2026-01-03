@@ -257,7 +257,7 @@ async function testWebhook(webhookId: string) {
 
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
-    <div class="max-w-4xl mx-auto w-full">
+    <div class="max-w-6xl mx-auto w-full">
       <!-- Loading State -->
       <div
         v-if="isLoadingIntegrations || isLoadingWebhooks"

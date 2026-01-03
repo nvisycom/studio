@@ -1,27 +1,113 @@
 import { useQuery, useMutation } from "@pinia/colada";
-import type { File as NvisyFile, UpdateFile } from "@nvisy/sdk/datatypes";
+import type {
+	File as NvisyFile,
+	UpdateFile,
+	ListFilesQuery,
+} from "@nvisy/sdk/datatypes";
+
+export interface UseFilesOptions {
+	workspaceId?: MaybeRef<string | null>;
+	query?: MaybeRef<ListFilesQuery>;
+	pageSize?: number;
+}
 
 /**
- * Composable for file operations
+ * Composable for file operations with infinite scroll support
  */
-export function useFiles(workspaceId?: MaybeRef<string | null>) {
+export function useFiles(options: UseFilesOptions = {}) {
 	const { $nvisyClient } = useNuxtApp();
 	const { authToken } = useAuth();
 	const { currentWorkspaceId } = useWorkspaces();
 
 	const effectiveWorkspaceId = computed(
-		() => (workspaceId ? toValue(workspaceId) : currentWorkspaceId.value) || "",
+		() =>
+			(options.workspaceId
+				? toValue(options.workspaceId)
+				: currentWorkspaceId.value) || "",
 	);
 
+	const pageSize = options.pageSize ?? 50;
+
+	// Track all loaded files and current offset
+	const allFiles = ref<NvisyFile[]>([]);
+	const currentOffset = ref(0);
+	const hasMore = ref(true);
+	const isLoadingMore = ref(false);
+
+	const queryParams = computed<ListFilesQuery>(() => ({
+		...toValue(options.query ?? {}),
+	}));
+
 	const filesQuery = useQuery({
-		key: () => ["files", effectiveWorkspaceId.value],
+		key: () => [
+			"files",
+			effectiveWorkspaceId.value,
+			JSON.stringify(queryParams.value),
+		],
 		query: async () => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			return await client.files.listFiles(effectiveWorkspaceId.value);
+			const result = await client.files.listFiles(effectiveWorkspaceId.value, {
+				...queryParams.value,
+				offset: 0,
+				limit: pageSize,
+			});
+			// Reset state on initial load
+			allFiles.value = result;
+			currentOffset.value = result.length;
+			hasMore.value = result.length >= pageSize;
+			return result;
 		},
 		enabled: () => !!effectiveWorkspaceId.value && !!authToken.value?.apiToken,
+		staleTime: 0,
 	});
+
+	// Sync allFiles when query data changes (e.g., from cache on navigation)
+	watch(
+		() => filesQuery.data.value,
+		(data) => {
+			if (data && allFiles.value.length === 0) {
+				allFiles.value = data;
+				currentOffset.value = data.length;
+				hasMore.value = data.length >= pageSize;
+			}
+		},
+		{ immediate: true },
+	);
+
+	// Load more files for infinite scroll
+	async function loadMore() {
+		if (!hasMore.value || isLoadingMore.value) return;
+
+		const client = $nvisyClient.value;
+		if (!client) return;
+
+		isLoadingMore.value = true;
+		try {
+			const result = await client.files.listFiles(effectiveWorkspaceId.value, {
+				...queryParams.value,
+				offset: currentOffset.value,
+				limit: pageSize,
+			});
+
+			if (result.length > 0) {
+				allFiles.value = [...allFiles.value, ...result];
+				currentOffset.value += result.length;
+			}
+
+			hasMore.value = result.length >= pageSize;
+		} finally {
+			isLoadingMore.value = false;
+		}
+	}
+
+	// Reset and reload files
+	function reset() {
+		allFiles.value = [];
+		currentOffset.value = 0;
+		hasMore.value = true;
+		filesQuery.refresh();
+	}
 
 	const updateFileMutation = useMutation({
 		mutation: async ({
@@ -36,7 +122,7 @@ export function useFiles(workspaceId?: MaybeRef<string | null>) {
 			return await client.files.updateFile(fileId, updates);
 		},
 		onSuccess() {
-			filesQuery.refresh();
+			reset();
 		},
 	});
 
@@ -47,7 +133,7 @@ export function useFiles(workspaceId?: MaybeRef<string | null>) {
 			await client.files.deleteFile(fileId);
 		},
 		onSuccess() {
-			filesQuery.refresh();
+			reset();
 		},
 	});
 
@@ -60,7 +146,7 @@ export function useFiles(workspaceId?: MaybeRef<string | null>) {
 			return await client.files.uploadFiles(wId, files);
 		},
 		onSuccess() {
-			filesQuery.refresh();
+			reset();
 		},
 	});
 
@@ -97,10 +183,15 @@ export function useFiles(workspaceId?: MaybeRef<string | null>) {
 
 	return {
 		// Query state
-		files: filesQuery.data,
+		files: allFiles,
 		isLoading: filesQuery.isLoading,
 		error: filesQuery.error,
-		refresh: filesQuery.refresh,
+		refresh: reset,
+
+		// Infinite scroll
+		loadMore,
+		hasMore,
+		isLoadingMore,
 
 		// Mutations
 		updateFile: updateFileMutation.mutate,

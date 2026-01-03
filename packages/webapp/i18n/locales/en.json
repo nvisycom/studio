@@ -330,11 +330,17 @@
 			"title": "Files",
 			"description": "Manage your uploaded files and documents"
 		},
+		"selection": {
+			"count": "{count} selected",
+			"clear": "Clear",
+			"delete": "Delete"
+		},
 		"table": {
 			"headers": {
 				"name": "Name",
 				"size": "Size",
 				"status": "Status",
+				"created": "Created",
 				"updated": "Updated"
 			},
 			"empty": {
@@ -367,7 +373,8 @@
 			"edit": "Edit",
 			"rename": "Rename",
 			"view": "View",
-			"delete": "Delete"
+			"delete": "Delete",
+			"clearFilters": "Clear Filters"
 		},
 		"dialogs": {
 			"delete": {
@@ -378,11 +385,23 @@
 				"confirm": "Delete",
 				"cancel": "Cancel"
 			},
-			"rename": {
-				"title": "Rename File",
+			"edit": {
+				"title": "Edit File",
+				"description": "Update the file name and other properties.",
 				"nameLabel": "File Name",
 				"namePlaceholder": "Enter file name",
-				"save": "Save",
+				"priorityLabel": "Processing Priority",
+				"priorityDescription": "Higher priority files are processed first (1-10)",
+				"indexedLabel": "Knowledge Indexing",
+				"indexedDescription": "Include this file in knowledge extraction",
+				"visualSupportLabel": "Visual Support",
+				"visualSupportDescription": "Enable visual element extraction (images, charts)",
+				"segmentationLabel": "Content Segmentation",
+				"segmentationDescription": "How the file content is split for processing",
+				"segmentationNone": "None",
+				"segmentationSemantic": "Semantic",
+				"segmentationFixed": "Fixed",
+				"save": "Save Changes",
 				"cancel": "Cancel"
 			},
 			"upload": {
@@ -400,17 +419,20 @@
 		"messages": {
 			"fileDeleted": "File deleted successfully",
 			"filesDeleted": "Files deleted successfully",
-			"fileRenamed": "File renamed successfully",
+			"fileUpdated": "File updated successfully",
 			"fileUploaded": "File uploaded successfully",
 			"filesUploaded": "Files uploaded successfully",
 			"downloadStarted": "Download started"
 		},
 		"errors": {
 			"deleteFailed": "Failed to delete file",
-			"renameFailed": "Failed to rename file",
+			"updateFailed": "Failed to update file",
 			"uploadFailed": "Failed to upload file",
 			"downloadFailed": "Failed to download file",
 			"loadFailed": "Failed to load files"
+		},
+		"loading": {
+			"more": "Loading more..."
 		}
 	},
 	"members": {
@@ -429,6 +451,7 @@
 				"emailPlaceholder": "email{'@'}example.com",
 				"button": "Send Invite",
 				"copyLink": "Copy Invite Link",
+				"createLink": "Create Invite Link",
 				"expiry": {
 					"label": "Expires In",
 					"never": "Never",
@@ -452,6 +475,7 @@
 				"expires": "Expires"
 			},
 			"actions": {
+				"edit": "Edit",
 				"delete": "Delete",
 				"deleteSelected": "Delete Selected",
 				"cancel": "Cancel",
@@ -478,6 +502,7 @@
 			"inviteSent": "Invitation sent successfully",
 			"linkCopied": "Invite link copied to clipboard",
 			"memberRemoved": "Member removed successfully",
+			"memberUpdated": "Member role updated successfully",
 			"membersRemoved": "Members removed successfully",
 			"membersPartiallyRemoved": "Some members could not be removed",
 			"inviteCanceled": "Invitation canceled successfully",
@@ -489,6 +514,7 @@
 			"linkCopyFailed": "Failed to copy invite link",
 			"linkFailed": "Failed to generate invite link",
 			"removeFailed": "Failed to remove member",
+			"updateFailed": "Failed to update member",
 			"someRemoveFailed": "{count} member failed to be removed | {count} members failed to be removed",
 			"cancelFailed": "Failed to cancel invitation",
 			"someCancelFailed": "{count} invitation failed to be canceled | {count} invitations failed to be canceled"
@@ -542,6 +568,12 @@
 				"noteDescription": "You can always create new invitations later.",
 				"keepButton": "Keep",
 				"confirmButton": "Cancel Invitations"
+			},
+			"edit": {
+				"title": "Edit Member",
+				"description": "Change the role for this team member.",
+				"memberLabel": "Member",
+				"roleLabel": "Role"
 			}
 		}
 	},
@@ -629,6 +661,25 @@
 			}
 		}
 	},
+	"invite": {
+		"title": "You're Invited",
+		"subtitle": "You've been invited to join a workspace",
+		"loading": "Loading invite details...",
+		"yourRole": "Your role",
+		"expired": "Invite Expired",
+		"expiredDescription": "This invitation has expired. Please request a new invite from the workspace administrator.",
+		"expiresInHours": "Expires in {hours} hours",
+		"expiresInDays": "Expires in {days} days",
+		"accept": "Accept",
+		"decline": "Decline",
+		"joining": "Joining...",
+		"joinError": "Failed to join workspace. Please try again.",
+		"footer": "By accepting this invite, you agree to the workspace's terms and policies.",
+		"error": {
+			"title": "Invalid Invite",
+			"description": "This invite link is invalid or has been revoked. Please check the link or request a new invite."
+		}
+	},
 	"integrations": {
 		"page": {
 			"title": "Active Integrations",
@@ -703,6 +754,9 @@
 				"ai": {
 					"name": "AI & Enhancements",
 					"assistants": "AI Assistants"
+				},
+				"sdk": {
+					"name": "SDKs & Libraries"
 				}
 			},
 			"items": {
@@ -719,7 +773,8 @@
 					"description": "Connect Dropbox for easy file import and export"
 				},
 				"awsS3": {
-					"name": "MinIO / S3-Compatible",
+					"name": "AWS S3",
+					"shortDescription": "MinIO, DigitalOcean, etc.",
 					"description": "Connect any S3-compatible object storage"
 				},
 				"slack": {
@@ -733,6 +788,10 @@
 				"notion": {
 					"name": "Notion",
 					"description": "Sync documents and data with Notion workspaces"
+				},
+				"discord": {
+					"name": "Discord",
+					"description": "Send notifications and updates to Discord channels"
 				},
 				"zapier": {
 					"name": "Zapier",
@@ -753,6 +812,16 @@
 				"claude": {
 					"name": "Anthropic Claude",
 					"description": "Leverage Anthropic Claude for intelligent analysis"
+				},
+				"javascriptSdk": {
+					"name": "JavaScript SDK",
+					"shortDescription": "{'@'}nvisy/sdk",
+					"description": "Integrate Nvisy into your JavaScript or TypeScript applications"
+				},
+				"pythonSdk": {
+					"name": "Python SDK",
+					"shortDescription": "nvisy-sdk",
+					"description": "Integrate Nvisy into your Python applications"
 				}
 			},
 			"filters": {
@@ -784,7 +853,8 @@
 				"noCode": "No-Code",
 				"ai": "AI",
 				"enterprise": "Enterprise",
-				"developer": "Developer"
+				"developer": "Developer",
+				"sdk": "SDK"
 			}
 		},
 		"table": {
@@ -793,6 +863,7 @@
 				"url": "URL",
 				"enabled": "Enabled",
 				"events": "Events",
+				"headers": "Headers",
 				"created": "Created",
 				"lastDelivery": "Last Delivery",
 				"connectedAt": "Connected"

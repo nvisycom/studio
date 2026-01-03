@@ -45,6 +45,7 @@ const emit = defineEmits<{
 		order: SortOrder,
 	];
 	removeMember: [memberId: string];
+	editMember: [memberId: string];
 	cancelInvite: [inviteId: string];
 	toggleSelectAllMembers: [];
 	toggleMember: [memberId: string];
@@ -222,6 +223,7 @@ function selectSorting(
           :selected-members="selectedMembers"
           :all-selected="allMembersSelected"
           @remove="emit('removeMember', $event)"
+          @edit="emit('editMember', $event)"
           @toggle-select-all="emit('toggleSelectAllMembers')"
           @toggle-member="emit('toggleMember', $event)"
           @delete-selected="emit('deleteSelectedMembers')"

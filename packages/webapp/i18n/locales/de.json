@@ -330,11 +330,17 @@
 			"title": "Dateien",
 			"description": "Verwalten Sie Ihre hochgeladenen Dateien und Dokumente"
 		},
+		"selection": {
+			"count": "{count} ausgewählt",
+			"clear": "Auswahl aufheben",
+			"delete": "Löschen"
+		},
 		"table": {
 			"headers": {
 				"name": "Name",
 				"size": "Größe",
 				"status": "Status",
+				"created": "Erstellt",
 				"updated": "Aktualisiert"
 			},
 			"empty": {
@@ -367,7 +373,8 @@
 			"edit": "Bearbeiten",
 			"rename": "Umbenennen",
 			"view": "Ansehen",
-			"delete": "Löschen"
+			"delete": "Löschen",
+			"clearFilters": "Filter löschen"
 		},
 		"dialogs": {
 			"delete": {
@@ -378,11 +385,23 @@
 				"confirm": "Löschen",
 				"cancel": "Abbrechen"
 			},
-			"rename": {
-				"title": "Datei Umbenennen",
+			"edit": {
+				"title": "Datei Bearbeiten",
+				"description": "Aktualisieren Sie den Dateinamen und andere Eigenschaften.",
 				"nameLabel": "Dateiname",
 				"namePlaceholder": "Dateinamen eingeben",
-				"save": "Speichern",
+				"priorityLabel": "Verarbeitungspriorität",
+				"priorityDescription": "Dateien mit höherer Priorität werden zuerst verarbeitet (1-10)",
+				"indexedLabel": "Wissensindexierung",
+				"indexedDescription": "Diese Datei in die Wissensextraktion einbeziehen",
+				"visualSupportLabel": "Visuelle Unterstützung",
+				"visualSupportDescription": "Visuelle Elementextraktion aktivieren (Bilder, Diagramme)",
+				"segmentationLabel": "Inhaltssegmentierung",
+				"segmentationDescription": "Wie der Dateiinhalt zur Verarbeitung aufgeteilt wird",
+				"segmentationNone": "Keine",
+				"segmentationSemantic": "Semantisch",
+				"segmentationFixed": "Fest",
+				"save": "Änderungen Speichern",
 				"cancel": "Abbrechen"
 			},
 			"upload": {
@@ -400,17 +419,20 @@
 		"messages": {
 			"fileDeleted": "Datei erfolgreich gelöscht",
 			"filesDeleted": "Dateien erfolgreich gelöscht",
-			"fileRenamed": "Datei erfolgreich umbenannt",
+			"fileUpdated": "Datei erfolgreich aktualisiert",
 			"fileUploaded": "Datei erfolgreich hochgeladen",
 			"filesUploaded": "Dateien erfolgreich hochgeladen",
 			"downloadStarted": "Download gestartet"
 		},
 		"errors": {
 			"deleteFailed": "Datei konnte nicht gelöscht werden",
-			"renameFailed": "Datei konnte nicht umbenannt werden",
+			"updateFailed": "Datei konnte nicht aktualisiert werden",
 			"uploadFailed": "Datei konnte nicht hochgeladen werden",
 			"downloadFailed": "Datei konnte nicht heruntergeladen werden",
 			"loadFailed": "Dateien konnten nicht geladen werden"
+		},
+		"loading": {
+			"more": "Lade mehr..."
 		}
 	},
 	"members": {
@@ -429,6 +451,7 @@
 				"emailPlaceholder": "email{'@'}beispiel.com",
 				"button": "Einladung Senden",
 				"copyLink": "Einladungslink Kopieren",
+				"createLink": "Einladungslink Erstellen",
 				"expiry": {
 					"label": "Läuft ab in",
 					"never": "Nie",
@@ -452,6 +475,7 @@
 				"expires": "Läuft ab"
 			},
 			"actions": {
+				"edit": "Bearbeiten",
 				"delete": "Löschen",
 				"deleteSelected": "Ausgewählte Löschen",
 				"cancel": "Abbrechen",
@@ -478,6 +502,7 @@
 			"inviteSent": "Einladung erfolgreich gesendet",
 			"linkCopied": "Einladungslink in die Zwischenablage kopiert",
 			"memberRemoved": "Mitglied erfolgreich entfernt",
+			"memberUpdated": "Mitgliedsrolle erfolgreich aktualisiert",
 			"membersRemoved": "Mitglieder erfolgreich entfernt",
 			"inviteCanceled": "Einladung erfolgreich storniert",
 			"invitesCanceled": "Einladungen erfolgreich storniert"
@@ -487,6 +512,7 @@
 			"linkCopyFailed": "Einladungslink konnte nicht kopiert werden",
 			"linkFailed": "Einladungslink konnte nicht generiert werden",
 			"removeFailed": "Mitglied konnte nicht entfernt werden",
+			"updateFailed": "Mitglied konnte nicht aktualisiert werden",
 			"cancelFailed": "Einladung konnte nicht storniert werden"
 		},
 		"roles": {
@@ -538,6 +564,12 @@
 				"noteDescription": "Sie können später jederzeit neue Einladungen erstellen.",
 				"keepButton": "Behalten",
 				"confirmButton": "Einladungen Abbrechen"
+			},
+			"edit": {
+				"title": "Mitglied Bearbeiten",
+				"description": "Ändern Sie die Rolle für dieses Teammitglied.",
+				"memberLabel": "Mitglied",
+				"roleLabel": "Rolle"
 			}
 		}
 	},
@@ -625,6 +657,25 @@
 			}
 		}
 	},
+	"invite": {
+		"title": "Sie sind eingeladen",
+		"subtitle": "Sie wurden eingeladen, einem Arbeitsbereich beizutreten",
+		"loading": "Einladungsdetails werden geladen...",
+		"yourRole": "Ihre Rolle",
+		"expired": "Einladung abgelaufen",
+		"expiredDescription": "Diese Einladung ist abgelaufen. Bitte fordern Sie eine neue Einladung vom Arbeitsbereich-Administrator an.",
+		"expiresInHours": "Läuft in {hours} Stunden ab",
+		"expiresInDays": "Läuft in {days} Tagen ab",
+		"accept": "Annehmen",
+		"decline": "Ablehnen",
+		"joining": "Beitritt...",
+		"joinError": "Beitritt zum Arbeitsbereich fehlgeschlagen. Bitte versuchen Sie es erneut.",
+		"footer": "Mit der Annahme dieser Einladung stimmen Sie den Bedingungen und Richtlinien des Arbeitsbereichs zu.",
+		"error": {
+			"title": "Ungültige Einladung",
+			"description": "Dieser Einladungslink ist ungültig oder wurde widerrufen. Bitte überprüfen Sie den Link oder fordern Sie eine neue Einladung an."
+		}
+	},
 	"integrations": {
 		"page": {
 			"title": "Aktive Integrationen",
@@ -699,6 +750,9 @@
 				"ai": {
 					"name": "KI & Erweiterungen",
 					"assistants": "KI-Assistenten"
+				},
+				"sdk": {
+					"name": "SDKs & Bibliotheken"
 				}
 			},
 			"items": {
@@ -719,7 +773,8 @@
 					"description": "Enterprise-Dokumentenmanagement mit SharePoint"
 				},
 				"awsS3": {
-					"name": "MinIO / S3-Kompatibel",
+					"name": "AWS S3",
+					"shortDescription": "MinIO, DigitalOcean, etc.",
 					"description": "Beliebigen S3-kompatiblen Objektspeicher verbinden"
 				},
 				"slack": {
@@ -733,6 +788,10 @@
 				"notion": {
 					"name": "Notion",
 					"description": "Dokumente und Daten mit Notion Workspaces synchronisieren"
+				},
+				"discord": {
+					"name": "Discord",
+					"description": "Benachrichtigungen und Updates an Discord-Kanäle senden"
 				},
 				"zapier": {
 					"name": "Zapier",
@@ -753,6 +812,16 @@
 				"claude": {
 					"name": "Anthropic Claude",
 					"description": "Anthropic Claude für intelligente Analyse nutzen"
+				},
+				"javascriptSdk": {
+					"name": "JavaScript SDK",
+					"shortDescription": "{'@'}nvisy/sdk",
+					"description": "Nvisy in Ihre JavaScript- oder TypeScript-Anwendungen integrieren"
+				},
+				"pythonSdk": {
+					"name": "Python SDK",
+					"shortDescription": "nvisy-sdk",
+					"description": "Nvisy in Ihre Python-Anwendungen integrieren"
 				}
 			},
 			"filters": {
@@ -784,7 +853,8 @@
 				"noCode": "No-Code",
 				"ai": "KI",
 				"enterprise": "Enterprise",
-				"developer": "Entwickler"
+				"developer": "Entwickler",
+				"sdk": "SDK"
 			}
 		},
 		"table": {
@@ -793,6 +863,7 @@
 				"url": "URL",
 				"enabled": "Aktiviert",
 				"events": "Ereignisse",
+				"headers": "Header",
 				"created": "Erstellt",
 				"lastDelivery": "Letzte Zustellung",
 				"connectedAt": "Verbunden Am"

@@ -60,7 +60,6 @@ const { leaveAsync, isLeaving } = useMembers();
 // Form state - use null to indicate "not yet initialized"
 const workspaceName = ref<string | null>(null);
 const workspaceDescription = ref<string | null>(null);
-const autoCleanup = ref<boolean | null>(null);
 const requireApproval = ref<boolean | null>(null);
 const enableComments = ref<boolean | null>(null);
 const copiedWorkspaceId = ref(false);
@@ -82,9 +81,6 @@ watch(
 			if (workspaceDescription.value === null) {
 				workspaceDescription.value = workspace.description ?? "";
 			}
-			if (autoCleanup.value === null) {
-				autoCleanup.value = workspace.autoCleanup;
-			}
 			if (requireApproval.value === null) {
 				requireApproval.value = workspace.requireApproval;
 			}
@@ -103,7 +99,6 @@ watch(
 		// Reset to null so the next workspace data triggers re-initialization
 		workspaceName.value = null;
 		workspaceDescription.value = null;
-		autoCleanup.value = null;
 		requireApproval.value = null;
 		enableComments.value = null;
 	},
@@ -123,9 +118,8 @@ const hasInfoChanges = computed(() => {
 
 // Check if options have changed
 const hasOptionsChanges = computed(() => {
-	if (!currentWorkspace.value || autoCleanup.value === null) return false;
+	if (!currentWorkspace.value || requireApproval.value === null) return false;
 	return (
-		autoCleanup.value !== currentWorkspace.value.autoCleanup ||
 		requireApproval.value !== currentWorkspace.value.requireApproval ||
 		enableComments.value !== currentWorkspace.value.enableComments
 	);
@@ -170,7 +164,6 @@ async function saveWorkspaceOptions() {
 		await updateWorkspaceAsync({
 			workspaceId,
 			updates: {
-				autoCleanup: autoCleanup.value,
 				requireApproval: requireApproval.value,
 				enableComments: enableComments.value,
 			},
@@ -382,22 +375,6 @@ const canDelete = computed(() => {
             }}</CardDescription>
           </CardHeader>
           <CardContent class="space-y-6">
-            <!-- Auto Cleanup -->
-            <div class="flex items-center justify-between">
-              <div class="space-y-0.5">
-                <Label>{{
-                  t("settings.workspace.options.autoCleanup.label")
-                }}</Label>
-                <p class="text-sm text-neutral-500 dark:text-neutral-400">
-                  {{ t("settings.workspace.options.autoCleanup.description") }}
-                </p>
-              </div>
-              <Switch
-                :model-value="autoCleanup ?? false"
-                @update:model-value="autoCleanup = $event"
-              />
-            </div>
-
             <!-- Require Approval -->
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">

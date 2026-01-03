@@ -59,6 +59,12 @@ function formatUrl(url: string): string {
           t("integrations.table.headers.events")
         }}</TableHead>
         <TableHead class="uppercase text-xs font-light tracking-wider">{{
+          t("integrations.table.headers.headers")
+        }}</TableHead>
+        <TableHead class="uppercase text-xs font-light tracking-wider">{{
+          t("integrations.table.headers.created")
+        }}</TableHead>
+        <TableHead class="uppercase text-xs font-light tracking-wider">{{
           t("integrations.table.headers.lastDelivery")
         }}</TableHead>
         <TableHead class="w-24"></TableHead>
@@ -100,6 +106,20 @@ function formatUrl(url: string): string {
                 count: webhook.events.length,
               })
             }}
+          </span>
+        </TableCell>
+        <TableCell>
+          <span
+            class="text-xs font-light text-neutral-600 dark:text-neutral-400"
+          >
+            {{ Object.keys(webhook.headers || {}).length }}
+          </span>
+        </TableCell>
+        <TableCell>
+          <span
+            class="text-sm font-light text-neutral-600 dark:text-neutral-400"
+          >
+            {{ formatRelativeTime(webhook.createdAt, t) }}
           </span>
         </TableCell>
         <TableCell>

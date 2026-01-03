@@ -12,6 +12,7 @@ interface Integration {
 	id: string | number;
 	name: string;
 	description: string;
+	shortDescription?: string;
 	icon: string;
 	status: "available" | "unavailable";
 	tags?: string[];
@@ -68,6 +69,12 @@ const emit = defineEmits<Emits>();
           <CardTitle class="text-base font-normal truncate">
             {{ integration.name }}
           </CardTitle>
+          <p
+            v-if="integration.shortDescription"
+            class="text-xs font-light text-neutral-500 dark:text-neutral-400 truncate mt-0.5"
+          >
+            {{ integration.shortDescription }}
+          </p>
         </div>
       </div>
 

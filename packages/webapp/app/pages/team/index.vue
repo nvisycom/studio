@@ -25,6 +25,7 @@ function getErrorMessage(err: unknown, fallback: string): string {
 import {
 	DeleteMemberModal,
 	DeleteMultipleMembersModal,
+	EditMemberModal,
 	CancelInviteModal,
 	CancelMultipleInvitesModal,
 	InviteMembersCard,
@@ -61,6 +62,8 @@ const {
 	members,
 	isLoading: isLoadingMembers,
 	removeMemberAsync,
+	updateMemberAsync,
+	isUpdatingMember,
 	refresh: refreshMembers,
 } = useMembers(membersQuery);
 
@@ -83,6 +86,8 @@ const inviteSent = ref(false);
 const memberToDelete = ref<Member | null>(null);
 const isDeleteMemberDialogOpen = ref(false);
 const isDeleteMultipleMembersDialogOpen = ref(false);
+const memberToEdit = ref<Member | null>(null);
+const isEditMemberDialogOpen = ref(false);
 const inviteToCancel = ref<Invite | null>(null);
 const isCancelInviteDialogOpen = ref(false);
 const isCancelMultipleInvitesDialogOpen = ref(false);
@@ -191,6 +196,32 @@ async function deleteMember() {
 		toast.success(t("members.messages.memberRemoved"));
 	} catch (err) {
 		toast.error(getErrorMessage(err, t("members.errors.removeFailed")));
+	}
+}
+
+// ===== Member Edit Functions =====
+
+function openEditMemberDialog(memberId: string) {
+	const member = members.value?.find((m) => m.accountId === memberId);
+	if (member) {
+		memberToEdit.value = member;
+		isEditMemberDialogOpen.value = true;
+	}
+}
+
+async function editMember(role: WorkspaceRole) {
+	if (!memberToEdit.value) return;
+
+	try {
+		await updateMemberAsync({
+			accountId: memberToEdit.value.accountId,
+			updates: { role },
+		});
+		isEditMemberDialogOpen.value = false;
+		memberToEdit.value = null;
+		toast.success(t("members.messages.memberUpdated"));
+	} catch (err) {
+		toast.error(getErrorMessage(err, t("members.errors.updateFailed")));
 	}
 }
 
@@ -311,6 +342,7 @@ function handleSortingChange(
         @update:role-filter="selectedRoleFilter = $event"
         @update:sorting="handleSortingChange"
         @remove-member="openDeleteMemberDialog"
+        @edit-member="openEditMemberDialog"
         @cancel-invite="openCancelInviteDialog"
         @toggle-select-all-members="membersSelection.toggleAll"
         @toggle-member="membersSelection.toggle"
@@ -333,6 +365,14 @@ function handleSortingChange(
         :count="membersSelection.selected.value.size"
         @update:open="isDeleteMultipleMembersDialogOpen = $event"
         @confirm="deleteSelectedMembers"
+      />
+
+      <EditMemberModal
+        :open="isEditMemberDialogOpen"
+        :member="memberToEdit"
+        :is-loading="isUpdatingMember"
+        @update:open="isEditMemberDialogOpen = $event"
+        @confirm="editMember"
       />
 
       <CancelInviteModal

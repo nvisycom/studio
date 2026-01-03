@@ -47,9 +47,13 @@ const helpChatRef = ref();
 // Get authenticated user data
 const { displayName, emailAddress } = useAccount();
 
-// Check if workspace is selected
-const { currentWorkspaceId } = useWorkspaces();
+// Check if workspace is selected and get current role
+const { currentWorkspaceId, currentWorkspace } = useWorkspaces();
 const hasWorkspace = computed(() => !!currentWorkspaceId.value);
+const isAdminOrOwner = computed(() => {
+	const role = currentWorkspace.value?.memberRole;
+	return role === "owner" || role === "admin";
+});
 
 const userData = computed(() => ({
 	name: displayName.value || "Guest",
@@ -144,7 +148,7 @@ function openHelpChat() {
       <NavMain
         :items="data.navAutomation"
         label="Automation"
-        :disabled="!hasWorkspace"
+        :disabled="!hasWorkspace || !isAdminOrOwner"
       />
       <NavMain
         :items="data.navObservability"

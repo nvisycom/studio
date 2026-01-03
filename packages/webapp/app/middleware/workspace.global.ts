@@ -13,6 +13,7 @@ export default defineNuxtRouteMiddleware((to) => {
 		"/account",
 		"/billing",
 		"/settings",
+		"/join",
 	];
 
 	const isWorkspaceFreeRoute = workspaceFreeRoutes.some(

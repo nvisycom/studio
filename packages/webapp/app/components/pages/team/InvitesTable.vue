@@ -77,18 +77,22 @@ async function copyInviteLink(invite: Invite) {
               class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
             />
           </TableHead>
-          <TableHead class="uppercase text-xs font-light tracking-wider">{{
-            t("members.table.headers.invite")
-          }}</TableHead>
-          <TableHead class="uppercase text-xs font-light tracking-wider">{{
-            t("members.table.headers.role")
-          }}</TableHead>
-          <TableHead class="uppercase text-xs font-light tracking-wider">{{
-            t("members.table.headers.invited")
-          }}</TableHead>
-          <TableHead class="uppercase text-xs font-light tracking-wider">{{
-            t("members.table.headers.expires")
-          }}</TableHead>
+          <TableHead
+            class="uppercase text-xs font-light tracking-wider min-w-[280px]"
+            >{{ t("members.table.headers.invite") }}</TableHead
+          >
+          <TableHead
+            class="uppercase text-xs font-light tracking-wider w-[140px]"
+            >{{ t("members.table.headers.role") }}</TableHead
+          >
+          <TableHead
+            class="uppercase text-xs font-light tracking-wider w-[160px]"
+            >{{ t("members.table.headers.invited") }}</TableHead
+          >
+          <TableHead
+            class="uppercase text-xs font-light tracking-wider w-[160px]"
+            >{{ t("members.table.headers.expires") }}</TableHead
+          >
           <TableHead class="w-[50px]">
             <DropdownMenu>
               <DropdownMenuTrigger as-child>

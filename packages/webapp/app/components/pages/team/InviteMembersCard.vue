@@ -149,7 +149,7 @@ function handleCopyLink() {
               class="text-green-500"
             />
             <Copy v-else :size="16" />
-            {{ t("members.forms.invite.copyLink") }}
+            {{ t("members.forms.invite.createLink") }}
           </Button>
         </div>
       </div>
