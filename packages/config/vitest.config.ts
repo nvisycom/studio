@@ -5,12 +5,12 @@ const importUrl = new URL("./src", import.meta.url);
 const srcDir = fileURLToPath(importUrl);
 
 export default defineConfig({
-	test: {
-		globals: true,
-	},
-	resolve: {
-		alias: {
-			"@": srcDir,
-		},
-	},
+  test: {
+    globals: true,
+  },
+  resolve: {
+    alias: {
+      "@": srcDir,
+    },
+  },
 });

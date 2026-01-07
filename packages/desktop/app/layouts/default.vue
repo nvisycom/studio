@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import "@nvisy/shared/styles.css";
+import "~/assets/tailwind.css";
 
 // Layout meta for Nuxt
 definePageMeta({

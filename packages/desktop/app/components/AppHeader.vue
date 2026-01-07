@@ -80,7 +80,6 @@
 </template>
 
 <script setup lang="ts">
-import { Button } from "@nvisy/shared/ui/button";
 import {
 	FolderOpen,
 	ChevronDown,

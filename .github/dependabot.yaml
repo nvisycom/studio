@@ -29,7 +29,10 @@ updates:
     labels:
       - "chore"
     commit-message:
-      prefix: "chore(actions)"
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+    rebase-strategy: "auto"
+    versioning-strategy: "increase"
 
   # Version updates for GitHub Actions
   - package-ecosystem: "github-actions"

@@ -13,22 +13,26 @@ Thank you for your interest in contributing to the Nvisy Desktop Application!
 
 - **Windows**: Microsoft Visual Studio C++ Build Tools
 - **macOS**: Xcode Command Line Tools (`xcode-select --install`)
-- **Linux**: Development packages (see [Tauri prerequisites](https://tauri.app/v2/guides/getting-started/prerequisites/))
+- **Linux**: Development packages (see
+  [Tauri prerequisites](https://tauri.app/v2/guides/getting-started/prerequisites/))
 
 ## Development Setup
 
 1. Fork and clone the repository:
+
 ```bash
 git clone https://github.com/your-username/app.git
 cd app
 ```
 
 2. Install all dependencies:
+
 ```bash
 npm install
 ```
 
 3. Verify setup by running the development server:
+
 ```bash
 cd packages/desktop
 npm run tauri:dev
@@ -59,12 +63,14 @@ app/
 ### 1. Development Server
 
 Start the development environment:
+
 ```bash
 cd packages/desktop
 npm run tauri:dev
 ```
 
-This starts both the Nuxt.js development server and the Tauri application with hot reloading.
+This starts both the Nuxt.js development server and the Tauri application with
+hot reloading.
 
 ### 2. Making Changes
 
@@ -75,9 +81,11 @@ This starts both the Nuxt.js development server and the Tauri application with h
 ### 3. Available Scripts
 
 #### Root Level
+
 - `npm install` - Install dependencies for all packages
 
 #### Desktop Package (`packages/desktop/`)
+
 - `npm run dev` - Nuxt.js development server
 - `npm run build` - Build frontend for production
 - `npm run tauri:dev` - Start Tauri development mode
@@ -87,6 +95,7 @@ This starts both the Nuxt.js development server and the Tauri application with h
 - `npm run check` - Run all checks (lint + format)
 
 #### Config Package (`packages/config/`)
+
 - `npm run build` - Build configuration package
 - `npm run test` - Run test suite with Vitest
 - `npm run test:watch` - Run tests in watch mode
@@ -117,6 +126,7 @@ npm run tauri:build
 ## Code Standards
 
 ### TypeScript
+
 - Use strict TypeScript configuration
 - Prefer type safety over convenience
 - Use native JavaScript private fields (`#privateField`)
@@ -124,6 +134,7 @@ npm run tauri:build
 - Use modern ES2022+ features
 
 ### Vue/Nuxt.js
+
 - Use Composition API with `<script setup>`
 - Follow Vue 3 best practices
 - Use TypeScript in all Vue files
@@ -131,12 +142,14 @@ npm run tauri:build
 - Use Nuxt.js conventions for pages and layouts
 
 ### Rust (Tauri Backend)
+
 - Follow standard Rust conventions
 - Use `cargo fmt` for formatting
 - Run `cargo clippy` for linting
 - Write tests for new functionality
 
 ### General
+
 - Use Biome for code formatting and linting
 - Follow existing patterns in the codebase
 - Write clear, self-documenting code
@@ -146,9 +159,12 @@ npm run tauri:build
 ## Testing
 
 ### Frontend Testing
-Currently, frontend testing is handled at the integration level. We welcome contributions to improve test coverage.
+
+Currently, frontend testing is handled at the integration level. We welcome
+contributions to improve test coverage.
 
 ### Config Package Testing
+
 The config package uses Vitest for testing:
 
 ```bash
@@ -160,6 +176,7 @@ npm run bench           # Performance benchmarks
 ```
 
 ### Writing Tests
+
 - Write unit tests for utility functions
 - Test error conditions and edge cases
 - Use descriptive test names
@@ -169,17 +186,21 @@ npm run bench           # Performance benchmarks
 ## Pull Request Process
 
 ### 1. Before Starting
+
 - Check existing issues and PRs to avoid duplication
 - Create an issue to discuss large changes
 - Fork the repository and create a feature branch
 
 ### 2. Branch Naming
+
 Use descriptive branch names:
+
 - `feature/add-document-encryption`
 - `fix/memory-leak-in-preview`
 - `docs/update-installation-guide`
 
 ### 3. Making Changes
+
 - Make focused, atomic commits
 - Write clear commit messages
 - Keep changes small and reviewable
@@ -223,41 +244,52 @@ Releases are handled by maintainers following semantic versioning:
 ## Getting Help
 
 ### Documentation
+
 - [Tauri Documentation](https://tauri.app/v2/guides/)
 - [Nuxt.js Documentation](https://nuxt.com/docs)
 - [Vue 3 Documentation](https://vuejs.org/guide/)
 - [Biome Documentation](https://biomejs.dev/)
 
 ### Communication
-- **Issues**: [GitHub Issues](https://github.com/nvisycom/app/issues) for bugs and feature requests
-- **Discussions**: [GitHub Discussions](https://github.com/nvisycom/app/discussions) for questions and ideas
+
+- **Issues**: [GitHub Issues](https://github.com/nvisycom/app/issues) for bugs
+  and feature requests
+- **Discussions**:
+  [GitHub Discussions](https://github.com/nvisycom/app/discussions) for
+  questions and ideas
 - **Email**: [support@nvisy.com](mailto:support@nvisy.com) for private matters
 
 ### Common Issues
 
 **Build fails with Rust errors:**
+
 - Update Rust: `rustup update`
 - Check Tauri prerequisites for your platform
 - Clear target directory: `rm -rf packages/desktop/tauri/target`
 
 **Node.js version issues:**
+
 - Use Node.js 23.0+ (check with `node --version`)
 - Consider using a Node version manager (nvm, fnm)
 
 **Dependency issues:**
+
 - Clear node_modules: `rm -rf node_modules && npm install`
 - Clear npm cache: `npm cache clean --force`
 
 ## Recognition
 
 Contributors are recognized in several ways:
+
 - Listed in release notes for their contributions
 - Added to the contributors section (for significant contributions)
 - Invited to the contributors team (for ongoing involvement)
 
 ## License Agreement
 
-By contributing, you agree that your contributions will be licensed under the MIT License that covers the project. You also represent that you have the right to make the contributions.
+By contributing, you agree that your contributions will be licensed under the
+MIT License that covers the project. You also represent that you have the right
+to make the contributions.
 
 ---
 

@@ -1,29 +1,29 @@
 {
-	"compilerOptions": {
-		"target": "esnext",
-		"lib": ["es2022"],
-		"moduleDetection": "force",
-		"module": "esnext",
-		"moduleResolution": "node",
+  "compilerOptions": {
+    "target": "esnext",
+    "lib": ["es2022"],
+    "moduleDetection": "force",
+    "module": "esnext",
+    "moduleResolution": "node",
 
-		"emitDeclarationOnly": true,
-		"allowImportingTsExtensions": true,
-		"resolveJsonModule": true,
-		"types": [],
+    "emitDeclarationOnly": true,
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "types": [],
 
-		"strict": true,
-		"noUnusedLocals": true,
-		"noUncheckedIndexedAccess": true,
-		"declaration": true,
-		"declarationDir": "dist",
-		"outDir": "./dist",
-		"paths": {
-			"@/*": ["./src/*"]
-		},
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUncheckedIndexedAccess": true,
+    "declaration": true,
+    "declarationDir": "dist",
+    "outDir": "./dist",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
 
-		"esModuleInterop": true,
-		"isolatedModules": true,
-		"verbatimModuleSyntax": true,
-		"skipLibCheck": true
-	}
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true
+  }
 }

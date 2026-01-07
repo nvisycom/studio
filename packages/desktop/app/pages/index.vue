@@ -240,13 +240,7 @@
 </template>
 
 <script setup lang="ts">
-import { Button } from "@nvisy/shared/ui/button";
-import {
-	Card,
-	CardHeader,
-	CardTitle,
-	CardContent,
-} from "@nvisy/shared/ui/card";
+import { ref } from 'vue';
 import {
 	Plus,
 	Play,
@@ -307,7 +301,9 @@ const recentActivity = ref([
 ]);
 
 // Helper function to get appropriate icon for file types
-const getFileIcon = (type: string) => {
+const getFileIcon = (type: string | undefined) => {
+	if (!type) return File;
+
 	switch (type) {
 		case "js":
 		case "ts":

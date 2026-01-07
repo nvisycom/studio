@@ -12,7 +12,8 @@ Cross-platform desktop application for the Nvisy document redaction platform.
 
 - **Cross-Platform** - Native desktop app for Windows, macOS, and Linux
 - **Modern Stack** - Built with Tauri, Nuxt.js, and Vue 3
-- **Document Processing** - Advanced document redaction and processing capabilities
+- **Document Processing** - Advanced document redaction and processing
+  capabilities
 - **Secure** - Local processing with enterprise-grade security
 - **Fast** - Rust backend with optimized frontend for maximum performance
 - **Offline-First** - Core functionality works without internet connection
@@ -24,28 +25,33 @@ Cross-platform desktop application for the Nvisy document redaction platform.
 - Platform-specific dependencies:
   - **Windows**: Microsoft Visual Studio C++ Build Tools
   - **macOS**: Xcode Command Line Tools
-  - **Linux**: Development packages (see [Tauri prerequisites](https://tauri.app/v2/guides/getting-started/prerequisites/))
+  - **Linux**: Development packages (see
+    [Tauri prerequisites](https://tauri.app/v2/guides/getting-started/prerequisites/))
 
 ## Installation
 
 ### Download Pre-built Releases
 
-Download the latest release for your platform from [GitHub Releases](https://github.com/nvisycom/app/releases).
+Download the latest release for your platform from
+[GitHub Releases](https://github.com/nvisycom/app/releases).
 
 ### Build from Source
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/nvisycom/app.git
 cd app
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Build and run:
+
 ```bash
 cd packages/desktop
 npm run tauri:build
@@ -56,17 +62,20 @@ npm run tauri:build
 ### Quick Start
 
 1. Install dependencies:
+
 ```bash
 npm install
 ```
 
 2. Start development server:
+
 ```bash
 cd packages/desktop
 npm run tauri:dev
 ```
 
-This will start the Nuxt.js development server and launch the Tauri app in development mode with hot reloading.
+This will start the Nuxt.js development server and launch the Tauri app in
+development mode with hot reloading.
 
 ### Project Structure
 
@@ -88,9 +97,11 @@ app/
 ### Available Scripts
 
 #### Root Level
+
 - `npm install` - Install all dependencies for all packages
 
 #### Desktop Package (`packages/desktop/`)
+
 - `npm run dev` - Start Nuxt.js development server
 - `npm run build` - Build frontend for production
 - `npm run preview` - Preview built frontend
@@ -101,6 +112,7 @@ app/
 - `npm run check` - Run all linting and formatting checks
 
 #### Config Package (`packages/config/`)
+
 - `npm run build` - Build configuration package
 - `npm run test` - Run test suite
 - `npm run test:watch` - Run tests in watch mode
@@ -138,7 +150,8 @@ cd packages/desktop
 npm run tauri:build
 ```
 
-This creates platform-specific installers in `packages/desktop/tauri/target/release/bundle/`.
+This creates platform-specific installers in
+`packages/desktop/tauri/target/release/bundle/`.
 
 ### All Packages
 
@@ -153,16 +166,19 @@ Builds all packages in the workspace.
 ### Common Issues
 
 **Tauri build fails:**
+
 - Ensure Rust is installed and up to date
 - Check platform-specific prerequisites
 - Try clearing the target directory: `rm -rf packages/desktop/tauri/target`
 
 **Development server won't start:**
+
 - Ensure Node.js version is 23.0+
 - Clear node_modules and reinstall: `rm -rf node_modules && npm install`
 - Check port 3000 is available
 
 **Frontend changes not reflected:**
+
 - Ensure development server is running with `npm run dev`
 - Check browser console for errors
 - Try hard refresh or clear browser cache
@@ -175,7 +191,8 @@ Builds all packages in the workspace.
 
 ## Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for
+guidelines on:
 
 - Development setup
 - Coding standards
@@ -188,7 +205,8 @@ See [CHANGELOG.md](CHANGELOG.md) for release notes and version history.
 
 ## License
 
-This project is licensed under the MIT License - see [LICENSE.txt](LICENSE.txt) for details.
+This project is licensed under the MIT License - see [LICENSE.txt](LICENSE.txt)
+for details.
 
 ## Support
 
