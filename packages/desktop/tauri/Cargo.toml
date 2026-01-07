@@ -24,6 +24,8 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 [dependencies]
 tauri = { workspace = true, features = ["tray-icon"] }
 tauri-plugin-opener = { workspace = true, features = [] }
+tauri-plugin-store = { workspace = true, features = [] }
+tauri-plugin-notification = { workspace = true, features = [] }
 
 serde = { workspace = true, features = [] }
 serde_json = { workspace = true, features = [] }

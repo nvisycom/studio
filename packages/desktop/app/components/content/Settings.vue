@@ -35,6 +35,15 @@
               <span class="text-sm">{{ $t('settings.language') }}</span>
               <LanguageSwitcher />
             </div>
+
+            <!-- Use Gradient -->
+            <div class="flex items-center justify-between">
+              <span class="text-sm">{{ $t('settings.useGradient') }}</span>
+              <Switch
+                :model-value="settings.useGradient"
+                @update:model-value="(val: boolean) => setUseGradient(val)"
+              />
+            </div>
           </div>
         </AccordionContent>
       </AccordionItem>
@@ -60,6 +69,7 @@
                     type="text"
                     :placeholder="$t('settings.folderPath')"
                     class="flex-1 h-8 px-3 text-xs bg-muted/50 border border-input rounded-md focus:outline-none focus:ring-1 focus:ring-ring"
+                    @blur="saveLocalFolders"
                   />
                   <Button variant="ghost" size="sm" class="h-8 w-8 p-0" @click="browseFolder('local', index)">
                     <FolderOpen class="w-3.5 h-3.5" />
@@ -89,6 +99,7 @@
                   type="text"
                   :placeholder="$t('settings.folderPath')"
                   class="flex-1 h-8 px-3 text-xs bg-muted/50 border border-input rounded-md focus:outline-none focus:ring-1 focus:ring-ring"
+                  @blur="saveRemoteFolder"
                 />
                 <Button variant="ghost" size="sm" class="h-8 w-8 p-0" @click="browseFolder('remote', 0)">
                   <FolderOpen class="w-3.5 h-3.5" />
@@ -134,6 +145,7 @@
 import { FolderOpen, Plus, X, LogOut } from "lucide-vue-next";
 import { Button } from "~/components/ui/button";
 import { Progress } from "~/components/ui/progress";
+import { Switch } from "~/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import {
   Accordion,
@@ -146,9 +158,11 @@ import LanguageSwitcher from "~/components/shared/LanguageSwitcher.vue";
 import { getInitials } from "~/utils/naming";
 import { useAuth } from "~/composables/useAuth";
 import { useActiveTab } from "~/composables/useActiveTab";
+import { useSettings } from "~/composables/useSettings";
 
 const { logout } = useAuth();
 const activeTab = useActiveTab();
+const { settings, setUseGradient, setLocalFolders, setRemoteFolder } = useSettings();
 
 // User data
 const user = ref({
@@ -157,15 +171,33 @@ const user = ref({
   avatar: "",
 });
 
-// Local folders (can be empty)
-const localFolders = ref<string[]>([]);
+// Local folders - synced with settings
+const localFolders = ref<string[]>([...settings.value.localFolders]);
 
-// Remote folder (single)
-const remoteFolder = ref('/Users/Documents/Nvisy');
+// Remote folder - synced with settings
+const remoteFolder = ref(settings.value.remoteFolder);
+
+// Watch for settings changes to update local state
+watch(() => settings.value.localFolders, (newVal) => {
+  localFolders.value = [...newVal];
+}, { deep: true });
+
+watch(() => settings.value.remoteFolder, (newVal) => {
+  remoteFolder.value = newVal;
+});
 
 const handleLogout = () => {
   logout();
   activeTab.value = 'files';
+};
+
+// Save functions
+const saveLocalFolders = () => {
+  setLocalFolders([...localFolders.value]);
+};
+
+const saveRemoteFolder = () => {
+  setRemoteFolder(remoteFolder.value);
 };
 
 // Folder management
@@ -178,6 +210,7 @@ const addFolder = (type: 'local' | 'remote') => {
 const removeFolder = (type: 'local' | 'remote', index: number) => {
   if (type === 'local') {
     localFolders.value.splice(index, 1);
+    saveLocalFolders();
   }
 };
 

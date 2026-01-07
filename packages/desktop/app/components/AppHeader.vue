@@ -62,22 +62,22 @@
 
             <DropdownMenuItem @click="goToSettings" class="text-sm">
               <SettingsIcon class="w-4 h-4 mr-2" />
-              Settings
+              {{ $t('nav.settings') }}
             </DropdownMenuItem>
             <DropdownMenuItem @click="goToAbout" class="text-sm">
               <Info class="w-4 h-4 mr-2" />
-              About
+              {{ $t('nav.about') }}
             </DropdownMenuItem>
             <DropdownMenuItem @click="checkForUpdates" class="text-sm">
               <RefreshCw class="w-4 h-4 mr-2" />
-              Update
+              {{ $t('nav.update') }}
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />
 
             <DropdownMenuItem @click="quit" class="text-destructive focus:text-destructive text-sm">
               <Power class="w-4 h-4 mr-2" />
-              Quit
+              {{ $t('nav.quit') }}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -94,7 +94,7 @@
             class="text-xs px-2.5 h-6 data-[state=active]:bg-accent rounded-md relative"
           >
             <FileText class="w-3 h-3 mr-1" />
-            Files
+            {{ $t('nav.files') }}
             <span
               v-if="fileNotifications > 0"
               class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-primary text-primary-foreground text-[9px] rounded-full flex items-center justify-center"
@@ -107,7 +107,7 @@
             class="text-xs px-2.5 h-6 data-[state=active]:bg-accent rounded-md relative"
           >
             <Puzzle class="w-3 h-3 mr-1" />
-            Integrations
+            {{ $t('nav.integrations') }}
             <span
               v-if="integrationNotifications > 0"
               class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-yellow-500 text-white text-[9px] rounded-full flex items-center justify-center"
@@ -120,7 +120,7 @@
             class="text-xs px-2.5 h-6 data-[state=active]:bg-accent rounded-md"
           >
             <Server class="w-3 h-3 mr-1" />
-            Services
+            {{ $t('nav.services') }}
           </TabsTrigger>
         </TabsList>
       </Tabs>
@@ -136,14 +136,14 @@
             class="text-xs px-2.5 h-6 data-[state=active]:bg-accent rounded-md"
           >
             <SettingsIcon class="w-3 h-3 mr-1" />
-            Settings
+            {{ $t('nav.settings') }}
           </TabsTrigger>
           <TabsTrigger
             value="about"
             class="text-xs px-2.5 h-6 data-[state=active]:bg-accent rounded-md"
           >
             <Info class="w-3 h-3 mr-1" />
-            About
+            {{ $t('nav.about') }}
           </TabsTrigger>
         </TabsList>
       </Tabs>
@@ -212,9 +212,8 @@ const currentWorkspace = ref({
 
 // Available workspaces
 const workspaces = ref([
-  { id: "workspace-1", name: "Personal" },
-  { id: "workspace-2", name: "Work" },
-  { id: "workspace-3", name: "My Very Long Workspace Name" },
+  { id: "workspace-1", name: "My Workspace" },
+  { id: "workspace-2", name: "My Very Long Workspace Name" },
 ]);
 
 // Notification badges

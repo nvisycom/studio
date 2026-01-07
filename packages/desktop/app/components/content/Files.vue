@@ -11,20 +11,16 @@
           class="w-full h-8 pl-8 pr-3 text-xs bg-muted/50 border-0 rounded-md focus:outline-none focus:ring-1 focus:ring-ring"
         />
       </div>
-      <Button
-        variant="ghost"
-        size="sm"
-        class="h-8 w-8 p-0"
-        :class="{ 'bg-primary/10 text-primary': autoSync }"
-        @click="autoSync = !autoSync"
-      >
-        <RefreshCw class="w-3.5 h-3.5" :class="{ 'animate-spin': isSyncing }" />
-      </Button>
-      <ToggleGroup v-model="viewMode" type="single" class="h-8">
-        <ToggleGroupItem value="list" class="h-8 w-8 p-0">
+      <ToggleGroup v-model="autoSyncValue" type="single" class="h-8 bg-muted/30 rounded-md p-0.5">
+        <ToggleGroupItem value="sync" class="h-7 w-8 p-0 data-[state=off]:bg-muted/50 data-[state=on]:bg-background data-[state=on]:shadow-sm">
+          <RefreshCw class="w-3.5 h-3.5" :class="{ 'animate-spin': isSyncing }" />
+        </ToggleGroupItem>
+      </ToggleGroup>
+      <ToggleGroup v-model="viewMode" type="single" class="h-8 bg-muted/30 rounded-md p-0.5">
+        <ToggleGroupItem value="list" class="h-7 w-8 p-0 data-[state=off]:bg-muted/50 data-[state=on]:bg-background data-[state=on]:shadow-sm">
           <List class="w-3.5 h-3.5" />
         </ToggleGroupItem>
-        <ToggleGroupItem value="folder" class="h-8 w-8 p-0">
+        <ToggleGroupItem value="folder" class="h-7 w-8 p-0 data-[state=off]:bg-muted/50 data-[state=on]:bg-background data-[state=on]:shadow-sm">
           <FolderTree class="w-3.5 h-3.5" />
         </ToggleGroupItem>
       </ToggleGroup>
@@ -152,7 +148,6 @@ import {
   FolderTree,
   RefreshCw,
 } from "lucide-vue-next";
-import { Button } from "~/components/ui/button";
 import {
   Accordion,
   AccordionContent,
@@ -167,6 +162,10 @@ import {
   ContextMenuTrigger,
 } from "~/components/ui/context-menu";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
+import { useDragDrop } from "~/composables/useDragDrop";
+
+// Drag and drop
+const { droppedPaths, clearDroppedPaths } = useDragDrop();
 
 // Search
 const searchQuery = ref("");
@@ -174,11 +173,20 @@ const searchQuery = ref("");
 // View mode (list or folder)
 const viewMode = ref("list");
 
-// Auto-sync toggle
-const autoSync = ref(false);
+// Auto-sync toggle (uses "sync" value when enabled, empty when disabled)
+const autoSyncValue = ref("");
+const autoSync = computed(() => autoSyncValue.value === "sync");
 
 // Syncing state (true when actively syncing)
 const isSyncing = ref(false);
+
+// Helper to get filename from path
+const getFileName = (path: string): string => {
+  return path.split('/').pop() || path;
+};
+
+// Next file ID counter
+const nextFileId = ref(100);
 
 // Mock local files data
 const localFiles = ref([
@@ -187,6 +195,40 @@ const localFiles = ref([
   { id: 3, name: "README.md", size: "4.2 KB", uploading: false, progress: 0 },
   { id: 4, name: "data.xlsx", size: "856 KB", uploading: false, progress: 0 },
 ]);
+
+// Watch for dropped file paths and add them to local files
+watch(droppedPaths, (paths) => {
+  if (paths.length > 0) {
+    for (const path of paths) {
+      const newFile = {
+        id: nextFileId.value++,
+        name: getFileName(path),
+        size: "...",
+        uploading: true,
+        progress: 0,
+      };
+      localFiles.value.unshift(newFile);
+
+      // Simulate upload progress
+      const fileId = newFile.id;
+      const interval = setInterval(() => {
+        const fileToUpdate = localFiles.value.find(f => f.id === fileId);
+        if (fileToUpdate) {
+          fileToUpdate.progress += Math.random() * 15 + 5;
+          if (fileToUpdate.progress >= 100) {
+            fileToUpdate.progress = 100;
+            fileToUpdate.uploading = false;
+            fileToUpdate.size = "1.2 MB"; // Mock size after upload
+            clearInterval(interval);
+          }
+        } else {
+          clearInterval(interval);
+        }
+      }, 200);
+    }
+    clearDroppedPaths();
+  }
+});
 
 // Mock remote files data
 const remoteFiles = ref([

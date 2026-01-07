@@ -1,5 +1,5 @@
 use tauri::{
-    App, AppHandle, Manager, PhysicalPosition, WebviewWindow, Window, WindowEvent,
+    App, AppHandle, Emitter, Manager, PhysicalPosition, WebviewWindow, Window, WindowEvent,
     menu::{Menu, MenuEvent, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIcon, TrayIconBuilder, TrayIconEvent},
 };
@@ -43,7 +43,7 @@ fn position_window_at_tray(window: &WebviewWindow, tray_rect: &tauri::Rect) {
     // Center window horizontally under tray icon
     let x = tray_x - (window_size.width as f64 / 2.0);
     // Position below the tray with some offset for better visibility
-    let y = tray_y + tray_height + 8.0;
+    let y = tray_y + tray_height + 12.0;
 
     let _ = window.set_position(PhysicalPosition::new(x as i32, y as i32));
 }
@@ -94,7 +94,14 @@ fn handle_window_event(window: &Window, event: &WindowEvent) {
         }
         WindowEvent::Focused(false) => {
             // Hide window when it loses focus (clicking elsewhere)
-            let _ = window.hide();
+            // Note: We use a small delay to allow drag-drop operations to complete
+            // The window will emit a custom event that the frontend can use to check
+            // if a drag operation is in progress before hiding
+            let window_clone = window.clone();
+            std::thread::spawn(move || {
+                std::thread::sleep(std::time::Duration::from_millis(100));
+                let _ = window_clone.emit("check-hide-window", ());
+            });
         }
         _ => {}
     }
@@ -134,6 +141,8 @@ fn setup_app(app: &mut App) -> Result<(), Box<dyn std::error::Error>> {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_store::Builder::new().build())
+        .plugin(tauri_plugin_notification::init())
         .invoke_handler(tauri::generate_handler![greet])
         .setup(|app| setup_app(app))
         .on_window_event(handle_window_event)

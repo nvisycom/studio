@@ -13,16 +13,17 @@
     "windows": [
       {
         "title": "nvisy",
-        "width": 400,
-        "height": 720,
+        "width": 460,
+        "height": 680,
         "minWidth": 400,
-        "minHeight": 720,
-        "maxWidth": 400,
-        "maxHeight": 720,
+        "minHeight": 680,
+        "maxWidth": 460,
+        "maxHeight": 680,
         "decorations": false,
         "resizable": false,
         "fullscreen": false,
-        "maximizable": false
+        "maximizable": false,
+        "dragDropEnabled": true
       }
     ],
     "trayIcon": {

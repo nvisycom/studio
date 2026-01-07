@@ -4,7 +4,9 @@
     "integrations": "Integrations",
     "services": "Services",
     "settings": "Settings",
-    "about": "About"
+    "about": "About",
+    "update": "Update",
+    "quit": "Quit"
   },
   "files": {
     "local": "Local Files",
@@ -19,6 +21,10 @@
       "upload": "Upload",
       "download": "Download",
       "delete": "Delete"
+    },
+    "dropzone": {
+      "title": "Drop files to upload",
+      "description": "Files will be added to your local folder"
     }
   },
   "integrations": {
@@ -57,6 +63,7 @@
     "folderPath": "/path/to/folder",
     "addFolder": "Add Folder",
     "theme": "Theme",
+    "useGradient": "Use Gradient",
     "light": "Light",
     "dark": "Dark",
     "system": "System",
@@ -82,6 +89,7 @@
   "about": {
     "version": "Version",
     "build": "Build",
+    "tauri": "Tauri",
     "platform": "Platform",
     "website": "Visit Website",
     "changelog": "View Changelog",
@@ -91,6 +99,10 @@
   "footer": {
     "online": "Online",
     "offline": "Offline",
-    "credits": "credits"
+    "credits": "credits",
+    "syncing": "Syncing...",
+    "synced": "Synced",
+    "syncError": "Sync failed",
+    "notSynced": "Not synced"
   }
 }

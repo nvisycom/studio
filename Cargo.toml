@@ -33,6 +33,8 @@ nvisy-desktop-socket = { path = "./crates/socket", version = "0.1.0" }
 # Tauri
 tauri = { version = "2", features = [] }
 tauri-plugin-opener = { version = "2", features = [] }
+tauri-plugin-store = { version = "2", features = [] }
+tauri-plugin-notification = { version = "2", features = [] }
 tauri-build = { version = "2", features = [] }
 
 # (De)serialization

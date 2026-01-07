@@ -13,6 +13,22 @@
         <span>{{ serviceOnline ? $t('footer.online') : $t('footer.offline') }}</span>
       </button>
 
+      <!-- Center: Sync Status (clickable - opens files) -->
+      <button
+        class="flex items-center space-x-1.5 hover:text-foreground transition-colors"
+        @click="goToFiles"
+      >
+        <RefreshCw
+          class="w-3 h-3"
+          :class="{ 'animate-spin': isSyncing }"
+        />
+        <span v-if="isSyncing">{{ $t('footer.syncing') }}</span>
+        <span v-else-if="syncStatus.state === 'success'" class="text-green-600 dark:text-green-400">{{ $t('footer.synced') }}</span>
+        <span v-else-if="syncStatus.state === 'error'" class="text-red-600 dark:text-red-400">{{ $t('footer.syncError') }}</span>
+        <span v-else-if="lastSyncFormatted">{{ lastSyncFormatted }}</span>
+        <span v-else>{{ $t('footer.notSynced') }}</span>
+      </button>
+
       <!-- Right: Credits and Storage (clickable - opens settings) -->
       <div class="flex items-center space-x-4">
         <!-- Credits -->
@@ -38,12 +54,17 @@
 </template>
 
 <script setup lang="ts">
-import { Zap, HardDrive } from "lucide-vue-next";
+import { Zap, HardDrive, RefreshCw } from "lucide-vue-next";
 import { useActiveTab } from "~/composables/useActiveTab";
 import { useAuth } from "~/composables/useAuth";
+import { useSyncStatus } from "~/composables/useSyncStatus";
 
 const activeTab = useActiveTab();
 const { isAuthenticated } = useAuth();
+const { syncStatus, isSyncing, formatLastSyncTime } = useSyncStatus();
+
+// Computed last sync time
+const lastSyncFormatted = computed(() => formatLastSyncTime());
 
 // Service status
 const serviceOnline = ref(true);
@@ -55,6 +76,10 @@ const creditsTotal = ref(5000);
 // Storage
 const storageUsed = ref("2.4 GB");
 const storageTotal = ref("10 GB");
+
+const goToFiles = () => {
+  activeTab.value = 'files';
+};
 
 const goToServices = () => {
   activeTab.value = 'services';

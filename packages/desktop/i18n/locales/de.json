@@ -4,7 +4,9 @@
     "integrations": "Integrationen",
     "services": "Dienste",
     "settings": "Einstellungen",
-    "about": "Über"
+    "about": "Über",
+    "update": "Aktualisieren",
+    "quit": "Beenden"
   },
   "files": {
     "local": "Lokale Dateien",
@@ -19,6 +21,10 @@
       "upload": "Hochladen",
       "download": "Herunterladen",
       "delete": "Löschen"
+    },
+    "dropzone": {
+      "title": "Dateien zum Hochladen ablegen",
+      "description": "Dateien werden zu Ihrem lokalen Ordner hinzugefügt"
     }
   },
   "integrations": {
@@ -57,6 +63,7 @@
     "folderPath": "/pfad/zum/ordner",
     "addFolder": "Ordner hinzufügen",
     "theme": "Thema",
+    "useGradient": "Farbverlauf verwenden",
     "light": "Hell",
     "dark": "Dunkel",
     "system": "System",
@@ -82,6 +89,7 @@
   "about": {
     "version": "Version",
     "build": "Build",
+    "tauri": "Tauri",
     "platform": "Plattform",
     "website": "Website besuchen",
     "changelog": "Änderungsprotokoll",
@@ -91,6 +99,10 @@
   "footer": {
     "online": "Online",
     "offline": "Offline",
-    "credits": "Credits"
+    "credits": "Credits",
+    "syncing": "Synchronisiere...",
+    "synced": "Synchronisiert",
+    "syncError": "Sync fehlgeschlagen",
+    "notSynced": "Nicht synchronisiert"
   }
 }

@@ -23,9 +23,20 @@ import ContentSettings from "~/components/content/Settings.vue";
 import ContentAbout from "~/components/content/About.vue";
 import { useActiveTab } from "~/composables/useActiveTab";
 import { useAuth } from "~/composables/useAuth";
+import { useKeyboardShortcuts } from "~/composables/useKeyboardShortcuts";
 
 const activeTab = useActiveTab();
 const { isAuthenticated, authenticate } = useAuth();
+const { registerShortcuts, unregisterShortcuts } = useKeyboardShortcuts();
+
+// Register keyboard shortcuts
+onMounted(() => {
+  registerShortcuts();
+});
+
+onUnmounted(() => {
+  unregisterShortcuts();
+});
 
 const handleAuthenticated = (baseUrl: string, apiToken: string) => {
   authenticate(baseUrl, apiToken);

@@ -28,7 +28,7 @@
           <span class="text-xs text-muted-foreground">{{ buildNumber }}</span>
         </div>
         <div class="flex items-center justify-between py-1">
-          <span class="text-sm">Tauri</span>
+          <span class="text-sm">{{ $t('about.tauri') }}</span>
           <span class="text-xs text-muted-foreground">{{ tauriVersion }}</span>
         </div>
         <div class="flex items-center justify-between py-1">
