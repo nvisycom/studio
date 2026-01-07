@@ -1,74 +1,66 @@
 <template>
-  <footer class="border-t border-border bg-background">
-    <div class="flex h-6 items-center justify-between px-4 text-xs text-muted-foreground">
-      <!-- Left: System Status -->
+  <footer v-if="isAuthenticated">
+    <div class="flex items-center justify-between px-4 py-2 text-xs text-muted-foreground">
+      <!-- Left: Service Status (clickable - opens services) -->
+      <button
+        class="flex items-center space-x-1.5 hover:text-foreground transition-colors"
+        @click="goToServices"
+      >
+        <div
+          class="w-2 h-2 rounded-full"
+          :class="serviceOnline ? 'bg-green-500' : 'bg-red-500'"
+        />
+        <span>{{ serviceOnline ? $t('footer.online') : $t('footer.offline') }}</span>
+      </button>
+
+      <!-- Right: Credits and Storage (clickable - opens settings) -->
       <div class="flex items-center space-x-4">
-        <!-- OpenStatus -->
-        <div class="flex items-center space-x-1.5">
-          <!-- <OpenStatus /> -->
-          OpenStatus
-        </div>
+        <!-- Credits -->
+        <button
+          class="flex items-center space-x-1.5 hover:text-foreground transition-colors"
+          @click="goToSettings"
+        >
+          <Zap class="w-3 h-3" />
+          <span>{{ credits }} / {{ creditsTotal }}</span>
+        </button>
 
-        <!-- Connection Status -->
-        <div class="flex items-center space-x-1">
-          <Wifi class="w-3 h-3 text-green-600" />
-          <span>Connected</span>
-        </div>
-
-        <!-- Activity Indicator -->
-        <div class="flex items-center space-x-1">
-          <Activity class="w-3 h-3" />
-          <span>Ready</span>
-        </div>
-      </div>
-
-      <!-- Right: Info and Actions -->
-      <div class="flex items-center space-x-4">
-        <!-- Version -->
-        <div class="flex items-center space-x-1">
-          <span>v0.1.0</span>
-        </div>
-
-        <!-- Memory Usage -->
-        <div class="flex items-center space-x-1">
+        <!-- Storage -->
+        <button
+          class="flex items-center space-x-1.5 hover:text-foreground transition-colors"
+          @click="goToSettings"
+        >
           <HardDrive class="w-3 h-3" />
-          <span>128 MB</span>
-        </div>
-
-        <!-- Current Time -->
-        <div class="flex items-center space-x-1">
-          <Clock class="w-3 h-3" />
-          <span>{{ currentTime }}</span>
-        </div>
+          <span>{{ storageUsed }} / {{ storageTotal }}</span>
+        </button>
       </div>
     </div>
   </footer>
 </template>
 
 <script setup lang="ts">
-// import { OpenStatus } from "@nvisy/shared/components";
-import { Wifi, Activity, HardDrive, Clock } from "lucide-vue-next";
+import { Zap, HardDrive } from "lucide-vue-next";
+import { useActiveTab } from "~/composables/useActiveTab";
+import { useAuth } from "~/composables/useAuth";
 
-// Current time
-const currentTime = ref("");
+const activeTab = useActiveTab();
+const { isAuthenticated } = useAuth();
 
-// Update time every second
-const updateTime = () => {
-	const now = new Date();
-	currentTime.value = now.toLocaleTimeString("en-US", {
-		hour12: false,
-		hour: "2-digit",
-		minute: "2-digit",
-	});
+// Service status
+const serviceOnline = ref(true);
+
+// Credits
+const credits = ref(1250);
+const creditsTotal = ref(5000);
+
+// Storage
+const storageUsed = ref("2.4 GB");
+const storageTotal = ref("10 GB");
+
+const goToServices = () => {
+  activeTab.value = 'services';
 };
 
-// Initialize time and set up interval
-onMounted(() => {
-	updateTime();
-	const interval = setInterval(updateTime, 1000);
-
-	onUnmounted(() => {
-		clearInterval(interval);
-	});
-});
+const goToSettings = () => {
+  activeTab.value = 'settings';
+};
 </script>

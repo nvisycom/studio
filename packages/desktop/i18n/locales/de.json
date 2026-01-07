@@ -1,1 +1,96 @@
-{}
+{
+  "nav": {
+    "files": "Dateien",
+    "integrations": "Integrationen",
+    "services": "Dienste",
+    "settings": "Einstellungen",
+    "about": "Über"
+  },
+  "files": {
+    "local": "Lokale Dateien",
+    "remote": "Remote-Dateien",
+    "search": "Dateien suchen...",
+    "empty": {
+      "local": "Keine lokalen Dateien",
+      "remote": "Keine Remote-Dateien"
+    },
+    "context": {
+      "open": "Öffnen",
+      "upload": "Hochladen",
+      "download": "Herunterladen",
+      "delete": "Löschen"
+    }
+  },
+  "integrations": {
+    "empty": {
+      "title": "Keine Integrationen",
+      "description": "Verbinden Sie Ihre erste Integration"
+    },
+    "context": {
+      "view": "Anzeigen",
+      "edit": "Bearbeiten",
+      "enable": "Aktivieren",
+      "disable": "Deaktivieren"
+    }
+  },
+  "services": {
+    "running": "Läuft",
+    "stopped": "Gestoppt",
+    "empty": {
+      "title": "Keine Dienste",
+      "description": "Keine Dienste konfiguriert"
+    }
+  },
+  "settings": {
+    "tabs": {
+      "billing": "Abrechnung",
+      "preferences": "Einstellungen",
+      "storage": "Speicher"
+    },
+    "api": "API-Konfiguration",
+    "baseUrl": "Basis-URL",
+    "baseUrlPlaceholder": "https://api.nvisy.com",
+    "apiToken": "API-Token",
+    "apiTokenPlaceholder": "API-Token eingeben",
+    "localFolders": "Lokale Ordner",
+    "remoteFolder": "Remote-Ordner",
+    "folderPath": "/pfad/zum/ordner",
+    "addFolder": "Ordner hinzufügen",
+    "theme": "Thema",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "system": "System",
+    "language": "Sprache",
+    "usage": "Nutzung",
+    "plan": "Tarif",
+    "planDescription": "Voller Zugriff auf alle Funktionen",
+    "upgrade": "Upgrade",
+    "credits": "Credits",
+    "storage": "Speicher"
+  },
+  "auth": {
+    "title": "Mit Nvisy verbinden",
+    "description": "Geben Sie Ihre API-Anmeldedaten ein",
+    "baseUrl": "Basis-URL",
+    "apiToken": "API-Token",
+    "connect": "Verbinden",
+    "connecting": "Verbinde...",
+    "logout": "Abmelden",
+    "optional": "optional",
+    "getToken": "API-Token erhalten"
+  },
+  "about": {
+    "version": "Version",
+    "build": "Build",
+    "platform": "Plattform",
+    "website": "Website besuchen",
+    "changelog": "Änderungsprotokoll",
+    "github": "GitHub-Repository",
+    "rights": "Alle Rechte vorbehalten."
+  },
+  "footer": {
+    "online": "Online",
+    "offline": "Offline",
+    "credits": "Credits"
+  }
+}

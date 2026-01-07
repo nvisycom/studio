@@ -1,1 +1,96 @@
-{}
+{
+  "nav": {
+    "files": "Files",
+    "integrations": "Integrations",
+    "services": "Services",
+    "settings": "Settings",
+    "about": "About"
+  },
+  "files": {
+    "local": "Local Files",
+    "remote": "Remote Files",
+    "search": "Search files...",
+    "empty": {
+      "local": "No local files",
+      "remote": "No remote files"
+    },
+    "context": {
+      "open": "Open",
+      "upload": "Upload",
+      "download": "Download",
+      "delete": "Delete"
+    }
+  },
+  "integrations": {
+    "empty": {
+      "title": "No integrations",
+      "description": "Connect your first integration to get started"
+    },
+    "context": {
+      "view": "View",
+      "edit": "Edit",
+      "enable": "Enable",
+      "disable": "Disable"
+    }
+  },
+  "services": {
+    "running": "Running",
+    "stopped": "Stopped",
+    "empty": {
+      "title": "No services",
+      "description": "No services are configured"
+    }
+  },
+  "settings": {
+    "tabs": {
+      "billing": "Billing",
+      "preferences": "Preferences",
+      "storage": "Storage"
+    },
+    "api": "API Configuration",
+    "baseUrl": "Base URL",
+    "baseUrlPlaceholder": "https://api.nvisy.com",
+    "apiToken": "API Token",
+    "apiTokenPlaceholder": "Enter your API token",
+    "localFolders": "Local Folders",
+    "remoteFolder": "Remote Folder",
+    "folderPath": "/path/to/folder",
+    "addFolder": "Add Folder",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "language": "Language",
+    "usage": "Usage",
+    "plan": "Plan",
+    "planDescription": "Full access to all features",
+    "upgrade": "Upgrade",
+    "credits": "Credits",
+    "storage": "Storage"
+  },
+  "auth": {
+    "title": "Connect to Nvisy",
+    "description": "Enter your API credentials to get started",
+    "baseUrl": "Base URL",
+    "apiToken": "API Token",
+    "connect": "Connect",
+    "connecting": "Connecting...",
+    "logout": "Log Out",
+    "optional": "optional",
+    "getToken": "Get your API token"
+  },
+  "about": {
+    "version": "Version",
+    "build": "Build",
+    "platform": "Platform",
+    "website": "Visit Website",
+    "changelog": "View Changelog",
+    "github": "GitHub Repository",
+    "rights": "All rights reserved."
+  },
+  "footer": {
+    "online": "Online",
+    "offline": "Offline",
+    "credits": "credits"
+  }
+}

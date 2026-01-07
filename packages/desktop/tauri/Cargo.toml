@@ -22,7 +22,7 @@ name = "nvisy_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [dependencies]
-tauri = { workspace = true, features = [] }
+tauri = { workspace = true, features = ["tray-icon"] }
 tauri-plugin-opener = { workspace = true, features = [] }
 
 serde = { workspace = true, features = [] }

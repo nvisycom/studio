@@ -13,10 +13,22 @@
     "windows": [
       {
         "title": "nvisy",
-        "width": 800,
-        "height": 600
+        "width": 400,
+        "height": 720,
+        "minWidth": 400,
+        "minHeight": 720,
+        "maxWidth": 400,
+        "maxHeight": 720,
+        "decorations": false,
+        "resizable": false,
+        "fullscreen": false,
+        "maximizable": false
       }
     ],
+    "trayIcon": {
+      "iconPath": "icons/32x32.png",
+      "iconAsTemplate": true
+    },
     "security": {
       "csp": null
     }
