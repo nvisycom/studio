@@ -3,30 +3,31 @@ import { computed } from "vue";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StudioFileTabs from "./StudioFileTabs.vue";
 import {
-	Settings,
-	Key,
-	User,
-	Bell,
-	BarChart3,
-	Cpu,
-	FileSearch,
-	Plug,
-	Library,
-	MessageSquare,
-	Database,
-	PlayCircle,
-	FolderOpen,
-	PenTool,
+  Settings,
+  Key,
+  User,
+  Bell,
+  BarChart3,
+  Cpu,
+  FileSearch,
+  Plug,
+  Library,
+  Database,
+  PlayCircle,
+  FolderOpen,
 } from "lucide-vue-next";
 
 const route = useRoute();
 
 // Check if current route should show tabs
 const showIntegrationTabs = computed(() =>
-	route.path.startsWith("/integrations"),
+  route.path.startsWith("/integrations"),
 );
 
 const showFilesTabs = computed(() => route.path.startsWith("/files"));
+
+// Studio pages show file tabs only (not navigation tabs)
+const showStudioTabs = computed(() => route.path.startsWith("/studio"));
 
 const showSettingsTabs = computed(() => route.path.startsWith("/settings"));
 
@@ -34,62 +35,55 @@ const showAccountTabs = computed(() => route.path.startsWith("/account"));
 
 const showAnalyticsTabs = computed(() => route.path.startsWith("/analytics"));
 
-const showKnowledgeTabs = computed(() => route.path.startsWith("/knowledge"));
-
 const currentIntegrationTab = computed(() =>
-	route.path === "/integrations/explore" ? "library" : "active",
+  route.path === "/integrations/explore" ? "library" : "active",
 );
 
 const currentSettingsTab = computed(() => {
-	if (route.path === "/settings/notifications") return "notifications";
-	return "general";
+  if (route.path === "/settings/notifications") return "notifications";
+  return "general";
 });
 
 const currentAccountTab = computed(() => {
-	if (route.path === "/account/tokens") return "tokens";
-	if (route.path === "/account/general") return "general";
-	return "general";
+  if (route.path === "/account/tokens") return "tokens";
+  if (route.path === "/account/general") return "general";
+  return "general";
 });
 
 const currentAnalyticsTab = computed(() => {
-	if (route.path === "/analytics/ai") return "ai";
-	if (route.path.startsWith("/analytics/logs")) return "logs";
-	return "overview";
+  if (route.path === "/analytics/ai") return "ai";
+  if (route.path.startsWith("/analytics/logs")) return "logs";
+  return "overview";
 });
 
 const currentIntegrationTabValue = computed(() => {
-	if (route.path === "/integrations/explore") return "explore";
-	if (route.path === "/integrations/runs") return "runs";
-	return "connections";
-});
-
-const currentKnowledgeTab = computed(() => {
-	if (route.path === "/knowledge/corpus") return "corpus";
-	return "chat";
+  if (route.path === "/integrations/explore") return "explore";
+  if (route.path === "/integrations/runs") return "runs";
+  return "connections";
 });
 
 const currentFilesTab = computed(() => {
-	if (route.path === "/files/studio") return "studio";
-	return "files";
+  if (route.path === "/files/corpus") return "corpus";
+  return "files";
 });
 
-const isStudioPage = computed(() => route.path === "/files/studio");
+const isStudioPage = computed(() => route.path === "/studio");
 
 // Computed to check if any tabs are visible
 const hasVisibleTabs = computed(() => {
-	return (
-		showIntegrationTabs.value ||
-		showFilesTabs.value ||
-		showSettingsTabs.value ||
-		showAccountTabs.value ||
-		showAnalyticsTabs.value ||
-		showKnowledgeTabs.value
-	);
+  return (
+    showIntegrationTabs.value ||
+    showFilesTabs.value ||
+    showStudioTabs.value ||
+    showSettingsTabs.value ||
+    showAccountTabs.value ||
+    showAnalyticsTabs.value
+  );
 });
 
 // Expose for parent component
 defineExpose({
-	hasVisibleTabs,
+  hasVisibleTabs,
 });
 </script>
 
@@ -119,37 +113,16 @@ defineExpose({
   </Tabs>
 
   <!-- Files Tabs -->
-  <template v-else-if="showFilesTabs">
-    <Tabs :model-value="currentFilesTab">
-      <TabsList>
-        <TabsTrigger value="files" as-child>
-          <NuxtLink to="/files" class="flex items-center gap-2">
-            <FolderOpen :size="16" />
-            Files
-          </NuxtLink>
-        </TabsTrigger>
-        <TabsTrigger value="studio" as-child>
-          <NuxtLink to="/files/studio" class="flex items-center gap-2">
-            <PenTool :size="16" />
-            Studio
-          </NuxtLink>
-        </TabsTrigger>
-      </TabsList>
-    </Tabs>
-    <StudioFileTabs v-if="isStudioPage" />
-  </template>
-
-  <!-- Knowledge Tabs -->
-  <Tabs v-else-if="showKnowledgeTabs" :model-value="currentKnowledgeTab">
+  <Tabs v-else-if="showFilesTabs" :model-value="currentFilesTab">
     <TabsList>
-      <TabsTrigger value="chat" as-child>
-        <NuxtLink to="/knowledge" class="flex items-center gap-2">
-          <MessageSquare :size="16" />
-          Chat
+      <TabsTrigger value="files" as-child>
+        <NuxtLink to="/files" class="flex items-center gap-2">
+          <FolderOpen :size="16" />
+          Files
         </NuxtLink>
       </TabsTrigger>
       <TabsTrigger value="corpus" as-child>
-        <NuxtLink to="/knowledge/corpus" class="flex items-center gap-2">
+        <NuxtLink to="/files/corpus" class="flex items-center gap-2">
           <Database :size="16" />
           Corpus
         </NuxtLink>
@@ -157,11 +130,14 @@ defineExpose({
     </TabsList>
   </Tabs>
 
+  <!-- Studio File Tabs (shown on all studio pages including chat) -->
+  <StudioFileTabs v-else-if="showStudioTabs" />
+
   <!-- Settings Tabs (Workspace Settings) -->
   <Tabs v-else-if="showSettingsTabs" :model-value="currentSettingsTab">
     <TabsList>
       <TabsTrigger value="general" as-child>
-        <NuxtLink to="/settings" class="flex items-center gap-2">
+        <NuxtLink to="/settings/general" class="flex items-center gap-2">
           <Settings :size="16" />
           General
         </NuxtLink>

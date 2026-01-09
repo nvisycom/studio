@@ -24,7 +24,8 @@ export function useWebhooks() {
 			const client = $nvisyClient.value;
 			const workspaceId = currentWorkspaceId.value;
 			if (!client || !workspaceId) throw new Error("Not authenticated");
-			return await client.webhooks.listWebhooks(workspaceId);
+			const result = await client.webhooks.listWebhooks(workspaceId);
+			return result.items;
 		},
 		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceId.value,
 	});

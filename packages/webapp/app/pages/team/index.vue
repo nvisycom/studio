@@ -4,8 +4,8 @@ import type {
 	Invite,
 	InviteExpiration,
 	WorkspaceRole,
-	ListMembersQuery,
-	ListInvitesQuery,
+	ListMembers,
+	ListInvites,
 	MemberSortField,
 	InviteSortField,
 	SortOrder,
@@ -45,13 +45,13 @@ const selectedSortField = ref<MemberSortField | InviteSortField>("date");
 const selectedSortOrder = ref<SortOrder>("desc");
 
 // Build query objects for SDK
-const membersQuery = computed<ListMembersQuery>(() => ({
+const membersQuery = computed<ListMembers>(() => ({
 	...(selectedRoleFilter.value && { role: selectedRoleFilter.value }),
 	sortBy: selectedSortField.value as MemberSortField,
 	order: selectedSortOrder.value,
 }));
 
-const invitesQuery = computed<ListInvitesQuery>(() => ({
+const invitesQuery = computed<ListInvites>(() => ({
 	...(selectedRoleFilter.value && { role: selectedRoleFilter.value }),
 	sortBy: selectedSortField.value as InviteSortField,
 	order: selectedSortOrder.value,
@@ -164,13 +164,14 @@ async function handleCopyLink(role: WorkspaceRole, expiry: InviteExpiration) {
 			expiresIn: expiry,
 		});
 		const baseUrl = window.location.origin;
-		const inviteUrl = `${baseUrl}/invite/${result.inviteCode}`;
+		const inviteUrl = `${baseUrl}/join/${result.inviteCode}`;
 		await navigator.clipboard.writeText(inviteUrl);
 		copiedInviteLink.value = true;
 		toast.success(t("members.messages.linkCopied"));
 		setTimeout(() => {
 			copiedInviteLink.value = false;
 		}, 2000);
+		await refreshInvites();
 	} catch (err) {
 		toast.error(getErrorMessage(err, t("members.errors.linkFailed")));
 	}

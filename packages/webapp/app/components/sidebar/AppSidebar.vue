@@ -2,43 +2,43 @@
 import { ref } from "vue";
 import type { SidebarProps } from "@/components/ui/sidebar";
 import {
-	Puzzle,
-	Settings,
-	Users,
-	CreditCard,
-	BarChart3,
-	MessagesSquare,
-	LayoutDashboard,
-	Sparkles,
-	FolderOpen,
-	FileSearch,
-	Compass,
+  Puzzle,
+  Settings,
+  Users,
+  CreditCard,
+  BarChart3,
+  MessagesSquare,
+  LayoutDashboard,
+  FolderOpen,
+  FileSearch,
+  Compass,
+  PenTool,
 } from "lucide-vue-next";
 import NavMain from "@/components/sidebar/NavMain.vue";
 import NavUser from "@/components/sidebar/NavUser.vue";
 import WorkspaceSwitcher from "@/components/sidebar/WorkspaceSwitcher.vue";
-import HelpChat from "@/components/help/HelpChat.vue";
+import HelpChat from "@/components/HelpChat.vue";
 import {
-	Sidebar,
-	SidebarContent,
-	SidebarFooter,
-	SidebarHeader,
-	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
-	SidebarRail,
-	useSidebar,
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 const props = withDefaults(defineProps<SidebarProps>(), {
-	collapsible: "icon",
+  collapsible: "icon",
 });
 
 const { state } = useSidebar();
@@ -51,75 +51,75 @@ const { displayName, emailAddress } = useAccount();
 const { currentWorkspaceId, currentWorkspace } = useWorkspaces();
 const hasWorkspace = computed(() => !!currentWorkspaceId.value);
 const isAdminOrOwner = computed(() => {
-	const role = currentWorkspace.value?.memberRole;
-	return role === "owner" || role === "admin";
+  const role = currentWorkspace.value?.memberRole;
+  return role === "owner" || role === "admin";
 });
 
 const userData = computed(() => ({
-	name: displayName.value || "Guest",
-	email: emailAddress.value || "",
-	avatar: "",
+  name: displayName.value || "Guest",
+  email: emailAddress.value || "",
+  avatar: "",
 }));
 
 // Navigation data
 const data = {
-	navDashboard: {
-		title: "Dashboard",
-		url: "/",
-		icon: LayoutDashboard,
-	},
-	navWorkspace: [
-		{
-			title: "Files",
-			url: "/files",
-			icon: FolderOpen,
-			isActive: false,
-		},
-		{
-			title: "Knowledge",
-			url: "/knowledge",
-			icon: Sparkles,
-			isActive: false,
-		},
-		{
-			title: "Team",
-			url: "/team",
-			icon: Users,
-			isActive: false,
-		},
-	],
-	navAutomation: [
-		{
-			title: "Integrations",
-			url: "/integrations",
-			icon: Puzzle,
-			isActive: false,
-		},
-		{
-			title: "Explore",
-			url: "/integrations/explore",
-			icon: Compass,
-			isActive: false,
-		},
-	],
-	navObservability: [
-		{
-			title: "Analytics",
-			url: "/analytics",
-			icon: BarChart3,
-			isActive: false,
-		},
-		{
-			title: "Logs",
-			url: "/analytics/logs",
-			icon: FileSearch,
-			isActive: false,
-		},
-	],
+  navDashboard: {
+    title: "Dashboard",
+    url: "/",
+    icon: LayoutDashboard,
+  },
+  navWorkspace: [
+    {
+      title: "Files",
+      url: "/files",
+      icon: FolderOpen,
+      isActive: false,
+    },
+    {
+      title: "Studio",
+      url: "/studio",
+      icon: PenTool,
+      isActive: false,
+    },
+    {
+      title: "Team",
+      url: "/team",
+      icon: Users,
+      isActive: false,
+    },
+  ],
+  navAutomation: [
+    {
+      title: "Integrations",
+      url: "/integrations",
+      icon: Puzzle,
+      isActive: false,
+    },
+    {
+      title: "Explore",
+      url: "/integrations/explore",
+      icon: Compass,
+      isActive: false,
+    },
+  ],
+  navObservability: [
+    {
+      title: "Analytics",
+      url: "/analytics",
+      icon: BarChart3,
+      isActive: false,
+    },
+    {
+      title: "Logs",
+      url: "/analytics/logs",
+      icon: FileSearch,
+      isActive: false,
+    },
+  ],
 };
 
 function openHelpChat() {
-	helpChatRef.value?.toggleChat();
+  helpChatRef.value?.toggleChat();
 }
 </script>
 
@@ -161,7 +161,10 @@ function openHelpChat() {
         <SidebarMenuItem
           :class="{ 'opacity-50 pointer-events-none': !hasWorkspace }"
         >
-          <SidebarMenuButton as-child>
+          <SidebarMenuButton
+            as-child
+            :tooltip="hasWorkspace ? 'Billing' : undefined"
+          >
             <NuxtLink v-if="hasWorkspace" to="/billing">
               <CreditCard />
               <span>Billing</span>
@@ -175,8 +178,11 @@ function openHelpChat() {
         <SidebarMenuItem
           :class="{ 'opacity-50 pointer-events-none': !hasWorkspace }"
         >
-          <SidebarMenuButton as-child>
-            <NuxtLink v-if="hasWorkspace" to="/settings">
+          <SidebarMenuButton
+            as-child
+            :tooltip="hasWorkspace ? 'Settings' : undefined"
+          >
+            <NuxtLink v-if="hasWorkspace" to="/settings/general">
               <Settings />
               <span>Settings</span>
             </NuxtLink>
@@ -187,7 +193,7 @@ function openHelpChat() {
           </SidebarMenuButton>
         </SidebarMenuItem>
         <SidebarMenuItem>
-          <SidebarMenuButton @click="openHelpChat">
+          <SidebarMenuButton :tooltip="'Support'" @click="openHelpChat">
             <MessagesSquare />
             <span>Support</span>
           </SidebarMenuButton>

@@ -61,6 +61,7 @@ const emit = defineEmits<{
 	(e: "expanded-change", expanded: ExpandedState): void;
 	(e: "load-more"): void;
 	(e: "row-click", row: TData): void;
+	(e: "row-contextmenu", event: MouseEvent, row: TData): void;
 }>();
 
 const sorting = ref<SortingState>([]);
@@ -162,6 +163,11 @@ function handleRowClick(row: TData) {
 	emit("row-click", row);
 }
 
+function handleRowContextMenu(event: MouseEvent, row: TData) {
+	event.preventDefault();
+	emit("row-contextmenu", event, row);
+}
+
 defineExpose({
 	table,
 	sorting,
@@ -228,6 +234,12 @@ defineExpose({
             class="cursor-pointer"
             @click="
               handleRowClick(
+                table.getRowModel().rows[virtualRow.index]?.original,
+              )
+            "
+            @contextmenu="
+              handleRowContextMenu(
+                $event,
                 table.getRowModel().rows[virtualRow.index]?.original,
               )
             "

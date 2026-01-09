@@ -19,7 +19,8 @@ export function useIntegrations() {
 			const client = $nvisyClient.value;
 			const workspaceId = currentWorkspaceId.value;
 			if (!client || !workspaceId) throw new Error("Not authenticated");
-			return await client.integrations.listIntegrations(workspaceId);
+			const result = await client.integrations.listIntegrations(workspaceId);
+			return result.items;
 		},
 		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceId.value,
 	});

@@ -15,7 +15,8 @@ export function useRuns() {
 			const client = $nvisyClient.value;
 			const workspaceId = currentWorkspaceId.value;
 			if (!client || !workspaceId) throw new Error("Not authenticated");
-			return await client.runs.listRuns(workspaceId);
+			const result = await client.runs.listRuns(workspaceId);
+			return result.items;
 		},
 		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceId.value,
 	});

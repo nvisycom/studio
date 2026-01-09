@@ -21,7 +21,8 @@ export function useWorkspaces() {
 		query: async () => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			return await client.workspaces.listWorkspaces();
+			const result = await client.workspaces.listWorkspaces();
+			return result.items;
 		},
 		enabled: () => !!authToken.value?.apiToken,
 	});

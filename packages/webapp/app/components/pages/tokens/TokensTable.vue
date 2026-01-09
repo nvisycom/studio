@@ -4,19 +4,20 @@ import { MoreHorizontal, Trash2, Edit, Key } from "lucide-vue-next";
 
 import { Button } from "@/components/ui/button";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 
@@ -24,18 +25,18 @@ import { Badge } from "@/components/ui/badge";
 const truncateId = (id: string): string => id.slice(0, 8);
 
 interface Props {
-	tokens: ApiToken[];
-	selectedTokens: Set<string>;
-	allSelected: boolean;
-	currentTokenId?: string | null;
+  tokens: ApiToken[];
+  selectedTokens: Set<string>;
+  allSelected: boolean;
+  currentTokenId?: string | null;
 }
 
 interface Emits {
-	(e: "toggleSelectAll"): void;
-	(e: "toggleToken", tokenId: string): void;
-	(e: "deleteToken", token: ApiToken): void;
-	(e: "deleteSelected"): void;
-	(e: "renameToken", token: ApiToken): void;
+  (e: "toggleSelectAll"): void;
+  (e: "toggleToken", tokenId: string): void;
+  (e: "deleteToken", token: ApiToken): void;
+  (e: "deleteSelected"): void;
+  (e: "renameToken", token: ApiToken): void;
 }
 
 const props = defineProps<Props>();
@@ -45,38 +46,36 @@ const { t } = useI18n();
 
 // Helper functions
 const isTokenSelected = (tokenId: string): boolean =>
-	props.selectedTokens.has(tokenId);
+  props.selectedTokens.has(tokenId);
 
 const isCurrentToken = (tokenId: string): boolean =>
-	props.currentTokenId === tokenId;
+  props.currentTokenId === tokenId;
 
 const formatDate = (date: string | null | undefined): string => {
-	if (!date) return t("tokens.table.info.never");
-	return new Intl.DateTimeFormat("en-GB", {
-		day: "2-digit",
-		month: "2-digit",
-		year: "2-digit",
-	}).format(new Date(date));
+  if (!date) return t("tokens.table.info.never");
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+  }).format(new Date(date));
 };
 
 const getSessionTypeColor = (type: string): string => {
-	const colors: Record<string, string> = {
-		web: "bg-blue-500",
-		mobile: "bg-green-500",
-		api: "bg-purple-500",
-		cli: "bg-orange-500",
-	};
-	return colors[type.toLowerCase()] || "bg-neutral-500";
+  const colors: Record<string, string> = {
+    web: "bg-blue-500",
+    api: "bg-purple-500",
+    cli: "bg-orange-500",
+  };
+  return colors[type.toLowerCase()] || "bg-neutral-500";
 };
 
 const getSessionTypeInitial = (type: string): string => {
-	const initials: Record<string, string> = {
-		web: "W",
-		mobile: "M",
-		api: "A",
-		cli: "C",
-	};
-	return initials[type.toLowerCase()] || "T";
+  const initials: Record<string, string> = {
+    web: "W",
+    api: "A",
+    cli: "C",
+  };
+  return initials[type.toLowerCase()] || "T";
 };
 </script>
 
@@ -148,7 +147,6 @@ const getSessionTypeInitial = (type: string): string => {
                   'absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center border-2 border-white dark:border-neutral-900',
                   getSessionTypeColor(token.sessionType),
                 ]"
-                :title="token.sessionType"
               >
                 <span class="text-white text-[8px] font-bold">
                   {{ getSessionTypeInitial(token.sessionType) }}
@@ -196,9 +194,16 @@ const getSessionTypeInitial = (type: string): string => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem @click="emit('renameToken', token)">
+              <DropdownMenuItem
+                v-if="token.sessionType === 'api'"
+                @click="emit('renameToken', token)"
+              >
                 <Edit :size="16" class="mr-2" />
                 {{ t("tokens.table.actions.rename") }}
+              </DropdownMenuItem>
+              <DropdownMenuItem v-else disabled class="text-neutral-400">
+                <Edit :size="16" class="mr-2" />
+                {{ t("tokens.table.actions.cannotRename") }}
               </DropdownMenuItem>
               <DropdownMenuItem
                 v-if="!isCurrentToken(token.id)"

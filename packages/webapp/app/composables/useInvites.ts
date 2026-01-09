@@ -4,19 +4,23 @@ import type {
 	CreateInvite,
 	GenerateInviteCode,
 	InviteCode,
-	ListInvitesQuery,
+	ListInvites,
 } from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for workspace invitation operations
  */
-export function useInvites(query?: Ref<ListInvitesQuery>) {
+export function useInvites(query?: Ref<ListInvites>) {
 	const { $nvisyClient } = useNuxtApp();
 	const { authToken } = useAuth();
 	const { currentWorkspaceId } = useWorkspaces();
 
 	const invitesQuery = useQuery({
-		key: () => ["invites", currentWorkspaceId.value, query?.value],
+		key: () => [
+			"invites",
+			currentWorkspaceId.value,
+			JSON.stringify(query?.value),
+		],
 		query: async () => {
 			const client = $nvisyClient.value;
 			const workspaceId = currentWorkspaceId.value;
@@ -24,12 +28,12 @@ export function useInvites(query?: Ref<ListInvitesQuery>) {
 			if (!workspaceId) throw new Error("No workspace selected");
 			const result = await client.invites.listInvites(
 				workspaceId,
-				{ limit: 500 },
-				// query?.value,
+				query?.value ?? { limit: 500 },
 			);
-			return result;
+			return result.items;
 		},
 		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceId.value,
+		staleTime: 0,
 	});
 
 	const sendInviteMutation = useMutation({
@@ -63,9 +67,6 @@ export function useInvites(query?: Ref<ListInvitesQuery>) {
 			if (!client) throw new Error("Not authenticated");
 			if (!workspaceId) throw new Error("No workspace selected");
 			return await client.invites.generateInviteCode(workspaceId, options);
-		},
-		onSuccess() {
-			invitesQuery.refresh();
 		},
 	});
 

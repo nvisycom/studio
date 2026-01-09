@@ -44,7 +44,7 @@ const props = withDefaults(
 </script>
 
 <template>
-  <SidebarGroup :class="{ 'opacity-50 pointer-events-none': disabled }">
+  <SidebarGroup :class="{ 'opacity-50': disabled }">
     <SidebarGroupLabel v-if="label" class="uppercase">{{
       label
     }}</SidebarGroupLabel>
@@ -66,7 +66,11 @@ const props = withDefaults(
               />
             </SidebarMenuButton>
           </CollapsibleTrigger>
-          <SidebarMenuButton v-else :tooltip="item.title" as-child>
+          <SidebarMenuButton
+            v-else
+            :tooltip="disabled ? undefined : item.title"
+            as-child
+          >
             <NuxtLink v-if="!disabled" :to="item.url">
               <component :is="item.icon" v-if="item.icon" />
               <span>{{ item.title }}</span>

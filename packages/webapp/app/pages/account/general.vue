@@ -3,7 +3,8 @@ import { Upload, ChevronDown, Loader2, Eye, EyeOff } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import EntityAvatar from "@/components/common/EntityAvatar.vue";
 import {
 	Card,
 	CardContent,
@@ -97,16 +98,6 @@ const timezones = [
 	{ label: "(UTC+11:00) Solomon Islands", value: "Pacific/Guadalcanal" },
 	{ label: "(UTC+12:00) Auckland, Fiji", value: "Pacific/Auckland" },
 ] as const;
-
-// Get initials from display name
-function getInitials(name: string): string {
-	return name
-		.split(" ")
-		.map((n) => n[0])
-		.join("")
-		.toUpperCase()
-		.slice(0, 2);
-}
 
 // Get timezone label
 function getTimezoneLabel(value: string): string {
@@ -212,14 +203,12 @@ function saveTimezone() {
                 @click="uploadAvatar"
                 class="group relative hover:opacity-80 transition-opacity cursor-pointer block"
               >
-                <Avatar class="size-16">
-                  <AvatarImage v-if="avatarUrl" :src="avatarUrl" />
-                  <AvatarFallback
-                    class="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xl font-medium"
-                  >
-                    {{ getInitials(displayName) }}
-                  </AvatarFallback>
-                </Avatar>
+                <template v-if="avatarUrl">
+                  <Avatar class="size-16">
+                    <AvatarImage :src="avatarUrl" />
+                  </Avatar>
+                </template>
+                <EntityAvatar v-else :name="displayName" size="lg" />
                 <div
                   class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
                 >

@@ -1,53 +1,53 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import type { File as NvisyFile, UpdateFile } from "@nvisy/sdk/datatypes";
 import {
-	Search,
-	FileText,
-	ChevronDown,
-	Upload,
-	Loader2,
-	Filter,
-	List,
-	LayoutGrid,
+  ChevronDown,
+  FileText,
+  Filter,
+  LayoutGrid,
+  List,
+  Loader2,
+  Search,
+  Upload,
 } from "lucide-vue-next";
+import { computed, ref } from "vue";
 import { toast } from "vue-sonner";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-	DeleteFileDialog,
-	EditFileDialog,
-	FilesGridView,
-	FilesTableView,
-	UploadFilesDialog,
+  DeleteFileDialog,
+  EditFileDialog,
+  FilesGridView,
+  FilesTableView,
+  UploadFilesDialog,
 } from "~/components/pages/files";
-import type { File as NvisyFile, UpdateFile } from "@nvisy/sdk/datatypes";
 
 const { t } = useI18n();
 
 definePageMeta({
-	pageCategory: "Files",
+  pageCategory: "Files",
 });
 
 const {
-	files,
-	isLoading,
-	error,
-	deleteFileAsync,
-	isDeleting,
-	updateFileAsync,
-	isUpdating,
-	uploadFilesAsync,
-	downloadFile,
-	downloadMultiple,
-	loadMore,
-	hasMore,
-	isLoadingMore,
+  files,
+  isLoading,
+  error,
+  deleteFileAsync,
+  isDeleting,
+  updateFileAsync,
+  isUpdating,
+  uploadFilesAsync,
+  downloadFile,
+  downloadMultiple,
+  loadMore,
+  hasMore,
+  isLoadingMore,
 } = useFiles();
 
 const searchQuery = ref("");
@@ -61,211 +61,232 @@ const uploadDialogOpen = ref(false);
 const fileToDelete = ref<NvisyFile | null>(null);
 const fileToEdit = ref<NvisyFile | null>(null);
 const selectedFiles = ref<Set<string>>(new Set());
+const isUploadingDrop = ref(false);
 
 const selectedFilesCount = computed(() => selectedFiles.value.size);
 const hasSelection = computed(() => selectedFilesCount.value > 0);
 const allSelected = computed(
-	() =>
-		filteredFiles.value.length > 0 &&
-		filteredFiles.value.every((f) => selectedFiles.value.has(f.fileId)),
+  () =>
+    filteredFiles.value.length > 0 &&
+    filteredFiles.value.every((f) => selectedFiles.value.has(f.fileId)),
 );
 
 function toggleSelectAll() {
-	if (allSelected.value) {
-		selectedFiles.value = new Set();
-	} else {
-		selectedFiles.value = new Set(filteredFiles.value.map((f) => f.fileId));
-	}
+  if (allSelected.value) {
+    selectedFiles.value = new Set();
+  } else {
+    selectedFiles.value = new Set(filteredFiles.value.map((f) => f.fileId));
+  }
 }
 
 function toggleFileSelection(fileId: string) {
-	const newSet = new Set(selectedFiles.value);
-	if (newSet.has(fileId)) {
-		newSet.delete(fileId);
-	} else {
-		newSet.add(fileId);
-	}
-	selectedFiles.value = newSet;
+  const newSet = new Set(selectedFiles.value);
+  if (newSet.has(fileId)) {
+    newSet.delete(fileId);
+  } else {
+    newSet.add(fileId);
+  }
+  selectedFiles.value = newSet;
 }
 
 function clearSelection() {
-	selectedFiles.value = new Set();
+  selectedFiles.value = new Set();
 }
 
 const statusFilters = computed(() => [
-	{ label: t("files.filters.anyStatus"), value: "any" },
-	{ label: t("files.filters.pending"), value: "pending" },
-	{ label: t("files.filters.processing"), value: "processing" },
-	{ label: t("files.filters.completed"), value: "completed" },
-	{ label: t("files.filters.failed"), value: "failed" },
+  { label: t("files.filters.anyStatus"), value: "any" },
+  { label: t("files.filters.pending"), value: "pending" },
+  { label: t("files.filters.processing"), value: "processing" },
+  { label: t("files.filters.ready"), value: "ready" },
+  { label: t("files.filters.canceled"), value: "canceled" },
 ]);
 
 const filteredFiles = computed(() => {
-	let filtered = files.value || [];
+  let filtered = files.value || [];
 
-	if (searchQuery.value.trim()) {
-		const query = searchQuery.value.toLowerCase();
-		filtered = filtered.filter((file) =>
-			file.displayName.toLowerCase().includes(query),
-		);
-	}
+  if (searchQuery.value.trim()) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter((file) =>
+      file.displayName.toLowerCase().includes(query),
+    );
+  }
 
-	if (filterStatus.value !== "any") {
-		filtered = filtered.filter((file) => file.status === filterStatus.value);
-	}
+  if (filterStatus.value !== "any") {
+    filtered = filtered.filter((file) => file.status === filterStatus.value);
+  }
 
-	return filtered;
+  return filtered;
 });
 
 const hasFilters = computed(() => {
-	return searchQuery.value.trim() || filterStatus.value !== "any";
+  return searchQuery.value.trim() || filterStatus.value !== "any";
 });
 
+// Get studio files store
+const { openFile: openFileInStudio } = useStudioFiles();
+
 function viewFile(fileId: string) {
-	navigateTo(`/files/studio?id=${fileId}`);
+  // Find the file to pass metadata
+  const file = files.value?.find((f) => f.fileId === fileId);
+  openFileInStudio(fileId, file);
+  navigateTo("/studio");
+}
+
+function handleBulkOpen() {
+  if (!hasSelection.value) return;
+  const fileIds = Array.from(selectedFiles.value);
+  // Open each selected file in the studio
+  for (const fileId of fileIds) {
+    const file = files.value?.find((f) => f.fileId === fileId);
+    openFileInStudio(fileId, file);
+  }
+  navigateTo("/studio");
 }
 
 async function handleDownloadFile(file: NvisyFile) {
-	try {
-		await downloadFile(file.fileId, file.displayName);
-		toast.success(t("files.messages.downloadStarted"));
-	} catch {
-		toast.error(t("files.errors.downloadFailed"));
-	}
+  try {
+    await downloadFile(file.fileId, file.displayName);
+    toast.success(t("files.messages.downloadStarted"));
+  } catch {
+    toast.error(t("files.errors.downloadFailed"));
+  }
 }
 
 async function handleBulkDownload(format: "zip" | "tar") {
-	if (!hasSelection.value) return;
-	try {
-		await downloadMultiple(Array.from(selectedFiles.value), format);
-		toast.success(t("files.messages.downloadStarted"));
-	} catch {
-		toast.error(t("files.errors.downloadFailed"));
-	}
+  if (!hasSelection.value) return;
+  try {
+    await downloadMultiple(Array.from(selectedFiles.value), format);
+    toast.success(t("files.messages.downloadStarted"));
+  } catch {
+    toast.error(t("files.errors.downloadFailed"));
+  }
 }
 
 function openDeleteDialog(file?: NvisyFile) {
-	fileToDelete.value = file || null;
-	deleteDialogOpen.value = true;
+  fileToDelete.value = file || null;
+  deleteDialogOpen.value = true;
 }
 
 function openBulkDeleteDialog() {
-	fileToDelete.value = null;
-	deleteDialogOpen.value = true;
+  fileToDelete.value = null;
+  deleteDialogOpen.value = true;
 }
 
 async function confirmDelete() {
-	try {
-		if (fileToDelete.value) {
-			await deleteFileAsync(fileToDelete.value.fileId);
-			toast.success(t("files.messages.fileDeleted"));
-		} else if (hasSelection.value) {
-			for (const fileId of Array.from(selectedFiles.value)) {
-				await deleteFileAsync(fileId);
-			}
-			toast.success(t("files.messages.filesDeleted"));
-			clearSelection();
-		}
-	} catch {
-		toast.error(t("files.errors.deleteFailed"));
-	} finally {
-		deleteDialogOpen.value = false;
-		fileToDelete.value = null;
-	}
+  try {
+    if (fileToDelete.value) {
+      await deleteFileAsync(fileToDelete.value.fileId);
+      toast.success(t("files.messages.fileDeleted"));
+    } else if (hasSelection.value) {
+      for (const fileId of Array.from(selectedFiles.value)) {
+        await deleteFileAsync(fileId);
+      }
+      toast.success(t("files.messages.filesDeleted"));
+      clearSelection();
+    }
+  } catch {
+    toast.error(t("files.errors.deleteFailed"));
+  } finally {
+    deleteDialogOpen.value = false;
+    fileToDelete.value = null;
+  }
 }
 
 function openEditDialog(file: NvisyFile) {
-	fileToEdit.value = file;
-	editDialogOpen.value = true;
+  fileToEdit.value = file;
+  editDialogOpen.value = true;
 }
 
 async function confirmEdit(data: UpdateFile) {
-	if (!fileToEdit.value) return;
-	try {
-		await updateFileAsync({
-			fileId: fileToEdit.value.fileId,
-			updates: data,
-		});
-		toast.success(t("files.messages.fileUpdated"));
-	} catch {
-		toast.error(t("files.errors.updateFailed"));
-	} finally {
-		editDialogOpen.value = false;
-		fileToEdit.value = null;
-	}
+  if (!fileToEdit.value) return;
+  try {
+    await updateFileAsync({
+      fileId: fileToEdit.value.fileId,
+      updates: data,
+    });
+    toast.success(t("files.messages.fileUpdated"));
+  } catch {
+    toast.error(t("files.errors.updateFailed"));
+  } finally {
+    editDialogOpen.value = false;
+    fileToEdit.value = null;
+  }
 }
 
 function openUploadDialog() {
-	uploadDialogOpen.value = true;
+  uploadDialogOpen.value = true;
 }
 
 function handleUploadComplete() {
-	toast.success(t("files.messages.filesUploaded"));
-	uploadDialogOpen.value = false;
-	isDraggingOver.value = false;
+  toast.success(t("files.messages.filesUploaded"));
+  uploadDialogOpen.value = false;
+  isDraggingOver.value = false;
 }
 
 function handleDragEnter(e: DragEvent) {
-	e.preventDefault();
-	if (e.dataTransfer?.types.includes("Files")) {
-		isDraggingOver.value = true;
-	}
+  e.preventDefault();
+  if (e.dataTransfer?.types.includes("Files")) {
+    isDraggingOver.value = true;
+  }
 }
 
 function handleDragOver(e: DragEvent) {
-	e.preventDefault();
+  e.preventDefault();
 }
 
 function handleDragLeave(e: DragEvent) {
-	e.preventDefault();
-	const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-	if (
-		e.clientX <= rect.left ||
-		e.clientX >= rect.right ||
-		e.clientY <= rect.top ||
-		e.clientY >= rect.bottom
-	) {
-		isDraggingOver.value = false;
-	}
+  e.preventDefault();
+  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+  if (
+    e.clientX <= rect.left ||
+    e.clientX >= rect.right ||
+    e.clientY <= rect.top ||
+    e.clientY >= rect.bottom
+  ) {
+    isDraggingOver.value = false;
+  }
 }
 
 async function handleDrop(e: DragEvent) {
-	e.preventDefault();
-	isDraggingOver.value = false;
+  e.preventDefault();
+  isDraggingOver.value = false;
 
-	const droppedFiles = e.dataTransfer?.files;
-	if (droppedFiles && droppedFiles.length > 0) {
-		try {
-			await uploadFilesAsync(Array.from(droppedFiles));
-			toast.success(t("files.messages.filesUploaded"));
-		} catch {
-			toast.error(t("files.errors.uploadFailed"));
-		}
-	}
+  const droppedFiles = e.dataTransfer?.files;
+  if (droppedFiles && droppedFiles.length > 0) {
+    isUploadingDrop.value = true;
+    try {
+      await uploadFilesAsync(Array.from(droppedFiles));
+      toast.success(t("files.messages.filesUploaded"));
+    } catch {
+      toast.error(t("files.errors.uploadFailed"));
+    } finally {
+      isUploadingDrop.value = false;
+    }
+  }
 }
 
 function selectStatusFilter(value: string) {
-	filterStatus.value = value;
+  filterStatus.value = value;
 }
 
 function clearFilters() {
-	searchQuery.value = "";
-	filterStatus.value = "any";
+  searchQuery.value = "";
+  filterStatus.value = "any";
 }
 
 function handleLoadMore() {
-	if (hasMore.value && !isLoadingMore.value) {
-		loadMore();
-	}
+  if (hasMore.value && !isLoadingMore.value) {
+    loadMore();
+  }
 }
 
 function handleGridScroll(event: Event) {
-	const target = event.target as HTMLElement;
-	const { scrollTop, scrollHeight, clientHeight } = target;
-	const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-	if (distanceFromBottom < 100) {
-		handleLoadMore();
-	}
+  const target = event.target as HTMLElement;
+  const { scrollTop, scrollHeight, clientHeight } = target;
+  const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+  if (distanceFromBottom < 100) {
+    handleLoadMore();
+  }
 }
 </script>
 
@@ -277,26 +298,6 @@ function handleGridScroll(event: Event) {
     @dragleave="handleDragLeave"
     @drop="handleDrop"
   >
-    <!-- Drag overlay -->
-    <Transition
-      enter-active-class="transition-opacity duration-200"
-      leave-active-class="transition-opacity duration-200"
-      enter-from-class="opacity-0"
-      leave-to-class="opacity-0"
-    >
-      <div
-        v-if="isDraggingOver"
-        class="absolute inset-0 z-50 flex items-center justify-center bg-primary/10 backdrop-blur-sm border-2 border-dashed border-primary rounded-lg m-2"
-      >
-        <div class="text-center">
-          <Upload :size="48" class="mx-auto mb-4 text-primary" />
-          <p class="text-lg font-normal text-primary">
-            {{ t("files.dialogs.upload.dropHint") }}
-          </p>
-        </div>
-      </div>
-    </Transition>
-
     <div class="max-w-7xl mx-auto w-full flex flex-col flex-1 min-h-0">
       <!-- Loading State -->
       <div v-if="isLoading" class="flex justify-center items-center py-12">
@@ -388,37 +389,94 @@ function handleGridScroll(event: Event) {
           </div>
         </div>
 
-        <!-- List View (Data Table) -->
-        <FilesTableView
-          v-if="filteredFiles.length > 0 && viewMode === 'list'"
-          :files="filteredFiles"
-          :selected-files="selectedFiles"
-          :all-selected="allSelected"
-          :has-selection="hasSelection"
-          :selected-count="selectedFilesCount"
-          @toggle-select-all="toggleSelectAll"
-          @toggle-selection="toggleFileSelection"
-          @view="viewFile"
-          @edit="openEditDialog"
-          @download="handleDownloadFile"
-          @delete="openDeleteDialog"
-          @bulk-download="handleBulkDownload"
-          @bulk-delete="openBulkDeleteDialog"
-          @load-more="handleLoadMore"
-        />
+        <!-- Files Content Area -->
+        <div v-if="filteredFiles.length > 0" class="relative flex-1 min-h-0">
+          <!-- Drag overlay -->
+          <Transition
+            enter-active-class="transition-opacity duration-200"
+            leave-active-class="transition-opacity duration-200"
+            enter-from-class="opacity-0"
+            leave-to-class="opacity-0"
+          >
+            <div
+              v-if="isDraggingOver"
+              class="absolute inset-0 z-50 flex items-center justify-center bg-background/50 backdrop-blur-[2px] rounded-lg border border-neutral-200 dark:border-neutral-800"
+            >
+              <div class="text-center -mt-16">
+                <Upload
+                  :size="40"
+                  :stroke-width="1.5"
+                  class="mx-auto mb-4 text-neutral-900 dark:text-neutral-400"
+                />
+                <p class="text-xl font-light text-foreground">
+                  {{ t("files.dialogs.upload.dropHint") }}
+                </p>
+              </div>
+            </div>
+          </Transition>
 
-        <!-- Grid View -->
-        <FilesGridView
-          v-else-if="filteredFiles.length > 0 && viewMode === 'grid'"
-          :files="filteredFiles"
-          :selected-files="selectedFiles"
-          @toggle-selection="toggleFileSelection"
-          @view="viewFile"
-          @edit="openEditDialog"
-          @download="handleDownloadFile"
-          @delete="openDeleteDialog"
-          @scroll="handleGridScroll"
-        />
+          <!-- Upload progress overlay -->
+          <Transition
+            enter-active-class="transition-opacity duration-200"
+            leave-active-class="transition-opacity duration-200"
+            enter-from-class="opacity-0"
+            leave-to-class="opacity-0"
+          >
+            <div
+              v-if="isUploadingDrop"
+              class="absolute inset-0 z-50 flex items-center justify-center bg-background/50 backdrop-blur-[2px] rounded-lg border border-neutral-200 dark:border-neutral-800"
+            >
+              <div class="text-center -mt-16">
+                <Loader2
+                  :size="40"
+                  :stroke-width="1.5"
+                  class="mx-auto mb-4 text-neutral-900 dark:text-neutral-400 animate-spin"
+                />
+                <p class="text-xl font-light text-foreground">
+                  {{ t("files.dialogs.upload.uploading") }}
+                </p>
+              </div>
+            </div>
+          </Transition>
+
+          <!-- List View (Data Table) -->
+          <FilesTableView
+            v-if="viewMode === 'list'"
+            class="h-full"
+            :files="filteredFiles"
+            :selected-files="selectedFiles"
+            :all-selected="allSelected"
+            :selected-count="selectedFilesCount"
+            @toggle-select-all="toggleSelectAll"
+            @toggle-selection="toggleFileSelection"
+            @view="viewFile"
+            @edit="openEditDialog"
+            @download="handleDownloadFile"
+            @delete="openDeleteDialog"
+            @bulk-open="handleBulkOpen"
+            @bulk-download="handleBulkDownload"
+            @bulk-delete="openBulkDeleteDialog"
+            @load-more="handleLoadMore"
+          />
+
+          <!-- Grid View -->
+          <FilesGridView
+            v-else
+            class="h-full"
+            :files="filteredFiles"
+            :selected-files="selectedFiles"
+            :selected-count="selectedFilesCount"
+            @toggle-selection="toggleFileSelection"
+            @bulk-open="handleBulkOpen"
+            @bulk-download="handleBulkDownload"
+            @bulk-delete="openBulkDeleteDialog"
+            @view="viewFile"
+            @edit="openEditDialog"
+            @download="handleDownloadFile"
+            @delete="openDeleteDialog"
+            @scroll="handleGridScroll"
+          />
+        </div>
 
         <!-- Empty State -->
         <div v-else class="py-12 text-center flex-1">

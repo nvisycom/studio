@@ -5,7 +5,6 @@
     "packages/*"
   ],
   "dependencies": {
-    "@nvisy/sdk": "file:../sdk-ts",
-    "@tanstack/vue-table": "^8.21.3"
+    "@nvisy/sdk": "file:../sdk-ts"
   }
 }

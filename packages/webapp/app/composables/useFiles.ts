@@ -2,12 +2,12 @@ import { useQuery, useMutation } from "@pinia/colada";
 import type {
 	File as NvisyFile,
 	UpdateFile,
-	ListFilesQuery,
+	ListFiles,
 } from "@nvisy/sdk/datatypes";
 
 export interface UseFilesOptions {
 	workspaceId?: MaybeRef<string | null>;
-	query?: MaybeRef<ListFilesQuery>;
+	query?: MaybeRef<ListFiles>;
 	pageSize?: number;
 }
 
@@ -28,13 +28,13 @@ export function useFiles(options: UseFilesOptions = {}) {
 
 	const pageSize = options.pageSize ?? 50;
 
-	// Track all loaded files and current offset
+	// Track all loaded files and cursor for pagination
 	const allFiles = ref<NvisyFile[]>([]);
-	const currentOffset = ref(0);
+	const nextCursor = ref<string | undefined>(undefined);
 	const hasMore = ref(true);
 	const isLoadingMore = ref(false);
 
-	const queryParams = computed<ListFilesQuery>(() => ({
+	const queryParams = computed<ListFiles>(() => ({
 		...toValue(options.query ?? {}),
 	}));
 
@@ -49,27 +49,35 @@ export function useFiles(options: UseFilesOptions = {}) {
 			if (!client) throw new Error("Not authenticated");
 			const result = await client.files.listFiles(effectiveWorkspaceId.value, {
 				...queryParams.value,
-				offset: 0,
 				limit: pageSize,
 			});
 			// Reset state on initial load
-			allFiles.value = result;
-			currentOffset.value = result.length;
-			hasMore.value = result.length >= pageSize;
-			return result;
+			allFiles.value = result.items;
+			nextCursor.value = result.nextCursor ?? undefined;
+			hasMore.value = !!result.nextCursor;
+			return result.items;
 		},
 		enabled: () => !!effectiveWorkspaceId.value && !!authToken.value?.apiToken,
-		staleTime: 0,
 	});
 
-	// Sync allFiles when query data changes (e.g., from cache on navigation)
+	// Reset pagination state and force refetch when workspace changes
+	watch(effectiveWorkspaceId, (newId, oldId) => {
+		if (newId !== oldId) {
+			allFiles.value = [];
+			nextCursor.value = undefined;
+			hasMore.value = true;
+			filesQuery.refetch();
+		}
+	});
+
+	// Sync allFiles with query data
+	// This handles initial load, navigation back to page, and refresh after mutations
 	watch(
 		() => filesQuery.data.value,
 		(data) => {
-			if (data && allFiles.value.length === 0) {
+			// Don't sync during loadMore operations (we handle that manually)
+			if (!isLoadingMore.value && data) {
 				allFiles.value = data;
-				currentOffset.value = data.length;
-				hasMore.value = data.length >= pageSize;
 			}
 		},
 		{ immediate: true },
@@ -86,16 +94,16 @@ export function useFiles(options: UseFilesOptions = {}) {
 		try {
 			const result = await client.files.listFiles(effectiveWorkspaceId.value, {
 				...queryParams.value,
-				offset: currentOffset.value,
+				after: nextCursor.value,
 				limit: pageSize,
 			});
 
-			if (result.length > 0) {
-				allFiles.value = [...allFiles.value, ...result];
-				currentOffset.value += result.length;
+			if (result.items.length > 0) {
+				allFiles.value = [...allFiles.value, ...result.items];
 			}
 
-			hasMore.value = result.length >= pageSize;
+			nextCursor.value = result.nextCursor ?? undefined;
+			hasMore.value = !!result.nextCursor;
 		} finally {
 			isLoadingMore.value = false;
 		}
@@ -103,10 +111,9 @@ export function useFiles(options: UseFilesOptions = {}) {
 
 	// Reset and reload files
 	function reset() {
-		allFiles.value = [];
-		currentOffset.value = 0;
+		nextCursor.value = undefined;
 		hasMore.value = true;
-		filesQuery.refresh();
+		filesQuery.refetch();
 	}
 
 	const updateFileMutation = useMutation({

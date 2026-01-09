@@ -37,8 +37,27 @@ interface Emits {
 	(e: "notifyMe", id: string | number): void;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
+
+/**
+ * Extract website domain from URL (e.g., "https://www.npmjs.com/package/..." -> "Npmjs.com")
+ */
+function getWebsiteName(url?: string): string {
+	if (!url) return "";
+	try {
+		const hostname = new URL(url).hostname;
+		// Remove www. prefix and capitalize first letter
+		const domain = hostname.replace(/^www\./, "");
+		return domain.charAt(0).toUpperCase() + domain.slice(1);
+	} catch {
+		return "";
+	}
+}
+
+const websiteName = computed(() =>
+	getWebsiteName(props.integration.externalUrl),
+);
 </script>
 
 <template>
@@ -94,7 +113,7 @@ const emit = defineEmits<Emits>();
         >
           {{ t("integrations.explore.badges.popular") }}
         </span>
-        <!-- Regular tags -->
+        <!-- Regular tags (max 3) -->
         <template v-if="integration.tags && integration.tags.length > 0">
           <span
             v-for="tag in integration.tags.slice(0, 3)"
@@ -102,12 +121,6 @@ const emit = defineEmits<Emits>();
             class="text-[10px] text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded"
           >
             {{ tag }}
-          </span>
-          <span
-            v-if="integration.tags.length > 3"
-            class="text-[10px] text-neutral-400 dark:text-neutral-500 px-1 py-0.5"
-          >
-            +{{ integration.tags.length - 3 }}
           </span>
         </template>
       </div>
@@ -136,7 +149,7 @@ const emit = defineEmits<Emits>();
           rel="noopener noreferrer"
           class="flex items-center justify-center gap-2"
         >
-          {{ t("integrations.actions.visitWebsite") }}
+          {{ t("integrations.actions.visitName", { name: websiteName }) }}
           <ExternalLink :size="14" />
         </a>
       </Button>

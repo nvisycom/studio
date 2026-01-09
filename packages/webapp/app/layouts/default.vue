@@ -10,7 +10,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
     <AppSidebar />
     <SidebarInset>
       <AppHeader />
-      <div class="flex flex-1 flex-col">
+      <div class="relative flex flex-1 flex-col min-h-0 overflow-y-auto">
         <slot />
       </div>
       <AppFooter />

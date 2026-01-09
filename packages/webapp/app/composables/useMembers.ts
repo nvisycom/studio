@@ -1,28 +1,33 @@
 import { useQuery, useMutation } from "@pinia/colada";
-import type {
-	Member,
-	UpdateMember,
-	ListMembersQuery,
-} from "@nvisy/sdk/datatypes";
+import type { Member, UpdateMember, ListMembers } from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for workspace member operations
  */
-export function useMembers(query?: Ref<ListMembersQuery>) {
+export function useMembers(query?: Ref<ListMembers>) {
 	const { $nvisyClient } = useNuxtApp();
 	const { authToken } = useAuth();
 	const { currentWorkspaceId } = useWorkspaces();
 
 	const membersQuery = useQuery({
-		key: () => ["members", currentWorkspaceId.value, query?.value],
+		key: () => [
+			"members",
+			currentWorkspaceId.value,
+			JSON.stringify(query?.value),
+		],
 		query: async () => {
 			const client = $nvisyClient.value;
 			const workspaceId = currentWorkspaceId.value;
 			if (!client) throw new Error("Not authenticated");
 			if (!workspaceId) throw new Error("No workspace selected");
-			return await client.members.listMembers(workspaceId, query?.value);
+			const result = await client.members.listMembers(
+				workspaceId,
+				query?.value,
+			);
+			return result.items;
 		},
 		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceId.value,
+		staleTime: 0,
 	});
 
 	const updateMemberMutation = useMutation({

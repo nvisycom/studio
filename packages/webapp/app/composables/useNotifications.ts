@@ -25,7 +25,8 @@ export function useNotifications() {
 		query: async () => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			return await client.notifications.listNotifications();
+			const result = await client.notifications.listNotifications();
+			return result.items;
 		},
 		enabled: false, // Don't auto-fetch, marks as read
 	});
