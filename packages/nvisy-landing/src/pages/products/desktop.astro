@@ -1,0 +1,180 @@
+---
+import { Layout } from "@/layouts";
+import { Hero, CTA, OpenSource } from "@/components";
+import { Check, Zap, Shield, Boxes } from "lucide-vue-next";
+import GithubIcon from "@/assets/icons/github.svg?raw";
+---
+
+<Layout
+  title="Desktop UI"
+  description="Cross-platform desktop application for document processing. Works with both Nvisy Cloud and Server. Open source and built with Tauri and Vue."
+>
+  <div class="bg-white dark:bg-black min-h-screen">
+    <!-- Hero Section -->
+    <div class="border-b border-neutral-200 dark:border-neutral-800">
+      <Hero
+        title="Desktop UI"
+        description="Cross-platform desktop application with intuitive UI for document processing. Open source, lightweight, and built with Tauri and Vue for optimal performance."
+        background="gradient"
+        buttons={[
+          {
+            text: "Download for Windows",
+            href: "https://github.com/nvisycom/desktop/releases/latest/download/nvisy-desktop-windows.exe",
+            variant: "primary"
+          },
+          {
+            text: "Download for macOS",
+            href: "https://github.com/nvisycom/desktop/releases/latest/download/nvisy-desktop-macos.dmg",
+            variant: "secondary"
+          },
+          {
+            text: "Download for Linux",
+            href: "https://github.com/nvisycom/desktop/releases/latest/download/nvisy-desktop-linux.AppImage",
+            variant: "secondary"
+          }
+        ]}
+      />
+    </div>
+
+    <!-- Download Section -->
+    <div class="container mx-auto px-4 py-12 md:py-20">
+      <div class="max-w-4xl mx-auto">
+        <!-- Why Desktop UI Section -->
+        <div class="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950/30 dark:to-blue-950/30 rounded-2xl p-6 md:p-10 mb-12 md:mb-20">
+          <h2 class="text-2xl md:text-3xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4 text-center">
+            Why Desktop UI?
+          </h2>
+          <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 text-center mb-8 md:mb-12 max-w-2xl mx-auto">
+            A lightweight, secure desktop application that combines the best of native performance with modern web technologies.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-8 md:mb-12">
+            <!-- Lightweight -->
+            <div class="text-center">
+              <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-3 md:mb-4">
+                <Zap class="w-6 h-6 md:w-7 md:h-7 text-white" />
+              </div>
+              <h3 class="text-base md:text-lg font-light text-neutral-900 dark:text-white mb-2">Lightning Fast</h3>
+              <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
+                Built with Tauri and Rust for minimal resource usage and maximum performance. Start processing in seconds.
+              </p>
+            </div>
+
+            <!-- Secure -->
+            <div class="text-center">
+              <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-3 md:mb-4">
+                <Shield class="w-6 h-6 md:w-7 md:h-7 text-white" />
+              </div>
+              <h3 class="text-base md:text-lg font-light text-neutral-900 dark:text-white mb-2">Secure by Default</h3>
+              <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
+                Your documents stay on your machine until you choose to process them. Complete control over your data.
+              </p>
+            </div>
+
+            <!-- Flexible -->
+            <div class="text-center">
+              <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-3 md:mb-4">
+                <Boxes class="w-6 h-6 md:w-7 md:h-7 text-white" />
+              </div>
+              <h3 class="text-base md:text-lg font-light text-neutral-900 dark:text-white mb-2">Backend Agnostic</h3>
+              <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
+                Works with Nvisy Cloud for scale or Nvisy Server for complete control. Switch backends anytime.
+              </p>
+            </div>
+          </div>
+
+          <!-- Additional Features -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+            <div class="flex items-start gap-3">
+              <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <h4 class="font-semibold text-neutral-900 dark:text-white mb-1 text-sm">Cross-platform Support</h4>
+                <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                  Works seamlessly on Windows, macOS, and Linux.
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <h4 class="font-semibold text-neutral-900 dark:text-white mb-1 text-sm">Batch Processing</h4>
+                <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                  Process multiple documents at once with progress tracking.
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <h4 class="font-semibold text-neutral-900 dark:text-white mb-1 text-sm">Intuitive Interface</h4>
+                <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                  Clean, modern UI with drag-and-drop and keyboard shortcuts.
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <h4 class="font-semibold text-neutral-900 dark:text-white mb-1 text-sm">Cloud & Server Ready</h4>
+                <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                  Connect to Nvisy Cloud or your own Server deployment.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Open Source Banner -->
+        <div class="bg-white dark:bg-black rounded-2xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-10 text-center">
+          <h2 class="text-xl md:text-2xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">
+            Built in the Open
+          </h2>
+          <p class="text-neutral-600 dark:text-neutral-300 mb-6 md:mb-8 max-w-2xl mx-auto">
+            Desktop UI is open source and MIT licensed. Contribute to the project, report issues, or fork it for your own needs.
+          </p>
+
+          <div class="flex flex-col items-center gap-4">
+            <a
+              href="https://github.com/nvisycom/desktop"
+              class="inline-flex items-center justify-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-black font-medium py-3 px-6 md:px-8 rounded-xl hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all duration-200 text-sm md:text-base"
+            >
+              <Fragment set:html={GithubIcon} />
+              View on GitHub
+            </a>
+            <p class="text-xs md:text-sm text-neutral-500 dark:text-neutral-500">
+              Latest version: v1.0.0 • <a href="https://github.com/nvisycom/desktop/releases" class="hover:text-neutral-700 dark:hover:text-neutral-400 transition-colors">View all releases</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Open Source -->
+    <OpenSource
+      title="Built on Open Source"
+      description="Desktop UI is fully open source. Contribute, validate our security approach, and build with confidence."
+    />
+
+    <!-- CTA Section -->
+    <CTA
+      title="Ready to Get Started?"
+      description="Download Desktop UI and connect it to Nvisy Cloud or your own Server deployment. Get started in minutes."
+      buttons={[
+        {
+          text: "View Documentation",
+          href: "https://docs.nvisy.com/desktop",
+          variant: "primary"
+        },
+        {
+          text: "View on GitHub",
+          href: "https://github.com/nvisycom/desktop",
+          variant: "secondary"
+        }
+      ]}
+      background="solid"
+    />
+  </div>
+</Layout>

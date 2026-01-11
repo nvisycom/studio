@@ -1,0 +1,238 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import {
+	ChevronLeft,
+	ChevronRight,
+	Zap,
+	Code,
+	Palette,
+	Building,
+	FileText,
+	Shield,
+	File,
+} from "lucide-vue-next";
+import { calculateReadingTime } from "@nvisy/shared";
+
+import BlueskyIcon from "@/assets/icons/bluesky.svg";
+import LinkedinIcon from "@/assets/icons/linkedin.svg";
+
+export async function getStaticPaths() {
+	try {
+		const blogEntries = await getCollection("blog-posts");
+		return blogEntries.map((entry) => ({
+			params: { slug: entry.slug },
+			props: { entry },
+		}));
+	} catch (error: unknown) {
+		// Return empty array if no blog collection exists.
+		console.error("Error fetching blog collection:", error);
+		return [];
+	}
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+
+// Calculate reading time dynamically
+const readingTime = calculateReadingTime(entry.body);
+
+// Get all blog entries for navigation
+const allPosts = (await getCollection("blog-posts")).sort(
+	(a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
+);
+
+// Find current post index for navigation
+const currentIndex = allPosts.findIndex((post) => post.slug === entry.slug);
+const previousPost =
+	currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
+const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+
+// Related posts (most recent posts, excluding current post)
+const relatedPosts = allPosts
+	.filter((post) => post.slug !== entry.slug)
+	.slice(0, 3);
+---
+
+<Layout title={entry.data.title} description={entry.data.description}>
+  <div class="bg-white dark:bg-black min-h-screen">
+    <!-- Article Header -->
+    <div class="container mx-auto px-4 py-8">
+      <div class="max-w-4xl mx-auto">
+        <div>
+          <!-- Meta -->
+          <div class="flex flex-wrap items-center gap-4 mb-6">
+            {entry.data.category && (
+              <span class="text-sm font-medium text-white bg-black dark:bg-white dark:text-black px-3 py-1 rounded-full">
+                {entry.data.category}
+              </span>
+            )}
+            <div class="flex items-center gap-4">
+              <time class="text-neutral-500 dark:text-neutral-400 text-sm">
+                {new Date(entry.data.publishedAt).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </time>
+              <span class="text-neutral-300 dark:text-neutral-600">•</span>
+              <span class="text-neutral-500 dark:text-neutral-400 text-sm">{readingTime} min read</span>
+            </div>
+          </div>
+
+          <!-- Title -->
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-light text-neutral-900 dark:text-white leading-tight mb-6">
+            {entry.data.title}
+          </h1>
+
+          <!-- Description -->
+          {entry.data.excerpt && (
+            <p class="text-xl md:text-2xl text-neutral-600 dark:text-neutral-300 leading-relaxed mb-8 max-w-3xl">
+              {entry.data.excerpt}
+            </p>
+          )}
+
+          <!-- Author & Meta -->
+          <div class="flex items-center justify-between border-t border-neutral-200 dark:border-neutral-700 pt-6 pb-2">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-neutral-200 dark:bg-neutral-800 rounded-full flex items-center justify-center">
+                <span class="text-lg font-semibold text-neutral-600 dark:text-neutral-300">
+                  {entry.data.author.split(' ').map(n => n[0]).join('').toUpperCase()}
+                </span>
+              </div>
+              <div>
+                <div class="font-light text-neutral-900 dark:text-white">{entry.data.author}</div>
+                <div class="text-sm text-neutral-500 dark:text-neutral-400">Author</div>
+              </div>
+            </div>
+
+            <!-- Share -->
+            <div class="flex items-center gap-3">
+              <span class="text-sm text-neutral-500 dark:text-neutral-400 mr-2">Share</span>
+              <a
+                href={`https://bsky.app/intent/compose?text=${encodeURIComponent(entry.data.title + ' ' + Astro.url)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-10 h-10 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-full flex items-center justify-center transition-colors"
+                aria-label="Share on Bluesky"
+              >
+                <BlueskyIcon class="w-4 h-4" />
+              </a>
+              <a
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`${Astro.url}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-10 h-10 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-full flex items-center justify-center transition-colors"
+                aria-label="Share on LinkedIn"
+              >
+                <LinkedinIcon class="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Article Content -->
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <article class="max-w-none mb-16">
+          <div class="prose prose-xl max-w-none mx-auto leading-loose text-neutral-800 dark:text-neutral-200 prose-headings:text-neutral-900 dark:prose-headings:text-neutral-100 prose-strong:text-neutral-900 dark:prose-strong:text-neutral-100" style="font-size: 1.125rem; line-height: 1.8;">
+            <Content />
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- Tags and Navigation Container -->
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+
+        <!-- Tags -->
+        {entry.data.tags && entry.data.tags.length > 0 && (
+          <div class="mb-12">
+            <div class="flex flex-wrap gap-2">
+              {entry.data.tags.map(tag => (
+                <span class="text-sm text-neutral-600 dark:text-neutral-400 bg-neutral-50 dark:bg-neutral-900 px-3 py-1.5 rounded-full border border-neutral-200 dark:border-neutral-700">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- Article Navigation -->
+        {(previousPost || nextPost) && (
+          <nav class="border-t border-neutral-200 dark:border-neutral-700 pt-12 mb-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {previousPost && (
+                <div>
+                  <div class="text-sm text-neutral-500 dark:text-neutral-400 mb-2">Previous Article</div>
+                  <a href={`/blog/${previousPost.slug}`} class="group inline-flex items-center gap-3">
+                    <ChevronLeft class="w-5 h-5 text-neutral-400 dark:text-neutral-500 group-hover:text-black dark:group-hover:text-white transition-colors" />
+                    <span class="text-lg font-light text-neutral-900 dark:text-white group-hover:text-black dark:group-hover:text-white transition-colors">
+                      {previousPost.data.title}
+                    </span>
+                  </a>
+                </div>
+              )}
+              {nextPost && (
+                <div class="md:text-right md:col-start-2">
+                  <div class="text-sm text-neutral-500 dark:text-neutral-400 mb-2">Next Article</div>
+                  <a href={`/blog/${nextPost.slug}`} class="group inline-flex items-center gap-3 md:flex-row-reverse">
+                    <ChevronRight class="w-5 h-5 text-neutral-400 dark:text-neutral-500 group-hover:text-black dark:group-hover:text-white transition-colors" />
+                    <span class="text-lg font-light text-neutral-900 dark:text-white group-hover:text-black dark:group-hover:text-white transition-colors">
+                      {nextPost.data.title}
+                    </span>
+                  </a>
+                </div>
+              )}
+            </div>
+          </nav>
+        )}
+
+        <!-- Related Posts -->
+        {relatedPosts.length > 0 && (
+          <div class="border-t border-neutral-200 dark:border-neutral-700 pt-12">
+            <h2 class="text-2xl font-light text-neutral-900 dark:text-white mb-8">Related Articles</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {relatedPosts.map(post => (
+                <article class="group">
+                  <a href={`/blog/${post.slug}`}>
+                    <div class="aspect-video bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-800 dark:to-neutral-900 rounded-lg mb-4 flex items-center justify-center transition-colors group-hover:from-neutral-100 group-hover:to-neutral-200 dark:group-hover:from-neutral-700 dark:group-hover:to-neutral-800">
+                      <div class="text-neutral-400 dark:text-neutral-500 transition-colors group-hover:text-neutral-600 dark:group-hover:text-neutral-300">
+                        {post.data.category === 'Engineering' && <Zap class="w-12 h-12" client:load />}
+                        {post.data.category === 'Development' && <Code class="w-12 h-12" client:load />}
+                        {post.data.category === 'Design' && <Palette class="w-12 h-12" client:load />}
+                        {post.data.category === 'Architecture' && <Building class="w-12 h-12" client:load />}
+                        {post.data.category === 'Compliance' && <Shield class="w-12 h-12" client:load />}
+                        {post.data.category === 'Case Study' && <FileText class="w-12 h-12" client:load />}
+                        {!post.data.category && <File class="w-12 h-12" client:load />}
+                      </div>
+                    </div>
+                    <div class="text-sm text-neutral-500 dark:text-neutral-400 mb-2 transition-colors group-hover:text-neutral-700 dark:group-hover:text-neutral-300">
+                      {new Date(post.data.publishedAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
+                    </div>
+                    <h3 class="text-lg font-light text-neutral-900 dark:text-white group-hover:text-black dark:group-hover:text-neutral-200 transition-colors mb-2">
+                      {post.data.title}
+                    </h3>
+                    <p class="text-neutral-600 dark:text-neutral-300 text-sm overflow-hidden transition-colors group-hover:text-neutral-800 dark:group-hover:text-neutral-200" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                      {post.data.excerpt || post.data.description}
+                    </p>
+                  </a>
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+
+    <!-- Extra spacing before footer -->
+    <div class="pb-16"></div>
+  </div>
+</Layout>

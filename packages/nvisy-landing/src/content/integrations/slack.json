@@ -1,0 +1,9 @@
+{
+  "icon": "slack",
+  "isBrand": true,
+  "version": "v1.0",
+  "status": "Planned",
+  "title": "Slack",
+  "category": "Notification",
+  "description": "Receive real-time notifications about document processing workflows, extraction status, and results directly in your Slack channels."
+}

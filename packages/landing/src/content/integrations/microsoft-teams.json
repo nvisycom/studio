@@ -1,9 +1,0 @@
-{
-	"icon": "microsoft",
-	"isBrand": true,
-	"version": "v1.0",
-	"status": "Planned",
-	"title": "Microsoft Teams",
-	"category": "Notification",
-	"description": "Get instant notifications about document redaction status, workflow updates, and compliance alerts delivered to your Microsoft Teams channels."
-}

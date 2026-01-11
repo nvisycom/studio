@@ -1,9 +1,0 @@
-{
-	"icon": "dropbox",
-	"isBrand": true,
-	"version": "v1.0",
-	"status": "Planned",
-	"title": "Dropbox",
-	"category": "File Import/Export",
-	"description": "Import and export documents from Dropbox with automated redaction workflows and secure file processing for shared folders and team spaces."
-}

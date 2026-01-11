@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Loan Processing",
+    "description": "Automatically extract and structure data from loan applications, income statements, and supporting documentation for faster processing and compliance.",
+    "audience": "Banks, Credit Unions, Mortgage Lenders"
+  },
+  {
+    "title": "KYC & AML",
+    "description": "Extract and validate customer identity data from documents while maintaining necessary information for Know Your Customer and Anti-Money Laundering processes.",
+    "audience": "Investment Firms, Payment Processors"
+  },
+  {
+    "title": "Regulatory Reporting",
+    "description": "Transform customer data and transaction documents into structured reports for regulatory bodies with automated data extraction.",
+    "audience": "All Financial Institutions"
+  },
+  {
+    "title": "Customer Communications",
+    "description": "Extract key information from account statements, transaction histories, and correspondence for customer service and dispute resolution.",
+    "audience": "Retail Banks, Credit Card Companies"
+  },
+  {
+    "title": "Fintech Integration",
+    "description": "API-first approach allows fintech applications to integrate document processing directly into their platforms for automated data extraction.",
+    "audience": "Fintech Startups, Neobanks"
+  },
+  {
+    "title": "Internal Audits",
+    "description": "Extract and structure documentation for internal compliance reviews and external audits with comprehensive data extraction.",
+    "audience": "Large Banks, Insurance Companies"
+  }
+]

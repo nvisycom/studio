@@ -1,0 +1,32 @@
+[
+  {
+    "title": "FOIA Requests",
+    "description": "Process Freedom of Information Act requests by automatically extracting and structuring document data for efficient response preparation.",
+    "audience": "Federal, State, Local Agencies"
+  },
+  {
+    "title": "Public Records",
+    "description": "Extract structured data from court documents, police reports, and administrative records for digitization and searchability.",
+    "audience": "Courts, Law Enforcement, Public Records Offices"
+  },
+  {
+    "title": "Case Management",
+    "description": "Extract key information from case files, investigation reports, and legal documents for inter-agency sharing and case coordination.",
+    "audience": "Social Services, Child Welfare, Criminal Justice"
+  },
+  {
+    "title": "Citizen Services",
+    "description": "Process citizen applications, permits, licenses, and service requests by extracting structured data for faster processing.",
+    "audience": "DMV, Licensing Agencies, Municipal Services"
+  },
+  {
+    "title": "Procurement & Contracts",
+    "description": "Extract key terms and data from procurement documents, bids, and contracts for analysis and compliance tracking.",
+    "audience": "Procurement Offices, Contract Management"
+  },
+  {
+    "title": "Internal Communications",
+    "description": "Extract and structure data from internal emails, memos, and reports for knowledge management and searchability.",
+    "audience": "All Government Agencies"
+  }
+]

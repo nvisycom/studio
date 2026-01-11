@@ -1,9 +1,0 @@
-{
-	"icon": "file-signature",
-	"isBrand": false,
-	"version": "v1.0",
-	"status": "Planned",
-	"title": "DocuSign",
-	"category": "Pre/Post Signing",
-	"description": "Automatically redact sensitive information before sending documents for signature or after signing is complete, ensuring compliance throughout the signing process."
-}
