@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import {
-	Upload,
-	Sparkles,
-	Users,
-	BarChart3,
-	ArrowRight,
-	CreditCard,
-	Database,
-	FileText,
-	Calendar,
+  Upload,
+  Users,
+  BarChart3,
+  ArrowRight,
+  CreditCard,
+  Database,
+  FileText,
+  Calendar,
 } from "lucide-vue-next";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,11 +21,11 @@ const { files } = useFiles();
 
 // Format date
 function formatDate(dateString: string): string {
-	return new Date(dateString).toLocaleDateString("en-US", {
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	});
+  return new Date(dateString).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 }
 
 // Usage data (placeholder - should come from API)
@@ -42,30 +41,24 @@ const storagePercentage = (storageUsed / storageTotal) * 100;
 
 // Quick actions
 const quickActions = [
-	{
-		title: t("overview.quickActions.uploadFiles.title"),
-		description: t("overview.quickActions.uploadFiles.description"),
-		icon: Upload,
-		href: "/files",
-	},
-	{
-		title: t("overview.quickActions.askAI.title"),
-		description: t("overview.quickActions.askAI.description"),
-		icon: Sparkles,
-		href: "/knowledge",
-	},
-	{
-		title: t("overview.quickActions.manageTeam.title"),
-		description: t("overview.quickActions.manageTeam.description"),
-		icon: Users,
-		href: "/team",
-	},
-	{
-		title: t("overview.quickActions.viewAnalytics.title"),
-		description: t("overview.quickActions.viewAnalytics.description"),
-		icon: BarChart3,
-		href: "/analytics",
-	},
+  {
+    title: t("overview.quickActions.uploadFiles.title"),
+    description: t("overview.quickActions.uploadFiles.description"),
+    icon: Upload,
+    href: "/files",
+  },
+  {
+    title: t("overview.quickActions.manageTeam.title"),
+    description: t("overview.quickActions.manageTeam.description"),
+    icon: Users,
+    href: "/team",
+  },
+  {
+    title: t("overview.quickActions.viewAnalytics.title"),
+    description: t("overview.quickActions.viewAnalytics.description"),
+    icon: BarChart3,
+    href: "/analytics",
+  },
 ];
 </script>
 
@@ -103,9 +96,6 @@ const quickActions = [
           v-if="currentWorkspace"
           class="flex flex-wrap items-center gap-2 mt-3"
         >
-          <Badge v-if="currentWorkspace.autoCleanup" variant="secondary">
-            {{ t("overview.workspace.badges.autoCleanup") }}
-          </Badge>
           <Badge v-if="currentWorkspace.requireApproval" variant="secondary">
             {{ t("overview.workspace.badges.requireApproval") }}
           </Badge>

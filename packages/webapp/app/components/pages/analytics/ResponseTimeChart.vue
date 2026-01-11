@@ -84,7 +84,12 @@ const svgDefs = `
           }
         "
       />
-      <VisAxis type="y" :num-ticks="3" :tick-line="false" :domain-line="false" />
+      <VisAxis
+        type="y"
+        :num-ticks="3"
+        :tick-line="false"
+        :domain-line="false"
+      />
       <ChartTooltip />
       <ChartCrosshair
         :template="
@@ -95,7 +100,6 @@ const svgDefs = `
                 day: 'numeric',
               });
             },
-            valueFormatter: (value) => `${value}ms`,
           })
         "
         :color="chartConfig.value.color"

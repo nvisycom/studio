@@ -7,7 +7,7 @@ import type {
 	VisibilityState,
 	RowSelectionState,
 	ExpandedState,
-	TableOptions,
+	Row,
 } from "@tanstack/vue-table";
 import {
 	FlexRender,
@@ -41,7 +41,7 @@ export interface DataTableProps<TData, TValue> {
 	enableExpanding?: boolean;
 	manualSorting?: boolean;
 	getRowId?: (row: TData) => string;
-	getRowCanExpand?: (row: TData) => boolean;
+	getRowCanExpand?: (row: Row<TData>) => boolean;
 	getSubRows?: (row: TData) => TData[] | undefined;
 }
 
@@ -72,9 +72,13 @@ const globalFilter = ref("");
 
 const tableContainerRef = ref<HTMLDivElement | null>(null);
 
-const tableOptions = computed<TableOptions<TData>>(() => ({
-	data: props.data,
-	columns: props.columns,
+const table = useVueTable({
+	get data() {
+		return props.data;
+	},
+	get columns() {
+		return props.columns;
+	},
 	getCoreRowModel: getCoreRowModel(),
 	getSortedRowModel: props.enableSorting ? getSortedRowModel() : undefined,
 	getFilteredRowModel: getFilteredRowModel(),
@@ -120,9 +124,7 @@ const tableOptions = computed<TableOptions<TData>>(() => ({
 			return globalFilter.value;
 		},
 	},
-}));
-
-const table = useVueTable(tableOptions);
+});
 
 const rowVirtualizer = useVirtualizer(
 	computed(() => ({
@@ -223,7 +225,7 @@ defineExpose({
 
           <TableRow
             v-for="virtualRow in virtualRows"
-            :key="virtualRow.key"
+            :key="String(virtualRow.key)"
             :data-index="virtualRow.index"
             :data-state="
               table.getRowModel().rows[virtualRow.index]?.getIsSelected()
@@ -234,13 +236,13 @@ defineExpose({
             class="cursor-pointer"
             @click="
               handleRowClick(
-                table.getRowModel().rows[virtualRow.index]?.original,
+                table.getRowModel().rows[virtualRow.index]?.original as TData,
               )
             "
             @contextmenu="
               handleRowContextMenu(
                 $event,
-                table.getRowModel().rows[virtualRow.index]?.original,
+                table.getRowModel().rows[virtualRow.index]?.original as TData,
               )
             "
           >

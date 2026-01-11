@@ -74,7 +74,7 @@ function cancel() {
           </p>
           <p class="text-xs text-neutral-500 dark:text-neutral-500">
             {{ t("integrations.dialogs.disconnect.provider") }}:
-            {{ integration?.providerName }}
+            {{ integration?.integrationType }}
           </p>
         </div>
 

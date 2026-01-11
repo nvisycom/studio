@@ -1,61 +1,71 @@
-import { ref, computed, type Ref, type ComputedRef } from "vue";
+import type { Ref, ComputedRef } from "vue";
 
-interface UseSelectionOptions<T> {
-	items: ComputedRef<T[]>;
-	getKey: (item: T) => string;
-	isSelectable?: (item: T) => boolean;
+export interface UseSelectionOptions<T, K> {
+  items: Ref<T[]> | ComputedRef<T[]>;
+  getKey: (item: T) => K;
+  isSelectable?: (item: T) => boolean;
 }
 
-interface UseSelectionReturn {
-	selected: Ref<Set<string>>;
-	allSelected: ComputedRef<boolean>;
-	toggle: (key: string) => void;
-	toggleAll: () => void;
-	clear: () => void;
-}
+/**
+ * Composable for managing multi-select state
+ */
+export function useSelection<T, K extends string | number>(
+  options: UseSelectionOptions<T, K>,
+) {
+  const { items, getKey, isSelectable = () => true } = options;
 
-export function useSelection<T>({
-	items,
-	getKey,
-	isSelectable = () => true,
-}: UseSelectionOptions<T>): UseSelectionReturn {
-	const selected = ref<Set<string>>(new Set());
+  const selected = ref<Set<K>>(new Set());
 
-	const selectableItems = computed(() => items.value.filter(isSelectable));
+  const selectableItems = computed(() => items.value.filter(isSelectable));
 
-	const allSelected = computed(
-		() =>
-			selectableItems.value.length > 0 &&
-			selectableItems.value.every((item) => selected.value.has(getKey(item))),
-	);
+  const allSelected = computed(() => {
+    if (selectableItems.value.length === 0) return false;
+    return selectableItems.value.every((item) =>
+      selected.value.has(getKey(item)),
+    );
+  });
 
-	function toggle(key: string): void {
-		const newSet = new Set(selected.value);
-		if (newSet.has(key)) {
-			newSet.delete(key);
-		} else {
-			newSet.add(key);
-		}
-		selected.value = newSet;
-	}
+  function toggle(key: K) {
+    const newSet = new Set(selected.value);
+    if (newSet.has(key)) {
+      newSet.delete(key);
+    } else {
+      newSet.add(key);
+    }
+    selected.value = newSet;
+  }
 
-	function toggleAll(): void {
-		if (allSelected.value) {
-			selected.value = new Set();
-		} else {
-			selected.value = new Set(selectableItems.value.map(getKey));
-		}
-	}
+  function toggleAll() {
+    if (allSelected.value) {
+      selected.value = new Set();
+    } else {
+      selected.value = new Set(selectableItems.value.map(getKey));
+    }
+  }
 
-	function clear(): void {
-		selected.value = new Set();
-	}
+  function clear() {
+    selected.value = new Set();
+  }
 
-	return {
-		selected,
-		allSelected,
-		toggle,
-		toggleAll,
-		clear,
-	};
+  function select(key: K) {
+    const newSet = new Set(selected.value);
+    newSet.add(key);
+    selected.value = newSet;
+  }
+
+  function deselect(key: K) {
+    const newSet = new Set(selected.value);
+    newSet.delete(key);
+    selected.value = newSet;
+  }
+
+  return {
+    selected,
+    allSelected,
+    toggle,
+    toggleAll,
+    clear,
+    select,
+    deselect,
+  };
 }

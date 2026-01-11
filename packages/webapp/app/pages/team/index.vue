@@ -1,39 +1,39 @@
 <script setup lang="ts">
 import type {
-	Member,
-	Invite,
-	InviteExpiration,
-	WorkspaceRole,
-	ListMembers,
-	ListInvites,
-	MemberSortField,
-	InviteSortField,
-	SortOrder,
+  Member,
+  Invite,
+  InviteExpiration,
+  WorkspaceRole,
+  ListMembers,
+  ListInvites,
+  MemberSortField,
+  InviteSortField,
+  SortOrder,
 } from "@nvisy/sdk/datatypes";
 import { NvisyApiError } from "@nvisy/sdk";
 import { toast } from "vue-sonner";
 
 function getErrorMessage(err: unknown, fallback: string): string {
-	if (err instanceof NvisyApiError) {
-		return err.message;
-	}
-	if (err instanceof Error) {
-		return err.message;
-	}
-	return fallback;
+  if (err instanceof NvisyApiError) {
+    return err.message;
+  }
+  if (err instanceof Error) {
+    return err.message;
+  }
+  return fallback;
 }
 import {
-	DeleteMemberModal,
-	DeleteMultipleMembersModal,
-	EditMemberModal,
-	CancelInviteModal,
-	CancelMultipleInvitesModal,
-	InviteMembersCard,
-	TeamListCard,
+  DeleteMemberModal,
+  DeleteMultipleMembersModal,
+  EditMemberModal,
+  CancelInviteModal,
+  CancelMultipleInvitesModal,
+  InviteMembersCard,
+  TeamListCard,
 } from "~/components/pages/team";
 
 definePageMeta({
-	pageCategory: "Team",
+  pageCategory: "Team",
 });
 
 const { t } = useI18n();
@@ -46,36 +46,39 @@ const selectedSortOrder = ref<SortOrder>("desc");
 
 // Build query objects for SDK
 const membersQuery = computed<ListMembers>(() => ({
-	...(selectedRoleFilter.value && { role: selectedRoleFilter.value }),
-	sortBy: selectedSortField.value as MemberSortField,
-	order: selectedSortOrder.value,
+  ...(selectedRoleFilter.value && { role: selectedRoleFilter.value }),
+  sortBy: selectedSortField.value as MemberSortField,
+  order: selectedSortOrder.value,
 }));
 
 const invitesQuery = computed<ListInvites>(() => ({
-	...(selectedRoleFilter.value && { role: selectedRoleFilter.value }),
-	sortBy: selectedSortField.value as InviteSortField,
-	order: selectedSortOrder.value,
+  ...(selectedRoleFilter.value && { role: selectedRoleFilter.value }),
+  // Map "name" to "email" for invites (members use "name", invites use "email")
+  sortBy: (selectedSortField.value === "name"
+    ? "email"
+    : selectedSortField.value) as InviteSortField,
+  order: selectedSortOrder.value,
 }));
 
 // Use SDK composables with query params
 const {
-	members,
-	isLoading: isLoadingMembers,
-	removeMemberAsync,
-	updateMemberAsync,
-	isUpdatingMember,
-	refresh: refreshMembers,
+  members,
+  isLoading: isLoadingMembers,
+  removeMemberAsync,
+  updateMemberAsync,
+  isUpdatingMember,
+  refresh: refreshMembers,
 } = useMembers(membersQuery);
 
 const {
-	invites,
-	isLoading: isLoadingInvites,
-	sendInviteAsync,
-	isSending,
-	cancelInviteAsync,
-	generateCodeAsync,
-	isGenerating,
-	refresh: refreshInvites,
+  invites,
+  isLoading: isLoadingInvites,
+  sendInviteAsync,
+  isSending,
+  cancelInviteAsync,
+  generateCodeAsync,
+  isGenerating,
+  refresh: refreshInvites,
 } = useInvites(invitesQuery);
 
 // UI feedback state
@@ -94,227 +97,228 @@ const isCancelMultipleInvitesDialogOpen = ref(false);
 
 // Client-side search filter (search isn't supported by SDK)
 const filteredMembers = computed(() => {
-	if (!members.value) return [];
-	if (!searchQuery.value) return members.value;
+  if (!members.value) return [];
+  if (!searchQuery.value) return members.value;
 
-	const query = searchQuery.value.toLowerCase();
-	return members.value.filter(
-		(member) =>
-			member.displayName.toLowerCase().includes(query) ||
-			member.emailAddress.toLowerCase().includes(query),
-	);
+  const query = searchQuery.value.toLowerCase();
+  return members.value.filter(
+    (member) =>
+      member.displayName.toLowerCase().includes(query) ||
+      member.emailAddress.toLowerCase().includes(query),
+  );
 });
 
 const pendingInvites = computed(() => {
-	if (!invites.value) return [];
-	return invites.value.filter((invite) => invite.inviteStatus === "pending");
+  if (!invites.value) return [];
+  console.log(invites.value);
+  return invites.value.filter((invite) => invite.inviteStatus === "pending");
 });
 
 const filteredInvites = computed(() => {
-	if (!searchQuery.value) return pendingInvites.value;
+  if (!searchQuery.value) return pendingInvites.value;
 
-	const query = searchQuery.value.toLowerCase();
-	return pendingInvites.value.filter((invite) =>
-		(invite.inviteeEmail ?? "").toLowerCase().includes(query),
-	);
+  const query = searchQuery.value.toLowerCase();
+  return pendingInvites.value.filter((invite) =>
+    (invite.inviteeEmail ?? "").toLowerCase().includes(query),
+  );
 });
 
 // Selection using composable
 const membersSelection = useSelection({
-	items: filteredMembers,
-	getKey: (m) => m.accountId,
-	isSelectable: (m) => m.memberRole !== "owner",
+  items: filteredMembers,
+  getKey: (m) => m.accountId,
+  isSelectable: (m) => m.memberRole !== "owner",
 });
 
 const invitesSelection = useSelection({
-	items: filteredInvites,
-	getKey: (i) => i.inviteId,
+  items: filteredInvites,
+  getKey: (i) => i.inviteId,
 });
 
 // ===== Invite Functions =====
 
 async function handleSendInvite(
-	email: string,
-	role: WorkspaceRole,
-	expiry: InviteExpiration,
+  email: string,
+  role: WorkspaceRole,
+  expiry: InviteExpiration,
 ) {
-	try {
-		await sendInviteAsync({
-			inviteeEmail: email,
-			invitedRole: role,
-			expiresIn: expiry,
-		});
-		inviteSent.value = true;
-		toast.success(t("members.messages.inviteSent"));
-		setTimeout(() => {
-			inviteSent.value = false;
-		}, 2000);
-	} catch (err) {
-		const errorMessage = getErrorMessage(err, t("members.errors.inviteFailed"));
-		toast.error(t("members.errors.inviteFailed"), {
-			description: errorMessage,
-		});
-	}
+  try {
+    await sendInviteAsync({
+      inviteeEmail: email,
+      invitedRole: role,
+      expiresIn: expiry,
+    });
+    inviteSent.value = true;
+    toast.success(t("members.messages.inviteSent"));
+    setTimeout(() => {
+      inviteSent.value = false;
+    }, 2000);
+  } catch (err) {
+    const errorMessage = getErrorMessage(err, t("members.errors.inviteFailed"));
+    toast.error(t("members.errors.inviteFailed"), {
+      description: errorMessage,
+    });
+  }
 }
 
 async function handleCopyLink(role: WorkspaceRole, expiry: InviteExpiration) {
-	try {
-		const result = await generateCodeAsync({
-			invitedRole: role,
-			expiresIn: expiry,
-		});
-		const baseUrl = window.location.origin;
-		const inviteUrl = `${baseUrl}/join/${result.inviteCode}`;
-		await navigator.clipboard.writeText(inviteUrl);
-		copiedInviteLink.value = true;
-		toast.success(t("members.messages.linkCopied"));
-		setTimeout(() => {
-			copiedInviteLink.value = false;
-		}, 2000);
-		await refreshInvites();
-	} catch (err) {
-		toast.error(getErrorMessage(err, t("members.errors.linkFailed")));
-	}
+  try {
+    const result = await generateCodeAsync({
+      invitedRole: role,
+      expiresIn: expiry,
+    });
+    const baseUrl = window.location.origin;
+    const inviteUrl = `${baseUrl}/join/${result.inviteCode}`;
+    await navigator.clipboard.writeText(inviteUrl);
+    copiedInviteLink.value = true;
+    toast.success(t("members.messages.linkCopied"));
+    setTimeout(() => {
+      copiedInviteLink.value = false;
+    }, 2000);
+    await refreshInvites();
+  } catch (err) {
+    toast.error(getErrorMessage(err, t("members.errors.linkFailed")));
+  }
 }
 
 // ===== Member Deletion Functions =====
 
 function openDeleteMemberDialog(memberId: string) {
-	const member = members.value?.find((m) => m.accountId === memberId);
-	if (member) {
-		memberToDelete.value = member;
-		isDeleteMemberDialogOpen.value = true;
-	}
+  const member = members.value?.find((m) => m.accountId === memberId);
+  if (member) {
+    memberToDelete.value = member;
+    isDeleteMemberDialogOpen.value = true;
+  }
 }
 
 async function deleteMember() {
-	if (!memberToDelete.value) return;
+  if (!memberToDelete.value) return;
 
-	try {
-		await removeMemberAsync(memberToDelete.value.accountId);
-		isDeleteMemberDialogOpen.value = false;
-		memberToDelete.value = null;
-		toast.success(t("members.messages.memberRemoved"));
-	} catch (err) {
-		toast.error(getErrorMessage(err, t("members.errors.removeFailed")));
-	}
+  try {
+    await removeMemberAsync(memberToDelete.value.accountId);
+    isDeleteMemberDialogOpen.value = false;
+    memberToDelete.value = null;
+    toast.success(t("members.messages.memberRemoved"));
+  } catch (err) {
+    toast.error(getErrorMessage(err, t("members.errors.removeFailed")));
+  }
 }
 
 // ===== Member Edit Functions =====
 
 function openEditMemberDialog(memberId: string) {
-	const member = members.value?.find((m) => m.accountId === memberId);
-	if (member) {
-		memberToEdit.value = member;
-		isEditMemberDialogOpen.value = true;
-	}
+  const member = members.value?.find((m) => m.accountId === memberId);
+  if (member) {
+    memberToEdit.value = member;
+    isEditMemberDialogOpen.value = true;
+  }
 }
 
 async function editMember(role: WorkspaceRole) {
-	if (!memberToEdit.value) return;
+  if (!memberToEdit.value) return;
 
-	try {
-		await updateMemberAsync({
-			accountId: memberToEdit.value.accountId,
-			updates: { role },
-		});
-		isEditMemberDialogOpen.value = false;
-		memberToEdit.value = null;
-		toast.success(t("members.messages.memberUpdated"));
-	} catch (err) {
-		toast.error(getErrorMessage(err, t("members.errors.updateFailed")));
-	}
+  try {
+    await updateMemberAsync({
+      accountId: memberToEdit.value.accountId,
+      updates: { role },
+    });
+    isEditMemberDialogOpen.value = false;
+    memberToEdit.value = null;
+    toast.success(t("members.messages.memberUpdated"));
+  } catch (err) {
+    toast.error(getErrorMessage(err, t("members.errors.updateFailed")));
+  }
 }
 
 async function deleteSelectedMembers() {
-	const accountIds = Array.from(membersSelection.selected.value);
-	const results = await Promise.allSettled(
-		accountIds.map((accountId) => removeMemberAsync(accountId)),
-	);
+  const accountIds = Array.from(membersSelection.selected.value);
+  const results = await Promise.allSettled(
+    accountIds.map((accountId) => removeMemberAsync(accountId)),
+  );
 
-	const failed = results.filter((r) => r.status === "rejected");
-	const succeeded = results.filter((r) => r.status === "fulfilled");
+  const failed = results.filter((r) => r.status === "rejected");
+  const succeeded = results.filter((r) => r.status === "fulfilled");
 
-	// Refresh once after all operations complete to avoid race conditions
-	if (succeeded.length > 0) {
-		await refreshMembers();
-	}
+  // Refresh once after all operations complete to avoid race conditions
+  if (succeeded.length > 0) {
+    await refreshMembers();
+  }
 
-	membersSelection.clear();
-	isDeleteMultipleMembersDialogOpen.value = false;
+  membersSelection.clear();
+  isDeleteMultipleMembersDialogOpen.value = false;
 
-	if (failed.length === 0) {
-		toast.success(t("members.messages.membersRemoved"));
-	} else if (succeeded.length > 0) {
-		toast.warning(t("members.messages.membersPartiallyRemoved"), {
-			description: t("members.errors.someRemoveFailed", {
-				count: failed.length,
-			}),
-		});
-	} else {
-		toast.error(t("members.errors.removeFailed"));
-	}
+  if (failed.length === 0) {
+    toast.success(t("members.messages.membersRemoved"));
+  } else if (succeeded.length > 0) {
+    toast.warning(t("members.messages.membersPartiallyRemoved"), {
+      description: t("members.errors.someRemoveFailed", {
+        count: failed.length,
+      }),
+    });
+  } else {
+    toast.error(t("members.errors.removeFailed"));
+  }
 }
 
 // ===== Invite Cancellation Functions =====
 
 function openCancelInviteDialog(inviteId: string) {
-	const invite = invites.value?.find((i) => i.inviteId === inviteId);
-	if (invite) {
-		inviteToCancel.value = invite;
-		isCancelInviteDialogOpen.value = true;
-	}
+  const invite = invites.value?.find((i) => i.inviteId === inviteId);
+  if (invite) {
+    inviteToCancel.value = invite;
+    isCancelInviteDialogOpen.value = true;
+  }
 }
 
 async function cancelInvite() {
-	if (!inviteToCancel.value) return;
+  if (!inviteToCancel.value) return;
 
-	try {
-		await cancelInviteAsync(inviteToCancel.value.inviteId);
-		isCancelInviteDialogOpen.value = false;
-		inviteToCancel.value = null;
-		toast.success(t("members.messages.inviteCanceled"));
-	} catch (err) {
-		toast.error(getErrorMessage(err, t("members.errors.cancelFailed")));
-	}
+  try {
+    await cancelInviteAsync(inviteToCancel.value.inviteId);
+    isCancelInviteDialogOpen.value = false;
+    inviteToCancel.value = null;
+    toast.success(t("members.messages.inviteCanceled"));
+  } catch (err) {
+    toast.error(getErrorMessage(err, t("members.errors.cancelFailed")));
+  }
 }
 
 async function cancelSelectedInvites() {
-	const inviteIds = Array.from(invitesSelection.selected.value);
-	const results = await Promise.allSettled(
-		inviteIds.map((inviteId) => cancelInviteAsync(inviteId)),
-	);
+  const inviteIds = Array.from(invitesSelection.selected.value);
+  const results = await Promise.allSettled(
+    inviteIds.map((inviteId) => cancelInviteAsync(inviteId)),
+  );
 
-	const failed = results.filter((r) => r.status === "rejected");
-	const succeeded = results.filter((r) => r.status === "fulfilled");
+  const failed = results.filter((r) => r.status === "rejected");
+  const succeeded = results.filter((r) => r.status === "fulfilled");
 
-	// Refresh once after all operations complete to avoid race conditions
-	if (succeeded.length > 0) {
-		await refreshInvites();
-	}
+  // Refresh once after all operations complete to avoid race conditions
+  if (succeeded.length > 0) {
+    await refreshInvites();
+  }
 
-	invitesSelection.clear();
-	isCancelMultipleInvitesDialogOpen.value = false;
+  invitesSelection.clear();
+  isCancelMultipleInvitesDialogOpen.value = false;
 
-	if (failed.length === 0) {
-		toast.success(t("members.messages.invitesCanceled"));
-	} else if (succeeded.length > 0) {
-		toast.warning(t("members.messages.invitesPartiallyCanceled"), {
-			description: t("members.errors.someCancelFailed", {
-				count: failed.length,
-			}),
-		});
-	} else {
-		toast.error(t("members.errors.cancelFailed"));
-	}
+  if (failed.length === 0) {
+    toast.success(t("members.messages.invitesCanceled"));
+  } else if (succeeded.length > 0) {
+    toast.warning(t("members.messages.invitesPartiallyCanceled"), {
+      description: t("members.errors.someCancelFailed", {
+        count: failed.length,
+      }),
+    });
+  } else {
+    toast.error(t("members.errors.cancelFailed"));
+  }
 }
 
 function handleSortingChange(
-	sortBy: MemberSortField | InviteSortField,
-	order: SortOrder,
+  sortBy: MemberSortField | InviteSortField,
+  order: SortOrder,
 ) {
-	selectedSortField.value = sortBy;
-	selectedSortOrder.value = order;
+  selectedSortField.value = sortBy;
+  selectedSortOrder.value = order;
 }
 </script>
 

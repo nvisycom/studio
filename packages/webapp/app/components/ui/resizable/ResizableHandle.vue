@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type {
-  SplitterResizeHandleEmits,
-  SplitterResizeHandleProps,
+	SplitterResizeHandleEmits,
+	SplitterResizeHandleProps,
 } from "reka-ui";
 import type { HTMLAttributes } from "vue";
 import { reactiveOmit } from "@vueuse/core";
@@ -10,10 +10,10 @@ import { SplitterResizeHandle, useForwardPropsEmits } from "reka-ui";
 import { cn } from "@/utils/shadcn";
 
 const props = defineProps<
-  SplitterResizeHandleProps & {
-    class?: HTMLAttributes["class"];
-    withHandle?: boolean;
-  }
+	SplitterResizeHandleProps & {
+		class?: HTMLAttributes["class"];
+		withHandle?: boolean;
+	}
 >();
 const emits = defineEmits<SplitterResizeHandleEmits>();
 

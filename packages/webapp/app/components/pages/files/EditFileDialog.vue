@@ -1,45 +1,45 @@
 <script setup lang="ts">
 import type {
-  File as NvisyFile,
-  UpdateFile,
-  ContentSegmentation,
+	File as NvisyFile,
+	UpdateFile,
+	ContentSegmentation,
 } from "@nvisy/sdk/datatypes";
 import { Loader2, ChevronDown } from "lucide-vue-next";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 const { t } = useI18n();
 
 interface Props {
-  open?: boolean;
-  file?: NvisyFile | null;
-  isLoading?: boolean;
+	open?: boolean;
+	file?: NvisyFile | null;
+	isLoading?: boolean;
 }
 
 interface Emits {
-  (e: "update:open", value: boolean): void;
-  (e: "update", data: UpdateFile): void;
+	(e: "update:open", value: boolean): void;
+	(e: "update", data: UpdateFile): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  open: false,
-  file: null,
-  isLoading: false,
+	open: false,
+	file: null,
+	isLoading: false,
 });
 
 const emit = defineEmits<Emits>();
@@ -53,95 +53,95 @@ const contentSegmentation = ref<ContentSegmentation>("semantic");
 
 // Helper to convert priority value to boolean (priority > 5 means high priority)
 function isHighPriority(priority: number | undefined): boolean {
-  return (priority ?? 5) > 5;
+	return (priority ?? 5) > 5;
 }
 
 // Segmentation options
 const segmentationOptions: { value: ContentSegmentation; labelKey: string }[] =
-  [
-    { value: "none", labelKey: "files.dialogs.edit.segmentationNone" },
-    { value: "semantic", labelKey: "files.dialogs.edit.segmentationSemantic" },
-    { value: "fixed", labelKey: "files.dialogs.edit.segmentationFixed" },
-  ];
+	[
+		{ value: "none", labelKey: "files.dialogs.edit.segmentationNone" },
+		{ value: "semantic", labelKey: "files.dialogs.edit.segmentationSemantic" },
+		{ value: "fixed", labelKey: "files.dialogs.edit.segmentationFixed" },
+	];
 
 // Computed validation
 const isFormValid = computed(() => {
-  return displayName.value.trim().length > 0;
+	return displayName.value.trim().length > 0;
 });
 
 const hasChanges = computed(() => {
-  if (!props.file) return false;
-  return (
-    displayName.value.trim() !== props.file.displayName ||
-    highPriority.value !== isHighPriority(props.file.processingPriority) ||
-    isIndexed.value !== (props.file.fileKnowledge?.isIndexed ?? true) ||
-    visualSupport.value !==
-      (props.file.fileKnowledge?.visualSupport ?? false) ||
-    contentSegmentation.value !==
-      (props.file.fileKnowledge?.contentSegmentation ?? "semantic")
-  );
+	if (!props.file) return false;
+	return (
+		displayName.value.trim() !== props.file.displayName ||
+		highPriority.value !== isHighPriority(props.file.processingPriority) ||
+		isIndexed.value !== (props.file.fileKnowledge?.isIndexed ?? true) ||
+		visualSupport.value !==
+			(props.file.fileKnowledge?.visualSupport ?? false) ||
+		contentSegmentation.value !==
+			(props.file.fileKnowledge?.contentSegmentation ?? "semantic")
+	);
 });
 
 // Watch for file prop changes to populate form
 watch(
-  () => props.file,
-  (newFile) => {
-    if (newFile && props.open) {
-      populateForm(newFile);
-    }
-  },
-  { immediate: true },
+	() => props.file,
+	(newFile) => {
+		if (newFile && props.open) {
+			populateForm(newFile);
+		}
+	},
+	{ immediate: true },
 );
 
 watch(
-  () => props.open,
-  (isOpen) => {
-    if (isOpen && props.file) {
-      populateForm(props.file);
-    }
-  },
+	() => props.open,
+	(isOpen) => {
+		if (isOpen && props.file) {
+			populateForm(props.file);
+		}
+	},
 );
 
 // Functions
 function populateForm(file: NvisyFile) {
-  displayName.value = file.displayName;
-  highPriority.value = isHighPriority(file.processingPriority);
-  isIndexed.value = file.fileKnowledge?.isIndexed ?? true;
-  visualSupport.value = file.fileKnowledge?.visualSupport ?? false;
-  contentSegmentation.value =
-    file.fileKnowledge?.contentSegmentation ?? "semantic";
+	displayName.value = file.displayName;
+	highPriority.value = isHighPriority(file.processingPriority);
+	isIndexed.value = file.fileKnowledge?.isIndexed ?? true;
+	visualSupport.value = file.fileKnowledge?.visualSupport ?? false;
+	contentSegmentation.value =
+		file.fileKnowledge?.contentSegmentation ?? "semantic";
 }
 
 function handleOpenChange(open: boolean) {
-  if (!open) {
-    resetForm();
-  }
-  emit("update:open", open);
+	if (!open) {
+		resetForm();
+	}
+	emit("update:open", open);
 }
 
 function resetForm() {
-  displayName.value = "";
-  highPriority.value = false;
-  isIndexed.value = true;
-  visualSupport.value = false;
-  contentSegmentation.value = "semantic";
+	displayName.value = "";
+	highPriority.value = false;
+	isIndexed.value = true;
+	visualSupport.value = false;
+	contentSegmentation.value = "semantic";
 }
 
 function updateFile() {
-  if (!isFormValid.value || !props.file) return;
+	if (!isFormValid.value || !props.file) return;
 
-  emit("update", {
-    displayName: displayName.value.trim(),
-    processingPriority: highPriority.value ? 10 : 5,
-    isIndexed: isIndexed.value,
-    visualSupport: isIndexed.value ? visualSupport.value : false,
-    contentSegmentation: isIndexed.value ? contentSegmentation.value : "none",
-  });
+	emit("update", {
+		displayName: displayName.value.trim(),
+		processingPriority: highPriority.value ? 10 : 5,
+		isIndexed: isIndexed.value,
+		visualSupport: isIndexed.value ? visualSupport.value : false,
+		contentSegmentation: isIndexed.value ? contentSegmentation.value : "none",
+	});
 }
 
 function cancel() {
-  resetForm();
-  emit("update:open", false);
+	resetForm();
+	emit("update:open", false);
 }
 </script>
 

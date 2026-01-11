@@ -2,77 +2,77 @@
 import { ref, computed } from "vue";
 import { Search } from "lucide-vue-next";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from "@/components/ui/select";
 import {
-  DeleteDocumentDialog,
-  EditDocumentDialog,
-  StatsCards,
-  CorpusTable,
+	DeleteDocumentDialog,
+	EditDocumentDialog,
+	StatsCards,
+	CorpusTable,
 } from "@/components/pages/files";
 import type { CorpusDocument } from "@/components/pages/files/CorpusTable.vue";
 
 definePageMeta({
-  pageCategory: "Files",
+	pageCategory: "Files",
 });
 
 const searchQuery = ref("");
 const statusFilter = ref("all");
 
 const corpusDocuments = ref<CorpusDocument[]>([
-  {
-    id: "1",
-    name: "product-documentation.pdf",
-    fileSize: "2.4 MB",
-    indexSize: "128 KB",
-    segments: 384,
-    avgQuery: "245ms",
-    indexedBy: "John Doe",
-    indexedAt: new Date("2024-01-15T14:30:00"),
-    visualSupport: false,
-    contentSegmentation: "semantic",
-    status: "indexed",
-  },
-  {
-    id: "2",
-    name: "faq-database.txt",
-    fileSize: "156 KB",
-    indexSize: "12 KB",
-    segments: 24,
-    avgQuery: "89ms",
-    indexedBy: "Jane Smith",
-    indexedAt: new Date("2024-01-20T09:15:00"),
-    visualSupport: false,
-    contentSegmentation: "paragraph",
-    status: "processing",
-  },
-  {
-    id: "3",
-    name: "training-materials.docx",
-    fileSize: "5.1 MB",
-    indexSize: "256 KB",
-    segments: 812,
-    avgQuery: "312ms",
-    indexedBy: "Bob Johnson",
-    indexedAt: new Date("2024-01-22T16:45:00"),
-    visualSupport: false,
-    contentSegmentation: "fixed",
-    status: "failed",
-  },
+	{
+		id: "1",
+		name: "product-documentation.pdf",
+		fileSize: "2.4 MB",
+		indexSize: "128 KB",
+		segments: 384,
+		avgQuery: "245ms",
+		indexedBy: "John Doe",
+		indexedAt: new Date("2024-01-15T14:30:00"),
+		visualSupport: false,
+		contentSegmentation: "semantic",
+		status: "indexed",
+	},
+	{
+		id: "2",
+		name: "faq-database.txt",
+		fileSize: "156 KB",
+		indexSize: "12 KB",
+		segments: 24,
+		avgQuery: "89ms",
+		indexedBy: "Jane Smith",
+		indexedAt: new Date("2024-01-20T09:15:00"),
+		visualSupport: false,
+		contentSegmentation: "paragraph",
+		status: "processing",
+	},
+	{
+		id: "3",
+		name: "training-materials.docx",
+		fileSize: "5.1 MB",
+		indexSize: "256 KB",
+		segments: 812,
+		avgQuery: "312ms",
+		indexedBy: "Bob Johnson",
+		indexedAt: new Date("2024-01-22T16:45:00"),
+		visualSupport: false,
+		contentSegmentation: "fixed",
+		status: "failed",
+	},
 ]);
 
 // Stats
@@ -89,14 +89,14 @@ const p95ResponseTime = ref(247);
 const documentCount = computed(() => corpusDocuments.value.length);
 
 const filteredDocuments = computed(() => {
-  return corpusDocuments.value.filter((doc) => {
-    const matchesStatus =
-      statusFilter.value === "all" || doc.status === statusFilter.value;
-    const matchesSearch =
-      searchQuery.value === "" ||
-      doc.name.toLowerCase().includes(searchQuery.value.toLowerCase());
-    return matchesStatus && matchesSearch;
-  });
+	return corpusDocuments.value.filter((doc) => {
+		const matchesStatus =
+			statusFilter.value === "all" || doc.status === statusFilter.value;
+		const matchesSearch =
+			searchQuery.value === "" ||
+			doc.name.toLowerCase().includes(searchQuery.value.toLowerCase());
+		return matchesStatus && matchesSearch;
+	});
 });
 
 const isEditDialogOpen = ref(false);
@@ -104,41 +104,41 @@ const isDeleteDialogOpen = ref(false);
 const selectedDocument = ref<CorpusDocument | null>(null);
 
 function addDocument() {
-  // TODO: Implement add document to corpus
+	// TODO: Implement add document to corpus
 }
 
 function editDocument(docId: string) {
-  const doc = corpusDocuments.value.find((d) => d.id === docId);
-  if (doc) {
-    selectedDocument.value = doc;
-    isEditDialogOpen.value = true;
-  }
+	const doc = corpusDocuments.value.find((d) => d.id === docId);
+	if (doc) {
+		selectedDocument.value = doc;
+		isEditDialogOpen.value = true;
+	}
 }
 
 function saveEdit(data: {
-  visualSupport: boolean;
-  contentSegmentation: string;
+	visualSupport: boolean;
+	contentSegmentation: string;
 }) {
-  if (selectedDocument.value) {
-    selectedDocument.value.visualSupport = data.visualSupport;
-    selectedDocument.value.contentSegmentation = data.contentSegmentation;
-  }
+	if (selectedDocument.value) {
+		selectedDocument.value.visualSupport = data.visualSupport;
+		selectedDocument.value.contentSegmentation = data.contentSegmentation;
+	}
 }
 
 function deleteDocument(docId: string) {
-  const doc = corpusDocuments.value.find((d) => d.id === docId);
-  if (doc) {
-    selectedDocument.value = doc;
-    isDeleteDialogOpen.value = true;
-  }
+	const doc = corpusDocuments.value.find((d) => d.id === docId);
+	if (doc) {
+		selectedDocument.value = doc;
+		isDeleteDialogOpen.value = true;
+	}
 }
 
 function confirmDelete() {
-  if (selectedDocument.value) {
-    corpusDocuments.value = corpusDocuments.value.filter(
-      (d) => d.id !== selectedDocument.value!.id,
-    );
-  }
+	if (selectedDocument.value) {
+		corpusDocuments.value = corpusDocuments.value.filter(
+			(d) => d.id !== selectedDocument.value!.id,
+		);
+	}
 }
 </script>
 

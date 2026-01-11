@@ -1,76 +1,76 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import {
-  Search,
-  ArrowLeft,
-  Cloud,
-  MessageSquare,
-  Database,
-  Bot,
-  Filter,
-  ArrowUpDown,
-  Puzzle,
-  Code,
+	Search,
+	ArrowLeft,
+	Cloud,
+	MessageSquare,
+	Database,
+	Bot,
+	Filter,
+	ArrowUpDown,
+	Puzzle,
+	Code,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from "@/components/ui/select";
 import { IntegrationCard } from "~/components/pages/integrations";
 
 const { t } = useI18n();
 
 definePageMeta({
-  pageCategory: "Integrations",
+	pageCategory: "Integrations",
 });
 
 /**
  * Tag keys that match the i18n keys
  */
 type TagKey =
-  | "fileSync"
-  | "import"
-  | "export"
-  | "notifications"
-  | "messaging"
-  | "collaboration"
-  | "notes"
-  | "database"
-  | "analytics"
-  | "automation"
-  | "noCode"
-  | "ai"
-  | "enterprise"
-  | "developer"
-  | "sdk";
+	| "fileSync"
+	| "import"
+	| "export"
+	| "notifications"
+	| "messaging"
+	| "collaboration"
+	| "notes"
+	| "database"
+	| "analytics"
+	| "automation"
+	| "noCode"
+	| "ai"
+	| "enterprise"
+	| "developer"
+	| "sdk";
 
 /**
  * Integration data structure
  */
 interface Integration {
-  id: string;
-  nameKey: string;
-  descriptionKey: string;
-  shortDescriptionKey?: string;
-  icon: string;
-  status: "available" | "unavailable";
-  category: string;
-  tags: TagKey[];
-  popularity: number;
-  isNew?: boolean;
-  isExternal?: boolean;
-  externalUrl?: string;
+	id: string;
+	nameKey: string;
+	descriptionKey: string;
+	shortDescriptionKey?: string;
+	icon: string;
+	status: "available" | "unavailable";
+	category: string;
+	tags: TagKey[];
+	popularity: number;
+	isNew?: boolean;
+	isExternal?: boolean;
+	externalUrl?: string;
 }
 
 interface Category {
-  key: string;
-  nameKey: string;
-  icon: any;
+	key: string;
+	nameKey: string;
+	icon: any;
 }
 
 const searchQuery = ref("");
@@ -80,371 +80,371 @@ const sortBy = ref<"popularity" | "nameAsc" | "nameDesc">("popularity");
 
 // Category definitions for filters
 const categories = ref<Category[]>([
-  {
-    key: "cloud-storage",
-    nameKey: "integrations.explore.categories.cloudStorage.name",
-    icon: Cloud,
-  },
-  {
-    key: "productivity",
-    nameKey: "integrations.explore.categories.productivity.name",
-    icon: MessageSquare,
-  },
-  {
-    key: "data-analytics",
-    nameKey: "integrations.explore.categories.dataAnalytics.name",
-    icon: Database,
-  },
-  {
-    key: "ai-enhancements",
-    nameKey: "integrations.explore.categories.ai.name",
-    icon: Bot,
-  },
-  {
-    key: "sdk",
-    nameKey: "integrations.explore.categories.sdk.name",
-    icon: Code,
-  },
+	{
+		key: "cloud-storage",
+		nameKey: "integrations.explore.categories.cloudStorage.name",
+		icon: Cloud,
+	},
+	{
+		key: "productivity",
+		nameKey: "integrations.explore.categories.productivity.name",
+		icon: MessageSquare,
+	},
+	{
+		key: "data-analytics",
+		nameKey: "integrations.explore.categories.dataAnalytics.name",
+		icon: Database,
+	},
+	{
+		key: "ai-enhancements",
+		nameKey: "integrations.explore.categories.ai.name",
+		icon: Bot,
+	},
+	{
+		key: "sdk",
+		nameKey: "integrations.explore.categories.sdk.name",
+		icon: Code,
+	},
 ]);
 
 // All integrations as a flat list (only those with brand icons)
 const integrations = ref<Integration[]>([
-  // Cloud Storage
-  {
-    id: "google-drive",
-    nameKey: "integrations.explore.items.googleDrive.name",
-    descriptionKey: "integrations.explore.items.googleDrive.description",
-    icon: "/integration/google-drive.svg",
-    status: "available",
-    category: "cloud-storage",
-    tags: ["fileSync", "import", "export"],
-    popularity: 95,
-  },
-  {
-    id: "onedrive",
-    nameKey: "integrations.explore.items.oneDrive.name",
-    descriptionKey: "integrations.explore.items.oneDrive.description",
-    icon: "/integration/microsoft-onedrive.svg",
-    status: "available",
-    category: "cloud-storage",
-    tags: ["fileSync", "import", "export", "enterprise"],
-    popularity: 85,
-  },
-  {
-    id: "dropbox",
-    nameKey: "integrations.explore.items.dropbox.name",
-    descriptionKey: "integrations.explore.items.dropbox.description",
-    icon: "/integration/dropbox.svg",
-    status: "unavailable",
-    category: "cloud-storage",
-    tags: ["fileSync", "import", "export"],
-    popularity: 70,
-  },
-  {
-    id: "aws-s3",
-    nameKey: "integrations.explore.items.awsS3.name",
-    descriptionKey: "integrations.explore.items.awsS3.description",
-    shortDescriptionKey: "integrations.explore.items.awsS3.shortDescription",
-    icon: "/integration/minio.svg",
-    status: "available",
-    category: "cloud-storage",
-    tags: ["fileSync", "developer", "enterprise"],
-    popularity: 80,
-  },
-  // Productivity
-  {
-    id: "slack",
-    nameKey: "integrations.explore.items.slack.name",
-    descriptionKey: "integrations.explore.items.slack.description",
-    icon: "/integration/slack.svg",
-    status: "unavailable",
-    category: "productivity",
-    tags: ["notifications", "messaging", "collaboration"],
-    popularity: 85,
-  },
-  {
-    id: "teams",
-    nameKey: "integrations.explore.items.teams.name",
-    descriptionKey: "integrations.explore.items.teams.description",
-    icon: "/integration/microsoft-teams.svg",
-    status: "unavailable",
-    category: "productivity",
-    tags: ["notifications", "messaging", "collaboration", "enterprise"],
-    popularity: 75,
-  },
-  {
-    id: "notion",
-    nameKey: "integrations.explore.items.notion.name",
-    descriptionKey: "integrations.explore.items.notion.description",
-    icon: "/integration/notion.svg",
-    status: "available",
-    category: "productivity",
-    tags: ["notes", "collaboration", "export"],
-    popularity: 85,
-    isNew: true,
-  },
-  {
-    id: "discord",
-    nameKey: "integrations.explore.items.discord.name",
-    descriptionKey: "integrations.explore.items.discord.description",
-    icon: "/integration/discord.svg",
-    status: "unavailable",
-    category: "productivity",
-    tags: ["notifications", "messaging", "collaboration"],
-    popularity: 80,
-  },
-  // Data & Analytics
-  {
-    id: "zapier",
-    nameKey: "integrations.explore.items.zapier.name",
-    descriptionKey: "integrations.explore.items.zapier.description",
-    icon: "/integration/zapier.svg",
-    status: "available",
-    category: "data-analytics",
-    tags: ["automation", "noCode", "developer"],
-    popularity: 92,
-    isExternal: true,
-    externalUrl: "https://zapier.com",
-  },
-  {
-    id: "make",
-    nameKey: "integrations.explore.items.make.name",
-    descriptionKey: "integrations.explore.items.make.description",
-    icon: "/integration/make.svg",
-    status: "unavailable",
-    category: "data-analytics",
-    tags: ["automation", "noCode"],
-    popularity: 68,
-    isExternal: true,
-    externalUrl: "https://www.make.com",
-  },
-  {
-    id: "n8n",
-    nameKey: "integrations.explore.items.n8n.name",
-    descriptionKey: "integrations.explore.items.n8n.description",
-    icon: "/integration/n8n.svg",
-    status: "unavailable",
-    category: "data-analytics",
-    tags: ["automation", "noCode", "developer"],
-    popularity: 58,
-    isExternal: true,
-    externalUrl: "https://n8n.io",
-  },
-  // AI & Enhancements
-  {
-    id: "chatgpt",
-    nameKey: "integrations.explore.items.chatgpt.name",
-    descriptionKey: "integrations.explore.items.chatgpt.description",
-    icon: "/integration/openai.svg",
-    status: "unavailable",
-    category: "ai-enhancements",
-    tags: ["ai", "automation"],
-    popularity: 85,
-  },
-  {
-    id: "claude",
-    nameKey: "integrations.explore.items.claude.name",
-    descriptionKey: "integrations.explore.items.claude.description",
-    icon: "/integration/anthropic.svg",
-    status: "unavailable",
-    category: "ai-enhancements",
-    tags: ["ai", "automation"],
-    popularity: 85,
-  },
-  // SDKs
-  {
-    id: "javascript-sdk",
-    nameKey: "integrations.explore.items.javascriptSdk.name",
-    descriptionKey: "integrations.explore.items.javascriptSdk.description",
-    shortDescriptionKey:
-      "integrations.explore.items.javascriptSdk.shortDescription",
-    icon: "/integration/javascript.svg",
-    status: "available",
-    category: "sdk",
-    tags: ["sdk", "developer"],
-    popularity: 85,
-    isExternal: true,
-    externalUrl: "https://www.npmjs.com/package/@nvisy/sdk",
-  },
-  {
-    id: "python-sdk",
-    nameKey: "integrations.explore.items.pythonSdk.name",
-    descriptionKey: "integrations.explore.items.pythonSdk.description",
-    shortDescriptionKey:
-      "integrations.explore.items.pythonSdk.shortDescription",
-    icon: "/integration/python.svg",
-    status: "unavailable",
-    category: "sdk",
-    tags: ["sdk", "developer"],
-    popularity: 88,
-  },
+	// Cloud Storage
+	{
+		id: "google-drive",
+		nameKey: "integrations.explore.items.googleDrive.name",
+		descriptionKey: "integrations.explore.items.googleDrive.description",
+		icon: "/integration/google-drive.svg",
+		status: "available",
+		category: "cloud-storage",
+		tags: ["fileSync", "import", "export"],
+		popularity: 95,
+	},
+	{
+		id: "onedrive",
+		nameKey: "integrations.explore.items.oneDrive.name",
+		descriptionKey: "integrations.explore.items.oneDrive.description",
+		icon: "/integration/microsoft-onedrive.svg",
+		status: "available",
+		category: "cloud-storage",
+		tags: ["fileSync", "import", "export", "enterprise"],
+		popularity: 85,
+	},
+	{
+		id: "dropbox",
+		nameKey: "integrations.explore.items.dropbox.name",
+		descriptionKey: "integrations.explore.items.dropbox.description",
+		icon: "/integration/dropbox.svg",
+		status: "unavailable",
+		category: "cloud-storage",
+		tags: ["fileSync", "import", "export"],
+		popularity: 70,
+	},
+	{
+		id: "aws-s3",
+		nameKey: "integrations.explore.items.awsS3.name",
+		descriptionKey: "integrations.explore.items.awsS3.description",
+		shortDescriptionKey: "integrations.explore.items.awsS3.shortDescription",
+		icon: "/integration/minio.svg",
+		status: "available",
+		category: "cloud-storage",
+		tags: ["fileSync", "developer", "enterprise"],
+		popularity: 80,
+	},
+	// Productivity
+	{
+		id: "slack",
+		nameKey: "integrations.explore.items.slack.name",
+		descriptionKey: "integrations.explore.items.slack.description",
+		icon: "/integration/slack.svg",
+		status: "unavailable",
+		category: "productivity",
+		tags: ["notifications", "messaging", "collaboration"],
+		popularity: 85,
+	},
+	{
+		id: "teams",
+		nameKey: "integrations.explore.items.teams.name",
+		descriptionKey: "integrations.explore.items.teams.description",
+		icon: "/integration/microsoft-teams.svg",
+		status: "unavailable",
+		category: "productivity",
+		tags: ["notifications", "messaging", "collaboration", "enterprise"],
+		popularity: 75,
+	},
+	{
+		id: "notion",
+		nameKey: "integrations.explore.items.notion.name",
+		descriptionKey: "integrations.explore.items.notion.description",
+		icon: "/integration/notion.svg",
+		status: "available",
+		category: "productivity",
+		tags: ["notes", "collaboration", "export"],
+		popularity: 85,
+		isNew: true,
+	},
+	{
+		id: "discord",
+		nameKey: "integrations.explore.items.discord.name",
+		descriptionKey: "integrations.explore.items.discord.description",
+		icon: "/integration/discord.svg",
+		status: "unavailable",
+		category: "productivity",
+		tags: ["notifications", "messaging", "collaboration"],
+		popularity: 80,
+	},
+	// Data & Analytics
+	{
+		id: "zapier",
+		nameKey: "integrations.explore.items.zapier.name",
+		descriptionKey: "integrations.explore.items.zapier.description",
+		icon: "/integration/zapier.svg",
+		status: "available",
+		category: "data-analytics",
+		tags: ["automation", "noCode", "developer"],
+		popularity: 92,
+		isExternal: true,
+		externalUrl: "https://zapier.com",
+	},
+	{
+		id: "make",
+		nameKey: "integrations.explore.items.make.name",
+		descriptionKey: "integrations.explore.items.make.description",
+		icon: "/integration/make.svg",
+		status: "unavailable",
+		category: "data-analytics",
+		tags: ["automation", "noCode"],
+		popularity: 68,
+		isExternal: true,
+		externalUrl: "https://www.make.com",
+	},
+	{
+		id: "n8n",
+		nameKey: "integrations.explore.items.n8n.name",
+		descriptionKey: "integrations.explore.items.n8n.description",
+		icon: "/integration/n8n.svg",
+		status: "unavailable",
+		category: "data-analytics",
+		tags: ["automation", "noCode", "developer"],
+		popularity: 58,
+		isExternal: true,
+		externalUrl: "https://n8n.io",
+	},
+	// AI & Enhancements
+	{
+		id: "chatgpt",
+		nameKey: "integrations.explore.items.chatgpt.name",
+		descriptionKey: "integrations.explore.items.chatgpt.description",
+		icon: "/integration/openai.svg",
+		status: "unavailable",
+		category: "ai-enhancements",
+		tags: ["ai", "automation"],
+		popularity: 85,
+	},
+	{
+		id: "claude",
+		nameKey: "integrations.explore.items.claude.name",
+		descriptionKey: "integrations.explore.items.claude.description",
+		icon: "/integration/anthropic.svg",
+		status: "unavailable",
+		category: "ai-enhancements",
+		tags: ["ai", "automation"],
+		popularity: 85,
+	},
+	// SDKs
+	{
+		id: "javascript-sdk",
+		nameKey: "integrations.explore.items.javascriptSdk.name",
+		descriptionKey: "integrations.explore.items.javascriptSdk.description",
+		shortDescriptionKey:
+			"integrations.explore.items.javascriptSdk.shortDescription",
+		icon: "/integration/javascript.svg",
+		status: "available",
+		category: "sdk",
+		tags: ["sdk", "developer"],
+		popularity: 85,
+		isExternal: true,
+		externalUrl: "https://www.npmjs.com/package/@nvisy/sdk",
+	},
+	{
+		id: "python-sdk",
+		nameKey: "integrations.explore.items.pythonSdk.name",
+		descriptionKey: "integrations.explore.items.pythonSdk.description",
+		shortDescriptionKey:
+			"integrations.explore.items.pythonSdk.shortDescription",
+		icon: "/integration/python.svg",
+		status: "unavailable",
+		category: "sdk",
+		tags: ["sdk", "developer"],
+		popularity: 88,
+	},
 ]);
 
 // Get localized name for an integration
 function getIntegrationName(integration: Integration): string {
-  return t(integration.nameKey);
+	return t(integration.nameKey);
 }
 
 // Get localized description for an integration
 function getIntegrationDescription(integration: Integration): string {
-  return t(integration.descriptionKey);
+	return t(integration.descriptionKey);
 }
 
 // Get localized short description for an integration
 function getIntegrationShortDescription(
-  integration: Integration,
+	integration: Integration,
 ): string | undefined {
-  return integration.shortDescriptionKey
-    ? t(integration.shortDescriptionKey)
-    : undefined;
+	return integration.shortDescriptionKey
+		? t(integration.shortDescriptionKey)
+		: undefined;
 }
 
 // Get localized tag name
 function getTagName(tagKey: TagKey): string {
-  return t(`integrations.explore.tags.${tagKey}`);
+	return t(`integrations.explore.tags.${tagKey}`);
 }
 
 // Filter and sort integrations
 const filteredIntegrations = computed(() => {
-  const query = searchQuery.value.toLowerCase().trim();
+	const query = searchQuery.value.toLowerCase().trim();
 
-  let filtered = integrations.value.filter((integration) => {
-    // Category filter (multi-select)
-    if (
-      selectedCategories.value.size > 0 &&
-      !selectedCategories.value.has(integration.category)
-    ) {
-      return false;
-    }
+	let filtered = integrations.value.filter((integration) => {
+		// Category filter (multi-select)
+		if (
+			selectedCategories.value.size > 0 &&
+			!selectedCategories.value.has(integration.category)
+		) {
+			return false;
+		}
 
-    // Status filter
-    if (
-      statusFilter.value === "available" &&
-      integration.status !== "available"
-    ) {
-      return false;
-    }
-    if (
-      statusFilter.value === "unavailable" &&
-      integration.status !== "unavailable"
-    ) {
-      return false;
-    }
+		// Status filter
+		if (
+			statusFilter.value === "available" &&
+			integration.status !== "available"
+		) {
+			return false;
+		}
+		if (
+			statusFilter.value === "unavailable" &&
+			integration.status !== "unavailable"
+		) {
+			return false;
+		}
 
-    // Search filter
-    if (query) {
-      const name = getIntegrationName(integration).toLowerCase();
-      const description = getIntegrationDescription(integration).toLowerCase();
-      const tagNames = integration.tags
-        .map((tag) => getTagName(tag).toLowerCase())
-        .join(" ");
-      return (
-        name.includes(query) ||
-        description.includes(query) ||
-        tagNames.includes(query)
-      );
-    }
+		// Search filter
+		if (query) {
+			const name = getIntegrationName(integration).toLowerCase();
+			const description = getIntegrationDescription(integration).toLowerCase();
+			const tagNames = integration.tags
+				.map((tag) => getTagName(tag).toLowerCase())
+				.join(" ");
+			return (
+				name.includes(query) ||
+				description.includes(query) ||
+				tagNames.includes(query)
+			);
+		}
 
-    return true;
-  });
+		return true;
+	});
 
-  // Sort integrations
-  return filtered.sort((a, b) => {
-    // Always put available first
-    if (a.status !== b.status) {
-      return a.status === "available" ? -1 : 1;
-    }
+	// Sort integrations
+	return filtered.sort((a, b) => {
+		// Always put available first
+		if (a.status !== b.status) {
+			return a.status === "available" ? -1 : 1;
+		}
 
-    switch (sortBy.value) {
-      case "nameAsc":
-        return getIntegrationName(a).localeCompare(getIntegrationName(b));
-      case "nameDesc":
-        return getIntegrationName(b).localeCompare(getIntegrationName(a));
-      case "popularity":
-      default:
-        return b.popularity - a.popularity;
-    }
-  });
+		switch (sortBy.value) {
+			case "nameAsc":
+				return getIntegrationName(a).localeCompare(getIntegrationName(b));
+			case "nameDesc":
+				return getIntegrationName(b).localeCompare(getIntegrationName(a));
+			case "popularity":
+			default:
+				return b.popularity - a.popularity;
+		}
+	});
 });
 
 // Integrations filtered by search and status (but not category)
 const baseFilteredIntegrations = computed(() => {
-  const query = searchQuery.value.toLowerCase().trim();
+	const query = searchQuery.value.toLowerCase().trim();
 
-  return integrations.value.filter((integration) => {
-    // Status filter
-    if (
-      statusFilter.value === "available" &&
-      integration.status !== "available"
-    ) {
-      return false;
-    }
-    if (
-      statusFilter.value === "unavailable" &&
-      integration.status !== "unavailable"
-    ) {
-      return false;
-    }
+	return integrations.value.filter((integration) => {
+		// Status filter
+		if (
+			statusFilter.value === "available" &&
+			integration.status !== "available"
+		) {
+			return false;
+		}
+		if (
+			statusFilter.value === "unavailable" &&
+			integration.status !== "unavailable"
+		) {
+			return false;
+		}
 
-    // Search filter
-    if (query) {
-      const name = getIntegrationName(integration).toLowerCase();
-      const description = getIntegrationDescription(integration).toLowerCase();
-      const tagNames = integration.tags
-        .map((tag) => getTagName(tag).toLowerCase())
-        .join(" ");
-      return (
-        name.includes(query) ||
-        description.includes(query) ||
-        tagNames.includes(query)
-      );
-    }
+		// Search filter
+		if (query) {
+			const name = getIntegrationName(integration).toLowerCase();
+			const description = getIntegrationDescription(integration).toLowerCase();
+			const tagNames = integration.tags
+				.map((tag) => getTagName(tag).toLowerCase())
+				.join(" ");
+			return (
+				name.includes(query) ||
+				description.includes(query) ||
+				tagNames.includes(query)
+			);
+		}
 
-    return true;
-  });
+		return true;
+	});
 });
 
 // Count integrations per category (respects search and status filters)
 function getCategoryCount(categoryKey: string): number {
-  return baseFilteredIntegrations.value.filter(
-    (i) => i.category === categoryKey,
-  ).length;
+	return baseFilteredIntegrations.value.filter(
+		(i) => i.category === categoryKey,
+	).length;
 }
 
 // Total count for "All" button (respects search and status filters)
 const totalFilteredCount = computed(
-  () => baseFilteredIntegrations.value.length,
+	() => baseFilteredIntegrations.value.length,
 );
 
 // Toggle category selection (multi-select)
 function toggleCategory(key: string) {
-  const newSet = new Set(selectedCategories.value);
-  if (newSet.has(key)) {
-    newSet.delete(key);
-  } else {
-    newSet.add(key);
-  }
-  selectedCategories.value = newSet;
+	const newSet = new Set(selectedCategories.value);
+	if (newSet.has(key)) {
+		newSet.delete(key);
+	} else {
+		newSet.add(key);
+	}
+	selectedCategories.value = newSet;
 }
 
 // Clear all category filters
 function clearCategoryFilters() {
-  selectedCategories.value = new Set();
+	selectedCategories.value = new Set();
 }
 
 // Clear all filters
 function clearAllFilters() {
-  searchQuery.value = "";
-  selectedCategories.value = new Set();
-  statusFilter.value = "all";
+	searchQuery.value = "";
+	selectedCategories.value = new Set();
+	statusFilter.value = "all";
 }
 
-function connectIntegration(_id: string) {
-  // TODO: Implement integration connection
+function connectIntegration(_id: string | number) {
+	// TODO: Implement integration connection
 }
 
-function notifyMe(_id: string) {
-  // TODO: Implement notify me functionality
+function notifyMe(_id: string | number) {
+	// TODO: Implement notify me functionality
 }
 </script>
 

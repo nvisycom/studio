@@ -8,11 +8,13 @@ const props = defineProps<{
   isLoading: boolean;
   isImage: boolean;
   zoomLevel: number;
+  chatVisible: boolean;
 }>();
 
 const emit = defineEmits<{
   "zoom-in": [];
   "zoom-out": [];
+  "toggle-chat": [];
 }>();
 </script>
 
@@ -73,8 +75,10 @@ const emit = defineEmits<{
     <!-- Zoom Controls -->
     <ZoomControls
       :zoom-level="zoomLevel"
+      :chat-visible="chatVisible"
       @zoom-in="emit('zoom-in')"
       @zoom-out="emit('zoom-out')"
+      @toggle-chat="emit('toggle-chat')"
     />
   </div>
 </template>

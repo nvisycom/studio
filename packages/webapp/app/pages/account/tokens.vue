@@ -1,70 +1,70 @@
 <script setup lang="ts">
 import { NvisyApiError } from "@nvisy/sdk";
 import type {
-  ApiToken,
-  ApiTokenWithJWT,
-  TokenExpiration,
+	ApiToken,
+	ApiTokenWithJWT,
+	TokenExpiration,
 } from "@nvisy/sdk/datatypes";
 import { ChevronDown, Key, Loader2 } from "lucide-vue-next";
 import { toast } from "vue-sonner";
 
 function getErrorMessage(err: unknown, fallback: string): string {
-  if (err instanceof NvisyApiError) {
-    return err.message;
-  }
-  if (err instanceof Error) {
-    return err.message;
-  }
-  return fallback;
+	if (err instanceof NvisyApiError) {
+		return err.message;
+	}
+	if (err instanceof Error) {
+		return err.message;
+	}
+	return fallback;
 }
 
 import {
-  DeleteMultipleTokensModal,
-  DeleteTokenModal,
-  RenameTokenModal,
-  TokenCreatedModal,
-  TokensTable,
+	DeleteMultipleTokensModal,
+	DeleteTokenModal,
+	RenameTokenModal,
+	TokenCreatedModal,
+	TokensTable,
 } from "@/components/pages/tokens";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
+	Empty,
+	EmptyDescription,
+	EmptyHeader,
+	EmptyTitle,
 } from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 definePageMeta({
-  pageCategory: "Settings",
+	pageCategory: "Settings",
 });
 
 const { t } = useI18n();
 
 // Use the API tokens composable
 const {
-  tokens,
-  isLoading,
-  error,
-  createTokenAsync,
-  isCreating,
-  updateTokenAsync,
-  revokeTokenAsync,
-  isRevoking,
+	tokens,
+	isLoading,
+	error,
+	createTokenAsync,
+	isCreating,
+	updateTokenAsync,
+	revokeTokenAsync,
+	isRevoking,
 } = useApiTokens();
 
 // Get current auth token to identify active session
@@ -91,144 +91,144 @@ const selectedTokens = ref<Set<string>>(new Set());
 
 // Constants
 const expirations = computed(() => [
-  { label: t("tokens.expiration.7days"), value: "in7Days" as TokenExpiration },
-  {
-    label: t("tokens.expiration.30days"),
-    value: "in30Days" as TokenExpiration,
-  },
-  {
-    label: t("tokens.expiration.90days"),
-    value: "in90Days" as TokenExpiration,
-  },
-  { label: t("tokens.expiration.1year"), value: "in1Year" as TokenExpiration },
-  { label: t("tokens.expiration.never"), value: "never" as TokenExpiration },
+	{ label: t("tokens.expiration.7days"), value: "in7Days" as TokenExpiration },
+	{
+		label: t("tokens.expiration.30days"),
+		value: "in30Days" as TokenExpiration,
+	},
+	{
+		label: t("tokens.expiration.90days"),
+		value: "in90Days" as TokenExpiration,
+	},
+	{ label: t("tokens.expiration.1year"), value: "in1Year" as TokenExpiration },
+	{ label: t("tokens.expiration.never"), value: "never" as TokenExpiration },
 ]);
 
 // Token creation
 async function createToken() {
-  if (!tokenName.value.trim()) return;
+	if (!tokenName.value.trim()) return;
 
-  try {
-    const result = await createTokenAsync({
-      name: tokenName.value,
-      expiresIn: tokenExpiration.value,
-    });
+	try {
+		const result = await createTokenAsync({
+			name: tokenName.value,
+			expiresIn: tokenExpiration.value,
+		});
 
-    // The result contains the JWT token (only shown once)
-    newTokenGenerated.value = (result as ApiTokenWithJWT).token || null;
-    isTokenCreatedModalOpen.value = true;
-    toast.success(t("tokens.messages.tokenCreated"));
+		// The result contains the JWT token (only shown once)
+		newTokenGenerated.value = (result as ApiTokenWithJWT).token || null;
+		isTokenCreatedModalOpen.value = true;
+		toast.success(t("tokens.messages.tokenCreated"));
 
-    // Reset form
-    tokenName.value = "";
-    tokenExpiration.value = "in90Days";
-  } catch (err) {
-    toast.error(t("tokens.errors.createFailed"), {
-      description: getErrorMessage(err, t("tokens.errors.createFailed")),
-    });
-  }
+		// Reset form
+		tokenName.value = "";
+		tokenExpiration.value = "in90Days";
+	} catch (err) {
+		toast.error(t("tokens.errors.createFailed"), {
+			description: getErrorMessage(err, t("tokens.errors.createFailed")),
+		});
+	}
 }
 
 function closeTokenCreatedModal() {
-  isTokenCreatedModalOpen.value = false;
-  newTokenGenerated.value = null;
+	isTokenCreatedModalOpen.value = false;
+	newTokenGenerated.value = null;
 }
 
 // Token deletion (revocation)
 function openDeleteDialog(token: ApiToken) {
-  tokenToDelete.value = token;
-  isDeleteDialogOpen.value = true;
+	tokenToDelete.value = token;
+	isDeleteDialogOpen.value = true;
 }
 
 async function deleteToken() {
-  if (!tokenToDelete.value) return;
+	if (!tokenToDelete.value) return;
 
-  try {
-    await revokeTokenAsync(tokenToDelete.value.id);
-    isDeleteDialogOpen.value = false;
-    tokenToDelete.value = null;
-    toast.success(t("tokens.messages.tokenRevoked"));
-  } catch (err) {
-    toast.error(t("tokens.errors.revokeFailed"), {
-      description: getErrorMessage(err, t("tokens.errors.revokeFailed")),
-    });
-  }
+	try {
+		await revokeTokenAsync(tokenToDelete.value.id);
+		isDeleteDialogOpen.value = false;
+		tokenToDelete.value = null;
+		toast.success(t("tokens.messages.tokenRevoked"));
+	} catch (err) {
+		toast.error(t("tokens.errors.revokeFailed"), {
+			description: getErrorMessage(err, t("tokens.errors.revokeFailed")),
+		});
+	}
 }
 
 function openDeleteMultipleDialog() {
-  isDeleteMultipleDialogOpen.value = true;
+	isDeleteMultipleDialogOpen.value = true;
 }
 
 async function deleteSelectedTokens() {
-  const tokenIds = Array.from(selectedTokens.value);
-  const results = await Promise.allSettled(
-    tokenIds.map((tokenId) => revokeTokenAsync(tokenId)),
-  );
+	const tokenIds = Array.from(selectedTokens.value);
+	const results = await Promise.allSettled(
+		tokenIds.map((tokenId) => revokeTokenAsync(tokenId)),
+	);
 
-  const failed = results.filter((r) => r.status === "rejected");
-  const succeeded = results.filter((r) => r.status === "fulfilled");
+	const failed = results.filter((r) => r.status === "rejected");
+	const succeeded = results.filter((r) => r.status === "fulfilled");
 
-  selectedTokens.value = new Set();
-  isDeleteMultipleDialogOpen.value = false;
+	selectedTokens.value = new Set();
+	isDeleteMultipleDialogOpen.value = false;
 
-  if (failed.length === 0) {
-    toast.success(t("tokens.messages.tokensRevoked"));
-  } else if (succeeded.length > 0) {
-    toast.warning(t("tokens.messages.tokensPartiallyRevoked"), {
-      description: t("tokens.errors.someRevokeFailed", {
-        count: failed.length,
-      }),
-    });
-  } else {
-    toast.error(t("tokens.errors.revokeFailed"));
-  }
+	if (failed.length === 0) {
+		toast.success(t("tokens.messages.tokensRevoked"));
+	} else if (succeeded.length > 0) {
+		toast.warning(t("tokens.messages.tokensPartiallyRevoked"), {
+			description: t("tokens.errors.someRevokeFailed", {
+				count: failed.length,
+			}),
+		});
+	} else {
+		toast.error(t("tokens.errors.revokeFailed"));
+	}
 }
 
 // Computed
 const selectableTokens = computed(
-  () => tokens.value?.filter((t) => t.id !== currentTokenId.value) ?? [],
+	() => tokens.value?.filter((t) => t.id !== currentTokenId.value) ?? [],
 );
 
 const allSelected = computed(
-  () =>
-    selectableTokens.value.length > 0 &&
-    selectedTokens.value.size === selectableTokens.value.length,
+	() =>
+		selectableTokens.value.length > 0 &&
+		selectedTokens.value.size === selectableTokens.value.length,
 );
 
 function toggleSelectAll() {
-  selectedTokens.value = allSelected.value
-    ? new Set()
-    : new Set(selectableTokens.value.map((t) => t.id));
+	selectedTokens.value = allSelected.value
+		? new Set()
+		: new Set(selectableTokens.value.map((t) => t.id));
 }
 
 function toggleToken(tokenId: string) {
-  const newSet = new Set(selectedTokens.value);
-  newSet.has(tokenId) ? newSet.delete(tokenId) : newSet.add(tokenId);
-  selectedTokens.value = newSet;
+	const newSet = new Set(selectedTokens.value);
+	newSet.has(tokenId) ? newSet.delete(tokenId) : newSet.add(tokenId);
+	selectedTokens.value = newSet;
 }
 
 // Token rename
 function openRenameDialog(token: ApiToken) {
-  tokenToRename.value = token;
-  isRenameDialogOpen.value = true;
+	tokenToRename.value = token;
+	isRenameDialogOpen.value = true;
 }
 
 async function renameToken(newName: string) {
-  if (!tokenToRename.value) return;
+	if (!tokenToRename.value) return;
 
-  try {
-    await updateTokenAsync({
-      tokenId: tokenToRename.value.id,
-      updates: { name: newName },
-    });
-    isRenameDialogOpen.value = false;
-    tokenToRename.value = null;
-    toast.success(t("tokens.messages.tokenRenamed"));
-  } catch (err) {
-    toast.error(t("tokens.errors.renameFailed"), {
-      description: getErrorMessage(err, t("tokens.errors.renameFailed")),
-    });
-  }
+	try {
+		await updateTokenAsync({
+			tokenId: tokenToRename.value.id,
+			updates: { name: newName },
+		});
+		isRenameDialogOpen.value = false;
+		tokenToRename.value = null;
+		toast.success(t("tokens.messages.tokenRenamed"));
+	} catch (err) {
+		toast.error(t("tokens.errors.renameFailed"), {
+			description: getErrorMessage(err, t("tokens.errors.renameFailed")),
+		});
+	}
 }
 </script>
 

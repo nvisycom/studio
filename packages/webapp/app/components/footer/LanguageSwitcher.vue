@@ -13,7 +13,7 @@ const currentLocale = computed(() => {
 	return locales.value.find((i) => i.code === locale.value);
 });
 
-type LocaleCode = "en" | "fr" | "de";
+type LocaleCode = "en" | "de";
 
 const switchLocale = async (code: LocaleCode) => {
 	await setLocale(code);
@@ -36,7 +36,11 @@ const switchLocale = async (code: LocaleCode) => {
         class="flex items-center justify-between gap-2"
       >
         <span>{{ loc.name }}</span>
-        <Check v-if="locale === loc.code" :size="16" class="text-neutral-600 dark:text-neutral-400" />
+        <Check
+          v-if="locale === loc.code"
+          :size="16"
+          class="text-neutral-600 dark:text-neutral-400"
+        />
       </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>

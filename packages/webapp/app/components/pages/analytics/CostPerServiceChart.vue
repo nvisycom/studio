@@ -55,21 +55,32 @@ const chartConfig = {
 </script>
 
 <template>
-  <ChartContainer :config="chartConfig" class="mx-auto aspect-square max-h-[250px]">
+  <ChartContainer
+    :config="chartConfig"
+    class="mx-auto aspect-square max-h-[250px]"
+  >
     <VisSingleContainer :data="chartData" :margin="{ top: 30, bottom: 30 }">
       <VisDonut
         :value="(d: Data) => d.cost"
         :color="
-          (d: Data) => chartConfig[d.service as keyof typeof chartConfig].color
+          (d: Data) =>
+            (
+              chartConfig[d.service as keyof typeof chartConfig] as {
+                color?: string;
+              }
+            )?.color ?? ''
         "
         :arc-width="30"
       />
       <ChartTooltip
         :triggers="{
-          [Donut.selectors.segment]: componentToString(chartConfig, ChartTooltipContent, {
-            hideLabel: true,
-            valueFormatter: (value) => `$${value.toFixed(2)}`,
-          })!,
+          [Donut.selectors.segment]: componentToString(
+            chartConfig,
+            ChartTooltipContent,
+            {
+              hideLabel: true,
+            },
+          )!,
         }"
       />
     </VisSingleContainer>

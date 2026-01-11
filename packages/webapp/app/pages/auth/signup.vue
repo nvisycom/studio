@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import {
 	Mail,
 	Lock,
@@ -21,12 +21,17 @@ import {
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
+import { NvisyApiError } from "@nvisy/sdk";
 
 definePageMeta({
 	layout: "auth",
 });
 
 const { signupAsync, isSigningUp, signupError } = useAuth();
+
+const apiError = computed(() =>
+	signupError.value instanceof NvisyApiError ? signupError.value : null,
+);
 
 // Form state
 const displayName = ref("");
@@ -237,16 +242,16 @@ async function handleMicrosoftSignup(): Promise<void> {
               {{ signupError.message || "An error occurred during signup" }}
             </p>
             <p
-              v-if="signupError.suggestion"
+              v-if="apiError?.suggestion"
               class="mt-1 text-red-500 dark:text-red-300"
             >
-              {{ signupError.suggestion }}
+              {{ apiError.suggestion }}
             </p>
             <ul
-              v-if="signupError.validation?.length"
+              v-if="apiError?.validation?.length"
               class="mt-2 list-disc list-inside space-y-1"
             >
-              <li v-for="err in signupError.validation" :key="err.field">
+              <li v-for="err in apiError.validation" :key="err.field">
                 <span class="font-medium">{{ err.field }}:</span>
                 {{ err.message }}
               </li>

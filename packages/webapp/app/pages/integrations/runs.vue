@@ -2,52 +2,56 @@
 import { ref, computed } from "vue";
 import type { IntegrationRun } from "@nvisy/sdk/datatypes";
 import {
-	Search,
-	ArrowLeft,
-	Eye,
-	Copy,
-	Check,
-	MoreHorizontal,
-	Loader2,
+  Search,
+  ArrowLeft,
+  Eye,
+  Copy,
+  Check,
+  Loader2,
+  Play,
+  Clock,
+  XCircle,
 } from "lucide-vue-next";
+import { formatRelativeTime } from "@/utils/date";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+  ContextMenuSeparator,
+} from "@/components/ui/context-menu";
 import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Spinner } from "@/components/ui/spinner";
+import { Badge } from "@/components/ui/badge";
 import { RunDetailsModal } from "~/components/pages/integrations";
 
 const { t } = useI18n();
 
 definePageMeta({
-	pageCategory: "Integrations",
+  pageCategory: "Integrations",
 });
 
 // Use SDK composable
@@ -62,113 +66,90 @@ const isViewDetailsModalOpen = ref(false);
 const selectedRunForDetails = ref<IntegrationRun | null>(null);
 
 const filteredRuns = computed(() => {
-	let filtered = runs.value ?? [];
+  let filtered = runs.value ?? [];
 
-	if (searchQuery.value.trim()) {
-		const query = searchQuery.value.toLowerCase();
-		filtered = filtered.filter((run) => {
-			const integration = integrations.value?.find(
-				(i) => i.integrationId === run.integrationId,
-			);
-			return (
-				integration?.integrationName.toLowerCase().includes(query) ||
-				run.id.toLowerCase().includes(query)
-			);
-		});
-	}
+  if (searchQuery.value.trim()) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter((run) => {
+      const integration = integrations.value?.find(
+        (i) => i.integrationId === run.integrationId,
+      );
+      return (
+        integration?.integrationName.toLowerCase().includes(query) ||
+        run.id.toLowerCase().includes(query)
+      );
+    });
+  }
 
-	if (statusFilter.value !== "all") {
-		filtered = filtered.filter((run) => {
-			const statusCode = run.statusCode ?? 0;
-			const statusPrefix = statusFilter.value.charAt(0);
-			return Math.floor(statusCode / 100).toString() === statusPrefix;
-		});
-	}
+  if (statusFilter.value !== "all") {
+    filtered = filtered.filter((run) => run.status === statusFilter.value);
+  }
 
-	return filtered.sort(
-		(a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
-	);
+  return filtered.sort(
+    (a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
+  );
 });
 
 function getIntegrationName(integrationId: string | null | undefined): string {
-	if (!integrationId) return t("integrations.runs.unknown");
-	const integration = integrations.value?.find(
-		(i) => i.integrationId === integrationId,
-	);
-	return integration?.integrationName ?? t("integrations.runs.unknown");
+  if (!integrationId) return t("integrations.runs.unknown");
+  const integration = integrations.value?.find(
+    (i) => i.integrationId === integrationId,
+  );
+  return integration?.integrationName ?? t("integrations.runs.unknown");
 }
 
 function toggleRunSelection(runId: string) {
-	if (selectedRuns.value.has(runId)) {
-		selectedRuns.value.delete(runId);
-	} else {
-		selectedRuns.value.add(runId);
-	}
+  if (selectedRuns.value.has(runId)) {
+    selectedRuns.value.delete(runId);
+  } else {
+    selectedRuns.value.add(runId);
+  }
 }
 
 function toggleAllRuns() {
-	if (selectedRuns.value.size === filteredRuns.value.length) {
-		selectedRuns.value.clear();
-	} else {
-		selectedRuns.value = new Set(filteredRuns.value.map((run) => run.id));
-	}
+  if (selectedRuns.value.size === filteredRuns.value.length) {
+    selectedRuns.value.clear();
+  } else {
+    selectedRuns.value = new Set(filteredRuns.value.map((run) => run.id));
+  }
 }
 
 const allSelected = computed(
-	() =>
-		filteredRuns.value.length > 0 &&
-		selectedRuns.value.size === filteredRuns.value.length,
+  () =>
+    filteredRuns.value.length > 0 &&
+    selectedRuns.value.size === filteredRuns.value.length,
 );
 
 const logsCopied = ref(false);
 
 function copyLogs() {
-	// TODO: Implement copy logs to clipboard
-	logsCopied.value = true;
-	setTimeout(() => {
-		logsCopied.value = false;
-	}, 2000);
+  // TODO: Implement copy logs to clipboard
+  logsCopied.value = true;
+  setTimeout(() => {
+    logsCopied.value = false;
+  }, 2000);
 }
 
 function viewRunDetails(run: IntegrationRun) {
-	selectedRunForDetails.value = run;
-	isViewDetailsModalOpen.value = true;
+  selectedRunForDetails.value = run;
+  isViewDetailsModalOpen.value = true;
 }
 
 function copyRunDetails(_run: IntegrationRun) {
-	// TODO: Implement copy run details to clipboard
-}
-
-function formatDate(dateString: string): string {
-	const date = new Date(dateString);
-	const now = new Date();
-	const diff = now.getTime() - date.getTime();
-	const hours = Math.floor(diff / (1000 * 60 * 60));
-	const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-	if (hours < 1) return t("integrations.time.justNow");
-	if (hours < 24) return t("integrations.time.hoursAgo", { hours });
-	if (days === 1) return t("integrations.time.daysAgo", { days: 1 });
-	if (days < 7) return t("integrations.time.daysAgo", { days });
-
-	return date.toLocaleDateString("en-US", {
-		month: "short",
-		day: "numeric",
-		year: "numeric",
-	});
+  // TODO: Implement copy run details to clipboard
 }
 
 function formatDuration(
-	startedAt: string,
-	completedAt: string | null | undefined,
+  startedAt: string,
+  completedAt: string | null | undefined,
 ): string {
-	if (!completedAt) return "-";
-	const start = new Date(startedAt).getTime();
-	const end = new Date(completedAt).getTime();
-	const diff = end - start;
-	const minutes = Math.floor(diff / 60000);
-	const seconds = Math.floor((diff % 60000) / 1000);
-	return `${minutes}m ${seconds}s`;
+  if (!completedAt) return "-";
+  const start = new Date(startedAt).getTime();
+  const end = new Date(completedAt).getTime();
+  const diff = end - start;
+  const minutes = Math.floor(diff / 60000);
+  const seconds = Math.floor((diff % 60000) / 1000);
+  return `${minutes}m ${seconds}s`;
 }
 </script>
 
@@ -212,21 +193,15 @@ function formatDuration(
               <SelectItem value="all" class="text-sm font-light">{{
                 t("integrations.runs.allStatus")
               }}</SelectItem>
-              <SelectItem value="1xx" class="text-sm font-light"
-                >1xx - {{ t("integrations.runs.informational") }}</SelectItem
-              >
-              <SelectItem value="2xx" class="text-sm font-light"
-                >2xx - {{ t("integrations.runs.success") }}</SelectItem
-              >
-              <SelectItem value="3xx" class="text-sm font-light"
-                >3xx - {{ t("integrations.runs.redirection") }}</SelectItem
-              >
-              <SelectItem value="4xx" class="text-sm font-light"
-                >4xx - {{ t("integrations.runs.clientError") }}</SelectItem
-              >
-              <SelectItem value="5xx" class="text-sm font-light"
-                >5xx - {{ t("integrations.runs.serverError") }}</SelectItem
-              >
+              <SelectItem value="pending" class="text-sm font-light">{{
+                t("integrations.runs.statusPending")
+              }}</SelectItem>
+              <SelectItem value="running" class="text-sm font-light">{{
+                t("integrations.runs.statusRunning")
+              }}</SelectItem>
+              <SelectItem value="cancelled" class="text-sm font-light">{{
+                t("integrations.runs.statusCancelled")
+              }}</SelectItem>
             </SelectContent>
           </Select>
 
@@ -302,11 +277,15 @@ function formatDuration(
                   </TableHead>
                   <TableHead
                     class="uppercase text-xs font-light tracking-wider"
-                    >{{ t("integrations.runs.name") }}</TableHead
+                    >{{ t("integrations.runs.runId") }}</TableHead
                   >
                   <TableHead
                     class="uppercase text-xs font-light tracking-wider"
                     >{{ t("integrations.runs.integration") }}</TableHead
+                  >
+                  <TableHead
+                    class="uppercase text-xs font-light tracking-wider"
+                    >{{ t("integrations.runs.type") }}</TableHead
                   >
                   <TableHead
                     class="w-[100px] uppercase text-xs font-light tracking-wider"
@@ -320,78 +299,93 @@ function formatDuration(
                     class="w-[100px] uppercase text-xs font-light tracking-wider"
                     >{{ t("integrations.runs.duration") }}</TableHead
                   >
-                  <TableHead class="w-[60px]"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow v-for="run in filteredRuns" :key="run.id">
-                  <TableCell @click.stop>
-                    <Checkbox
-                      :model-value="selectedRuns.has(run.id)"
-                      @update:model-value="toggleRunSelection(run.id)"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <p class="font-normal text-neutral-900 dark:text-white">
-                      {{ run.id.slice(0, 8) }}...
-                    </p>
-                  </TableCell>
-                  <TableCell>
-                    <span
-                      class="text-sm font-light text-neutral-600 dark:text-neutral-400"
+                <ContextMenu v-for="run in filteredRuns" :key="run.id">
+                  <ContextMenuTrigger as-child>
+                    <TableRow
+                      class="cursor-pointer"
+                      @click="toggleRunSelection(run.id)"
                     >
-                      {{ getIntegrationName(run.integrationId) }}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <div
-                      v-if="run.status === 'running'"
-                      class="flex items-center gap-2"
-                    >
-                      <Spinner class="h-3 w-3" />
-                      <span
-                        class="font-mono text-xs text-neutral-900 dark:text-white"
+                      <TableCell @click.stop>
+                        <Checkbox
+                          :model-value="selectedRuns.has(run.id)"
+                          @update:model-value="toggleRunSelection(run.id)"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <code
+                          class="font-mono text-xs text-neutral-900 dark:text-white"
+                        >
+                          {{ run.id.slice(0, 8) }}...
+                        </code>
+                      </TableCell>
+                      <TableCell>
+                        <span
+                          class="text-sm font-light text-neutral-600 dark:text-neutral-400"
+                        >
+                          {{ getIntegrationName(run.integrationId) }}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" class="capitalize font-light">
+                          {{ t(`integrations.runs.runType.${run.runType}`) }}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div class="flex items-center gap-2">
+                          <Play
+                            v-if="run.status === 'running'"
+                            :size="14"
+                            class="text-blue-500"
+                          />
+                          <Clock
+                            v-else-if="run.status === 'pending'"
+                            :size="14"
+                            class="text-yellow-500"
+                          />
+                          <XCircle
+                            v-else-if="run.status === 'cancelled'"
+                            :size="14"
+                            class="text-red-500"
+                          />
+                          <span
+                            class="text-xs text-neutral-900 dark:text-white capitalize"
+                          >
+                            {{ t(`integrations.runs.status.${run.status}`) }}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell
+                        class="text-xs font-light text-neutral-600 dark:text-neutral-400"
                       >
-                        {{ run.statusCode ?? "-" }}
-                      </span>
-                    </div>
-                    <span
-                      v-else
-                      class="font-mono text-xs text-neutral-900 dark:text-white"
+                        {{ formatRelativeTime(run.startedAt, t) }}
+                      </TableCell>
+                      <TableCell
+                        class="text-xs font-light text-neutral-600 dark:text-neutral-400"
+                      >
+                        {{ formatDuration(run.startedAt, run.completedAt) }}
+                      </TableCell>
+                    </TableRow>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent>
+                    <ContextMenuItem
+                      class="cursor-pointer"
+                      @click="viewRunDetails(run)"
                     >
-                      {{ run.statusCode ?? "-" }}
-                    </span>
-                  </TableCell>
-                  <TableCell
-                    class="text-xs font-light text-neutral-600 dark:text-neutral-400"
-                  >
-                    {{ formatDate(run.startedAt) }}
-                  </TableCell>
-                  <TableCell
-                    class="text-xs font-light text-neutral-600 dark:text-neutral-400"
-                  >
-                    {{ formatDuration(run.startedAt, run.completedAt) }}
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger as-child>
-                        <Button variant="ghost" size="sm" class="h-8 w-8 p-0">
-                          <MoreHorizontal :size="16" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem @click="viewRunDetails(run)">
-                          <Eye :size="16" class="mr-2" />
-                          {{ t("integrations.runs.viewDetails") }}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem @click="copyRunDetails(run)">
-                          <Copy :size="16" class="mr-2" />
-                          {{ t("integrations.runs.copyLogs") }}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
+                      <Eye :size="14" class="mr-2" />
+                      {{ t("integrations.runs.viewDetails") }}
+                    </ContextMenuItem>
+                    <ContextMenuItem
+                      class="cursor-pointer"
+                      @click="copyRunDetails(run)"
+                    >
+                      <Copy :size="14" class="mr-2" />
+                      {{ t("integrations.runs.copyLogs") }}
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
               </TableBody>
             </Table>
 

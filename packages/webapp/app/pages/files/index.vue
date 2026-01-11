@@ -60,38 +60,7 @@ const editDialogOpen = ref(false);
 const uploadDialogOpen = ref(false);
 const fileToDelete = ref<NvisyFile | null>(null);
 const fileToEdit = ref<NvisyFile | null>(null);
-const selectedFiles = ref<Set<string>>(new Set());
 const isUploadingDrop = ref(false);
-
-const selectedFilesCount = computed(() => selectedFiles.value.size);
-const hasSelection = computed(() => selectedFilesCount.value > 0);
-const allSelected = computed(
-  () =>
-    filteredFiles.value.length > 0 &&
-    filteredFiles.value.every((f) => selectedFiles.value.has(f.fileId)),
-);
-
-function toggleSelectAll() {
-  if (allSelected.value) {
-    selectedFiles.value = new Set();
-  } else {
-    selectedFiles.value = new Set(filteredFiles.value.map((f) => f.fileId));
-  }
-}
-
-function toggleFileSelection(fileId: string) {
-  const newSet = new Set(selectedFiles.value);
-  if (newSet.has(fileId)) {
-    newSet.delete(fileId);
-  } else {
-    newSet.add(fileId);
-  }
-  selectedFiles.value = newSet;
-}
-
-function clearSelection() {
-  selectedFiles.value = new Set();
-}
 
 const statusFilters = computed(() => [
   { label: t("files.filters.anyStatus"), value: "any" },
@@ -121,6 +90,21 @@ const filteredFiles = computed(() => {
 const hasFilters = computed(() => {
   return searchQuery.value.trim() || filterStatus.value !== "any";
 });
+
+// Selection
+const {
+  selected: selectedFiles,
+  allSelected,
+  toggle: toggleFileSelection,
+  toggleAll: toggleSelectAll,
+  clear: clearSelection,
+} = useSelection({
+  items: filteredFiles,
+  getKey: (f) => f.fileId,
+});
+
+const selectedFilesCount = computed(() => selectedFiles.value.size);
+const hasSelection = computed(() => selectedFilesCount.value > 0);
 
 // Get studio files store
 const { openFile: openFileInStudio } = useStudioFiles();

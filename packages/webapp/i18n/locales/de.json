@@ -10,11 +10,19 @@
     },
     "time": {
       "justNow": "Gerade eben",
+      "now": "Jetzt",
       "never": "Nie",
+      "expired": "Abgelaufen",
+      "minutesAgo": "vor {minutes}m",
       "hoursAgo": "vor {hours}h",
       "daysAgo": "vor {days}d",
       "weeksAgo": "vor {weeks}w",
-      "monthsAgo": "vor {months}m"
+      "monthsAgo": "vor {months}Mo",
+      "inMinutes": "in {minutes}m",
+      "inHours": "in {hours}h",
+      "inDays": "in {days}d",
+      "inWeeks": "in {weeks}w",
+      "inMonths": "in {months}Mo"
     }
   },
   "settings": {
@@ -603,6 +611,7 @@
     "table": {
       "headers": {
         "name": "Name",
+        "createdAt": "Erstellt Am",
         "lastUsed": "Zuletzt Verwendet"
       },
       "info": {
@@ -1015,13 +1024,10 @@
       "title": "Integrationsausführungen",
       "backToConnections": "Zurück zu Verbindungen",
       "searchPlaceholder": "Ausführungen suchen...",
-      "status": "Status",
       "allStatus": "Alle Status",
-      "informational": "Informativ",
-      "success": "Erfolg",
-      "redirection": "Weiterleitung",
-      "clientError": "Client-Fehler",
-      "serverError": "Server-Fehler",
+      "statusPending": "Ausstehend",
+      "statusRunning": "Läuft",
+      "statusCancelled": "Abgebrochen",
       "period": "Zeitraum",
       "lastHour": "Letzte Stunde",
       "last24Hours": "Letzte 24 Stunden",
@@ -1031,14 +1037,82 @@
       "selected": "ausgewählt",
       "copyLogs": "Logs Kopieren",
       "copied": "Kopiert!",
-      "name": "Name",
+      "runId": "Ausführungs-ID",
       "integration": "Integration",
+      "type": "Typ",
       "statusHeader": "Status",
       "started": "Gestartet",
       "duration": "Dauer",
       "viewDetails": "Details Anzeigen",
       "noRunsFound": "Keine Ausführungen gefunden, die Ihren Filtern entsprechen",
-      "unknown": "Unbekannt"
+      "unknown": "Unbekannt",
+      "runType": {
+        "manual": "Manuell",
+        "scheduled": "Geplant",
+        "triggered": "Ausgelöst"
+      },
+      "status": {
+        "pending": "Ausstehend",
+        "running": "Läuft",
+        "cancelled": "Abgebrochen"
+      }
+    }
+  },
+  "sidebar": {
+    "overview": "Übersicht",
+    "workspace": "Arbeitsbereich",
+    "files": "Dateien",
+    "studio": "Studio",
+    "team": "Team",
+    "automation": "Automatisierung",
+    "integrations": "Integrationen",
+    "explore": "Entdecken",
+    "observability": "Beobachtbarkeit",
+    "analytics": "Analytik",
+    "logs": "Protokolle",
+    "billing": "Abrechnung",
+    "settings": "Einstellungen",
+    "support": "Support"
+  },
+  "studio": {
+    "chat": {
+      "placeholder": "Änderungen beschreiben...",
+      "tools": {
+        "highlight": "Hervorheben",
+        "annotate": "Annotieren"
+      },
+      "changes": {
+        "title": "Änderungen",
+        "accept": "Annehmen",
+        "reject": "Ablehnen",
+        "acceptAll": "Alle annehmen",
+        "rejectAll": "Alle ablehnen",
+        "empty": "Keine ausstehenden Änderungen"
+      }
+    }
+  },
+  "commandMenu": {
+    "title": "Befehlsmenü",
+    "placeholder": "Befehl eingeben oder suchen...",
+    "noResults": "Keine Ergebnisse gefunden.",
+    "homePage": "Startseite",
+    "settings": "Einstellungen",
+    "actions": {
+      "title": "Schnellaktionen",
+      "createWorkspace": "Arbeitsbereich erstellen",
+      "uploadFile": "Datei hochladen",
+      "inviteMember": "Mitglied einladen",
+      "createInviteCode": "Einladungscode erstellen",
+      "inviteCodeCreated": "Einladungslink in die Zwischenablage kopiert",
+      "inviteCodeFailed": "Einladungscode konnte nicht erstellt werden",
+      "toggleTheme": "Design wechseln",
+      "openSupport": "Support öffnen"
+    },
+    "account": {
+      "title": "Konto",
+      "profile": "Profil",
+      "tokens": "API-Tokens",
+      "logout": "Abmelden"
     }
   }
 }

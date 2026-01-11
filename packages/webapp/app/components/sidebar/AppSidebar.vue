@@ -41,6 +41,7 @@ const props = withDefaults(defineProps<SidebarProps>(), {
   collapsible: "icon",
 });
 
+const { t } = useI18n();
 const { state } = useSidebar();
 const helpChatRef = ref();
 
@@ -62,61 +63,56 @@ const userData = computed(() => ({
 }));
 
 // Navigation data
-const data = {
-  navDashboard: {
-    title: "Dashboard",
-    url: "/",
-    icon: LayoutDashboard,
+const navWorkspace = computed(() => [
+  {
+    title: t("sidebar.files"),
+    url: "/files",
+    icon: FolderOpen,
+    isActive: false,
   },
-  navWorkspace: [
-    {
-      title: "Files",
-      url: "/files",
-      icon: FolderOpen,
-      isActive: false,
-    },
-    {
-      title: "Studio",
-      url: "/studio",
-      icon: PenTool,
-      isActive: false,
-    },
-    {
-      title: "Team",
-      url: "/team",
-      icon: Users,
-      isActive: false,
-    },
-  ],
-  navAutomation: [
-    {
-      title: "Integrations",
-      url: "/integrations",
-      icon: Puzzle,
-      isActive: false,
-    },
-    {
-      title: "Explore",
-      url: "/integrations/explore",
-      icon: Compass,
-      isActive: false,
-    },
-  ],
-  navObservability: [
-    {
-      title: "Analytics",
-      url: "/analytics",
-      icon: BarChart3,
-      isActive: false,
-    },
-    {
-      title: "Logs",
-      url: "/analytics/logs",
-      icon: FileSearch,
-      isActive: false,
-    },
-  ],
-};
+  {
+    title: t("sidebar.studio"),
+    url: "/studio",
+    icon: PenTool,
+    isActive: false,
+  },
+  {
+    title: t("sidebar.team"),
+    url: "/team",
+    icon: Users,
+    isActive: false,
+  },
+]);
+
+const navAutomation = computed(() => [
+  {
+    title: t("sidebar.integrations"),
+    url: "/integrations",
+    icon: Puzzle,
+    isActive: false,
+  },
+  {
+    title: t("sidebar.explore"),
+    url: "/integrations/explore",
+    icon: Compass,
+    isActive: false,
+  },
+]);
+
+const navObservability = computed(() => [
+  {
+    title: t("sidebar.analytics"),
+    url: "/analytics",
+    icon: BarChart3,
+    isActive: false,
+  },
+  {
+    title: t("sidebar.logs"),
+    url: "/analytics/logs",
+    icon: FileSearch,
+    isActive: false,
+  },
+]);
 
 function openHelpChat() {
   helpChatRef.value?.toggleChat();
@@ -132,27 +128,27 @@ function openHelpChat() {
       <!-- Overview - always visible -->
       <SidebarMenu v-if="state === 'expanded'" class="px-2 pt-2">
         <SidebarMenuItem>
-          <SidebarMenuButton as-child :tooltip="'Overview'">
+          <SidebarMenuButton as-child :tooltip="t('sidebar.overview')">
             <NuxtLink to="/">
               <LayoutDashboard />
-              <span>Overview</span>
+              <span>{{ t("sidebar.overview") }}</span>
             </NuxtLink>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
       <NavMain
-        :items="data.navWorkspace"
-        label="Workspace"
+        :items="navWorkspace"
+        :label="t('sidebar.workspace')"
         :disabled="!hasWorkspace"
       />
       <NavMain
-        :items="data.navAutomation"
-        label="Automation"
+        :items="navAutomation"
+        :label="t('sidebar.automation')"
         :disabled="!hasWorkspace || !isAdminOrOwner"
       />
       <NavMain
-        :items="data.navObservability"
-        label="Observability"
+        :items="navObservability"
+        :label="t('sidebar.observability')"
         :disabled="!hasWorkspace"
       />
     </SidebarContent>
@@ -163,15 +159,15 @@ function openHelpChat() {
         >
           <SidebarMenuButton
             as-child
-            :tooltip="hasWorkspace ? 'Billing' : undefined"
+            :tooltip="hasWorkspace ? t('sidebar.billing') : undefined"
           >
             <NuxtLink v-if="hasWorkspace" to="/billing">
               <CreditCard />
-              <span>Billing</span>
+              <span>{{ t("sidebar.billing") }}</span>
             </NuxtLink>
             <span v-else class="flex items-center gap-2 cursor-not-allowed">
               <CreditCard />
-              <span>Billing</span>
+              <span>{{ t("sidebar.billing") }}</span>
             </span>
           </SidebarMenuButton>
         </SidebarMenuItem>
@@ -180,22 +176,25 @@ function openHelpChat() {
         >
           <SidebarMenuButton
             as-child
-            :tooltip="hasWorkspace ? 'Settings' : undefined"
+            :tooltip="hasWorkspace ? t('sidebar.settings') : undefined"
           >
             <NuxtLink v-if="hasWorkspace" to="/settings/general">
               <Settings />
-              <span>Settings</span>
+              <span>{{ t("sidebar.settings") }}</span>
             </NuxtLink>
             <span v-else class="flex items-center gap-2 cursor-not-allowed">
               <Settings />
-              <span>Settings</span>
+              <span>{{ t("sidebar.settings") }}</span>
             </span>
           </SidebarMenuButton>
         </SidebarMenuItem>
         <SidebarMenuItem>
-          <SidebarMenuButton :tooltip="'Support'" @click="openHelpChat">
+          <SidebarMenuButton
+            :tooltip="t('sidebar.support')"
+            @click="openHelpChat"
+          >
             <MessagesSquare />
-            <span>Support</span>
+            <span>{{ t("sidebar.support") }}</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

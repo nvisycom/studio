@@ -10,11 +10,19 @@
     },
     "time": {
       "justNow": "Just now",
+      "now": "Now",
       "never": "Never",
+      "expired": "Expired",
+      "minutesAgo": "{minutes}m ago",
       "hoursAgo": "{hours}h ago",
       "daysAgo": "{days}d ago",
       "weeksAgo": "{weeks}w ago",
-      "monthsAgo": "{months}m ago"
+      "monthsAgo": "{months}mo ago",
+      "inMinutes": "in {minutes}m",
+      "inHours": "in {hours}h",
+      "inDays": "in {days}d",
+      "inWeeks": "in {weeks}w",
+      "inMonths": "in {months}mo"
     }
   },
   "settings": {
@@ -607,6 +615,7 @@
     "table": {
       "headers": {
         "name": "Name",
+        "createdAt": "Created At",
         "lastUsed": "Last Used"
       },
       "info": {
@@ -1015,13 +1024,10 @@
       "title": "Integration Runs",
       "backToConnections": "Back to Connections",
       "searchPlaceholder": "Search runs...",
-      "status": "Status",
       "allStatus": "All Status",
-      "informational": "Informational",
-      "success": "Success",
-      "redirection": "Redirection",
-      "clientError": "Client Error",
-      "serverError": "Server Error",
+      "statusPending": "Pending",
+      "statusRunning": "Running",
+      "statusCancelled": "Cancelled",
       "period": "Period",
       "lastHour": "Last hour",
       "last24Hours": "Last 24 hours",
@@ -1031,14 +1037,82 @@
       "selected": "selected",
       "copyLogs": "Copy Logs",
       "copied": "Copied!",
-      "name": "Name",
+      "runId": "Run ID",
       "integration": "Integration",
+      "type": "Type",
       "statusHeader": "Status",
       "started": "Started",
       "duration": "Duration",
       "viewDetails": "View Details",
       "noRunsFound": "No runs found matching your filters",
-      "unknown": "Unknown"
+      "unknown": "Unknown",
+      "runType": {
+        "manual": "Manual",
+        "scheduled": "Scheduled",
+        "triggered": "Triggered"
+      },
+      "status": {
+        "pending": "Pending",
+        "running": "Running",
+        "cancelled": "Cancelled"
+      }
+    }
+  },
+  "sidebar": {
+    "overview": "Overview",
+    "workspace": "Workspace",
+    "files": "Files",
+    "studio": "Studio",
+    "team": "Team",
+    "automation": "Automation",
+    "integrations": "Integrations",
+    "explore": "Explore",
+    "observability": "Observability",
+    "analytics": "Analytics",
+    "logs": "Logs",
+    "billing": "Billing",
+    "settings": "Settings",
+    "support": "Support"
+  },
+  "studio": {
+    "chat": {
+      "placeholder": "Describe changes...",
+      "tools": {
+        "highlight": "Highlight",
+        "annotate": "Annotate"
+      },
+      "changes": {
+        "title": "Changes",
+        "accept": "Accept",
+        "reject": "Reject",
+        "acceptAll": "Accept All",
+        "rejectAll": "Reject All",
+        "empty": "No pending changes"
+      }
+    }
+  },
+  "commandMenu": {
+    "title": "Command Menu",
+    "placeholder": "Type a command or search...",
+    "noResults": "No results found.",
+    "homePage": "Home Page",
+    "settings": "Settings",
+    "actions": {
+      "title": "Quick Actions",
+      "createWorkspace": "Create Workspace",
+      "uploadFile": "Upload File",
+      "inviteMember": "Invite Member",
+      "createInviteCode": "Create Invite Code",
+      "inviteCodeCreated": "Invite link copied to clipboard",
+      "inviteCodeFailed": "Failed to create invite code",
+      "toggleTheme": "Toggle Theme",
+      "openSupport": "Open Support"
+    },
+    "account": {
+      "title": "Account",
+      "profile": "Profile",
+      "tokens": "API Tokens",
+      "logout": "Log out"
     }
   }
 }

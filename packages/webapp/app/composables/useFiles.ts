@@ -175,7 +175,7 @@ export function useFiles(options: UseFilesOptions = {}) {
 		if (!client) throw new Error("Not authenticated");
 		const wId = effectiveWorkspaceId.value;
 		if (!wId) throw new Error("No workspace selected");
-		const response = await client.files.downloadFilesArchive(wId, {
+		const response = await client.files.downloadFiles(wId, {
 			fileIds,
 			format,
 		});

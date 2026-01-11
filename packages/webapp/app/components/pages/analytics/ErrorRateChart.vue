@@ -101,7 +101,6 @@ const svgDefs = `
                 day: 'numeric',
               });
             },
-            valueFormatter: (value) => `${value.toFixed(1)}%`,
           })
         "
         :color="chartConfig.value.color"

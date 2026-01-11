@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,12 +13,17 @@ import {
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
+import { NvisyApiError } from "@nvisy/sdk";
 
 definePageMeta({
 	layout: "auth",
 });
 
 const { loginAsync, isLoggingIn, loginError } = useAuth();
+
+const apiError = computed(() =>
+	loginError.value instanceof NvisyApiError ? loginError.value : null,
+);
 
 // Form state
 const email = ref("");
@@ -177,18 +182,20 @@ async function handleMicrosoftLogin(): Promise<void> {
             v-if="loginError"
             class="p-3 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 rounded-md"
           >
-            <p>{{ loginError.message || "An error occurred during login" }}</p>
+            <p>
+              {{ loginError.message || "An error occurred during login" }}
+            </p>
             <p
-              v-if="loginError.suggestion"
+              v-if="apiError?.suggestion"
               class="mt-1 text-red-500 dark:text-red-300"
             >
-              {{ loginError.suggestion }}
+              {{ apiError.suggestion }}
             </p>
             <ul
-              v-if="loginError.validation?.length"
+              v-if="apiError?.validation?.length"
               class="mt-2 list-disc list-inside space-y-1"
             >
-              <li v-for="err in loginError.validation" :key="err.field">
+              <li v-for="err in apiError.validation" :key="err.field">
                 <span class="font-medium">{{ err.field }}:</span>
                 {{ err.message }}
               </li>

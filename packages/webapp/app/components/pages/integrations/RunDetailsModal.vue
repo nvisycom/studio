@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import type { IntegrationRun } from "@nvisy/sdk/datatypes";
 import {
 	Dialog,
 	DialogContent,
@@ -8,15 +8,6 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-
-interface IntegrationRun {
-	id: string;
-	integration: string;
-	name: string;
-	statusCode: number;
-	startedAt: Date;
-	duration: string;
-}
 
 interface Props {
 	open?: boolean;
@@ -37,23 +28,21 @@ function handleOpenChange(open: boolean) {
 	emit("update:open", open);
 }
 
-function getStatusCodeColor(statusCode: number): string {
-	if (statusCode >= 100 && statusCode < 200) {
-		return "text-blue-600 dark:text-blue-400";
-	} else if (statusCode >= 200 && statusCode < 300) {
-		return "text-green-600 dark:text-green-400";
-	} else if (statusCode >= 300 && statusCode < 400) {
-		return "text-yellow-600 dark:text-yellow-400";
-	} else if (statusCode >= 400 && statusCode < 500) {
-		return "text-orange-600 dark:text-orange-400";
-	} else if (statusCode >= 500) {
-		return "text-red-600 dark:text-red-400";
+function getStatusColor(status: "pending" | "running" | "cancelled"): string {
+	switch (status) {
+		case "running":
+			return "text-blue-600 dark:text-blue-400";
+		case "pending":
+			return "text-yellow-600 dark:text-yellow-400";
+		case "cancelled":
+			return "text-red-600 dark:text-red-400";
+		default:
+			return "text-neutral-600 dark:text-neutral-400";
 	}
-	return "text-neutral-600 dark:text-neutral-400";
 }
 
-function formatDateTime(date: Date): string {
-	return date.toLocaleString("en-US", {
+function formatDateTime(dateString: string): string {
+	return new Date(dateString).toLocaleString("en-US", {
 		month: "short",
 		day: "numeric",
 		year: "numeric",
@@ -61,6 +50,19 @@ function formatDateTime(date: Date): string {
 		minute: "2-digit",
 		second: "2-digit",
 	});
+}
+
+function formatDuration(
+	startedAt: string,
+	completedAt: string | null | undefined,
+): string {
+	if (!completedAt) return "-";
+	const start = new Date(startedAt).getTime();
+	const end = new Date(completedAt).getTime();
+	const diff = end - start;
+	const minutes = Math.floor(diff / 60000);
+	const seconds = Math.floor((diff % 60000) / 1000);
+	return `${minutes}m ${seconds}s`;
 }
 </script>
 
@@ -82,21 +84,21 @@ function formatDateTime(date: Date): string {
               <p
                 class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1"
               >
-                Name
+                Run ID
               </p>
-              <p class="text-sm text-neutral-900 dark:text-white">
-                {{ run.name }}
+              <p class="text-sm text-neutral-900 dark:text-white font-mono">
+                {{ run.id }}
               </p>
             </div>
             <div>
               <p
                 class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1"
               >
-                Integration
+                Run Type
               </p>
-              <p class="text-sm text-neutral-900 dark:text-white">
-                {{ run.integration }}
-              </p>
+              <Badge variant="outline" class="capitalize">
+                {{ run.runType }}
+              </Badge>
             </div>
           </div>
 
@@ -105,13 +107,13 @@ function formatDateTime(date: Date): string {
               <p
                 class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1"
               >
-                Status Code
+                Status
               </p>
               <span
-                :class="getStatusCodeColor(run.statusCode)"
-                class="font-mono text-sm font-medium"
+                :class="getStatusColor(run.status)"
+                class="text-sm font-medium capitalize"
               >
-                {{ run.statusCode }}
+                {{ run.status }}
               </span>
             </div>
             <div>
@@ -121,43 +123,44 @@ function formatDateTime(date: Date): string {
                 Duration
               </p>
               <p class="text-sm text-neutral-900 dark:text-white">
-                {{ run.duration }}
+                {{ formatDuration(run.startedAt, run.completedAt) }}
               </p>
             </div>
           </div>
 
-          <div>
-            <p
-              class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1"
-            >
-              Started At
-            </p>
-            <p class="text-sm text-neutral-900 dark:text-white">
-              {{ formatDateTime(run.startedAt) }}
-            </p>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p
+                class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1"
+              >
+                Started At
+              </p>
+              <p class="text-sm text-neutral-900 dark:text-white">
+                {{ formatDateTime(run.startedAt) }}
+              </p>
+            </div>
+            <div v-if="run.completedAt">
+              <p
+                class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1"
+              >
+                Completed At
+              </p>
+              <p class="text-sm text-neutral-900 dark:text-white">
+                {{ formatDateTime(run.completedAt) }}
+              </p>
+            </div>
           </div>
         </div>
 
-        <!-- Logs Section -->
-        <div>
+        <!-- Metadata Section -->
+        <div v-if="run.metadata">
           <p class="text-sm font-medium text-neutral-900 dark:text-white mb-2">
-            Logs
+            Metadata
           </p>
           <div
             class="bg-neutral-900 dark:bg-neutral-950 rounded-lg p-4 font-mono text-xs text-neutral-300 dark:text-neutral-400 max-h-60 overflow-y-auto"
           >
-            <p>
-              [{{ formatDateTime(run.startedAt) }}] Starting {{ run.name }}...
-            </p>
-            <p>
-              [{{ formatDateTime(run.startedAt) }}] Connecting to
-              {{ run.integration }}...
-            </p>
-            <p>[{{ formatDateTime(run.startedAt) }}] Processing request...</p>
-            <p>
-              [{{ formatDateTime(run.startedAt) }}] Completed with status
-              {{ run.statusCode }}
-            </p>
+            <pre>{{ JSON.stringify(run.metadata, null, 2) }}</pre>
           </div>
         </div>
       </div>

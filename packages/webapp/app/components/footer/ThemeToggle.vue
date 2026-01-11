@@ -18,7 +18,7 @@ const themes = [
 ];
 
 const currentTheme = computed(() => {
-	return themes.find((t) => t.value === colorMode.preference) || themes[0];
+	return themes.find((t) => t.value === colorMode.preference) ?? themes[0]!;
 });
 
 function setTheme(theme: "light" | "dark" | "system") {

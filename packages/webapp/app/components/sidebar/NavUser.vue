@@ -1,58 +1,86 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
-	ChevronsUpDown,
-	LogOut,
-	Command,
-	Moon,
-	Sun,
-	Home,
-	ExternalLink,
-	User,
-	Key,
+  ChevronsUpDown,
+  LogOut,
+  Command,
+  Moon,
+  Sun,
+  Home,
+  ExternalLink,
+  User,
+  Key,
 } from "lucide-vue-next";
 import { EntityAvatar } from "@/components/common";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuGroup,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
-	useSidebar,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
+import { Kbd } from "@/components/ui/kbd";
 import CommandMenu from "@/components/CommandMenu.vue";
+import CreateWorkspaceModal from "@/components/sidebar/CreateWorkspaceModal.vue";
+import HelpChat from "@/components/HelpChat.vue";
 
 const props = defineProps<{
-	user: {
-		name: string;
-		email: string;
-		avatar: string;
-	};
+  user: {
+    name: string;
+    email: string;
+    avatar: string;
+  };
 }>();
 
+const { t } = useI18n();
+const { getKbdKey } = useKbd();
 const { isMobile } = useSidebar();
 const { logout } = useAuth();
 
 const isCommandMenuOpen = ref(false);
+const isCreateWorkspaceOpen = ref(false);
+const helpChatRef = ref();
 const colorMode = useColorMode();
 
 function openCommandMenu() {
-	isCommandMenuOpen.value = true;
+  isCommandMenuOpen.value = true;
 }
 
 function toggleTheme() {
-	colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
+  colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
 }
 
 function handleLogout() {
-	logout();
+  logout();
 }
+
+// Command menu action handlers
+function handleCreateWorkspace() {
+  isCreateWorkspaceOpen.value = true;
+}
+
+function handleUploadFile() {
+  // Navigate to files page where upload can be triggered
+  navigateTo("/files");
+}
+
+function handleOpenSupport() {
+  helpChatRef.value?.toggleChat();
+}
+
+// Global keyboard shortcut for opening command menu
+defineShortcuts({
+  meta_k: () => {
+    isCommandMenuOpen.value = !isCommandMenuOpen.value;
+  },
+});
 </script>
 
 <template>
@@ -85,7 +113,7 @@ function handleLogout() {
                 class="cursor-pointer flex items-center"
               >
                 <User />
-                Account Settings
+                {{ t("commandMenu.account.profile") }}
               </NuxtLink>
             </DropdownMenuItem>
             <DropdownMenuItem as-child>
@@ -94,24 +122,24 @@ function handleLogout() {
                 class="cursor-pointer flex items-center"
               >
                 <Key />
-                API Tokens
+                {{ t("commandMenu.account.tokens") }}
               </NuxtLink>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem @click="openCommandMenu" class="cursor-pointer">
+            <DropdownMenuItem class="cursor-pointer" @click="openCommandMenu">
               <Command />
-              Command Menu
-              <span
-                class="ml-auto text-sm font-light text-neutral-500 dark:text-neutral-400"
-                >⌘K</span
-              >
+              {{ t("commandMenu.title") }}
+              <div class="ml-auto flex items-center gap-1">
+                <Kbd>{{ getKbdKey("meta") }}</Kbd>
+                <Kbd>K</Kbd>
+              </div>
             </DropdownMenuItem>
-            <DropdownMenuItem @click="toggleTheme" class="cursor-pointer">
+            <DropdownMenuItem class="cursor-pointer" @click="toggleTheme">
               <Sun v-if="colorMode.value === 'dark'" />
               <Moon v-else />
-              Toggle Theme
+              {{ t("commandMenu.actions.toggleTheme") }}
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
@@ -124,13 +152,13 @@ function handleLogout() {
                 class="cursor-pointer flex items-center"
               >
                 <Home />
-                Home Page
+                {{ t("commandMenu.homePage") }}
                 <ExternalLink :size="12" class="ml-auto opacity-60" />
               </a>
             </DropdownMenuItem>
-            <DropdownMenuItem @click="handleLogout" class="cursor-pointer">
+            <DropdownMenuItem class="cursor-pointer" @click="handleLogout">
               <LogOut />
-              Log Out
+              {{ t("commandMenu.account.logout") }}
             </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
@@ -139,5 +167,16 @@ function handleLogout() {
   </SidebarMenu>
 
   <!-- Command Menu -->
-  <CommandMenu v-model:open="isCommandMenuOpen" />
+  <CommandMenu
+    v-model:open="isCommandMenuOpen"
+    @create-workspace="handleCreateWorkspace"
+    @upload-file="handleUploadFile"
+    @open-support="handleOpenSupport"
+  />
+
+  <!-- Create Workspace Modal -->
+  <CreateWorkspaceModal v-model:open="isCreateWorkspaceOpen" />
+
+  <!-- Help Chat -->
+  <HelpChat ref="helpChatRef" />
 </template>

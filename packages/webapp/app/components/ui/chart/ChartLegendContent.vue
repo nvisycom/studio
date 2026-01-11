@@ -57,7 +57,7 @@ onMounted(() => {
       <div
         class="h-2 w-2 shrink-0 rounded-[2px]"
         :style="{
-          backgroundColor: itemConfig.color,
+          backgroundColor: itemConfig?.color,
         }"
       />
 

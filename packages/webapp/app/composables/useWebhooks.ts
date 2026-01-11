@@ -31,13 +31,13 @@ export function useWebhooks() {
 	});
 
 	// Computed that applies optimistic updates on top of query data
-	const webhooks = computed(() => {
+	const webhooks = computed<Webhook[] | undefined>(() => {
 		const data = webhooksQuery.data.value;
 		if (!data) return data;
 		return data.map((w) => ({
 			...w,
 			...optimisticUpdates.value[w.webhookId],
-		}));
+		})) as Webhook[];
 	});
 
 	const createWebhookMutation = useMutation({

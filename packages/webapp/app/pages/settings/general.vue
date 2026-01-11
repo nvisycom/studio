@@ -57,9 +57,9 @@ const {
 
 const { leaveAsync, isLeaving } = useMembers();
 
-// Form state - use null to indicate "not yet initialized"
-const workspaceName = ref<string | null>(null);
-const workspaceDescription = ref<string | null>(null);
+// Form state - use empty string as initial value
+const workspaceName = ref("");
+const workspaceDescription = ref("");
 const requireApproval = ref<boolean | null>(null);
 const enableComments = ref<boolean | null>(null);
 const copiedWorkspaceId = ref(false);
@@ -69,24 +69,19 @@ const isLeaveDialogOpen = ref(false);
 const isDeleteDialogOpen = ref(false);
 const deleteConfirmName = ref("");
 
+// Track if form has been initialized
+const formInitialized = ref(false);
+
 // Initialize form from workspace data
 watch(
 	() => currentWorkspace.value,
 	(workspace) => {
-		if (workspace) {
-			// Only initialize if not already set (first load)
-			if (workspaceName.value === null) {
-				workspaceName.value = workspace.displayName;
-			}
-			if (workspaceDescription.value === null) {
-				workspaceDescription.value = workspace.description ?? "";
-			}
-			if (requireApproval.value === null) {
-				requireApproval.value = workspace.requireApproval;
-			}
-			if (enableComments.value === null) {
-				enableComments.value = workspace.enableComments;
-			}
+		if (workspace && !formInitialized.value) {
+			workspaceName.value = workspace.displayName;
+			workspaceDescription.value = workspace.description ?? "";
+			requireApproval.value = workspace.requireApproval;
+			enableComments.value = workspace.enableComments;
+			formInitialized.value = true;
 		}
 	},
 	{ immediate: true },
@@ -96,9 +91,10 @@ watch(
 watch(
 	() => currentWorkspaceId.value,
 	() => {
-		// Reset to null so the next workspace data triggers re-initialization
-		workspaceName.value = null;
-		workspaceDescription.value = null;
+		// Reset so the next workspace data triggers re-initialization
+		formInitialized.value = false;
+		workspaceName.value = "";
+		workspaceDescription.value = "";
 		requireApproval.value = null;
 		enableComments.value = null;
 	},
@@ -109,7 +105,7 @@ const isOwner = computed(() => currentWorkspace.value?.memberRole === "owner");
 
 // Check if info has changed
 const hasInfoChanges = computed(() => {
-	if (!currentWorkspace.value || workspaceName.value === null) return false;
+	if (!currentWorkspace.value || !formInitialized.value) return false;
 	return (
 		workspaceName.value !== currentWorkspace.value.displayName ||
 		workspaceDescription.value !== (currentWorkspace.value.description ?? "")

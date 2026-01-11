@@ -43,7 +43,10 @@ const visibleFiles = computed(() => {
   // Active file is in overflow, swap it with the last visible tab
   const visible = openFiles.value.slice(0, MAX_VISIBLE_TABS - 1);
   const activeFile = openFiles.value[activeIndex];
-  return [...visible, activeFile];
+  if (activeFile) {
+    return [...visible, activeFile];
+  }
+  return visible;
 });
 
 const overflowFiles = computed(() => {
@@ -51,8 +54,10 @@ const overflowFiles = computed(() => {
     return [];
   }
 
-  const visibleIds = new Set(visibleFiles.value.map((f) => f.fileId));
-  return openFiles.value.filter((f) => !visibleIds.has(f.fileId));
+  const visibleIds = new Set(
+    visibleFiles.value.map((f) => f?.fileId).filter(Boolean),
+  );
+  return openFiles.value.filter((f) => f && !visibleIds.has(f.fileId));
 });
 
 const hasOverflow = computed(() => overflowFiles.value.length > 0);
@@ -129,7 +134,10 @@ function truncate(str: string, maxLength: number): string {
             <ChevronDown :size="14" />
           </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" class="w-[220px]">
+        <DropdownMenuContent
+          align="end"
+          class="w-[220px] max-h-[300px] overflow-y-auto"
+        >
           <DropdownMenuItem
             v-for="file in overflowFiles"
             :key="file.fileId"
