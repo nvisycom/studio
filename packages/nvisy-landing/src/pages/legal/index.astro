@@ -1,0 +1,77 @@
+---
+import { Layout } from "@/layouts";
+import { getCollection, type CollectionEntry } from "astro:content";
+import { CTA, Hero, LegalCard } from "@/components";
+import { File } from "lucide-vue-next";
+
+// Get all legal documents
+let legalEntries: CollectionEntry<"legal">[] = [];
+try {
+	legalEntries = await getCollection("legal-docs");
+} catch (error: unknown) {
+	console.error("Error fetching legal collection:", error);
+}
+
+// Sort by title
+legalEntries.sort((a, b) => a.data.title.localeCompare(b.data.title));
+---
+
+<Layout title="Legal" description="Legal documents and policies for our platform and services.">
+  <div class="bg-white dark:bg-black min-h-screen">
+    <!-- Hero Section -->
+    <Hero
+      title="Legal Information"
+      description="Access our legal documents, policies, and terms that govern our services."
+      background="gradient"
+      buttons={[]}
+    />
+
+    <!-- Legal Documents -->
+    <div class="container mx-auto px-4 py-12">
+      <div class="max-w-4xl mx-auto">
+        {legalEntries.length > 0 ? (
+          <>
+            <div class="flex items-center justify-between mb-8">
+              <h2 class="text-2xl font-light text-neutral-900 dark:text-white">
+                Documents
+              </h2>
+              <span class="text-sm text-neutral-500 dark:text-neutral-400">
+                {legalEntries.length} document{legalEntries.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {legalEntries.map((entry) => (
+              <LegalCard entry={entry} />
+            ))}
+            </div>
+          </>
+        ) : (
+          <div class="text-center py-16">
+            <div class="w-16 h-16 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-6 text-neutral-400">
+                 <File/>
+            </div>
+            <h3 class="text-xl font-light text-neutral-900 dark:text-white mb-2">No legal documents found</h3>
+            <p class="text-neutral-500 dark:text-neutral-400">Legal documents will appear here once they are available.</p>
+          </div>
+        )}
+      </div>
+    </div>
+
+    <CTA
+      title="Questions about our legal policies?"
+      description="If you have questions about our legal documents or need clarification on our policies, please don't hesitate to reach out to our legal team."
+      background="solid"
+      buttons={[
+        {
+          text: "Contact Us",
+          href: "/contact",
+          variant: "primary"
+        },
+        {
+          text: "Email Us",
+          href: "mailto:hello@nvisy.com",
+          variant: "secondary"
+        }
+      ]}
+    />
+</Layout>

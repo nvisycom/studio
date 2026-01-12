@@ -1,0 +1,18 @@
+[
+	{
+		"quote": "Nvisy's API integration with our existing systems was flawless. The developer experience is top-notch, and the enterprise support team is incredibly responsive.",
+		"author": "Lisa Park",
+		"title": "CTO",
+		"company": "DataSecure Solutions",
+		"order": 1,
+		"featured": true
+	},
+	{
+		"quote": "We've processed over 100,000 documents with zero security incidents. The AI learns our extraction patterns and gets smarter every day. Absolutely essential tool.",
+		"author": "Robert Martinez",
+		"title": "Information Security Director",
+		"company": "Federal Contractors Inc",
+		"order": 2,
+		"featured": true
+	}
+]

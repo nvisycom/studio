@@ -6,7 +6,6 @@ Thumbs.db
 .vs/
 .vscode/
 .idea/
-.fleet/
 .zed/
 
 # Node & JavaScript
@@ -33,7 +32,6 @@ output/
 !.env.example
 
 # Logs
-logs/
 *.log
 *.log*
 

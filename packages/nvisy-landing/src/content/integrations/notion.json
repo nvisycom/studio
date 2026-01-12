@@ -1,0 +1,9 @@
+{
+	"icon": "notion",
+	"isBrand": true,
+	"version": "v1.0",
+	"status": "Planned",
+	"title": "Notion",
+	"category": "File Import/Export",
+	"description": "Export extracted document data directly to Notion databases and pages for seamless integration with your knowledge management workflows."
+}

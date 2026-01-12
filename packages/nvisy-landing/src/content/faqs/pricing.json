@@ -1,0 +1,38 @@
+[
+	{
+		"question": "How does page-based pricing work?",
+		"answer": "You pay per page processed. Each page of your document is counted, and you're billed based on your plan's included pages plus any overages.",
+		"order": 1,
+		"featured": true
+	},
+	{
+		"question": "Is there a free trial available?",
+		"answer": "Yes! We offer a 14-day free trial for all paid plans. No credit card required to get started.",
+		"order": 2,
+		"featured": true
+	},
+	{
+		"question": "Can I change my plan at any time?",
+		"answer": "Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate the billing accordingly.",
+		"order": 3,
+		"featured": true
+	},
+	{
+		"question": "What's the difference between Basic and Professional plans?",
+		"answer": "Professional plan includes webhooks and integrations not available in Basic. It also offers 20GB storage (vs 5GB), priority support, and more included pages.",
+		"order": 4,
+		"featured": true
+	},
+	{
+		"question": "What's included in the Enterprise plan?",
+		"answer": "Enterprise includes everything in Professional plus unlimited storage, 24/7 dedicated support, custom integrations, SLA guarantees, on-premise deployment options, and custom pricing tailored to your volume and needs.",
+		"order": 5,
+		"featured": true
+	},
+	{
+		"question": "Do you offer volume discounts?",
+		"answer": "Yes! Professional plan already offers more pages at a better rate. For enterprise-level volumes, contact our sales team for custom pricing with additional discounts.",
+		"order": 6,
+		"featured": false
+	}
+]

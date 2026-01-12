@@ -1,0 +1,9 @@
+{
+  "icon": "javascript",
+  "isBrand": true,
+  "version": "v1.0",
+  "status": "Planned",
+  "title": "JavaScript SDK",
+  "category": "Developer",
+  "description": "Modern JavaScript SDK with TypeScript support for web browsers and Node.js applications with comprehensive document processing APIs and promise-based workflows."
+}

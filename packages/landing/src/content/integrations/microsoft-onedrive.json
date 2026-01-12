@@ -1,9 +1,0 @@
-{
-	"icon": "microsoft",
-	"isBrand": true,
-	"version": "v1.0",
-	"status": "Planned",
-	"title": "Microsoft OneDrive",
-	"category": "File Import/Export",
-	"description": "Import and export documents from OneDrive and SharePoint with enterprise-grade redaction and seamless Microsoft 365 integration."
-}

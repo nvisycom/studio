@@ -1,0 +1,87 @@
+---
+import { getCollection, getEntry } from "astro:content";
+import { FAQAccordion } from "../features/faq";
+
+export interface FAQItem {
+	question: string;
+	answer: string;
+}
+
+export interface Props {
+	title?: string;
+	description?: string;
+	faqs?: FAQItem[];
+	maxWidth?: "3xl" | "4xl" | "5xl";
+	category?: string;
+	featured?: boolean;
+}
+
+const {
+	title = "Frequently Asked Questions",
+	description = "Everything you need to know about our platform and services.",
+	maxWidth = "4xl",
+	category,
+	featured,
+	faqs: propFaqs,
+} = Astro.props;
+
+// Fetch FAQs from content if no faqs prop is provided
+let faqs: FAQItem[] = propFaqs || [];
+
+if (!propFaqs) {
+	if (category) {
+		// Fetch specific category JSON file
+		const categoryFaqs = await getEntry("faqs", category);
+		if (categoryFaqs) {
+			let faqList = categoryFaqs.data;
+
+			// Filter by featured if specified
+			if (featured !== undefined) {
+				faqList = faqList.filter((faq) => faq.featured === featured);
+			}
+
+			faqs = faqList
+				.sort((a, b) => a.order - b.order)
+				.map((faq) => ({
+					question: faq.question,
+					answer: faq.answer,
+				}));
+		}
+	} else {
+		// Fetch all FAQ categories and combine them
+		const allFaqEntries = await getCollection("faqs");
+		let allFaqsList = allFaqEntries.flatMap((entry) => entry.data);
+
+		// Filter by featured if specified
+		if (featured !== undefined) {
+			allFaqsList = allFaqsList.filter((faq) => faq.featured === featured);
+		}
+
+		faqs = allFaqsList
+			.sort((a, b) => a.order - b.order)
+			.map((faq) => ({
+				question: faq.question,
+				answer: faq.answer,
+			}));
+	}
+}
+
+const maxWidthClass = `max-w-${maxWidth}`;
+---
+
+<section class="py-12 md:py-20 bg-white dark:bg-black">
+  <div class="container mx-auto px-4">
+    <div class="text-center mb-12 md:mb-16">
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-light text-neutral-900 dark:text-white mb-4 md:mb-6">
+        {title}
+      </h2>
+      <p class="text-base md:text-lg lg:text-xl text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto px-4">
+        {description}
+      </p>
+    </div>
+
+    <div class={`${maxWidthClass} mx-auto`}>
+      <FAQAccordion client:load faqs={faqs} />
+    </div>
+  </div>
+</section>

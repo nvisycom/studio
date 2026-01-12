@@ -1,0 +1,9 @@
+{
+	"icon": "make",
+	"isBrand": false,
+	"version": "v1.0",
+	"status": "Planned",
+	"title": "Make",
+	"category": "Automation",
+	"description": "Build powerful automation workflows with Make's visual platform. Create complex document processing pipelines, connect multiple services, and extract data at scale."
+}

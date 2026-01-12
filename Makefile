@@ -9,9 +9,11 @@ endef
 install: # Installs all dependencies.
 	$(call log,Installing dependencies...)
 	@npm install
-	$(call log,Making scripts executable...)
-	@chmod +x scripts/*.sh
-	$(call log,Made scripts executable.)
+	@if [ -d scripts ]; then \
+		$(call log,Making scripts executable...); \
+		chmod +x scripts/*.sh; \
+		$(call log,Made scripts executable.); \
+	fi
 
 .PHONY: build-deps
 build-deps: # Builds shared dependencies (config, shared).
@@ -26,7 +28,7 @@ build-com: build-deps # Builds landing (nvisy.com).
 	@npm run build --workspace=@nvisy/landing
 	$(call log,Copying build output to ./output/com folder...)
 	@mkdir -p ./output/com
-	@cp -r packages/landing/dist/* ./output/com/
+	@cp -r packages/nvisy-landing/dist/* ./output/com/
 	$(call log,Copied build output to ./output/com folder.)
 
 .PHONY: build-app
@@ -35,7 +37,7 @@ build-app: build-deps # Builds webapp (app.nvisy.com).
 	@npm run generate --workspace=@nvisy/webapp
 	$(call log,Copying build output to ./output/app folder...)
 	@mkdir -p ./output/app
-	@cp -r packages/webapp/.output/public/* ./output/app/
+	@cp -r packages/nvisy-webapp/.output/public/* ./output/app/
 	$(call log,Copied build output to ./output/app folder.)
 
 .PHONY: build
@@ -51,6 +53,9 @@ clean: # Cleans build artifacts and dependencies.
 	@rm -rf packages/*/.nuxt
 	@rm -rf output
 	$(call log,Cleaned build artifacts.)
+
+.PHONY: repair
+repair: clean install build-deps # Cleans, reinstalls, and builds shared dependencies.
 
 .PHONY: check
 check: # Runs code quality checks.

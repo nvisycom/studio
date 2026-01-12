@@ -1,0 +1,169 @@
+<script setup lang="ts">
+import type { IntegrationRun } from "@nvisy/sdk/datatypes";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+
+interface Props {
+	open?: boolean;
+	run: IntegrationRun | null;
+}
+
+interface Emits {
+	(e: "update:open", value: boolean): void;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+	open: false,
+});
+
+const emit = defineEmits<Emits>();
+
+function handleOpenChange(open: boolean) {
+	emit("update:open", open);
+}
+
+function getStatusColor(status: "pending" | "running" | "cancelled"): string {
+	switch (status) {
+		case "running":
+			return "text-blue-600 dark:text-blue-400";
+		case "pending":
+			return "text-yellow-600 dark:text-yellow-400";
+		case "cancelled":
+			return "text-red-600 dark:text-red-400";
+		default:
+			return "text-neutral-600 dark:text-neutral-400";
+	}
+}
+
+function formatDateTime(dateString: string): string {
+	return new Date(dateString).toLocaleString("en-US", {
+		month: "short",
+		day: "numeric",
+		year: "numeric",
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
+	});
+}
+
+function formatDuration(
+	startedAt: string,
+	completedAt: string | null | undefined,
+): string {
+	if (!completedAt) return "-";
+	const start = new Date(startedAt).getTime();
+	const end = new Date(completedAt).getTime();
+	const diff = end - start;
+	const minutes = Math.floor(diff / 60000);
+	const seconds = Math.floor((diff % 60000) / 1000);
+	return `${minutes}m ${seconds}s`;
+}
+</script>
+
+<template>
+  <Dialog :open="open" @update:open="handleOpenChange">
+    <DialogContent class="max-w-2xl">
+      <DialogHeader>
+        <DialogTitle>Run Details</DialogTitle>
+        <DialogDescription>
+          Detailed information about this integration run
+        </DialogDescription>
+      </DialogHeader>
+
+      <div v-if="run" class="space-y-6 py-6">
+        <!-- Basic Information -->
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p
+                class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1"
+              >
+                Run ID
+              </p>
+              <p class="text-sm text-neutral-900 dark:text-white font-mono">
+                {{ run.id }}
+              </p>
+            </div>
+            <div>
+              <p
+                class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1"
+              >
+                Run Type
+              </p>
+              <Badge variant="outline" class="capitalize">
+                {{ run.runType }}
+              </Badge>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p
+                class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1"
+              >
+                Status
+              </p>
+              <span
+                :class="getStatusColor(run.status)"
+                class="text-sm font-medium capitalize"
+              >
+                {{ run.status }}
+              </span>
+            </div>
+            <div>
+              <p
+                class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1"
+              >
+                Duration
+              </p>
+              <p class="text-sm text-neutral-900 dark:text-white">
+                {{ formatDuration(run.startedAt, run.completedAt) }}
+              </p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p
+                class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1"
+              >
+                Started At
+              </p>
+              <p class="text-sm text-neutral-900 dark:text-white">
+                {{ formatDateTime(run.startedAt) }}
+              </p>
+            </div>
+            <div v-if="run.completedAt">
+              <p
+                class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1"
+              >
+                Completed At
+              </p>
+              <p class="text-sm text-neutral-900 dark:text-white">
+                {{ formatDateTime(run.completedAt) }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metadata Section -->
+        <div v-if="run.metadata">
+          <p class="text-sm font-medium text-neutral-900 dark:text-white mb-2">
+            Metadata
+          </p>
+          <div
+            class="bg-neutral-900 dark:bg-neutral-950 rounded-lg p-4 font-mono text-xs text-neutral-300 dark:text-neutral-400 max-h-60 overflow-y-auto"
+          >
+            <pre>{{ JSON.stringify(run.metadata, null, 2) }}</pre>
+          </div>
+        </div>
+      </div>
+    </DialogContent>
+  </Dialog>
+</template>

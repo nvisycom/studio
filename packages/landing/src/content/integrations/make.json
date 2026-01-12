@@ -1,9 +1,0 @@
-{
-	"icon": "rocket",
-	"isBrand": false,
-	"version": "v1.0",
-	"status": "Planned",
-	"title": "Make",
-	"category": "Automation",
-	"description": "Build powerful automation workflows with Make's visual platform. Create complex redaction pipelines, connect multiple services, and process documents at scale."
-}

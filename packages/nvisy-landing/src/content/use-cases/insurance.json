@@ -1,0 +1,32 @@
+[
+	{
+		"title": "Claims Processing",
+		"description": "Extract policyholder data from claims documentation for faster processing when sharing with third-party adjusters, legal counsel, or fraud investigators.",
+		"audience": "Insurance Carriers, Claims Adjusters"
+	},
+	{
+		"title": "Underwriting",
+		"description": "Extract key data from underwriting documents, medical records, and financial statements for faster risk assessment.",
+		"audience": "Underwriters, Risk Assessment Teams"
+	},
+	{
+		"title": "Fraud Investigation",
+		"description": "Extract and structure claim details and supporting documentation for fraud investigation units with comprehensive data capture.",
+		"audience": "Special Investigation Units, Fraud Departments"
+	},
+	{
+		"title": "Regulatory Compliance",
+		"description": "Transform policy and claims documents into structured data for state insurance department audits and regulatory filings.",
+		"audience": "Compliance Teams, Regulatory Affairs"
+	},
+	{
+		"title": "Litigation Support",
+		"description": "Extract key information from policyholder documents for litigation, arbitration, or legal discovery processes.",
+		"audience": "Legal Departments, Outside Counsel"
+	},
+	{
+		"title": "Agent & Broker Sharing",
+		"description": "Extract and share structured policy information and claim updates with agents and brokers for better service.",
+		"audience": "Independent Agents, Insurance Brokers"
+	}
+]

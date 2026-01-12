@@ -1,9 +1,0 @@
-{
-	"icon": "server",
-	"isBrand": false,
-	"version": "v1.0",
-	"status": "Completed",
-	"title": "REST API",
-	"category": "Developer",
-	"description": "Comprehensive REST API with full CRUD operations, batch processing, and webhook support for seamless integration into enterprise systems and custom workflows."
-}

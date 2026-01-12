@@ -1,0 +1,63 @@
+/**
+ * Format a date as a relative time string (e.g., "2 days ago", "3 weeks ago")
+ * Uses i18n keys from common.time namespace
+ */
+export function formatRelativeTime(
+	dateString: string | null | undefined,
+	t: (key: string, params?: Record<string, unknown>) => string,
+): string {
+	if (!dateString) return t("common.time.never");
+
+	const date = new Date(dateString);
+	const now = new Date();
+	const diff = now.getTime() - date.getTime();
+	const minutes = Math.floor(diff / (1000 * 60));
+	const hours = Math.floor(diff / (1000 * 60 * 60));
+	const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+	const weeks = Math.floor(days / 7);
+	const months = Math.floor(days / 30);
+
+	if (minutes < 1) return t("common.time.justNow");
+	if (hours < 1) return t("common.time.minutesAgo", { minutes });
+	if (hours < 24) return t("common.time.hoursAgo", { hours });
+	if (days === 1) return t("common.time.daysAgo", { days: 1 });
+	if (days < 7) return t("common.time.daysAgo", { days });
+	if (weeks === 1) return t("common.time.weeksAgo", { weeks: 1 });
+	if (weeks < 4) return t("common.time.weeksAgo", { weeks });
+	if (months === 1) return t("common.time.monthsAgo", { months: 1 });
+	return t("common.time.monthsAgo", { months });
+}
+
+/**
+ * Format a future date as a relative time string (e.g., "in 2 days", "in 3 months")
+ * Uses i18n keys from common.time namespace
+ */
+export function formatRelativeTimeFuture(
+	dateString: string | null | undefined,
+	t: (key: string, params?: Record<string, unknown>) => string,
+): string {
+	if (!dateString) return t("common.time.never");
+
+	const date = new Date(dateString);
+	const now = new Date();
+	const diff = date.getTime() - now.getTime();
+
+	// If date is in the past, return expired
+	if (diff < 0) return t("common.time.expired");
+
+	const minutes = Math.floor(diff / (1000 * 60));
+	const hours = Math.floor(diff / (1000 * 60 * 60));
+	const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+	const weeks = Math.floor(days / 7);
+	const months = Math.floor(days / 30);
+
+	if (minutes < 1) return t("common.time.now");
+	if (hours < 1) return t("common.time.inMinutes", { minutes });
+	if (hours < 24) return t("common.time.inHours", { hours });
+	if (days === 1) return t("common.time.inDays", { days: 1 });
+	if (days < 7) return t("common.time.inDays", { days });
+	if (weeks === 1) return t("common.time.inWeeks", { weeks: 1 });
+	if (days < 30) return t("common.time.inWeeks", { weeks });
+	if (months === 1) return t("common.time.inMonths", { months: 1 });
+	return t("common.time.inMonths", { months });
+}

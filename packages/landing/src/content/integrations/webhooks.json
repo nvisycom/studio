@@ -1,9 +1,0 @@
-{
-	"icon": "link",
-	"isBrand": false,
-	"version": "v1.0",
-	"status": "Completed",
-	"title": "Webhooks",
-	"category": "Developer",
-	"description": "Real-time event notifications for document processing with configurable endpoints and secure payload delivery for automated workflows."
-}

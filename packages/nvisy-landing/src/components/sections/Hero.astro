@@ -1,0 +1,180 @@
+---
+import type { ButtonProps } from "@/components/types";
+import { getButtonClasses } from "@/utils/buttonStyles";
+import { getBackgroundClass } from "@/utils/backgroundStyles";
+import { Play, ArrowRight, ExternalLink } from "lucide-vue-next";
+
+export interface Props {
+	title?: string;
+	subtitle?: string;
+	description?: string;
+	buttons?: ButtonProps[];
+	centered?: boolean;
+	background?: "solid" | "gradient" | "none";
+	maxWidth?: "sm" | "md" | "lg" | "xl" | "full";
+	titleHighlight?: string;
+	heroImage?: string;
+	heroImageAlt?: string;
+}
+
+const {
+	title = "Enterprise Document",
+	subtitle = "",
+	description = "Turn unstructured documents into structured data with AI-powered precision. Extract, transform, and automate your document workflows at scale.",
+	centered = true,
+	background = "solid",
+	maxWidth = "xl",
+	titleHighlight,
+	heroImage,
+	heroImageAlt = "Hero image",
+	buttons = [
+		{
+			text: "Start Free Trial",
+			href: "/dashboard",
+			variant: "primary",
+		},
+		{
+			text: "Watch Demo",
+			href: "/demo",
+			variant: "secondary",
+		},
+	],
+} = Astro.props;
+
+// Helper function to split title and highlight text
+const getTitleParts = () => {
+	if (!titleHighlight || !title.includes(titleHighlight)) {
+		return { beforeHighlight: title, highlight: "", afterHighlight: "" };
+	}
+	const parts = title.split(titleHighlight);
+	return {
+		beforeHighlight: parts[0],
+		highlight: titleHighlight,
+		afterHighlight: parts[1] || "",
+	};
+};
+
+const titleParts = getTitleParts();
+
+const maxWidthClasses = {
+	sm: "max-w-2xl",
+	md: "max-w-4xl",
+	lg: "max-w-5xl",
+	xl: "max-w-6xl",
+	full: "max-w-none",
+};
+---
+
+<section class={`
+	${getBackgroundClass(background)}
+	py-24 px-12
+	min-h-[20vh] flex items-center
+	${background === 'gradient' ? 'border-b border-neutral-200 dark:border-neutral-800' : ''}
+`}>
+	<div class="container mx-auto px-4 w-full">
+		<div class={`grid ${heroImage ? 'lg:grid-cols-2 gap-12 items-center' : 'grid-cols-1'}`}>
+			<div class={`
+				${centered ? `mx-auto text-center` : ""}
+				${maxWidthClasses[maxWidth]}
+			`}>
+				<slot name="pre-title" />
+
+				{title && (
+					<h1 class="text-4xl md:text-5xl lg:text-6xl font-light leading-tight mb-4 md:mb-6 text-neutral-900 dark:text-white">
+						{titleParts.beforeHighlight}
+						{titleParts.highlight && (
+							<span class="text-blue-600 dark:text-blue-400">
+								{titleParts.highlight}
+							</span>
+						)}
+						{titleParts.afterHighlight}
+						{subtitle && (
+							<span class="block mt-2 text-2xl md:text-3xl lg:text-4xl font-light leading-tight text-neutral-700 dark:text-neutral-300">
+								{subtitle}
+							</span>
+						)}
+					</h1>
+				)}
+
+				<slot name="title" />
+
+				{description && (
+					<p class={`
+						text-lg md:text-xl mb-6 md:mb-8 leading-relaxed text-neutral-600 dark:text-neutral-400
+						${centered ? "max-w-3xl mx-auto" : "max-w-3xl"}
+					`}>
+						{description}
+					</p>
+				)}
+
+				<slot name="description" />
+
+				{(buttons.length > 0 || Astro.slots.has('buttons')) && (
+					<div class={`
+						flex flex-col sm:flex-row gap-4 mb-8 md:mb-12
+						${centered ? "justify-center" : "justify-start"}
+					`}>
+						{buttons.map((button) => {
+							return button.href ? (
+								<a
+									href={button.href}
+									class={getButtonClasses(button.variant || "primary")}
+									aria-label={button.text}
+									{...(button.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+								>
+									{button.icon && (
+										<span class="flex-shrink-0">
+											{button.icon === "play" && <Play class="w-5 h-5" />}
+											{button.icon === "arrow" && <ArrowRight class="w-5 h-5" />}
+											{button.icon === "external" && <ExternalLink class="w-5 h-5" />}
+										</span>
+									)}
+									{button.text}
+								</a>
+							) : (
+								<button
+									class={getButtonClasses(button.variant || "primary")}
+									onclick={button.onClick}
+									aria-label={button.text}
+								>
+									{button.icon && (
+										<span class="flex-shrink-0">
+											{button.icon === "play" && <Play class="w-5 h-5" />}
+											{button.icon === "arrow" && <ArrowRight class="w-5 h-5" />}
+											{button.icon === "external" && <ExternalLink class="w-5 h-5" />}
+										</span>
+									)}
+									{button.text}
+								</button>
+							);
+						})}
+
+						<slot name="buttons" />
+					</div>
+				)}
+
+				<slot name="stats" />
+				<slot name="content" />
+			</div>
+
+			{heroImage && (
+				<div class={centered ? "flex justify-center" : ""}>
+					<div class="relative">
+						<img
+							src={heroImage}
+							alt={heroImageAlt}
+							class="w-full h-auto rounded-lg shadow-2xl"
+							loading="eager"
+						/>
+						<slot name="hero-image-overlay" />
+					</div>
+				</div>
+			)}
+
+			<slot name="media" />
+			<slot name="stats" />
+		</div>
+
+		<slot name="footer" />
+	</div>
+</section>

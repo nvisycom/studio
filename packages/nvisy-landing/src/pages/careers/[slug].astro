@@ -1,0 +1,175 @@
+---
+import { Layout } from "@/layouts";
+import { getCollection, type CollectionEntry } from "astro:content";
+import { CTA } from "@/components";
+
+export async function getStaticPaths() {
+	try {
+		const jobEntries = await getCollection("jobs");
+		return jobEntries
+			.filter((job) => job.data.published !== false)
+			.map((entry) => ({
+				params: { slug: entry.slug },
+				props: { entry },
+			}));
+	} catch (error: unknown) {
+		// Return empty array if no jobs collection exists.
+		console.error(`Error fetching jobs collection: ${error}`);
+		return [];
+	}
+}
+
+export interface Props {
+	entry: CollectionEntry<"jobs">;
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+
+// Get all jobs for related positions
+const allJobs = (await getCollection("jobs"))
+	.filter((job) => job.data.published !== false && job.slug !== entry.slug)
+	.slice(0, 2);
+
+// TODO: Move apply button href into a variable
+---
+
+<Layout title={`${entry.data.title} - Careers`} description={entry.data.description}>
+  <div class="bg-white dark:bg-black min-h-screen">
+    <!-- Job Header -->
+    <div class="container mx-auto px-4 py-8">
+      <div class="max-w-4xl mx-auto">
+        <div>
+          <!-- Department & Meta -->
+          <div class="flex flex-wrap items-center gap-4 mb-6">
+            <span class="text-sm font-medium text-white bg-black dark:bg-white dark:text-black px-3 py-1 rounded-full">
+              {entry.data.department}
+            </span>
+            <div class="flex items-center gap-3">
+              <span class="text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 px-3 py-1 rounded-full">
+                {entry.data.location}
+              </span>
+              <span class="text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 px-3 py-1 rounded-full">
+                {entry.data.region}
+              </span>
+              <span class="text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 px-3 py-1 rounded-full">
+                {entry.data.type}
+              </span>
+            </div>
+          </div>
+
+          <!-- Title -->
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-light text-neutral-900 dark:text-white leading-tight mb-6">
+            {entry.data.title}
+          </h1>
+
+          <!-- Description -->
+          <p class="text-xl md:text-2xl text-neutral-600 dark:text-neutral-300 leading-relaxed mb-8 max-w-3xl">
+            {entry.data.description}
+          </p>
+
+          <!-- Apply Button -->
+          <div class="border-t border-neutral-200 dark:border-neutral-700 pt-6">
+            <a
+              href={`mailto:careers@nvisy.com?subject=Application for ${entry.data.title}&body=Hi there,%0D%0A%0D%0AI'm interested in the ${entry.data.title} position.%0D%0A%0D%0AThanks!`}
+              class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-lg text-white bg-black dark:bg-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all duration-200 shadow-sm hover:shadow-md"
+            >
+              Apply for this Position
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Job Content -->
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <!-- Requirements -->
+        <div class="mb-16">
+          <h2 class="text-2xl font-light text-neutral-900 dark:text-white mb-6">Requirements</h2>
+          <ul class="space-y-3">
+            {entry.data.requirements.map((req: string) => (
+              <li class="text-neutral-700 dark:text-neutral-300 flex items-start">
+                <span class="text-neutral-900 dark:text-white mr-3 mt-1 flex-shrink-0">✓</span>
+                <span>{req}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Full Job Description -->
+        <div class="border-t border-neutral-200 dark:border-neutral-700 pt-12 mb-16">
+          <article class="max-w-none">
+            <div class="prose prose-xl max-w-none mx-auto leading-loose text-neutral-800 dark:text-neutral-200 prose-headings:text-neutral-900 dark:prose-headings:text-neutral-100 prose-strong:text-neutral-900 dark:prose-strong:text-neutral-100" style="font-size: 1.125rem; line-height: 1.8;">
+              <Content />
+            </div>
+          </article>
+        </div>
+
+        <!-- Apply Section -->
+        <div class="pt-2 mb-2">
+          <CTA
+            title="Ready to Apply?"
+            description="Think you'd be a great fit for this role? We'd love to hear from you!"
+            background="none"
+            buttons={[
+              {
+                text: "Apply Now",
+                href: `mailto:careers@nvisy.com?subject=Application for ${entry.data.title}&body=Hi there,%0D%0A%0D%0AI'm interested in the ${entry.data.title} position.%0D%0A%0D%0AThanks!`,
+                variant: "primary"
+              },
+              {
+                text: "View All Positions",
+                href: "/careers",
+                variant: "secondary"
+              }
+            ]}
+          />
+        </div>
+
+        <!-- Other Positions -->
+        {allJobs.length > 0 && (
+          <div class="border-t border-neutral-200 dark:border-neutral-700 pt-20">
+            <h2 class="text-2xl font-light text-neutral-900 dark:text-white mb-8">Other Open Positions</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {allJobs.map(job => (
+                <a
+                  href={`/careers/${job.slug}`}
+                  class="block bg-white dark:bg-black border border-neutral-200 dark:border-neutral-700 rounded-xl p-6 hover:shadow-lg hover:border-neutral-300 dark:hover:border-neutral-600 transition-all duration-300"
+                >
+                  <div class="flex flex-wrap items-center gap-4 mb-4">
+                    <span class="text-sm font-medium text-white bg-black dark:bg-white dark:text-black px-3 py-1 rounded-full">
+                      {job.data.department}
+                    </span>
+                    <div class="flex items-center gap-3">
+                      <span class="text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 px-3 py-1 rounded-full">
+                        {job.data.location}
+                      </span>
+                      <span class="text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 px-3 py-1 rounded-full">
+                        {job.data.region}
+                      </span>
+                      <span class="text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 px-3 py-1 rounded-full">
+                        {job.data.type}
+                      </span>
+                    </div>
+                  </div>
+
+                  <h3 class="text-lg font-light text-neutral-900 dark:text-white mb-4">
+                    {job.data.title}
+                  </h3>
+
+                  <p class="text-neutral-700 dark:text-neutral-300 text-sm line-clamp-2">
+                    {job.data.description}
+                  </p>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+
+    <!-- Extra spacing before footer -->
+    <div class="pb-16"></div>
+  </div>
+</Layout>
