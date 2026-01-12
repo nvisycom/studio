@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted } from "vue";
 import * as THREE from "three";
 
 interface Props {
-	maskSelector?: string;
+  maskSelector?: string;
 }
 
 const props = defineProps<Props>();
@@ -183,163 +183,163 @@ const fragmentShader = `
 `;
 
 function updateMaskRect() {
-	if (!props.maskSelector || !container.value) {
-		maskRect = null;
-		return;
-	}
+  if (!props.maskSelector || !container.value) {
+    maskRect = null;
+    return;
+  }
 
-	const maskEl = document.querySelector(props.maskSelector);
-	if (!maskEl) return;
+  const maskEl = document.querySelector(props.maskSelector);
+  if (!maskEl) return;
 
-	const containerRect = container.value.getBoundingClientRect();
-	const elRect = maskEl.getBoundingClientRect();
+  const containerRect = container.value.getBoundingClientRect();
+  const elRect = maskEl.getBoundingClientRect();
 
-	maskRect = new DOMRect(
-		(elRect.left - containerRect.left) / containerRect.width,
-		1 - (elRect.bottom - containerRect.top) / containerRect.height,
-		elRect.width / containerRect.width,
-		elRect.height / containerRect.height,
-	);
+  maskRect = new DOMRect(
+    (elRect.left - containerRect.left) / containerRect.width,
+    1 - (elRect.bottom - containerRect.top) / containerRect.height,
+    elRect.width / containerRect.width,
+    elRect.height / containerRect.height,
+  );
 }
 
 function checkDarkMode() {
-	isDarkMode = document.documentElement.classList.contains("dark");
+  isDarkMode = document.documentElement.classList.contains("dark");
 }
 
 function init() {
-	if (!container.value) return;
+  if (!container.value) return;
 
-	const rect = container.value.getBoundingClientRect();
-	checkDarkMode();
-	updateMaskRect();
+  const rect = container.value.getBoundingClientRect();
+  checkDarkMode();
+  updateMaskRect();
 
-	scene = new THREE.Scene();
-	camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  scene = new THREE.Scene();
+  camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
-	renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-	renderer.setSize(rect.width, rect.height);
-	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-	container.value.appendChild(renderer.domElement);
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(rect.width, rect.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  container.value.appendChild(renderer.domElement);
 
-	material = new THREE.ShaderMaterial({
-		vertexShader,
-		fragmentShader,
-		uniforms: {
-			uResolution: { value: new THREE.Vector2(rect.width, rect.height) },
-			uMouse: { value: new THREE.Vector2(0.5, 0.5) },
-			uLastMouse: { value: new THREE.Vector2(0.5, 0.5) },
-			uTime: { value: 0 },
-			uHover: { value: 0 },
-			uFlyAway: { value: 0 },
-			uDarkMode: { value: isDarkMode ? 1 : 0 },
-			uMask: { value: new THREE.Vector4(0, 0, 0, 0) },
-		},
-	});
+  material = new THREE.ShaderMaterial({
+    vertexShader,
+    fragmentShader,
+    uniforms: {
+      uResolution: { value: new THREE.Vector2(rect.width, rect.height) },
+      uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+      uLastMouse: { value: new THREE.Vector2(0.5, 0.5) },
+      uTime: { value: 0 },
+      uHover: { value: 0 },
+      uFlyAway: { value: 0 },
+      uDarkMode: { value: isDarkMode ? 1 : 0 },
+      uMask: { value: new THREE.Vector4(0, 0, 0, 0) },
+    },
+  });
 
-	const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
-	scene.add(mesh);
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+  scene.add(mesh);
 }
 
 function resize() {
-	if (!container.value || !renderer || !material) return;
-	const rect = container.value.getBoundingClientRect();
-	renderer.setSize(rect.width, rect.height);
-	material.uniforms.uResolution.value.set(rect.width, rect.height);
-	updateMaskRect();
+  if (!container.value || !renderer || !material) return;
+  const rect = container.value.getBoundingClientRect();
+  renderer.setSize(rect.width, rect.height);
+  material.uniforms.uResolution.value.set(rect.width, rect.height);
+  updateMaskRect();
 }
 
 function animate() {
-	if (!renderer || !scene || !camera || !material) return;
+  if (!renderer || !scene || !camera || !material) return;
 
-	mouse.x += (targetMouse.x - mouse.x) * 0.08;
-	mouse.y += (targetMouse.y - mouse.y) * 0.08;
+  mouse.x += (targetMouse.x - mouse.x) * 0.08;
+  mouse.y += (targetMouse.y - mouse.y) * 0.08;
 
-	if (wasHovering && !isHovering) {
-		lastMouse.x = mouse.x;
-		lastMouse.y = mouse.y;
-		flyAwayProgress = 0.01;
-	}
-	wasHovering = isHovering;
+  if (wasHovering && !isHovering) {
+    lastMouse.x = mouse.x;
+    lastMouse.y = mouse.y;
+    flyAwayProgress = 0.01;
+  }
+  wasHovering = isHovering;
 
-	hoverStrength += ((isHovering ? 1 : 0) - hoverStrength) * 0.05;
+  hoverStrength += ((isHovering ? 1 : 0) - hoverStrength) * 0.05;
 
-	if (!isHovering && flyAwayProgress > 0 && flyAwayProgress < 1) {
-		flyAwayProgress += 0.02;
-	} else if (isHovering) {
-		flyAwayProgress *= 0.95;
-	}
+  if (!isHovering && flyAwayProgress > 0 && flyAwayProgress < 1) {
+    flyAwayProgress += 0.02;
+  } else if (isHovering) {
+    flyAwayProgress *= 0.95;
+  }
 
-	checkDarkMode();
+  checkDarkMode();
 
-	material.uniforms.uMouse.value.set(mouse.x, mouse.y);
-	material.uniforms.uLastMouse.value.set(lastMouse.x, lastMouse.y);
-	material.uniforms.uTime.value = performance.now() * 0.001;
-	material.uniforms.uHover.value = hoverStrength;
-	material.uniforms.uFlyAway.value = flyAwayProgress;
-	material.uniforms.uDarkMode.value = isDarkMode ? 1 : 0;
+  material.uniforms.uMouse.value.set(mouse.x, mouse.y);
+  material.uniforms.uLastMouse.value.set(lastMouse.x, lastMouse.y);
+  material.uniforms.uTime.value = performance.now() * 0.001;
+  material.uniforms.uHover.value = hoverStrength;
+  material.uniforms.uFlyAway.value = flyAwayProgress;
+  material.uniforms.uDarkMode.value = isDarkMode ? 1 : 0;
 
-	if (maskRect) {
-		material.uniforms.uMask.value.set(
-			maskRect.x,
-			maskRect.y,
-			maskRect.width,
-			maskRect.height,
-		);
-	}
+  if (maskRect) {
+    material.uniforms.uMask.value.set(
+      maskRect.x,
+      maskRect.y,
+      maskRect.width,
+      maskRect.height,
+    );
+  }
 
-	renderer.render(scene, camera);
-	animationId = requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+  animationId = requestAnimationFrame(animate);
 }
 
 function handleMouseMove(e: MouseEvent) {
-	if (!container.value) return;
-	const rect = container.value.getBoundingClientRect();
-	const x = e.clientX - rect.left;
-	const y = e.clientY - rect.top;
+  if (!container.value) return;
+  const rect = container.value.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
 
-	isHovering = x >= 0 && x <= rect.width && y >= 0 && y <= rect.height;
-	if (isHovering) {
-		targetMouse.x = x / rect.width;
-		targetMouse.y = 1 - y / rect.height;
-	}
+  isHovering = x >= 0 && x <= rect.width && y >= 0 && y <= rect.height;
+  if (isHovering) {
+    targetMouse.x = x / rect.width;
+    targetMouse.y = 1 - y / rect.height;
+  }
 }
 
 function handleMouseLeave() {
-	isHovering = false;
+  isHovering = false;
 }
 
 function cleanup() {
-	window.removeEventListener("resize", resize);
-	document.removeEventListener("mousemove", handleMouseMove);
-	document.removeEventListener("mouseleave", handleMouseLeave);
-	darkModeObserver?.disconnect();
-	cancelAnimationFrame(animationId);
+  window.removeEventListener("resize", resize);
+  document.removeEventListener("mousemove", handleMouseMove);
+  document.removeEventListener("mouseleave", handleMouseLeave);
+  darkModeObserver?.disconnect();
+  cancelAnimationFrame(animationId);
 
-	if (renderer && container.value) {
-		container.value.removeChild(renderer.domElement);
-		renderer.dispose();
-	}
-	material?.dispose();
-	scene?.traverse((obj) => {
-		if (obj instanceof THREE.Mesh) obj.geometry.dispose();
-	});
+  if (renderer && container.value) {
+    container.value.removeChild(renderer.domElement);
+    renderer.dispose();
+  }
+  material?.dispose();
+  scene?.traverse((obj) => {
+    if (obj instanceof THREE.Mesh) obj.geometry.dispose();
+  });
 }
 
 let darkModeObserverInstance: MutationObserver | null = null;
 
 onMounted(() => {
-	init();
-	window.addEventListener("resize", resize);
-	document.addEventListener("mousemove", handleMouseMove);
-	document.addEventListener("mouseleave", handleMouseLeave);
+  init();
+  window.addEventListener("resize", resize);
+  document.addEventListener("mousemove", handleMouseMove);
+  document.addEventListener("mouseleave", handleMouseLeave);
 
-	darkModeObserverInstance = new MutationObserver(checkDarkMode);
-	darkModeObserverInstance.observe(document.documentElement, {
-		attributes: true,
-		attributeFilter: ["class"],
-	});
+  darkModeObserverInstance = new MutationObserver(checkDarkMode);
+  darkModeObserverInstance.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"],
+  });
 
-	animate();
+  animate();
 });
 
 onUnmounted(cleanup);
