@@ -21,8 +21,8 @@
 		"@nvisy/config": "file:../nvisy-config",
 		"@nvisy/sdk": "^0.3.0",
 		"@nvisy/shared": "file:../nvisy-shared",
-		"@pinia/colada": "^0.19.0",
-		"@pinia/colada-nuxt": "^0.2.3",
+		"@pinia/colada": "^0.21.1",
+		"@pinia/colada-nuxt": "^0.3.0",
 		"@pinia/nuxt": "^0.11.2",
 		"@tailwindcss/vite": "^4.1.14",
 		"@tanstack/vue-table": "^8.21.3",
@@ -33,7 +33,7 @@
 		"@vueuse/core": "^13.9.0",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
-		"lucide-vue-next": "^0.536.0",
+		"lucide-vue-next": "^0.562.0",
 		"nuxt": "^4.2.1",
 		"pinia": "^3.0.3",
 		"reka-ui": "^2.7.0",
@@ -46,6 +46,6 @@
 		"vue-sonner": "^2.0.9"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.2.5"
+		"@biomejs/biome": "2.3.11"
 	}
 }
