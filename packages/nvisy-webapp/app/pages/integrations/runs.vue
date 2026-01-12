@@ -50,6 +50,8 @@ import { RunDetailsModal } from "~/components/pages/integrations";
 
 const { t } = useI18n();
 
+useHead({ title: "Integration Runs" });
+
 definePageMeta({
 	pageCategory: "Integrations",
 });
@@ -232,7 +234,7 @@ function formatDuration(
             <div class="flex items-center justify-between">
               <div>
                 <CardTitle
-                  class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
+                  class="text-sm font-light tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
                   >{{ t("integrations.runs.title") }}</CardTitle
                 >
                 <CardDescription>

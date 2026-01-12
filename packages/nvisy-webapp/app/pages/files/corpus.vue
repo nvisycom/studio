@@ -26,6 +26,8 @@ import {
 } from "@/components/pages/files";
 import type { CorpusDocument } from "@/components/pages/files/CorpusTable.vue";
 
+useHead({ title: "Corpus" });
+
 definePageMeta({
 	pageCategory: "Files",
 });

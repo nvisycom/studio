@@ -135,8 +135,14 @@
 	* {
 		@apply border-border outline-ring/50;
 	}
+	html,
 	body {
+		font-family: "Barlow", ui-sans-serif, system-ui, sans-serif;
 		@apply bg-background text-foreground;
+	}
+	code,
+	pre {
+		font-family: "JetBrains", ui-monospace, monospace;
 	}
 	button:not(:disabled),
 	[role="button"]:not(:disabled) {

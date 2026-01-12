@@ -12,6 +12,8 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 
+useHead({ title: "Reset Password" });
+
 definePageMeta({
 	layout: "auth",
 });
@@ -107,12 +109,12 @@ function toggleConfirmPasswordVisibility(): void {
     <!-- Header -->
     <div class="mb-8">
       <h1
-        class="text-4xl md:text-5xl font-light leading-tight text-neutral-900 dark:text-white"
+        class="text-4xl md:text-5xl font-normal leading-tight text-black dark:text-white"
       >
         {{ isSuccess ? "Password reset successful" : "Create new password" }}
       </h1>
       <p
-        class="text-lg md:text-xl leading-relaxed text-neutral-600 dark:text-neutral-400"
+        class="text-lg md:text-xl leading-relaxed text-neutral-700 dark:text-neutral-300 font-medium"
       >
         {{
           isSuccess
@@ -125,7 +127,7 @@ function toggleConfirmPasswordVisibility(): void {
     <!-- Reset Password Card -->
     <Card class="border-neutral-200 dark:border-neutral-800">
       <CardHeader class="space-y-0 pb-4">
-        <CardTitle class="text-2xl font-light text-neutral-900 dark:text-white">
+        <CardTitle class="text-2xl font-normal text-black dark:text-white">
           {{ isSuccess ? "All set!" : "Reset password" }}
         </CardTitle>
         <CardDescription

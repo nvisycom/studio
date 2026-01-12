@@ -25,6 +25,8 @@ import { IntegrationCard } from "~/components/pages/integrations";
 
 const { t } = useI18n();
 
+useHead({ title: "Explore Integrations" });
+
 definePageMeta({
 	pageCategory: "Integrations",
 });
@@ -559,7 +561,7 @@ function notifyMe(_id: string | number) {
           {{ t("integrations.explore.noResults") }}
         </p>
         <p
-          class="font-light text-sm text-neutral-500 dark:text-neutral-400 mb-4"
+          class="font-light text-sm text-neutral-600 dark:text-neutral-400 mb-4"
         >
           {{ t("integrations.explore.noResultsHint") }}
         </p>

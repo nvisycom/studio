@@ -49,6 +49,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+useHead({ title: "API Tokens" });
+
 definePageMeta({
 	pageCategory: "Settings",
 });
@@ -239,7 +241,7 @@ async function renameToken(newName: string) {
       <Card class="mb-8 py-0 pt-6 rounded-xl">
         <CardHeader>
           <CardTitle
-            class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
+            class="text-sm font-light tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
             >{{ t("tokens.create.title") }}</CardTitle
           >
           <CardDescription>{{
@@ -308,7 +310,7 @@ async function renameToken(newName: string) {
       <Card class="overflow-hidden py-0 pt-6 rounded-xl">
         <CardHeader>
           <CardTitle
-            class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
+            class="text-sm font-light tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
             >{{ t("tokens.list.title") }}</CardTitle
           >
           <CardDescription>

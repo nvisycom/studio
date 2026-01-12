@@ -17,8 +17,7 @@ legalEntries.sort((a, b) => a.data.title.localeCompare(b.data.title));
 ---
 
 <Layout title="Legal" description="Legal documents and policies for our platform and services.">
-  <div class="bg-white dark:bg-black min-h-screen">
-    <!-- Hero Section -->
+  <!-- Hero Section -->
     <Hero
       title="Legal Information"
       description="Access our legal documents, policies, and terms that govern our services."
@@ -57,21 +56,21 @@ legalEntries.sort((a, b) => a.data.title.localeCompare(b.data.title));
       </div>
     </div>
 
-    <CTA
-      title="Questions about our legal policies?"
-      description="If you have questions about our legal documents or need clarification on our policies, please don't hesitate to reach out to our legal team."
-      background="solid"
-      buttons={[
-        {
-          text: "Contact Us",
-          href: "/contact",
-          variant: "primary"
-        },
-        {
-          text: "Email Us",
-          href: "mailto:hello@nvisy.com",
-          variant: "secondary"
-        }
-      ]}
-    />
+  <CTA
+    title="Questions about our legal policies?"
+    description="If you have questions about our legal documents or need clarification on our policies, please don't hesitate to reach out to our legal team."
+    background="solid"
+    buttons={[
+      {
+        text: "Contact Us",
+        href: "/contact",
+        variant: "primary"
+      },
+      {
+        text: "Email Us",
+        href: "mailto:hello@nvisy.com",
+        variant: "secondary"
+      }
+    ]}
+  />
 </Layout>

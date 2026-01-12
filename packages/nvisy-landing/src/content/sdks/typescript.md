@@ -1,6 +1,6 @@
 ---
-name: JavaScript
-language: javascript
+name: TypeScript
+language: typescript
 filename: extract-document
 extension: ts
 githubUrl: https://github.com/nvisycom/sdk-ts

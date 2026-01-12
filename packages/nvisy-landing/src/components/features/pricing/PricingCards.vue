@@ -3,7 +3,7 @@ import { plans } from "./pricing-data";
 import { usePricing } from "./usePricing";
 import { Check } from "lucide-vue-next";
 
-const { basicPrice, professionalPrice, formatNumber } = usePricing();
+const { basicPrice, professionalPrice } = usePricing();
 </script>
 
 <template>
@@ -41,31 +41,25 @@ const { basicPrice, professionalPrice, formatNumber } = usePricing();
             {{ plan.description }}
           </p>
 
-          <!-- Pages included info -->
-          <template v-if="plan.pagesIncluded">
-            <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4 mb-6">
-              <div class="text-sm text-neutral-700 dark:text-neutral-300">
-                <div class="font-medium mb-1">
-                  {{ formatNumber(plan.pagesIncluded) }} pages/month
-                </div>
-                <div class="text-neutral-500 dark:text-neutral-400">
-                  included in plan
-                </div>
+          <!-- Storage & Queries info -->
+          <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4 mb-6">
+            <div
+              class="text-sm text-neutral-700 dark:text-neutral-300 space-y-2"
+            >
+              <div class="flex justify-between">
+                <span class="text-neutral-500 dark:text-neutral-400"
+                  >Storage</span
+                >
+                <span class="font-medium">{{ plan.storage }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-neutral-500 dark:text-neutral-400"
+                  >Queries/month</span
+                >
+                <span class="font-medium">{{ plan.queries }}</span>
               </div>
             </div>
-          </template>
-
-          <!-- Enterprise Info -->
-          <template v-else-if="plan.price === 'custom'">
-            <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4 mb-6">
-              <div class="text-sm text-neutral-700 dark:text-neutral-300">
-                <div class="font-medium mb-1">Unlimited pages</div>
-                <div class="text-neutral-500 dark:text-neutral-400">
-                  Custom volume pricing available
-                </div>
-              </div>
-            </div>
-          </template>
+          </div>
         </div>
 
         <!-- Features List -->

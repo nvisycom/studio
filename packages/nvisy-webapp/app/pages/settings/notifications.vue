@@ -15,6 +15,8 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 
+useHead({ title: "Notifications" });
+
 definePageMeta({
 	pageCategory: "Settings",
 });
@@ -272,7 +274,7 @@ async function saveEventSettings() {
                   <p class="font-medium text-neutral-900 dark:text-white">
                     {{ t("settings.notifications.channels.web.label") }}
                   </p>
-                  <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                  <p class="text-sm text-neutral-700 dark:text-neutral-400">
                     {{ t("settings.notifications.channels.web.description") }}
                   </p>
                 </div>
@@ -283,7 +285,7 @@ async function saveEventSettings() {
                   <p class="font-medium text-neutral-900 dark:text-white">
                     {{ t("settings.notifications.channels.email.label") }}
                   </p>
-                  <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                  <p class="text-sm text-neutral-700 dark:text-neutral-400">
                     {{ t("settings.notifications.channels.email.description") }}
                   </p>
                 </div>
@@ -298,7 +300,7 @@ async function saveEventSettings() {
           <CardFooter
             class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
           >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
+            <p class="text-sm text-neutral-700 dark:text-neutral-400">
               {{ t("settings.notifications.channels.footer") }}
             </p>
           </CardFooter>
@@ -392,7 +394,7 @@ async function saveEventSettings() {
           <CardFooter
             class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
           >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
+            <p class="text-sm text-neutral-700 dark:text-neutral-400">
               {{ t("settings.notifications.events.footer") }}
             </p>
             <Button

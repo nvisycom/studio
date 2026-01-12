@@ -78,45 +78,45 @@ import type { CollectionEntry } from "astro:content";
 import { FileText, Clock, Calendar, CircleCheck } from "lucide-vue-next";
 
 const icons = import.meta.glob("@/assets/integration/*.svg", {
-  eager: true,
-  query: "?url",
-  import: "default",
+	eager: true,
+	query: "?url",
+	import: "default",
 }) as Record<string, string>;
 
 interface Props {
-  integrations: CollectionEntry<"integrations">[];
+	integrations: CollectionEntry<"integrations">[];
 }
 
 const props = defineProps<Props>();
 const { integrations } = props;
 
 const getIconUrl = (iconName: string) => {
-  const key = Object.keys(icons).find((k) => k.includes(`/${iconName}.svg`));
-  return key ? icons[key] : null;
+	const key = Object.keys(icons).find((k) => k.includes(`/${iconName}.svg`));
+	return key ? icons[key] : null;
 };
 
 // Status icon mapping
 const getStatusIcon = (status: string) => {
-  const statusIconMap: Record<string, any> = {
-    Completed: CircleCheck,
-    "In Progress": Clock,
-    Planned: Calendar,
-  };
+	const statusIconMap: Record<string, any> = {
+		Completed: CircleCheck,
+		"In Progress": Clock,
+		Planned: Calendar,
+	};
 
-  return statusIconMap[status] || Clock;
+	return statusIconMap[status] || Clock;
 };
 
 // Status text color classes - less prominent
 const getStatusTextClasses = (status: string) => {
-  switch (status.toLowerCase()) {
-    case "completed":
-      return "text-neutral-600 dark:text-neutral-400";
-    case "in progress":
-      return "text-neutral-500 dark:text-neutral-500";
-    case "planned":
-      return "text-neutral-500 dark:text-neutral-500";
-    default:
-      return "text-neutral-600 dark:text-neutral-400";
-  }
+	switch (status.toLowerCase()) {
+		case "completed":
+			return "text-neutral-600 dark:text-neutral-400";
+		case "in progress":
+			return "text-neutral-500 dark:text-neutral-500";
+		case "planned":
+			return "text-neutral-500 dark:text-neutral-500";
+		default:
+			return "text-neutral-600 dark:text-neutral-400";
+	}
 };
 </script>

@@ -30,6 +30,8 @@ import {
 
 const { t } = useI18n();
 
+useHead({ title: "Files" });
+
 definePageMeta({
 	pageCategory: "Files",
 });
@@ -473,7 +475,7 @@ function handleGridScroll(event: Event) {
             {{ t("files.table.empty.title") }}
           </p>
           <p
-            class="font-light text-sm text-neutral-500 dark:text-neutral-400 mb-4"
+            class="font-light text-sm text-neutral-600 dark:text-neutral-400 mb-4"
           >
             {{
               hasFilters

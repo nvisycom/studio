@@ -22,6 +22,8 @@ import VlmCacheHitsChart from "~/components/pages/analytics/VlmCacheHitsChart.vu
 import ErrorRateChart from "~/components/pages/analytics/ErrorRateChart.vue";
 import ResponseTimeChart from "~/components/pages/analytics/ResponseTimeChart.vue";
 
+useHead({ title: "AI Analytics" });
+
 definePageMeta({
 	pageCategory: "Analytics",
 });

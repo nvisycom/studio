@@ -1,17 +1,11 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import {
-	Hero,
-	Review,
-	Features,
-	Testimonials,
-	CTA,
-	SocialProof,
-	FAQ,
-} from "@/components";
-import Connect from "@/components/sections/Connect.astro";
+import { Hero, Features, Testimonials, CTA } from "@/components";
 import Industries from "@/components/sections/Industries.astro";
-import Blogposts from "@/components/sections/Blogposts.astro";
+import Stats from "@/components/sections/Stats.astro";
+import Security from "@/components/sections/Security.astro";
+import HowItWorks from "@/components/sections/HowItWorks.astro";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 // SEO and metadata
 const pageTitle = "Home";
@@ -26,35 +20,55 @@ const pageKeywords =
 	description={pageDescription}
 	keywords={pageKeywords}
 >
-	<main class="overflow-hidden">
-		<!-- Hero Section - Immediate Impact -->
+	<main>
+		<!-- Hero Section -->
 		<Hero
 			title="Turn Documents Into Useful Data"
-			description="Extract, structure, and transform information from any document with AI-powered precision. From data extraction to compliance-ready processing, automate your document workflows at scale."
+			titleHighlight="Useful Data"
+			description="Transform any document into structured, actionable data with AI-powered precision. Extract insights and automate workflows at scale."
+			background="gradient"
 			buttons={[
 				{
-					text: "Try for Free",
-					href: "/pricing",
-					variant: "primary"
+					text: "Start Free",
+					href: "https://app.nvisy.com/auth/signup",
+					variant: "primary",
 				},
 				{
 					text: "Request a Demo",
 					href: "/contact",
-					variant: "secondary"
-				}
+					variant: "secondary",
+				},
 			]}
+		>
+			<Fragment slot="media">
+				<div class="max-w-5xl mx-auto mb-10">
+					<div id="hero-screenshot" class="rounded-2xl overflow-hidden border border-neutral-200/50 dark:border-neutral-800/50 shadow-2xl bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm relative z-20">
+						<AspectRatio ratio={16 / 9}>
+							<img
+								src="/images/dashboard-screenshot.png"
+								alt="Nvisy Dashboard - Document Processing Interface"
+								class="w-full h-full object-cover"
+								loading="eager"
+							/>
+						</AspectRatio>
+					</div>
+				</div>
+			</Fragment>
+		</Hero>
+
+		<!-- Stats Section -->
+		<Stats
+			stats={[
+				{ value: "99.5%", label: "Accuracy Rate" },
+				{ value: "10x", label: "Faster Processing" },
+				{ value: "500+", label: "Companies Trust Us" },
+				{ value: "1M+", label: "Documents Processed" },
+			]}
+			padding="md"
 		/>
 
-		<!-- Social Proof - Clients -->
-		<SocialProof
-			title="Trusted by Industry Leaders"
-			subtitle="Join hundreds of companies transforming their document workflows"
-		/>
-
-		<!-- Review Section - How It Works with Screenshots -->
-		<Review
-			description="Four simple steps from upload to structured, actionable data. See our intuitive dashboard in action."
-		/>
+		<!-- How It Works Section -->
+		<HowItWorks />
 
 		<!-- Features Section - Core Value Props -->
 		<Features
@@ -76,42 +90,25 @@ const pageKeywords =
 			description="Join hundreds of companies that trust Nvisy to transform their document workflows."
 		/>
 
-		<!-- Connect Section - Integrations & Webhooks -->
-		<Connect
-			title="Connect Your Workflow"
-			description="Seamlessly integrate Nvisy into your existing infrastructure with powerful APIs and webhooks."
-		/>
+		<!-- Security & Compliance -->
+		<Security />
 
-		<!-- Latest Blog Posts Section -->
-		<Blogposts
-			title="Latest from Our Blog"
-			description="Stay updated with insights, tutorials, and product announcements from our team"
-		/>
-
-		<!-- FAQ Section - Answer Objections -->
-		<FAQ
-			title="Common Questions"
-			description="Everything you need to know about transforming your documents with Nvisy"
-			category="general"
-			featured={true}
-		/>
-
-		<!-- Final CTA - Strong Close -->
+		<!-- Final CTA -->
 		<CTA
-			title="Ready to Unlock Your Document Data?"
+			title="Ready to Get Started?"
 			description="Join 500+ companies already using Nvisy. Start with 100 free pages, no credit card required."
 			background="gradient"
 			buttons={[
 				{
-					text: "Start Free Trial",
-					href: "/pricing",
-					variant: "primary"
+					text: "Start Free",
+					href: "https://app.nvisy.com/auth/signup",
+					variant: "primary",
 				},
 				{
 					text: "Talk to Sales",
 					href: "/contact",
-					variant: "secondary"
-				}
+					variant: "secondary",
+				},
 			]}
 		/>
 	</main>

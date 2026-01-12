@@ -1,8 +1,13 @@
 ---
 import type { ButtonProps } from "@/components/types";
 import { getButtonClasses } from "@/utils/buttonStyles";
-import { getBackgroundClass } from "@/utils/backgroundStyles";
+import {
+	getBackgroundClass,
+	type BackgroundVariant,
+} from "@/utils/backgroundStyles";
 import { Play, ArrowRight, ExternalLink } from "lucide-vue-next";
+import GradientShader from "@/components/effects/GradientShader.vue";
+import TextShimmer from "@/components/effects/TextShimmer.vue";
 
 export interface Props {
 	title?: string;
@@ -10,7 +15,7 @@ export interface Props {
 	description?: string;
 	buttons?: ButtonProps[];
 	centered?: boolean;
-	background?: "solid" | "gradient" | "none";
+	background?: BackgroundVariant;
 	maxWidth?: "sm" | "md" | "lg" | "xl" | "full";
 	titleHighlight?: string;
 	heroImage?: string;
@@ -63,52 +68,73 @@ const maxWidthClasses = {
 	xl: "max-w-6xl",
 	full: "max-w-none",
 };
+
+const isGradient = background === "gradient";
 ---
 
 <section class={`
-	${getBackgroundClass(background)}
-	py-24 px-12
-	min-h-[20vh] flex items-center
-	${background === 'gradient' ? 'border-b border-neutral-200 dark:border-neutral-800' : ''}
+	${isGradient ? '' : getBackgroundClass(background)}
+	min-h-[20vh]
+	${isGradient ? 'relative' : 'py-12 md:py-16 px-4 flex items-center'}
 `}>
-	<div class="container mx-auto px-4 w-full">
-		<div class={`grid ${heroImage ? 'lg:grid-cols-2 gap-12 items-center' : 'grid-cols-1'}`}>
+	{isGradient && <GradientShader client:load maskSelector="#hero-screenshot" />}
+
+	<div class={`container mx-auto px-4 w-full relative z-10 ${isGradient ? 'py-12 md:py-16' : ''}`}>
+			<div class={`grid ${heroImage ? 'lg:grid-cols-2 gap-12 items-center' : 'grid-cols-1'}`}>
+				<div class={`
+					${centered ? `mx-auto text-center` : ""}
+					${maxWidthClasses[maxWidth]}
+				`}>
+					<slot name="pre-title" />
+
+					{title && (
+						<h1 class="text-4xl md:text-5xl lg:text-6xl font-normal leading-tight mb-4 md:mb-6 text-black dark:text-white">
+							<TextShimmer client:load delay={300}>{title}</TextShimmer>
+							{subtitle && (
+								<span class="block mt-2 text-2xl md:text-3xl lg:text-4xl font-normal leading-tight text-neutral-800 dark:text-neutral-200">
+									<TextShimmer client:load delay={500}>{subtitle}</TextShimmer>
+								</span>
+							)}
+						</h1>
+					)}
+
+					<slot name="title" />
+
+					{description && (
+						<p class={`
+							text-lg md:text-xl mb-6 md:mb-8 leading-relaxed text-neutral-700 dark:text-neutral-300 font-normal
+							${centered ? "max-w-3xl mx-auto" : "max-w-3xl"}
+						`}>
+							{description}
+						</p>
+					)}
+
+					<slot name="description" />
+				</div>
+
+				{heroImage && (
+					<div class={centered ? "flex justify-center" : ""}>
+						<div class="relative">
+							<img
+								src={heroImage}
+								alt={heroImageAlt}
+								class="w-full h-auto rounded-lg shadow-2xl"
+								loading="eager"
+							/>
+							<slot name="hero-image-overlay" />
+						</div>
+					</div>
+				)}
+			</div>
+
+			<!-- Media slot - full width, outside the constrained grid -->
+			<slot name="media" />
+
+			<!-- Buttons section -->
 			<div class={`
 				${centered ? `mx-auto text-center` : ""}
 				${maxWidthClasses[maxWidth]}
 			`}>
-				<slot name="pre-title" />
-
-				{title && (
-					<h1 class="text-4xl md:text-5xl lg:text-6xl font-light leading-tight mb-4 md:mb-6 text-neutral-900 dark:text-white">
-						{titleParts.beforeHighlight}
-						{titleParts.highlight && (
-							<span class="text-blue-600 dark:text-blue-400">
-								{titleParts.highlight}
-							</span>
-						)}
-						{titleParts.afterHighlight}
-						{subtitle && (
-							<span class="block mt-2 text-2xl md:text-3xl lg:text-4xl font-light leading-tight text-neutral-700 dark:text-neutral-300">
-								{subtitle}
-							</span>
-						)}
-					</h1>
-				)}
-
-				<slot name="title" />
-
-				{description && (
-					<p class={`
-						text-lg md:text-xl mb-6 md:mb-8 leading-relaxed text-neutral-600 dark:text-neutral-400
-						${centered ? "max-w-3xl mx-auto" : "max-w-3xl"}
-					`}>
-						{description}
-					</p>
-				)}
-
-				<slot name="description" />
-
 				{(buttons.length > 0 || Astro.slots.has('buttons')) && (
 					<div class={`
 						flex flex-col sm:flex-row gap-4 mb-8 md:mb-12
@@ -157,24 +183,6 @@ const maxWidthClasses = {
 				<slot name="content" />
 			</div>
 
-			{heroImage && (
-				<div class={centered ? "flex justify-center" : ""}>
-					<div class="relative">
-						<img
-							src={heroImage}
-							alt={heroImageAlt}
-							class="w-full h-auto rounded-lg shadow-2xl"
-							loading="eager"
-						/>
-						<slot name="hero-image-overlay" />
-					</div>
-				</div>
-			)}
-
-			<slot name="media" />
-			<slot name="stats" />
-		</div>
-
-		<slot name="footer" />
+			<slot name="footer" />
 	</div>
 </section>

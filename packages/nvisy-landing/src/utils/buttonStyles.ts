@@ -8,7 +8,7 @@ export function getButtonClasses(
 		primary:
 			"bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-100 focus:ring-black dark:focus:ring-white shadow-sm hover:shadow-md",
 		secondary:
-			"bg-white dark:bg-black/50 text-black dark:text-white border-2 border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 hover:border-black/20 dark:hover:border-white/20 focus:ring-black/10 dark:focus:ring-white/10",
+			"bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 focus:ring-neutral-300 dark:focus:ring-neutral-700 shadow-sm hover:shadow-md",
 		outline:
 			"bg-white dark:bg-black/50 text-black dark:text-white border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 hover:border-black/20 dark:hover:border-white/20 focus:ring-black/10 dark:focus:ring-white/10",
 	};

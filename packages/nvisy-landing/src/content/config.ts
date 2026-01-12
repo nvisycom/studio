@@ -32,45 +32,6 @@ const legalDocs = defineCollection({
 	schema: legalSchema,
 });
 
-const jobSchema = z.object({
-	title: z.string(),
-	department: z.string(),
-	location: z.string(),
-	region: z.string(),
-	type: z.string(),
-	description: z.string(),
-	requirements: z.array(z.string()),
-	responsibilities: z.array(z.string()).optional(),
-	techStack: z.array(z.string()).optional(),
-	published: z.boolean().default(true),
-	createdAt: z.coerce.date(),
-	updatedAt: z.coerce.date().optional(),
-});
-
-export type JobItem = z.infer<typeof jobSchema>;
-const jobs = defineCollection({
-	type: "content",
-	schema: jobSchema,
-});
-
-const roadmapSchema = z.object({
-	id: z.string(),
-	title: z.string(),
-	description: z.string(),
-	quarter: z.string(),
-	status: z.enum(["completed", "in-progress", "planned"]),
-	category: z.string(),
-	priority: z.enum(["high", "medium", "low"]),
-	progress: z.number().optional(),
-	githubIssue: z.string().optional(),
-});
-
-export type RoadmapItem = z.infer<typeof roadmapSchema>;
-const roadmap = defineCollection({
-	type: "data",
-	schema: z.array(roadmapSchema),
-});
-
 const integrationSchema = z.object({
 	icon: z.string(),
 	isBrand: z.boolean().default(false),
@@ -150,7 +111,7 @@ const sdks = defineCollection({
 const useCaseSchema = z.object({
 	title: z.string(),
 	description: z.string(),
-	audience: z.string(),
+	audience: z.string().optional(),
 });
 
 export type UseCaseItem = z.infer<typeof useCaseSchema>;
@@ -162,8 +123,6 @@ const useCases = defineCollection({
 export const collections = {
 	"blog-posts": blogPosts,
 	"legal-docs": legalDocs,
-	jobs,
-	roadmap,
 	integrations,
 	faqs,
 	testimonials,

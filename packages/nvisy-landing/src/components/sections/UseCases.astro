@@ -32,13 +32,10 @@ const useCases = categoryUseCases?.data || [];
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {useCases.map((useCase) => (
         <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 flex flex-col">
-          <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">{useCase.title}</h3>
-          <p class="text-neutral-600 dark:text-neutral-300 text-sm mb-4 flex-grow">
+          <h3 class="text-lg font-light text-neutral-900 dark:text-white mb-3">{useCase.title}</h3>
+          <p class="text-neutral-600 dark:text-neutral-400 text-sm flex-grow leading-relaxed">
             {useCase.description}
           </p>
-          <div class="text-xs text-neutral-500 bg-neutral-50 dark:bg-neutral-900 rounded-lg p-3 mt-auto">
-            {useCase.audience}
-          </div>
         </div>
       ))}
     </div>

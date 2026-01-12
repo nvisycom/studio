@@ -30,149 +30,209 @@ const categories = [
 // Helper function to slugify category names
 const slugifyCategory = (category: string) =>
 	category.toLowerCase().replace(/\s+/g, "-");
-
-// Get selected category from URL params
-const url = new URL(Astro.request.url);
-const selectedCategorySlug = url.searchParams.get("category") || "all";
-
-// Find the actual category name from the slug
-const selectedCategory =
-	selectedCategorySlug === "all"
-		? "All"
-		: categories.find((cat) => slugifyCategory(cat) === selectedCategorySlug) ||
-			"All";
-
-// Filter posts by category
-const filteredPosts =
-	selectedCategory === "All"
-		? blogEntries
-		: blogEntries.filter((entry) => entry.data.category === selectedCategory);
 ---
 
 <Layout title="Blog" description="Insights, stories, and updates from our team">
-  <div class="bg-white dark:bg-black min-h-screen">
-    <!-- Hero Section -->
-    <Hero
-      title="Stories & Insights"
-      description="Discover the latest from our team. Engineering insights, product updates, and thought leadership from the people building the future."
-      background="gradient"
-      buttons={[]}
-    />
+  <!-- Hero Section -->
+  <Hero
+    title="Stories & Insights"
+    description="Discover the latest from our team. Engineering insights, product updates, and thought leadership from the people building the future."
+    background="gradient"
+    buttons={[]}
+  />
 
-    <!-- Main Content -->
-    <div class="container mx-auto px-4 py-12">
-      <div class="max-w-7xl mx-auto">
-        <!-- Category Filter -->
-        {categories.length > 1 && (
-          <div class="flex flex-wrap gap-2 mb-8">
-            {categories.map(category => (
-              <a
-                href={category === 'All' ? '/blog' : `/blog?category=${slugifyCategory(category)}`}
-                class:list={[
-                  "px-4 py-2 text-sm font-medium rounded-lg transition-all",
-                  selectedCategory === category
-                    ? "bg-black dark:bg-white text-white dark:text-black"
-                    : "bg-white dark:bg-black text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600"
-                ]}
-              >
-                {category}
-              </a>
-            ))}
-          </div>
-        )}
+  <!-- Main Content -->
+  <div class="container mx-auto px-4 py-12">
+    <div class="max-w-7xl mx-auto">
+      <!-- Category Filter -->
+      {categories.length > 1 && (
+        <div class="flex flex-wrap gap-2 mb-8" id="category-filter">
+          {categories.map(category => (
+            <button
+              type="button"
+              data-category={slugifyCategory(category)}
+              class="category-btn px-4 py-2 text-sm font-medium rounded-lg transition-all bg-white dark:bg-black text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600"
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+      )}
 
-        <!-- Posts Grid -->
-        {filteredPosts.length > 0 ? (
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredPosts.map((post, index) => (
-              <article class="group transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
-                <a href={`/blog/${post.slug}`} class="block h-full">
-                  <div class="bg-white dark:bg-black rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 h-full flex flex-col min-h-[400px]">
-                    <!-- Image/Icon Area -->
-                    <div class="aspect-[4/3] bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-800 dark:to-neutral-900 flex items-center justify-center relative overflow-hidden">
-                      <div class="text-neutral-400 dark:text-neutral-500">
-                        {post.data.category === 'Engineering' && <Zap class="w-16 h-16" client:load />}
-                        {post.data.category === 'Development' && <Code class="w-16 h-16" client:load />}
-                        {post.data.category === 'Design' && <Palette class="w-16 h-16" client:load />}
-                        {post.data.category === 'Architecture' && <Building class="w-16 h-16" client:load />}
-                        {post.data.category === 'Compliance' && <Shield class="w-16 h-16" client:load />}
-                        {post.data.category === 'Case Study' && <FileText class="w-16 h-16" client:load />}
-                        {!post.data.category && <File class="w-16 h-16" client:load />}
-                      </div>
-
-                      <!-- Latest Badge - only for first post -->
-                      {index === 0 && (
-                        <div class="absolute top-3 left-3">
-                          <span class="text-xs font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 px-3 py-1 rounded-full shadow-lg">
-                            Latest
-                          </span>
-                        </div>
-                      )}
-
-                      <!-- Category Badge -->
-                      {post.data.category && (
-                        <div class="absolute top-3 right-3">
-                          <span class="text-xs font-medium text-neutral-600 dark:text-neutral-400 bg-white/90 dark:bg-black/90 backdrop-blur-sm px-2 py-1 rounded border dark:border-neutral-700">
-                            {post.data.category}
-                          </span>
-                        </div>
-                      )}
+      <!-- Posts Grid -->
+      {blogEntries.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="posts-grid">
+          {blogEntries.map((post, index) => (
+            <article
+              class="group transition-all duration-300 hover:-translate-y-2 hover:shadow-xl blog-post"
+              data-category={slugifyCategory(post.data.category || '')}
+            >
+              <a href={`/blog/${post.slug}`} class="block h-full">
+                <div class="bg-white dark:bg-black rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 h-full flex flex-col min-h-[400px]">
+                  <!-- Image/Icon Area -->
+                  <div class="aspect-[4/3] bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-800 dark:to-neutral-900 flex items-center justify-center relative overflow-hidden">
+                    <div class="text-neutral-400 dark:text-neutral-500">
+                      {post.data.category === 'Engineering' && <Zap class="w-16 h-16" client:load />}
+                      {post.data.category === 'Development' && <Code class="w-16 h-16" client:load />}
+                      {post.data.category === 'Design' && <Palette class="w-16 h-16" client:load />}
+                      {post.data.category === 'Architecture' && <Building class="w-16 h-16" client:load />}
+                      {post.data.category === 'Compliance' && <Shield class="w-16 h-16" client:load />}
+                      {post.data.category === 'Case Study' && <FileText class="w-16 h-16" client:load />}
+                      {!post.data.category && <File class="w-16 h-16" client:load />}
                     </div>
 
-                    <!-- Content -->
-                    <div class="flex-grow flex flex-col p-5">
-                      <!-- Meta Info -->
-                      <div class="flex items-center gap-2 mb-3 text-neutral-500 dark:text-neutral-400 text-xs">
-                        <span>
-                          {new Date(post.data.publishedAt).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
-                          })}
+                    <!-- Latest Badge - only for first post -->
+                    {index === 0 && (
+                      <div class="absolute top-3 left-3 latest-badge">
+                        <span class="text-xs font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 px-3 py-1 rounded-full shadow-lg">
+                          Latest
                         </span>
-                        <span class="text-neutral-300 dark:text-neutral-600">•</span>
-                        <span>{post.readingTime} min read</span>
                       </div>
+                    )}
 
-                      <!-- Title -->
-                      <h3 class="font-light text-neutral-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-base leading-snug line-clamp-2">
-                        {post.data.title}
-                      </h3>
+                    <!-- Category Badge -->
+                    {post.data.category && (
+                      <div class="absolute top-3 right-3">
+                        <span class="text-xs font-medium text-neutral-600 dark:text-neutral-400 bg-white/90 dark:bg-black/90 backdrop-blur-sm px-2 py-1 rounded border dark:border-neutral-700">
+                          {post.data.category}
+                        </span>
+                      </div>
+                    )}
+                  </div>
 
-                      <!-- Excerpt -->
-                      <p class="text-neutral-600 dark:text-neutral-300 mb-4 leading-relaxed flex-grow text-sm line-clamp-3">
-                        {post.data.excerpt || post.data.description}
-                      </p>
+                  <!-- Content -->
+                  <div class="flex-grow flex flex-col p-5">
+                    <!-- Meta Info -->
+                    <div class="flex items-center gap-2 mb-3 text-neutral-500 dark:text-neutral-400 text-xs">
+                      <span>
+                        {new Date(post.data.publishedAt).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        })}
+                      </span>
+                      <span class="text-neutral-300 dark:text-neutral-600">•</span>
+                      <span>{post.readingTime} min read</span>
+                    </div>
 
-                      <!-- Author -->
-                      <div class="mt-auto">
-                        <div class="flex items-center gap-3">
-                          <div class="w-8 h-8 bg-gradient-to-br from-neutral-200 to-neutral-300 dark:from-neutral-800 dark:to-neutral-900 rounded-full flex items-center justify-center">
-                            <span class="font-medium text-neutral-600 dark:text-neutral-300 text-xs">
-                              {post.data.author.split(' ').map(n => n[0]).join('').toUpperCase()}
-                            </span>
-                          </div>
-                          <span class="text-neutral-600 dark:text-neutral-300 text-sm">{post.data.author}</span>
+                    <!-- Title -->
+                    <h3 class="font-light text-neutral-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-base leading-snug line-clamp-2">
+                      {post.data.title}
+                    </h3>
+
+                    <!-- Excerpt -->
+                    <p class="text-neutral-600 dark:text-neutral-300 mb-4 leading-relaxed flex-grow text-sm line-clamp-3">
+                      {post.data.excerpt || post.data.description}
+                    </p>
+
+                    <!-- Author -->
+                    <div class="mt-auto">
+                      <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-gradient-to-br from-neutral-200 to-neutral-300 dark:from-neutral-800 dark:to-neutral-900 rounded-full flex items-center justify-center">
+                          <span class="font-medium text-neutral-600 dark:text-neutral-300 text-xs">
+                            {post.data.author.split(' ').map(n => n[0]).join('').toUpperCase()}
+                          </span>
                         </div>
+                        <span class="text-neutral-600 dark:text-neutral-300 text-sm">{post.data.author}</span>
                       </div>
                     </div>
                   </div>
-                </a>
-              </article>
-            ))}
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-20">
+          <div class="w-20 h-20 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-6 text-neutral-400 dark:text-neutral-500">
+            <File class="w-4 h-4" client:load />
           </div>
-        ) : (
-          <div class="text-center py-20">
-            <div class="w-20 h-20 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-6 text-neutral-400 dark:text-neutral-500">
-              <File class="w-4 h-4" client:load />
-            </div>
-            <h3 class="text-xl font-light text-neutral-900 dark:text-white mb-2">No blog posts found</h3>
-            <p class="text-neutral-500 dark:text-neutral-400">Blog posts will appear here once they are published.</p>
-          </div>
-        )}
+          <h3 class="text-xl font-light text-neutral-900 dark:text-white mb-2">No blog posts found</h3>
+          <p class="text-neutral-500 dark:text-neutral-400">Blog posts will appear here once they are published.</p>
+        </div>
+      )}
+
+      <!-- No results message (hidden by default) -->
+      <div id="no-results" class="text-center py-20 hidden">
+        <div class="w-20 h-20 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-6 text-neutral-400 dark:text-neutral-500">
+          <File class="w-8 h-8" />
+        </div>
+        <h3 class="text-xl font-light text-neutral-900 dark:text-white mb-2">No posts in this category</h3>
+        <p class="text-neutral-500 dark:text-neutral-400">Try selecting a different category.</p>
       </div>
     </div>
-
-
   </div>
 </Layout>
+
+<script>
+  function initCategoryFilter() {
+    const buttons = document.querySelectorAll('.category-btn');
+    const posts = document.querySelectorAll('.blog-post');
+    const noResults = document.getElementById('no-results');
+    const postsGrid = document.getElementById('posts-grid');
+
+    let activeCategory = 'all';
+
+    function updateFilter(category: string) {
+      activeCategory = category;
+
+      // Update button styles
+      buttons.forEach(btn => {
+        const btnCategory = btn.getAttribute('data-category');
+        if (btnCategory === category) {
+          btn.classList.remove('bg-white', 'dark:bg-black', 'text-neutral-700', 'dark:text-neutral-300', 'border', 'border-neutral-200', 'dark:border-neutral-700');
+          btn.classList.add('bg-black', 'dark:bg-white', 'text-white', 'dark:text-black');
+        } else {
+          btn.classList.add('bg-white', 'dark:bg-black', 'text-neutral-700', 'dark:text-neutral-300', 'border', 'border-neutral-200', 'dark:border-neutral-700');
+          btn.classList.remove('bg-black', 'dark:bg-white', 'text-white', 'dark:text-black');
+        }
+      });
+
+      // Filter posts
+      let visibleCount = 0;
+      posts.forEach((post, index) => {
+        const postCategory = post.getAttribute('data-category');
+        const shouldShow = category === 'all' || postCategory === category;
+
+        if (shouldShow) {
+          (post as HTMLElement).style.display = '';
+          visibleCount++;
+
+          // Update latest badge visibility - only show on first visible post when showing all
+          const latestBadge = post.querySelector('.latest-badge');
+          if (latestBadge) {
+            (latestBadge as HTMLElement).style.display = (category === 'all' && index === 0) ? '' : 'none';
+          }
+        } else {
+          (post as HTMLElement).style.display = 'none';
+        }
+      });
+
+      // Show/hide no results message
+      if (noResults && postsGrid) {
+        if (visibleCount === 0) {
+          noResults.classList.remove('hidden');
+          postsGrid.classList.add('hidden');
+        } else {
+          noResults.classList.add('hidden');
+          postsGrid.classList.remove('hidden');
+        }
+      }
+    }
+
+    // Add click handlers
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const category = btn.getAttribute('data-category') || 'all';
+        updateFilter(category);
+      });
+    });
+
+    // Initialize with 'all' selected
+    updateFilter('all');
+  }
+
+  // Run on page load and after Astro navigation
+  document.addEventListener('astro:page-load', initCategoryFilter);
+  initCategoryFilter();
+</script>

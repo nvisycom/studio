@@ -1,0 +1,44 @@
+[
+	{
+		"title": "Lightning Fast",
+		"description": "Built with Tauri and Rust for minimal resource usage and maximum performance. Start processing in seconds.",
+		"icon": "zap",
+		"featured": true,
+		"order": 1
+	},
+	{
+		"title": "Secure by Default",
+		"description": "Your documents stay on your machine until you choose to process them. Complete control over your data.",
+		"icon": "shield",
+		"featured": true,
+		"order": 2
+	},
+	{
+		"title": "Backend Agnostic",
+		"description": "Works with Nvisy Cloud for scale or Nvisy Server for complete control. Switch backends anytime.",
+		"icon": "layers",
+		"featured": true,
+		"order": 3
+	},
+	{
+		"title": "Cross-platform Support",
+		"description": "Works seamlessly on Windows, macOS, and Linux.",
+		"icon": "globe",
+		"featured": true,
+		"order": 4
+	},
+	{
+		"title": "Batch Processing",
+		"description": "Process multiple documents at once with progress tracking.",
+		"icon": "file-text",
+		"featured": true,
+		"order": 5
+	},
+	{
+		"title": "Intuitive Interface",
+		"description": "Clean, modern UI with drag-and-drop and keyboard shortcuts.",
+		"icon": "eye",
+		"featured": true,
+		"order": 6
+	}
+]

@@ -23,6 +23,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { NvisyApiError } from "@nvisy/sdk";
 
+useHead({ title: "Sign Up" });
+
 definePageMeta({
 	layout: "auth",
 });
@@ -93,12 +95,12 @@ async function handleMicrosoftSignup(): Promise<void> {
     <!-- Header -->
     <div class="mb-8">
       <h1
-        class="text-4xl md:text-5xl font-light leading-tight text-neutral-900 dark:text-white"
+        class="text-4xl md:text-5xl font-normal leading-tight text-black dark:text-white"
       >
         Create an account
       </h1>
       <p
-        class="text-lg md:text-xl leading-relaxed text-neutral-600 dark:text-neutral-400"
+        class="text-lg md:text-xl leading-relaxed text-neutral-700 dark:text-neutral-300 font-medium"
       >
         Get started with your free account
       </p>
@@ -107,7 +109,7 @@ async function handleMicrosoftSignup(): Promise<void> {
     <!-- Signup Card -->
     <Card class="border-neutral-200 dark:border-neutral-800">
       <CardHeader class="space-y-0 pb-4">
-        <CardTitle class="text-2xl font-light text-neutral-900 dark:text-white"
+        <CardTitle class="text-2xl font-normal text-black dark:text-white"
           >Sign up</CardTitle
         >
         <CardDescription
@@ -204,7 +206,7 @@ async function handleMicrosoftSignup(): Promise<void> {
               />
               <Label
                 for="terms"
-                class="text-sm font-light cursor-pointer leading-tight text-neutral-600 dark:text-neutral-400"
+                class="text-sm font-normal cursor-pointer leading-tight text-neutral-600 dark:text-neutral-400"
               >
                 I agree to the
                 <a
@@ -277,7 +279,7 @@ async function handleMicrosoftSignup(): Promise<void> {
             </div>
             <div class="relative flex justify-center text-sm">
               <span
-                class="bg-white dark:bg-neutral-950 px-2 text-neutral-600 dark:text-neutral-400 font-light"
+                class="bg-white dark:bg-neutral-950 px-2 text-neutral-600 dark:text-neutral-400 font-normal"
               >
                 Or continue with
               </span>

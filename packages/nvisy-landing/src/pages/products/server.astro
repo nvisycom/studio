@@ -1,6 +1,13 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, CTA, OpenSource, Premium, Features } from "@/components";
+import {
+	Hero,
+	CTA,
+	OpenSource,
+	Premium,
+	Features,
+	Security,
+} from "@/components";
 import SDKExamples from "@/components/sections/SDKExamples.astro";
 import Connect from "@/components/sections/Connect.astro";
 import { Check, Shield, ArrowRight, BookOpen } from "lucide-vue-next";
@@ -11,194 +18,183 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
   title="Nvisy Server"
   description="Deploy Nvisy's AI-powered document processing on your own infrastructure. Complete control, maximum security, and compliance for air-gapped environments."
 >
-  <div class="bg-white dark:bg-black min-h-screen">
-    <!-- Hero Section -->
-    <div class="border-b border-neutral-200 dark:border-neutral-800">
-      <Hero
-        title="Nvisy Server"
-        description="Enterprise-grade document processing deployed entirely on your infrastructure. Maximum security, complete data sovereignty, full customization. Perfect for organizations with strict compliance requirements and air-gapped environments."
-        background="gradient"
-        buttons={[
-          {
-            text: "View Documentation",
-            href: "https://docs.nvisy.com/server",
-            variant: "primary"
-          },
-          {
-            text: "Contact Sales",
-            href: "/contact",
-            variant: "secondary"
-          }
-        ]}
-      />
-    </div>
+  <Hero
+    title="Nvisy Server"
+    description="Enterprise-grade document processing deployed entirely on your infrastructure. Maximum security, complete data sovereignty, full customization. Perfect for organizations with strict compliance requirements and air-gapped environments."
+    background="gradient"
+    buttons={[
+      {
+        text: "View Documentation",
+        href: "https://docs.nvisy.com/server",
+        variant: "primary"
+      },
+      {
+        text: "Contact Sales",
+        href: "/contact",
+        variant: "secondary"
+      }
+    ]}
+  />
 
-    <!-- Deployment Options -->
-    <div class="container mx-auto px-4 py-12 md:py-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-12 md:mb-16">
-          <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">
-            Two Ways to Deploy
-          </h2>
-          <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto px-4">
-            Choose between running the open-source version for free or get enterprise support with our licensed deployment.
-          </p>
-        </div>
+  <div class="container mx-auto px-4 py-12 md:py-20">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12 md:mb-16">
+        <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">
+          Two Ways to Deploy
+        </h2>
+        <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto px-4">
+          Choose between running the open-source version for free or get enterprise support with our licensed deployment.
+        </p>
+      </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-          <!-- Open Source -->
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="w-12 h-12 md:w-14 md:h-14 bg-neutral-100 dark:bg-neutral-800 rounded-2xl flex items-center justify-center">
-                <div class="w-6 h-6 md:w-7 md:h-7 text-neutral-900 dark:text-white [&>svg]:w-full [&>svg]:h-full">
-                  <Fragment set:html={GithubIcon} />
-                </div>
-              </div>
-              <div>
-                <h3 class="text-xl md:text-2xl font-light text-neutral-900 dark:text-white">Open Source</h3>
-                <p class="text-sm text-neutral-600 dark:text-neutral-400">MIT Licensed</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <!-- Open Source -->
+        <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 md:w-14 md:h-14 bg-neutral-100 dark:bg-neutral-800 rounded-2xl flex items-center justify-center">
+              <div class="w-6 h-6 md:w-7 md:h-7 text-neutral-900 dark:text-white [&>svg]:w-full [&>svg]:h-full">
+                <Fragment set:html={GithubIcon} />
               </div>
             </div>
-
-            <p class="text-sm text-neutral-600 dark:text-neutral-300 mb-6 leading-relaxed">
-              Run Nvisy Server for free using our open-source release. Perfect for testing, development, or small-scale deployments. Deploy using Docker for quick setup.
-            </p>
-
-            <div class="space-y-2 mb-8 flex-grow">
-              <div class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                <span class="text-sm text-neutral-700 dark:text-neutral-400">Free to use and modify</span>
-              </div>
-              <div class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                <span class="text-sm text-neutral-700 dark:text-neutral-400">Docker container support</span>
-              </div>
-              <div class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                <span class="text-sm text-neutral-700 dark:text-neutral-400">Community support</span>
-              </div>
-              <div class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                <span class="text-sm text-neutral-700 dark:text-neutral-400">Self-managed updates</span>
-              </div>
-            </div>
-
-            <div class="flex flex-col gap-3 mt-auto">
-              <a
-                href="https://github.com/nvisycom/server"
-                class="inline-flex items-center justify-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-black font-medium py-3 px-6 rounded-xl hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all duration-200 text-sm"
-              >
-                <div class="w-4 h-4 [&>svg]:w-full [&>svg]:h-full">
-                  <Fragment set:html={GithubIcon} />
-                </div>
-                View on GitHub
-              </a>
-              <a
-                href="https://docs.nvisy.com/server/quickstart"
-                class="inline-flex items-center justify-center gap-2 border border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-white font-medium py-3 px-6 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-all duration-200 text-sm"
-              >
-                <BookOpen class="w-4 h-4" />
-                Quick Start
-              </a>
+            <div>
+              <h3 class="text-xl md:text-2xl font-light text-neutral-900 dark:text-white">Open Source</h3>
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">MIT Licensed</p>
             </div>
           </div>
 
-          <!-- Enterprise -->
-          <div class="bg-white dark:bg-black rounded-xl border-2 border-neutral-900 dark:border-white p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col">
-            <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-black dark:bg-white text-white dark:text-black text-xs font-medium px-3 py-1 rounded-full">
-              Recommended for Enterprise
+          <p class="text-sm text-neutral-600 dark:text-neutral-300 mb-6 leading-relaxed">
+            Run Nvisy Server for free using our open-source release. Perfect for testing, development, or small-scale deployments. Deploy using Docker for quick setup.
+          </p>
+
+          <div class="space-y-2 mb-8 flex-grow">
+            <div class="flex items-start gap-2">
+              <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+              <span class="text-sm text-neutral-700 dark:text-neutral-400">Free to use and modify</span>
             </div>
-
-            <div class="flex items-center gap-3 mb-6 mt-2">
-              <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-neutral-700 to-neutral-900 rounded-2xl flex items-center justify-center">
-                <Shield class="w-6 h-6 md:w-7 md:h-7 text-white" />
-              </div>
-              <div>
-                <h3 class="text-xl md:text-2xl font-light text-neutral-900 dark:text-white">Enterprise License</h3>
-                <a href="/pricing" class="text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white underline">View Pricing</a>
-              </div>
+            <div class="flex items-start gap-2">
+              <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+              <span class="text-sm text-neutral-700 dark:text-neutral-400">Docker container support</span>
             </div>
-
-            <p class="text-sm text-neutral-600 dark:text-neutral-300 mb-6 leading-relaxed">
-              Get enterprise-grade support, custom deployment assistance, and priority access to new features. Perfect for production deployments.
-            </p>
-
-            <div class="space-y-2 mb-8 flex-grow">
-              <div class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                <span class="text-sm text-neutral-700 dark:text-neutral-400">24/7 enterprise support</span>
-              </div>
-              <div class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                <span class="text-sm text-neutral-700 dark:text-neutral-400">Deployment assistance</span>
-              </div>
-              <div class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                <span class="text-sm text-neutral-700 dark:text-neutral-400">Priority feature access</span>
-              </div>
+            <div class="flex items-start gap-2">
+              <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+              <span class="text-sm text-neutral-700 dark:text-neutral-400">Community support</span>
             </div>
+            <div class="flex items-start gap-2">
+              <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+              <span class="text-sm text-neutral-700 dark:text-neutral-400">Self-managed updates</span>
+            </div>
+          </div>
 
+          <div class="flex flex-col gap-3 mt-auto">
             <a
-              href="/contact"
-              class="inline-flex items-center justify-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-black font-medium py-3 px-6 rounded-xl hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all duration-200 text-sm mt-auto"
+              href="https://github.com/nvisycom/server"
+              class="inline-flex items-center justify-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-black font-medium py-3 px-6 rounded-xl hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all duration-200 text-sm"
             >
-              Contact Sales
-              <ArrowRight class="w-4 h-4" />
+              <div class="w-4 h-4 [&>svg]:w-full [&>svg]:h-full">
+                <Fragment set:html={GithubIcon} />
+              </div>
+              View on GitHub
+            </a>
+            <a
+              href="https://docs.nvisy.com/server/quickstart"
+              class="inline-flex items-center justify-center gap-2 border border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-white font-medium py-3 px-6 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-all duration-200 text-sm"
+            >
+              <BookOpen class="w-4 h-4" />
+              Quick Start
             </a>
           </div>
         </div>
+
+        <!-- Enterprise -->
+        <div class="bg-white dark:bg-black rounded-xl border-2 border-neutral-900 dark:border-white p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-black dark:bg-white text-white dark:text-black text-xs font-medium px-3 py-1 rounded-full">
+            Recommended for Enterprise
+          </div>
+
+          <div class="flex items-center gap-3 mb-6 mt-2">
+            <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-neutral-700 to-neutral-900 rounded-2xl flex items-center justify-center">
+              <Shield class="w-6 h-6 md:w-7 md:h-7 text-white" />
+            </div>
+            <div>
+              <h3 class="text-xl md:text-2xl font-light text-neutral-900 dark:text-white">Enterprise License</h3>
+              <a href="/pricing" class="text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white underline">View Pricing</a>
+            </div>
+          </div>
+
+          <p class="text-sm text-neutral-600 dark:text-neutral-300 mb-6 leading-relaxed">
+            Get enterprise-grade support, custom deployment assistance, and priority access to new features. Perfect for production deployments.
+          </p>
+
+          <div class="space-y-2 mb-8 flex-grow">
+            <div class="flex items-start gap-2">
+              <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+              <span class="text-sm text-neutral-700 dark:text-neutral-400">24/7 enterprise support</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+              <span class="text-sm text-neutral-700 dark:text-neutral-400">Deployment assistance</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+              <span class="text-sm text-neutral-700 dark:text-neutral-400">Priority feature access</span>
+            </div>
+          </div>
+
+          <a
+            href="/contact"
+            class="inline-flex items-center justify-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-black font-medium py-3 px-6 rounded-xl hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all duration-200 text-sm mt-auto"
+          >
+            Contact Sales
+            <ArrowRight class="w-4 h-4" />
+          </a>
+        </div>
       </div>
     </div>
-
-    <!-- Features -->
-    <Features
-      title="Complete Control & Flexibility"
-      description="Deploy on your infrastructure with full customization capabilities. Perfect for organizations with strict security and compliance requirements."
-      category="enterprise"
-      featured={true}
-    />
-
-    <!-- Open Source -->
-    <OpenSource
-      title="Built on Open Source"
-      description="Server is fully open source. Contribute, validate our security approach, and build with confidence."
-    />
-
-    <!-- Connect/Integration -->
-    <Connect
-      title="Flexible Integration"
-      description="Self-hosted server with the same powerful APIs as Nvisy Cloud. Integrate seamlessly into your infrastructure."
-    />
-
-    <!-- SDK Examples -->
-    <SDKExamples
-      title="Compatible SDKs"
-      description="Use the same TypeScript and Python SDKs as Nvisy Cloud. Simply point to your server endpoint."
-    />
-
-    <!-- Premium -->
-    <Premium
-      title="Enterprise Support"
-      description="Get dedicated support for your on-premise deployment. Source code access, custom modifications, and priority assistance available."
-    />
-
-    <!-- CTA Section -->
-    <CTA
-      title="Ready to Deploy Nvisy Server?"
-      description="Start with the open-source version or contact us for enterprise deployment assistance."
-      buttons={[
-        {
-          text: "View on GitHub",
-          href: "https://github.com/nvisycom/server",
-          variant: "primary"
-        },
-        {
-          text: "Contact Sales",
-          href: "/contact",
-          variant: "secondary"
-        }
-      ]}
-      background="solid"
-    />
   </div>
+
+  <Features
+    title="Complete Control & Flexibility"
+    description="Deploy on your infrastructure with full customization capabilities. Perfect for organizations with strict security and compliance requirements."
+    category="enterprise"
+    featured={true}
+  />
+
+  <OpenSource
+    title="Built on Open Source"
+    description="Server is fully open source. Contribute, validate our security approach, and build with confidence."
+  />
+
+  <Connect
+    title="Flexible Integration"
+    description="Self-hosted server with the same powerful APIs as Nvisy Cloud. Integrate seamlessly into your infrastructure."
+  />
+
+  <SDKExamples
+    title="Compatible SDKs"
+    description="Use the same TypeScript and Python SDKs as Nvisy Cloud. Simply point to your server endpoint."
+  />
+
+  <Premium
+    title="Enterprise Support"
+    description="Get dedicated support for your on-premise deployment. Source code access, custom modifications, and priority assistance available."
+  />
+
+  <CTA
+    title="Ready to Deploy Nvisy Server?"
+    description="Start with the open-source version or contact us for enterprise deployment assistance."
+    buttons={[
+      {
+        text: "View on GitHub",
+        href: "https://github.com/nvisycom/server",
+        variant: "primary"
+      },
+      {
+        text: "Contact Sales",
+        href: "/contact",
+        variant: "secondary"
+      }
+    ]}
+    background="solid"
+  />
+  <Security />
 </Layout>

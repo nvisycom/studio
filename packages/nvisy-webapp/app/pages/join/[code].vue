@@ -22,6 +22,8 @@ import { Badge } from "@/components/ui/badge";
 import { EntityAvatar } from "@/components/common";
 import type { InvitePreview, WorkspaceRole } from "@nvisy/sdk/datatypes";
 
+useHead({ title: "Join Workspace" });
+
 definePageMeta({
 	layout: "default",
 });
@@ -187,9 +189,7 @@ function handleDecline() {
         class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
       >
         <CardHeader class="text-center pb-4">
-          <CardTitle
-            class="text-4xl font-light text-neutral-900 dark:text-white"
-          >
+          <CardTitle class="text-4xl font-normal text-black dark:text-white">
             {{ t("invite.title") }}
           </CardTitle>
           <CardDescription>
@@ -230,7 +230,7 @@ function handleDecline() {
 
           <!-- Role & Expiry Info -->
           <div
-            class="flex items-center justify-between text-sm font-light text-neutral-500 dark:text-neutral-400"
+            class="flex items-center justify-between text-sm font-light text-neutral-600 dark:text-neutral-400"
           >
             <div class="flex items-center gap-2">
               <component

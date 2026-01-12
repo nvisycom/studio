@@ -3,14 +3,17 @@ import { Mail, ExternalLink } from "lucide-vue-next";
 import GithubIcon from "@/assets/icons/github.svg?raw";
 import type { ButtonProps } from "@/components/types";
 import { getButtonClasses } from "@/utils/buttonStyles";
-import { getBackgroundClass } from "@/utils/backgroundStyles";
+import {
+	getBackgroundClass,
+	type BackgroundVariant,
+} from "@/utils/backgroundStyles";
 
 export interface Props {
 	title?: string;
 	description?: string;
 	buttons?: ButtonProps[];
 	centered?: boolean;
-	background?: "solid" | "gradient" | "none";
+	background?: BackgroundVariant;
 	maxWidth?: "sm" | "md" | "lg" | "xl" | "full";
 }
 
@@ -42,17 +45,18 @@ const maxWidthClasses = {
 ---
 
 <section class={`
-	${background === 'gradient' ? 'border-t border-neutral-200 dark:border-neutral-800' : ''}
 	${getBackgroundClass(background)}
 	py-20 px-10
+	${background === 'gradient' ? 'relative border-t border-neutral-200/50 dark:border-neutral-800/50' : ''}
 `}>
-	<div class="container mx-auto px-4">
+
+	<div class={`container mx-auto px-4 ${background === 'gradient' ? 'relative z-10' : ''}`}>
 		<div class={`
 			${centered ? "mx-auto text-center" : ""}
 			${maxWidthClasses[maxWidth]}
 		`}>
 			{title && (
-				<h2 class="text-4xl md:text-5xl lg:text-6xl font-light leading-tight mb-4 md:mb-6 text-neutral-900 dark:text-white">
+				<h2 class="text-4xl md:text-5xl lg:text-6xl font-normal leading-tight mb-4 md:mb-6 text-black dark:text-white">
 					{title}
 				</h2>
 			)}
@@ -61,7 +65,7 @@ const maxWidthClasses = {
 
 			{description && (
 				<p class={`
-					text-lg md:text-xl mb-6 md:mb-8 leading-relaxed text-neutral-600 dark:text-neutral-400
+					text-lg md:text-xl mb-6 md:mb-8 leading-relaxed text-neutral-700 dark:text-neutral-300 font-medium
 					${centered ? "max-w-3xl mx-auto" : "max-w-3xl"}
 				`}>
 					{description}
@@ -127,3 +131,28 @@ const maxWidthClasses = {
 		</div>
 	</div>
 </section>
+
+<style>
+	@keyframes blob {
+		0%, 100% {
+			transform: translate(0, 0) scale(1);
+		}
+		25% {
+			transform: translate(20px, -30px) scale(1.05);
+		}
+		50% {
+			transform: translate(-20px, 20px) scale(0.95);
+		}
+		75% {
+			transform: translate(30px, 10px) scale(1.02);
+		}
+	}
+
+	.cta-blob {
+		animation: blob 12s ease-in-out infinite;
+	}
+
+	.cta-blob-delay-2 {
+		animation-delay: 2s;
+	}
+</style>

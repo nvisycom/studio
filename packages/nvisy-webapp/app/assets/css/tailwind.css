@@ -153,6 +153,11 @@
 	}
 	html,
 	body {
-		@apply bg-background text-foreground overflow-hidden;
+		font-family: "Barlow", ui-sans-serif, system-ui, sans-serif;
+		@apply bg-background text-foreground overflow-hidden antialiased;
+	}
+	code,
+	pre {
+		font-family: "JetBrains", ui-monospace, monospace;
 	}
 }

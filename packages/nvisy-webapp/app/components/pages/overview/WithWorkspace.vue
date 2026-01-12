@@ -69,7 +69,7 @@ const quickActions = [
       <div class="mb-6">
         <div class="flex items-center gap-3 mb-2">
           <h1
-            class="text-3xl font-light text-neutral-800 dark:text-neutral-200 tracking-tight"
+            class="text-3xl font-normal text-black dark:text-white tracking-tight"
           >
             {{ t("overview.welcome.title")
             }}<span v-if="firstName">, {{ firstName }}</span
@@ -83,7 +83,7 @@ const quickActions = [
             {{ t(`members.roles.${currentWorkspace.memberRole}`) }}
           </Badge>
         </div>
-        <p class="text-base font-light text-neutral-500 dark:text-neutral-400">
+        <p class="text-base font-light text-neutral-600 dark:text-neutral-400">
           {{
             t("overview.welcome.subtitle", {
               workspace: currentWorkspace?.displayName ?? "",
@@ -139,7 +139,7 @@ const quickActions = [
                 <p class="text-lg font-medium text-neutral-900 dark:text-white">
                   {{ members?.length ?? 0 }}
                 </p>
-                <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                <p class="text-xs text-neutral-600 dark:text-neutral-400">
                   {{ t("overview.workspace.members") }}
                 </p>
               </div>
@@ -157,7 +157,7 @@ const quickActions = [
                 <p class="text-lg font-medium text-neutral-900 dark:text-white">
                   {{ files?.length ?? 0 }}
                 </p>
-                <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                <p class="text-xs text-neutral-600 dark:text-neutral-400">
                   {{ t("overview.workspace.files") }}
                 </p>
               </div>
@@ -175,7 +175,7 @@ const quickActions = [
                 <p class="text-sm font-medium text-neutral-900 dark:text-white">
                   {{ formatDate(currentWorkspace.createdAt) }}
                 </p>
-                <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                <p class="text-xs text-neutral-600 dark:text-neutral-400">
                   {{ t("overview.workspace.created") }}
                 </p>
               </div>
@@ -259,7 +259,7 @@ const quickActions = [
       <Card class="rounded-xl border-neutral-200 dark:border-neutral-800">
         <CardHeader class="pb-2">
           <CardTitle
-            class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
+            class="text-sm font-light tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
             >{{ t("overview.quickActions.title") }}</CardTitle
           >
         </CardHeader>
@@ -284,7 +284,7 @@ const quickActions = [
                   {{ action.title }}
                 </p>
                 <p
-                  class="text-xs text-neutral-500 dark:text-neutral-400 truncate"
+                  class="text-xs text-neutral-600 dark:text-neutral-400 truncate"
                 >
                   {{ action.description }}
                 </p>

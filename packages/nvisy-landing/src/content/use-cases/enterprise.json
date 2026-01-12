@@ -1,0 +1,26 @@
+[
+	{
+		"title": "Global Document Processing",
+		"description": "Process millions of documents across multiple regions with dedicated infrastructure, ensuring consistent performance and data residency compliance."
+	},
+	{
+		"title": "Custom Integrations",
+		"description": "Deep integration with your existing enterprise systems including SAP, Salesforce, and custom ERP solutions through dedicated API endpoints."
+	},
+	{
+		"title": "Multi-Department Rollout",
+		"description": "Centralized management with granular permissions, allowing different departments to use tailored document workflows while maintaining governance."
+	},
+	{
+		"title": "On-Premise Deployment",
+		"description": "Deploy in your own data center or private cloud for maximum security and compliance with strict data sovereignty requirements."
+	},
+	{
+		"title": "Advanced Analytics",
+		"description": "Enterprise dashboards with detailed usage metrics, processing trends, and cost allocation across business units and projects."
+	},
+	{
+		"title": "Dedicated Support",
+		"description": "24/7 priority support with dedicated account managers, custom SLAs, and direct access to engineering teams for complex requirements."
+	}
+]

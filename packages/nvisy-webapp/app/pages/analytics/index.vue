@@ -21,6 +21,8 @@ import StorageUsedChart from "~/components/pages/analytics/StorageUsedChart.vue"
 import DocumentsUploadDownloadChart from "~/components/pages/analytics/DocumentsUploadDownloadChart.vue";
 import DocumentsEditVerifyChart from "~/components/pages/analytics/DocumentsEditVerifyChart.vue";
 
+useHead({ title: "Analytics" });
+
 definePageMeta({
 	pageCategory: "Analytics",
 });

@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 
+useHead({ title: "Billing" });
+
 definePageMeta({
 	pageCategory: "Billing",
 });
@@ -308,7 +310,7 @@ function toggleAddon(addonId: string) {
 
       <!-- Footer note -->
       <div class="mt-8 text-center">
-        <p class="text-sm text-neutral-500 dark:text-neutral-400">
+        <p class="text-sm text-neutral-600 dark:text-neutral-400">
           All payments are securely processed through Stripe.
           <a
             href="https://nvisy.com/pricing"

@@ -36,6 +36,8 @@ import {
 
 const { t } = useI18n();
 
+useHead({ title: "Integrations" });
+
 definePageMeta({
 	pageCategory: "Integrations",
 });
@@ -276,7 +278,7 @@ async function testWebhook(webhookId: string) {
             <div class="flex items-center justify-between">
               <div>
                 <CardTitle
-                  class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
+                  class="text-sm font-light tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
                   >{{
                     t("integrations.sections.connectedServices.title")
                   }}</CardTitle
@@ -336,7 +338,7 @@ async function testWebhook(webhookId: string) {
             <div class="flex items-center justify-between">
               <div>
                 <CardTitle
-                  class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
+                  class="text-sm font-light tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
                   >{{
                     t("integrations.sections.connectedServices.title")
                   }}</CardTitle
@@ -377,7 +379,7 @@ async function testWebhook(webhookId: string) {
                   }}
                 </p>
                 <p
-                  class="font-light text-sm text-neutral-500 dark:text-neutral-400"
+                  class="font-light text-sm text-neutral-600 dark:text-neutral-400"
                 >
                   {{
                     t(
@@ -416,7 +418,7 @@ async function testWebhook(webhookId: string) {
             <div class="flex items-center justify-between">
               <div>
                 <CardTitle
-                  class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
+                  class="text-sm font-light tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
                   >{{ t("integrations.sections.webhooks.title") }}</CardTitle
                 >
                 <CardDescription>{{
@@ -456,7 +458,7 @@ async function testWebhook(webhookId: string) {
                   {{ t("integrations.sections.webhooks.noWebhooksTitle") }}
                 </p>
                 <p
-                  class="font-light text-sm text-neutral-500 dark:text-neutral-400"
+                  class="font-light text-sm text-neutral-600 dark:text-neutral-400"
                 >
                   {{
                     t("integrations.sections.webhooks.noWebhooksDescription")

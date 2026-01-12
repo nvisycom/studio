@@ -6,14 +6,10 @@ export const footerSections: FooterSection[] = [
 		links: [
 			{ name: "Nvisy Cloud", href: "/products/cloud" },
 			{ name: "Nvisy Server", href: "/products/server" },
+			{ name: "Nvisy Studio", href: "/products/studio" },
 			{
 				name: "Documentation",
 				href: "https://docs.nvisy.com",
-				isExternal: true,
-			},
-			{
-				name: "API Reference",
-				href: "https://docs.nvisy.com/api",
 				isExternal: true,
 			},
 			{ name: "Integrations", href: "/integrations" },
@@ -33,7 +29,11 @@ export const footerSections: FooterSection[] = [
 		links: [
 			{ name: "About", href: "/about" },
 			{ name: "Blog", href: "/blog" },
-			{ name: "Careers", href: "/careers" },
+			{
+				name: "Careers",
+				href: "https://www.linkedin.com/company/nvisy/jobs/",
+				isExternal: true,
+			},
 			{ name: "Contact", href: "/contact" },
 		],
 	},

@@ -11,9 +11,8 @@ import { Layout } from "@/layouts";
 ---
 
 <Layout title="Pricing" description="Choose the perfect plan for your needs. Simple, transparent pricing with no hidden fees.">
-  <div class="bg-white dark:bg-black min-h-screen">
-    <!-- Hero Section -->
-    <Hero
+  <!-- Hero Section -->
+  <Hero
       title="Simple, Transparent Pricing"
       description="Choose the perfect plan for your needs. Start free and scale as you grow, with no hidden fees or surprise charges."
       background="gradient"
@@ -40,22 +39,20 @@ import { Layout } from "@/layouts";
       category="pricing"
     />
 
-    <CTA
-      title="Ready to get started?"
-      description="Join thousands of companies already using our platform to build better products faster."
-      background="solid"
-      buttons={[
-        {
-          text: "Start Free Trial",
-          variant: "primary"
-        },
-        {
-          text: "Book a Demo",
-          variant: "secondary",
-          icon: "mail"
-        }
-      ]}
-    />
-  </div>
-  </div>
+  <CTA
+    title="Ready to get started?"
+    description="Join thousands of companies already using our platform to build better products faster."
+    background="solid"
+    buttons={[
+      {
+        text: "Start Free Trial",
+        variant: "primary"
+      },
+      {
+        text: "Book a Demo",
+        variant: "secondary",
+        icon: "mail"
+      }
+    ]}
+  />
 </Layout>

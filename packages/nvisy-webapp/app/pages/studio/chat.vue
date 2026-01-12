@@ -4,6 +4,8 @@ import { ArrowLeft } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { MessageInput, ChatMessage } from "@/components/pages/studio";
 
+useHead({ title: "Chat" });
+
 definePageMeta({
 	pageCategory: "Studio",
 });

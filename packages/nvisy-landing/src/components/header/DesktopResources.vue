@@ -12,7 +12,7 @@ import { ExternalLink } from "lucide-vue-next";
 <template>
   <NavigationMenuItem>
     <NavigationMenuTrigger
-      class="group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-base font-light text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white focus:bg-neutral-50 dark:focus:bg-neutral-800 focus:text-neutral-900 dark:focus:text-white disabled:pointer-events-none disabled:opacity-50 data-[state=open]:bg-neutral-50 dark:data-[state=open]:bg-neutral-800 data-[state=open]:text-neutral-900 dark:data-[state=open]:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-300 dark:focus-visible:ring-neutral-600 transition-all duration-200"
+      class="group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-base font-medium text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-black dark:hover:text-white focus:bg-neutral-50 dark:focus:bg-neutral-800 focus:text-black dark:focus:text-white disabled:pointer-events-none disabled:opacity-50 data-[state=open]:bg-neutral-50 dark:data-[state=open]:bg-neutral-800 data-[state=open]:text-black dark:data-[state=open]:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-300 dark:focus-visible:ring-neutral-600 transition-all duration-200"
     >
       Resources
     </NavigationMenuTrigger>
@@ -45,7 +45,7 @@ import { ExternalLink } from "lucide-vue-next";
                   </span>
                   <div class="flex-1">
                     <div
-                      class="text-sm font-light leading-none flex items-center gap-1.5"
+                      class="text-sm font-medium leading-none flex items-center gap-1.5 text-neutral-800 dark:text-neutral-200"
                     >
                       {{ developer.title }}
                       <ExternalLink
@@ -89,7 +89,7 @@ import { ExternalLink } from "lucide-vue-next";
                   </span>
                   <div class="flex-1">
                     <div
-                      class="text-sm font-light leading-none flex items-center gap-1.5"
+                      class="text-sm font-medium leading-none flex items-center gap-1.5 text-neutral-800 dark:text-neutral-200"
                     >
                       {{ support.title }}
                       <ExternalLink

@@ -43,7 +43,7 @@ const descriptionParts = parseDescription(props.description);
 
 <template>
   <p
-    class="text-sm md:text-base text-neutral-500 dark:text-neutral-400 leading-relaxed"
+    class="text-sm md:text-base text-neutral-600 dark:text-neutral-300 leading-relaxed font-medium"
   >
     <TooltipProvider v-if="descriptionParts.some((p) => p.tooltip)">
       <template v-for="(part, index) in descriptionParts" :key="index">

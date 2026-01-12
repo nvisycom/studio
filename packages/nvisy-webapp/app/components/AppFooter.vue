@@ -17,7 +17,7 @@ const { t } = useI18n();
     class="border-t border-neutral-200 dark:border-neutral-800 bg-background"
   >
     <div
-      class="flex items-center justify-between px-4 py-3 text-xs text-neutral-500 dark:text-neutral-600"
+      class="flex items-center justify-between px-4 py-3 text-sm font-normal text-neutral-600 dark:text-neutral-300"
     >
       <div class="flex items-center gap-3">
         <span>© {{ new Date().getFullYear() }} {{ t("common.service") }}</span>

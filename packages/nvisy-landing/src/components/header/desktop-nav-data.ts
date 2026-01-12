@@ -6,22 +6,18 @@ import type {
 import {
 	BookOpen,
 	Braces,
-	Briefcase,
 	Building2,
 	Cloud,
 	Code,
 	HeartPulse,
-	Info,
 	Landmark,
 	Mail,
-	Map as MapIcon,
-	Package,
 	Plug,
-	Rocket,
 	Scale,
 	Server,
 	ShieldCheck,
 	Terminal,
+	Users,
 } from "lucide-vue-next";
 
 export const products: ProductSection = {
@@ -39,20 +35,13 @@ export const products: ProductSection = {
 			icon: Server,
 		},
 		{
-			title: "Nvisy Desktop",
-			href: "/products/desktop",
+			title: "Nvisy Studio",
+			href: "/products/studio",
 			description: "Cross-platform desktop app",
 			icon: Terminal,
 		},
 	],
 	opensource: [
-		{
-			title: "Nvisy Runtime",
-			href: "https://github.com/nvisycom/run",
-			description: "Secure OCR runtime with extraction",
-			icon: Package,
-			isExternal: true,
-		},
 		{
 			title: "TypeScript SDK",
 			href: "https://github.com/nvisycom/sdk-ts",
@@ -68,75 +57,45 @@ export const products: ProductSection = {
 			isExternal: true,
 		},
 	],
-	features: [],
-	customers: [],
-	comparisons: [],
 };
 
 export const solutions: SolutionSection = {
-	integrations: [
-		{
-			title: "Slack",
-			href: "/integrations",
-			icon: Plug,
-		},
-		{
-			title: "Google Drive",
-			href: "/integrations",
-			icon: Cloud,
-		},
-		{
-			title: "Dropbox",
-			href: "/integrations",
-			icon: Cloud,
-		},
-		{
-			title: "Notion",
-			href: "/integrations",
-			icon: BookOpen,
-		},
-		{
-			title: "Zapier",
-			href: "/integrations",
-			icon: Plug,
-		},
-		{
-			title: "Make",
-			href: "/integrations",
-			icon: Rocket,
-		},
-	],
-	usecase: [
+	byUsecase: [
 		{
 			title: "Financial",
 			href: "/solutions/financial",
+			description: "Banks & fintech",
 			icon: Building2,
 		},
 		{
 			title: "Government",
 			href: "/solutions/government",
+			description: "Public sector",
 			icon: Landmark,
 		},
 		{
 			title: "Healthcare",
 			href: "/solutions/healthcare",
+			description: "HIPAA compliant",
 			icon: HeartPulse,
 		},
 		{
 			title: "Insurance",
 			href: "/solutions/insurance",
+			description: "Claims & policies",
 			icon: ShieldCheck,
 		},
 	],
+	byCompany: [],
 };
 
 export const resources: ResourceSection = {
 	developers: [
 		{
-			title: "Reference",
-			href: "https://docs.nvisy.com/api-reference",
-			description: "Complete API documentation",
-			icon: Code,
+			title: "Docs",
+			href: "https://docs.nvisy.com",
+			description: "Guides & API docs",
+			icon: BookOpen,
 			isExternal: true,
 		},
 		{
@@ -145,27 +104,8 @@ export const resources: ResourceSection = {
 			description: "Connect & integrate with APIs",
 			icon: Plug,
 		},
-		{
-			title: "Roadmap",
-			href: "/roadmap",
-			description: "Product development roadmap",
-			icon: MapIcon,
-		},
-		{
-			title: "Careers",
-			href: "/careers",
-			description: "Join our remote team",
-			icon: Briefcase,
-		},
 	],
 	support: [
-		{
-			title: "Docs",
-			href: "https://docs.nvisy.com",
-			description: "Guides & API docs",
-			icon: BookOpen,
-			isExternal: true,
-		},
 		{
 			title: "Contact",
 			href: "/contact",
@@ -176,7 +116,7 @@ export const resources: ResourceSection = {
 			title: "About",
 			href: "/about",
 			description: "Learn more about Nvisy",
-			icon: Info,
+			icon: Users,
 		},
 		{
 			title: "Legal",

@@ -4,12 +4,20 @@ export const BACKGROUND_CLASSES = {
 	dark: "bg-neutral-900 dark:bg-black",
 	solid: "bg-white dark:bg-black",
 	gradient:
-		"bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-neutral-900 dark:via-black dark:to-neutral-900",
+		"bg-gradient-to-br from-blue-50 via-white to-pink-50 dark:from-blue-950/20 dark:via-black dark:to-pink-950/20 backdrop-blur-3xl",
 	none: "bg-transparent",
 };
 
+export type BackgroundVariant =
+	| "white"
+	| "gray"
+	| "dark"
+	| "solid"
+	| "gradient"
+	| "none";
+
 export function getBackgroundClass(
-	variant: "white" | "gray" | "dark" | "solid" | "gradient" | "none" = "white",
+	variant: BackgroundVariant = "white",
 ): string {
 	return BACKGROUND_CLASSES[variant];
 }

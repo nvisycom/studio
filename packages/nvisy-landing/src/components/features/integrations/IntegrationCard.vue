@@ -52,52 +52,52 @@ import { computed } from "vue";
 import { FileText, CircleCheck, Clock, Calendar } from "lucide-vue-next";
 
 const icons = import.meta.glob("@/assets/integration/*.svg", {
-  eager: true,
-  query: "?url",
-  import: "default",
+	eager: true,
+	query: "?url",
+	import: "default",
 }) as Record<string, string>;
 
 interface Props {
-  icon: string;
-  isBrand?: boolean;
-  version: string;
-  status: string;
-  title: string;
-  category: string;
-  description: string;
+	icon: string;
+	isBrand?: boolean;
+	version: string;
+	status: string;
+	title: string;
+	category: string;
+	description: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  isBrand: false,
+	isBrand: false,
 });
 
 const iconUrl = computed(() => {
-  const key = Object.keys(icons).find((k) => k.includes(`/${props.icon}.svg`));
-  return key ? icons[key] : null;
+	const key = Object.keys(icons).find((k) => k.includes(`/${props.icon}.svg`));
+	return key ? icons[key] : null;
 });
 
 // Status icon mapping
 const getStatusIcon = (status: string) => {
-  const statusIconMap: Record<string, any> = {
-    Completed: CircleCheck,
-    "In Progress": Clock,
-    Planned: Calendar,
-  };
+	const statusIconMap: Record<string, any> = {
+		Completed: CircleCheck,
+		"In Progress": Clock,
+		Planned: Calendar,
+	};
 
-  return statusIconMap[status] || Clock;
+	return statusIconMap[status] || Clock;
 };
 
 // Status text color classes - less prominent
 const statusTextClasses = computed(() => {
-  switch (props.status.toLowerCase()) {
-    case "completed":
-      return "text-neutral-600 dark:text-neutral-400";
-    case "in progress":
-      return "text-neutral-500 dark:text-neutral-500";
-    case "planned":
-      return "text-neutral-500 dark:text-neutral-500";
-    default:
-      return "text-neutral-600 dark:text-neutral-400";
-  }
+	switch (props.status.toLowerCase()) {
+		case "completed":
+			return "text-neutral-600 dark:text-neutral-400";
+		case "in progress":
+			return "text-neutral-500 dark:text-neutral-500";
+		case "planned":
+			return "text-neutral-500 dark:text-neutral-500";
+		default:
+			return "text-neutral-600 dark:text-neutral-400";
+	}
 });
 </script>

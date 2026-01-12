@@ -9,6 +9,7 @@ import {
 	Security,
 	CaseStudies,
 	UseCases,
+	Features,
 } from "@/components";
 ---
 
@@ -16,79 +17,52 @@ import {
   title="Healthcare Solutions"
   description="Document intelligence for healthcare organizations. Extract insights from medical records, automate clinical workflows, and ensure HIPAA compliance for patient data."
 >
-  <div class="bg-white dark:bg-black min-h-screen">
+  <Hero
+    title="Healthcare Document Intelligence"
+    description="Transform medical documents into structured, actionable data. Built for hospitals, clinics, health systems, and healthcare organizations that need to extract insights while ensuring HIPAA compliance."
+    background="gradient"
+    buttons={[
+      {
+        text: "Schedule Demo",
+        href: "/contact",
+        variant: "primary"
+      },
+      {
+        text: "View Documentation",
+        href: "https://docs.nvisy.com",
+        variant: "secondary"
+      }
+    ]}
+  />
 
-    <!-- Hero Section -->
-    <Hero
-      title="Healthcare Document Intelligence"
-      description="Transform medical documents into structured, actionable data. Built for hospitals, clinics, health systems, and healthcare organizations that need to extract insights while ensuring HIPAA compliance."
-      background="gradient"
-      buttons={[
-        {
-          text: "Schedule Demo",
-          href: "/contact",
-          variant: "primary"
-        },
-        {
-          text: "View Documentation",
-          href: "https://docs.nvisy.com",
-          variant: "secondary"
-        }
-      ]}
-    />
+  <SocialProof />
+  <Features
+    title="Built for Healthcare Organizations"
+    description="Advanced AI technology meets HIPAA requirements. Process clinical documents, patient records, and medical forms with healthcare-grade security and accuracy."
+    category="healthcare"
+    featured={true}
+  />
+  <CaseStudies />
+  <UseCases category="healthcare" />
+  <Testimonials />
+  <FAQ category="general" featured={true} />
 
-    <!-- Social Proof -->
-    <SocialProof
-      title="Trusted by Healthcare Organizations"
-      subtitle="Hospitals, clinics, and health systems trust Nvisy to transform their document workflows"
-    />
-
-    <!-- Case Studies -->
-    <CaseStudies />
-
-    <Security
-      title="Enterprise-Grade Document Security"
-      description="Built with compliance and security at the core. Our platform meets the rigorous standards required by healthcare organizations."
-    />
-
-    <!-- Use Cases -->
-    <UseCases
-      title="Healthcare Use Cases"
-      description="Healthcare organizations across different settings use our platform to protect patient information while maintaining care quality and research capabilities."
-      category="healthcare"
-    />
-
-    <!-- Testimonials -->
-    <Testimonials
-      title="Trusted by Healthcare Organizations"
-      description="See how hospitals, clinics, and health systems are transforming their document workflows with Nvisy"
-    />
-
-    <!-- FAQ -->
-    <FAQ
-      title="Healthcare FAQs"
-      description="Common questions about HIPAA-compliant document processing for healthcare"
-      category="general"
-      featured={true}
-    />
-
-    <!-- CTA -->
-    <CTA
-      title="Ready to Transform Your Healthcare Documents?"
-      description="Whether you're a small practice or a large health system, we have solutions tailored for your data extraction and HIPAA compliance needs. Special pricing available for qualifying healthcare organizations."
-      buttons={[
-        {
-          text: "Schedule Demo",
-          href: "/contact",
-          variant: "primary"
-        },
-        {
-          text: "View API Documentation",
-          href: "https://docs.nvisy.com",
-          variant: "secondary"
-        }
-      ]}
-      background="solid"
-    />
-  </div>
+  <CTA
+    title="Ready to Transform Your Healthcare Documents?"
+    description="Whether you're a small practice or a large health system, we have solutions tailored for your data extraction and HIPAA compliance needs."
+    buttons={[
+      {
+        text: "Schedule Demo",
+        href: "/contact",
+        variant: "primary"
+      },
+      {
+        text: "View API Documentation",
+        href: "https://docs.nvisy.com",
+        variant: "secondary"
+      }
+    ]}
+    background="solid"
+  />
+  <Security />
 </Layout>

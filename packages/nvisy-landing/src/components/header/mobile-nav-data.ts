@@ -13,8 +13,6 @@ import {
 	Info,
 	Landmark,
 	Mail,
-	Map as MapIcon,
-	Package,
 	Plug,
 	Rocket,
 	Scale,
@@ -38,20 +36,13 @@ export const products: ProductSection = {
 			icon: Server,
 		},
 		{
-			title: "Nvisy Desktop",
-			href: "/products/desktop",
+			title: "Nvisy Studio",
+			href: "/products/studio",
 			description: "Cross-platform desktop app",
 			icon: Terminal,
 		},
 	],
 	opensource: [
-		{
-			title: "Nvisy Runtime",
-			href: "https://github.com/nvisycom/run",
-			description: "Secure OCR runtime with extraction",
-			icon: Package,
-			isExternal: true,
-		},
 		{
 			title: "TypeScript SDK",
 			href: "https://github.com/nvisycom/sdk-ts",
@@ -105,7 +96,7 @@ export const solutions: SolutionSection = {
 			icon: Rocket,
 		},
 	],
-	usecase: [
+	byUsecase: [
 		{
 			title: "Financial",
 			href: "/solutions/financial",
@@ -132,10 +123,10 @@ export const solutions: SolutionSection = {
 export const resources: ResourceSection = {
 	developers: [
 		{
-			title: "Reference",
-			href: "https://docs.nvisy.com/api-reference",
-			description: "Complete API documentation",
-			icon: Code,
+			title: "Docs",
+			href: "https://docs.nvisy.com",
+			description: "Guides & API docs",
+			icon: BookOpen,
 			isExternal: true,
 		},
 		{
@@ -144,27 +135,8 @@ export const resources: ResourceSection = {
 			description: "Connect & integrate with APIs",
 			icon: Plug,
 		},
-		{
-			title: "Roadmap",
-			href: "/roadmap",
-			description: "Product development roadmap",
-			icon: MapIcon,
-		},
-		{
-			title: "Careers",
-			href: "/careers",
-			description: "Join our remote team",
-			icon: Building2,
-		},
 	],
 	support: [
-		{
-			title: "Docs",
-			href: "https://docs.nvisy.com",
-			description: "Guides & API docs",
-			icon: BookOpen,
-			isExternal: true,
-		},
 		{
 			title: "Contact",
 			href: "/contact",

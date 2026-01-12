@@ -1,0 +1,44 @@
+[
+	{
+		"title": "Clinical Document Processing",
+		"description": "Extract structured data from clinical notes, discharge summaries, and care plans while maintaining HIPAA compliance throughout the workflow.",
+		"icon": "file-text",
+		"order": 1,
+		"featured": true
+	},
+	{
+		"title": "HIPAA Compliance Built-In",
+		"description": "Process PHI with confidence using healthcare-grade security, BAA agreements, and comprehensive audit trails for regulatory compliance.",
+		"icon": "shield-check",
+		"order": 2,
+		"featured": true
+	},
+	{
+		"title": "Medical Records Intelligence",
+		"description": "Transform unstructured medical records into structured datasets for research, quality improvement, and population health initiatives.",
+		"icon": "bar-chart-3",
+		"order": 3,
+		"featured": true
+	},
+	{
+		"title": "Insurance & Billing Automation",
+		"description": "Extract data from claims, prior authorizations, and billing documents to accelerate reimbursement and reduce errors.",
+		"icon": "dollar-sign",
+		"order": 4,
+		"featured": true
+	},
+	{
+		"title": "EHR/EMR Integration",
+		"description": "Connect seamlessly with Epic, Cerner, and other healthcare systems through HL7 FHIR-compatible APIs and pre-built connectors.",
+		"icon": "link",
+		"order": 5,
+		"featured": true
+	},
+	{
+		"title": "Patient Data Protection",
+		"description": "Automatic PHI detection and handling with encryption at rest and in transit. Your patient data never leaves your control.",
+		"icon": "lock",
+		"order": 6,
+		"featured": true
+	}
+]

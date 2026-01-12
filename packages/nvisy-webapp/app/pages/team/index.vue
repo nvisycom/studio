@@ -32,6 +32,8 @@ import {
 	TeamListCard,
 } from "~/components/pages/team";
 
+useHead({ title: "Team" });
+
 definePageMeta({
 	pageCategory: "Team",
 });

@@ -1,0 +1,44 @@
+[
+	{
+		"title": "FOIA Request Processing",
+		"description": "Automate Freedom of Information Act request handling with intelligent document classification, redaction suggestions, and response preparation.",
+		"icon": "file-text",
+		"order": 1,
+		"featured": true
+	},
+	{
+		"title": "Public Records Digitization",
+		"description": "Transform paper-based public records into searchable, structured digital formats while maintaining chain of custody and authenticity.",
+		"icon": "layers",
+		"order": 2,
+		"featured": true
+	},
+	{
+		"title": "Government Security Standards",
+		"description": "Meet FedRAMP, FISMA, and state-level security requirements with air-gap deployment options and government-grade encryption.",
+		"icon": "shield-check",
+		"order": 3,
+		"featured": true
+	},
+	{
+		"title": "Citizen Services Automation",
+		"description": "Process permit applications, license requests, and citizen forms faster with automated data extraction and validation workflows.",
+		"icon": "users",
+		"order": 4,
+		"featured": true
+	},
+	{
+		"title": "Inter-Agency Data Sharing",
+		"description": "Securely share structured document data between agencies with role-based access controls and comprehensive audit logging.",
+		"icon": "link",
+		"order": 5,
+		"featured": true
+	},
+	{
+		"title": "On-Premises Deployment",
+		"description": "Deploy within your secure government network with full data sovereignty. No data leaves your infrastructure.",
+		"icon": "server",
+		"order": 6,
+		"featured": true
+	}
+]

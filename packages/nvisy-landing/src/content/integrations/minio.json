@@ -1,9 +1,9 @@
 {
-  "icon": "minio",
-  "isBrand": true,
-  "version": "v1.0",
-  "status": "Planned",
-  "title": "Minio",
-  "category": "File Import/Export",
-  "description": "Import documents from any S3-compatible object storage (AWS S3, MinIO, DigitalOcean Spaces, etc.) for automated data extraction and export structured results back to your storage."
+	"icon": "minio",
+	"isBrand": true,
+	"version": "v1.0",
+	"status": "Planned",
+	"title": "Minio",
+	"category": "File Import/Export",
+	"description": "Import documents from any S3-compatible object storage (AWS S3, MinIO, DigitalOcean Spaces, etc.) for automated data extraction and export structured results back to your storage."
 }

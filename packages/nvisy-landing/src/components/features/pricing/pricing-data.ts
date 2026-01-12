@@ -6,7 +6,8 @@ export interface PricingPlan {
 	features: string[];
 	buttonText: string;
 	buttonVariant: "primary" | "secondary" | "outline";
-	pagesIncluded?: number;
+	storage?: string;
+	queries?: string;
 	popular?: boolean;
 	badge?: string;
 }
@@ -24,13 +25,13 @@ export const plans: PricingPlan[] = [
 		name: "Basic",
 		description: "Perfect for individuals and small teams",
 		price: 0,
-		pagesIncluded: 100,
+		storage: "5GB",
+		queries: "1,000",
 		features: [
 			"Unlimited workspaces",
 			"Team collaboration",
 			"API access",
 			"Community support",
-			"5GB storage",
 		],
 		buttonText: "Get Started Free",
 		buttonVariant: "outline",
@@ -40,13 +41,13 @@ export const plans: PricingPlan[] = [
 		name: "Professional",
 		description: "Best for growing businesses and teams",
 		price: 49,
-		pagesIncluded: 1000,
+		storage: "20GB",
+		queries: "10,000",
 		features: [
 			"Everything in Basic",
-			"Webhooks",
-			"Integrations",
+			"Integrations & Webhooks",
 			"Priority support",
-			"20GB storage",
+			"On-premise deployment",
 		],
 		buttonText: "Start Pro Trial",
 		buttonVariant: "primary",
@@ -58,13 +59,13 @@ export const plans: PricingPlan[] = [
 		name: "Enterprise",
 		description: "Tailored solutions for large organizations",
 		price: "custom",
+		storage: "Unlimited",
+		queries: "Unlimited",
 		features: [
 			"Everything in Professional",
-			"Unlimited storage",
 			"24/7 dedicated support",
 			"Custom integrations",
 			"SLA guarantee",
-			"On-premise deployment",
 		],
 		buttonText: "Contact Sales",
 		buttonVariant: "outline",

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Upload, Eye, FileSearch, Download } from "lucide-vue-next";
 import type { FunctionalComponent } from "vue";
 
@@ -78,12 +79,14 @@ const screenshots: Screenshot[] = [
       <div
         class="relative rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-800 shadow-2xl"
       >
-        <img
-          :src="screenshot.image"
-          :alt="screenshot.alt"
-          class="w-full h-auto"
-          loading="lazy"
-        />
+        <AspectRatio :ratio="16 / 9">
+          <img
+            :src="screenshot.image"
+            :alt="screenshot.alt"
+            class="w-full h-full object-cover"
+            loading="lazy"
+          />
+        </AspectRatio>
       </div>
     </TabsContent>
   </Tabs>

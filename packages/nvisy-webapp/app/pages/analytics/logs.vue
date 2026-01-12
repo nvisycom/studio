@@ -56,6 +56,8 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 
+useHead({ title: "Logs" });
+
 definePageMeta({
 	pageCategory: "Analytics",
 });
@@ -254,7 +256,7 @@ function importLogs() {
         <div class="flex-1 min-w-[200px]">
           <div class="relative">
             <Search
-              class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-neutral-500"
+              class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-neutral-600"
             />
             <Input
               v-model="searchQuery"
@@ -367,7 +369,7 @@ function importLogs() {
 
           <div
             v-if="filteredLogs.length === 0"
-            class="py-12 text-center text-neutral-500"
+            class="py-12 text-center text-neutral-600"
           >
             No logs found matching your filters
           </div>

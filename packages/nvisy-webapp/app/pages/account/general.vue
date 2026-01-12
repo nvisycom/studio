@@ -20,6 +20,8 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+useHead({ title: "Account" });
+
 definePageMeta({
 	pageCategory: "Settings",
 });
@@ -195,7 +197,7 @@ function saveTimezone() {
             <div class="flex items-start justify-between">
               <div class="space-y-1">
                 <Label>Avatar</Label>
-                <p class="text-sm text-neutral-500 dark:text-neutral-400">
+                <p class="text-sm text-neutral-600 dark:text-neutral-400">
                   Click to upload. Recommended: 256x256px. PNG, JPG, or GIF.
                 </p>
               </div>
@@ -220,7 +222,7 @@ function saveTimezone() {
           <CardFooter
             class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
           >
-            <p class="text-sm text-neutral-500 dark:text-neutral-400">
+            <p class="text-sm text-neutral-600 dark:text-neutral-400">
               Your profile picture will be visible to other team members.
             </p>
           </CardFooter>
@@ -240,7 +242,7 @@ function saveTimezone() {
                 placeholder="John Doe"
                 class="max-w-md"
               />
-              <p class="text-sm text-neutral-500 dark:text-neutral-400">
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">
                 Your name as it appears across the platform. Max 64 characters.
               </p>
             </div>
@@ -254,7 +256,7 @@ function saveTimezone() {
                 placeholder="Acme Inc."
                 class="max-w-md"
               />
-              <p class="text-sm text-neutral-500 dark:text-neutral-400">
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">
                 May be displayed on documents and invoices.
               </p>
             </div>
@@ -262,7 +264,7 @@ function saveTimezone() {
           <CardFooter
             class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
           >
-            <p class="text-sm text-neutral-500 dark:text-neutral-400">
+            <p class="text-sm text-neutral-600 dark:text-neutral-400">
               This information will be used across all your workspaces.
             </p>
             <Button size="sm" @click="saveProfile" :disabled="isUpdating">
@@ -287,7 +289,7 @@ function saveTimezone() {
                 readonly
                 class="max-w-md bg-neutral-100 dark:bg-neutral-800 border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300"
               />
-              <p class="text-sm text-neutral-500 dark:text-neutral-400">
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">
                 To change your email address, please contact support.
               </p>
             </div>
@@ -336,7 +338,7 @@ function saveTimezone() {
                     <Eye v-else :size="16" />
                   </button>
                 </div>
-                <p class="text-sm text-neutral-500 dark:text-neutral-400">
+                <p class="text-sm text-neutral-600 dark:text-neutral-400">
                   Minimum 8 characters.
                 </p>
               </div>
@@ -381,7 +383,7 @@ function saveTimezone() {
           <CardFooter
             class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
           >
-            <p class="text-sm text-neutral-500 dark:text-neutral-400">
+            <p class="text-sm text-neutral-600 dark:text-neutral-400">
               You'll need to sign in again after changing your password.
             </p>
             <Button
@@ -432,7 +434,7 @@ function saveTimezone() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <p class="text-sm text-neutral-500 dark:text-neutral-400">
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">
                 All timestamps will be displayed in this timezone.
               </p>
             </div>
@@ -440,7 +442,7 @@ function saveTimezone() {
           <CardFooter
             class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
           >
-            <p class="text-sm text-neutral-500 dark:text-neutral-400">
+            <p class="text-sm text-neutral-600 dark:text-neutral-400">
               Changes will take effect immediately.
             </p>
             <Button size="sm" @click="saveTimezone"> Save </Button>

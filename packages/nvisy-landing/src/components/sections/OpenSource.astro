@@ -16,14 +16,21 @@ const nvisyRepos = [
 	{
 		name: "nvisycom/server",
 		description: "Document processing server - core extraction engine",
-		url: "https://github.com/nvisycom/server",
+		url: "#",
 		language: "Rust",
-		stars: 87,
+		comingSoon: true,
 	},
 	{
-		name: "nvisycom/desktop",
-		description: "Desktop application for document processing",
-		url: "https://github.com/nvisycom/desktop",
+		name: "nvisycom/runtime",
+		description: "Secure OCR runtime with extraction capabilities",
+		url: "#",
+		language: "Rust",
+		comingSoon: true,
+	},
+	{
+		name: "nvisycom/studio",
+		description: "Cross-platform desktop application for document processing",
+		url: "https://github.com/nvisycom/studio",
 		language: "TypeScript",
 		stars: 54,
 	},
@@ -65,33 +72,58 @@ const nvisyRepos = [
     <!-- Nvisy Repositories -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {nvisyRepos.map((repo) => (
-        <a
-          href={repo.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 hover:border-neutral-900 dark:hover:border-white transition-all flex flex-col"
-        >
-          <div class="flex items-start justify-between mb-4">
-            <div class="flex-1">
-              <h3 class="text-lg font-medium text-neutral-900 dark:text-white group-hover:text-black dark:group-hover:text-white transition-colors mb-2">
-                {repo.name}
-              </h3>
-              <p class="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
-                {repo.description}
-              </p>
+        repo.comingSoon ? (
+          <div
+            class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 flex flex-col opacity-75"
+          >
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <h3 class="text-lg font-medium text-neutral-900 dark:text-white mb-2">
+                  {repo.name}
+                </h3>
+                <p class="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
+                  {repo.description}
+                </p>
+              </div>
             </div>
-            <ExternalLink class="w-5 h-5 text-neutral-400 dark:text-neutral-500 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors flex-shrink-0 ml-3" />
-          </div>
-          <div class="mt-auto flex items-center justify-between">
-            <span class="inline-block text-xs px-2 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">
-              {repo.language}
-            </span>
-            <div class="flex items-center gap-1 text-neutral-600 dark:text-neutral-400">
-              <Star class="w-4 h-4" />
-              <span class="text-xs">{repo.stars}</span>
+            <div class="mt-auto flex items-center justify-between">
+              <span class="inline-block text-xs px-2 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">
+                {repo.language}
+              </span>
+              <span class="text-xs text-neutral-600 dark:text-neutral-400 font-medium">
+                Coming Soon
+              </span>
             </div>
           </div>
-        </a>
+        ) : (
+          <a
+            href={repo.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 hover:border-neutral-900 dark:hover:border-white transition-all flex flex-col"
+          >
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <h3 class="text-lg font-medium text-neutral-900 dark:text-white group-hover:text-black dark:group-hover:text-white transition-colors mb-2">
+                  {repo.name}
+                </h3>
+                <p class="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
+                  {repo.description}
+                </p>
+              </div>
+              <ExternalLink class="w-5 h-5 text-neutral-400 dark:text-neutral-500 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors flex-shrink-0 ml-3" />
+            </div>
+            <div class="mt-auto flex items-center justify-between">
+              <span class="inline-block text-xs px-2 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">
+                {repo.language}
+              </span>
+              <div class="flex items-center gap-1 text-neutral-600 dark:text-neutral-400">
+                <Star class="w-4 h-4" />
+                <span class="text-xs">{repo.stars}</span>
+              </div>
+            </div>
+          </a>
+        )
       ))}
     </div>
   </div>

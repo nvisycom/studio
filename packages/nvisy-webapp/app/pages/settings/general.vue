@@ -27,6 +27,8 @@ import {
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+useHead({ title: "Workspace Settings" });
+
 definePageMeta({
 	pageCategory: "Settings",
 });
@@ -242,7 +244,7 @@ const canDelete = computed(() => {
             <div class="flex items-start justify-between">
               <div class="space-y-1">
                 <Label>{{ t("settings.workspace.avatar.label") }}</Label>
-                <p class="text-sm text-neutral-500 dark:text-neutral-400">
+                <p class="text-sm text-neutral-600 dark:text-neutral-400">
                   {{ t("settings.workspace.avatar.description") }}
                 </p>
               </div>
@@ -262,7 +264,7 @@ const canDelete = computed(() => {
           <CardFooter
             class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
           >
-            <p class="text-sm text-neutral-500 dark:text-neutral-400">
+            <p class="text-sm text-neutral-600 dark:text-neutral-400">
               {{ t("settings.workspace.avatar.footer") }}
             </p>
           </CardFooter>
@@ -284,7 +286,7 @@ const canDelete = computed(() => {
                 :placeholder="t('settings.workspace.name.placeholder')"
                 class="max-w-md"
               />
-              <p class="text-sm text-neutral-500 dark:text-neutral-400">
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">
                 {{ t("settings.workspace.name.description") }}
               </p>
             </div>
@@ -301,7 +303,7 @@ const canDelete = computed(() => {
                 class="max-w-md resize-none"
                 :rows="3"
               />
-              <p class="text-sm text-neutral-500 dark:text-neutral-400">
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">
                 {{ t("settings.workspace.description.description") }}
               </p>
             </div>
@@ -332,7 +334,7 @@ const canDelete = computed(() => {
                   <Copy v-else :size="16" />
                 </Button>
               </div>
-              <p class="text-sm text-neutral-500 dark:text-neutral-400">
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">
                 {{ t("settings.workspace.id.description") }}
               </p>
             </div>
@@ -340,7 +342,7 @@ const canDelete = computed(() => {
           <CardFooter
             class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
           >
-            <p class="text-sm text-neutral-500 dark:text-neutral-400">
+            <p class="text-sm text-neutral-600 dark:text-neutral-400">
               {{ t("settings.workspace.info.footer") }}
             </p>
             <Button
@@ -371,7 +373,7 @@ const canDelete = computed(() => {
                 <Label>{{
                   t("settings.workspace.options.requireApproval.label")
                 }}</Label>
-                <p class="text-sm text-neutral-500 dark:text-neutral-400">
+                <p class="text-sm text-neutral-600 dark:text-neutral-400">
                   {{
                     t("settings.workspace.options.requireApproval.description")
                   }}
@@ -389,7 +391,7 @@ const canDelete = computed(() => {
                 <Label>{{
                   t("settings.workspace.options.enableComments.label")
                 }}</Label>
-                <p class="text-sm text-neutral-500 dark:text-neutral-400">
+                <p class="text-sm text-neutral-600 dark:text-neutral-400">
                   {{
                     t("settings.workspace.options.enableComments.description")
                   }}
@@ -404,7 +406,7 @@ const canDelete = computed(() => {
           <CardFooter
             class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
           >
-            <p class="text-sm text-neutral-500 dark:text-neutral-400">
+            <p class="text-sm text-neutral-600 dark:text-neutral-400">
               {{ t("settings.workspace.options.footer") }}
             </p>
             <Button

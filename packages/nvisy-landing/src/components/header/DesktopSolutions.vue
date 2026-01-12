@@ -5,7 +5,7 @@ import {
 	NavigationMenuLink,
 	NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { ChevronRight } from "lucide-vue-next";
+import { ArrowRight } from "lucide-vue-next";
 import { solutions } from "./desktop-nav-data";
 
 interface BlogPost {
@@ -18,12 +18,15 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const featuredPost = props.blogPosts[0];
+const remainingPosts = props.blogPosts.slice(1, 4);
 </script>
 
 <template>
   <NavigationMenuItem>
     <NavigationMenuTrigger
-      class="group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-base font-light text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white focus:bg-neutral-50 dark:focus:bg-neutral-800 focus:text-neutral-900 dark:focus:text-white disabled:pointer-events-none disabled:opacity-50 data-[state=open]:bg-neutral-50 dark:data-[state=open]:bg-neutral-800 data-[state=open]:text-neutral-900 dark:data-[state=open]:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-300 dark:focus-visible:ring-neutral-600 transition-all duration-200"
+      class="group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-base font-medium text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-black dark:hover:text-white focus:bg-neutral-50 dark:focus:bg-neutral-800 focus:text-black dark:focus:text-white disabled:pointer-events-none disabled:opacity-50 data-[state=open]:bg-neutral-50 dark:data-[state=open]:bg-neutral-800 data-[state=open]:text-black dark:data-[state=open]:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-300 dark:focus-visible:ring-neutral-600 transition-all duration-200"
     >
       Solutions
     </NavigationMenuTrigger>
@@ -32,62 +35,84 @@ const props = defineProps<Props>();
     >
       <div class="p-0 md:w-[800px]">
         <div class="grid gap-0 lg:grid-cols-2">
-          <!-- Left Column: Solutions 2x2 Grid -->
+          <!-- Left Column: Solutions List -->
           <div class="p-6 border-r border-neutral-100 dark:border-neutral-700">
+            <!-- Industries -->
             <h3
-              class="font-light text-neutral-500 dark:text-neutral-400 mb-4 text-xs tracking-wide"
+              class="font-light text-neutral-500 dark:text-neutral-400 mb-3 text-xs tracking-wide"
             >
-              By Use Case
+              Industries
             </h3>
-            <div class="grid grid-cols-2 gap-3">
-              <NavigationMenuLink
-                v-for="solution in solutions.usecase"
+            <div class="grid grid-cols-2 gap-1">
+              <a
+                v-for="solution in solutions.byUsecase"
                 :key="solution.title"
                 :href="solution.href"
-                class="flex flex-col p-4 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 transition-all hover:bg-neutral-50 dark:hover:bg-neutral-900 hover:border-neutral-300 dark:hover:border-neutral-600 hover:shadow-sm"
+                class="group/item flex items-center gap-3 p-2 rounded-md transition-all duration-200 hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
               >
                 <component
                   :is="solution.icon"
-                  class="w-6 h-6 text-neutral-400 dark:text-neutral-500 mb-2"
+                  class="w-5 h-5 text-neutral-400 dark:text-neutral-500 group-hover/item:text-neutral-600 dark:group-hover/item:text-neutral-300 transition-colors duration-200 flex-shrink-0"
                 />
-                <div class="flex items-center justify-between">
+                <div class="flex-1 min-w-0">
                   <div
-                    class="text-sm font-medium text-neutral-900 dark:text-white"
+                    class="text-sm font-medium text-neutral-800 dark:text-neutral-200 group-hover/item:text-black dark:group-hover/item:text-white transition-colors"
                   >
                     {{ solution.title }}
                   </div>
-                  <ChevronRight
-                    class="w-4 h-4 text-neutral-400 dark:text-neutral-500"
-                  />
+                  <div
+                    v-if="solution.description"
+                    class="text-xs text-neutral-500 dark:text-neutral-500 mt-1"
+                  >
+                    {{ solution.description }}
+                  </div>
                 </div>
-              </NavigationMenuLink>
+              </a>
             </div>
           </div>
 
           <!-- Right Column: Blog Section -->
           <div class="p-6">
-            <NavigationMenuLink
-              href="/blog"
-              class="inline-flex items-center font-light text-neutral-500 dark:text-neutral-400 mb-3 text-xs tracking-wide transition-colors hover:text-neutral-900 dark:hover:text-white focus:text-neutral-900 dark:focus:text-white -mt-2"
+            <h3
+              class="font-light text-neutral-500 dark:text-neutral-400 mb-3 text-xs tracking-wide"
             >
-              <span class="flex items-center">
-                Blog
-                <ChevronRight class="h-4 w-4 ml-1" />
-              </span>
+              <a
+                href="/blog"
+                class="inline-flex items-center gap-1 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
+              >
+                From the Blog <ArrowRight class="w-3 h-3" />
+              </a>
+            </h3>
+
+            <!-- Featured Post -->
+            <NavigationMenuLink
+              v-if="featuredPost"
+              :href="featuredPost.href"
+              class="group/featured block p-4 -mx-1 rounded-xl bg-white dark:bg-neutral-800/50 shadow-sm hover:shadow-md transition-all duration-200 mb-4"
+            >
+              <div
+                class="text-sm font-medium text-neutral-900 dark:text-white line-clamp-2 group-hover/featured:text-neutral-700 dark:group-hover/featured:text-neutral-200 transition-colors"
+              >
+                {{ featuredPost.title }}
+              </div>
+              <div
+                class="flex items-center gap-1 mt-2 text-xs text-neutral-400 dark:text-neutral-500 group-hover/featured:text-neutral-600 dark:group-hover/featured:text-neutral-400 transition-colors"
+              >
+                Read article
+                <ArrowRight class="w-3 h-3" />
+              </div>
             </NavigationMenuLink>
-            <div class="space-y-2">
-              <NavigationMenuLink
-                v-for="post in props.blogPosts.slice(0, 3)"
+
+            <!-- Remaining Posts - Minimal List -->
+            <div class="space-y-3">
+              <a
+                v-for="post in remainingPosts"
                 :key="post.href"
                 :href="post.href"
-                class="block p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-900 hover:border-neutral-300 dark:hover:border-neutral-600"
+                class="block text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors hover:underline line-clamp-2"
               >
-                <div
-                  class="text-sm font-light text-neutral-900 dark:text-white line-clamp-2"
-                >
-                  {{ post.title }}
-                </div>
-              </NavigationMenuLink>
+                {{ post.title }}
+              </a>
             </div>
           </div>
         </div>

@@ -6,6 +6,8 @@ import {
 	StudioChatPanel,
 } from "~/components/pages/studio";
 
+useHead({ title: "Studio" });
+
 definePageMeta({
 	pageCategory: "Studio",
 });

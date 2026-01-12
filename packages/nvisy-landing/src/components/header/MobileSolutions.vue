@@ -25,7 +25,7 @@ const toggle = () => {
     <div v-show="isOpen" class="mt-3 pl-4">
       <div class="grid grid-cols-2 gap-x-4 gap-y-3">
         <a
-          v-for="solution in solutions.usecase"
+          v-for="solution in solutions.byUsecase"
           :key="solution.title"
           :href="solution.href"
           class="text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors text-sm"
