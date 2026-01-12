@@ -3,18 +3,18 @@ import { FileText, Loader2 } from "lucide-vue-next";
 import { ZoomControls } from "~/components/pages/documents";
 
 const props = defineProps<{
-  contentUrl: string | null;
-  displayName: string;
-  isLoading: boolean;
-  isImage: boolean;
-  zoomLevel: number;
-  chatVisible: boolean;
+	contentUrl: string | null;
+	displayName: string;
+	isLoading: boolean;
+	isImage: boolean;
+	zoomLevel: number;
+	chatVisible: boolean;
 }>();
 
 const emit = defineEmits<{
-  "zoom-in": [];
-  "zoom-out": [];
-  "toggle-chat": [];
+	"zoom-in": [];
+	"zoom-out": [];
+	"toggle-chat": [];
 }>();
 </script>
 

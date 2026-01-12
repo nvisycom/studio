@@ -1,9 +1,9 @@
 {
-  "icon": "dropbox",
-  "isBrand": true,
-  "version": "v1.0",
-  "status": "Planned",
-  "title": "Dropbox",
-  "category": "File Import/Export",
-  "description": "Import documents from Dropbox for automated data extraction and export structured results back to shared folders and team spaces."
+	"icon": "dropbox",
+	"isBrand": true,
+	"version": "v1.0",
+	"status": "Planned",
+	"title": "Dropbox",
+	"category": "File Import/Export",
+	"description": "Import documents from Dropbox for automated data extraction and export structured results back to shared folders and team spaces."
 }

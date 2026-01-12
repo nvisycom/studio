@@ -6,7 +6,7 @@ import type {
 import type { HTMLAttributes } from "vue";
 import { reactiveOmit } from "@vueuse/core";
 import { NavigationMenuContent, useForwardPropsEmits } from "reka-ui";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 const props = defineProps<
 	NavigationMenuContentProps & { class?: HTMLAttributes["class"] }

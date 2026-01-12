@@ -1,9 +1,0 @@
-{
-  "icon": "adobe",
-  "isBrand": true,
-  "version": "v1.0",
-  "status": "Planned",
-  "title": "Adobe Sign",
-  "category": "Pre/Post Signing",
-  "description": "Seamlessly extract and structure document data before and after Adobe Sign workflows, transforming signed documents into actionable structured data."
-}

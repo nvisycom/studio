@@ -4,34 +4,34 @@ import { Users, Trash2, UserCog } from "lucide-vue-next";
 import { EntityAvatar } from "@/components/common";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-  ContextMenuSeparator,
+	ContextMenu,
+	ContextMenuContent,
+	ContextMenuItem,
+	ContextMenuTrigger,
+	ContextMenuSeparator,
 } from "@/components/ui/context-menu";
 import { formatRelativeTime } from "@/utils/date";
 
 interface Props {
-  members: Member[];
-  selectedMembers?: Set<string>;
-  allSelected?: boolean;
+	members: Member[];
+	selectedMembers?: Set<string>;
+	allSelected?: boolean;
 }
 
 interface Emits {
-  (e: "remove", memberId: string): void;
-  (e: "edit", memberId: string): void;
-  (e: "toggleSelectAll"): void;
-  (e: "toggleMember", memberId: string): void;
-  (e: "deleteSelected"): void;
+	(e: "remove", memberId: string): void;
+	(e: "edit", memberId: string): void;
+	(e: "toggleSelectAll"): void;
+	(e: "toggleMember", memberId: string): void;
+	(e: "deleteSelected"): void;
 }
 
 const props = defineProps<Props>();
@@ -40,13 +40,13 @@ const emit = defineEmits<Emits>();
 const { t } = useI18n();
 
 function canSelectMember(member: Member): boolean {
-  return member.memberRole !== "owner";
+	return member.memberRole !== "owner";
 }
 
 function handleRowClick(member: Member) {
-  if (canSelectMember(member)) {
-    emit("toggleMember", member.accountId);
-  }
+	if (canSelectMember(member)) {
+		emit("toggleMember", member.accountId);
+	}
 }
 </script>
 

@@ -1,40 +1,40 @@
 <script setup lang="ts">
 import {
-  ZoomIn,
-  ZoomOut,
-  PanelRightClose,
-  PanelRightOpen,
+	ZoomIn,
+	ZoomOut,
+	PanelRightClose,
+	PanelRightOpen,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 
 interface Props {
-  zoomLevel?: number;
-  chatVisible?: boolean;
+	zoomLevel?: number;
+	chatVisible?: boolean;
 }
 
 interface Emits {
-  (e: "zoomIn"): void;
-  (e: "zoomOut"): void;
-  (e: "toggleChat"): void;
+	(e: "zoomIn"): void;
+	(e: "zoomOut"): void;
+	(e: "toggleChat"): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  zoomLevel: 100,
-  chatVisible: true,
+	zoomLevel: 100,
+	chatVisible: true,
 });
 
 const emit = defineEmits<Emits>();
 
 function zoomIn() {
-  emit("zoomIn");
+	emit("zoomIn");
 }
 
 function zoomOut() {
-  emit("zoomOut");
+	emit("zoomOut");
 }
 
 function toggleChat() {
-  emit("toggleChat");
+	emit("toggleChat");
 }
 </script>
 

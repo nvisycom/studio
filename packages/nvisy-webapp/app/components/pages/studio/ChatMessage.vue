@@ -1,46 +1,46 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
-  Copy,
-  Check,
-  ThumbsUp,
-  ThumbsDown,
-  RefreshCw,
-  Pencil,
+	Copy,
+	Check,
+	ThumbsUp,
+	ThumbsDown,
+	RefreshCw,
+	Pencil,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 
 interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  timestamp: Date;
-  goodFeedback?: boolean;
-  badFeedback?: boolean;
+	id: string;
+	role: "user" | "assistant";
+	content: string;
+	timestamp: Date;
+	goodFeedback?: boolean;
+	badFeedback?: boolean;
 }
 
 const props = defineProps<{
-  message: Message;
-  isEditing?: boolean;
+	message: Message;
+	isEditing?: boolean;
 }>();
 
 const emit = defineEmits<{
-  copy: [id: string];
-  edit: [id: string];
-  good: [id: string];
-  bad: [id: string];
-  tryAgain: [id: string];
+	copy: [id: string];
+	edit: [id: string];
+	good: [id: string];
+	bad: [id: string];
+	tryAgain: [id: string];
 }>();
 
 const copied = ref(false);
 
 async function handleCopy() {
-  await navigator.clipboard.writeText(props.message.content);
-  copied.value = true;
-  emit("copy", props.message.id);
-  setTimeout(() => {
-    copied.value = false;
-  }, 2000);
+	await navigator.clipboard.writeText(props.message.content);
+	copied.value = true;
+	emit("copy", props.message.id);
+	setTimeout(() => {
+		copied.value = false;
+	}, 2000);
 }
 </script>
 

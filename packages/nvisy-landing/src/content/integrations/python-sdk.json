@@ -1,9 +1,9 @@
 {
-  "icon": "python",
-  "isBrand": true,
-  "version": "v1.0",
-  "status": "Planned",
-  "title": "Python SDK",
-  "category": "Developer",
-  "description": "Native Python library with async support and comprehensive error handling for seamless document processing integration in Python applications."
+	"icon": "python",
+	"isBrand": true,
+	"version": "v1.0",
+	"status": "Planned",
+	"title": "Python SDK",
+	"category": "Developer",
+	"description": "Native Python library with async support and comprehensive error handling for seamless document processing integration in Python applications."
 }

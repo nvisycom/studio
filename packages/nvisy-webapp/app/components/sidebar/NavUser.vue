@@ -1,30 +1,30 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
-  ChevronsUpDown,
-  LogOut,
-  Command,
-  Moon,
-  Sun,
-  Home,
-  ExternalLink,
-  User,
-  Key,
+	ChevronsUpDown,
+	LogOut,
+	Command,
+	Moon,
+	Sun,
+	Home,
+	ExternalLink,
+	User,
+	Key,
 } from "lucide-vue-next";
 import { EntityAvatar } from "@/components/common";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuGroup,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	useSidebar,
 } from "@/components/ui/sidebar";
 import { Kbd } from "@/components/ui/kbd";
 import CommandMenu from "@/components/CommandMenu.vue";
@@ -32,11 +32,11 @@ import CreateWorkspaceModal from "@/components/sidebar/CreateWorkspaceModal.vue"
 import HelpChat from "@/components/HelpChat.vue";
 
 const props = defineProps<{
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
+	user: {
+		name: string;
+		email: string;
+		avatar: string;
+	};
 }>();
 
 const { t } = useI18n();
@@ -50,36 +50,36 @@ const helpChatRef = ref();
 const colorMode = useColorMode();
 
 function openCommandMenu() {
-  isCommandMenuOpen.value = true;
+	isCommandMenuOpen.value = true;
 }
 
 function toggleTheme() {
-  colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
+	colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
 }
 
 function handleLogout() {
-  logout();
+	logout();
 }
 
 // Command menu action handlers
 function handleCreateWorkspace() {
-  isCreateWorkspaceOpen.value = true;
+	isCreateWorkspaceOpen.value = true;
 }
 
 function handleUploadFile() {
-  // Navigate to files page where upload can be triggered
-  navigateTo("/files");
+	// Navigate to files page where upload can be triggered
+	navigateTo("/files");
 }
 
 function handleOpenSupport() {
-  helpChatRef.value?.toggleChat();
+	helpChatRef.value?.toggleChat();
 }
 
 // Global keyboard shortcut for opening command menu
 defineShortcuts({
-  meta_k: () => {
-    isCommandMenuOpen.value = !isCommandMenuOpen.value;
-  },
+	meta_k: () => {
+		isCommandMenuOpen.value = !isCommandMenuOpen.value;
+	},
 });
 </script>
 

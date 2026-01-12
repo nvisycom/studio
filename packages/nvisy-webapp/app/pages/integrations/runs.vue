@@ -2,47 +2,47 @@
 import { ref, computed } from "vue";
 import type { IntegrationRun } from "@nvisy/sdk/datatypes";
 import {
-  Search,
-  ArrowLeft,
-  Eye,
-  Copy,
-  Check,
-  Loader2,
-  Play,
-  Clock,
-  XCircle,
+	Search,
+	ArrowLeft,
+	Eye,
+	Copy,
+	Check,
+	Loader2,
+	Play,
+	Clock,
+	XCircle,
 } from "lucide-vue-next";
 import { formatRelativeTime } from "@/utils/date";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-  ContextMenuSeparator,
+	ContextMenu,
+	ContextMenuContent,
+	ContextMenuItem,
+	ContextMenuTrigger,
+	ContextMenuSeparator,
 } from "@/components/ui/context-menu";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
@@ -51,7 +51,7 @@ import { RunDetailsModal } from "~/components/pages/integrations";
 const { t } = useI18n();
 
 definePageMeta({
-  pageCategory: "Integrations",
+	pageCategory: "Integrations",
 });
 
 // Use SDK composable
@@ -66,90 +66,90 @@ const isViewDetailsModalOpen = ref(false);
 const selectedRunForDetails = ref<IntegrationRun | null>(null);
 
 const filteredRuns = computed(() => {
-  let filtered = runs.value ?? [];
+	let filtered = runs.value ?? [];
 
-  if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter((run) => {
-      const integration = integrations.value?.find(
-        (i) => i.integrationId === run.integrationId,
-      );
-      return (
-        integration?.integrationName.toLowerCase().includes(query) ||
-        run.id.toLowerCase().includes(query)
-      );
-    });
-  }
+	if (searchQuery.value.trim()) {
+		const query = searchQuery.value.toLowerCase();
+		filtered = filtered.filter((run) => {
+			const integration = integrations.value?.find(
+				(i) => i.integrationId === run.integrationId,
+			);
+			return (
+				integration?.integrationName.toLowerCase().includes(query) ||
+				run.id.toLowerCase().includes(query)
+			);
+		});
+	}
 
-  if (statusFilter.value !== "all") {
-    filtered = filtered.filter((run) => run.status === statusFilter.value);
-  }
+	if (statusFilter.value !== "all") {
+		filtered = filtered.filter((run) => run.status === statusFilter.value);
+	}
 
-  return filtered.sort(
-    (a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
-  );
+	return filtered.sort(
+		(a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
+	);
 });
 
 function getIntegrationName(integrationId: string | null | undefined): string {
-  if (!integrationId) return t("integrations.runs.unknown");
-  const integration = integrations.value?.find(
-    (i) => i.integrationId === integrationId,
-  );
-  return integration?.integrationName ?? t("integrations.runs.unknown");
+	if (!integrationId) return t("integrations.runs.unknown");
+	const integration = integrations.value?.find(
+		(i) => i.integrationId === integrationId,
+	);
+	return integration?.integrationName ?? t("integrations.runs.unknown");
 }
 
 function toggleRunSelection(runId: string) {
-  if (selectedRuns.value.has(runId)) {
-    selectedRuns.value.delete(runId);
-  } else {
-    selectedRuns.value.add(runId);
-  }
+	if (selectedRuns.value.has(runId)) {
+		selectedRuns.value.delete(runId);
+	} else {
+		selectedRuns.value.add(runId);
+	}
 }
 
 function toggleAllRuns() {
-  if (selectedRuns.value.size === filteredRuns.value.length) {
-    selectedRuns.value.clear();
-  } else {
-    selectedRuns.value = new Set(filteredRuns.value.map((run) => run.id));
-  }
+	if (selectedRuns.value.size === filteredRuns.value.length) {
+		selectedRuns.value.clear();
+	} else {
+		selectedRuns.value = new Set(filteredRuns.value.map((run) => run.id));
+	}
 }
 
 const allSelected = computed(
-  () =>
-    filteredRuns.value.length > 0 &&
-    selectedRuns.value.size === filteredRuns.value.length,
+	() =>
+		filteredRuns.value.length > 0 &&
+		selectedRuns.value.size === filteredRuns.value.length,
 );
 
 const logsCopied = ref(false);
 
 function copyLogs() {
-  // TODO: Implement copy logs to clipboard
-  logsCopied.value = true;
-  setTimeout(() => {
-    logsCopied.value = false;
-  }, 2000);
+	// TODO: Implement copy logs to clipboard
+	logsCopied.value = true;
+	setTimeout(() => {
+		logsCopied.value = false;
+	}, 2000);
 }
 
 function viewRunDetails(run: IntegrationRun) {
-  selectedRunForDetails.value = run;
-  isViewDetailsModalOpen.value = true;
+	selectedRunForDetails.value = run;
+	isViewDetailsModalOpen.value = true;
 }
 
 function copyRunDetails(_run: IntegrationRun) {
-  // TODO: Implement copy run details to clipboard
+	// TODO: Implement copy run details to clipboard
 }
 
 function formatDuration(
-  startedAt: string,
-  completedAt: string | null | undefined,
+	startedAt: string,
+	completedAt: string | null | undefined,
 ): string {
-  if (!completedAt) return "-";
-  const start = new Date(startedAt).getTime();
-  const end = new Date(completedAt).getTime();
-  const diff = end - start;
-  const minutes = Math.floor(diff / 60000);
-  const seconds = Math.floor((diff % 60000) / 1000);
-  return `${minutes}m ${seconds}s`;
+	if (!completedAt) return "-";
+	const start = new Date(startedAt).getTime();
+	const end = new Date(completedAt).getTime();
+	const diff = end - start;
+	const minutes = Math.floor(diff / 60000);
+	const seconds = Math.floor((diff % 60000) / 1000);
+	return `${minutes}m ${seconds}s`;
 }
 </script>
 

@@ -1,9 +1,9 @@
 {
-  "icon": "microsoft",
-  "isBrand": true,
-  "version": "v1.0",
-  "status": "Planned",
-  "title": "Microsoft Teams",
-  "category": "Notification",
-  "description": "Get instant notifications about document processing status, workflow updates, and extraction results delivered to your Microsoft Teams channels."
+	"icon": "microsoft-teams",
+	"isBrand": true,
+	"version": "v1.0",
+	"status": "Planned",
+	"title": "Microsoft Teams",
+	"category": "Notification",
+	"description": "Get instant notifications about document processing status, workflow updates, and extraction results delivered to your Microsoft Teams channels."
 }

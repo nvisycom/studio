@@ -3,53 +3,53 @@ import type { Integration } from "@nvisy/sdk/datatypes";
 import { Edit, Trash2, HardDrive, Webhook, Box } from "lucide-vue-next";
 import { Badge } from "@/components/ui/badge";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-  ContextMenuSeparator,
+	ContextMenu,
+	ContextMenuContent,
+	ContextMenuItem,
+	ContextMenuTrigger,
+	ContextMenuSeparator,
 } from "@/components/ui/context-menu";
 import { formatRelativeTime } from "@/utils/date";
 
 const { t } = useI18n();
 
 defineProps<{
-  integrations: Integration[];
+	integrations: Integration[];
 }>();
 
 const emit = defineEmits<{
-  (e: "configure", integrationId: string): void;
-  (e: "disconnect", integrationId: string): void;
+	(e: "configure", integrationId: string): void;
+	(e: "disconnect", integrationId: string): void;
 }>();
 
 function getIntegrationIcon(type: string) {
-  switch (type) {
-    case "storage":
-      return HardDrive;
-    case "webhook":
-      return Webhook;
-    default:
-      return Box;
-  }
+	switch (type) {
+		case "storage":
+			return HardDrive;
+		case "webhook":
+			return Webhook;
+		default:
+			return Box;
+	}
 }
 
 function getIntegrationColor(type: string): string {
-  switch (type) {
-    case "storage":
-      return "bg-blue-600";
-    case "webhook":
-      return "bg-purple-600";
-    default:
-      return "bg-gray-600";
-  }
+	switch (type) {
+		case "storage":
+			return "bg-blue-600";
+		case "webhook":
+			return "bg-purple-600";
+		default:
+			return "bg-gray-600";
+	}
 }
 </script>
 

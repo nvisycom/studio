@@ -1,9 +1,9 @@
 {
-  "icon": "brain",
-  "isBrand": false,
-  "version": "v1.0",
-  "status": "Planned",
-  "title": "OpenAI",
-  "category": "AI Extraction",
-  "description": "Leverage OpenAI's language models for intelligent, context-aware data extraction that understands document structure and semantic meaning for precise structuring."
+	"icon": "openai",
+	"isBrand": false,
+	"version": "v1.0",
+	"status": "Planned",
+	"title": "OpenAI",
+	"category": "AI Extraction",
+	"description": "Leverage OpenAI's language models for intelligent, context-aware data extraction that understands document structure and semantic meaning for precise structuring."
 }

@@ -1,38 +1,38 @@
 [
-  {
-    "question": "How do I get started?",
-    "answer": "Getting started is easy! Simply sign up for an account, follow our onboarding guide, and you'll be up and running in minutes. Our getting started tutorial will walk you through the essential features and help you set up your first workspace.",
-    "order": 1,
-    "featured": true
-  },
-  {
-    "question": "Can I collaborate with my team?",
-    "answer": "Yes! Our Pro and Enterprise plans include team collaboration features. You can invite team members, assign roles and permissions, share workspaces, and work together seamlessly on document processing workflows.",
-    "order": 2,
-    "featured": true
-  },
-  {
-    "question": "What file formats do you support?",
-    "answer": "We support a wide range of document formats including PDF, Word (DOC/DOCX), Excel (XLS/XLSX), PowerPoint (PPT/PPTX), images (PNG, JPG, TIFF), and many more. Our AI-powered processing works consistently across all supported formats.",
-    "order": 3,
-    "featured": true
-  },
-  {
-    "question": "How accurate is the AI processing?",
-    "answer": "Our AI-powered document processing achieves 99.9% accuracy through advanced machine learning models. The system intelligently extracts and structures data including text, tables, forms, and custom patterns. All results can be reviewed and adjusted before finalizing.",
-    "order": 4,
-    "featured": true
-  },
-  {
-    "question": "Is my data secure?",
-    "answer": "Absolutely. We're SOC 2 Type II compliant and use enterprise-grade encryption for data at rest and in transit. Your documents are processed in secure, isolated environments and can be automatically deleted after processing. We never train our AI models on your data.",
-    "order": 5,
-    "featured": true
-  },
-  {
-    "question": "Do you offer a free trial?",
-    "answer": "Yes! We offer a 14-day free trial with full access to all features. No credit card required. You can process up to 100 documents during your trial period to fully evaluate our platform.",
-    "order": 6,
-    "featured": true
-  }
+	{
+		"question": "How do I get started?",
+		"answer": "Getting started is easy! Simply sign up for an account, follow our onboarding guide, and you'll be up and running in minutes. Our getting started tutorial will walk you through the essential features and help you set up your first workspace.",
+		"order": 1,
+		"featured": true
+	},
+	{
+		"question": "Can I collaborate with my team?",
+		"answer": "Yes! Our Pro and Enterprise plans include team collaboration features. You can invite team members, assign roles and permissions, share workspaces, and work together seamlessly on document processing workflows.",
+		"order": 2,
+		"featured": true
+	},
+	{
+		"question": "What file formats do you support?",
+		"answer": "We support a wide range of document formats including PDF, Word (DOC/DOCX), Excel (XLS/XLSX), PowerPoint (PPT/PPTX), images (PNG, JPG, TIFF), and many more. Our AI-powered processing works consistently across all supported formats.",
+		"order": 3,
+		"featured": true
+	},
+	{
+		"question": "How accurate is the AI processing?",
+		"answer": "Our AI-powered document processing achieves 99.9% accuracy through advanced machine learning models. The system intelligently extracts and structures data including text, tables, forms, and custom patterns. All results can be reviewed and adjusted before finalizing.",
+		"order": 4,
+		"featured": true
+	},
+	{
+		"question": "Is my data secure?",
+		"answer": "Absolutely. We're SOC 2 Type II compliant and use enterprise-grade encryption for data at rest and in transit. Your documents are processed in secure, isolated environments and can be automatically deleted after processing. We never train our AI models on your data.",
+		"order": 5,
+		"featured": true
+	},
+	{
+		"question": "Do you offer a free trial?",
+		"answer": "Yes! We offer a 14-day free trial with full access to all features. No credit card required. You can process up to 100 documents during your trial period to fully evaluate our platform.",
+		"order": 6,
+		"featured": true
+	}
 ]

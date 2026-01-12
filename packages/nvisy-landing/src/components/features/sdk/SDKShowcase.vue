@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { Check, Copy, ExternalLink, Package } from "lucide-vue-next";
-import TypeScriptIcon from "@/assets/sdks/typescript.svg?raw";
-import PythonIcon from "@/assets/sdks/python.svg?raw";
+import JavaScriptIcon from "@/assets/integration/javascript.svg?raw";
+import PythonIcon from "@/assets/integration/python.svg?raw";
 
 interface SDK {
   name: string;
@@ -77,14 +77,16 @@ const copyCode = async () => {
           ]"
         >
           <div
-            v-if="sdk.name === 'TypeScript'"
-            v-html="TypeScriptIcon"
-            class="w-4 h-4 hidden sm:block"
+            v-if="sdk.name === 'JavaScript'"
+            v-html="JavaScriptIcon"
+            class="w-4 h-4 hidden sm:block [&>svg]:w-full [&>svg]:h-full"
+            :class="activeTab === index ? 'sdk-icon-active' : 'sdk-icon'"
           ></div>
           <div
             v-else-if="sdk.name === 'Python'"
             v-html="PythonIcon"
-            class="w-4 h-4 hidden sm:block"
+            class="w-4 h-4 hidden sm:block [&>svg]:w-full [&>svg]:h-full"
+            :class="activeTab === index ? 'sdk-icon-active' : 'sdk-icon'"
           ></div>
           <Package v-else class="w-4 h-4 hidden sm:block" />
           <span>{{ sdk.name }}</span>
@@ -146,5 +148,13 @@ const copyCode = async () => {
 .code-container :deep(pre) {
   margin: 0;
   padding: 1.5rem;
+}
+
+.sdk-icon {
+  filter: grayscale(100%);
+}
+
+.sdk-icon-active {
+  filter: grayscale(100%);
 }
 </style>

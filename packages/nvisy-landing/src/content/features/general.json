@@ -1,44 +1,44 @@
 [
-  {
-    "title": "AI-Powered Document Intelligence",
-    "description": "Powered by latest Claude and GPT models for unmatched accuracy. Automatically extract, classify, and structure data from any document. Identify {PII|Personally Identifiable Information}, {PHI|Protected Health Information}, and key business data across all formats.",
-    "icon": "zap",
-    "order": 1,
-    "featured": true
-  },
-  {
-    "title": "Enterprise Security & Compliance",
-    "description": "{AES-256|Advanced Encryption Standard with 256-bit keys} encryption, zero-trust architecture, and private processing. {GDPR|General Data Protection Regulation} compliant with SOC 2, ISO 27001, {HIPAA|Health Insurance Portability and Accountability Act}, and CCPA readiness.",
-    "icon": "shield-check",
-    "order": 2,
-    "featured": true
-  },
-  {
-    "title": "Developer Friendly APIs",
-    "description": "{RESTful APIs|Representational State Transfer - web service architecture} with comprehensive documentation, TypeScript and Python {SDKs|Software Development Kits}. Integration takes minutes, not weeks.",
-    "icon": "code",
-    "order": 3,
-    "featured": true
-  },
-  {
-    "title": "Seamless Integrations",
-    "description": "Connect with Google Drive, Dropbox, AWS S3, and popular platforms. Automate workflows with {webhooks|HTTP callbacks that trigger when events occur} and real-time processing.",
-    "icon": "link",
-    "order": 4,
-    "featured": true
-  },
-  {
-    "title": "Flexible Deployment Options",
-    "description": "Choose cloud-hosted, {on-premises|Software installed and run on your own servers}, or {hybrid deployment|Combination of cloud and on-premises infrastructure}. Works with both cloud APIs and self-hosted servers.",
-    "icon": "server",
-    "order": 5,
-    "featured": true
-  },
-  {
-    "title": "Structured Data Output",
-    "description": "Transform unstructured documents into clean, structured data. Export to JSON, CSV, or integrate directly with your databases and {data pipelines|Automated workflows for processing and moving data}.",
-    "icon": "clipboard-check",
-    "order": 6,
-    "featured": true
-  }
+	{
+		"title": "AI-Powered Document Intelligence",
+		"description": "Powered by latest Claude and GPT models for unmatched accuracy. Automatically extract, classify, and structure data from any document. Identify {PII|Personally Identifiable Information}, {PHI|Protected Health Information}, and key business data across all formats.",
+		"icon": "zap",
+		"order": 1,
+		"featured": true
+	},
+	{
+		"title": "Enterprise Security & Compliance",
+		"description": "{AES-256|Advanced Encryption Standard with 256-bit keys} encryption, zero-trust architecture, and private processing. {GDPR|General Data Protection Regulation} compliant with SOC 2, ISO 27001, {HIPAA|Health Insurance Portability and Accountability Act}, and CCPA readiness.",
+		"icon": "shield-check",
+		"order": 2,
+		"featured": true
+	},
+	{
+		"title": "Developer Friendly APIs",
+		"description": "{RESTful APIs|Representational State Transfer - web service architecture} with comprehensive documentation, TypeScript and Python {SDKs|Software Development Kits}. Integration takes minutes, not weeks.",
+		"icon": "code",
+		"order": 3,
+		"featured": true
+	},
+	{
+		"title": "Seamless Integrations",
+		"description": "Connect with Google Drive, Dropbox, AWS S3, and popular platforms. Automate workflows with {webhooks|HTTP callbacks that trigger when events occur} and real-time processing.",
+		"icon": "link",
+		"order": 4,
+		"featured": true
+	},
+	{
+		"title": "Flexible Deployment Options",
+		"description": "Choose cloud-hosted, {on-premises|Software installed and run on your own servers}, or {hybrid deployment|Combination of cloud and on-premises infrastructure}. Works with both cloud APIs and self-hosted servers.",
+		"icon": "server",
+		"order": 5,
+		"featured": true
+	},
+	{
+		"title": "Structured Data Output",
+		"description": "Transform unstructured documents into clean, structured data. Export to JSON, CSV, or integrate directly with your databases and {data pipelines|Automated workflows for processing and moving data}.",
+		"icon": "clipboard-check",
+		"order": 6,
+		"featured": true
+	}
 ]

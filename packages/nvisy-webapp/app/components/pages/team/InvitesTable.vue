@@ -5,33 +5,33 @@ import { toast } from "vue-sonner";
 import { EntityAvatar } from "@/components/common";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-  ContextMenuSeparator,
+	ContextMenu,
+	ContextMenuContent,
+	ContextMenuItem,
+	ContextMenuTrigger,
+	ContextMenuSeparator,
 } from "@/components/ui/context-menu";
 import { formatRelativeTime, formatRelativeTimeFuture } from "@/utils/date";
 
 interface Props {
-  invites: Invite[];
-  selectedInvites?: Set<string>;
-  allSelected?: boolean;
+	invites: Invite[];
+	selectedInvites?: Set<string>;
+	allSelected?: boolean;
 }
 
 interface Emits {
-  (e: "cancel", inviteId: string): void;
-  (e: "toggleSelectAll"): void;
-  (e: "toggleInvite", inviteId: string): void;
-  (e: "cancelSelected"): void;
+	(e: "cancel", inviteId: string): void;
+	(e: "toggleSelectAll"): void;
+	(e: "toggleInvite", inviteId: string): void;
+	(e: "cancelSelected"): void;
 }
 
 const props = defineProps<Props>();
@@ -40,21 +40,21 @@ const emit = defineEmits<Emits>();
 const { t } = useI18n();
 
 function getInviteCode(invite: Invite): string {
-  if (invite.inviteToken) {
-    return `${invite.inviteToken.slice(0, 8)}...`;
-  }
-  return "";
+	if (invite.inviteToken) {
+		return `${invite.inviteToken.slice(0, 8)}...`;
+	}
+	return "";
 }
 
 async function copyInviteLink(invite: Invite) {
-  if (!invite.inviteToken) return;
-  try {
-    const inviteLink = `${window.location.origin}/join/${invite.inviteToken}`;
-    await navigator.clipboard.writeText(inviteLink);
-    toast.success(t("members.messages.linkCopied"));
-  } catch {
-    toast.error(t("members.errors.linkCopyFailed"));
-  }
+	if (!invite.inviteToken) return;
+	try {
+		const inviteLink = `${window.location.origin}/join/${invite.inviteToken}`;
+		await navigator.clipboard.writeText(inviteLink);
+		toast.success(t("members.messages.linkCopied"));
+	} catch {
+		toast.error(t("members.errors.linkCopyFailed"));
+	}
 }
 </script>
 

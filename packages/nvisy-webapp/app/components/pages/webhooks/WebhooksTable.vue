@@ -3,44 +3,44 @@ import type { Webhook } from "@nvisy/sdk/datatypes";
 import { Edit, Play, Trash2 } from "lucide-vue-next";
 import { Switch } from "@/components/ui/switch";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-  ContextMenuSeparator,
+	ContextMenu,
+	ContextMenuContent,
+	ContextMenuItem,
+	ContextMenuTrigger,
+	ContextMenuSeparator,
 } from "@/components/ui/context-menu";
 import { formatRelativeTime } from "@/utils/date";
 
 const { t } = useI18n();
 
 defineProps<{
-  webhooks: Webhook[];
+	webhooks: Webhook[];
 }>();
 
 const emit = defineEmits<{
-  (e: "edit", webhookId: string): void;
-  (e: "delete", webhookId: string): void;
-  (e: "test", webhookId: string): void;
-  (e: "toggleStatus", webhookId: string, active: boolean): void;
+	(e: "edit", webhookId: string): void;
+	(e: "delete", webhookId: string): void;
+	(e: "test", webhookId: string): void;
+	(e: "toggleStatus", webhookId: string, active: boolean): void;
 }>();
 
 function formatUrl(url: string): string {
-  try {
-    const urlObj = new URL(url);
-    const domain = urlObj.hostname;
-    const path = urlObj.pathname !== "/" ? urlObj.pathname : "";
-    return domain + path;
-  } catch {
-    return url;
-  }
+	try {
+		const urlObj = new URL(url);
+		const domain = urlObj.hostname;
+		const path = urlObj.pathname !== "/" ? urlObj.pathname : "";
+		return domain + path;
+	} catch {
+		return url;
+	}
 }
 </script>
 

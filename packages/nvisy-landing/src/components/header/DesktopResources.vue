@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuTrigger,
+	NavigationMenuContent,
+	NavigationMenuItem,
+	NavigationMenuLink,
+	NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { resources } from "./desktop-nav-data";
 import { ExternalLink } from "lucide-vue-next";

@@ -2,16 +2,16 @@
 import { computed } from "vue";
 import { FileText, X, Loader2, ChevronDown } from "lucide-vue-next";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
@@ -19,68 +19,68 @@ const router = useRouter();
 
 // Use studio files store for multiple open files
 const { openFiles, activeFileId, closeFile, setActiveFile, moveFileToFront } =
-  useStudioFiles();
+	useStudioFiles();
 
 // Max visible tabs before showing dropdown
 const MAX_VISIBLE_TABS = 3;
 
 // Compute visible tabs and overflow tabs
 const visibleFiles = computed(() => {
-  if (openFiles.value.length <= MAX_VISIBLE_TABS) {
-    return openFiles.value;
-  }
+	if (openFiles.value.length <= MAX_VISIBLE_TABS) {
+		return openFiles.value;
+	}
 
-  // Always show the active file in visible tabs
-  const activeIndex = openFiles.value.findIndex(
-    (f) => f.fileId === activeFileId.value,
-  );
+	// Always show the active file in visible tabs
+	const activeIndex = openFiles.value.findIndex(
+		(f) => f.fileId === activeFileId.value,
+	);
 
-  if (activeIndex < MAX_VISIBLE_TABS) {
-    // Active file is already in the visible range
-    return openFiles.value.slice(0, MAX_VISIBLE_TABS);
-  }
+	if (activeIndex < MAX_VISIBLE_TABS) {
+		// Active file is already in the visible range
+		return openFiles.value.slice(0, MAX_VISIBLE_TABS);
+	}
 
-  // Active file is in overflow, swap it with the last visible tab
-  const visible = openFiles.value.slice(0, MAX_VISIBLE_TABS - 1);
-  const activeFile = openFiles.value[activeIndex];
-  if (activeFile) {
-    return [...visible, activeFile];
-  }
-  return visible;
+	// Active file is in overflow, swap it with the last visible tab
+	const visible = openFiles.value.slice(0, MAX_VISIBLE_TABS - 1);
+	const activeFile = openFiles.value[activeIndex];
+	if (activeFile) {
+		return [...visible, activeFile];
+	}
+	return visible;
 });
 
 const overflowFiles = computed(() => {
-  if (openFiles.value.length <= MAX_VISIBLE_TABS) {
-    return [];
-  }
+	if (openFiles.value.length <= MAX_VISIBLE_TABS) {
+		return [];
+	}
 
-  const visibleIds = new Set(
-    visibleFiles.value.map((f) => f?.fileId).filter(Boolean),
-  );
-  return openFiles.value.filter((f) => f && !visibleIds.has(f.fileId));
+	const visibleIds = new Set(
+		visibleFiles.value.map((f) => f?.fileId).filter(Boolean),
+	);
+	return openFiles.value.filter((f) => f && !visibleIds.has(f.fileId));
 });
 
 const hasOverflow = computed(() => overflowFiles.value.length > 0);
 
 function handleCloseFile(fileId: string) {
-  closeFile(fileId);
-  // If no more files open, navigate back to files page
-  if (openFiles.value.length === 0) {
-    router.push("/files");
-  }
+	closeFile(fileId);
+	// If no more files open, navigate back to files page
+	if (openFiles.value.length === 0) {
+		router.push("/files");
+	}
 }
 
 function handleSelectFile(fileId: string) {
-  setActiveFile(fileId);
+	setActiveFile(fileId);
 }
 
 function handleSelectFromDropdown(fileId: string) {
-  moveFileToFront(fileId);
+	moveFileToFront(fileId);
 }
 
 function truncate(str: string, maxLength: number): string {
-  if (str.length <= maxLength) return str;
-  return `${str.slice(0, maxLength - 3)}...`;
+	if (str.length <= maxLength) return str;
+	return `${str.slice(0, maxLength - 3)}...`;
 }
 </script>
 

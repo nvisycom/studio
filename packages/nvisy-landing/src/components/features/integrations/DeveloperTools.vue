@@ -27,9 +27,11 @@
             <div
               class="w-12 h-12 bg-neutral-100 dark:bg-neutral-800 rounded-lg flex items-center justify-center"
             >
-              <component
-                :is="getIcon(tool.data.icon)"
-                class="w-6 h-6 text-neutral-900 dark:text-white"
+              <img
+                v-if="getIconUrl(tool.data.icon)"
+                :src="getIconUrl(tool.data.icon)"
+                :alt="tool.data.title"
+                class="w-6 h-6"
               />
             </div>
           </div>
@@ -73,58 +75,48 @@
 
 <script setup lang="ts">
 import type { CollectionEntry } from "astro:content";
-import {
-	Server,
-	Code,
-	Code2,
-	Link,
-	FileText,
-	Clock,
-	Calendar,
-	CircleCheck,
-} from "lucide-vue-next";
+import { FileText, Clock, Calendar, CircleCheck } from "lucide-vue-next";
+
+const icons = import.meta.glob("@/assets/integration/*.svg", {
+  eager: true,
+  query: "?url",
+  import: "default",
+}) as Record<string, string>;
 
 interface Props {
-	integrations: CollectionEntry<"integrations">[];
+  integrations: CollectionEntry<"integrations">[];
 }
 
 const props = defineProps<Props>();
 const { integrations } = props;
 
-// Icon mapping from FontAwesome to Lucide
-const getIcon = (iconName: string) => {
-	const iconMap: Record<string, any> = {
-		server: Server,
-		python: Code,
-		js: Code2,
-		link: Link,
-	};
-
-	return iconMap[iconName] || FileText;
+const getIconUrl = (iconName: string) => {
+  const key = Object.keys(icons).find((k) => k.includes(`/${iconName}.svg`));
+  return key ? icons[key] : null;
 };
 
 // Status icon mapping
 const getStatusIcon = (status: string) => {
-	const statusIconMap: Record<string, any> = {
-		Completed: CircleCheck,
-		"In Progress": Clock,
-		Planned: Calendar,
-	};
+  const statusIconMap: Record<string, any> = {
+    Completed: CircleCheck,
+    "In Progress": Clock,
+    Planned: Calendar,
+  };
 
-	return statusIconMap[status] || Clock;
+  return statusIconMap[status] || Clock;
 };
 
 // Status text color classes - less prominent
 const getStatusTextClasses = (status: string) => {
-	switch (status.toLowerCase()) {
-		case "completed":
-			return "text-neutral-600 dark:text-neutral-400";
-		case "in progress":
-			return "text-neutral-500 dark:text-neutral-500";
-		case "planned":
-			return "text-neutral-500 dark:text-neutral-500";
-		default:
-			return "text-neutral-600 dark:text-neutral-400";
-	}
+  switch (status.toLowerCase()) {
+    case "completed":
+      return "text-neutral-600 dark:text-neutral-400";
+    case "in progress":
+      return "text-neutral-500 dark:text-neutral-500";
+    case "planned":
+      return "text-neutral-500 dark:text-neutral-500";
+    default:
+      return "text-neutral-600 dark:text-neutral-400";
+  }
 };
 </script>

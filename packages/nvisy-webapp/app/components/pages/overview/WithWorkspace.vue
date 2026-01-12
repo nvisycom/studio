@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import {
-  Upload,
-  Users,
-  BarChart3,
-  ArrowRight,
-  CreditCard,
-  Database,
-  FileText,
-  Calendar,
+	Upload,
+	Users,
+	BarChart3,
+	ArrowRight,
+	CreditCard,
+	Database,
+	FileText,
+	Calendar,
 } from "lucide-vue-next";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,11 +21,11 @@ const { files } = useFiles();
 
 // Format date
 function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+	return new Date(dateString).toLocaleDateString("en-US", {
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	});
 }
 
 // Usage data (placeholder - should come from API)
@@ -41,24 +41,24 @@ const storagePercentage = (storageUsed / storageTotal) * 100;
 
 // Quick actions
 const quickActions = [
-  {
-    title: t("overview.quickActions.uploadFiles.title"),
-    description: t("overview.quickActions.uploadFiles.description"),
-    icon: Upload,
-    href: "/files",
-  },
-  {
-    title: t("overview.quickActions.manageTeam.title"),
-    description: t("overview.quickActions.manageTeam.description"),
-    icon: Users,
-    href: "/team",
-  },
-  {
-    title: t("overview.quickActions.viewAnalytics.title"),
-    description: t("overview.quickActions.viewAnalytics.description"),
-    icon: BarChart3,
-    href: "/analytics",
-  },
+	{
+		title: t("overview.quickActions.uploadFiles.title"),
+		description: t("overview.quickActions.uploadFiles.description"),
+		icon: Upload,
+		href: "/files",
+	},
+	{
+		title: t("overview.quickActions.manageTeam.title"),
+		description: t("overview.quickActions.manageTeam.description"),
+		icon: Users,
+		href: "/team",
+	},
+	{
+		title: t("overview.quickActions.viewAnalytics.title"),
+		description: t("overview.quickActions.viewAnalytics.description"),
+		icon: BarChart3,
+		href: "/analytics",
+	},
 ];
 </script>
 

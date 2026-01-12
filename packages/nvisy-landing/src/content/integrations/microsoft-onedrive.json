@@ -1,9 +1,9 @@
 {
-  "icon": "microsoft",
-  "isBrand": true,
-  "version": "v1.0",
-  "status": "Planned",
-  "title": "Microsoft OneDrive",
-  "category": "File Import/Export",
-  "description": "Import documents from OneDrive and SharePoint for enterprise-grade data extraction with seamless Microsoft 365 integration."
+	"icon": "microsoft-onedrive",
+	"isBrand": true,
+	"version": "v1.0",
+	"status": "Planned",
+	"title": "Microsoft OneDrive",
+	"category": "File Import/Export",
+	"description": "Import documents from OneDrive and SharePoint for enterprise-grade data extraction with seamless Microsoft 365 integration."
 }

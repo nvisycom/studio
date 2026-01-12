@@ -22,24 +22,31 @@ const blogEntries = (await getCollection("blog-posts"))
 	.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
 
 // Get unique categories for filtering
-const categories = ["All", ...new Set(blogEntries.map(entry => entry.data.category).filter(Boolean))] as string[];
+const categories = [
+	"All",
+	...new Set(blogEntries.map((entry) => entry.data.category).filter(Boolean)),
+] as string[];
 
 // Helper function to slugify category names
-const slugifyCategory = (category: string) => category.toLowerCase().replace(/\s+/g, '-');
+const slugifyCategory = (category: string) =>
+	category.toLowerCase().replace(/\s+/g, "-");
 
 // Get selected category from URL params
 const url = new URL(Astro.request.url);
-const selectedCategorySlug = url.searchParams.get('category') || 'all';
+const selectedCategorySlug = url.searchParams.get("category") || "all";
 
 // Find the actual category name from the slug
-const selectedCategory = selectedCategorySlug === 'all'
-	? 'All'
-	: categories.find(cat => slugifyCategory(cat) === selectedCategorySlug) || 'All';
+const selectedCategory =
+	selectedCategorySlug === "all"
+		? "All"
+		: categories.find((cat) => slugifyCategory(cat) === selectedCategorySlug) ||
+			"All";
 
 // Filter posts by category
-const filteredPosts = selectedCategory === 'All'
-	? blogEntries
-	: blogEntries.filter(entry => entry.data.category === selectedCategory);
+const filteredPosts =
+	selectedCategory === "All"
+		? blogEntries
+		: blogEntries.filter((entry) => entry.data.category === selectedCategory);
 ---
 
 <Layout title="Blog" description="Insights, stories, and updates from our team">

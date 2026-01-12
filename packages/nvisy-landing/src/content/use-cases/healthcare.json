@@ -1,32 +1,32 @@
 [
-  {
-    "title": "Clinical Documentation",
-    "description": "Extract structured data from clinical notes, discharge summaries, and care plans for quality improvement, training, or case studies.",
-    "audience": "Hospitals, Clinics, Health Systems"
-  },
-  {
-    "title": "Medical Research",
-    "description": "Transform patient documents into structured datasets for research studies, clinical trials, and publications while maintaining HIPAA compliance.",
-    "audience": "Research Institutions, Academic Medical Centers"
-  },
-  {
-    "title": "Insurance & Billing",
-    "description": "Extract key data from insurance claims, prior authorization requests, and billing documentation for faster processing and fewer errors.",
-    "audience": "Healthcare Billing Companies, Payers"
-  },
-  {
-    "title": "Patient Portals",
-    "description": "Automatically structure medical records for sharing with patients, family members, or authorized representatives through patient portals.",
-    "audience": "Healthcare IT Vendors, EMR Systems"
-  },
-  {
-    "title": "Legal & Compliance",
-    "description": "Extract and structure medical records for legal proceedings, malpractice cases, or regulatory investigations with comprehensive data capture.",
-    "audience": "Legal Departments, Risk Management"
-  },
-  {
-    "title": "Quality Improvement",
-    "description": "Create structured datasets for quality improvement initiatives, outcome analysis, and population health studies.",
-    "audience": "Quality Departments, Public Health Organizations"
-  }
+	{
+		"title": "Clinical Documentation",
+		"description": "Extract structured data from clinical notes, discharge summaries, and care plans for quality improvement, training, or case studies.",
+		"audience": "Hospitals, Clinics, Health Systems"
+	},
+	{
+		"title": "Medical Research",
+		"description": "Transform patient documents into structured datasets for research studies, clinical trials, and publications while maintaining HIPAA compliance.",
+		"audience": "Research Institutions, Academic Medical Centers"
+	},
+	{
+		"title": "Insurance & Billing",
+		"description": "Extract key data from insurance claims, prior authorization requests, and billing documentation for faster processing and fewer errors.",
+		"audience": "Healthcare Billing Companies, Payers"
+	},
+	{
+		"title": "Patient Portals",
+		"description": "Automatically structure medical records for sharing with patients, family members, or authorized representatives through patient portals.",
+		"audience": "Healthcare IT Vendors, EMR Systems"
+	},
+	{
+		"title": "Legal & Compliance",
+		"description": "Extract and structure medical records for legal proceedings, malpractice cases, or regulatory investigations with comprehensive data capture.",
+		"audience": "Legal Departments, Risk Management"
+	},
+	{
+		"title": "Quality Improvement",
+		"description": "Create structured datasets for quality improvement initiatives, outcome analysis, and population health studies.",
+		"audience": "Quality Departments, Public Health Organizations"
+	}
 ]

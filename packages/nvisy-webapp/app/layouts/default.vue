@@ -7,7 +7,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 const route = useRoute();
 
 const hideFooter = computed(() => {
-  return route.path.startsWith("/studio");
+	return route.path.startsWith("/studio");
 });
 </script>
 

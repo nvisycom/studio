@@ -9,7 +9,7 @@ import {
 	SliderTrack,
 	useForwardPropsEmits,
 } from "reka-ui";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 const props = defineProps<
 	SliderRootProps & { class?: HTMLAttributes["class"] }

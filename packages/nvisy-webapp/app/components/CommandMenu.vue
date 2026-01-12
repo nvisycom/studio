@@ -1,34 +1,34 @@
 <script setup lang="ts">
 import {
-  LayoutDashboard,
-  FolderOpen,
-  PenTool,
-  Users,
-  Puzzle,
-  Compass,
-  BarChart3,
-  FileSearch,
-  CreditCard,
-  Settings,
-  User,
-  Key,
-  LogOut,
-  Plus,
-  Upload,
-  UserPlus,
-  Moon,
-  Sun,
-  MessageSquare,
-  Copy,
+	LayoutDashboard,
+	FolderOpen,
+	PenTool,
+	Users,
+	Puzzle,
+	Compass,
+	BarChart3,
+	FileSearch,
+	CreditCard,
+	Settings,
+	User,
+	Key,
+	LogOut,
+	Plus,
+	Upload,
+	UserPlus,
+	Moon,
+	Sun,
+	MessageSquare,
+	Copy,
 } from "lucide-vue-next";
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+	CommandSeparator,
 } from "@/components/ui/command";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Kbd } from "@/components/ui/kbd";
@@ -44,9 +44,9 @@ const isOpen = defineModel<boolean>("open", { required: true });
 
 // Emit for actions that need parent handling
 const emit = defineEmits<{
-  createWorkspace: [];
-  uploadFile: [];
-  openSupport: [];
+	createWorkspace: [];
+	uploadFile: [];
+	openSupport: [];
 }>();
 
 // Get current workspace and invite functionality
@@ -55,177 +55,177 @@ const { generateCodeAsync, isGenerating } = useInvites();
 
 // Navigation items - matching sidebar structure
 const navigationItems = computed(() => [
-  {
-    label: t("sidebar.overview"),
-    icon: LayoutDashboard,
-    href: "/",
-    shortcut: "O",
-  },
-  {
-    label: t("sidebar.files"),
-    icon: FolderOpen,
-    href: "/files",
-    shortcut: "F",
-  },
-  { label: t("sidebar.studio"), icon: PenTool, href: "/studio", shortcut: "S" },
-  { label: t("sidebar.team"), icon: Users, href: "/team", shortcut: "T" },
+	{
+		label: t("sidebar.overview"),
+		icon: LayoutDashboard,
+		href: "/",
+		shortcut: "O",
+	},
+	{
+		label: t("sidebar.files"),
+		icon: FolderOpen,
+		href: "/files",
+		shortcut: "F",
+	},
+	{ label: t("sidebar.studio"), icon: PenTool, href: "/studio", shortcut: "S" },
+	{ label: t("sidebar.team"), icon: Users, href: "/team", shortcut: "T" },
 ]);
 
 // Automation items
 const automationItems = computed(() => [
-  {
-    label: t("sidebar.integrations"),
-    icon: Puzzle,
-    href: "/integrations",
-    shortcut: "I",
-  },
-  { label: t("sidebar.explore"), icon: Compass, href: "/integrations/explore" },
+	{
+		label: t("sidebar.integrations"),
+		icon: Puzzle,
+		href: "/integrations",
+		shortcut: "I",
+	},
+	{ label: t("sidebar.explore"), icon: Compass, href: "/integrations/explore" },
 ]);
 
 // Observability items
 const observabilityItems = computed(() => [
-  {
-    label: t("sidebar.analytics"),
-    icon: BarChart3,
-    href: "/analytics",
-    shortcut: "A",
-  },
-  {
-    label: t("sidebar.logs"),
-    icon: FileSearch,
-    href: "/analytics/logs",
-    shortcut: "L",
-  },
+	{
+		label: t("sidebar.analytics"),
+		icon: BarChart3,
+		href: "/analytics",
+		shortcut: "A",
+	},
+	{
+		label: t("sidebar.logs"),
+		icon: FileSearch,
+		href: "/analytics/logs",
+		shortcut: "L",
+	},
 ]);
 
 // Settings items
 const settingsItems = computed(() => [
-  {
-    label: t("sidebar.billing"),
-    icon: CreditCard,
-    href: "/billing",
-    shortcut: "B",
-  },
-  { label: t("sidebar.settings"), icon: Settings, href: "/settings/general" },
+	{
+		label: t("sidebar.billing"),
+		icon: CreditCard,
+		href: "/billing",
+		shortcut: "B",
+	},
+	{ label: t("sidebar.settings"), icon: Settings, href: "/settings/general" },
 ]);
 
 // Account items
 const accountItems = computed(() => [
-  {
-    label: t("commandMenu.account.profile"),
-    icon: User,
-    href: "/account",
-    shortcut: "P",
-  },
-  {
-    label: t("commandMenu.account.tokens"),
-    icon: Key,
-    href: "/account/tokens",
-  },
+	{
+		label: t("commandMenu.account.profile"),
+		icon: User,
+		href: "/account",
+		shortcut: "P",
+	},
+	{
+		label: t("commandMenu.account.tokens"),
+		icon: Key,
+		href: "/account/tokens",
+	},
 ]);
 
 // Quick actions
 const quickActions = computed(() => [
-  {
-    id: "create-workspace",
-    label: t("commandMenu.actions.createWorkspace"),
-    icon: Plus,
-    shortcut: "N",
-  },
-  {
-    id: "upload-file",
-    label: t("commandMenu.actions.uploadFile"),
-    icon: Upload,
-    shortcut: "U",
-  },
-  {
-    id: "invite-member",
-    label: t("commandMenu.actions.inviteMember"),
-    icon: UserPlus,
-    shortcut: "M",
-  },
-  {
-    id: "create-invite-code",
-    label: t("commandMenu.actions.createInviteCode"),
-    icon: Copy,
-  },
-  {
-    id: "toggle-theme",
-    label: t("commandMenu.actions.toggleTheme"),
-    icon: colorMode.value === "dark" ? Sun : Moon,
-  },
-  {
-    id: "open-support",
-    label: t("commandMenu.actions.openSupport"),
-    icon: MessageSquare,
-  },
+	{
+		id: "create-workspace",
+		label: t("commandMenu.actions.createWorkspace"),
+		icon: Plus,
+		shortcut: "N",
+	},
+	{
+		id: "upload-file",
+		label: t("commandMenu.actions.uploadFile"),
+		icon: Upload,
+		shortcut: "U",
+	},
+	{
+		id: "invite-member",
+		label: t("commandMenu.actions.inviteMember"),
+		icon: UserPlus,
+		shortcut: "M",
+	},
+	{
+		id: "create-invite-code",
+		label: t("commandMenu.actions.createInviteCode"),
+		icon: Copy,
+	},
+	{
+		id: "toggle-theme",
+		label: t("commandMenu.actions.toggleTheme"),
+		icon: colorMode.value === "dark" ? Sun : Moon,
+	},
+	{
+		id: "open-support",
+		label: t("commandMenu.actions.openSupport"),
+		icon: MessageSquare,
+	},
 ]);
 
 function navigateTo(href: string) {
-  router.push(href);
-  isOpen.value = false;
+	router.push(href);
+	isOpen.value = false;
 }
 
 async function executeAction(actionId: string) {
-  switch (actionId) {
-    case "create-workspace":
-      emit("createWorkspace");
-      break;
-    case "upload-file":
-      emit("uploadFile");
-      break;
-    case "invite-member":
-      navigateTo("/team");
-      return;
-    case "create-invite-code":
-      try {
-        const result = await generateCodeAsync({
-          invitedRole: "member",
-          expiresIn: "in7Days",
-        });
-        const baseUrl = window.location.origin;
-        const inviteUrl = `${baseUrl}/join/${result.inviteCode}`;
-        await navigator.clipboard.writeText(inviteUrl);
-        toast.success(t("commandMenu.actions.inviteCodeCreated"));
-      } catch (err) {
-        toast.error(t("commandMenu.actions.inviteCodeFailed"));
-      }
-      break;
-    case "toggle-theme":
-      colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
-      break;
-    case "open-support":
-      emit("openSupport");
-      break;
-  }
-  isOpen.value = false;
+	switch (actionId) {
+		case "create-workspace":
+			emit("createWorkspace");
+			break;
+		case "upload-file":
+			emit("uploadFile");
+			break;
+		case "invite-member":
+			navigateTo("/team");
+			return;
+		case "create-invite-code":
+			try {
+				const result = await generateCodeAsync({
+					invitedRole: "member",
+					expiresIn: "in7Days",
+				});
+				const baseUrl = window.location.origin;
+				const inviteUrl = `${baseUrl}/join/${result.inviteCode}`;
+				await navigator.clipboard.writeText(inviteUrl);
+				toast.success(t("commandMenu.actions.inviteCodeCreated"));
+			} catch (err) {
+				toast.error(t("commandMenu.actions.inviteCodeFailed"));
+			}
+			break;
+		case "toggle-theme":
+			colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
+			break;
+		case "open-support":
+			emit("openSupport");
+			break;
+	}
+	isOpen.value = false;
 }
 
 function logout() {
-  isOpen.value = false;
-  performLogout();
+	isOpen.value = false;
+	performLogout();
 }
 
 // Global keyboard shortcuts (only when command menu is closed)
 defineShortcuts(
-  computed(() =>
-    isOpen.value
-      ? {}
-      : {
-          meta_o: () => navigateTo("/"),
-          meta_f: () => navigateTo("/files"),
-          meta_s: () => navigateTo("/studio"),
-          meta_t: () => navigateTo("/team"),
-          meta_i: () => navigateTo("/integrations"),
-          meta_a: () => navigateTo("/analytics"),
-          meta_l: () => navigateTo("/analytics/logs"),
-          meta_b: () => navigateTo("/billing"),
-          meta_p: () => navigateTo("/account"),
-          meta_n: () => executeAction("create-workspace"),
-          meta_u: () => executeAction("upload-file"),
-          meta_m: () => executeAction("invite-member"),
-        },
-  ),
+	computed(() =>
+		isOpen.value
+			? {}
+			: {
+					meta_o: () => navigateTo("/"),
+					meta_f: () => navigateTo("/files"),
+					meta_s: () => navigateTo("/studio"),
+					meta_t: () => navigateTo("/team"),
+					meta_i: () => navigateTo("/integrations"),
+					meta_a: () => navigateTo("/analytics"),
+					meta_l: () => navigateTo("/analytics/logs"),
+					meta_b: () => navigateTo("/billing"),
+					meta_p: () => navigateTo("/account"),
+					meta_n: () => executeAction("create-workspace"),
+					meta_u: () => executeAction("upload-file"),
+					meta_m: () => executeAction("invite-member"),
+				},
+	),
 );
 </script>
 
