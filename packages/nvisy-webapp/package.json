@@ -19,7 +19,7 @@
 		"@nuxtjs/device": "^3.2.4",
 		"@nuxtjs/i18n": "^10.1.0",
 		"@nvisy/config": "file:../nvisy-config",
-		"@nvisy/sdk": "file:../../../sdk-ts",
+		"@nvisy/sdk": "^0.3.0",
 		"@nvisy/shared": "file:../nvisy-shared",
 		"@pinia/colada": "^0.17.9",
 		"@pinia/colada-nuxt": "^0.2.3",

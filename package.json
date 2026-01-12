@@ -3,8 +3,5 @@
   "private": true,
   "workspaces": [
     "packages/*"
-  ],
-  "dependencies": {
-    "@nvisy/sdk": "file:../sdk-ts"
-  }
+  ]
 }
