@@ -394,7 +394,7 @@ function importLogs() {
                 <PopoverTrigger as-child>
                   <Button
                     variant="outline"
-                    class="w-full justify-start text-left font-light"
+                    class="w-full justify-start text-left font-normal"
                   >
                     <Calendar :size="16" class="mr-2" />
                     {{ formattedExportDateRange }}

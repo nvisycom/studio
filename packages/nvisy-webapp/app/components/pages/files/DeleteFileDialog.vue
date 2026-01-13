@@ -78,7 +78,7 @@ const isMultiple = computed(() => props.fileCount > 1);
           variant="outline"
           @click="emit('update:open', false)"
           :disabled="isDeleting"
-          class="font-light"
+          class="font-normal"
         >
           {{ t("files.dialogs.delete.cancel") }}
         </Button>
@@ -86,7 +86,7 @@ const isMultiple = computed(() => props.fileCount > 1);
           variant="destructive"
           @click="emit('confirm')"
           :disabled="isDeleting"
-          class="font-light"
+          class="font-normal"
         >
           {{ t("files.dialogs.delete.confirm") }}
         </Button>

@@ -141,7 +141,7 @@ async function createWorkspace() {
                     <Label for="require-approval">{{
                       t("workspace.create.requireApprovalLabel")
                     }}</Label>
-                    <p class="text-xs text-muted-foreground font-light">
+                    <p class="text-xs text-muted-foreground font-normal">
                       {{ t("workspace.create.requireApprovalDescription") }}
                     </p>
                   </div>
@@ -157,7 +157,7 @@ async function createWorkspace() {
                     <Label for="enable-comments">{{
                       t("workspace.create.enableCommentsLabel")
                     }}</Label>
-                    <p class="text-xs text-muted-foreground font-light">
+                    <p class="text-xs text-muted-foreground font-normal">
                       {{ t("workspace.create.enableCommentsDescription") }}
                     </p>
                   </div>

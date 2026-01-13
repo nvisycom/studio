@@ -14,14 +14,14 @@ const isCreateWorkspaceModalOpen = ref(false);
     <!-- Hero Section -->
     <div class="text-center max-w-xl mx-auto">
       <h1
-        class="text-4xl font-light text-neutral-800 dark:text-neutral-200 mb-4 tracking-tight"
+        class="text-4xl font-normal text-neutral-800 dark:text-neutral-200 mb-4 tracking-tight"
       >
         {{ t("overview.welcome.title")
         }}<span v-if="firstName">, {{ firstName }}</span
         >!
       </h1>
       <p
-        class="text-lg font-light text-neutral-500 dark:text-neutral-400 mb-10 leading-relaxed"
+        class="text-lg font-normal text-neutral-500 dark:text-neutral-400 mb-10 leading-relaxed"
       >
         {{ t("overview.welcome.description") }}
       </p>

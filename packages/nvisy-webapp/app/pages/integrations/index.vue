@@ -278,7 +278,7 @@ async function testWebhook(webhookId: string) {
             <div class="flex items-center justify-between">
               <div>
                 <CardTitle
-                  class="text-sm font-light tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
+                  class="text-sm font-normal tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
                   >{{
                     t("integrations.sections.connectedServices.title")
                   }}</CardTitle
@@ -290,12 +290,12 @@ async function testWebhook(webhookId: string) {
                 }}</CardDescription>
               </div>
               <div class="flex items-center gap-2">
-                <Button as-child variant="outline" size="sm" class="font-light">
+                <Button as-child variant="outline" size="sm" class="font-normal">
                   <NuxtLink to="/integrations/explore">
                     {{ t("integrations.actions.explore") }}
                   </NuxtLink>
                 </Button>
-                <Button as-child variant="outline" size="sm" class="font-light">
+                <Button as-child variant="outline" size="sm" class="font-normal">
                   <NuxtLink to="/integrations/runs">
                     {{ t("integrations.actions.viewRuns") }}
                   </NuxtLink>
@@ -314,7 +314,7 @@ async function testWebhook(webhookId: string) {
             class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
           >
             <p
-              class="text-sm font-light text-neutral-600 dark:text-neutral-400"
+              class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
             >
               {{ t("integrations.messages.integrationFooter") }}
               <a
@@ -338,7 +338,7 @@ async function testWebhook(webhookId: string) {
             <div class="flex items-center justify-between">
               <div>
                 <CardTitle
-                  class="text-sm font-light tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
+                  class="text-sm font-normal tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
                   >{{
                     t("integrations.sections.connectedServices.title")
                   }}</CardTitle
@@ -350,7 +350,7 @@ async function testWebhook(webhookId: string) {
                 }}</CardDescription>
               </div>
               <div class="flex items-center gap-2">
-                <Button as-child variant="outline" size="sm" class="font-light">
+                <Button as-child variant="outline" size="sm" class="font-normal">
                   <NuxtLink to="/integrations/explore">
                     <PlugZap :size="16" />
                     {{ t("integrations.actions.explore") }}
@@ -379,7 +379,7 @@ async function testWebhook(webhookId: string) {
                   }}
                 </p>
                 <p
-                  class="font-light text-sm text-neutral-600 dark:text-neutral-400"
+                  class="font-normal text-sm text-neutral-600 dark:text-neutral-400"
                 >
                   {{
                     t(
@@ -394,7 +394,7 @@ async function testWebhook(webhookId: string) {
             class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
           >
             <p
-              class="text-sm font-light text-neutral-600 dark:text-neutral-400"
+              class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
             >
               {{ t("integrations.messages.integrationFooter") }}
               <a
@@ -418,7 +418,7 @@ async function testWebhook(webhookId: string) {
             <div class="flex items-center justify-between">
               <div>
                 <CardTitle
-                  class="text-sm font-light tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
+                  class="text-sm font-normal tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
                   >{{ t("integrations.sections.webhooks.title") }}</CardTitle
                 >
                 <CardDescription>{{
@@ -458,7 +458,7 @@ async function testWebhook(webhookId: string) {
                   {{ t("integrations.sections.webhooks.noWebhooksTitle") }}
                 </p>
                 <p
-                  class="font-light text-sm text-neutral-600 dark:text-neutral-400"
+                  class="font-normal text-sm text-neutral-600 dark:text-neutral-400"
                 >
                   {{
                     t("integrations.sections.webhooks.noWebhooksDescription")
@@ -471,7 +471,7 @@ async function testWebhook(webhookId: string) {
             class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
           >
             <p
-              class="text-sm font-light text-neutral-600 dark:text-neutral-400"
+              class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
             >
               {{ t("integrations.messages.webhookFooter") }}
               <a

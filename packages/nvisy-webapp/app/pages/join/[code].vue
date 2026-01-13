@@ -209,7 +209,7 @@ function handleDecline() {
               </h3>
               <p
                 v-if="preview.description"
-                class="text-sm font-light text-neutral-600 dark:text-neutral-400 mt-0.5 line-clamp-2"
+                class="text-sm font-normal text-neutral-600 dark:text-neutral-400 mt-0.5 line-clamp-2"
               >
                 {{ preview.description }}
               </p>
@@ -222,7 +222,7 @@ function handleDecline() {
               v-for="tag in preview.tags"
               :key="tag"
               variant="secondary"
-              class="text-xs font-light"
+              class="text-xs font-normal"
             >
               {{ tag }}
             </Badge>
@@ -230,7 +230,7 @@ function handleDecline() {
 
           <!-- Role & Expiry Info -->
           <div
-            class="flex items-center justify-between text-sm font-light text-neutral-600 dark:text-neutral-400"
+            class="flex items-center justify-between text-sm font-normal text-neutral-600 dark:text-neutral-400"
           >
             <div class="flex items-center gap-2">
               <component
@@ -262,7 +262,7 @@ function handleDecline() {
           <!-- Action Buttons -->
           <div class="flex gap-3 pt-4">
             <Button
-              class="flex-1 h-10 font-light"
+              class="flex-1 h-10 font-normal"
               :disabled="isProcessing"
               @click="handleAccept"
             >
@@ -280,7 +280,7 @@ function handleDecline() {
             </Button>
             <Button
               variant="outline"
-              class="flex-1 h-10 font-light"
+              class="flex-1 h-10 font-normal"
               :disabled="isProcessing"
               @click="handleDecline"
             >
@@ -302,7 +302,7 @@ function handleDecline() {
           class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
         >
           <p
-            class="text-sm font-light text-neutral-600 dark:text-neutral-400 text-center w-full"
+            class="text-sm font-normal text-neutral-600 dark:text-neutral-400 text-center w-full"
           >
             {{ t("invite.footer") }}
           </p>

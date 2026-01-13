@@ -83,7 +83,7 @@ function handleCopyLink() {
       <div class="flex items-center justify-between">
         <div>
           <CardTitle
-            class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
+            class="text-sm font-normal tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
             >{{ t("members.forms.invite.title") }}</CardTitle
           >
           <CardDescription>{{
@@ -92,7 +92,7 @@ function handleCopyLink() {
         </div>
         <div class="flex items-center gap-3">
           <span
-            class="text-sm font-light text-neutral-600 dark:text-neutral-400"
+            class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
           >
             {{ t("members.forms.invite.expiry.label") }}
           </span>
@@ -100,7 +100,7 @@ function handleCopyLink() {
             <DropdownMenuTrigger as-child>
               <Button
                 variant="outline"
-                class="flex items-center gap-2 min-w-32 justify-between font-light"
+                class="flex items-center gap-2 min-w-32 justify-between font-normal"
               >
                 {{
                   inviteExpiryOptions.find((o) => o.value === selectedExpiry)
@@ -121,7 +121,7 @@ function handleCopyLink() {
           </DropdownMenu>
           <DropdownMenu>
             <DropdownMenuTrigger as-child>
-              <Button variant="outline" class="w-32 justify-between font-light">
+              <Button variant="outline" class="w-32 justify-between font-normal">
                 {{ roles.find((r) => r.value === selectedRole)?.label }}
                 <ChevronDown :size="16" />
               </Button>
@@ -140,7 +140,7 @@ function handleCopyLink() {
             variant="outline"
             @click="handleCopyLink"
             :disabled="isGenerating"
-            class="flex items-center gap-2 font-light"
+            class="flex items-center gap-2 font-normal"
           >
             <Loader2 v-if="isGenerating" :size="16" class="animate-spin" />
             <Check
@@ -160,13 +160,13 @@ function handleCopyLink() {
           v-model="inviteEmail"
           type="email"
           :placeholder="t('members.forms.invite.emailPlaceholder')"
-          class="flex-1 font-light"
+          class="flex-1 font-normal"
           @keyup.enter="handleSendInvite"
         />
         <Button
           @click="handleSendInvite"
           :disabled="!inviteEmail.trim() || isSending"
-          class="font-light"
+          class="font-normal"
         >
           <Loader2 v-if="isSending" :size="16" class="animate-spin" />
           <Check v-else-if="inviteSent" :size="16" class="text-green-500" />
@@ -178,7 +178,7 @@ function handleCopyLink() {
     <CardFooter
       class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
     >
-      <p class="text-sm font-light text-neutral-600 dark:text-neutral-400">
+      <p class="text-sm font-normal text-neutral-600 dark:text-neutral-400">
         {{ t("members.messages.inviteFooter") }}
       </p>
     </CardFooter>

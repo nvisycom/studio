@@ -137,7 +137,7 @@ function toggleAddon(addonId: string) {
           <h2 class="text-xl font-medium text-neutral-900 dark:text-white">
             Plans
           </h2>
-          <p class="text-sm font-light text-neutral-600 dark:text-neutral-400">
+          <p class="text-sm font-normal text-neutral-600 dark:text-neutral-400">
             Choose the plan that works best for your team
           </p>
         </div>
@@ -178,7 +178,7 @@ function toggleAddon(addonId: string) {
                     ${{ plan.price }}
                   </span>
                   <span
-                    class="text-sm font-light text-neutral-600 dark:text-neutral-400"
+                    class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
                   >
                     /month
                   </span>
@@ -243,7 +243,7 @@ function toggleAddon(addonId: string) {
           <h2 class="text-xl font-medium text-neutral-900 dark:text-white">
             Add-ons
           </h2>
-          <p class="text-sm font-light text-neutral-600 dark:text-neutral-400">
+          <p class="text-sm font-normal text-neutral-600 dark:text-neutral-400">
             Enhance your workspace with additional features
           </p>
         </div>
@@ -257,7 +257,7 @@ function toggleAddon(addonId: string) {
           >
             <CardHeader class="pb-3">
               <div class="flex items-center justify-between">
-                <CardTitle class="text-lg font-light flex items-center gap-2">
+                <CardTitle class="text-lg font-normal flex items-center gap-2">
                   {{ addon.name }}
                   <Badge v-if="addon.alpha" variant="secondary" class="text-xs">
                     ALPHA
@@ -281,7 +281,7 @@ function toggleAddon(addonId: string) {
                   ${{ addon.price }}
                 </span>
                 <span
-                  class="text-sm font-light text-neutral-600 dark:text-neutral-400"
+                  class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
                 >
                   /month
                 </span>

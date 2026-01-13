@@ -83,7 +83,7 @@ const quickActions = [
             {{ t(`members.roles.${currentWorkspace.memberRole}`) }}
           </Badge>
         </div>
-        <p class="text-base font-light text-neutral-600 dark:text-neutral-400">
+        <p class="text-base font-normal text-neutral-600 dark:text-neutral-400">
           {{
             t("overview.welcome.subtitle", {
               workspace: currentWorkspace?.displayName ?? "",
@@ -259,7 +259,7 @@ const quickActions = [
       <Card class="rounded-xl border-neutral-200 dark:border-neutral-800">
         <CardHeader class="pb-2">
           <CardTitle
-            class="text-sm font-light tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
+            class="text-sm font-normal tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
             >{{ t("overview.quickActions.title") }}</CardTitle
           >
         </CardHeader>

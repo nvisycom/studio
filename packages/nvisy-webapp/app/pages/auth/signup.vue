@@ -1,23 +1,23 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import {
-	Mail,
-	Lock,
-	Eye,
-	EyeOff,
-	ArrowRight,
-	ExternalLink,
-	User,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  ExternalLink,
+  User,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
@@ -26,13 +26,13 @@ import { NvisyApiError } from "@nvisy/sdk";
 useHead({ title: "Sign Up" });
 
 definePageMeta({
-	layout: "auth",
+  layout: "auth",
 });
 
 const { signupAsync, isSigningUp, signupError } = useAuth();
 
 const apiError = computed(() =>
-	signupError.value instanceof NvisyApiError ? signupError.value : null,
+  signupError.value instanceof NvisyApiError ? signupError.value : null,
 );
 
 // Form state
@@ -47,46 +47,46 @@ const termsError = ref(false);
  * Handle signup form submission
  */
 async function handleSignup(): Promise<void> {
-	if (agreeToTerms.value !== true) {
-		termsError.value = true;
-		return;
-	}
-	termsError.value = false;
+  if (agreeToTerms.value !== true) {
+    termsError.value = true;
+    return;
+  }
+  termsError.value = false;
 
-	try {
-		await signupAsync({
-			displayName: displayName.value,
-			emailAddress: email.value,
-			password: password.value,
-			rememberMe: true,
-		});
+  try {
+    await signupAsync({
+      displayName: displayName.value,
+      emailAddress: email.value,
+      password: password.value,
+      rememberMe: true,
+    });
 
-		// Redirect to dashboard or onboarding
-		navigateTo("/");
-	} catch {
-		// Error is handled by the mutation
-	}
+    // Redirect to dashboard or onboarding
+    navigateTo("/");
+  } catch {
+    // Error is handled by the mutation
+  }
 }
 
 /**
  * Toggle password visibility
  */
 function togglePasswordVisibility(): void {
-	showPassword.value = !showPassword.value;
+  showPassword.value = !showPassword.value;
 }
 
 /**
  * Handle Google signup
  */
 async function handleGoogleSignup(): Promise<void> {
-	// TODO: Implement Google OAuth
+  // TODO: Implement Google OAuth
 }
 
 /**
  * Handle Microsoft signup
  */
 async function handleMicrosoftSignup(): Promise<void> {
-	// TODO: Implement Microsoft OAuth
+  // TODO: Implement Microsoft OAuth
 }
 </script>
 
@@ -124,7 +124,7 @@ async function handleMicrosoftSignup(): Promise<void> {
             <Label
               for="displayName"
               class="text-sm font-normal text-neutral-700 dark:text-neutral-300"
-              >Full name</Label
+              >Display name</Label
             >
             <div class="relative">
               <User

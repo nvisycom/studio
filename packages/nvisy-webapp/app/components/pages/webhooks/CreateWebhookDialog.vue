@@ -174,7 +174,7 @@ function cancel() {
       <Button
         variant="outline"
         size="sm"
-        class="flex items-center gap-2 font-light"
+        class="flex items-center gap-2 font-normal"
       >
         <Webhook :size="16" />
         {{ t("integrations.actions.createWebhook") }}

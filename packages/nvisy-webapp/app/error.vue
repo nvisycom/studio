@@ -3,76 +3,76 @@ import { computed } from "vue";
 import { ArrowLeft, Home, RefreshCw } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import {
-	Empty,
-	EmptyContent,
-	EmptyTitle,
-	EmptyDescription,
+  Empty,
+  EmptyContent,
+  EmptyTitle,
+  EmptyDescription,
 } from "@/components/ui/empty";
-import GradientBackground from "@/components/effects/GradientBackground.vue";
+import GradientShader from "@/components/effects/GradientShader.vue";
 import ThemeToggle from "@/components/footer/ThemeToggle.vue";
 
 interface NuxtError {
-	statusCode: number;
-	message: string;
-	stack?: string;
+  statusCode: number;
+  message: string;
+  stack?: string;
 }
 
 const props = defineProps<{
-	error: NuxtError;
+  error: NuxtError;
 }>();
 
 const errorConfig = computed(() => {
-	const code = props.error?.statusCode || 500;
+  const code = props.error?.statusCode || 500;
 
-	if (code === 404) {
-		return {
-			title: "Page not found",
-			description:
-				"The page you're looking for doesn't exist or has been moved.",
-		};
-	}
+  if (code === 404) {
+    return {
+      title: "Page not found",
+      description:
+        "The page you're looking for doesn't exist or has been moved.",
+    };
+  }
 
-	if (code === 403) {
-		return {
-			title: "Access denied",
-			description: "You don't have permission to access this page.",
-		};
-	}
+  if (code === 403) {
+    return {
+      title: "Access denied",
+      description: "You don't have permission to access this page.",
+    };
+  }
 
-	if (code === 401) {
-		return {
-			title: "Unauthorized",
-			description: "Please sign in to access this page.",
-		};
-	}
+  if (code === 401) {
+    return {
+      title: "Unauthorized",
+      description: "Please sign in to access this page.",
+    };
+  }
 
-	if (code >= 500) {
-		return {
-			title: "Something went wrong",
-			description: "We're having trouble loading this page. Please try again.",
-		};
-	}
+  if (code >= 500) {
+    return {
+      title: "Something went wrong",
+      description: "We're having trouble loading this page. Please try again.",
+    };
+  }
 
-	return {
-		title: "An error occurred",
-		description: props.error?.message || "Something unexpected happened.",
-	};
+  return {
+    title: "An error occurred",
+    description: props.error?.message || "Something unexpected happened.",
+  };
 });
 
 function handleGoBack(): void {
-	if (window.history.length > 1) {
-		window.history.back();
-	} else {
-		clearError({ redirect: "/" });
-	}
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    clearError({ redirect: "/" });
+  }
 }
 
 function handleRefresh(): void {
-	window.location.reload();
+  window.location.reload();
 }
 
 function handleGoHome(): void {
-	clearError({ redirect: "/" });
+  clearError({ redirect: "/" });
 }
 </script>
 
@@ -80,7 +80,7 @@ function handleGoHome(): void {
   <div class="min-h-screen flex flex-col relative">
     <!-- Gradient Background -->
     <div class="absolute inset-0">
-      <GradientBackground />
+      <GradientShader />
     </div>
 
     <!-- Bottom gradient fade -->
@@ -100,21 +100,25 @@ function handleGoHome(): void {
       <Empty class="border-none max-w-md">
         <EmptyContent>
           <!-- Error Code -->
-          <div class="mb-2">
+          <div class="mb-4">
             <span
-              class="text-8xl md:text-9xl font-bold text-black/10 dark:text-white/10"
+              class="text-8xl md:text-9xl font-bold text-black/20 dark:text-white/20"
             >
               {{ error?.statusCode || 500 }}
             </span>
           </div>
 
           <!-- Title -->
-          <EmptyTitle class="text-2xl md:text-3xl font-semibold">
+          <EmptyTitle
+            class="text-2xl md:text-3xl font-semibold text-black dark:text-white"
+          >
             {{ errorConfig.title }}
           </EmptyTitle>
 
           <!-- Description -->
-          <EmptyDescription class="text-base font-normal">
+          <EmptyDescription
+            class="text-base font-medium text-neutral-700 dark:text-neutral-300"
+          >
             {{ errorConfig.description }}
           </EmptyDescription>
 

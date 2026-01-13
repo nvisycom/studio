@@ -69,7 +69,7 @@ function handleSelectWorkspace(workspaceId: string) {
               </span>
               <span
                 v-if="currentWorkspace?.description"
-                class="truncate text-sm font-light"
+                class="truncate text-sm font-normal"
               >
                 {{ currentWorkspace.description }}
               </span>
@@ -97,7 +97,7 @@ function handleSelectWorkspace(workspaceId: string) {
               <span class="truncate text-sm">{{
                 truncate(workspace.displayName, MAX_NAME_LENGTH)
               }}</span>
-              <span class="text-xs font-light text-muted-foreground">
+              <span class="text-xs font-normal text-muted-foreground">
                 {{ t(`members.roles.${workspace.memberRole}`) }}
               </span>
             </div>

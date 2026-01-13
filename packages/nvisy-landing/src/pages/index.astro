@@ -5,7 +5,6 @@ import Industries from "@/components/sections/Industries.astro";
 import Stats from "@/components/sections/Stats.astro";
 import Security from "@/components/sections/Security.astro";
 import HowItWorks from "@/components/sections/HowItWorks.astro";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 // SEO and metadata
 const pageTitle = "Home";
@@ -39,22 +38,7 @@ const pageKeywords =
 					variant: "secondary",
 				},
 			]}
-		>
-			<Fragment slot="media">
-				<div class="max-w-5xl mx-auto mb-10">
-					<div id="hero-screenshot" class="rounded-2xl overflow-hidden border border-neutral-200/50 dark:border-neutral-800/50 shadow-2xl bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm relative z-20">
-						<AspectRatio ratio={16 / 9}>
-							<img
-								src="/images/dashboard-screenshot.png"
-								alt="Nvisy Dashboard - Document Processing Interface"
-								class="w-full h-full object-cover"
-								loading="eager"
-							/>
-						</AspectRatio>
-					</div>
-				</div>
-			</Fragment>
-		</Hero>
+		/>
 
 		<!-- Stats Section -->
 		<Stats
@@ -90,9 +74,6 @@ const pageKeywords =
 			description="Join hundreds of companies that trust Nvisy to transform their document workflows."
 		/>
 
-		<!-- Security & Compliance -->
-		<Security />
-
 		<!-- Final CTA -->
 		<CTA
 			title="Ready to Get Started?"
@@ -111,5 +92,8 @@ const pageKeywords =
 				},
 			]}
 		/>
+
+		<!-- Security & Compliance -->
+		<Security />
 	</main>
 </Layout>

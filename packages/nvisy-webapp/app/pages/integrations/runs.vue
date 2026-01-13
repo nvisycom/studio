@@ -166,7 +166,7 @@ function formatDuration(
       <template v-else>
         <!-- Search and Filters -->
         <div class="flex items-center gap-3 mb-6 flex-wrap">
-          <Button as-child variant="outline" class="font-light">
+          <Button as-child variant="outline" class="font-normal">
             <NuxtLink to="/integrations" class="flex items-center gap-2">
               <ArrowLeft :size="16" />
               {{ t("integrations.runs.backToConnections") }}
@@ -182,46 +182,46 @@ function formatDuration(
               <Input
                 v-model="searchQuery"
                 :placeholder="t('integrations.runs.searchPlaceholder')"
-                class="pl-10 font-light"
+                class="pl-10 font-normal"
               />
             </div>
           </div>
 
           <Select v-model="statusFilter">
-            <SelectTrigger class="w-[150px] text-sm font-light">
+            <SelectTrigger class="w-[150px] text-sm font-normal">
               <SelectValue :placeholder="t('integrations.runs.status')" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all" class="text-sm font-light">{{
+              <SelectItem value="all" class="text-sm font-normal">{{
                 t("integrations.runs.allStatus")
               }}</SelectItem>
-              <SelectItem value="pending" class="text-sm font-light">{{
+              <SelectItem value="pending" class="text-sm font-normal">{{
                 t("integrations.runs.statusPending")
               }}</SelectItem>
-              <SelectItem value="running" class="text-sm font-light">{{
+              <SelectItem value="running" class="text-sm font-normal">{{
                 t("integrations.runs.statusRunning")
               }}</SelectItem>
-              <SelectItem value="cancelled" class="text-sm font-light">{{
+              <SelectItem value="cancelled" class="text-sm font-normal">{{
                 t("integrations.runs.statusCancelled")
               }}</SelectItem>
             </SelectContent>
           </Select>
 
           <Select v-model="dateRange">
-            <SelectTrigger class="w-[150px] text-sm font-light">
+            <SelectTrigger class="w-[150px] text-sm font-normal">
               <SelectValue :placeholder="t('integrations.runs.period')" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="1h" class="text-sm font-light">{{
+              <SelectItem value="1h" class="text-sm font-normal">{{
                 t("integrations.runs.lastHour")
               }}</SelectItem>
-              <SelectItem value="24h" class="text-sm font-light">{{
+              <SelectItem value="24h" class="text-sm font-normal">{{
                 t("integrations.runs.last24Hours")
               }}</SelectItem>
-              <SelectItem value="7d" class="text-sm font-light">{{
+              <SelectItem value="7d" class="text-sm font-normal">{{
                 t("integrations.runs.last7Days")
               }}</SelectItem>
-              <SelectItem value="30d" class="text-sm font-light">{{
+              <SelectItem value="30d" class="text-sm font-normal">{{
                 t("integrations.runs.last30Days")
               }}</SelectItem>
             </SelectContent>
@@ -234,7 +234,7 @@ function formatDuration(
             <div class="flex items-center justify-between">
               <div>
                 <CardTitle
-                  class="text-sm font-light tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
+                  class="text-sm font-normal tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
                   >{{ t("integrations.runs.title") }}</CardTitle
                 >
                 <CardDescription>
@@ -255,7 +255,7 @@ function formatDuration(
                 size="sm"
                 @click="copyLogs"
                 :disabled="selectedRuns.size === 0"
-                class="flex items-center gap-2 font-light"
+                class="flex items-center gap-2 font-normal"
               >
                 <Check v-if="logsCopied" :size="16" class="text-green-500" />
                 <Copy v-else :size="16" />
@@ -278,27 +278,27 @@ function formatDuration(
                     />
                   </TableHead>
                   <TableHead
-                    class="uppercase text-xs font-light tracking-wider"
+                    class="uppercase text-xs font-normal tracking-wider"
                     >{{ t("integrations.runs.runId") }}</TableHead
                   >
                   <TableHead
-                    class="uppercase text-xs font-light tracking-wider"
+                    class="uppercase text-xs font-normal tracking-wider"
                     >{{ t("integrations.runs.integration") }}</TableHead
                   >
                   <TableHead
-                    class="uppercase text-xs font-light tracking-wider"
+                    class="uppercase text-xs font-normal tracking-wider"
                     >{{ t("integrations.runs.type") }}</TableHead
                   >
                   <TableHead
-                    class="w-[100px] uppercase text-xs font-light tracking-wider"
+                    class="w-[100px] uppercase text-xs font-normal tracking-wider"
                     >{{ t("integrations.runs.statusHeader") }}</TableHead
                   >
                   <TableHead
-                    class="uppercase text-xs font-light tracking-wider"
+                    class="uppercase text-xs font-normal tracking-wider"
                     >{{ t("integrations.runs.started") }}</TableHead
                   >
                   <TableHead
-                    class="w-[100px] uppercase text-xs font-light tracking-wider"
+                    class="w-[100px] uppercase text-xs font-normal tracking-wider"
                     >{{ t("integrations.runs.duration") }}</TableHead
                   >
                 </TableRow>
@@ -325,13 +325,13 @@ function formatDuration(
                       </TableCell>
                       <TableCell>
                         <span
-                          class="text-sm font-light text-neutral-600 dark:text-neutral-400"
+                          class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
                         >
                           {{ getIntegrationName(run.integrationId) }}
                         </span>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" class="capitalize font-light">
+                        <Badge variant="outline" class="capitalize font-normal">
                           {{ t(`integrations.runs.runType.${run.runType}`) }}
                         </Badge>
                       </TableCell>
@@ -360,12 +360,12 @@ function formatDuration(
                         </div>
                       </TableCell>
                       <TableCell
-                        class="text-xs font-light text-neutral-600 dark:text-neutral-400"
+                        class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
                       >
                         {{ formatRelativeTime(run.startedAt, t) }}
                       </TableCell>
                       <TableCell
-                        class="text-xs font-light text-neutral-600 dark:text-neutral-400"
+                        class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
                       >
                         {{ formatDuration(run.startedAt, run.completedAt) }}
                       </TableCell>
@@ -393,7 +393,7 @@ function formatDuration(
 
             <div
               v-if="filteredRuns.length === 0"
-              class="py-12 text-center font-light text-neutral-500"
+              class="py-12 text-center font-normal text-neutral-500"
             >
               {{ t("integrations.runs.noRunsFound") }}
             </div>

@@ -95,7 +95,7 @@ defineShortcuts({
             <EntityAvatar :src="user.avatar" :name="user.name" size="md" />
             <div class="grid flex-1 text-left text-sm leading-tight">
               <span class="truncate font-medium">{{ user.name }}</span>
-              <span class="truncate text-sm font-light">{{ user.email }}</span>
+              <span class="truncate text-sm font-normal">{{ user.email }}</span>
             </div>
             <ChevronsUpDown class="ml-auto size-4" />
           </SidebarMenuButton>

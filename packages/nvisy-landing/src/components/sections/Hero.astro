@@ -7,7 +7,6 @@ import {
 } from "@/utils/backgroundStyles";
 import { Play, ArrowRight, ExternalLink } from "lucide-vue-next";
 import GradientShader from "@/components/effects/GradientShader.vue";
-import TextShimmer from "@/components/effects/TextShimmer.vue";
 
 export interface Props {
 	title?: string;
@@ -89,10 +88,10 @@ const isGradient = background === "gradient";
 
 					{title && (
 						<h1 class="text-4xl md:text-5xl lg:text-6xl font-normal leading-tight mb-4 md:mb-6 text-black dark:text-white">
-							<TextShimmer client:load delay={300}>{title}</TextShimmer>
+							{title}
 							{subtitle && (
 								<span class="block mt-2 text-2xl md:text-3xl lg:text-4xl font-normal leading-tight text-neutral-800 dark:text-neutral-200">
-									<TextShimmer client:load delay={500}>{subtitle}</TextShimmer>
+									{subtitle}
 								</span>
 							)}
 						</h1>

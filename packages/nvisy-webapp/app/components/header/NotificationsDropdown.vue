@@ -63,7 +63,7 @@ function formatRelativeTime(dateString: string): string {
           Notifications
         </h3>
         <p
-          class="text-sm font-light text-neutral-600 dark:text-neutral-400 mt-0.5"
+          class="text-sm font-normal text-neutral-600 dark:text-neutral-400 mt-0.5"
         >
           Stay updated with your latest notifications
         </p>
@@ -93,12 +93,12 @@ function formatRelativeTime(dateString: string): string {
                     {{ notification.title }}
                   </p>
                   <p
-                    class="text-sm font-light text-neutral-600 dark:text-neutral-400 mt-1"
+                    class="text-sm font-normal text-neutral-600 dark:text-neutral-400 mt-1"
                   >
                     {{ notification.message }}
                   </p>
                   <p
-                    class="text-sm font-light text-neutral-500 dark:text-neutral-500 mt-2"
+                    class="text-sm font-normal text-neutral-500 dark:text-neutral-500 mt-2"
                   >
                     {{ formatRelativeTime(notification.createdAt) }}
                   </p>

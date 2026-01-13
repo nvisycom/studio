@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import AppFooter from "@/components/AppFooter.vue";
-import GradientBackground from "@/components/effects/GradientBackground.vue";
+import GradientShader from "@/components/effects/GradientShader.vue";
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col">
+  <div class="min-h-screen flex flex-col overflow-hidden">
     <!-- Main Content -->
     <div class="flex-1 flex relative">
       <!-- Full-width gradient background -->
       <div class="absolute inset-0">
-        <GradientBackground />
+        <GradientShader />
       </div>
 
       <!-- Bottom gradient fade to footer color -->

@@ -412,7 +412,7 @@ function saveTimezone() {
                 <DropdownMenuTrigger as-child>
                   <Button
                     variant="outline"
-                    class="w-full max-w-md justify-between text-left font-light"
+                    class="w-full max-w-md justify-between text-left font-normal"
                   >
                     <span class="truncate">{{
                       getTimezoneLabel(timezone)

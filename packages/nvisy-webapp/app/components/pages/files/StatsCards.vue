@@ -29,7 +29,7 @@ defineProps<Props>();
       <CardContent>
         <div class="text-2xl font-medium">{{ totalSize }}</div>
         <p
-          class="text-sm font-light text-neutral-500 dark:text-neutral-400 mt-1"
+          class="text-sm font-normal text-neutral-500 dark:text-neutral-400 mt-1"
         >
           Files {{ totalDocumentsSize }} • Index {{ indexSize }}
         </p>
@@ -46,7 +46,7 @@ defineProps<Props>();
       <CardContent>
         <div class="text-2xl font-medium">{{ totalDocuments }}</div>
         <p
-          class="text-sm font-light text-neutral-500 dark:text-neutral-400 mt-1"
+          class="text-sm font-normal text-neutral-500 dark:text-neutral-400 mt-1"
         >
           {{ totalSegments.toLocaleString() }} Segments •
           {{ avgSegmentSize }} Avg
@@ -64,7 +64,7 @@ defineProps<Props>();
       <CardContent>
         <div class="text-2xl font-medium">{{ avgResponseTime }}ms</div>
         <p
-          class="text-sm font-light text-neutral-500 dark:text-neutral-400 mt-1"
+          class="text-sm font-normal text-neutral-500 dark:text-neutral-400 mt-1"
         >
           p95 {{ p95ResponseTime }}ms • {{ cacheHitRate }}% Cache Hit
         </p>

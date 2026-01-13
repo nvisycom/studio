@@ -457,7 +457,7 @@ function notifyMe(_id: string | number) {
       <div
         class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center mb-6"
       >
-        <Button as-child variant="outline" class="font-light">
+        <Button as-child variant="outline" class="font-normal">
           <NuxtLink to="/integrations" class="flex items-center gap-2">
             <ArrowLeft :size="16" />
             {{ t("integrations.actions.backToConnections") }}
@@ -472,41 +472,41 @@ function notifyMe(_id: string | number) {
           <Input
             v-model="searchQuery"
             :placeholder="t('integrations.forms.search.placeholder')"
-            class="pl-10 font-light"
+            class="pl-10 font-normal"
           />
         </div>
 
         <Select v-model="statusFilter">
-          <SelectTrigger class="w-[160px] text-sm font-light">
+          <SelectTrigger class="w-[160px] text-sm font-normal">
             <Filter :size="14" class="mr-2 text-neutral-400" />
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all" class="text-sm font-light">
+            <SelectItem value="all" class="text-sm font-normal">
               {{ t("integrations.explore.filters.allStatus") }}
             </SelectItem>
-            <SelectItem value="available" class="text-sm font-light">
+            <SelectItem value="available" class="text-sm font-normal">
               {{ t("integrations.explore.filters.availableOnly") }}
             </SelectItem>
-            <SelectItem value="unavailable" class="text-sm font-light">
+            <SelectItem value="unavailable" class="text-sm font-normal">
               {{ t("integrations.explore.filters.unavailableOnly") }}
             </SelectItem>
           </SelectContent>
         </Select>
 
         <Select v-model="sortBy">
-          <SelectTrigger class="w-[180px] text-sm font-light">
+          <SelectTrigger class="w-[180px] text-sm font-normal">
             <ArrowUpDown :size="14" class="mr-2 text-neutral-400" />
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="popularity" class="text-sm font-light">
+            <SelectItem value="popularity" class="text-sm font-normal">
               {{ t("integrations.explore.sorting.popularity") }}
             </SelectItem>
-            <SelectItem value="nameAsc" class="text-sm font-light">
+            <SelectItem value="nameAsc" class="text-sm font-normal">
               {{ t("integrations.explore.sorting.nameAsc") }}
             </SelectItem>
-            <SelectItem value="nameDesc" class="text-sm font-light">
+            <SelectItem value="nameDesc" class="text-sm font-normal">
               {{ t("integrations.explore.sorting.nameDesc") }}
             </SelectItem>
           </SelectContent>
@@ -519,7 +519,7 @@ function notifyMe(_id: string | number) {
           variant="outline"
           size="sm"
           :class="[
-            'font-light transition-colors',
+            'font-normal transition-colors',
             selectedCategories.size === 0
               ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border-neutral-900 dark:border-white'
               : '',
@@ -535,7 +535,7 @@ function notifyMe(_id: string | number) {
           variant="outline"
           size="sm"
           :class="[
-            'font-light transition-colors',
+            'font-normal transition-colors',
             selectedCategories.has(category.key)
               ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border-neutral-900 dark:border-white'
               : '',
@@ -561,7 +561,7 @@ function notifyMe(_id: string | number) {
           {{ t("integrations.explore.noResults") }}
         </p>
         <p
-          class="font-light text-sm text-neutral-600 dark:text-neutral-400 mb-4"
+          class="font-normal text-sm text-neutral-600 dark:text-neutral-400 mb-4"
         >
           {{ t("integrations.explore.noResultsHint") }}
         </p>
@@ -571,7 +571,7 @@ function notifyMe(_id: string | number) {
           "
           variant="outline"
           size="sm"
-          class="font-light"
+          class="font-normal"
           @click="clearAllFilters"
         >
           {{ t("integrations.explore.clearFilters") }}

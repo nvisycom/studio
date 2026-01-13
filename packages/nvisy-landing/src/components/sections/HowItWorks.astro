@@ -1,39 +1,12 @@
 ---
-import { Upload, Cpu, FileCheck, Download } from "lucide-vue-next";
-
-const steps = [
-	{
-		number: "01",
-		title: "Upload",
-		description:
-			"Drag and drop any document - PDFs, images, scans. We handle them all.",
-		icon: Upload,
-	},
-	{
-		number: "02",
-		title: "Process",
-		description: "Our AI analyzes and extracts structured data in seconds.",
-		icon: Cpu,
-	},
-	{
-		number: "03",
-		title: "Review",
-		description: "Verify extractions with our intuitive review interface.",
-		icon: FileCheck,
-	},
-	{
-		number: "04",
-		title: "Export",
-		description: "Download as JSON, CSV, or integrate via API.",
-		icon: Download,
-	},
-];
+import HowItWorksStepper from "./HowItWorksStepper.vue";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 ---
 
 <section class="py-16 md:py-28 bg-white dark:bg-black">
 	<div class="container mx-auto px-4">
 		<div class="max-w-3xl mx-auto text-center mb-16">
-			<h2 class="text-3xl md:text-4xl lg:text-5xl font-light text-neutral-900 dark:text-white mb-4">
+			<h2 class="text-3xl md:text-4xl lg:text-5xl font-normal text-black dark:text-white mb-4">
 				How It Works
 			</h2>
 			<p class="text-lg md:text-xl text-neutral-700 dark:text-neutral-300 font-medium">
@@ -41,41 +14,22 @@ const steps = [
 			</p>
 		</div>
 
-		<!-- Steps Grid -->
-		<div class="max-w-6xl mx-auto">
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
-				{steps.map((step, index) => (
-					<div class="relative group">
-						<!-- Connector Line (hidden on mobile, visible on lg) -->
-						{index < steps.length - 1 && (
-							<div class="hidden lg:block absolute top-10 left-1/2 w-full h-px bg-gradient-to-r from-neutral-300 dark:from-neutral-700 to-transparent z-0"></div>
-						)}
+		<!-- Stepper -->
+		<div class="max-w-5xl mx-auto">
+			<HowItWorksStepper client:load />
+		</div>
 
-						<div class="relative z-10 text-center">
-							<!-- Icon with number badge -->
-							<div class="relative mx-auto mb-6 w-20 h-20 flex items-center justify-center">
-								<div class="absolute inset-0 bg-gradient-to-br from-blue-100 to-pink-100 dark:from-blue-900/30 dark:to-pink-900/30 rounded-2xl group-hover:scale-105 transition-transform duration-300"></div>
-								<div class="relative w-12 h-12 flex items-center justify-center bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-700">
-									<step.icon class="w-6 h-6 text-neutral-700 dark:text-neutral-300" />
-								</div>
-								<!-- Step number badge -->
-								<div class="absolute -top-2 -right-2 w-7 h-7 flex items-center justify-center bg-gradient-to-br from-blue-600 to-pink-600 rounded-full text-white text-xs font-semibold shadow-md">
-									{step.number}
-								</div>
-							</div>
-
-							<!-- Title -->
-							<h3 class="text-xl font-medium text-neutral-900 dark:text-white mb-3">
-								{step.title}
-							</h3>
-
-							<!-- Description -->
-							<p class="text-neutral-700 dark:text-neutral-300 text-sm leading-relaxed max-w-xs mx-auto font-medium">
-								{step.description}
-							</p>
-						</div>
-					</div>
-				))}
+		<!-- Screenshot -->
+		<div class="max-w-5xl mx-auto mt-16">
+			<div class="rounded-2xl overflow-hidden border border-neutral-200/50 dark:border-neutral-800/50 shadow-2xl bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm">
+				<AspectRatio ratio={16 / 9}>
+					<img
+						src="/images/dashboard-screenshot.png"
+						alt="Nvisy Dashboard - Document Processing Interface"
+						class="w-full h-full object-cover"
+						loading="eager"
+					/>
+				</AspectRatio>
 			</div>
 		</div>
 	</div>

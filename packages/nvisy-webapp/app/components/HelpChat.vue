@@ -89,7 +89,7 @@ defineExpose({
           </p>
         </div>
         <p
-          class="text-sm font-light mt-1 text-neutral-500 dark:text-neutral-400"
+          class="text-sm font-normal mt-1 text-neutral-500 dark:text-neutral-400"
         >
           {{ message.timestamp.toLocaleTimeString() }}
         </p>

@@ -63,19 +63,19 @@ function handleRowClick(member: Member) {
             />
           </TableHead>
           <TableHead
-            class="uppercase text-xs font-light tracking-wider min-w-[280px]"
+            class="uppercase text-xs font-normal tracking-wider min-w-[280px]"
             >{{ t("members.table.headers.member") }}</TableHead
           >
           <TableHead
-            class="uppercase text-xs font-light tracking-wider w-[140px]"
+            class="uppercase text-xs font-normal tracking-wider w-[140px]"
             >{{ t("members.table.headers.role") }}</TableHead
           >
           <TableHead
-            class="uppercase text-xs font-light tracking-wider w-[160px]"
+            class="uppercase text-xs font-normal tracking-wider w-[160px]"
             >{{ t("members.table.headers.twoFA") }}</TableHead
           >
           <TableHead
-            class="uppercase text-xs font-light tracking-wider w-[160px]"
+            class="uppercase text-xs font-normal tracking-wider w-[160px]"
             >{{ t("members.table.headers.joined") }}</TableHead
           >
         </TableRow>
@@ -136,7 +136,7 @@ function handleRowClick(member: Member) {
               </TableCell>
               <TableCell>
                 <span
-                  class="text-xs font-light text-neutral-600 dark:text-neutral-400"
+                  class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
                   >{{ formatRelativeTime(member.createdAt, t) }}</span
                 >
               </TableCell>
@@ -195,7 +195,7 @@ function handleRowClick(member: Member) {
       <p class="font-normal text-neutral-700 dark:text-neutral-300 mb-1">
         {{ t("members.table.empty.noMembers") }}
       </p>
-      <p class="font-light text-sm text-neutral-500 dark:text-neutral-400">
+      <p class="font-normal text-sm text-neutral-500 dark:text-neutral-400">
         {{ t("members.table.empty.noMembersDescription") }}
       </p>
     </div>

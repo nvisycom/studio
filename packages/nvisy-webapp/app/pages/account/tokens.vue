@@ -241,7 +241,7 @@ async function renameToken(newName: string) {
       <Card class="mb-8 py-0 pt-6 rounded-xl">
         <CardHeader>
           <CardTitle
-            class="text-sm font-light tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
+            class="text-sm font-normal tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
             >{{ t("tokens.create.title") }}</CardTitle
           >
           <CardDescription>{{
@@ -251,7 +251,7 @@ async function renameToken(newName: string) {
         <CardContent>
           <div class="flex gap-4">
             <div class="space-y-2 flex-1">
-              <Label for="tokenName" class="font-light">{{
+              <Label for="tokenName" class="font-normal">{{
                 t("tokens.create.nameLabel")
               }}</Label>
               <Input
@@ -262,7 +262,7 @@ async function renameToken(newName: string) {
             </div>
 
             <div class="space-y-2 flex-1">
-              <Label for="tokenExpiration" class="font-light">{{
+              <Label for="tokenExpiration" class="font-normal">{{
                 t("tokens.create.expirationLabel")
               }}</Label>
               <DropdownMenu>
@@ -291,7 +291,7 @@ async function renameToken(newName: string) {
         <CardFooter
           class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
         >
-          <p class="text-sm font-light text-neutral-600 dark:text-neutral-400">
+          <p class="text-sm font-normal text-neutral-600 dark:text-neutral-400">
             {{ t("tokens.create.footer") }}
           </p>
           <Button
@@ -310,7 +310,7 @@ async function renameToken(newName: string) {
       <Card class="overflow-hidden py-0 pt-6 rounded-xl">
         <CardHeader>
           <CardTitle
-            class="text-sm font-light tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
+            class="text-sm font-normal tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
             >{{ t("tokens.list.title") }}</CardTitle
           >
           <CardDescription>
@@ -362,7 +362,7 @@ async function renameToken(newName: string) {
         <CardFooter
           class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
         >
-          <p class="text-sm font-light text-neutral-600 dark:text-neutral-400">
+          <p class="text-sm font-normal text-neutral-600 dark:text-neutral-400">
             {{ t("tokens.list.footer") }}
           </p>
         </CardFooter>

@@ -47,8 +47,14 @@ const maxWidthClasses = {
 <section class={`
 	${getBackgroundClass(background)}
 	py-20 px-10
-	${background === 'gradient' ? 'relative border-t border-neutral-200/50 dark:border-neutral-800/50' : ''}
+	${background === 'gradient' ? 'relative' : ''}
 `}>
+	{background === 'gradient' && (
+		<>
+			<div class="absolute top-0 left-0 right-0 h-[10%] pointer-events-none z-[5] bg-gradient-to-b from-white dark:from-black to-transparent" />
+			<div class="absolute bottom-0 left-0 right-0 h-[10%] pointer-events-none z-[5] bg-gradient-to-t from-white dark:from-black to-transparent" />
+		</>
+	)}
 
 	<div class={`container mx-auto px-4 ${background === 'gradient' ? 'relative z-10' : ''}`}>
 		<div class={`

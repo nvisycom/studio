@@ -25,7 +25,7 @@ const emit = defineEmits<{
       <div v-if="isLoading" class="h-full flex items-center justify-center">
         <div class="text-center text-muted-foreground">
           <Loader2 :size="32" class="mx-auto mb-3 animate-spin" />
-          <p class="text-sm font-light">Loading document...</p>
+          <p class="text-sm font-normal">Loading document...</p>
         </div>
       </div>
 
@@ -36,7 +36,7 @@ const emit = defineEmits<{
       >
         <div class="text-center text-muted-foreground">
           <FileText :size="64" class="mx-auto mb-4 opacity-20" />
-          <p class="text-sm font-light">No document selected</p>
+          <p class="text-sm font-normal">No document selected</p>
           <p class="text-xs mt-2">
             Select a file from the Files page to preview
           </p>
@@ -64,7 +64,7 @@ const emit = defineEmits<{
       <div v-else class="h-full flex items-center justify-center">
         <div class="text-center text-muted-foreground">
           <FileText :size="64" class="mx-auto mb-4 opacity-20" />
-          <p class="text-sm font-light">{{ displayName }}</p>
+          <p class="text-sm font-normal">{{ displayName }}</p>
           <p class="text-xs mt-2">
             This file type is not supported for preview
           </p>

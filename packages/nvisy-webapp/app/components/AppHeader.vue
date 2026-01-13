@@ -51,7 +51,7 @@ function openFeedbackModal() {
         <BreadcrumbList class="flex items-center">
           <BreadcrumbItem class="flex items-center">
             <BreadcrumbPage
-              class="text-base font-light text-neutral-500 dark:text-neutral-400 leading-none"
+              class="text-base font-normal text-neutral-500 dark:text-neutral-400 leading-none"
             >
               {{ pageCategory }}
             </BreadcrumbPage>
