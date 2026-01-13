@@ -48,8 +48,8 @@ const industries = [
 
 <section class="py-16 md:py-28 px-4 bg-white dark:bg-black" aria-labelledby="use-cases-title">
 	<div class="container mx-auto max-w-5xl">
-		<!-- Header -->
-		<header class="text-center mb-12 md:mb-16">
+		<!-- Section Header -->
+		<div class="text-center mb-12 md:mb-16">
 			<h2 id="use-cases-title" class="text-3xl md:text-4xl lg:text-5xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">
 				{title}
 			</h2>
@@ -58,7 +58,7 @@ const industries = [
 					{description}
 				</p>
 			)}
-		</header>
+		</div>
 
 		<!-- Tabbed Use Cases -->
 		<IndustriesTabs client:load industries={industries} />

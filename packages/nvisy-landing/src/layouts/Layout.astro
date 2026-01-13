@@ -92,11 +92,7 @@ const {
 	<!-- Page Content -->
 	<div slot="content" class="flex flex-col min-h-screen">
 		<!-- Header -->
-		{!hideHeader && (
-			<header role="banner" class="shrink-0">
-				<Header />
-			</header>
-		)}
+		{!hideHeader && <Header />}
 
 		<!-- Main Content -->
 		<main
@@ -109,11 +105,7 @@ const {
 		</main>
 
 		<!-- Footer -->
-		{!hideFooter && (
-			<footer role="contentinfo" class="shrink-0">
-				<Footer />
-			</footer>
-		)}
+		{!hideFooter && <Footer />}
 
 		<!-- Compliance Slot -->
 		{showCookiePopup && <Cookies slot="compliance" />}

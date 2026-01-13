@@ -171,10 +171,9 @@ const slugifyCategory = (category: string) =>
     const noResults = document.getElementById('no-results');
     const postsGrid = document.getElementById('posts-grid');
 
-    let activeCategory = 'all';
+
 
     function updateFilter(category: string) {
-      activeCategory = category;
 
       // Update button styles
       buttons.forEach(btn => {

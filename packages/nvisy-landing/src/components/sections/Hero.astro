@@ -16,7 +16,6 @@ export interface Props {
 	centered?: boolean;
 	background?: BackgroundVariant;
 	maxWidth?: "sm" | "md" | "lg" | "xl" | "full";
-	titleHighlight?: string;
 	heroImage?: string;
 	heroImageAlt?: string;
 }
@@ -28,7 +27,6 @@ const {
 	centered = true,
 	background = "solid",
 	maxWidth = "xl",
-	titleHighlight,
 	heroImage,
 	heroImageAlt = "Hero image",
 	buttons = [
@@ -45,21 +43,6 @@ const {
 		},
 	],
 } = Astro.props;
-
-// Helper function to split title and highlight text
-const getTitleParts = () => {
-	if (!titleHighlight || !title.includes(titleHighlight)) {
-		return { beforeHighlight: title, highlight: "", afterHighlight: "" };
-	}
-	const parts = title.split(titleHighlight);
-	return {
-		beforeHighlight: parts[0],
-		highlight: titleHighlight,
-		afterHighlight: parts[1] || "",
-	};
-};
-
-const titleParts = getTitleParts();
 
 const maxWidthClasses = {
 	sm: "max-w-2xl",

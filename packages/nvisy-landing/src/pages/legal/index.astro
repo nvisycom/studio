@@ -5,7 +5,7 @@ import { CTA, Hero, LegalCard, Security } from "@/components";
 import { File } from "lucide-vue-next";
 
 // Get all legal documents
-let legalEntries: CollectionEntry<"legal">[] = [];
+let legalEntries: CollectionEntry<"legal-docs">[] = [];
 try {
 	legalEntries = await getCollection("legal-docs");
 } catch (error: unknown) {

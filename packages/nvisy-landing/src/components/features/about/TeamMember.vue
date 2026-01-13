@@ -6,7 +6,7 @@ import GitHubIcon from "@/assets/icons/github.svg?raw";
 
 interface Props {
 	name: string;
-	role: string;
+	title: string;
 	image?: string;
 	linkedin?: string;
 	github?: string;
@@ -44,12 +44,14 @@ const gradient = gradients[gradientIndex];
       </AvatarFallback>
     </Avatar>
 
-    <h3 class="text-lg md:text-xl font-bold text-neutral-900 dark:text-white mb-1">
+    <h3
+      class="text-lg md:text-xl font-bold text-neutral-900 dark:text-white mb-1"
+    >
       {{ name }}
     </h3>
 
     <p class="text-sm md:text-base text-neutral-600 dark:text-neutral-400 mb-4">
-      {{ role }}
+      {{ title }}
     </p>
 
     <div class="flex items-center gap-4">
