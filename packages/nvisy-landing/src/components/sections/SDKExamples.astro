@@ -13,7 +13,7 @@ const {
 } = Astro.props;
 
 // Fetch SDK content and render Content components
-const sdkEntries = await getCollection("sdks");
+const sdkEntries = await getCollection("sdk-examples");
 const sortedSdks = sdkEntries.sort((a, b) => a.data.order - b.data.order);
 
 // Render each SDK entry to get Content component

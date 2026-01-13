@@ -21,7 +21,7 @@ const cards: ConnectCard[] = [
 		description:
 			"Connect with your favorite tools and platforms. Integrate Nvisy seamlessly with cloud storage, collaboration tools, and enterprise software.",
 		icon: Plug2,
-		href: "/integrations",
+		href: "https://docs.nvisy.com/integrations",
 		component: IntegrationAnimation,
 	},
 	{

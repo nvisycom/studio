@@ -29,7 +29,7 @@ export const integrationSteps: Omit<IntegrationStep, "status" | "timestamp">[] =
 			id: 2,
 			icon: Cpu,
 			text: "Extract data",
-			service: "Nvisy Cloud",
+			service: "Nvisy",
 			badgeColor:
 				"bg-neutral-100 text-neutral-900 dark:bg-black dark:text-white border-neutral-300 dark:border-neutral-700",
 			duration: "3.8s",

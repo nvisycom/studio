@@ -1,72 +1,74 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { Sun, Moon } from "lucide-vue-next";
+import { Sun, Moon, Monitor } from "lucide-vue-next";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
-const isDark = ref(false);
+type Theme = "light" | "dark" | "system";
+
+const theme = ref<Theme>("system");
 
 function updateThemeColor(dark: boolean) {
-	// Update theme-color meta tag for Safari tab bar
 	const metaThemeColor = document.querySelector('meta[name="theme-color"]');
 	if (metaThemeColor) {
 		metaThemeColor.setAttribute("content", dark ? "#000000" : "#ffffff");
 	}
 }
 
-function initTheme() {
-	// Get stored theme or use system preference
-	const stored = localStorage.getItem("theme");
+function applyTheme(newTheme: Theme) {
 	const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-	const shouldBeDark = stored ? stored === "dark" : prefersDark;
+	const shouldBeDark =
+		newTheme === "dark" || (newTheme === "system" && prefersDark);
 
-	// Apply theme
-	isDark.value = shouldBeDark;
 	if (shouldBeDark) {
 		document.documentElement.classList.add("dark");
 	} else {
 		document.documentElement.classList.remove("dark");
 	}
 
-	// Update theme color for Safari
 	updateThemeColor(shouldBeDark);
-
-	// Store preference
-	localStorage.setItem("theme", shouldBeDark ? "dark" : "light");
 }
 
-function toggleTheme() {
-	isDark.value = !isDark.value;
+function initTheme() {
+	const stored = localStorage.getItem("theme") as Theme | null;
+	theme.value = stored || "system";
+	applyTheme(theme.value);
+}
 
-	if (isDark.value) {
-		document.documentElement.classList.add("dark");
-		localStorage.setItem("theme", "dark");
-	} else {
-		document.documentElement.classList.remove("dark");
-		localStorage.setItem("theme", "light");
-	}
-
-	// Update theme color for Safari
-	updateThemeColor(isDark.value);
+function setTheme(newTheme: Theme) {
+	theme.value = newTheme;
+	localStorage.setItem("theme", newTheme);
+	applyTheme(newTheme);
 }
 
 onMounted(() => {
 	initTheme();
+
+	// Listen for system theme changes
+	window
+		.matchMedia("(prefers-color-scheme: dark)")
+		.addEventListener("change", () => {
+			if (theme.value === "system") {
+				applyTheme("system");
+			}
+		});
 });
 </script>
 
 <template>
-  <button
-    @click="toggleTheme"
-    class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-neutral-100 hover:bg-neutral-200 dark:bg-black dark:hover:bg-neutral-900 border border-transparent dark:border-neutral-800 transition-colors duration-200"
-    :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
-    :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+  <ToggleGroup
+    type="single"
+    :model-value="theme"
+    @update:model-value="(val) => val && setTheme(val as Theme)"
+    class="bg-neutral-100 dark:bg-neutral-900"
   >
-    <!-- Sun icon (shown in dark mode) -->
-    <Sun v-show="isDark" class="w-5 h-5 text-neutral-600 dark:text-neutral-300" />
-
-    <!-- Moon icon (shown in light mode) -->
-    <Moon
-      v-show="!isDark"
-      class="w-5 h-5 text-neutral-600 dark:text-neutral-300"
-    />
-  </button>
+    <ToggleGroupItem value="light" aria-label="Light mode" class="px-3">
+      <Sun class="w-4 h-4" />
+    </ToggleGroupItem>
+    <ToggleGroupItem value="system" aria-label="System theme" class="px-3">
+      <Monitor class="w-4 h-4" />
+    </ToggleGroupItem>
+    <ToggleGroupItem value="dark" aria-label="Dark mode" class="px-3">
+      <Moon class="w-4 h-4" />
+    </ToggleGroupItem>
+  </ToggleGroup>
 </template>

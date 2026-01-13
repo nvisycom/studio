@@ -1,26 +1,26 @@
 [
-  {
-    "quote": "We transformed our citizen services and reduced processing times by 60%. The platform's accessibility features ensure all residents can access our services digitally.",
-    "author": "Michael Davis",
-    "title": "CIO",
-    "company": "City of Innovation",
-    "order": 1,
-    "featured": false
-  },
-  {
-    "quote": "FedRAMP compliance was seamless, and the security features exceed our requirements. We've processed over 1 million citizen requests without a single security incident.",
-    "author": "Jennifer Thompson",
-    "title": "Chief Security Officer",
-    "company": "Federal Healthcare Agency",
-    "order": 2,
-    "featured": false
-  },
-  {
-    "quote": "The accessibility features are outstanding. We achieved WCAG 2.1 AA compliance instantly, and citizen satisfaction has increased by 45% since launch.",
-    "author": "Robert Martinez",
-    "title": "Digital Services Director",
-    "company": "State Department of Motor Vehicles",
-    "order": 3,
-    "featured": false
-  }
+	{
+		"quote": "We transformed our citizen services and reduced processing times by 60%. The platform's accessibility features ensure all residents can access our services digitally.",
+		"author": "Michael Davis",
+		"title": "CIO",
+		"company": "City of Innovation",
+		"order": 1,
+		"featured": false
+	},
+	{
+		"quote": "FedRAMP compliance was seamless, and the security features exceed our requirements. We've processed over 1 million citizen requests without a single security incident.",
+		"author": "Jennifer Thompson",
+		"title": "Chief Security Officer",
+		"company": "Federal Healthcare Agency",
+		"order": 2,
+		"featured": false
+	},
+	{
+		"quote": "The accessibility features are outstanding. We achieved WCAG 2.1 AA compliance instantly, and citizen satisfaction has increased by 45% since launch.",
+		"author": "Robert Martinez",
+		"title": "Digital Services Director",
+		"company": "State Department of Motor Vehicles",
+		"order": 3,
+		"featured": false
+	}
 ]

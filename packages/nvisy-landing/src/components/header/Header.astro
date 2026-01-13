@@ -2,16 +2,6 @@
 import Logo from "../Logo.astro";
 import DesktopNavigation from "./DesktopNavigation.vue";
 import MobileNavigation from "./MobileNavigation.vue";
-import { getCollection } from "astro:content";
-
-// Fetch latest 3 blog posts for the Resources dropdown
-const blogPosts = (await getCollection("blog-posts"))
-	.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
-	.slice(0, 3)
-	.map((post) => ({
-		title: post.data.title,
-		href: `/blog/${post.slug}`,
-	}));
 ---
 
 <header
@@ -23,7 +13,7 @@ const blogPosts = (await getCollection("blog-posts"))
       <Logo asLink={true} size="md" />
 
       <!-- Desktop Navigation Section -->
-      <DesktopNavigation client:load blogPosts={blogPosts} />
+      <DesktopNavigation client:load />
 
       <!-- Auth Button Section -->
       <div class="flex items-center space-x-3">

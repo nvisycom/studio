@@ -32,22 +32,6 @@ const legalDocs = defineCollection({
 	schema: legalSchema,
 });
 
-const integrationSchema = z.object({
-	icon: z.string(),
-	isBrand: z.boolean().default(false),
-	version: z.string(),
-	status: z.enum(["Completed", "In Progress", "Planned"]),
-	title: z.string(),
-	category: z.string(),
-	description: z.string(),
-});
-
-export type IntegrationItem = z.infer<typeof integrationSchema>;
-const integrations = defineCollection({
-	type: "data",
-	schema: integrationSchema,
-});
-
 const faqSchema = z.object({
 	question: z.string(),
 	answer: z.string(),
@@ -93,7 +77,7 @@ const features = defineCollection({
 	schema: z.array(featureSchema),
 });
 
-const sdkSchema = z.object({
+const sdkExampleSchema = z.object({
 	name: z.string(),
 	language: z.string(),
 	filename: z.string(),
@@ -102,10 +86,10 @@ const sdkSchema = z.object({
 	order: z.number(),
 });
 
-export type SDKItem = z.infer<typeof sdkSchema>;
-const sdks = defineCollection({
+export type SDKExampleItem = z.infer<typeof sdkExampleSchema>;
+const sdkExamples = defineCollection({
 	type: "content",
-	schema: sdkSchema,
+	schema: sdkExampleSchema,
 });
 
 const useCaseSchema = z.object({
@@ -123,10 +107,9 @@ const useCases = defineCollection({
 export const collections = {
 	"blog-posts": blogPosts,
 	"legal-docs": legalDocs,
-	integrations,
 	faqs,
 	testimonials,
 	features,
-	sdks,
+	"sdk-examples": sdkExamples,
 	"use-cases": useCases,
 };

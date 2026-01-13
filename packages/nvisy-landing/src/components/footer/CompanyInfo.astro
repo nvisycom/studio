@@ -5,6 +5,7 @@ import OpenStatus from "./OpenStatus.vue";
 import GithubIcon from "@/assets/icons/github.svg";
 import BlueskyIcon from "@/assets/icons/bluesky.svg";
 import LinkedinIcon from "@/assets/icons/linkedin.svg";
+import { Mail } from "lucide-vue-next";
 
 export interface Props {
 	companyName?: string;
@@ -13,6 +14,11 @@ export interface Props {
 const { companyName = COMPANY_NAME } = Astro.props;
 
 const socialLinks = [
+	{
+		name: "Email",
+		href: "mailto:hello@nvisy.com",
+		Icon: Mail,
+	},
 	{
 		name: "GitHub",
 		href: "https://github.com/nvisycom",

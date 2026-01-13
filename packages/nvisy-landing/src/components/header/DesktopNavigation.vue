@@ -7,19 +7,6 @@ import {
 	navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import ProductsDropdown from "./DesktopProducts.vue";
-import SolutionsDropdown from "./DesktopSolutions.vue";
-import ResourcesDropdown from "./DesktopResources.vue";
-
-interface BlogPost {
-	title: string;
-	href: string;
-}
-
-interface Props {
-	blogPosts: BlogPost[];
-}
-
-const props = defineProps<Props>();
 </script>
 
 <template>
@@ -32,11 +19,27 @@ const props = defineProps<Props>();
       <!-- Products -->
       <ProductsDropdown />
 
-      <!-- Solutions -->
-      <SolutionsDropdown :blogPosts="props.blogPosts" />
+      <!-- Customers -->
+      <NavigationMenuItem>
+        <NavigationMenuLink
+          href="/customers"
+          :class="navigationMenuTriggerStyle()"
+          class="group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-base font-medium text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-black dark:hover:text-white focus:bg-neutral-50 dark:focus:bg-neutral-800 focus:text-black dark:focus:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-300 dark:focus-visible:ring-neutral-600 transition-all duration-200"
+        >
+          Customers
+        </NavigationMenuLink>
+      </NavigationMenuItem>
 
-      <!-- Resources -->
-      <ResourcesDropdown />
+      <!-- Blog -->
+      <NavigationMenuItem>
+        <NavigationMenuLink
+          href="/blog"
+          :class="navigationMenuTriggerStyle()"
+          class="group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-base font-medium text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-black dark:hover:text-white focus:bg-neutral-50 dark:focus:bg-neutral-800 focus:text-black dark:focus:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-300 dark:focus-visible:ring-neutral-600 transition-all duration-200"
+        >
+          Blog
+        </NavigationMenuLink>
+      </NavigationMenuItem>
 
       <!-- Pricing -->
       <NavigationMenuItem>

@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { Menu, X } from "lucide-vue-next";
 import MobileProducts from "./MobileProducts.vue";
-import MobileSolutions from "./MobileSolutions.vue";
-import MobileResources from "./MobileResources.vue";
 import { useMobileMenu } from "./useMobileMenu.ts";
 
 defineProps<{
@@ -30,8 +28,20 @@ const { mobileMenuOpen, toggleMobileMenu } = useMobileMenu();
   >
     <nav class="flex flex-col space-y-3">
       <MobileProducts />
-      <MobileSolutions />
-      <MobileResources />
+
+      <a
+        href="/customers"
+        class="text-neutral-900 dark:text-white font-light text-base tracking-wide transition-all duration-300 px-2 py-2 uppercase"
+      >
+        Customers
+      </a>
+
+      <a
+        href="/blog"
+        class="text-neutral-900 dark:text-white font-light text-base tracking-wide transition-all duration-300 px-2 py-2 uppercase"
+      >
+        Blog
+      </a>
 
       <a
         href="/pricing"

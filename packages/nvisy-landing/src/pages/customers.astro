@@ -1,0 +1,58 @@
+---
+import { Layout } from "@/layouts";
+import {
+	Hero,
+	CTA,
+	SocialProof,
+	Testimonials,
+	CaseStudies,
+	Industries,
+	Security,
+} from "@/components";
+---
+
+<Layout
+  title="Customers"
+  description="See how organizations across industries use Nvisy to transform their document workflows. From financial services to healthcare, government to insurance."
+>
+  <Hero
+    title="Trusted by Industry Leaders"
+    description="Organizations worldwide rely on Nvisy to extract insights from documents, automate workflows, and meet compliance requirements. See how our customers are transforming their document processing."
+    background="gradient"
+    buttons={[
+      {
+        text: "Get Started",
+        href: "/pricing",
+        variant: "primary"
+      },
+      {
+        text: "View Documentation",
+        href: "https://docs.nvisy.com",
+        variant: "secondary"
+      }
+    ]}
+  />
+
+  <SocialProof />
+  <Industries />
+  <CaseStudies />
+  <Testimonials />
+  <CTA
+    title="Ready to Transform Your Document Workflows?"
+    description="Join leading organizations that trust Nvisy for their document processing needs."
+    buttons={[
+      {
+        text: "Get Started",
+        href: "/pricing",
+        variant: "primary"
+      },
+      {
+        text: "View Documentation",
+        href: "https://docs.nvisy.com",
+        variant: "secondary"
+      }
+    ]}
+    background="gradient"
+  />
+  <Security />
+</Layout>

@@ -1,7 +1,7 @@
 ---
 import { Layout } from "@/layouts";
 import { getCollection, type CollectionEntry } from "astro:content";
-import { CTA, Hero, LegalCard } from "@/components";
+import { CTA, Hero, LegalCard, Security } from "@/components";
 import { File } from "lucide-vue-next";
 
 // Get all legal documents
@@ -62,15 +62,12 @@ legalEntries.sort((a, b) => a.data.title.localeCompare(b.data.title));
     background="solid"
     buttons={[
       {
-        text: "Contact Us",
-        href: "/contact",
-        variant: "primary"
-      },
-      {
         text: "Email Us",
         href: "mailto:hello@nvisy.com",
-        variant: "secondary"
+        variant: "primary"
       }
     ]}
   />
+
+  <Security />
 </Layout>

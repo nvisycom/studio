@@ -6,6 +6,7 @@ import {
 	Testimonials,
 	PricingCards,
 	BillingToggle,
+	Security,
 } from "@/components";
 import { Layout } from "@/layouts";
 ---
@@ -46,13 +47,16 @@ import { Layout } from "@/layouts";
     buttons={[
       {
         text: "Start Free Trial",
+        href: "https://app.nvisy.com/auth/signup",
         variant: "primary"
       },
       {
-        text: "Book a Demo",
-        variant: "secondary",
-        icon: "mail"
+        text: "View Documentation",
+        href: "https://docs.nvisy.com",
+        variant: "secondary"
       }
     ]}
   />
+
+  <Security />
 </Layout>

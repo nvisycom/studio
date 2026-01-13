@@ -1,9 +1,0 @@
-{
-	"icon": "typescript",
-	"isBrand": true,
-	"version": "v1.0",
-	"status": "Planned",
-	"title": "TypeScript SDK",
-	"category": "Developer",
-	"description": "Modern TypeScript SDK for web browsers and Node.js applications with comprehensive document processing APIs and promise-based workflows."
-}

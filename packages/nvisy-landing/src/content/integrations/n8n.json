@@ -1,9 +1,0 @@
-{
-	"icon": "n8n",
-	"isBrand": false,
-	"version": "v1.0",
-	"status": "In Progress",
-	"title": "n8n",
-	"category": "Automation",
-	"description": "Self-hosted workflow automation with full control over your document processing pipelines. Build custom nodes, integrate with any API, and maintain complete data privacy."
-}

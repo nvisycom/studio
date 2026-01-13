@@ -4,7 +4,6 @@ export const footerSections: FooterSection[] = [
 	{
 		title: "Product",
 		links: [
-			{ name: "Nvisy Cloud", href: "/products/cloud" },
 			{ name: "Nvisy Server", href: "/products/server" },
 			{ name: "Nvisy Studio", href: "/products/studio" },
 			{
@@ -12,29 +11,30 @@ export const footerSections: FooterSection[] = [
 				href: "https://docs.nvisy.com",
 				isExternal: true,
 			},
-			{ name: "Integrations", href: "/integrations" },
+			{
+				name: "API Reference",
+				href: "https://docs.nvisy.com/api-reference",
+				isExternal: true,
+			},
 		],
 	},
 	{
-		title: "Solutions",
+		title: "Resources",
 		links: [
-			{ name: "Healthcare", href: "/solutions/healthcare" },
-			{ name: "Financial", href: "/solutions/financial" },
-			{ name: "Government", href: "/solutions/government" },
-			{ name: "Insurance", href: "/solutions/insurance" },
+			{ name: "Blog", href: "/blog" },
+			{ name: "Customers", href: "/customers" },
+			{ name: "Pricing", href: "/pricing" },
 		],
 	},
 	{
 		title: "Company",
 		links: [
 			{ name: "About", href: "/about" },
-			{ name: "Blog", href: "/blog" },
 			{
 				name: "Careers",
 				href: "https://www.linkedin.com/company/nvisy/jobs/",
 				isExternal: true,
 			},
-			{ name: "Contact", href: "/contact" },
 		],
 	},
 	{

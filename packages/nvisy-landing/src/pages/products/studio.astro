@@ -8,7 +8,7 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
 
 <Layout
   title="Nvisy Studio"
-  description="Cross-platform desktop application for document processing. Works with both Nvisy Cloud and Server. Open source and built with Tauri and Vue."
+  description="Cross-platform desktop application for document processing. Works with Nvisy Server. Open source and built with Tauri and Vue."
 >
   <Hero
     title="Nvisy Studio"
@@ -17,18 +17,6 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
     maxWidth="full"
     buttons={[]}
   >
-    <div slot="media" class="mb-8 md:mb-12 max-w-5xl mx-auto">
-      <div class="rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800 shadow-2xl">
-        <AspectRatio ratio={16 / 9}>
-          <img
-            src="/images/studio-screenshot.png"
-            alt="Nvisy Studio interface"
-            class="w-full h-full object-cover"
-            loading="eager"
-          />
-        </AspectRatio>
-      </div>
-    </div>
     <div slot="buttons" class="w-full">
       <DownloadButtons client:load />
     </div>
@@ -53,6 +41,22 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
         </p>
       </div>
 
+      <!-- Screenshot placeholder - add /public/images/studio-screenshot.png -->
+      <!--
+      <div class="mb-12 md:mb-16 max-w-5xl mx-auto">
+        <div class="rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800 shadow-2xl">
+          <AspectRatio ratio={16 / 9}>
+            <img
+              src="/images/studio-screenshot.png"
+              alt="Nvisy Studio interface"
+              class="w-full h-full object-cover"
+              loading="lazy"
+            />
+          </AspectRatio>
+        </div>
+      </div>
+      -->
+
       <div class="flex flex-col items-center gap-6">
         <a
           href="https://github.com/nvisycom/studio"
@@ -75,10 +79,9 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
     description="Nvisy Studio is part of our open source ecosystem. Explore our other projects and contribute to the community."
   />
 
-  <Security />
   <CTA
     title="Ready to Get Started?"
-    description="Download Nvisy Studio and connect it to Nvisy Cloud or your own Server deployment. Get started in minutes."
+    description="Download Nvisy Studio and connect it to Nvisy Server. Get started in minutes."
     buttons={[
       {
         text: "View Documentation",
@@ -93,4 +96,5 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
     ]}
     background="gradient"
   />
+  <Security />
 </Layout>

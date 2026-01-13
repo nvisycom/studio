@@ -1,6 +1,5 @@
 ---
 import HowItWorksStepper from "./HowItWorksStepper.vue";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 ---
 
 <section class="py-16 md:py-28 bg-white dark:bg-black">
@@ -14,23 +13,9 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 			</p>
 		</div>
 
-		<!-- Stepper -->
+		<!-- Stepper with Screenshots -->
 		<div class="max-w-5xl mx-auto">
 			<HowItWorksStepper client:load />
-		</div>
-
-		<!-- Screenshot -->
-		<div class="max-w-5xl mx-auto mt-16">
-			<div class="rounded-2xl overflow-hidden border border-neutral-200/50 dark:border-neutral-800/50 shadow-2xl bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm">
-				<AspectRatio ratio={16 / 9}>
-					<img
-						src="/images/dashboard-screenshot.png"
-						alt="Nvisy Dashboard - Document Processing Interface"
-						class="w-full h-full object-cover"
-						loading="eager"
-					/>
-				</AspectRatio>
-			</div>
 		</div>
 	</div>
 </section>

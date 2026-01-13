@@ -7,6 +7,7 @@ import {
 	getBackgroundClass,
 	type BackgroundVariant,
 } from "@/utils/backgroundStyles";
+import GradientShader from "@/components/effects/GradientShader.vue";
 
 export interface Props {
 	title?: string;
@@ -42,21 +43,18 @@ const maxWidthClasses = {
 	xl: "max-w-6xl",
 	full: "max-w-none",
 };
+
+const isGradient = background === "gradient";
 ---
 
 <section class={`
-	${getBackgroundClass(background)}
+	${isGradient ? '' : getBackgroundClass(background)}
 	py-20 px-10
-	${background === 'gradient' ? 'relative' : ''}
+	${isGradient ? 'relative overflow-hidden' : ''}
 `}>
-	{background === 'gradient' && (
-		<>
-			<div class="absolute top-0 left-0 right-0 h-[10%] pointer-events-none z-[5] bg-gradient-to-b from-white dark:from-black to-transparent" />
-			<div class="absolute bottom-0 left-0 right-0 h-[10%] pointer-events-none z-[5] bg-gradient-to-t from-white dark:from-black to-transparent" />
-		</>
-	)}
+	{isGradient && <GradientShader client:load />}
 
-	<div class={`container mx-auto px-4 ${background === 'gradient' ? 'relative z-10' : ''}`}>
+	<div class={`container mx-auto px-4 ${isGradient ? 'relative z-10' : ''}`}>
 		<div class={`
 			${centered ? "mx-auto text-center" : ""}
 			${maxWidthClasses[maxWidth]}
@@ -137,28 +135,3 @@ const maxWidthClasses = {
 		</div>
 	</div>
 </section>
-
-<style>
-	@keyframes blob {
-		0%, 100% {
-			transform: translate(0, 0) scale(1);
-		}
-		25% {
-			transform: translate(20px, -30px) scale(1.05);
-		}
-		50% {
-			transform: translate(-20px, 20px) scale(0.95);
-		}
-		75% {
-			transform: translate(30px, 10px) scale(1.02);
-		}
-	}
-
-	.cta-blob {
-		animation: blob 12s ease-in-out infinite;
-	}
-
-	.cta-blob-delay-2 {
-		animation-delay: 2s;
-	}
-</style>
