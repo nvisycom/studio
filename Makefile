@@ -9,6 +9,8 @@ endef
 install: # Installs all dependencies.
 	$(call log,Installing dependencies...)
 	@npm install
+	$(call log,Installing Playwright...)
+	@npx playwright install
 	@if [ -d scripts ]; then \
 		$(call log,Making scripts executable...); \
 		chmod +x scripts/*.sh; \
