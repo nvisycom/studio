@@ -27,16 +27,16 @@ test.describe("404 Error Page", () => {
 		const goBackButton = page.getByRole("link", { name: /Go back/i });
 		await expect(goBackButton).toBeVisible();
 
-		// Check for Go home button
-		const goHomeButton = page.getByRole("link", { name: /Go home/i });
-		await expect(goHomeButton).toBeVisible();
+		// Check for Home button
+		const homeButton = page.getByRole("link", { name: /^Home$/i });
+		await expect(homeButton).toBeVisible();
 	});
 
 	test("home button navigates to homepage", async ({ page }) => {
 		await page.goto("/non-existent-page");
 
-		const goHomeButton = page.getByRole("link", { name: /Go home/i });
-		await goHomeButton.click();
+		const homeButton = page.getByRole("link", { name: /^Home$/i });
+		await homeButton.click();
 
 		await expect(page).toHaveURL("/");
 	});
