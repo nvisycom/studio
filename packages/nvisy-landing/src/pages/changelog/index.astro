@@ -37,7 +37,9 @@ function parseSections(body: string) {
 		}
 
 		// Check for list items under current section
-		const currentSectionArray = currentSection ? sections[currentSection] : undefined;
+		const currentSectionArray = currentSection
+			? sections[currentSection]
+			: undefined;
 		if (currentSectionArray && line.match(/^-\s+/)) {
 			const item = line.replace(/^-\s+/, "").replace(/\*\*([^*]+)\*\*/g, "$1");
 			if (item.trim()) {

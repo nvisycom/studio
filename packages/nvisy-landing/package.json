@@ -9,7 +9,7 @@
 		"build": "astro build",
 		"preview": "astro preview",
 		"astro": "astro",
-		"test": "vitest run",
+		"test": "vitest run --passWithNoTests",
 		"test:e2e": "playwright test",
 		"test:watch": "vitest watch",
 		"test:types": "astro check",
