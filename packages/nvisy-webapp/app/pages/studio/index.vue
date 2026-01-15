@@ -6,6 +6,8 @@ import {
 	StudioChatPanel,
 } from "~/components/pages/studio";
 
+useHead({ title: "Studio" });
+
 definePageMeta({
 	pageCategory: "Studio",
 });
@@ -103,9 +105,7 @@ function startResize(e: MouseEvent) {
 </script>
 
 <template>
-  <div
-    class="absolute inset-0 overflow-hidden bg-neutral-100 dark:bg-neutral-950 flex"
-  >
+  <div class="absolute inset-0 overflow-hidden bg-muted/30 flex">
     <!-- Main Canvas Panel -->
     <div class="flex-1 min-w-0 h-full">
       <StudioDocumentPreview

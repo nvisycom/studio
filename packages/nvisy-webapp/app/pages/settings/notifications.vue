@@ -15,6 +15,8 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 
+useHead({ title: "Notifications" });
+
 definePageMeta({
 	pageCategory: "Settings",
 });
@@ -246,22 +248,21 @@ async function saveEventSettings() {
 
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
-    <div class="max-w-4xl mx-auto w-full">
+    <div class="max-w-3xl mx-auto w-full">
       <!-- Loading State -->
       <div v-if="isLoading" class="flex items-center justify-center py-12">
-        <Loader2 :size="32" class="animate-spin text-neutral-400" />
+        <Loader2 :size="24" class="animate-spin text-muted-foreground" />
       </div>
 
       <div v-else-if="settings" class="space-y-6">
         <!-- Notification Channels -->
-        <Card
-          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-        >
-          <CardHeader>
-            <CardTitle>{{
-              t("settings.notifications.channels.title")
-            }}</CardTitle>
-            <CardDescription>{{
+        <Card class="py-0 pt-6 rounded-xl border-border/50">
+          <CardHeader class="pb-4">
+            <CardTitle
+              class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
+              >{{ t("settings.notifications.channels.title") }}</CardTitle
+            >
+            <CardDescription class="text-sm">{{
               t("settings.notifications.channels.description")
             }}</CardDescription>
           </CardHeader>
@@ -269,10 +270,10 @@ async function saveEventSettings() {
             <div class="space-y-4">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="font-medium text-neutral-900 dark:text-white">
+                  <p class="text-sm font-medium text-foreground">
                     {{ t("settings.notifications.channels.web.label") }}
                   </p>
-                  <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                  <p class="text-xs text-muted-foreground">
                     {{ t("settings.notifications.channels.web.description") }}
                   </p>
                 </div>
@@ -280,10 +281,10 @@ async function saveEventSettings() {
               </div>
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="font-medium text-neutral-900 dark:text-white">
+                  <p class="text-sm font-medium text-foreground">
                     {{ t("settings.notifications.channels.email.label") }}
                   </p>
-                  <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                  <p class="text-xs text-muted-foreground">
                     {{ t("settings.notifications.channels.email.description") }}
                   </p>
                 </div>
@@ -296,23 +297,22 @@ async function saveEventSettings() {
             </div>
           </CardContent>
           <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+            class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
           >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
+            <p class="text-xs text-muted-foreground">
               {{ t("settings.notifications.channels.footer") }}
             </p>
           </CardFooter>
         </Card>
 
         <!-- Notification Events -->
-        <Card
-          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-        >
-          <CardHeader>
-            <CardTitle>{{
-              t("settings.notifications.events.title")
-            }}</CardTitle>
-            <CardDescription>{{
+        <Card class="py-0 pt-6 rounded-xl border-border/50">
+          <CardHeader class="pb-4">
+            <CardTitle
+              class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
+              >{{ t("settings.notifications.events.title") }}</CardTitle
+            >
+            <CardDescription class="text-sm">{{
               t("settings.notifications.events.description")
             }}</CardDescription>
           </CardHeader>
@@ -321,21 +321,19 @@ async function saveEventSettings() {
               <div v-for="category in categories" :key="category.id">
                 <!-- Category Header with Web/Email Labels -->
                 <div
-                  class="flex items-center justify-between pb-2 border-b border-neutral-300 dark:border-neutral-600"
+                  class="flex items-center justify-between pb-2 border-b border-border/50"
                 >
-                  <h4
-                    class="text-sm font-medium text-neutral-900 dark:text-white"
-                  >
+                  <h4 class="text-sm font-medium text-foreground">
                     {{ category.name }}
                   </h4>
                   <div class="flex items-center gap-8">
                     <span
-                      class="text-xs font-medium text-neutral-600 dark:text-neutral-400 w-16 text-center"
+                      class="text-xs font-medium text-muted-foreground w-16 text-center"
                     >
                       {{ t("settings.notifications.events.headers.web") }}
                     </span>
                     <span
-                      class="text-xs font-medium text-neutral-600 dark:text-neutral-400 w-16 text-center"
+                      class="text-xs font-medium text-muted-foreground w-16 text-center"
                     >
                       {{ t("settings.notifications.events.headers.email") }}
                     </span>
@@ -350,12 +348,10 @@ async function saveEventSettings() {
                     class="flex items-start justify-between py-2"
                   >
                     <div class="flex-1 pr-4">
-                      <p class="text-sm text-neutral-900 dark:text-white">
+                      <p class="text-sm text-foreground">
                         {{ item.name }}
                       </p>
-                      <p
-                        class="text-xs text-neutral-600 dark:text-neutral-400 mt-1"
-                      >
+                      <p class="text-xs text-muted-foreground mt-1">
                         {{ item.description }}
                       </p>
                     </div>
@@ -390,9 +386,9 @@ async function saveEventSettings() {
             </div>
           </CardContent>
           <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
+            class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl flex items-center justify-between"
           >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
+            <p class="text-xs text-muted-foreground">
               {{ t("settings.notifications.events.footer") }}
             </p>
             <Button
@@ -409,7 +405,7 @@ async function saveEventSettings() {
 
       <!-- No settings state -->
       <div v-else class="flex items-center justify-center py-12">
-        <p class="text-neutral-500 dark:text-neutral-400">
+        <p class="text-sm text-muted-foreground">
           {{ t("settings.notifications.noSettings") }}
         </p>
       </div>

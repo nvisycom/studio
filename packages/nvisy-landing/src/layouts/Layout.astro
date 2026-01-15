@@ -56,6 +56,9 @@ export interface Props {
 
 	/** Whether to show the cookie consent popup */
 	showCookiePopup?: boolean | undefined;
+
+	/** Whether to hide the footer top border (useful when Security section is present) */
+	hideFooterBorder?: boolean | undefined;
 }
 
 const {
@@ -72,6 +75,7 @@ const {
 	hideHeader = false,
 	hideFooter = false,
 	showCookiePopup = true,
+	hideFooterBorder = false,
 } = Astro.props;
 ---
 <MinLayout
@@ -92,28 +96,20 @@ const {
 	<!-- Page Content -->
 	<div slot="content" class="flex flex-col min-h-screen">
 		<!-- Header -->
-		{!hideHeader && (
-			<header role="banner" class="shrink-0">
-				<Header />
-			</header>
-		)}
+		{!hideHeader && <Header />}
 
 		<!-- Main Content -->
 		<main
 			id="main-content"
 			role="main"
-			class="flex-1 w-full"
+			class="flex-1 w-full bg-background"
 			tabindex="-1"
 		>
 			<slot/>
 		</main>
 
 		<!-- Footer -->
-		{!hideFooter && (
-			<footer role="contentinfo" class="shrink-0">
-				<Footer />
-			</footer>
-		)}
+		{!hideFooter && <Footer hideBorder={hideFooterBorder} />}
 
 		<!-- Compliance Slot -->
 		{showCookiePopup && <Cookies slot="compliance" />}

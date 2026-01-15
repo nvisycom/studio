@@ -158,7 +158,7 @@ function selectSorting(
           <Input
             v-model="searchQuery"
             :placeholder="t('members.forms.search.placeholder')"
-            class="pl-10 border-neutral-300 dark:border-neutral-700 font-light"
+            class="pl-10 border-neutral-300 dark:border-neutral-700 font-normal"
           />
         </div>
 
@@ -167,7 +167,7 @@ function selectSorting(
           <DropdownMenuTrigger as-child>
             <Button
               variant="outline"
-              class="justify-between min-w-32 border-neutral-300 dark:border-neutral-700 font-light"
+              class="justify-between min-w-32 border-neutral-300 dark:border-neutral-700 font-normal"
             >
               {{ currentRoleFilterLabel }}
               <ChevronDown :size="16" />
@@ -189,7 +189,7 @@ function selectSorting(
           <DropdownMenuTrigger as-child>
             <Button
               variant="outline"
-              class="justify-between min-w-32 border-neutral-300 dark:border-neutral-700 font-light"
+              class="justify-between min-w-32 border-neutral-300 dark:border-neutral-700 font-normal"
             >
               {{ currentSortLabel }}
               <ChevronDown :size="16" />
@@ -254,7 +254,7 @@ function selectSorting(
     <CardFooter
       class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
     >
-      <p class="text-sm font-light text-neutral-600 dark:text-neutral-400">
+      <p class="text-sm font-normal text-neutral-600 dark:text-neutral-400">
         {{ t("members.messages.reviewFooter") }}
       </p>
     </CardFooter>

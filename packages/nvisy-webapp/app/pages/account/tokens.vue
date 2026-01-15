@@ -49,6 +49,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+useHead({ title: "API Tokens" });
+
 definePageMeta({
 	pageCategory: "Settings",
 });
@@ -234,43 +236,51 @@ async function renameToken(newName: string) {
 
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
-    <div class="max-w-4xl mx-auto w-full">
+    <div class="max-w-3xl mx-auto w-full">
       <!-- Create Token Section -->
-      <Card class="mb-8 py-0 pt-6 rounded-xl">
-        <CardHeader>
+      <Card class="mb-6 py-0 pt-6 border-border/50">
+        <CardHeader class="pb-4">
           <CardTitle
-            class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
-            >{{ t("tokens.create.title") }}</CardTitle
+            class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
           >
-          <CardDescription>{{
-            t("tokens.create.description")
-          }}</CardDescription>
+            {{ t("tokens.create.title") }}
+          </CardTitle>
+          <CardDescription class="text-sm">
+            {{ t("tokens.create.description") }}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div class="flex gap-4">
             <div class="space-y-2 flex-1">
-              <Label for="tokenName" class="font-light">{{
-                t("tokens.create.nameLabel")
-              }}</Label>
+              <Label for="tokenName" class="text-sm font-medium">
+                {{ t("tokens.create.nameLabel") }}
+              </Label>
               <Input
                 id="tokenName"
                 v-model="tokenName"
                 :placeholder="t('tokens.create.namePlaceholder')"
+                class="h-9"
               />
             </div>
 
             <div class="space-y-2 flex-1">
-              <Label for="tokenExpiration" class="font-light">{{
-                t("tokens.create.expirationLabel")
-              }}</Label>
+              <Label for="tokenExpiration" class="text-sm font-medium">
+                {{ t("tokens.create.expirationLabel") }}
+              </Label>
               <DropdownMenu>
                 <DropdownMenuTrigger as-child>
-                  <Button variant="outline" class="w-full justify-between">
-                    {{
-                      expirations.find((e) => e.value === tokenExpiration)
-                        ?.label
-                    }}
-                    <ChevronDown :size="16" />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    class="w-full justify-between h-9"
+                  >
+                    <span class="text-sm">
+                      {{
+                        expirations.find((e) => e.value === tokenExpiration)
+                          ?.label
+                      }}
+                    </span>
+                    <ChevronDown :size="14" class="text-muted-foreground" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" class="w-full">
@@ -278,6 +288,7 @@ async function renameToken(newName: string) {
                     v-for="expiration in expirations"
                     :key="expiration.value"
                     @click="tokenExpiration = expiration.value"
+                    class="text-sm"
                   >
                     {{ expiration.label }}
                   </DropdownMenuItem>
@@ -287,13 +298,14 @@ async function renameToken(newName: string) {
           </div>
         </CardContent>
         <CardFooter
-          class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
+          class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl flex items-center justify-between"
         >
-          <p class="text-sm font-light text-neutral-600 dark:text-neutral-400">
+          <p class="text-xs text-muted-foreground">
             {{ t("tokens.create.footer") }}
           </p>
           <Button
             type="button"
+            size="sm"
             @click="createToken"
             :disabled="!tokenName.trim() || isCreating"
           >
@@ -305,13 +317,14 @@ async function renameToken(newName: string) {
       </Card>
 
       <!-- Active Tokens -->
-      <Card class="overflow-hidden py-0 pt-6 rounded-xl">
-        <CardHeader>
+      <Card class="overflow-hidden py-0 pt-6 border-border/50">
+        <CardHeader class="pb-4">
           <CardTitle
-            class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
-            >{{ t("tokens.list.title") }}</CardTitle
+            class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
           >
-          <CardDescription>
+            {{ t("tokens.list.title") }}
+          </CardTitle>
+          <CardDescription class="text-sm">
             {{
               t(
                 "tokens.list.description",
@@ -324,12 +337,14 @@ async function renameToken(newName: string) {
         <CardContent>
           <!-- Loading State -->
           <div v-if="isLoading" class="flex items-center justify-center py-12">
-            <Loader2 :size="32" class="animate-spin text-neutral-400" />
+            <Loader2 :size="24" class="animate-spin text-muted-foreground" />
           </div>
 
           <!-- Error State -->
-          <div v-else-if="error" class="text-center py-12 text-red-500">
-            <p>Failed to load tokens: {{ error.message }}</p>
+          <div v-else-if="error" class="text-center py-12">
+            <p class="text-sm text-destructive">
+              Failed to load tokens: {{ error.message }}
+            </p>
           </div>
 
           <!-- Tokens Table -->
@@ -349,7 +364,7 @@ async function renameToken(newName: string) {
           <!-- Empty State -->
           <Empty v-else>
             <EmptyHeader>
-              <Key :size="48" class="mx-auto text-neutral-400 mb-4" />
+              <Key :size="32" class="mx-auto text-muted-foreground mb-3" />
               <EmptyTitle>{{ t("tokens.empty.title") }}</EmptyTitle>
               <EmptyDescription>
                 {{ t("tokens.empty.description") }}
@@ -358,9 +373,9 @@ async function renameToken(newName: string) {
           </Empty>
         </CardContent>
         <CardFooter
-          class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+          class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
         >
-          <p class="text-sm font-light text-neutral-600 dark:text-neutral-400">
+          <p class="text-xs text-muted-foreground">
             {{ t("tokens.list.footer") }}
           </p>
         </CardFooter>

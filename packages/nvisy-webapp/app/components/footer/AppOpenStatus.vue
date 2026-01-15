@@ -4,7 +4,7 @@
       href="https://nvisy.openstatus.dev"
       target="_blank"
       rel="noopener noreferrer"
-      class="inline-flex items-center gap-1.5 text-xs hover:text-neutral-900 dark:hover:text-neutral-400 transition-colors"
+      class="inline-flex items-center gap-1.5 text-sm font-normal text-neutral-600 dark:text-neutral-300 hover:text-neutral-700 dark:hover:text-neutral-400 transition-colors"
     >
       <!-- Status Indicator -->
       <div class="relative flex-shrink-0">
@@ -53,9 +53,11 @@
         href="https://nvisy.openstatus.dev"
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex items-center gap-1.5 text-xs hover:text-neutral-900 dark:hover:text-neutral-400 transition-colors"
+        class="inline-flex items-center gap-1.5 text-sm font-normal text-neutral-600 dark:text-neutral-300 hover:text-neutral-700 dark:hover:text-neutral-400 transition-colors"
       >
-        <div class="w-2 h-2 rounded-full bg-neutral-400 dark:bg-neutral-600 animate-pulse" />
+        <div
+          class="w-2 h-2 rounded-full bg-neutral-400 dark:bg-neutral-600 animate-pulse"
+        />
         <span>Loading</span>
       </a>
     </template>

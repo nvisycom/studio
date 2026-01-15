@@ -157,7 +157,7 @@ function cancel() {
               {{ t("integrations.dialogs.configure.activeLabel") }}
             </p>
             <p
-              class="text-sm font-light text-neutral-600 dark:text-neutral-400"
+              class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
             >
               {{ t("integrations.dialogs.configure.activeDescription") }}
             </p>

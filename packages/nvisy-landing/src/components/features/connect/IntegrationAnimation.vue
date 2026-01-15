@@ -59,11 +59,15 @@ const runAnimation = () => {
 					if (currentStep === steps.value.length) {
 						setTimeout(() => {
 							// Set all steps to loading for spinner effect
-							steps.value.forEach((step) => (step.status = "loading"));
+							for (const step of steps.value) {
+								step.status = "loading";
+							}
 
 							setTimeout(() => {
 								// Reset all after spinner
-								steps.value.forEach((step) => (step.status = "pending"));
+								for (const step of steps.value) {
+									step.status = "pending";
+								}
 								currentStep = 0;
 							}, 800);
 						}, 1200);
@@ -84,80 +88,125 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="bg-white dark:bg-black rounded-lg p-6 h-[280px] relative">
+  <div
+    class="bg-background rounded-xl p-6 h-[280px] relative border border-border/50"
+  >
     <div class="space-y-6 relative overflow-hidden h-full">
-      <div v-for="(step, index) in steps" :key="step.id" class="relative">
-        <!-- Vertical line connector -->
-        <div
-          v-if="index < steps.length - 1"
-          class="absolute left-5 w-px bg-neutral-300 dark:bg-neutral-700"
-          style="top: 50px; bottom: -14px"
-        />
-
-        <!-- Top row: Icon, Badge, Date -->
-        <div class="flex items-center gap-4 mb-4">
+      <TransitionGroup name="step">
+        <div v-for="(step, index) in steps" :key="step.id" class="relative">
+          <!-- Vertical line connector -->
           <div
-            class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 z-10 bg-neutral-100 dark:bg-neutral-900 transition-all duration-300"
-          >
-            <Spinner
-              v-if="step.status === 'loading'"
-              class="w-5 h-5 text-blue-600 dark:text-blue-400"
-            />
-            <Check
-              v-else-if="step.status === 'completed'"
-              class="w-5 h-5 text-green-600 dark:text-green-400"
-            />
-            <component
-              v-else
-              :is="step.icon"
-              class="w-5 h-5 text-neutral-600 dark:text-neutral-300"
-            />
-          </div>
-          <Badge
-            :class="step.badgeColor"
-            class="text-sm font-light px-3 py-1 border"
-          >
-            {{ step.text }}
-          </Badge>
-          <div
-            class="flex items-center gap-1 ml-auto text-xs font-light text-neutral-600 dark:text-neutral-400"
-          >
-            <Calendar class="w-3 h-3" />
-            {{ step.timestamp }}
-          </div>
-        </div>
+            v-if="index < steps.length - 1"
+            class="absolute left-5 w-px bg-border"
+            style="top: 50px; bottom: -14px"
+          />
 
-        <!-- Bottom section: Metadata in single line -->
-        <div class="ml-14 text-xs font-light text-neutral-900 dark:text-white">
-          <div class="flex items-center gap-1.5 flex-wrap">
-            <span>via</span>
-            <Badge
-              class="text-xs font-light bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-700"
+          <!-- Top row: Icon, Badge, Date -->
+          <div class="flex items-center gap-4 mb-4">
+            <div
+              class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 z-10 bg-accent border border-border/50 transition-all duration-500"
+              :class="{
+                'bg-emerald-500/10 border-emerald-500/30':
+                  step.status === 'completed',
+                'bg-blue-500/10 border-blue-500/30': step.status === 'loading',
+              }"
             >
-              {{ step.service }}
+              <Spinner
+                v-if="step.status === 'loading'"
+                class="w-5 h-5 text-blue-500"
+              />
+              <Check
+                v-else-if="step.status === 'completed'"
+                class="w-5 h-5 text-emerald-500"
+              />
+              <component
+                v-else
+                :is="step.icon"
+                class="w-5 h-5 text-muted-foreground"
+              />
+            </div>
+            <Badge
+              :class="step.badgeColor"
+              class="text-sm px-3 py-1 border transition-all duration-300"
+            >
+              {{ step.text }}
             </Badge>
-            <template v-if="step.status === 'completed'">
-              <span>• took</span>
+            <div
+              class="flex items-center gap-1.5 ml-auto text-xs text-muted-foreground"
+            >
+              <Calendar class="w-3 h-3" />
+              <span class="font-mono">{{ step.timestamp }}</span>
+            </div>
+          </div>
+
+          <!-- Bottom section: Metadata in single line -->
+          <div class="ml-14 text-xs text-foreground">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-muted-foreground">via</span>
               <Badge
-                class="text-xs font-light bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-700"
+                variant="secondary"
+                class="text-xs bg-accent text-foreground border-border/50"
               >
-                {{ step.duration }}
+                {{ step.service }}
               </Badge>
-              <span>•</span>
-              <Badge
-                class="text-xs font-light bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-700"
+              <span
+                v-if="step.status === 'completed'"
+                class="contents animate-fade-in"
               >
-                {{ step.dataSize }}
-              </Badge>
-            </template>
+                <span class="text-muted-foreground">• took</span>
+                <Badge
+                  variant="secondary"
+                  class="text-xs bg-accent text-foreground border-border/50"
+                >
+                  {{ step.duration }}
+                </Badge>
+                <span class="text-muted-foreground">•</span>
+                <Badge
+                  variant="secondary"
+                  class="text-xs bg-accent text-foreground border-border/50"
+                >
+                  {{ step.dataSize }}
+                </Badge>
+              </span>
+            </div>
           </div>
         </div>
-      </div>
+      </TransitionGroup>
 
       <!-- Fade effect at the bottom -->
       <div
-        class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white dark:from-black to-transparent pointer-events-none z-10"
+        class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-background to-transparent pointer-events-none z-10"
       />
     </div>
   </div>
 </template>
+
+<style scoped>
+.step-enter-active,
+.step-leave-active {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.step-enter-from {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.step-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease forwards;
+}
+</style>

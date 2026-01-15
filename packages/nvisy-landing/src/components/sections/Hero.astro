@@ -1,180 +1,121 @@
 ---
-import type { ButtonProps } from "@/components/types";
-import { getButtonClasses } from "@/utils/buttonStyles";
-import { getBackgroundClass } from "@/utils/backgroundStyles";
-import { Play, ArrowRight, ExternalLink } from "lucide-vue-next";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-vue-next";
 
 export interface Props {
+	badge?: string;
 	title?: string;
-	subtitle?: string;
-	description?: string;
-	buttons?: ButtonProps[];
-	centered?: boolean;
-	background?: "solid" | "gradient" | "none";
-	maxWidth?: "sm" | "md" | "lg" | "xl" | "full";
 	titleHighlight?: string;
-	heroImage?: string;
-	heroImageAlt?: string;
+	titleInline?: boolean;
+	description?: string;
+	primaryCta?: { text: string; href: string } | undefined;
+	secondaryCta?: { text: string; href: string } | undefined;
+	centered?: boolean;
+	compact?: boolean;
 }
 
 const {
-	title = "Enterprise Document",
-	subtitle = "",
-	description = "Turn unstructured documents into structured data with AI-powered precision. Extract, transform, and automate your document workflows at scale.",
-	centered = true,
-	background = "solid",
-	maxWidth = "xl",
+	badge,
+	title = "Document intelligence",
 	titleHighlight,
-	heroImage,
-	heroImageAlt = "Hero image",
-	buttons = [
-		{
-			text: "Start Free Trial",
-			href: "/dashboard",
-			variant: "primary",
-		},
-		{
-			text: "Watch Demo",
-			href: "/demo",
-			variant: "secondary",
-		},
-	],
+	titleInline = false,
+	description = "Transform any document into structured, actionable data.",
+	primaryCta = {
+		text: "Get Started",
+		href: "https://app.nvisy.com/auth/signup",
+	},
+	secondaryCta,
+	centered = true,
+	compact = false,
 } = Astro.props;
-
-// Helper function to split title and highlight text
-const getTitleParts = () => {
-	if (!titleHighlight || !title.includes(titleHighlight)) {
-		return { beforeHighlight: title, highlight: "", afterHighlight: "" };
-	}
-	const parts = title.split(titleHighlight);
-	return {
-		beforeHighlight: parts[0],
-		highlight: titleHighlight,
-		afterHighlight: parts[1] || "",
-	};
-};
-
-const titleParts = getTitleParts();
-
-const maxWidthClasses = {
-	sm: "max-w-2xl",
-	md: "max-w-4xl",
-	lg: "max-w-5xl",
-	xl: "max-w-6xl",
-	full: "max-w-none",
-};
 ---
 
-<section class={`
-	${getBackgroundClass(background)}
-	py-24 px-12
-	min-h-[20vh] flex items-center
-	${background === 'gradient' ? 'border-b border-neutral-200 dark:border-neutral-800' : ''}
-`}>
-	<div class="container mx-auto px-4 w-full">
-		<div class={`grid ${heroImage ? 'lg:grid-cols-2 gap-12 items-center' : 'grid-cols-1'}`}>
-			<div class={`
-				${centered ? `mx-auto text-center` : ""}
-				${maxWidthClasses[maxWidth]}
-			`}>
-				<slot name="pre-title" />
+<section class:list={["relative flex items-center justify-center overflow-hidden bg-background", compact ? "min-h-[40vh] md:min-h-[50vh]" : "min-h-[60vh] md:min-h-[85vh]"]}>
+	<!-- Base gradient background -->
+	<div class="absolute inset-0 bg-gradient-radial [mask-image:linear-gradient(to_bottom,black_50%,transparent_100%)]" />
 
-				{title && (
-					<h1 class="text-4xl md:text-5xl lg:text-6xl font-light leading-tight mb-4 md:mb-6 text-neutral-900 dark:text-white">
-						{titleParts.beforeHighlight}
-						{titleParts.highlight && (
-							<span class="text-blue-600 dark:text-blue-400">
-								{titleParts.highlight}
-							</span>
-						)}
-						{titleParts.afterHighlight}
-						{subtitle && (
-							<span class="block mt-2 text-2xl md:text-3xl lg:text-4xl font-light leading-tight text-neutral-700 dark:text-neutral-300">
-								{subtitle}
-							</span>
-						)}
-					</h1>
-				)}
+	<!-- Animated gradient mesh orbs -->
+	<div class="absolute inset-0 overflow-hidden">
+		<!-- Primary orb - purple/violet -->
+		<div class="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] animate-orb-float">
+			<div class="w-full h-full bg-gradient-to-b from-violet-500/15 via-fuchsia-500/10 to-transparent dark:from-violet-500/40 dark:via-fuchsia-500/20 dark:to-transparent rounded-full animate-pulse-glow" />
+		</div>
 
-				<slot name="title" />
+		<!-- Secondary orb - blue/cyan (left) -->
+		<div class="absolute top-[5%] left-[10%] w-[500px] h-[400px] animate-orb-float-reverse">
+			<div class="w-full h-full bg-gradient-to-br from-blue-500/10 via-cyan-500/5 to-transparent dark:from-blue-500/25 dark:via-cyan-500/15 dark:to-transparent rounded-full animate-pulse-glow" style="animation-delay: -2s;" />
+		</div>
 
-				{description && (
-					<p class={`
-						text-lg md:text-xl mb-6 md:mb-8 leading-relaxed text-neutral-600 dark:text-neutral-400
-						${centered ? "max-w-3xl mx-auto" : "max-w-3xl"}
-					`}>
-						{description}
-					</p>
-				)}
+		<!-- Tertiary orb - pink/rose (right) -->
+		<div class="absolute top-[15%] right-[5%] w-[450px] h-[350px] animate-orb-float" style="animation-delay: -5s;">
+			<div class="w-full h-full bg-gradient-to-bl from-pink-500/8 via-rose-500/5 to-transparent dark:from-pink-500/20 dark:via-rose-500/10 dark:to-transparent rounded-full animate-pulse-glow" style="animation-delay: -3s;" />
+		</div>
+	</div>
 
-				<slot name="description" />
+	<!-- Subtle grid pattern with fade -->
+	<div class="absolute inset-0 bg-[linear-gradient(to_right,oklch(0.5_0_0/0.03)_1px,transparent_1px),linear-gradient(to_bottom,oklch(0.5_0_0/0.03)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:linear-gradient(to_bottom,black_50%,transparent_100%)]" />
 
-				{(buttons.length > 0 || Astro.slots.has('buttons')) && (
-					<div class={`
-						flex flex-col sm:flex-row gap-4 mb-8 md:mb-12
-						${centered ? "justify-center" : "justify-start"}
-					`}>
-						{buttons.map((button) => {
-							return button.href ? (
-								<a
-									href={button.href}
-									class={getButtonClasses(button.variant || "primary")}
-									aria-label={button.text}
-									{...(button.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-								>
-									{button.icon && (
-										<span class="flex-shrink-0">
-											{button.icon === "play" && <Play class="w-5 h-5" />}
-											{button.icon === "arrow" && <ArrowRight class="w-5 h-5" />}
-											{button.icon === "external" && <ExternalLink class="w-5 h-5" />}
-										</span>
-									)}
-									{button.text}
-								</a>
-							) : (
-								<button
-									class={getButtonClasses(button.variant || "primary")}
-									onclick={button.onClick}
-									aria-label={button.text}
-								>
-									{button.icon && (
-										<span class="flex-shrink-0">
-											{button.icon === "play" && <Play class="w-5 h-5" />}
-											{button.icon === "arrow" && <ArrowRight class="w-5 h-5" />}
-											{button.icon === "external" && <ExternalLink class="w-5 h-5" />}
-										</span>
-									)}
-									{button.text}
-								</button>
-							);
-						})}
-
-						<slot name="buttons" />
-					</div>
-				)}
-
-				<slot name="stats" />
-				<slot name="content" />
-			</div>
-
-			{heroImage && (
-				<div class={centered ? "flex justify-center" : ""}>
-					<div class="relative">
-						<img
-							src={heroImage}
-							alt={heroImageAlt}
-							class="w-full h-auto rounded-lg shadow-2xl"
-							loading="eager"
-						/>
-						<slot name="hero-image-overlay" />
-					</div>
+	<div class="container relative z-10 mx-auto px-4 py-12 md:py-16">
+		<div class={`max-w-4xl ${centered ? 'mx-auto text-center' : ''}`}>
+			<!-- Badge -->
+			{badge && (
+				<div class="inline-flex items-center gap-2 px-4 py-1.5 mb-5 text-sm font-medium rounded-full border border-border bg-background/50 backdrop-blur-sm animate-fade-in" style="animation-delay: 0ms; opacity: 0;">
+					<span class="relative flex h-2 w-2">
+						<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+						<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+					</span>
+					{badge}
 				</div>
 			)}
 
-			<slot name="media" />
-			<slot name="stats" />
+			<!-- Pre-title slot -->
+			<slot name="pre-title" />
+
+			<!-- Title -->
+			<h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.1] mb-6 animate-fade-in-up" style="animation-delay: 100ms; opacity: 0;">
+				{title}
+				{titleHighlight && (
+					<span class={`${titleInline ? 'inline' : 'block mt-2'} text-gradient-vibrant`}>
+						{titleInline ? ` ${titleHighlight}` : titleHighlight}
+					</span>
+				)}
+			</h1>
+
+			<!-- Title slot -->
+			<slot name="title" />
+
+			<!-- Description -->
+			{description && (
+				<p class={`text-lg md:text-xl text-muted-foreground max-w-2xl mb-10 leading-relaxed animate-fade-in-up ${centered ? 'mx-auto' : ''}`} style="animation-delay: 200ms; opacity: 0;">
+					{description}
+				</p>
+			)}
+
+			<!-- Description slot -->
+			<slot name="description" />
+
+			<!-- CTAs -->
+			<div class={`flex flex-col sm:flex-row items-center gap-4 animate-fade-in-up ${centered ? 'justify-center' : ''}`} style="animation-delay: 300ms; opacity: 0;">
+				{primaryCta && (
+					<Button as="a" href={primaryCta.href} size="lg" variant="glow">
+						{primaryCta.text}
+						<ArrowRight class="w-4 h-4" />
+					</Button>
+				)}
+				{secondaryCta && (
+					<Button as="a" href={secondaryCta.href} size="lg" variant="outline">
+						{secondaryCta.text}
+					</Button>
+				)}
+				<slot name="buttons" />
+			</div>
+
+			<!-- Content slot -->
+			<slot name="content" />
 		</div>
 
-		<slot name="footer" />
+		<!-- Demo slot -->
+		<slot name="demo" />
 	</div>
+
 </section>

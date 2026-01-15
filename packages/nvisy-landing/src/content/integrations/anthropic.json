@@ -1,9 +1,0 @@
-{
-	"icon": "anthropic",
-	"isBrand": false,
-	"version": "v1.0",
-	"status": "Planned",
-	"title": "Anthropic",
-	"category": "AI Extraction",
-	"description": "Use Claude AI for advanced contextual data extraction with deep understanding of document nuances, ensuring accurate transformation of unstructured content."
-}

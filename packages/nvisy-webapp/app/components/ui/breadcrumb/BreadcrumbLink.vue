@@ -19,7 +19,7 @@ const props = withDefaults(
     :as-child="asChild"
     :class="
       cn(
-        'hover:text-foreground text-sm font-light transition-colors',
+        'hover:text-foreground text-sm font-normal transition-colors',
         props.class,
       )
     "

@@ -22,6 +22,8 @@ import VlmCacheHitsChart from "~/components/pages/analytics/VlmCacheHitsChart.vu
 import ErrorRateChart from "~/components/pages/analytics/ErrorRateChart.vue";
 import ResponseTimeChart from "~/components/pages/analytics/ResponseTimeChart.vue";
 
+useHead({ title: "AI Analytics" });
+
 definePageMeta({
 	pageCategory: "Analytics",
 });
@@ -47,7 +49,7 @@ function importAnalytics() {
       <!-- Toolbar -->
       <div class="flex items-center justify-between mb-6">
         <Select v-model="dateRange">
-          <SelectTrigger class="w-[180px]">
+          <SelectTrigger class="w-[180px] h-9">
             <SelectValue placeholder="Select period" />
           </SelectTrigger>
           <SelectContent>
@@ -77,47 +79,53 @@ function importAnalytics() {
       <!-- AI Charts -->
       <div class="grid gap-4 md:grid-cols-2 mb-4">
         <!-- AI Usage Chart -->
-        <Card>
-          <CardHeader>
-            <CardTitle>AI Usage</CardTitle>
-            <CardDescription> OCR and VLM token consumption </CardDescription>
+        <Card class="border-border/50">
+          <CardHeader class="pb-2">
+            <CardTitle class="text-sm font-medium">AI Usage</CardTitle>
+            <CardDescription class="text-xs text-muted-foreground"
+              >OCR and VLM token consumption</CardDescription
+            >
           </CardHeader>
-          <CardContent class="pt-4">
+          <CardContent class="pt-2">
             <AiUsageChart :date-range="dateRange" />
           </CardContent>
         </Card>
 
         <!-- VLM Cache Hits Chart -->
-        <Card>
-          <CardHeader>
-            <CardTitle>Cache Performance</CardTitle>
-            <CardDescription> VLM cache hits and misses </CardDescription>
+        <Card class="border-border/50">
+          <CardHeader class="pb-2">
+            <CardTitle class="text-sm font-medium">Cache Performance</CardTitle>
+            <CardDescription class="text-xs text-muted-foreground"
+              >VLM cache hits and misses</CardDescription
+            >
           </CardHeader>
-          <CardContent class="pt-4">
+          <CardContent class="pt-2">
             <VlmCacheHitsChart :date-range="dateRange" />
           </CardContent>
         </Card>
 
         <!-- Error Rate Chart -->
-        <Card>
-          <CardHeader>
-            <CardTitle>Error Rate</CardTitle>
-            <CardDescription>
-              System errors as percentage of total requests
-            </CardDescription>
+        <Card class="border-border/50">
+          <CardHeader class="pb-2">
+            <CardTitle class="text-sm font-medium">Error Rate</CardTitle>
+            <CardDescription class="text-xs text-muted-foreground"
+              >System errors as percentage of total requests</CardDescription
+            >
           </CardHeader>
-          <CardContent class="pt-4">
+          <CardContent class="pt-2">
             <ErrorRateChart :date-range="dateRange" />
           </CardContent>
         </Card>
 
         <!-- Response Time Chart -->
-        <Card>
-          <CardHeader>
-            <CardTitle>Response Time</CardTitle>
-            <CardDescription> Average API response latency </CardDescription>
+        <Card class="border-border/50">
+          <CardHeader class="pb-2">
+            <CardTitle class="text-sm font-medium">Response Time</CardTitle>
+            <CardDescription class="text-xs text-muted-foreground"
+              >Average API response latency</CardDescription
+            >
           </CardHeader>
-          <CardContent class="pt-4">
+          <CardContent class="pt-2">
             <ResponseTimeChart :date-range="dateRange" />
           </CardContent>
         </Card>

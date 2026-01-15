@@ -6,7 +6,8 @@ export interface PricingPlan {
 	features: string[];
 	buttonText: string;
 	buttonVariant: "primary" | "secondary" | "outline";
-	pagesIncluded?: number;
+	storage?: string;
+	queries?: string;
 	popular?: boolean;
 	badge?: string;
 }
@@ -16,39 +17,55 @@ export interface PricingConfig {
 }
 
 // Plan types
-export type PlanType = "basic" | "professional" | "enterprise";
+export type PlanType = "free" | "basic" | "business" | "enterprise";
 
 export const plans: PricingPlan[] = [
 	{
-		id: "basic",
-		name: "Basic",
-		description: "Perfect for individuals and small teams",
+		id: "free",
+		name: "Free",
+		description: "For individuals getting started",
 		price: 0,
-		pagesIncluded: 100,
+		storage: "1GB",
+		queries: "100",
 		features: [
-			"Unlimited workspaces",
-			"Team collaboration",
-			"API access",
+			"1 workspace",
+			"Basic document processing",
 			"Community support",
-			"5GB storage",
+			"7-day data retention",
 		],
-		buttonText: "Get Started Free",
+		buttonText: "Get Started",
 		buttonVariant: "outline",
 	},
 	{
-		id: "professional",
-		name: "Professional",
-		description: "Best for growing businesses and teams",
-		price: 49,
-		pagesIncluded: 1000,
+		id: "basic",
+		name: "Basic",
+		description: "For small teams and projects",
+		price: 29,
+		storage: "10GB",
+		queries: "2,500",
 		features: [
-			"Everything in Basic",
-			"Webhooks",
-			"Integrations",
-			"Priority support",
-			"20GB storage",
+			"5 workspaces",
+			"Team collaboration",
+			"API access",
+			"Email support",
 		],
-		buttonText: "Start Pro Trial",
+		buttonText: "Start Free Trial",
+		buttonVariant: "outline",
+	},
+	{
+		id: "business",
+		name: "Business",
+		description: "For growing businesses",
+		price: 99,
+		storage: "50GB",
+		queries: "25,000",
+		features: [
+			"Unlimited workspaces",
+			"Integrations & Webhooks",
+			"Priority support",
+			"Advanced analytics",
+		],
+		buttonText: "Start Free Trial",
 		buttonVariant: "primary",
 		popular: true,
 		badge: "Most Popular",
@@ -56,15 +73,15 @@ export const plans: PricingPlan[] = [
 	{
 		id: "enterprise",
 		name: "Enterprise",
-		description: "Tailored solutions for large organizations",
+		description: "For large organizations",
 		price: "custom",
+		storage: "Unlimited",
+		queries: "Unlimited",
 		features: [
-			"Everything in Professional",
-			"Unlimited storage",
-			"24/7 dedicated support",
-			"Custom integrations",
-			"SLA guarantee",
+			"Everything in Business",
 			"On-premise deployment",
+			"24/7 dedicated support",
+			"Custom SLA",
 		],
 		buttonText: "Contact Sales",
 		buttonVariant: "outline",

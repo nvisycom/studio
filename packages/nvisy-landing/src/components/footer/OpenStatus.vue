@@ -55,7 +55,7 @@ function getStatusConfig(status: Status) {
 		case "operational":
 			return {
 				label: "All systems operational",
-				color: "text-green-600 dark:text-green-400",
+				color: "text-green-700 dark:text-green-400",
 				dotColor: "bg-green-500",
 			};
 		case "degraded_performance":
@@ -107,7 +107,7 @@ async function updateStatus() {
 
 		if (response.ok) {
 			const data = await response.json();
-			if (data && data.status) {
+			if (data?.status) {
 				currentStatus.value = data.status;
 				lastUpdated.value = new Date();
 			} else {

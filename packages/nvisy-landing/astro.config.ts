@@ -4,7 +4,6 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import vue from "@astrojs/vue";
 
-import vueDevTools from "vite-plugin-vue-devtools";
 import tailwindcss from "@tailwindcss/vite";
 
 const srcImport = new URL("./src", import.meta.url);
@@ -18,15 +17,14 @@ const srcPath = fileURLToPath(srcImport);
 export default defineConfig({
 	site: "https://nvisy.com",
 	srcDir: "./src",
-	integrations: [mdx(), sitemap(), vue()],
+	devToolbar: { enabled: false },
+	integrations: [mdx(), sitemap(), vue({ devtools: false })],
 
 	i18n: {
-		locales: ["en", "de", "fr"],
-		// locales: ["en", "de", "fr"],
+		locales: ["en", "de"],
 		defaultLocale: "en",
 		fallback: {
 			// de: "en",
-			// fr: "en",
 		},
 	},
 
@@ -43,7 +41,7 @@ export default defineConfig({
 	},
 
 	vite: {
-		plugins: [vueDevTools(), tailwindcss()],
+		plugins: [tailwindcss()],
 		resolve: { alias: { "@": srcPath } },
 	},
 });

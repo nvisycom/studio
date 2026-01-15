@@ -7,6 +7,10 @@ const withCI = !!process.env.CI;
 export default defineConfig({
 	testDir: "./e2e",
 	testMatch: ["**/*.spec.ts", "**/*.test.ts"],
+	// Run tests in parallel.
+	fullyParallel: true,
+	// Use half of available CPUs for workers in CI.
+	...(withCI && { workers: "50%" }),
 	// Maximum time one test can run for.
 	timeout: 30 * 1000,
 	expect: {
@@ -72,8 +76,7 @@ export default defineConfig({
 		// Use the preview server on CI for more realistic testing.
 		// Playwright will re-use the local server if there is already a dev-server running.
 		command: withCI ? "npm run preview" : "npm run dev",
-		port: withCI ? 4321 : 4321,
+		port: 4321,
 		reuseExistingServer: !withCI,
-		timeout: 10 * 1000,
 	},
 });

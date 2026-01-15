@@ -1,15 +1,38 @@
 <script setup lang="ts">
+import { watch, onMounted, onUnmounted } from "vue";
 import { Menu, X } from "lucide-vue-next";
-import MobileProducts from "./MobileProducts.vue";
-import MobileSolutions from "./MobileSolutions.vue";
-import MobileResources from "./MobileResources.vue";
 import { useMobileMenu } from "./useMobileMenu.ts";
+import { products } from "./mobile-nav-data";
 
 defineProps<{
 	menuOnly?: boolean;
 }>();
 
-const { mobileMenuOpen, toggleMobileMenu } = useMobileMenu();
+const { mobileMenuOpen, toggleMobileMenu, closeMobileMenu } = useMobileMenu();
+
+// Disable body scroll when menu is open
+watch(mobileMenuOpen, (isOpen) => {
+	if (isOpen) {
+		document.body.style.overflow = "hidden";
+	} else {
+		document.body.style.overflow = "";
+	}
+});
+
+// Close menu and restore scroll when resizing to desktop
+const handleResize = () => {
+	if (window.innerWidth >= 1024 && mobileMenuOpen.value) {
+		closeMobileMenu();
+	}
+};
+
+onMounted(() => {
+	window.addEventListener("resize", handleResize);
+});
+
+onUnmounted(() => {
+	window.removeEventListener("resize", handleResize);
+});
 </script>
 
 <template>
@@ -17,28 +40,104 @@ const { mobileMenuOpen, toggleMobileMenu } = useMobileMenu();
   <button
     v-if="!menuOnly"
     @click="toggleMobileMenu"
-    class="lg:hidden p-2 text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors duration-200 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/50 rounded-md"
+    :aria-label="mobileMenuOpen ? 'Close menu' : 'Open menu'"
+    :aria-expanded="mobileMenuOpen"
+    class="lg:hidden p-2 text-muted-foreground hover:text-foreground transition-colors duration-200 hover:bg-accent rounded-md"
   >
-    <X v-if="mobileMenuOpen" class="w-5 h-5" />
-    <Menu v-else class="w-5 h-5" />
+    <X v-if="mobileMenuOpen" class="w-5 h-5" aria-hidden="true" />
+    <Menu v-else class="w-5 h-5" aria-hidden="true" />
   </button>
 
-  <!-- Mobile Navigation Menu -->
+  <!-- Mobile Navigation Menu - Full screen overlay -->
   <div
     v-if="menuOnly && mobileMenuOpen"
-    class="lg:hidden border-t border-neutral-200/50 dark:border-neutral-700/50 py-4 px-4 backdrop-blur-xl bg-white/95 dark:bg-black/95"
+    class="lg:hidden fixed inset-0 top-12 md:top-16 z-40 bg-background"
   >
-    <nav class="flex flex-col space-y-3">
-      <MobileProducts />
-      <MobileSolutions />
-      <MobileResources />
+    <nav class="h-full flex flex-col px-6 py-6">
+      <!-- Product Section -->
+      <div class="mb-6">
+        <h3
+          class="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3"
+        >
+          Product
+        </h3>
+        <div class="space-y-0.5">
+          <a
+            v-for="product in products.platforms"
+            :key="product.title"
+            :href="product.href"
+            class="block text-xl font-medium text-foreground hover:text-foreground/70 transition-colors py-1.5"
+          >
+            {{ product.title }}
+          </a>
+          <a
+            href="/pricing"
+            class="block text-xl font-medium text-foreground hover:text-foreground/70 transition-colors py-1.5"
+          >
+            Pricing
+          </a>
+        </div>
+      </div>
 
-      <a
-        href="/pricing"
-        class="text-neutral-900 dark:text-white font-light text-base tracking-wide transition-all duration-300 px-2 py-2 uppercase"
-      >
-        Pricing
-      </a>
+      <!-- Resources Section -->
+      <div class="mb-6">
+        <h3
+          class="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3"
+        >
+          Resources
+        </h3>
+        <div class="space-y-0.5">
+          <a
+            href="https://docs.nvisy.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="block text-xl font-medium text-foreground hover:text-foreground/70 transition-colors py-1.5"
+          >
+            Docs
+          </a>
+          <a
+            href="/integrations"
+            class="block text-xl font-medium text-foreground hover:text-foreground/70 transition-colors py-1.5"
+          >
+            Integrations
+          </a>
+          <a
+            href="/changelog"
+            class="block text-xl font-medium text-foreground hover:text-foreground/70 transition-colors py-1.5"
+          >
+            Changelog
+          </a>
+        </div>
+      </div>
+
+      <!-- Company Section -->
+      <div>
+        <h3
+          class="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3"
+        >
+          Company
+        </h3>
+        <div class="space-y-0.5">
+          <a
+            href="/about"
+            class="block text-xl font-medium text-foreground hover:text-foreground/70 transition-colors py-1.5"
+          >
+            About
+          </a>
+          <a
+            href="/customers"
+            class="block text-xl font-medium text-foreground hover:text-foreground/70 transition-colors py-1.5"
+          >
+            Customers
+          </a>
+          <a
+            href="/blog"
+            class="block text-xl font-medium text-foreground hover:text-foreground/70 transition-colors py-1.5"
+          >
+            Blog
+          </a>
+        </div>
+      </div>
     </nav>
   </div>
 </template>

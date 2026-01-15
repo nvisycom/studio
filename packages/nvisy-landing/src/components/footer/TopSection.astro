@@ -19,12 +19,9 @@ interface Props {
 const { footerSections } = Astro.props;
 ---
 
-<!-- Dynamic Footer Sections -->
 {footerSections.map((section) => (
   <div>
-    <h3
-      class="font-light text-neutral-900 dark:text-white text-sm mb-4 tracking-wider uppercase"
-    >
+    <h3 class="text-xs font-medium text-muted-foreground mb-4 uppercase tracking-wider">
       {section.title}
     </h3>
     <ul class="space-y-3">
@@ -34,7 +31,7 @@ const { footerSections } = Astro.props;
             href={link.href}
             target={link.isExternal ? "_blank" : undefined}
             rel={link.isExternal ? "noopener noreferrer" : undefined}
-            class="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white text-sm font-light transition-colors duration-200 inline-flex items-center gap-1.5"
+            class="text-sm text-foreground/80 hover:text-foreground transition-colors inline-flex items-center gap-1.5"
           >
             {link.name}
             {link.isExternal && <ExternalLink class="w-3 h-3" />}

@@ -96,13 +96,13 @@ const getSessionTypeInitial = (type: string): string => {
             @update:model-value="emit('toggleSelectAll')"
           />
         </TableHead>
-        <TableHead class="uppercase text-xs font-light tracking-wider">{{
+        <TableHead class="uppercase text-xs font-normal tracking-wider">{{
           t("tokens.table.headers.name")
         }}</TableHead>
-        <TableHead class="uppercase text-xs font-light tracking-wider">{{
+        <TableHead class="uppercase text-xs font-normal tracking-wider">{{
           t("tokens.table.headers.createdAt")
         }}</TableHead>
-        <TableHead class="uppercase text-xs font-light tracking-wider">{{
+        <TableHead class="uppercase text-xs font-normal tracking-wider">{{
           t("tokens.table.headers.lastUsed")
         }}</TableHead>
       </TableRow>
@@ -175,12 +175,12 @@ const getSessionTypeInitial = (type: string): string => {
               </div>
             </TableCell>
             <TableCell
-              class="font-light text-neutral-600 dark:text-neutral-400"
+              class="font-normal text-neutral-600 dark:text-neutral-400"
             >
               {{ formatRelativeTime(token.issuedAt, t) }}
             </TableCell>
             <TableCell
-              class="font-light text-neutral-600 dark:text-neutral-400"
+              class="font-normal text-neutral-600 dark:text-neutral-400"
             >
               {{ formatRelativeTime(token.lastUsedAt, t) }}
             </TableCell>

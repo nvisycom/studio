@@ -5,59 +5,54 @@ import {
 	NavigationMenuLink,
 	NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { resources } from "./desktop-nav-data";
 import { ExternalLink } from "lucide-vue-next";
+import { resources } from "./desktop-nav-data";
 </script>
 
 <template>
   <NavigationMenuItem>
     <NavigationMenuTrigger
-      class="group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-base font-light text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white focus:bg-neutral-50 dark:focus:bg-neutral-800 focus:text-neutral-900 dark:focus:text-white disabled:pointer-events-none disabled:opacity-50 data-[state=open]:bg-neutral-50 dark:data-[state=open]:bg-neutral-800 data-[state=open]:text-neutral-900 dark:data-[state=open]:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-300 dark:focus-visible:ring-neutral-600 transition-all duration-200"
+      class="inline-flex h-9 w-max items-center justify-center rounded-lg bg-transparent px-4 py-2 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent data-[state=open]:bg-accent data-[state=open]:text-foreground transition-colors"
     >
       Resources
     </NavigationMenuTrigger>
     <NavigationMenuContent
       class="left-0 top-0 w-full data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52 md:absolute md:w-auto md:left-1/2 md:-translate-x-1/2"
     >
-      <div class="p-0 md:w-[800px]">
-        <div class="grid gap-0 lg:grid-cols-2">
-          <!-- Left Column: Developers Section -->
-          <div class="p-6 border-r border-neutral-100 dark:border-neutral-700">
+      <div
+        class="md:w-[500px] bg-card rounded-xl border border-border shadow-lg overflow-hidden"
+      >
+        <div class="grid lg:grid-cols-2">
+          <!-- Developers Column -->
+          <div class="p-4">
             <h3
-              class="font-light text-neutral-500 dark:text-neutral-400 mb-3 text-xs tracking-wide"
+              class="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wider px-2"
             >
               Developers
             </h3>
-            <div class="space-y-2">
+            <div class="space-y-1">
               <NavigationMenuLink
-                v-for="developer in resources.developers"
-                :key="developer.title"
-                :href="developer.href"
-                :target="developer.isExternal ? '_blank' : undefined"
-                :rel="developer.isExternal ? 'noopener noreferrer' : undefined"
-                class="block select-none rounded-md leading-none no-underline outline-none transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white focus:bg-neutral-50 dark:focus:bg-neutral-800 focus:text-neutral-900 dark:focus:text-white p-2"
+                v-for="item in resources.developers"
+                :key="item.title"
+                :href="item.href"
+                :target="item.isExternal ? '_blank' : undefined"
+                :rel="item.isExternal ? 'noopener noreferrer' : undefined"
+                class="block select-none rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent"
               >
                 <div class="flex items-center gap-3">
-                  <span
-                    class="text-neutral-400 dark:text-neutral-500 flex-shrink-0"
-                  >
-                    <component :is="developer.icon" class="w-5 h-5" />
+                  <span class="text-muted-foreground flex-shrink-0">
+                    <component :is="item.icon" class="w-5 h-5" />
                   </span>
                   <div class="flex-1">
-                    <div
-                      class="text-sm font-light leading-none flex items-center gap-1.5"
-                    >
-                      {{ developer.title }}
+                    <div class="text-sm font-medium flex items-center gap-1.5">
+                      {{ item.title }}
                       <ExternalLink
-                        v-if="developer.isExternal"
-                        class="w-3 h-3 text-neutral-400 dark:text-neutral-500"
+                        v-if="item.isExternal"
+                        class="w-3 h-3 text-muted-foreground"
                       />
                     </div>
-                    <div
-                      v-if="developer.description"
-                      class="text-xs text-neutral-500 dark:text-neutral-500 mt-1"
-                    >
-                      {{ developer.description }}
+                    <div class="text-xs text-muted-foreground mt-0.5">
+                      {{ item.description }}
                     </div>
                   </div>
                 </div>
@@ -65,43 +60,36 @@ import { ExternalLink } from "lucide-vue-next";
             </div>
           </div>
 
-          <!-- Right Column: Support Section -->
-          <div class="p-6">
+          <!-- Company Column -->
+          <div class="p-4 bg-accent/30">
             <h3
-              class="font-light text-neutral-500 dark:text-neutral-400 mb-3 text-xs tracking-wide"
+              class="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wider px-2"
             >
-              Support
+              Company
             </h3>
-            <div class="space-y-2">
+            <div class="space-y-1">
               <NavigationMenuLink
-                v-for="support in resources.support"
-                :key="support.title"
-                :href="support.href"
-                :target="support.isExternal ? '_blank' : undefined"
-                :rel="support.isExternal ? 'noopener noreferrer' : undefined"
-                class="block select-none rounded-md leading-none no-underline outline-none transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white focus:bg-neutral-50 dark:focus:bg-neutral-800 focus:text-neutral-900 dark:focus:text-white p-2"
+                v-for="item in resources.support"
+                :key="item.title"
+                :href="item.href"
+                :target="item.isExternal ? '_blank' : undefined"
+                :rel="item.isExternal ? 'noopener noreferrer' : undefined"
+                class="block select-none rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent"
               >
                 <div class="flex items-center gap-3">
-                  <span
-                    class="text-neutral-400 dark:text-neutral-500 flex-shrink-0"
-                  >
-                    <component :is="support.icon" class="w-5 h-5" />
+                  <span class="text-muted-foreground flex-shrink-0">
+                    <component :is="item.icon" class="w-5 h-5" />
                   </span>
                   <div class="flex-1">
-                    <div
-                      class="text-sm font-light leading-none flex items-center gap-1.5"
-                    >
-                      {{ support.title }}
+                    <div class="text-sm font-medium flex items-center gap-1.5">
+                      {{ item.title }}
                       <ExternalLink
-                        v-if="support.isExternal"
-                        class="w-3 h-3 text-neutral-400 dark:text-neutral-500"
+                        v-if="item.isExternal"
+                        class="w-3 h-3 text-muted-foreground"
                       />
                     </div>
-                    <div
-                      v-if="support.description"
-                      class="text-xs text-neutral-500 dark:text-neutral-500 mt-1"
-                    >
-                      {{ support.description }}
+                    <div class="text-xs text-muted-foreground mt-0.5">
+                      {{ item.description }}
                     </div>
                   </div>
                 </div>

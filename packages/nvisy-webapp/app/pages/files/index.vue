@@ -30,6 +30,8 @@ import {
 
 const { t } = useI18n();
 
+useHead({ title: "Files" });
+
 definePageMeta({
 	pageCategory: "Files",
 });
@@ -114,6 +116,11 @@ function viewFile(fileId: string) {
 	const file = files.value?.find((f) => f.fileId === fileId);
 	openFileInStudio(fileId, file);
 	navigateTo("/studio");
+}
+
+function chatAboutFile(file: NvisyFile) {
+	// Navigate to chat page with file context
+	navigateTo(`/files/chat?fileId=${file.fileId}`);
 }
 
 function handleBulkOpen() {
@@ -276,7 +283,7 @@ function handleGridScroll(event: Event) {
 
 <template>
   <div
-    class="flex flex-col gap-4 p-4 pt-4 pb-6 relative h-[calc(100vh-8rem)]"
+    class="flex flex-col gap-4 p-4 pt-4 pb-6 relative h-[calc(100vh-5.5rem)]"
     @dragenter="handleDragEnter"
     @dragover="handleDragOver"
     @dragleave="handleDragLeave"
@@ -285,15 +292,15 @@ function handleGridScroll(event: Event) {
     <div class="max-w-7xl mx-auto w-full flex flex-col flex-1 min-h-0">
       <!-- Loading State -->
       <div v-if="isLoading" class="flex justify-center items-center py-12">
-        <Loader2 :size="32" class="animate-spin text-neutral-400" />
+        <Loader2 :size="24" class="animate-spin text-muted-foreground" />
       </div>
 
       <!-- Error State -->
       <div
         v-else-if="error"
-        class="p-4 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 rounded-lg"
+        class="p-4 bg-destructive/10 border border-destructive/20 rounded-lg"
       >
-        <p class="text-red-600 dark:text-red-400">
+        <p class="text-sm text-destructive">
           {{ error.message || t("files.errors.loadFailed") }}
         </p>
       </div>
@@ -301,13 +308,9 @@ function handleGridScroll(event: Event) {
       <template v-else>
         <!-- Search, Filters, and Actions -->
         <div
-          class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center mb-6"
+          class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center mb-4"
         >
-          <Button
-            variant="outline"
-            @click="openUploadDialog"
-            class="font-light"
-          >
+          <Button variant="default" size="sm" @click="openUploadDialog">
             <Upload :size="16" class="mr-2" />
             {{ t("files.actions.upload") }}
           </Button>
@@ -315,12 +318,12 @@ function handleGridScroll(event: Event) {
           <div class="relative flex-1">
             <Search
               :size="16"
-              class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+              class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             />
             <Input
               v-model="searchQuery"
               :placeholder="t('files.filters.search')"
-              class="pl-10 font-light"
+              class="pl-10 h-9 text-sm"
             />
           </div>
 
@@ -328,22 +331,25 @@ function handleGridScroll(event: Event) {
             <DropdownMenuTrigger as-child>
               <Button
                 variant="outline"
-                class="justify-between min-w-[160px] font-light"
+                size="sm"
+                class="justify-between min-w-[140px]"
               >
-                <Filter :size="14" class="mr-2 text-neutral-400" />
-                {{
-                  statusFilters.find((f) => f.value === filterStatus)?.label ||
-                  t("files.filters.anyStatus")
-                }}
-                <ChevronDown :size="16" class="ml-2" />
+                <Filter :size="14" class="mr-2 text-muted-foreground" />
+                <span class="text-sm">
+                  {{
+                    statusFilters.find((f) => f.value === filterStatus)
+                      ?.label || t("files.filters.anyStatus")
+                  }}
+                </span>
+                <ChevronDown :size="14" class="ml-2 text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" class="w-[160px]">
+            <DropdownMenuContent align="end" class="w-[140px]">
               <DropdownMenuItem
                 v-for="filter in statusFilters"
                 :key="filter.value"
                 @click="selectStatusFilter(filter.value)"
-                class="cursor-pointer font-light"
+                class="cursor-pointer text-sm"
               >
                 {{ filter.label }}
               </DropdownMenuItem>
@@ -351,24 +357,24 @@ function handleGridScroll(event: Event) {
           </DropdownMenu>
 
           <!-- View Toggle -->
-          <div class="flex items-center border rounded-md">
+          <div class="flex items-center border border-border/50 rounded-md">
             <Button
               variant="ghost"
               size="sm"
-              class="rounded-r-none px-3"
+              class="rounded-r-none px-2.5 h-9"
               :class="{ 'bg-muted': viewMode === 'list' }"
               @click="viewMode = 'list'"
             >
-              <List :size="16" />
+              <List :size="16" class="text-muted-foreground" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
-              class="rounded-l-none px-3"
+              class="rounded-l-none px-2.5 h-9"
               :class="{ 'bg-muted': viewMode === 'grid' }"
               @click="viewMode = 'grid'"
             >
-              <LayoutGrid :size="16" />
+              <LayoutGrid :size="16" class="text-muted-foreground" />
             </Button>
           </div>
         </div>
@@ -384,15 +390,15 @@ function handleGridScroll(event: Event) {
           >
             <div
               v-if="isDraggingOver"
-              class="absolute inset-0 z-50 flex items-center justify-center bg-background/50 backdrop-blur-[2px] rounded-lg border border-neutral-200 dark:border-neutral-800"
+              class="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-lg border-2 border-dashed border-border"
             >
               <div class="text-center -mt-16">
                 <Upload
-                  :size="40"
+                  :size="32"
                   :stroke-width="1.5"
-                  class="mx-auto mb-4 text-neutral-900 dark:text-neutral-400"
+                  class="mx-auto mb-3 text-muted-foreground"
                 />
-                <p class="text-xl font-light text-foreground">
+                <p class="text-sm font-medium text-foreground">
                   {{ t("files.dialogs.upload.dropHint") }}
                 </p>
               </div>
@@ -408,15 +414,15 @@ function handleGridScroll(event: Event) {
           >
             <div
               v-if="isUploadingDrop"
-              class="absolute inset-0 z-50 flex items-center justify-center bg-background/50 backdrop-blur-[2px] rounded-lg border border-neutral-200 dark:border-neutral-800"
+              class="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-lg border border-border"
             >
               <div class="text-center -mt-16">
                 <Loader2
-                  :size="40"
+                  :size="24"
                   :stroke-width="1.5"
-                  class="mx-auto mb-4 text-neutral-900 dark:text-neutral-400 animate-spin"
+                  class="mx-auto mb-3 text-muted-foreground animate-spin"
                 />
-                <p class="text-xl font-light text-foreground">
+                <p class="text-sm font-medium text-foreground">
                   {{ t("files.dialogs.upload.uploading") }}
                 </p>
               </div>
@@ -434,6 +440,7 @@ function handleGridScroll(event: Event) {
             @toggle-select-all="toggleSelectAll"
             @toggle-selection="toggleFileSelection"
             @view="viewFile"
+            @chat="chatAboutFile"
             @edit="openEditDialog"
             @download="handleDownloadFile"
             @delete="openDeleteDialog"
@@ -455,6 +462,7 @@ function handleGridScroll(event: Event) {
             @bulk-download="handleBulkDownload"
             @bulk-delete="openBulkDeleteDialog"
             @view="viewFile"
+            @chat="chatAboutFile"
             @edit="openEditDialog"
             @download="handleDownloadFile"
             @delete="openDeleteDialog"
@@ -463,18 +471,19 @@ function handleGridScroll(event: Event) {
         </div>
 
         <!-- Empty State -->
-        <div v-else class="py-12 text-center flex-1">
+        <div
+          v-else
+          class="py-16 text-center flex-1 flex flex-col items-center justify-center"
+        >
           <div
-            class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
+            class="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-muted/50"
           >
-            <FileText class="h-6 w-6 text-neutral-400 dark:text-neutral-500" />
+            <FileText class="h-5 w-5 text-muted-foreground" />
           </div>
-          <p class="font-normal text-neutral-700 dark:text-neutral-300 mb-1">
+          <p class="text-sm font-medium text-foreground mb-1">
             {{ t("files.table.empty.title") }}
           </p>
-          <p
-            class="font-light text-sm text-neutral-500 dark:text-neutral-400 mb-4"
-          >
+          <p class="text-sm text-muted-foreground mb-4 max-w-sm">
             {{
               hasFilters
                 ? t("files.table.empty.filterDescription")
@@ -485,12 +494,11 @@ function handleGridScroll(event: Event) {
             v-if="hasFilters"
             variant="outline"
             size="sm"
-            class="font-light"
             @click="clearFilters"
           >
             {{ t("files.actions.clearFilters") }}
           </Button>
-          <Button v-else @click="openUploadDialog" size="sm" class="font-light">
+          <Button v-else @click="openUploadDialog" size="sm">
             <Upload :size="16" class="mr-2" />
             {{ t("files.actions.upload") }}
           </Button>

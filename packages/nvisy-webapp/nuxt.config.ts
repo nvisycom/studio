@@ -11,6 +11,17 @@ export default defineNuxtConfig({
 	telemetry: { enabled: false },
 	ssr: false, // SPA mode
 
+	app: {
+		head: {
+			title: "Nvisy App",
+			titleTemplate: "%s · Nvisy App",
+			link: [
+				{ rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+				{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+			],
+		},
+	},
+
 	runtimeConfig: {
 		public: {
 			nvisyApiUrl: isDev ? API_URL_DEV : API_URL_PROD,

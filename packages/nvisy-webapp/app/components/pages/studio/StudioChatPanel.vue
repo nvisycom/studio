@@ -180,7 +180,7 @@ function startResize(e: MouseEvent) {
         v-for="message in chatMessages"
         :key="message.id"
         :class="[
-          'p-2.5 rounded-lg text-sm font-light break-words overflow-hidden max-w-full',
+          'p-2.5 rounded-lg text-sm font-normal break-words overflow-hidden max-w-full',
           message.role === 'user'
             ? 'bg-primary text-primary-foreground ml-8'
             : 'bg-muted/50 text-muted-foreground mr-8',
@@ -219,10 +219,10 @@ function startResize(e: MouseEvent) {
             class="flex items-center gap-1 hover:bg-muted/50 rounded px-1 py-0.5 transition-colors"
             @click="changesOpen = !changesOpen"
           >
-            <span class="text-xs font-light">{{
+            <span class="text-xs font-normal">{{
               t("studio.chat.changes.title")
             }}</span>
-            <span class="text-[10px] font-light text-muted-foreground"
+            <span class="text-[10px] font-normal text-muted-foreground"
               >({{ layers.length }})</span
             >
             <ChevronDown
@@ -235,7 +235,7 @@ function startResize(e: MouseEvent) {
             <Button
               variant="outline"
               size="sm"
-              class="h-6 text-xs font-light px-2 gap-1"
+              class="h-6 text-xs font-normal px-2 gap-1"
               :disabled="layers.length === 0"
               @click="rejectAllChanges"
             >
@@ -253,7 +253,7 @@ function startResize(e: MouseEvent) {
             <Button
               variant="outline"
               size="sm"
-              class="h-6 text-xs font-light px-2 gap-1"
+              class="h-6 text-xs font-normal px-2 gap-1"
               :disabled="layers.length === 0"
               @click="acceptAllChanges"
             >
@@ -286,9 +286,9 @@ function startResize(e: MouseEvent) {
               <div class="flex items-center gap-2">
                 <component :is="layer.icon" :size="14" class="flex-shrink-0" />
                 <div class="flex-1 min-w-0">
-                  <p class="text-sm font-light truncate">{{ layer.name }}</p>
+                  <p class="text-sm font-normal truncate">{{ layer.name }}</p>
                   <p
-                    class="text-[10px] font-light text-muted-foreground truncate"
+                    class="text-[10px] font-normal text-muted-foreground truncate"
                   >
                     {{ layer.fileName }} · Page {{ layer.page }}
                   </p>
@@ -297,7 +297,7 @@ function startResize(e: MouseEvent) {
                   <Button
                     variant="outline"
                     size="sm"
-                    class="h-6 text-xs font-light px-2"
+                    class="h-6 text-xs font-normal px-2"
                     @click.stop="rejectChange(layer.id)"
                   >
                     {{ t("studio.chat.changes.reject") }}
@@ -305,7 +305,7 @@ function startResize(e: MouseEvent) {
                   <Button
                     variant="outline"
                     size="sm"
-                    class="h-6 text-xs font-light px-2"
+                    class="h-6 text-xs font-normal px-2"
                     @click.stop="acceptChange(layer.id)"
                   >
                     {{ t("studio.chat.changes.accept") }}
@@ -329,7 +329,7 @@ function startResize(e: MouseEvent) {
         <Textarea
           v-model="chatMessage"
           :placeholder="t('studio.chat.placeholder')"
-          class="h-full w-full rounded-none border-0 border-t focus-visible:ring-0 resize-none break-words pb-12 text-sm font-light"
+          class="h-full w-full rounded-none border-0 border-t focus-visible:ring-0 resize-none break-words pb-12 text-sm font-normal"
           @keydown.enter.prevent="sendMessage"
         />
 
@@ -366,7 +366,7 @@ function startResize(e: MouseEvent) {
               size="sm"
               class="h-7 w-7 p-0 cursor-pointer"
             >
-              <NuxtLink to="/studio/chat" title="Open full chat">
+              <NuxtLink to="/files/chat" title="Open full chat">
                 <Maximize2 :size="14" />
               </NuxtLink>
             </Button>

@@ -1,147 +1,121 @@
 ---
-import { getCollection, getEntry } from "astro:content";
 import {
-	Check,
 	Lock,
 	Zap,
 	Shield,
-	ShieldCheck,
-	Link,
-	Users,
-	Server,
-	Code,
-	ClipboardCheck,
-	TrendingUp,
-	BarChart3,
-	Eye,
-	FileText,
-	Layers,
-	DollarSign,
-	Cog,
 	Globe,
-	Award,
+	BarChart3,
+	Cpu,
+	type LucideIcon,
 } from "lucide-vue-next";
-import type { FunctionalComponent } from "vue";
-import FeatureCard from "@/components/features/FeatureCard.astro";
 
-export interface FeatureItem {
+interface Feature {
+	icon: LucideIcon;
 	title: string;
 	description: string;
-	icon: string;
+	span?: "wide";
 }
 
 export interface Props {
 	title?: string;
 	description?: string;
-	features?: FeatureItem[];
+	features?: Feature[];
 	category?: string;
 	featured?: boolean;
 }
 
 const {
-	title = "Built for Enterprise Scale",
-	description = "Advanced AI technology meets enterprise security requirements. Process thousands of documents with unprecedented accuracy.",
-	category,
-	featured,
+	title = "Built for scale",
+	description = "Everything you need to process documents at enterprise scale.",
 	features: propFeatures,
 } = Astro.props;
 
-// Fetch features from content if no features prop is provided
-let features: FeatureItem[] = propFeatures || [];
+const defaultFeatures: Feature[] = [
+	{
+		icon: Zap,
+		title: "Lightning Fast",
+		description:
+			"Process thousands of documents in seconds with our optimized AI pipeline.",
+	},
+	{
+		icon: Shield,
+		title: "Enterprise Security",
+		description:
+			"Bank-grade encryption, SOC 2 compliance, and zero data retention.",
+		span: "wide",
+	},
+	{
+		icon: Cpu,
+		title: "AI-Powered Extraction",
+		description: "State-of-the-art models trained on millions of documents.",
+	},
+	{
+		icon: Globe,
+		title: "Global Infrastructure",
+		description: "Deployed across 12 regions worldwide. Sub-100ms latency.",
+	},
+	{
+		icon: Lock,
+		title: "Privacy First",
+		description:
+			"GDPR and CCPA compliant. Process sensitive documents with confidence.",
+	},
+	{
+		icon: BarChart3,
+		title: "Real-time Analytics",
+		description:
+			"Monitor processing metrics and optimize workflows with detailed insights.",
+		span: "wide",
+	},
+];
 
-if (!propFeatures) {
-	if (category) {
-		// Fetch specific category JSON file
-		const categoryFeatures = await getEntry("features", category);
-		if (categoryFeatures) {
-			let featureList = categoryFeatures.data;
-
-			// Filter by featured if specified
-			if (featured !== undefined) {
-				featureList = featureList.filter(
-					(feature) => feature.featured === featured,
-				);
-			}
-
-			features = featureList
-				.sort((a, b) => a.order - b.order)
-				.map((feature) => ({
-					title: feature.title,
-					description: feature.description,
-					icon: feature.icon,
-				}));
-		}
-	} else {
-		// Fetch all feature categories and combine them
-		const allFeatureEntries = await getCollection("features");
-		let allFeaturesList = allFeatureEntries.flatMap((entry) => entry.data);
-
-		// Filter by featured if specified
-		if (featured !== undefined) {
-			allFeaturesList = allFeaturesList.filter(
-				(feature) => feature.featured === featured,
-			);
-		}
-
-		features = allFeaturesList
-			.sort((a, b) => a.order - b.order)
-			.map((feature) => ({
-				title: feature.title,
-				description: feature.description,
-				icon: feature.icon,
-			}));
-	}
-}
-
-const iconComponents: Record<string, FunctionalComponent> = {
-	check: Check,
-	lock: Lock,
-	zap: Zap,
-	shield: Shield,
-	"shield-check": ShieldCheck,
-	link: Link,
-	users: Users,
-	server: Server,
-	code: Code,
-	"clipboard-check": ClipboardCheck,
-	"trending-up": TrendingUp,
-	"bar-chart-3": BarChart3,
-	eye: Eye,
-	"file-text": FileText,
-	layers: Layers,
-	"dollar-sign": DollarSign,
-	cog: Cog,
-	globe: Globe,
-	award: Award,
-};
-
-const getIcon = (iconName: string) => {
-	return iconComponents[iconName] || Check;
-};
+const features = propFeatures || defaultFeatures;
 ---
 
-<section class="py-12 md:py-20 px-4 bg-white dark:bg-black">
-  <div class="container mx-auto max-w-7xl">
-    <div class="mb-12 md:mb-16 text-center px-4 md:px-6">
-      <h2 class="text-3xl md:text-4xl lg:text-5xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">
-        {title}
-      </h2>
-      <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
-        {description}
-      </p>
-    </div>
+<section class="relative py-24 md:py-32 overflow-hidden">
+	<!-- Background -->
+	<div class="absolute inset-0 bg-gradient-to-b from-transparent via-accent/30 to-transparent" />
 
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
-      {features.map((feature) => {
-        const IconComponent = getIcon(feature.icon);
-        return (
-          <FeatureCard
-            title={feature.title}
-            description={feature.description}
-            IconComponent={IconComponent}
-          />
-        );
-      })}
-    </div>
-  </div>
+	<div class="container relative z-10 mx-auto px-4">
+		<!-- Header -->
+		<div class="max-w-2xl mx-auto text-center mb-16">
+			<h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
+				{title}
+			</h2>
+			<p class="text-lg text-muted-foreground">
+				{description}
+			</p>
+		</div>
+
+		<!-- Bento Grid -->
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
+			{features.map((feature, index) => {
+				const Icon = feature.icon;
+				const spanClass = feature.span === "wide" ? "md:col-span-2" : "";
+				return (
+					<div
+						class={`scroll-reveal group relative p-6 md:p-8 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:border-border/60 transition-all duration-300 ${spanClass}`}
+						style={`--reveal-delay: ${index * 100}ms;`}
+						data-reveal
+					>
+						<!-- Gradient background on hover -->
+						<div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-sky-100/80 to-pink-100/80 dark:from-sky-900/30 dark:to-pink-900/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+						<!-- Content -->
+						<div class="relative z-10">
+							<div class="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center mb-4 group-hover:bg-foreground/10 transition-colors duration-300">
+								<Icon class="w-5 h-5 text-foreground" />
+							</div>
+							<h3 class="text-lg font-semibold mb-2 tracking-tight">
+								{feature.title}
+							</h3>
+							<p class="text-sm text-muted-foreground leading-relaxed">
+								{feature.description}
+							</p>
+						</div>
+					</div>
+				);
+			})}
+		</div>
+	</div>
 </section>

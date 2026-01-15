@@ -102,7 +102,7 @@ function formatFileSize(bytes: number): string {
 	const k = 1024;
 	const sizes = ["B", "KB", "MB", "GB"];
 	const i = Math.floor(Math.log(bytes) / Math.log(k));
-	return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+	return `${parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`;
 }
 
 async function startUpload() {
@@ -192,7 +192,7 @@ function handleBrowseClick() {
           <Button
             variant="outline"
             size="sm"
-            class="mt-2 font-light"
+            class="mt-2 font-normal"
             @click.stop="handleBrowseClick"
           >
             {{ t("files.dialogs.upload.browseButton") }}
@@ -259,7 +259,7 @@ function handleBrowseClick() {
           variant="outline"
           @click="handleClose"
           :disabled="isUploading"
-          class="font-light"
+          class="font-normal"
         >
           {{
             allComplete
@@ -271,7 +271,7 @@ function handleBrowseClick() {
           v-if="!allComplete"
           @click="startUpload"
           :disabled="!hasFiles || isUploading"
-          class="font-light"
+          class="font-normal"
         >
           <Upload v-if="!isUploading" :size="16" class="mr-2" />
           <Loader2 v-else :size="16" class="mr-2 animate-spin" />

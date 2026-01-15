@@ -15,6 +15,8 @@ pre {
 	border-width: 1px;
 	background-color: transparent !important;
 	padding: 1em;
+	margin-top: 1.5rem;
+	margin-bottom: 1.5rem;
 }
 
 code {

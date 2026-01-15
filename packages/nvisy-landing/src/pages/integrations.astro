@@ -1,85 +1,146 @@
 ---
 import { Layout } from "@/layouts";
-import { CTA, Hero, IntegrationsGrid, DeveloperTools } from "@/components";
-import Connect from "@/components/sections/Connect.astro";
-import SDKExamples from "@/components/sections/SDKExamples.astro";
-import { getCollection } from "astro:content";
+import { Hero, CTA, Security } from "@/components";
+import IntegrationsGrid from "@/components/features/integrations/IntegrationsGrid.vue";
 
-// Get all integrations
-const integrations = await getCollection("integrations");
+import AnthropicIcon from "@/assets/integration/anthropic.svg?raw";
+import DiscordIcon from "@/assets/integration/discord.svg?raw";
+import DropboxIcon from "@/assets/integration/dropbox.svg?raw";
+import GoogleDriveIcon from "@/assets/integration/google-drive.svg?raw";
+import MakeIcon from "@/assets/integration/make.svg?raw";
+import OneDriveIcon from "@/assets/integration/microsoft-onedrive.svg?raw";
+import TeamsIcon from "@/assets/integration/microsoft-teams.svg?raw";
+import MinioIcon from "@/assets/integration/minio.svg?raw";
+import N8nIcon from "@/assets/integration/n8n.svg?raw";
+import NotionIcon from "@/assets/integration/notion.svg?raw";
+import OpenAIIcon from "@/assets/integration/openai.svg?raw";
+import SlackIcon from "@/assets/integration/slack.svg?raw";
+import ZapierIcon from "@/assets/integration/zapier.svg?raw";
 
-// Separate regular integrations from developer tools
-const regularIntegrations = integrations.filter(
-	(integration) => integration.data.category !== "Developer",
-);
-const developerIntegrations = integrations.filter(
-	(integration) => integration.data.category === "Developer",
-);
+const integrations = [
+	{
+		name: "Anthropic",
+		icon: AnthropicIcon,
+		description: "Claude-powered document understanding and analysis.",
+		status: "available" as const,
+		category: "ai",
+	},
+	{
+		name: "Discord",
+		icon: DiscordIcon,
+		description: "Receive processing notifications in your Discord channels.",
+		status: "coming_soon" as const,
+		category: "communication",
+	},
+	{
+		name: "Dropbox",
+		icon: DropboxIcon,
+		description: "Connect Dropbox folders for automated document processing.",
+		status: "available" as const,
+		category: "storage",
+	},
+	{
+		name: "Google Drive",
+		icon: GoogleDriveIcon,
+		description: "Process documents directly from your Google Drive folders.",
+		status: "available" as const,
+		category: "storage",
+	},
+	{
+		name: "Make",
+		icon: MakeIcon,
+		description:
+			"Build complex automation scenarios with Make (formerly Integromat).",
+		status: "available" as const,
+		category: "automation",
+	},
+	{
+		name: "Microsoft OneDrive",
+		icon: OneDriveIcon,
+		description: "Sync with OneDrive for seamless document workflows.",
+		status: "available" as const,
+		category: "storage",
+	},
+	{
+		name: "Microsoft Teams",
+		icon: TeamsIcon,
+		description: "Integrate document processing into your Teams workflows.",
+		status: "available" as const,
+		category: "communication",
+	},
+	{
+		name: "n8n",
+		icon: N8nIcon,
+		description: "Open-source workflow automation with full control.",
+		status: "available" as const,
+		category: "automation",
+	},
+	{
+		name: "Notion",
+		icon: NotionIcon,
+		description: "Automatically export extracted data to Notion databases.",
+		status: "available" as const,
+		category: "productivity",
+	},
+	{
+		name: "OpenAI",
+		icon: OpenAIIcon,
+		description: "Enhanced extraction with GPT models for complex documents.",
+		status: "available" as const,
+		category: "ai",
+	},
+	{
+		name: "S3-Compatible Storage",
+		icon: MinioIcon,
+		description:
+			"Connect any S3-compatible storage including AWS S3, MinIO, and others.",
+		status: "available" as const,
+		category: "storage",
+	},
+	{
+		name: "Slack",
+		icon: SlackIcon,
+		description:
+			"Get notified when documents are processed and share results with your team.",
+		status: "available" as const,
+		category: "communication",
+	},
+	{
+		name: "Zapier",
+		icon: ZapierIcon,
+		description: "Connect Nvisy to 5,000+ apps with Zapier workflows.",
+		status: "available" as const,
+		category: "automation",
+	},
+];
 ---
 
 <Layout
   title="Integrations"
-  description="Seamlessly integrate Nvisy's AI-powered document processing with your existing workflow. Connect with cloud storage, development tools, and enterprise systems."
+  description="Connect Nvisy with your favorite tools. Automate document workflows with 50+ integrations."
+  hideFooterBorder
 >
-  <div class="bg-white dark:bg-black min-h-screen">
-    <!-- Hero Section -->
-    <Hero
-      title="Powerful Integrations"
-      description="Connect seamlessly with your existing tools and workflows. Our comprehensive integration ecosystem ensures secure document processing fits naturally into your processes."
-      background="gradient"
-      buttons={[
-        {
-          text: "Request Integration",
-          href: "/contact",
-          variant: "primary"
-        },
-        {
-          text: "View All Integrations",
-          href: "#integrations",
-          variant: "secondary"
-        }
-      ]}
-    />
+  <Hero
+    title="Integrations"
+    titleHighlight="for your stack"
+    description="Connect Nvisy with the tools you already use. Automate document workflows and sync data across your entire stack."
+    primaryCta={{ text: "Get Started", href: "https://app.nvisy.com/auth/signup" }}
+    secondaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com/integrations" }}
+  />
 
-    <!-- Main Content -->
-    <div class="bg-white dark:bg-black">
-      <IntegrationsGrid integrations={regularIntegrations} client:load />
-
-      <!-- Connect -->
-      <Connect />
-
-      <!-- Developer Tools -->
-      <DeveloperTools integrations={developerIntegrations} client:load />
-
-      <!-- SDK Examples -->
-      <SDKExamples />
-
-      <!-- Custom Integration CTA -->
-      <CTA
-        title="Need a Custom Integration?"
-        description="Don't see your tool listed? Our team can build custom integrations to fit your specific workflow requirements. Get in touch to discuss your needs."
-        background="none"
-        buttons={[
-          {
-            text: "Contact Sales",
-            href: "/contact",
-            variant: "primary"
-          },
-          {
-            text: "View Documentation",
-            href: "https://docs.nvisy.com",
-            variant: "secondary",
-            external: true
-          }
-        ]}
-      />
+  <!-- Integrations Grid -->
+  <section class="py-24 md:py-32">
+    <div class="container mx-auto max-w-6xl px-4">
+      <IntegrationsGrid integrations={integrations} client:load />
     </div>
-  </div>
+  </section>
 
-  <!-- Smooth scrolling -->
-  <style>
-    html {
-      scroll-behavior: smooth;
-    }
-  </style>
+  <CTA
+    title="Need a different integration?"
+    description="We're constantly adding new integrations. Let us know what you need or get started with what's available."
+    primaryCta={{ text: "Get Started", href: "https://app.nvisy.com/auth/signup" }}
+    secondaryCta={{ text: "Request Integration", href: "mailto:support@nvisy.com?subject=Integration Request" }}
+  />
+
+  <Security />
 </Layout>

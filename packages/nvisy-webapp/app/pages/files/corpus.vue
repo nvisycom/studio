@@ -26,6 +26,8 @@ import {
 } from "@/components/pages/files";
 import type { CorpusDocument } from "@/components/pages/files/CorpusTable.vue";
 
+useHead({ title: "Corpus" });
+
 definePageMeta({
 	pageCategory: "Files",
 });
@@ -159,14 +161,14 @@ function confirmDelete() {
       />
 
       <!-- Main Card -->
-      <Card
-        class="overflow-hidden py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-      >
+      <Card class="overflow-hidden py-0 pt-6 rounded-xl border-border/50">
         <CardHeader>
           <div class="flex items-center justify-between mb-4">
             <div>
-              <CardTitle>Knowledge Corpus</CardTitle>
-              <CardDescription>
+              <CardTitle class="text-sm font-medium"
+                >Knowledge Corpus</CardTitle
+              >
+              <CardDescription class="text-xs text-muted-foreground">
                 {{ documentCount }} document{{ documentCount !== 1 ? "s" : "" }}
                 in the index
               </CardDescription>
@@ -180,16 +182,16 @@ function confirmDelete() {
           <div class="flex gap-2">
             <div class="relative flex-1">
               <Search
-                class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400"
+                class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
               />
               <Input
                 v-model="searchQuery"
                 placeholder="Search documents..."
-                class="pl-9"
+                class="pl-9 h-9"
               />
             </div>
             <Select v-model="statusFilter">
-              <SelectTrigger class="w-[180px]">
+              <SelectTrigger class="w-[180px] h-9">
                 <SelectValue placeholder="All statuses" />
               </SelectTrigger>
               <SelectContent>
@@ -209,9 +211,9 @@ function confirmDelete() {
           />
         </CardContent>
         <CardFooter
-          class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+          class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
         >
-          <p class="text-sm text-neutral-600 dark:text-neutral-400">
+          <p class="text-xs text-muted-foreground">
             Documents are automatically indexed for intelligent search and
             retrieval.
           </p>

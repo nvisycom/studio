@@ -15,9 +15,11 @@ import {
 	Database,
 	PlayCircle,
 	FolderOpen,
+	MessageCircle,
 } from "lucide-vue-next";
 
 const route = useRoute();
+const { t } = useI18n();
 
 // Check if current route should show tabs
 const showIntegrationTabs = computed(() =>
@@ -64,6 +66,7 @@ const currentIntegrationTabValue = computed(() => {
 
 const currentFilesTab = computed(() => {
 	if (route.path === "/files/corpus") return "corpus";
+	if (route.path === "/files/chat") return "chat";
 	return "files";
 });
 
@@ -94,19 +97,19 @@ defineExpose({
       <TabsTrigger value="connections" as-child>
         <NuxtLink to="/integrations" class="flex items-center gap-2">
           <Plug :size="16" />
-          Connections
+          {{ t("header.tabs.integrations.connections") }}
         </NuxtLink>
       </TabsTrigger>
       <TabsTrigger value="explore" as-child>
         <NuxtLink to="/integrations/explore" class="flex items-center gap-2">
           <Library :size="16" />
-          Explore
+          {{ t("header.tabs.integrations.explore") }}
         </NuxtLink>
       </TabsTrigger>
       <TabsTrigger value="runs" as-child>
         <NuxtLink to="/integrations/runs" class="flex items-center gap-2">
           <PlayCircle :size="16" />
-          Runs
+          {{ t("header.tabs.integrations.runs") }}
         </NuxtLink>
       </TabsTrigger>
     </TabsList>
@@ -118,13 +121,19 @@ defineExpose({
       <TabsTrigger value="files" as-child>
         <NuxtLink to="/files" class="flex items-center gap-2">
           <FolderOpen :size="16" />
-          Files
+          {{ t("header.tabs.files.index") }}
         </NuxtLink>
       </TabsTrigger>
       <TabsTrigger value="corpus" as-child>
         <NuxtLink to="/files/corpus" class="flex items-center gap-2">
           <Database :size="16" />
-          Corpus
+          {{ t("header.tabs.files.corpus") }}
+        </NuxtLink>
+      </TabsTrigger>
+      <TabsTrigger value="chat" as-child>
+        <NuxtLink to="/files/chat" class="flex items-center gap-2">
+          <MessageCircle :size="16" />
+          {{ t("header.tabs.files.chat") }}
         </NuxtLink>
       </TabsTrigger>
     </TabsList>
@@ -139,13 +148,13 @@ defineExpose({
       <TabsTrigger value="general" as-child>
         <NuxtLink to="/settings/general" class="flex items-center gap-2">
           <Settings :size="16" />
-          General
+          {{ t("header.tabs.settings.general") }}
         </NuxtLink>
       </TabsTrigger>
       <TabsTrigger value="notifications" as-child>
         <NuxtLink to="/settings/notifications" class="flex items-center gap-2">
           <Bell :size="16" />
-          Notifications
+          {{ t("header.tabs.settings.notifications") }}
         </NuxtLink>
       </TabsTrigger>
     </TabsList>
@@ -157,13 +166,13 @@ defineExpose({
       <TabsTrigger value="general" as-child>
         <NuxtLink to="/account/general" class="flex items-center gap-2">
           <User :size="16" />
-          General
+          {{ t("header.tabs.account.general") }}
         </NuxtLink>
       </TabsTrigger>
       <TabsTrigger value="tokens" as-child>
         <NuxtLink to="/account/tokens" class="flex items-center gap-2">
           <Key :size="16" />
-          Tokens
+          {{ t("header.tabs.account.tokens") }}
         </NuxtLink>
       </TabsTrigger>
     </TabsList>
@@ -175,19 +184,19 @@ defineExpose({
       <TabsTrigger value="overview" as-child>
         <NuxtLink to="/analytics" class="flex items-center gap-2">
           <BarChart3 :size="16" />
-          Overview
+          {{ t("header.tabs.analytics.overview") }}
         </NuxtLink>
       </TabsTrigger>
       <TabsTrigger value="ai" as-child>
         <NuxtLink to="/analytics/ai" class="flex items-center gap-2">
           <Cpu :size="16" />
-          AI
+          {{ t("header.tabs.analytics.ai") }}
         </NuxtLink>
       </TabsTrigger>
       <TabsTrigger value="logs" as-child>
         <NuxtLink to="/analytics/logs" class="flex items-center gap-2">
           <FileSearch :size="16" />
-          Logs
+          {{ t("header.tabs.analytics.logs") }}
         </NuxtLink>
       </TabsTrigger>
     </TabsList>

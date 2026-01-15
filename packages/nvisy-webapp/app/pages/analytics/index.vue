@@ -21,6 +21,8 @@ import StorageUsedChart from "~/components/pages/analytics/StorageUsedChart.vue"
 import DocumentsUploadDownloadChart from "~/components/pages/analytics/DocumentsUploadDownloadChart.vue";
 import DocumentsEditVerifyChart from "~/components/pages/analytics/DocumentsEditVerifyChart.vue";
 
+useHead({ title: "Analytics" });
+
 definePageMeta({
 	pageCategory: "Analytics",
 });
@@ -46,7 +48,7 @@ function importAnalytics() {
       <!-- Toolbar -->
       <div class="flex items-center justify-between mb-6">
         <Select v-model="dateRange">
-          <SelectTrigger class="w-[180px]">
+          <SelectTrigger class="w-[180px] h-9">
             <SelectValue placeholder="Select period" />
           </SelectTrigger>
           <SelectContent>
@@ -76,49 +78,59 @@ function importAnalytics() {
       <!-- Charts -->
       <div class="grid gap-4 md:grid-cols-2">
         <!-- Credits Used Chart -->
-        <Card>
-          <CardHeader>
-            <CardTitle>Credit Consumption</CardTitle>
-            <CardDescription
+        <Card class="border-border/50">
+          <CardHeader class="pb-2">
+            <CardTitle class="text-sm font-medium"
+              >Credit Consumption</CardTitle
+            >
+            <CardDescription class="text-xs text-muted-foreground"
               >AI and platform credits used over time</CardDescription
             >
           </CardHeader>
-          <CardContent class="pt-4">
+          <CardContent class="pt-2">
             <CreditsUsedChart :date-range="dateRange" />
           </CardContent>
         </Card>
 
         <!-- Storage Used Chart -->
-        <Card>
-          <CardHeader>
-            <CardTitle>Storage Usage</CardTitle>
-            <CardDescription
+        <Card class="border-border/50">
+          <CardHeader class="pb-2">
+            <CardTitle class="text-sm font-medium">Storage Usage</CardTitle>
+            <CardDescription class="text-xs text-muted-foreground"
               >Original and edited file storage consumption</CardDescription
             >
           </CardHeader>
-          <CardContent class="pt-4">
+          <CardContent class="pt-2">
             <StorageUsedChart :date-range="dateRange" />
           </CardContent>
         </Card>
 
         <!-- Documents Uploaded/Downloaded Chart -->
-        <Card>
-          <CardHeader>
-            <CardTitle>Document Transfers</CardTitle>
-            <CardDescription>Documents uploaded and downloaded</CardDescription>
+        <Card class="border-border/50">
+          <CardHeader class="pb-2">
+            <CardTitle class="text-sm font-medium"
+              >Document Transfers</CardTitle
+            >
+            <CardDescription class="text-xs text-muted-foreground"
+              >Documents uploaded and downloaded</CardDescription
+            >
           </CardHeader>
-          <CardContent class="pt-4">
+          <CardContent class="pt-2">
             <DocumentsUploadDownloadChart :date-range="dateRange" />
           </CardContent>
         </Card>
 
         <!-- Documents Edited/Verified Chart -->
-        <Card>
-          <CardHeader>
-            <CardTitle>Document Processing</CardTitle>
-            <CardDescription>Documents edited and verified</CardDescription>
+        <Card class="border-border/50">
+          <CardHeader class="pb-2">
+            <CardTitle class="text-sm font-medium"
+              >Document Processing</CardTitle
+            >
+            <CardDescription class="text-xs text-muted-foreground"
+              >Documents edited and verified</CardDescription
+            >
           </CardHeader>
-          <CardContent class="pt-4">
+          <CardContent class="pt-2">
             <DocumentsEditVerifyChart :date-range="dateRange" />
           </CardContent>
         </Card>

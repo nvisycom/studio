@@ -71,19 +71,19 @@ async function copyInviteLink(invite: Invite) {
             />
           </TableHead>
           <TableHead
-            class="uppercase text-xs font-light tracking-wider min-w-[280px]"
+            class="uppercase text-xs font-normal tracking-wider min-w-[280px]"
             >{{ t("members.table.headers.invite") }}</TableHead
           >
           <TableHead
-            class="uppercase text-xs font-light tracking-wider w-[140px]"
+            class="uppercase text-xs font-normal tracking-wider w-[140px]"
             >{{ t("members.table.headers.role") }}</TableHead
           >
           <TableHead
-            class="uppercase text-xs font-light tracking-wider w-[160px]"
+            class="uppercase text-xs font-normal tracking-wider w-[160px]"
             >{{ t("members.table.headers.invited") }}</TableHead
           >
           <TableHead
-            class="uppercase text-xs font-light tracking-wider w-[160px]"
+            class="uppercase text-xs font-normal tracking-wider w-[160px]"
             >{{ t("members.table.headers.expires") }}</TableHead
           >
         </TableRow>
@@ -140,13 +140,13 @@ async function copyInviteLink(invite: Invite) {
               </TableCell>
               <TableCell>
                 <span
-                  class="text-xs font-light text-neutral-600 dark:text-neutral-400"
+                  class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
                   >{{ formatRelativeTime(invite.createdAt, t) }}</span
                 >
               </TableCell>
               <TableCell>
                 <span
-                  class="text-xs font-light text-neutral-600 dark:text-neutral-400"
+                  class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
                   >{{ formatRelativeTimeFuture(invite.expiresAt, t) }}</span
                 >
               </TableCell>
@@ -204,7 +204,7 @@ async function copyInviteLink(invite: Invite) {
       <p class="font-normal text-neutral-700 dark:text-neutral-300 mb-1">
         {{ t("members.table.empty.noPendingInvites") }}
       </p>
-      <p class="font-light text-sm text-neutral-500 dark:text-neutral-400">
+      <p class="font-normal text-sm text-neutral-500 dark:text-neutral-400">
         {{ t("members.table.empty.noPendingInvitesDescription") }}
       </p>
     </div>

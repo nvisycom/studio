@@ -27,6 +27,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 	SidebarRail,
+	SidebarSeparator,
 	useSidebar,
 } from "@/components/ui/sidebar";
 import {
@@ -121,12 +122,13 @@ function openHelpChat() {
 
 <template>
   <Sidebar v-bind="props">
-    <SidebarHeader>
+    <SidebarHeader class="h-[calc(2.75rem-1px)] p-2 justify-center">
       <WorkspaceSwitcher />
     </SidebarHeader>
+    <SidebarSeparator />
     <SidebarContent>
       <!-- Overview - always visible -->
-      <SidebarMenu v-if="state === 'expanded'" class="px-2 pt-2">
+      <SidebarMenu v-if="state === 'expanded'" class="px-2">
         <SidebarMenuItem>
           <SidebarMenuButton as-child :tooltip="t('sidebar.overview')">
             <NuxtLink to="/">
@@ -152,53 +154,59 @@ function openHelpChat() {
         :disabled="!hasWorkspace"
       />
     </SidebarContent>
-    <SidebarFooter>
-      <SidebarMenu>
-        <SidebarMenuItem
-          :class="{ 'opacity-50 pointer-events-none': !hasWorkspace }"
-        >
-          <SidebarMenuButton
-            as-child
-            :tooltip="hasWorkspace ? t('sidebar.billing') : undefined"
+    <SidebarFooter class="gap-0 p-0">
+      <SidebarSeparator />
+      <div class="p-2">
+        <SidebarMenu>
+          <SidebarMenuItem
+            :class="{ 'opacity-50 pointer-events-none': !hasWorkspace }"
           >
-            <NuxtLink v-if="hasWorkspace" to="/billing">
-              <CreditCard />
-              <span>{{ t("sidebar.billing") }}</span>
-            </NuxtLink>
-            <span v-else class="flex items-center gap-2 cursor-not-allowed">
-              <CreditCard />
-              <span>{{ t("sidebar.billing") }}</span>
-            </span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-        <SidebarMenuItem
-          :class="{ 'opacity-50 pointer-events-none': !hasWorkspace }"
-        >
-          <SidebarMenuButton
-            as-child
-            :tooltip="hasWorkspace ? t('sidebar.settings') : undefined"
+            <SidebarMenuButton
+              as-child
+              :tooltip="hasWorkspace ? t('sidebar.billing') : undefined"
+            >
+              <NuxtLink v-if="hasWorkspace" to="/billing">
+                <CreditCard />
+                <span>{{ t("sidebar.billing") }}</span>
+              </NuxtLink>
+              <span v-else class="flex items-center gap-2 cursor-not-allowed">
+                <CreditCard />
+                <span>{{ t("sidebar.billing") }}</span>
+              </span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem
+            :class="{ 'opacity-50 pointer-events-none': !hasWorkspace }"
           >
-            <NuxtLink v-if="hasWorkspace" to="/settings/general">
-              <Settings />
-              <span>{{ t("sidebar.settings") }}</span>
-            </NuxtLink>
-            <span v-else class="flex items-center gap-2 cursor-not-allowed">
-              <Settings />
-              <span>{{ t("sidebar.settings") }}</span>
-            </span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            :tooltip="t('sidebar.support')"
-            @click="openHelpChat"
-          >
-            <MessagesSquare />
-            <span>{{ t("sidebar.support") }}</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
-      <NavUser :user="userData" />
+            <SidebarMenuButton
+              as-child
+              :tooltip="hasWorkspace ? t('sidebar.settings') : undefined"
+            >
+              <NuxtLink v-if="hasWorkspace" to="/settings/general">
+                <Settings />
+                <span>{{ t("sidebar.settings") }}</span>
+              </NuxtLink>
+              <span v-else class="flex items-center gap-2 cursor-not-allowed">
+                <Settings />
+                <span>{{ t("sidebar.settings") }}</span>
+              </span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              :tooltip="t('sidebar.support')"
+              @click="openHelpChat"
+            >
+              <MessagesSquare />
+              <span>{{ t("sidebar.support") }}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </div>
+      <SidebarSeparator />
+      <div class="h-[calc(2.75rem-1px)] px-2 flex items-center">
+        <NavUser :user="userData" />
+      </div>
     </SidebarFooter>
     <SidebarRail />
   </Sidebar>

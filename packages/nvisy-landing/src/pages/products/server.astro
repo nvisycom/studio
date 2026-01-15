@@ -1,92 +1,129 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, CTA, OpenSource, Premium, Features } from "@/components";
+import { Hero, CTA, OpenSource, Features, Security } from "@/components";
 import SDKExamples from "@/components/sections/SDKExamples.astro";
 import Connect from "@/components/sections/Connect.astro";
-import { Check, Shield, ArrowRight, BookOpen } from "lucide-vue-next";
+import HowItWorks from "@/components/sections/HowItWorks.astro";
+import { Check, Shield, ArrowRight, BookOpen, Cloud } from "lucide-vue-next";
 import GithubIcon from "@/assets/icons/github.svg?raw";
 ---
 
 <Layout
   title="Nvisy Server"
-  description="Deploy Nvisy's AI-powered document processing on your own infrastructure. Complete control, maximum security, and compliance for air-gapped environments."
+  description="Deploy Nvisy's AI-powered document processing in the cloud or on your own infrastructure. Flexible deployment options for any security and compliance requirement."
+  hideFooterBorder
 >
-  <div class="bg-white dark:bg-black min-h-screen">
-    <!-- Hero Section -->
-    <div class="border-b border-neutral-200 dark:border-neutral-800">
-      <Hero
-        title="Nvisy Server"
-        description="Enterprise-grade document processing deployed entirely on your infrastructure. Maximum security, complete data sovereignty, full customization. Perfect for organizations with strict compliance requirements and air-gapped environments."
-        background="gradient"
-        buttons={[
-          {
-            text: "View Documentation",
-            href: "https://docs.nvisy.com/server",
-            variant: "primary"
-          },
-          {
-            text: "Contact Sales",
-            href: "/contact",
-            variant: "secondary"
-          }
-        ]}
-      />
-    </div>
+  <Hero
+    title="Nvisy"
+    titleHighlight="Server"
+    titleInline={true}
+    description="Enterprise-grade document processing with flexible deployment options. Deploy in our managed cloud or on your own infrastructure."
+    primaryCta={{ text: "Start Free Trial", href: "/pricing" }}
+    secondaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com" }}
+  />
 
-    <!-- Deployment Options -->
-    <div class="container mx-auto px-4 py-12 md:py-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-12 md:mb-16">
-          <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">
-            Two Ways to Deploy
+  <section class="py-24 md:py-32 relative overflow-hidden">
+    <!-- Background gradient -->
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-accent/30 to-transparent" />
+
+    <div class="container relative z-10 mx-auto px-4">
+      <div class="max-w-5xl mx-auto">
+        <div class="scroll-reveal text-center mb-16" data-reveal>
+          <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
+            Choose your deployment
           </h2>
-          <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto px-4">
-            Choose between running the open-source version for free or get enterprise support with our licensed deployment.
+          <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Deploy in our managed cloud for zero maintenance, or self-host for complete control.
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <!-- Deployment options -->
+        <div class="scroll-reveal grid grid-cols-1 lg:grid-cols-3 gap-8" style="--reveal-delay: 100ms;" data-reveal>
+          <!-- Cloud - Recommended -->
+          <div class="relative group">
+            <div class="absolute -inset-px bg-gradient-to-b from-foreground/20 to-foreground/5 rounded-3xl" />
+            <div class="relative h-full p-8 rounded-3xl bg-card border border-foreground/10 flex flex-col">
+              <!-- Badge -->
+              <div class="absolute -top-3 left-6 px-3 py-1 bg-foreground text-background text-xs font-medium rounded-full">
+                Recommended
+              </div>
+
+              <div class="flex items-center gap-4 mb-6 mt-2">
+                <div class="w-12 h-12 rounded-xl bg-foreground flex items-center justify-center">
+                  <Cloud class="w-6 h-6 text-background" />
+                </div>
+                <div>
+                  <h3 class="text-lg font-semibold">Nvisy Cloud</h3>
+                  <p class="text-sm text-muted-foreground">Managed service</p>
+                </div>
+              </div>
+
+              <p class="text-muted-foreground mb-8">
+                Fully managed cloud deployment. Deploy in minutes, scale instantly.
+              </p>
+
+              <ul class="space-y-3 mb-8 flex-grow">
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                  <span class="text-muted-foreground">Zero infrastructure management</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                  <span class="text-muted-foreground">Auto-scaling & high availability</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <Check class="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                  <span class="text-muted-foreground">100 free pages/month</span>
+                </li>
+              </ul>
+
+              <a
+                href="/pricing"
+                class="inline-flex items-center justify-center gap-2 bg-foreground text-background font-medium py-3 px-6 rounded-xl hover:opacity-90 transition-opacity"
+              >
+                Start Free Trial
+                <ArrowRight class="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+
           <!-- Open Source -->
-          <div class="bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="w-12 h-12 md:w-14 md:h-14 bg-neutral-100 dark:bg-neutral-800 rounded-2xl flex items-center justify-center">
-                <div class="w-6 h-6 md:w-7 md:h-7 text-neutral-900 dark:text-white [&>svg]:w-full [&>svg]:h-full">
+          <div class="group h-full p-8 rounded-3xl bg-card border border-border hover:border-border/80 hover:bg-card/80 transition-all duration-300 flex flex-col">
+            <div class="flex items-center gap-4 mb-6">
+              <div class="w-12 h-12 rounded-xl bg-accent flex items-center justify-center">
+                <div class="w-6 h-6 text-foreground [&>svg]:w-full [&>svg]:h-full">
                   <Fragment set:html={GithubIcon} />
                 </div>
               </div>
               <div>
-                <h3 class="text-xl md:text-2xl font-light text-neutral-900 dark:text-white">Open Source</h3>
-                <p class="text-sm text-neutral-600 dark:text-neutral-400">MIT Licensed</p>
+                <h3 class="text-lg font-semibold">Open Source</h3>
+                <p class="text-sm text-muted-foreground">MIT Licensed</p>
               </div>
             </div>
 
-            <p class="text-sm text-neutral-600 dark:text-neutral-300 mb-6 leading-relaxed">
-              Run Nvisy Server for free using our open-source release. Perfect for testing, development, or small-scale deployments. Deploy using Docker for quick setup.
+            <p class="text-muted-foreground mb-8">
+              Run Nvisy Server for free. Perfect for testing and development.
             </p>
 
-            <div class="space-y-2 mb-8 flex-grow">
-              <div class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                <span class="text-sm text-neutral-700 dark:text-neutral-400">Free to use and modify</span>
-              </div>
-              <div class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                <span class="text-sm text-neutral-700 dark:text-neutral-400">Docker container support</span>
-              </div>
-              <div class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                <span class="text-sm text-neutral-700 dark:text-neutral-400">Community support</span>
-              </div>
-              <div class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                <span class="text-sm text-neutral-700 dark:text-neutral-400">Self-managed updates</span>
-              </div>
-            </div>
+            <ul class="space-y-3 mb-8 flex-grow">
+              <li class="flex items-center gap-3">
+                <Check class="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                <span class="text-muted-foreground">Free to use and modify</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <Check class="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                <span class="text-muted-foreground">Docker container support</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <Check class="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                <span class="text-muted-foreground">Community support</span>
+              </li>
+            </ul>
 
-            <div class="flex flex-col gap-3 mt-auto">
+            <div class="flex flex-col gap-3">
               <a
                 href="https://github.com/nvisycom/server"
-                class="inline-flex items-center justify-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-black font-medium py-3 px-6 rounded-xl hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all duration-200 text-sm"
+                class="inline-flex items-center justify-center gap-2 bg-foreground text-background font-medium py-3 px-6 rounded-xl hover:opacity-90 transition-opacity"
               >
                 <div class="w-4 h-4 [&>svg]:w-full [&>svg]:h-full">
                   <Fragment set:html={GithubIcon} />
@@ -95,7 +132,7 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
               </a>
               <a
                 href="https://docs.nvisy.com/server/quickstart"
-                class="inline-flex items-center justify-center gap-2 border border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-white font-medium py-3 px-6 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-all duration-200 text-sm"
+                class="inline-flex items-center justify-center gap-2 border border-border text-foreground font-medium py-3 px-6 rounded-xl hover:bg-accent transition-colors"
               >
                 <BookOpen class="w-4 h-4" />
                 Quick Start
@@ -104,43 +141,39 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
           </div>
 
           <!-- Enterprise -->
-          <div class="bg-white dark:bg-black rounded-xl border-2 border-neutral-900 dark:border-white p-6 md:p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col">
-            <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-black dark:bg-white text-white dark:text-black text-xs font-medium px-3 py-1 rounded-full">
-              Recommended for Enterprise
-            </div>
-
-            <div class="flex items-center gap-3 mb-6 mt-2">
-              <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-neutral-700 to-neutral-900 rounded-2xl flex items-center justify-center">
-                <Shield class="w-6 h-6 md:w-7 md:h-7 text-white" />
+          <div class="group h-full p-8 rounded-3xl bg-card border border-border hover:border-border/80 hover:bg-card/80 transition-all duration-300 flex flex-col">
+            <div class="flex items-center gap-4 mb-6">
+              <div class="w-12 h-12 rounded-xl bg-accent flex items-center justify-center">
+                <Shield class="w-6 h-6 text-muted-foreground" />
               </div>
               <div>
-                <h3 class="text-xl md:text-2xl font-light text-neutral-900 dark:text-white">Enterprise License</h3>
-                <a href="/pricing" class="text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white underline">View Pricing</a>
+                <h3 class="text-lg font-semibold">Enterprise</h3>
+                <a href="/pricing" class="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2">View Pricing</a>
               </div>
             </div>
 
-            <p class="text-sm text-neutral-600 dark:text-neutral-300 mb-6 leading-relaxed">
-              Get enterprise-grade support, custom deployment assistance, and priority access to new features. Perfect for production deployments.
+            <p class="text-muted-foreground mb-8">
+              Enterprise-grade support and custom deployment assistance.
             </p>
 
-            <div class="space-y-2 mb-8 flex-grow">
-              <div class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                <span class="text-sm text-neutral-700 dark:text-neutral-400">24/7 enterprise support</span>
-              </div>
-              <div class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                <span class="text-sm text-neutral-700 dark:text-neutral-400">Deployment assistance</span>
-              </div>
-              <div class="flex items-start gap-2">
-                <Check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                <span class="text-sm text-neutral-700 dark:text-neutral-400">Priority feature access</span>
-              </div>
-            </div>
+            <ul class="space-y-3 mb-8 flex-grow">
+              <li class="flex items-center gap-3">
+                <Check class="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                <span class="text-muted-foreground">24/7 enterprise support</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <Check class="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                <span class="text-muted-foreground">Deployment assistance</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <Check class="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                <span class="text-muted-foreground">Air-gapped environments</span>
+              </li>
+            </ul>
 
             <a
-              href="/contact"
-              class="inline-flex items-center justify-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-black font-medium py-3 px-6 rounded-xl hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all duration-200 text-sm mt-auto"
+              href="mailto:hello@nvisy.com"
+              class="inline-flex items-center justify-center gap-2 bg-foreground text-background font-medium py-3 px-6 rounded-xl hover:opacity-90 transition-opacity"
             >
               Contact Sales
               <ArrowRight class="w-4 h-4" />
@@ -149,56 +182,37 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
         </div>
       </div>
     </div>
+  </section>
 
-    <!-- Features -->
-    <Features
-      title="Complete Control & Flexibility"
-      description="Deploy on your infrastructure with full customization capabilities. Perfect for organizations with strict security and compliance requirements."
-      category="enterprise"
-      featured={true}
-    />
+  <Features
+    title="Built for enterprise scale"
+    description="Advanced AI technology meets enterprise security requirements."
+    category="general"
+    featured={true}
+  />
 
-    <!-- Open Source -->
-    <OpenSource
-      title="Built on Open Source"
-      description="Server is fully open source. Contribute, validate our security approach, and build with confidence."
-    />
+  <HowItWorks />
 
-    <!-- Connect/Integration -->
-    <Connect
-      title="Flexible Integration"
-      description="Self-hosted server with the same powerful APIs as Nvisy Cloud. Integrate seamlessly into your infrastructure."
-    />
+  <OpenSource
+    title="Built on open source"
+    description="Server is fully open source. Contribute, validate our security approach, and build with confidence."
+  />
 
-    <!-- SDK Examples -->
-    <SDKExamples
-      title="Compatible SDKs"
-      description="Use the same TypeScript and Python SDKs as Nvisy Cloud. Simply point to your server endpoint."
-    />
+  <Connect
+    title="Flexible integration"
+    description="Powerful APIs and comprehensive SDKs make it easy to integrate document processing."
+  />
 
-    <!-- Premium -->
-    <Premium
-      title="Enterprise Support"
-      description="Get dedicated support for your on-premise deployment. Source code access, custom modifications, and priority assistance available."
-    />
+  <SDKExamples
+    title="Developer-friendly SDKs"
+    description="Get started in minutes with our TypeScript and Python SDKs."
+  />
 
-    <!-- CTA Section -->
-    <CTA
-      title="Ready to Deploy Nvisy Server?"
-      description="Start with the open-source version or contact us for enterprise deployment assistance."
-      buttons={[
-        {
-          text: "View on GitHub",
-          href: "https://github.com/nvisycom/server",
-          variant: "primary"
-        },
-        {
-          text: "Contact Sales",
-          href: "/contact",
-          variant: "secondary"
-        }
-      ]}
-      background="solid"
-    />
-  </div>
+  <CTA
+    title="Ready to get started?"
+    description="Deploy AI-powered document processing in minutes. Start with 100 free pages per month."
+    primaryCta={{ text: "Start Free Trial", href: "/pricing" }}
+    secondaryCta={{ text: "View on GitHub", href: "https://github.com/nvisycom/server" }}
+  />
+  <Security />
 </Layout>

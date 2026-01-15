@@ -46,61 +46,66 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="bg-white dark:bg-black rounded-lg p-6 h-[280px] relative">
+  <div
+    class="bg-background rounded-xl p-6 h-[280px] relative border border-border/50"
+  >
     <div class="space-y-6 relative overflow-hidden h-full">
       <TransitionGroup name="webhook">
         <div v-for="(event, index) in events" :key="event.id" class="relative">
           <!-- Vertical line connector -->
           <div
             v-if="index < events.length - 1"
-            class="absolute left-5 w-px bg-neutral-300 dark:bg-neutral-700"
+            class="absolute left-5 w-px bg-border"
             style="top: 50px; bottom: -14px"
           />
 
           <!-- Top row: Icon, Badge, Date -->
           <div class="flex items-center gap-4 mb-4">
             <div
-              class="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center flex-shrink-0 z-10"
+              class="w-10 h-10 rounded-full bg-accent border border-border/50 flex items-center justify-center flex-shrink-0 z-10"
             >
               <component
                 :is="event.icon"
-                class="w-5 h-5 text-neutral-600 dark:text-neutral-300"
+                class="w-5 h-5 text-muted-foreground"
               />
             </div>
             <Badge
               :class="event.eventColor"
-              class="text-sm font-light px-3 py-1"
+              class="text-sm px-3 py-1 transition-all duration-300"
             >
               {{ event.type }}
             </Badge>
             <div
-              class="flex items-center gap-1 ml-auto text-xs font-light text-neutral-600 dark:text-neutral-400"
+              class="flex items-center gap-1.5 ml-auto text-xs text-muted-foreground"
             >
               <Calendar class="w-3 h-3" />
-              {{ event.timestamp }}
+              <span class="font-mono">{{ event.timestamp }}</span>
             </div>
           </div>
 
           <!-- Bottom section: Metadata -->
-          <div class="ml-14 text-xs font-light text-neutral-900 dark:text-white">
+          <div class="ml-14 text-xs text-foreground">
             <!-- uploaded -->
             <div
               v-if="event.type === 'uploaded'"
               class="flex items-center gap-1.5 flex-wrap"
             >
               <Badge
-                class="text-xs font-light bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-700"
+                variant="secondary"
+                class="text-xs bg-accent text-foreground border-border/50"
               >
                 {{ event.filename }}
               </Badge>
-              <span>by</span>
+              <span class="text-muted-foreground">by</span>
               <Badge
-                class="text-xs font-light bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-700"
+                variant="secondary"
+                class="text-xs bg-accent text-foreground border-border/50"
               >
                 {{ event.author }}
               </Badge>
               <Badge
-                class="text-xs font-light bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-700"
+                variant="secondary"
+                class="text-xs bg-accent text-foreground border-border/50"
               >
                 {{ event.size }}
               </Badge>
@@ -112,30 +117,35 @@ onUnmounted(() => {
               class="flex items-center gap-1.5 flex-wrap"
             >
               <Badge
-                class="text-xs font-light bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-700"
+                variant="secondary"
+                class="text-xs bg-accent text-foreground border-border/50"
               >
                 {{ event.filename }}
               </Badge>
               <Badge
-                class="text-xs font-light bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-700"
+                variant="secondary"
+                class="text-xs bg-accent text-foreground border-border/50"
               >
                 {{ event.version }}
               </Badge>
-              <span>by</span>
+              <span class="text-muted-foreground">by</span>
               <Badge
-                class="text-xs font-light bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-700"
+                variant="secondary"
+                class="text-xs bg-accent text-foreground border-border/50"
               >
                 {{ event.author }}
               </Badge>
-              <span>extracted</span>
+              <span class="text-muted-foreground">extracted</span>
               <Badge
-                class="text-xs font-light bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-700"
+                variant="secondary"
+                class="text-xs bg-accent text-foreground border-border/50"
               >
                 {{ event.fields }} fields
               </Badge>
-              <span>from</span>
+              <span class="text-muted-foreground">from</span>
               <Badge
-                class="text-xs font-light bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-700"
+                variant="secondary"
+                class="text-xs bg-accent text-foreground border-border/50"
               >
                 {{ event.size }}
               </Badge>
@@ -147,24 +157,28 @@ onUnmounted(() => {
               class="flex items-center gap-1.5 flex-wrap"
             >
               <Badge
-                class="text-xs font-light bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-700"
+                variant="secondary"
+                class="text-xs bg-accent text-foreground border-border/50"
               >
                 {{ event.filename }}
               </Badge>
               <Badge
-                class="text-xs font-light bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-700"
+                variant="secondary"
+                class="text-xs bg-accent text-foreground border-border/50"
               >
                 {{ event.version }}
               </Badge>
-              <span>by</span>
+              <span class="text-muted-foreground">by</span>
               <Badge
-                class="text-xs font-light bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-700"
+                variant="secondary"
+                class="text-xs bg-accent text-foreground border-border/50"
               >
                 {{ event.author }}
               </Badge>
-              <span>in</span>
+              <span class="text-muted-foreground">in</span>
               <Badge
-                class="text-xs font-light bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-700"
+                variant="secondary"
+                class="text-xs bg-accent text-foreground border-border/50"
               >
                 {{ event.duration }}
               </Badge>
@@ -176,18 +190,21 @@ onUnmounted(() => {
               class="flex items-center gap-1.5 flex-wrap"
             >
               <Badge
-                class="text-xs font-light bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-700"
+                variant="secondary"
+                class="text-xs bg-accent text-foreground border-border/50"
               >
                 {{ event.filename }}
               </Badge>
               <Badge
-                class="text-xs font-light bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-700"
+                variant="secondary"
+                class="text-xs bg-accent text-foreground border-border/50"
               >
                 {{ event.version }}
               </Badge>
-              <span>by</span>
+              <span class="text-muted-foreground">by</span>
               <Badge
-                class="text-xs font-light bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-700"
+                variant="secondary"
+                class="text-xs bg-accent text-foreground border-border/50"
               >
                 {{ event.author }}
               </Badge>
@@ -198,7 +215,7 @@ onUnmounted(() => {
 
       <!-- Fade effect at the bottom -->
       <div
-        class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white dark:from-black to-transparent pointer-events-none z-10"
+        class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-background to-transparent pointer-events-none z-10"
       />
     </div>
   </div>
@@ -206,24 +223,24 @@ onUnmounted(() => {
 
 <style scoped>
 .webhook-enter-active {
-  transition: all 0.5s ease-out;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .webhook-leave-active {
-  transition: all 0.3s ease-in;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .webhook-enter-from {
   opacity: 0;
-  transform: translateY(-15px);
+  transform: translateY(-20px) scale(0.98);
 }
 
 .webhook-leave-to {
   opacity: 0;
-  transform: translateY(15px);
+  transform: translateY(20px) scale(0.98);
 }
 
 .webhook-move {
-  transition: transform 0.5s ease;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 </style>

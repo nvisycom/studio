@@ -36,6 +36,8 @@ import {
 
 const { t } = useI18n();
 
+useHead({ title: "Integrations" });
+
 definePageMeta({
 	pageCategory: "Integrations",
 });
@@ -263,37 +265,47 @@ async function testWebhook(webhookId: string) {
         v-if="isLoadingIntegrations || isLoadingWebhooks"
         class="flex items-center justify-center py-12"
       >
-        <Loader2 class="h-8 w-8 animate-spin text-neutral-400" />
+        <Loader2 :size="24" class="animate-spin text-muted-foreground" />
       </div>
 
       <template v-else>
         <!-- Active Integrations -->
         <Card
           v-if="integrations && integrations.length > 0"
-          class="mb-8 py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
+          class="mb-8 py-0 pt-6 rounded-xl border-border/50"
         >
           <CardHeader>
             <div class="flex items-center justify-between">
               <div>
                 <CardTitle
-                  class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
+                  class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
                   >{{
                     t("integrations.sections.connectedServices.title")
                   }}</CardTitle
                 >
-                <CardDescription>{{
+                <CardDescription class="text-sm">{{
                   t("integrations.sections.connectedServices.description", {
                     count: integrations.length,
                   })
                 }}</CardDescription>
               </div>
               <div class="flex items-center gap-2">
-                <Button as-child variant="outline" size="sm" class="font-light">
+                <Button
+                  as-child
+                  variant="outline"
+                  size="sm"
+                  class="font-normal"
+                >
                   <NuxtLink to="/integrations/explore">
                     {{ t("integrations.actions.explore") }}
                   </NuxtLink>
                 </Button>
-                <Button as-child variant="outline" size="sm" class="font-light">
+                <Button
+                  as-child
+                  variant="outline"
+                  size="sm"
+                  class="font-normal"
+                >
                   <NuxtLink to="/integrations/runs">
                     {{ t("integrations.actions.viewRuns") }}
                   </NuxtLink>
@@ -309,17 +321,15 @@ async function testWebhook(webhookId: string) {
             />
           </CardContent>
           <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+            class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
           >
-            <p
-              class="text-sm font-light text-neutral-600 dark:text-neutral-400"
-            >
+            <p class="text-xs text-muted-foreground">
               {{ t("integrations.messages.integrationFooter") }}
               <a
                 href="https://docs.nvisy.com/integrations"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center gap-1 text-neutral-900 dark:text-white hover:underline font-medium"
+                class="inline-flex items-center gap-1 text-foreground hover:underline font-medium"
               >
                 {{ t("integrations.messages.documentation") }}
                 <ExternalLink :size="12" />
@@ -328,27 +338,29 @@ async function testWebhook(webhookId: string) {
           </CardFooter>
         </Card>
 
-        <Card
-          v-else
-          class="mb-8 py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-        >
+        <Card v-else class="mb-8 py-0 pt-6 rounded-xl border-border/50">
           <CardHeader>
             <div class="flex items-center justify-between">
               <div>
                 <CardTitle
-                  class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
+                  class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
                   >{{
                     t("integrations.sections.connectedServices.title")
                   }}</CardTitle
                 >
-                <CardDescription>{{
+                <CardDescription class="text-sm">{{
                   t("integrations.sections.connectedServices.description", {
                     count: 0,
                   })
                 }}</CardDescription>
               </div>
               <div class="flex items-center gap-2">
-                <Button as-child variant="outline" size="sm" class="font-light">
+                <Button
+                  as-child
+                  variant="outline"
+                  size="sm"
+                  class="font-normal"
+                >
                   <NuxtLink to="/integrations/explore">
                     <PlugZap :size="16" />
                     {{ t("integrations.actions.explore") }}
@@ -361,24 +373,18 @@ async function testWebhook(webhookId: string) {
             <div class="py-12">
               <div class="text-center">
                 <div
-                  class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
+                  class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
                 >
-                  <Plug
-                    class="h-6 w-6 text-neutral-400 dark:text-neutral-500"
-                  />
+                  <Plug class="size-5 text-muted-foreground" />
                 </div>
-                <p
-                  class="font-normal text-neutral-700 dark:text-neutral-300 mb-1"
-                >
+                <p class="text-sm text-foreground mb-1">
                   {{
                     t(
                       "integrations.sections.connectedServices.noIntegrationsTitle",
                     )
                   }}
                 </p>
-                <p
-                  class="font-light text-sm text-neutral-500 dark:text-neutral-400"
-                >
+                <p class="text-xs text-muted-foreground">
                   {{
                     t(
                       "integrations.sections.connectedServices.noIntegrationsDescription",
@@ -389,17 +395,15 @@ async function testWebhook(webhookId: string) {
             </div>
           </CardContent>
           <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+            class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
           >
-            <p
-              class="text-sm font-light text-neutral-600 dark:text-neutral-400"
-            >
+            <p class="text-xs text-muted-foreground">
               {{ t("integrations.messages.integrationFooter") }}
               <a
                 href="https://docs.nvisy.com/integrations"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center gap-1 text-neutral-900 dark:text-white hover:underline font-medium"
+                class="inline-flex items-center gap-1 text-foreground hover:underline font-medium"
               >
                 {{ t("integrations.messages.documentation") }}
                 <ExternalLink :size="12" />
@@ -409,17 +413,15 @@ async function testWebhook(webhookId: string) {
         </Card>
 
         <!-- Webhook Endpoints Section -->
-        <Card
-          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-        >
+        <Card class="py-0 pt-6 rounded-xl border-border/50">
           <CardHeader>
             <div class="flex items-center justify-between">
               <div>
                 <CardTitle
-                  class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
+                  class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
                   >{{ t("integrations.sections.webhooks.title") }}</CardTitle
                 >
-                <CardDescription>{{
+                <CardDescription class="text-sm">{{
                   t("integrations.sections.webhooks.description", {
                     count: webhooks?.length ?? 0,
                   })
@@ -444,20 +446,14 @@ async function testWebhook(webhookId: string) {
             <div v-else class="py-12">
               <div class="text-center">
                 <div
-                  class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
+                  class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
                 >
-                  <WebhookIcon
-                    class="h-6 w-6 text-neutral-400 dark:text-neutral-500"
-                  />
+                  <WebhookIcon class="size-5 text-muted-foreground" />
                 </div>
-                <p
-                  class="font-normal text-neutral-700 dark:text-neutral-300 mb-1"
-                >
+                <p class="text-sm text-foreground mb-1">
                   {{ t("integrations.sections.webhooks.noWebhooksTitle") }}
                 </p>
-                <p
-                  class="font-light text-sm text-neutral-500 dark:text-neutral-400"
-                >
+                <p class="text-xs text-muted-foreground">
                   {{
                     t("integrations.sections.webhooks.noWebhooksDescription")
                   }}
@@ -466,17 +462,15 @@ async function testWebhook(webhookId: string) {
             </div>
           </CardContent>
           <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+            class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
           >
-            <p
-              class="text-sm font-light text-neutral-600 dark:text-neutral-400"
-            >
+            <p class="text-xs text-muted-foreground">
               {{ t("integrations.messages.webhookFooter") }}
               <a
                 href="https://docs.nvisy.com/webhooks"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center gap-1 text-neutral-900 dark:text-white hover:underline font-medium"
+                class="inline-flex items-center gap-1 text-foreground hover:underline font-medium"
               >
                 {{ t("integrations.messages.documentation") }}
                 <ExternalLink :size="12" />

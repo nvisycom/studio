@@ -119,7 +119,7 @@ function saveAsDoc() {
           @click="selectTool(tool.id)"
         >
           <component :is="tool.icon" :size="14" class="mr-1.5" />
-          <span class="text-sm font-light">{{ tool.name }}</span>
+          <span class="text-sm font-normal">{{ tool.name }}</span>
         </Button>
       </div>
     </CardContent>

@@ -57,13 +57,13 @@ function getIntegrationColor(type: string): string {
   <Table>
     <TableHeader>
       <TableRow>
-        <TableHead class="uppercase text-xs font-light tracking-wider">{{
+        <TableHead class="uppercase text-xs font-normal tracking-wider">{{
           t("integrations.table.headers.name")
         }}</TableHead>
-        <TableHead class="uppercase text-xs font-light tracking-wider">{{
+        <TableHead class="uppercase text-xs font-normal tracking-wider">{{
           t("integrations.table.headers.status")
         }}</TableHead>
-        <TableHead class="uppercase text-xs font-light tracking-wider">{{
+        <TableHead class="uppercase text-xs font-normal tracking-wider">{{
           t("integrations.table.headers.connectedAt")
         }}</TableHead>
       </TableRow>
@@ -96,7 +96,7 @@ function getIntegrationColor(type: string): string {
                     {{ integration.integrationName }}
                   </p>
                   <p
-                    class="text-xs font-light text-neutral-600 dark:text-neutral-400"
+                    class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
                   >
                     {{ integration.description }}
                   </p>
@@ -114,7 +114,7 @@ function getIntegrationColor(type: string): string {
             </TableCell>
             <TableCell>
               <span
-                class="text-sm font-light text-neutral-600 dark:text-neutral-400"
+                class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
                 >{{ formatRelativeTime(integration.createdAt, t) }}</span
               >
             </TableCell>

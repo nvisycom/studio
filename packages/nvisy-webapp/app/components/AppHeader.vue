@@ -11,6 +11,7 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+// biome-ignore lint/style/useImportType: HeaderTabs is used at runtime via typeof
 import {
 	HeaderTabs,
 	FeedbackModal,
@@ -42,16 +43,16 @@ function openFeedbackModal() {
 
 <template>
   <header
-    class="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 border-b border-neutral-200 dark:border-neutral-800 bg-background"
+    class="sticky top-0 z-10 flex h-11 shrink-0 items-center justify-between gap-2 border-b border-border/50 bg-background/80 backdrop-blur-sm"
   >
     <div class="flex items-center gap-2 px-4">
       <SidebarTrigger class="-ml-1" />
-      <Separator orientation="vertical" class="mr-2 h-4" />
+      <Separator orientation="vertical" class="mr-2 h-4 bg-border/50" />
       <Breadcrumb v-if="pageCategory">
         <BreadcrumbList class="flex items-center">
           <BreadcrumbItem class="flex items-center">
             <BreadcrumbPage
-              class="text-base font-light text-neutral-500 dark:text-neutral-400 leading-none"
+              class="text-sm font-medium text-muted-foreground leading-none"
             >
               {{ pageCategory }}
             </BreadcrumbPage>
@@ -61,16 +62,16 @@ function openFeedbackModal() {
       </Breadcrumb>
       <HeaderTabs ref="headerTabsRef" />
     </div>
-    <div class="flex items-center gap-2 px-4">
+    <div class="flex items-center gap-1 px-4">
       <NotificationsDropdown />
       <Button
         variant="ghost"
         size="sm"
-        class="flex items-center gap-2"
+        class="flex items-center gap-2 text-muted-foreground hover:text-foreground"
         @click="openFeedbackModal"
       >
         <MessageSquare :size="16" />
-        <span class="hidden sm:inline">Feedback</span>
+        <span class="hidden sm:inline text-sm">Feedback</span>
       </Button>
     </div>
 

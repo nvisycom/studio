@@ -1,31 +1,140 @@
 ---
-import ClientsGrid from "@/components/features/clients/ClientsGrid.vue";
+import { ArrowRight } from "lucide-vue-next";
 
 export interface Props {
 	title?: string;
 	subtitle?: string;
+	showTitle?: boolean;
+	showSubtitle?: boolean;
+	variant?: "marquee" | "grid";
 }
 
 const {
-	title = "Trusted by Industry Leaders",
+	title = "Trusted by industry leaders",
 	subtitle = "Join hundreds of companies protecting their sensitive data",
+	showTitle = true,
+	showSubtitle = true,
+	variant = "marquee",
 } = Astro.props;
+
+// Placeholder client logos - in production these would be real company logos
+const clients = [
+	{ name: "Acme Corporation", fallback: "Acme Corp" },
+	{ name: "Globex Industries", fallback: "Globex" },
+	{ name: "Initech Systems", fallback: "Initech" },
+	{ name: "Umbrella Corp", fallback: "Umbrella" },
+	{ name: "Stark Industries", fallback: "Stark Ind." },
+	{ name: "Wayne Enterprises", fallback: "Wayne Ent." },
+	{ name: "Oscorp Technologies", fallback: "Oscorp" },
+	{ name: "LexCorp International", fallback: "LexCorp" },
+];
 ---
 
-<section class="py-12 md:py-16 bg-white dark:bg-black">
-  <div class="container mx-auto max-w-7xl px-4">
-    <div class="text-center mb-8 md:mb-12 px-4 md:px-0">
-      <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 dark:text-white mb-3">
-        {title}
-      </h2>
-      {subtitle && (
-        <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-400">
-          {subtitle}
-        </p>
-      )}
-    </div>
+<section class="py-20 md:py-24">
+  <div class="container mx-auto px-4">
+    {(showTitle || showSubtitle) && (
+      <div class="text-center mb-6">
+        {showTitle && (
+          <h2 class="text-xl md:text-2xl font-semibold tracking-tight mb-2">
+            {title}
+          </h2>
+        )}
+        {showSubtitle && subtitle && (
+          <p class="text-base text-foreground/70">
+            {subtitle}
+          </p>
+        )}
+      </div>
+    )}
 
-    <!-- Client Avatars Grid -->
-    <ClientsGrid client:load />
+    <!-- Client logos with hover effect -->
+    <a href="/customers" class="block relative group cursor-pointer max-w-5xl mx-auto">
+      {variant === "marquee" ? (
+        <!-- Marquee variant -->
+        <div class="transition-all duration-300 group-hover:blur-sm group-hover:opacity-30">
+          <div class="relative overflow-hidden">
+            <!-- Gradient overlays -->
+            <div class="absolute left-0 top-0 bottom-0 w-16 md:w-24 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
+            <div class="absolute right-0 top-0 bottom-0 w-16 md:w-24 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
+
+            <!-- Scrolling track -->
+            <div class="social-proof-marquee">
+              <div class="social-proof-track">
+                {clients.map((client) => (
+                  <div
+                    class="flex-shrink-0 w-36 h-16 md:w-44 md:h-18 rounded-xl bg-card border border-border flex items-center justify-center"
+                    title={client.name}
+                  >
+                    <span class="text-sm md:text-base font-medium text-muted-foreground">
+                      {client.fallback}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div class="social-proof-track" aria-hidden="true">
+                {clients.map((client) => (
+                  <div
+                    class="flex-shrink-0 w-36 h-16 md:w-44 md:h-18 rounded-xl bg-card border border-border flex items-center justify-center"
+                    title={client.name}
+                  >
+                    <span class="text-sm md:text-base font-medium text-muted-foreground">
+                      {client.fallback}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <!-- Grid variant (2 rows x 4 columns) -->
+        <div class="transition-all duration-300 group-hover:blur-sm group-hover:opacity-30">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {clients.map((client) => (
+              <div
+                class="h-16 md:h-18 rounded-xl bg-card border border-border flex items-center justify-center"
+                title={client.name}
+              >
+                <span class="text-sm md:text-base font-medium text-muted-foreground">
+                  {client.fallback}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <!-- Hover overlay with CTA -->
+      <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+        <div class="flex items-center gap-2 px-6 py-3 rounded-xl bg-foreground text-background font-medium text-sm shadow-lg transform scale-95 group-hover:scale-100 transition-transform duration-300">
+          Meet our customers
+          <ArrowRight class="w-4 h-4" />
+        </div>
+      </div>
+    </a>
   </div>
 </section>
+
+<style>
+  .social-proof-marquee {
+    display: flex;
+    gap: 1rem;
+    padding: 0.5rem 0;
+  }
+
+  .social-proof-track {
+    display: flex;
+    gap: 1rem;
+    animation: social-proof-scroll 35s linear infinite;
+    will-change: transform;
+  }
+
+  @keyframes social-proof-scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(calc(-100% - 1rem));
+    }
+  }
+</style>

@@ -68,7 +68,7 @@ function confirmRename() {
         </DialogDescription>
       </DialogHeader>
       <div class="py-4">
-        <Label for="tokenName" class="mb-2 block font-light">
+        <Label for="tokenName" class="mb-2 block font-normal">
           {{ t("tokens.modals.rename.nameLabel") }}
         </Label>
         <Input

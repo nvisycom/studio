@@ -11,6 +11,7 @@ import {
 	Trash2,
 	Pencil,
 	File as FileIcon,
+	MessageCircle,
 } from "lucide-vue-next";
 import type { File as NvisyFile } from "@nvisy/sdk/datatypes";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -41,6 +42,7 @@ interface Emits {
 	(e: "toggle-select-all"): void;
 	(e: "toggle-selection", fileId: string): void;
 	(e: "view", fileId: string): void;
+	(e: "chat", file: NvisyFile): void;
 	(e: "edit", file: NvisyFile): void;
 	(e: "download", file: NvisyFile): void;
 	(e: "delete", file: NvisyFile): void;
@@ -92,7 +94,7 @@ function formatFileSize(bytes: number): string {
 	const k = 1024;
 	const sizes = ["B", "KB", "MB", "GB"];
 	const i = Math.floor(Math.log(bytes) / Math.log(k));
-	return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+	return `${parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`;
 }
 
 function formatDate(dateStr: string | null | undefined): string {
@@ -145,7 +147,7 @@ const columns = computed<ColumnDef<NvisyFile>[]>(() => [
 		header: () =>
 			h(
 				"span",
-				{ class: "uppercase text-xs font-light tracking-wider" },
+				{ class: "uppercase text-xs font-normal tracking-wider" },
 				t("files.table.headers.name"),
 			),
 		cell: ({ row }) => {
@@ -180,13 +182,13 @@ const columns = computed<ColumnDef<NvisyFile>[]>(() => [
 		header: () =>
 			h(
 				"span",
-				{ class: "uppercase text-xs font-light tracking-wider" },
+				{ class: "uppercase text-xs font-normal tracking-wider" },
 				t("files.table.headers.size"),
 			),
 		cell: ({ row }) =>
 			h(
 				"span",
-				{ class: "text-sm font-light text-neutral-600 dark:text-neutral-400" },
+				{ class: "text-sm font-normal text-neutral-600 dark:text-neutral-400" },
 				formatFileSize(row.original.fileSize),
 			),
 	},
@@ -196,7 +198,7 @@ const columns = computed<ColumnDef<NvisyFile>[]>(() => [
 		header: () =>
 			h(
 				"span",
-				{ class: "uppercase text-xs font-light tracking-wider" },
+				{ class: "uppercase text-xs font-normal tracking-wider" },
 				t("files.table.headers.status"),
 			),
 		cell: ({ row }) =>
@@ -215,13 +217,13 @@ const columns = computed<ColumnDef<NvisyFile>[]>(() => [
 		header: () =>
 			h(
 				"span",
-				{ class: "uppercase text-xs font-light tracking-wider" },
+				{ class: "uppercase text-xs font-normal tracking-wider" },
 				t("files.table.headers.created"),
 			),
 		cell: ({ row }) =>
 			h(
 				"span",
-				{ class: "text-sm font-light text-neutral-600 dark:text-neutral-400" },
+				{ class: "text-sm font-normal text-neutral-600 dark:text-neutral-400" },
 				formatDate(row.original.createdAt),
 			),
 	},
@@ -231,13 +233,13 @@ const columns = computed<ColumnDef<NvisyFile>[]>(() => [
 		header: () =>
 			h(
 				"span",
-				{ class: "uppercase text-xs font-light tracking-wider" },
+				{ class: "uppercase text-xs font-normal tracking-wider" },
 				t("files.table.headers.updated"),
 			),
 		cell: ({ row }) =>
 			h(
 				"span",
-				{ class: "text-sm font-light text-neutral-600 dark:text-neutral-400" },
+				{ class: "text-sm font-normal text-neutral-600 dark:text-neutral-400" },
 				formatDate(row.original.updatedAt),
 			),
 	},
@@ -312,7 +314,14 @@ function handleRowContextMenu(event: MouseEvent, file: NvisyFile) {
             @click="emit('view', contextMenuFile.fileId)"
           >
             <Eye :size="14" class="mr-2" />
-            {{ t("files.actions.open") }}
+            {{ t("files.actions.openInStudio") }}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            class="cursor-pointer"
+            @click="emit('chat', contextMenuFile)"
+          >
+            <MessageCircle :size="14" class="mr-2" />
+            {{ t("files.actions.chat") }}
           </DropdownMenuItem>
           <DropdownMenuItem
             class="cursor-pointer"

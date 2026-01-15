@@ -17,7 +17,7 @@ export default defineNuxtRouteMiddleware((to) => {
 	];
 
 	const isWorkspaceFreeRoute = workspaceFreeRoutes.some(
-		(route) => to.path === route || to.path.startsWith(route + "/"),
+		(route) => to.path === route || to.path.startsWith(`${route}/`),
 	);
 
 	if (isWorkspaceFreeRoute) return;

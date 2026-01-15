@@ -56,6 +56,8 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 
+useHead({ title: "Logs" });
+
 definePageMeta({
 	pageCategory: "Analytics",
 });
@@ -226,14 +228,14 @@ function importLogs() {
       <!-- Search and Filters -->
       <div class="flex items-center gap-4 mb-6 flex-wrap">
         <!-- Logs/Traces Toggle -->
-        <div class="flex border rounded-md overflow-hidden">
+        <div class="flex border border-border/50 rounded-md overflow-hidden">
           <button
             @click="viewType = 'logs'"
             :class="[
               'px-4 py-2 text-sm font-medium transition-colors',
               viewType === 'logs'
-                ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900'
-                : 'bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800',
+                ? 'bg-foreground text-background'
+                : 'bg-background text-muted-foreground hover:bg-muted/50',
             ]"
           >
             Logs
@@ -241,10 +243,10 @@ function importLogs() {
           <button
             @click="viewType = 'traces'"
             :class="[
-              'px-4 py-2 text-sm font-medium transition-colors border-l',
+              'px-4 py-2 text-sm font-medium transition-colors border-l border-border/50',
               viewType === 'traces'
-                ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900'
-                : 'bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800',
+                ? 'bg-foreground text-background'
+                : 'bg-background text-muted-foreground hover:bg-muted/50',
             ]"
           >
             Traces
@@ -254,18 +256,18 @@ function importLogs() {
         <div class="flex-1 min-w-[200px]">
           <div class="relative">
             <Search
-              class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-neutral-500"
+              class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"
             />
             <Input
               v-model="searchQuery"
               placeholder="Search logs..."
-              class="pl-10"
+              class="pl-10 h-9"
             />
           </div>
         </div>
 
         <Select v-model="logLevel">
-          <SelectTrigger class="w-[150px]">
+          <SelectTrigger class="w-[150px] h-9">
             <SelectValue placeholder="Level" />
           </SelectTrigger>
           <SelectContent>
@@ -277,7 +279,7 @@ function importLogs() {
         </Select>
 
         <Select v-model="dateRange">
-          <SelectTrigger class="w-[150px]">
+          <SelectTrigger class="w-[150px] h-9">
             <SelectValue placeholder="Period" />
           </SelectTrigger>
           <SelectContent>
@@ -290,12 +292,12 @@ function importLogs() {
       </div>
 
       <!-- Logs Table -->
-      <Card class="py-0 pt-6 pb-6 rounded-xl">
+      <Card class="py-0 pt-6 pb-6 rounded-xl border-border/50">
         <CardHeader>
           <div class="flex items-center justify-between">
             <div>
-              <CardTitle>Activity Logs</CardTitle>
-              <CardDescription>
+              <CardTitle class="text-sm font-medium">Activity Logs</CardTitle>
+              <CardDescription class="text-xs text-muted-foreground">
                 {{ filteredLogs.length }} log{{
                   filteredLogs.length !== 1 ? "s" : ""
                 }}
@@ -337,27 +339,21 @@ function importLogs() {
                   {{ formatTimestamp(log.timestamp) }}
                 </TableCell>
                 <TableCell>
-                  <span class="text-xs text-neutral-600 dark:text-neutral-400">
+                  <span class="text-xs text-muted-foreground">
                     {{ log.level.toLowerCase() }}
                   </span>
                 </TableCell>
                 <TableCell class="max-w-md truncate">
                   {{ log.message }}
                 </TableCell>
-                <TableCell
-                  class="font-mono text-xs text-neutral-600 dark:text-neutral-400"
-                >
+                <TableCell class="font-mono text-xs text-muted-foreground">
                   {{ log.endpoint }}
                 </TableCell>
-                <TableCell
-                  class="text-xs text-neutral-600 dark:text-neutral-400"
-                >
+                <TableCell class="text-xs text-muted-foreground">
                   {{ log.duration }}
                 </TableCell>
                 <TableCell>
-                  <span
-                    class="font-mono text-xs text-neutral-900 dark:text-white"
-                  >
+                  <span class="font-mono text-xs text-foreground">
                     {{ log.status }}
                   </span>
                 </TableCell>
@@ -367,7 +363,7 @@ function importLogs() {
 
           <div
             v-if="filteredLogs.length === 0"
-            class="py-12 text-center text-neutral-500"
+            class="py-12 text-center text-muted-foreground text-sm"
           >
             No logs found matching your filters
           </div>
@@ -386,15 +382,15 @@ function importLogs() {
 
           <div class="space-y-6 py-4">
             <!-- Date Range -->
-            <div class="space-y-3">
+            <div class="space-y-2">
               <Label class="text-sm font-medium">Date Range</Label>
               <Popover v-model:open="isCalendarOpen">
                 <PopoverTrigger as-child>
                   <Button
                     variant="outline"
-                    class="w-full justify-start text-left font-light"
+                    class="w-full justify-start text-left font-normal h-9"
                   >
-                    <Calendar :size="16" class="mr-2" />
+                    <Calendar :size="16" class="mr-2 text-muted-foreground" />
                     {{ formattedExportDateRange }}
                   </Button>
                 </PopoverTrigger>
@@ -405,9 +401,9 @@ function importLogs() {
             </div>
 
             <!-- Event Types -->
-            <div class="space-y-3">
+            <div class="space-y-2">
               <Label class="text-sm font-medium">Event Types</Label>
-              <div class="space-y-3">
+              <div class="space-y-2">
                 <div class="flex items-center space-x-2">
                   <Checkbox
                     id="export-info"

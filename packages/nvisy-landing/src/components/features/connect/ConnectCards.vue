@@ -21,7 +21,7 @@ const cards: ConnectCard[] = [
 		description:
 			"Connect with your favorite tools and platforms. Integrate Nvisy seamlessly with cloud storage, collaboration tools, and enterprise software.",
 		icon: Plug2,
-		href: "/integrations",
+		href: "https://docs.nvisy.com/integrations",
 		component: IntegrationAnimation,
 	},
 	{
@@ -41,41 +41,41 @@ const cards: ConnectCard[] = [
     <div
       v-for="card in cards"
       :key="card.id"
-      class="group relative bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl p-8 hover:shadow-2xl hover:border-neutral-300 dark:hover:border-neutral-700 transition-all duration-300 overflow-hidden"
+      class="group relative bg-card border border-border rounded-2xl p-8 hover:shadow-xl hover:border-border/80 transition-all duration-500 overflow-hidden"
     >
+      <!-- Subtle gradient on hover -->
+      <div
+        class="absolute inset-0 bg-gradient-to-br from-accent/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+      />
+
       <!-- Content -->
       <div class="relative z-10">
         <!-- Animation Preview -->
-        <div class="mb-6">
+        <div class="mb-6 rounded-xl overflow-hidden">
           <component :is="card.component" />
         </div>
 
-        <!-- Icon (smaller, no background) -->
+        <!-- Icon -->
         <div class="mb-4">
-          <component
-            :is="card.icon"
-            class="w-6 h-6 text-neutral-900 dark:text-white"
-          />
+          <component :is="card.icon" class="w-6 h-6 text-foreground" />
         </div>
 
         <!-- Title -->
-        <h3 class="text-2xl font-light text-neutral-900 dark:text-white mb-3">
+        <h3 class="text-2xl font-medium text-foreground mb-3">
           {{ card.title }}
         </h3>
 
         <!-- Description -->
-        <p
-          class="text-base font-light text-neutral-600 dark:text-neutral-400 leading-relaxed mb-6"
-        >
+        <p class="text-base text-muted-foreground leading-relaxed mb-6">
           {{ card.description }}
         </p>
 
         <!-- Learn More Button -->
-        <Button variant="ghost" size="sm" as-child class="font-light">
+        <Button variant="ghost" size="sm" as-child>
           <a :href="card.href" class="inline-flex items-center gap-2">
             Learn More
             <svg
-              class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"
+              class="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

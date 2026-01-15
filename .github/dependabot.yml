@@ -6,8 +6,8 @@ updates:
     schedule:
       interval: "weekly"
       timezone: "Europe/Berlin"
-      day: monday
-      time: "08:00"
+      day: "monday"
+      time: "04:00"
     open-pull-requests-limit: 5
     labels:
       - "chore"
@@ -16,6 +16,7 @@ updates:
       prefix-development: "chore(deps-dev)"
     rebase-strategy: "auto"
     versioning-strategy: "auto"
+    # Group patch and minor updates together to reduce PR noise
     groups:
       npm-dependencies:
         patterns:
@@ -30,13 +31,14 @@ updates:
     schedule:
       interval: "weekly"
       timezone: "Europe/Berlin"
-      day: monday
-      time: "08:00"
+      day: "monday"
+      time: "04:00"
     open-pull-requests-limit: 5
     labels:
       - "chore"
     commit-message:
       prefix: "chore(actions)"
+    # Group all GitHub Actions updates together to reduce PR noise
     groups:
       github-actions:
         patterns:

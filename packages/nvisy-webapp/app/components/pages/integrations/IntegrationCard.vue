@@ -90,7 +90,7 @@ const websiteName = computed(() =>
           </CardTitle>
           <p
             v-if="integration.shortDescription"
-            class="text-xs font-light text-neutral-500 dark:text-neutral-400 truncate mt-0.5"
+            class="text-xs font-normal text-neutral-500 dark:text-neutral-400 truncate mt-0.5"
           >
             {{ integration.shortDescription }}
           </p>
@@ -131,7 +131,7 @@ const websiteName = computed(() =>
       <Button
         v-if="integration.status === 'unavailable'"
         variant="outline"
-        class="w-full font-light"
+        class="w-full font-normal"
         disabled
       >
         {{ t("integrations.actions.comingSoon") }}
@@ -141,7 +141,7 @@ const websiteName = computed(() =>
         v-else-if="integration.status === 'available' && integration.isExternal"
         as-child
         variant="outline"
-        class="w-full font-light"
+        class="w-full font-normal"
       >
         <a
           :href="integration.externalUrl"
@@ -158,7 +158,7 @@ const websiteName = computed(() =>
         v-else-if="integration.status === 'available'"
         @click="emit('connect', integration.id)"
         variant="outline"
-        class="w-full font-light"
+        class="w-full font-normal"
       >
         {{ t("integrations.actions.connect") }}
       </Button>

@@ -1,51 +1,38 @@
 ---
 import Logo from "../Logo.astro";
+import HeaderWrapper from "./HeaderWrapper.vue";
 import DesktopNavigation from "./DesktopNavigation.vue";
 import MobileNavigation from "./MobileNavigation.vue";
-import { getCollection } from "astro:content";
-
-// Fetch latest 3 blog posts for the Resources dropdown
-const blogPosts = (await getCollection("blog-posts"))
-	.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
-	.slice(0, 3)
-	.map((post) => ({
-		title: post.data.title,
-		href: `/blog/${post.slug}`,
-	}));
 ---
 
-<header
-  class="sticky top-0 z-50 w-full border-b border-neutral-200/50 dark:border-neutral-700/50 bg-white/95 dark:bg-black/95 backdrop-blur-md supports-[backdrop-filter]:bg-white/90 dark:supports-[backdrop-filter]:bg-black/90 shadow-sm"
->
-  <div class="container mx-auto px-4 md:px-8 lg:px-12">
-    <div class="flex h-16 items-center justify-between gap-8">
-      <!-- Logo Section -->
-      <Logo asLink={true} size="md" />
+<HeaderWrapper client:only="vue">
+  <!-- Logo Section -->
+  <Logo asLink={true} size="sm" />
 
-      <!-- Desktop Navigation Section -->
-      <DesktopNavigation client:load blogPosts={blogPosts} />
+  <!-- Desktop Navigation Section -->
+  <DesktopNavigation client:load />
 
-      <!-- Auth Button Section -->
-      <div class="flex items-center space-x-3">
-        <a
-          href="/signin"
-          class="hidden sm:inline-flex relative text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white font-light text-base transition-all duration-300"
-        >
-          Sign In
-        </a>
-        <a
-          href="/signup"
-          class="inline-flex items-center justify-center bg-black dark:bg-white hover:bg-neutral-800 dark:hover:bg-neutral-200 text-white dark:text-black font-light px-4 py-2 text-base transition-all duration-300 rounded-md no-underline hover:shadow-lg hover:scale-105"
-        >
-          Sign Up
-        </a>
+  <!-- Auth Button Section -->
+  <div class="flex items-center gap-2">
+    <a
+      href="https://docs.nvisy.com"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="hidden sm:inline-flex items-center justify-center text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent px-4 py-2 rounded-lg transition-colors"
+    >
+      Docs
+    </a>
+    <a
+      href="https://app.nvisy.com/auth/login"
+      class="inline-flex items-center justify-center bg-foreground text-background hover:opacity-90 font-medium px-4 py-2 text-base rounded-lg transition-all shadow-sm"
+    >
+      Open App
+    </a>
 
-        <!-- Mobile Navigation Component -->
-        <MobileNavigation client:load />
-      </div>
-    </div>
+    <!-- Mobile Navigation Component -->
+    <MobileNavigation client:load />
   </div>
 
   <!-- Mobile Navigation Menu (Full Width) -->
-  <MobileNavigation menuOnly={true} client:load />
-</header>
+  <MobileNavigation slot="mobile-menu" menuOnly={true} client:load />
+</HeaderWrapper>

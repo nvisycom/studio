@@ -14,9 +14,7 @@ interface Props {
 	run: IntegrationRun | null;
 }
 
-interface Emits {
-	(e: "update:open", value: boolean): void;
-}
+type Emits = (e: "update:open", value: boolean) => void;
 
 const props = withDefaults(defineProps<Props>(), {
 	open: false,

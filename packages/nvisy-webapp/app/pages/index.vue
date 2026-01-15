@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { WithWorkspace, WithoutWorkspace } from "@/components/pages/overview";
 
+useHead({ title: "Overview" });
+
 definePageMeta({
 	pageCategory: "Overview",
 });

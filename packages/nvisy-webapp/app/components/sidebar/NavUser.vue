@@ -90,14 +90,24 @@ defineShortcuts({
         <DropdownMenuTrigger as-child>
           <SidebarMenuButton
             size="lg"
-            class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            class="data-[state=open]:bg-sidebar-accent/50"
           >
-            <EntityAvatar :src="user.avatar" :name="user.name" size="md" />
-            <div class="grid flex-1 text-left text-sm leading-tight">
-              <span class="truncate font-medium">{{ user.name }}</span>
-              <span class="truncate text-sm font-light">{{ user.email }}</span>
+            <EntityAvatar
+              :src="user.avatar"
+              :name="user.name"
+              size="sm"
+              class="rounded-md"
+            />
+            <div class="grid flex-1 text-left leading-tight">
+              <span
+                class="truncate text-sm font-medium text-sidebar-foreground"
+                >{{ user.name }}</span
+              >
+              <span class="truncate text-xs text-sidebar-foreground/60">{{
+                user.email
+              }}</span>
             </div>
-            <ChevronsUpDown class="ml-auto size-4" />
+            <ChevronsUpDown class="ml-auto size-4 text-sidebar-foreground/50" />
           </SidebarMenuButton>
         </DropdownMenuTrigger>
         <DropdownMenuContent

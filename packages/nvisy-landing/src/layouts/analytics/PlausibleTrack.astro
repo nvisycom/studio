@@ -4,10 +4,11 @@ export interface Props {
 	interactive?: boolean;
 }
 
-const { event, interactive = true } = Astro.props;
+const { event: eventName, interactive: isInteractive = true } = Astro.props;
 ---
 
-<script is:inline define:vars={{ event, interactive }}>
+<script is:inline define:vars={{ eventName, isInteractive }}>
+// @ts-nocheck - define:vars injects variables at runtime
 import { track } from "@plausible-analytics/tracker";
-track(event, { interactive });
+track(eventName, { interactive: isInteractive });
 </script>

@@ -1,4 +1,31 @@
 {
+	"header": {
+		"tabs": {
+			"integrations": {
+				"connections": "Connections",
+				"explore": "Explore",
+				"runs": "Runs"
+			},
+			"files": {
+				"index": "Index",
+				"corpus": "Corpus",
+				"chat": "Chat"
+			},
+			"settings": {
+				"general": "General",
+				"notifications": "Notifications"
+			},
+			"account": {
+				"general": "General",
+				"tokens": "Tokens"
+			},
+			"analytics": {
+				"overview": "Overview",
+				"ai": "AI",
+				"logs": "Logs"
+			}
+		}
+	},
 	"common": {
 		"service": "Nvisy",
 		"save": "Save",
@@ -382,6 +409,8 @@
 			"rename": "Rename",
 			"view": "View",
 			"open": "Open",
+			"openInStudio": "Open in Studio",
+			"chat": "Open in Chat",
 			"delete": "Delete",
 			"clearFilters": "Clear Filters"
 		},

@@ -7,18 +7,21 @@ export interface Props {
 }
 
 const {
-	title = "Connect Your Workflow",
+	title = "Connect your workflow",
 	description = "Seamlessly integrate Nvisy into your existing infrastructure with powerful APIs and webhooks.",
 } = Astro.props;
 ---
 
-<section class="py-12 md:py-20 bg-white dark:bg-black">
-  <div class="container mx-auto max-w-6xl px-4">
-    <div class="text-center mb-12 md:mb-16">
-      <h2 class="text-3xl md:text-4xl lg:text-5xl font-light text-neutral-900 dark:text-white mb-4 md:mb-6">
+<section class="relative py-24 md:py-32 overflow-hidden">
+  <!-- Background effects -->
+  <div class="absolute inset-0 bg-gradient-to-b from-transparent via-accent/10 to-transparent" />
+
+  <div class="container relative z-10 mx-auto max-w-6xl px-4">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
         {title}
       </h2>
-      <p class="text-base md:text-lg lg:text-xl font-light text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto leading-relaxed">
+      <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
         {description}
       </p>
     </div>

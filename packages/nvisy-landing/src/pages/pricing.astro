@@ -3,59 +3,42 @@ import {
 	Hero,
 	CTA,
 	FAQ,
-	Testimonials,
+	SocialProof,
 	PricingCards,
-	BillingToggle,
+	PricingComparison,
+	Security,
 } from "@/components";
 import { Layout } from "@/layouts";
 ---
 
-<Layout title="Pricing" description="Choose the perfect plan for your needs. Simple, transparent pricing with no hidden fees.">
-  <div class="bg-white dark:bg-black min-h-screen">
-    <!-- Hero Section -->
-    <Hero
-      title="Simple, Transparent Pricing"
-      description="Choose the perfect plan for your needs. Start free and scale as you grow, with no hidden fees or surprise charges."
-      background="gradient"
-      buttons={[]}
-      >
-        <BillingToggle client:load slot="content" />
-      </Hero>
+<Layout title="Pricing" description="Choose the perfect plan for your needs. Simple, transparent pricing with no hidden fees." hideFooterBorder>
+  <Hero
+    title="Pricing"
+    description="Start free and scale as you grow. No hidden fees or surprise charges."
+    compact
+  />
 
-    <!-- Pricing Cards -->
-    <PricingCards client:load />
+  <PricingCards client:load />
 
-    <!-- Testimonials Section -->
-    <Testimonials
-      title="Trusted by teams worldwide"
-      description="See what our customers say about transforming their document processing workflows."
-    />
+  <SocialProof
+    showTitle={false}
+    subtitle="Trusted by industry leaders worldwide"
+  />
 
+  <PricingComparison />
 
+  <FAQ
+    title="Frequently asked questions"
+    description="Everything you need to know about our pricing and plans."
+    category="pricing"
+  />
 
-    <FAQ
-      title="Frequently asked questions"
-      description="Everything you need to know about our pricing and plans."
-      maxWidth="3xl"
-      category="pricing"
-    />
+  <CTA
+    title="Ready to get started?"
+    description="Join thousands of companies already using our platform."
+    primaryCta={{ text: "Start Free Trial", href: "https://app.nvisy.com/auth/signup" }}
+    secondaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com" }}
+  />
 
-    <CTA
-      title="Ready to get started?"
-      description="Join thousands of companies already using our platform to build better products faster."
-      background="solid"
-      buttons={[
-        {
-          text: "Start Free Trial",
-          variant: "primary"
-        },
-        {
-          text: "Book a Demo",
-          variant: "secondary",
-          icon: "mail"
-        }
-      ]}
-    />
-  </div>
-  </div>
+  <Security />
 </Layout>

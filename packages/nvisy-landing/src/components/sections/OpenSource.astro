@@ -16,14 +16,21 @@ const nvisyRepos = [
 	{
 		name: "nvisycom/server",
 		description: "Document processing server - core extraction engine",
-		url: "https://github.com/nvisycom/server",
+		url: "#",
 		language: "Rust",
-		stars: 87,
+		comingSoon: true,
 	},
 	{
-		name: "nvisycom/desktop",
-		description: "Desktop application for document processing",
-		url: "https://github.com/nvisycom/desktop",
+		name: "nvisycom/runtime",
+		description: "Secure OCR runtime with extraction capabilities",
+		url: "#",
+		language: "Rust",
+		comingSoon: true,
+	},
+	{
+		name: "nvisycom/studio",
+		description: "Cross-platform desktop application for document processing",
+		url: "https://github.com/nvisycom/studio",
 		language: "TypeScript",
 		stars: 54,
 	},
@@ -49,49 +56,86 @@ const nvisyRepos = [
 		stars: 23,
 	},
 ];
+
+const languageColors: Record<string, string> = {
+	Rust: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
+	TypeScript: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+	Python: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
+	MDX: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
+};
 ---
 
-<section class="py-12 md:py-20 bg-white dark:bg-black">
+<section class="py-24 md:py-32">
   <div class="container mx-auto max-w-6xl px-4">
-    <div class="text-center mb-12">
-      <h2 class="text-3xl md:text-4xl lg:text-5xl font-light text-neutral-900 dark:text-white mb-4 md:mb-6">
+    <div class="scroll-reveal text-center mb-16" data-reveal>
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
         {title}
       </h2>
-      <p class="text-base md:text-lg lg:text-xl font-light text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto leading-relaxed">
+      <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
         {description}
       </p>
     </div>
 
-    <!-- Nvisy Repositories -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {nvisyRepos.map((repo) => (
-        <a
-          href={repo.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 p-6 hover:border-neutral-900 dark:hover:border-white transition-all flex flex-col"
-        >
-          <div class="flex items-start justify-between mb-4">
-            <div class="flex-1">
-              <h3 class="text-lg font-medium text-neutral-900 dark:text-white group-hover:text-black dark:group-hover:text-white transition-colors mb-2">
+    <!-- Repositories Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {nvisyRepos.map((repo, index) => (
+        repo.comingSoon ? (
+          <div
+            class="scroll-reveal group relative p-6 rounded-2xl border border-border bg-card/30 backdrop-blur-sm flex flex-col opacity-60"
+            style={`--reveal-delay: ${index * 75}ms;`}
+            data-reveal
+          >
+            <div class="flex-1 mb-4">
+              <h3 class="text-base font-medium mb-2">
                 {repo.name}
               </h3>
-              <p class="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
+              <p class="text-sm text-muted-foreground">
                 {repo.description}
               </p>
             </div>
-            <ExternalLink class="w-5 h-5 text-neutral-400 dark:text-neutral-500 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors flex-shrink-0 ml-3" />
-          </div>
-          <div class="mt-auto flex items-center justify-between">
-            <span class="inline-block text-xs px-2 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">
-              {repo.language}
-            </span>
-            <div class="flex items-center gap-1 text-neutral-600 dark:text-neutral-400">
-              <Star class="w-4 h-4" />
-              <span class="text-xs">{repo.stars}</span>
+            <div class="flex items-center justify-between">
+              <span class={`text-xs px-2 py-1 rounded-md font-medium ${languageColors[repo.language] || 'bg-muted text-muted-foreground'}`}>
+                {repo.language}
+              </span>
+              <span class="text-xs text-muted-foreground font-medium">
+                Coming Soon
+              </span>
             </div>
           </div>
-        </a>
+        ) : (
+          <a
+            href={repo.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="scroll-reveal group relative p-6 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-300 flex flex-col"
+            style={`--reveal-delay: ${index * 75}ms;`}
+            data-reveal
+          >
+            <!-- Subtle gradient on hover -->
+            <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-violet-500/5 to-fuchsia-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+            <div class="relative flex-1 mb-4">
+              <div class="flex items-start justify-between mb-2">
+                <h3 class="text-base font-medium">
+                  {repo.name}
+                </h3>
+                <ExternalLink class="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
+              </div>
+              <p class="text-sm text-muted-foreground">
+                {repo.description}
+              </p>
+            </div>
+            <div class="relative flex items-center justify-between">
+              <span class={`text-xs px-2 py-1 rounded-md font-medium ${languageColors[repo.language] || 'bg-muted text-muted-foreground'}`}>
+                {repo.language}
+              </span>
+              <div class="flex items-center gap-1 text-muted-foreground">
+                <Star class="w-3.5 h-3.5" />
+                <span class="text-xs font-medium">{repo.stars}</span>
+              </div>
+            </div>
+          </a>
+        )
       ))}
     </div>
   </div>

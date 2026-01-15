@@ -5,6 +5,7 @@ import OpenStatus from "./OpenStatus.vue";
 import GithubIcon from "@/assets/icons/github.svg";
 import BlueskyIcon from "@/assets/icons/bluesky.svg";
 import LinkedinIcon from "@/assets/icons/linkedin.svg";
+import { Mail } from "lucide-vue-next";
 
 export interface Props {
 	companyName?: string;
@@ -13,6 +14,11 @@ export interface Props {
 const { companyName = COMPANY_NAME } = Astro.props;
 
 const socialLinks = [
+	{
+		name: "Email",
+		href: "mailto:hello@nvisy.com",
+		Icon: Mail,
+	},
 	{
 		name: "GitHub",
 		href: "https://github.com/nvisycom",
@@ -30,28 +36,29 @@ const socialLinks = [
 	},
 ];
 ---
+
 <div class="col-span-1 lg:col-span-2">
   <div class="mb-4">
     <Logo size="md" asLink={true} companyName={companyName} />
   </div>
-  <p class="text-neutral-600 dark:text-neutral-300 text-sm font-light max-w-md leading-relaxed">
-    Turn unstructured documents into structured data with AI-powered precision. Extract, transform, and automate your document workflows.
+  <p class="text-sm text-muted-foreground max-w-xs leading-relaxed">
+    Turn unstructured documents into structured data with AI-powered precision.
   </p>
-  <div class="flex space-x-4 mt-6">
+  <div class="flex gap-1 mt-6">
     {socialLinks.map((social) => (
       <a
         href={social.href}
-        class="text-neutral-400 dark:text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-muted-foreground hover:text-foreground transition-colors p-2 hover:bg-accent rounded-lg"
         aria-label={`Follow us on ${social.name}`}
       >
-        <social.Icon class="h-5 w-5" />
+        <social.Icon class="h-4 w-4" />
       </a>
     ))}
   </div>
 
-  <!-- OpenStatus state -->
   <div class="mt-6">
-      <OpenStatus client:load slug="nvisy" />
+    <OpenStatus client:idle slug="nvisy" />
   </div>
-
 </div>

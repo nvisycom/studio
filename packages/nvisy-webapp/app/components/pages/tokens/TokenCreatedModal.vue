@@ -17,9 +17,7 @@ interface Props {
 	token: string | null;
 }
 
-interface Emits {
-	(e: "update:open", value: boolean): void;
-}
+type Emits = (e: "update:open", value: boolean) => void;
 
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();

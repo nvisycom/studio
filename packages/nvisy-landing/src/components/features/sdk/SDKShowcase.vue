@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { Check, Copy, ExternalLink, Package } from "lucide-vue-next";
-import JavaScriptIcon from "@/assets/integration/javascript.svg?raw";
+import TypeScriptIcon from "@/assets/integration/typescript.svg?raw";
 import PythonIcon from "@/assets/integration/python.svg?raw";
 
 interface SDK {
-  name: string;
-  language: string;
-  githubUrl: string;
-  order: number;
+	name: string;
+	language: string;
+	githubUrl: string;
+	order: number;
 }
 
 const props = defineProps<{
-  sdks: SDK[];
+	sdks: SDK[];
 }>();
 
 const activeTab = ref(0);
@@ -21,41 +21,41 @@ const codeHtmlMap = ref<Record<string, string>>({});
 
 const activeSdk = computed(() => props.sdks[activeTab.value]);
 const activeCodeHtml = computed(
-  () => codeHtmlMap.value[activeSdk.value.name] || "",
+	() => codeHtmlMap.value[activeSdk.value.name] || "",
 );
 
 onMounted(() => {
-  // Listen for code-ready event from Astro
-  const container = document.querySelector("[data-sdk-showcase]");
-  if (container) {
-    container.addEventListener("code-ready", ((e: CustomEvent) => {
-      codeHtmlMap.value = e.detail;
-    }) as EventListener);
+	// Listen for code-ready event from Astro
+	const container = document.querySelector("[data-sdk-showcase]");
+	if (container) {
+		container.addEventListener("code-ready", ((e: CustomEvent) => {
+			codeHtmlMap.value = e.detail;
+		}) as EventListener);
 
-    // Also check if data is already available
-    const codeAttr = container.getAttribute("data-code-html");
-    if (codeAttr) {
-      try {
-        codeHtmlMap.value = JSON.parse(codeAttr);
-      } catch (e) {
-        console.error("Failed to parse code HTML data:", e);
-      }
-    }
-  }
+		// Also check if data is already available
+		const codeAttr = container.getAttribute("data-code-html");
+		if (codeAttr) {
+			try {
+				codeHtmlMap.value = JSON.parse(codeAttr);
+			} catch (e) {
+				console.error("Failed to parse code HTML data:", e);
+			}
+		}
+	}
 });
 
 const copyCode = async () => {
-  if (activeCodeHtml.value) {
-    // Extract text content from the rendered HTML
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = activeCodeHtml.value;
-    const codeText = tempDiv.querySelector("code")?.textContent || "";
-    await navigator.clipboard.writeText(codeText);
-    copied.value = true;
-    setTimeout(() => {
-      copied.value = false;
-    }, 2000);
-  }
+	if (activeCodeHtml.value) {
+		// Extract text content from the rendered HTML
+		const tempDiv = document.createElement("div");
+		tempDiv.innerHTML = activeCodeHtml.value;
+		const codeText = tempDiv.querySelector("code")?.textContent || "";
+		await navigator.clipboard.writeText(codeText);
+		copied.value = true;
+		setTimeout(() => {
+			copied.value = false;
+		}, 2000);
+	}
 };
 </script>
 
@@ -77,8 +77,8 @@ const copyCode = async () => {
           ]"
         >
           <div
-            v-if="sdk.name === 'JavaScript'"
-            v-html="JavaScriptIcon"
+            v-if="sdk.name === 'TypeScript'"
+            v-html="TypeScriptIcon"
             class="w-4 h-4 hidden sm:block [&>svg]:w-full [&>svg]:h-full"
             :class="activeTab === index ? 'sdk-icon-active' : 'sdk-icon'"
           ></div>
@@ -122,16 +122,16 @@ const copyCode = async () => {
 
     <!-- Code Display -->
     <div
-      class="relative rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-800"
+      class="relative rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-800 min-h-[480px]"
     >
       <div
         v-if="activeCodeHtml"
         v-html="activeCodeHtml"
-        class="code-container"
+        class="code-container h-full"
       />
       <div
         v-else
-        class="p-6 text-neutral-500 dark:text-neutral-400 bg-white dark:bg-neutral-900"
+        class="p-6 text-neutral-500 dark:text-neutral-400 bg-white dark:bg-neutral-900 h-full"
       >
         Loading code...
       </div>
@@ -143,11 +143,15 @@ const copyCode = async () => {
 .code-container :deep(.astro-code) {
   margin: 0;
   overflow-x: auto;
+  border: none;
+  border-radius: 0;
 }
 
 .code-container :deep(pre) {
   margin: 0;
   padding: 1.5rem;
+  border: none;
+  border-radius: 0;
 }
 
 .sdk-icon {

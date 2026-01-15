@@ -50,6 +50,8 @@ import { RunDetailsModal } from "~/components/pages/integrations";
 
 const { t } = useI18n();
 
+useHead({ title: "Integration Runs" });
+
 definePageMeta({
 	pageCategory: "Integrations",
 });
@@ -158,13 +160,13 @@ function formatDuration(
     <div class="max-w-6xl mx-auto w-full">
       <!-- Loading State -->
       <div v-if="isLoading" class="flex items-center justify-center py-12">
-        <Loader2 class="h-8 w-8 animate-spin text-neutral-400" />
+        <Loader2 :size="24" class="animate-spin text-muted-foreground" />
       </div>
 
       <template v-else>
         <!-- Search and Filters -->
         <div class="flex items-center gap-3 mb-6 flex-wrap">
-          <Button as-child variant="outline" class="font-light">
+          <Button as-child variant="outline" class="font-normal">
             <NuxtLink to="/integrations" class="flex items-center gap-2">
               <ArrowLeft :size="16" />
               {{ t("integrations.runs.backToConnections") }}
@@ -175,51 +177,51 @@ function formatDuration(
             <div class="relative">
               <Search
                 :size="16"
-                class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
               />
               <Input
                 v-model="searchQuery"
                 :placeholder="t('integrations.runs.searchPlaceholder')"
-                class="pl-10 font-light"
+                class="pl-10 h-9"
               />
             </div>
           </div>
 
           <Select v-model="statusFilter">
-            <SelectTrigger class="w-[150px] text-sm font-light">
+            <SelectTrigger class="w-[150px] h-9 text-sm">
               <SelectValue :placeholder="t('integrations.runs.status')" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all" class="text-sm font-light">{{
+              <SelectItem value="all" class="text-sm font-normal">{{
                 t("integrations.runs.allStatus")
               }}</SelectItem>
-              <SelectItem value="pending" class="text-sm font-light">{{
+              <SelectItem value="pending" class="text-sm font-normal">{{
                 t("integrations.runs.statusPending")
               }}</SelectItem>
-              <SelectItem value="running" class="text-sm font-light">{{
+              <SelectItem value="running" class="text-sm font-normal">{{
                 t("integrations.runs.statusRunning")
               }}</SelectItem>
-              <SelectItem value="cancelled" class="text-sm font-light">{{
+              <SelectItem value="cancelled" class="text-sm font-normal">{{
                 t("integrations.runs.statusCancelled")
               }}</SelectItem>
             </SelectContent>
           </Select>
 
           <Select v-model="dateRange">
-            <SelectTrigger class="w-[150px] text-sm font-light">
+            <SelectTrigger class="w-[150px] h-9 text-sm">
               <SelectValue :placeholder="t('integrations.runs.period')" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="1h" class="text-sm font-light">{{
+              <SelectItem value="1h" class="text-sm font-normal">{{
                 t("integrations.runs.lastHour")
               }}</SelectItem>
-              <SelectItem value="24h" class="text-sm font-light">{{
+              <SelectItem value="24h" class="text-sm font-normal">{{
                 t("integrations.runs.last24Hours")
               }}</SelectItem>
-              <SelectItem value="7d" class="text-sm font-light">{{
+              <SelectItem value="7d" class="text-sm font-normal">{{
                 t("integrations.runs.last7Days")
               }}</SelectItem>
-              <SelectItem value="30d" class="text-sm font-light">{{
+              <SelectItem value="30d" class="text-sm font-normal">{{
                 t("integrations.runs.last30Days")
               }}</SelectItem>
             </SelectContent>
@@ -227,15 +229,15 @@ function formatDuration(
         </div>
 
         <!-- Runs Table -->
-        <Card class="py-0 pt-6 pb-6 rounded-xl">
+        <Card class="py-0 pt-6 pb-6 rounded-xl border-border/50">
           <CardHeader>
             <div class="flex items-center justify-between">
               <div>
                 <CardTitle
-                  class="text-sm font-light tracking-wider uppercase text-neutral-500 dark:text-neutral-400"
+                  class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
                   >{{ t("integrations.runs.title") }}</CardTitle
                 >
-                <CardDescription>
+                <CardDescription class="text-sm">
                   {{ filteredRuns.length }}
                   {{
                     t("integrations.runs.runsFound", {
@@ -253,7 +255,7 @@ function formatDuration(
                 size="sm"
                 @click="copyLogs"
                 :disabled="selectedRuns.size === 0"
-                class="flex items-center gap-2 font-light"
+                class="flex items-center gap-2"
               >
                 <Check v-if="logsCopied" :size="16" class="text-green-500" />
                 <Copy v-else :size="16" />
@@ -276,27 +278,27 @@ function formatDuration(
                     />
                   </TableHead>
                   <TableHead
-                    class="uppercase text-xs font-light tracking-wider"
+                    class="uppercase text-xs font-normal tracking-wider"
                     >{{ t("integrations.runs.runId") }}</TableHead
                   >
                   <TableHead
-                    class="uppercase text-xs font-light tracking-wider"
+                    class="uppercase text-xs font-normal tracking-wider"
                     >{{ t("integrations.runs.integration") }}</TableHead
                   >
                   <TableHead
-                    class="uppercase text-xs font-light tracking-wider"
+                    class="uppercase text-xs font-normal tracking-wider"
                     >{{ t("integrations.runs.type") }}</TableHead
                   >
                   <TableHead
-                    class="w-[100px] uppercase text-xs font-light tracking-wider"
+                    class="w-[100px] uppercase text-xs font-normal tracking-wider"
                     >{{ t("integrations.runs.statusHeader") }}</TableHead
                   >
                   <TableHead
-                    class="uppercase text-xs font-light tracking-wider"
+                    class="uppercase text-xs font-normal tracking-wider"
                     >{{ t("integrations.runs.started") }}</TableHead
                   >
                   <TableHead
-                    class="w-[100px] uppercase text-xs font-light tracking-wider"
+                    class="w-[100px] uppercase text-xs font-normal tracking-wider"
                     >{{ t("integrations.runs.duration") }}</TableHead
                   >
                 </TableRow>
@@ -315,21 +317,17 @@ function formatDuration(
                         />
                       </TableCell>
                       <TableCell>
-                        <code
-                          class="font-mono text-xs text-neutral-900 dark:text-white"
-                        >
+                        <code class="font-mono text-xs text-foreground">
                           {{ run.id.slice(0, 8) }}...
                         </code>
                       </TableCell>
                       <TableCell>
-                        <span
-                          class="text-sm font-light text-neutral-600 dark:text-neutral-400"
-                        >
+                        <span class="text-sm text-muted-foreground">
                           {{ getIntegrationName(run.integrationId) }}
                         </span>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" class="capitalize font-light">
+                        <Badge variant="outline" class="capitalize">
                           {{ t(`integrations.runs.runType.${run.runType}`) }}
                         </Badge>
                       </TableCell>
@@ -350,21 +348,15 @@ function formatDuration(
                             :size="14"
                             class="text-red-500"
                           />
-                          <span
-                            class="text-xs text-neutral-900 dark:text-white capitalize"
-                          >
+                          <span class="text-xs text-foreground capitalize">
                             {{ t(`integrations.runs.status.${run.status}`) }}
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell
-                        class="text-xs font-light text-neutral-600 dark:text-neutral-400"
-                      >
+                      <TableCell class="text-xs text-muted-foreground">
                         {{ formatRelativeTime(run.startedAt, t) }}
                       </TableCell>
-                      <TableCell
-                        class="text-xs font-light text-neutral-600 dark:text-neutral-400"
-                      >
+                      <TableCell class="text-xs text-muted-foreground">
                         {{ formatDuration(run.startedAt, run.completedAt) }}
                       </TableCell>
                     </TableRow>
@@ -391,7 +383,7 @@ function formatDuration(
 
             <div
               v-if="filteredRuns.length === 0"
-              class="py-12 text-center font-light text-neutral-500"
+              class="py-12 text-center text-sm text-muted-foreground"
             >
               {{ t("integrations.runs.noRunsFound") }}
             </div>

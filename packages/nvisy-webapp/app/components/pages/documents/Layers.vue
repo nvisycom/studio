@@ -88,7 +88,7 @@ function selectLayer(layerId: string) {
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <component :is="layer.icon" :size="13" />
-              <span class="text-sm font-light">{{ layer.name }}</span>
+              <span class="text-sm font-normal">{{ layer.name }}</span>
             </div>
             <div class="flex items-center gap-2">
               <Badge variant="secondary" class="text-[10px] px-1.5 py-0">

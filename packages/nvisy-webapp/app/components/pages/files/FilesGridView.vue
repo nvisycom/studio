@@ -9,6 +9,7 @@ import {
 	Trash2,
 	Pencil,
 	File as FileIcon,
+	MessageCircle,
 } from "lucide-vue-next";
 import type { File as NvisyFile } from "@nvisy/sdk/datatypes";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -29,6 +30,7 @@ interface Props {
 interface Emits {
 	(e: "toggle-selection", fileId: string): void;
 	(e: "view", fileId: string): void;
+	(e: "chat", file: NvisyFile): void;
 	(e: "edit", file: NvisyFile): void;
 	(e: "download", file: NvisyFile): void;
 	(e: "delete", file: NvisyFile): void;
@@ -80,7 +82,7 @@ function formatFileSize(bytes: number): string {
 	const k = 1024;
 	const sizes = ["B", "KB", "MB", "GB"];
 	const i = Math.floor(Math.log(bytes) / Math.log(k));
-	return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+	return `${parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`;
 }
 
 function handleScroll(event: Event) {
@@ -147,7 +149,7 @@ function handleScroll(event: Event) {
                 }"
               />
               <p
-                class="text-xs font-light text-neutral-500 dark:text-neutral-400"
+                class="text-xs font-normal text-neutral-500 dark:text-neutral-400"
               >
                 {{ formatFileSize(file.fileSize) }}
               </p>
@@ -192,7 +194,11 @@ function handleScroll(event: Event) {
               @click="emit('view', file.fileId)"
             >
               <Eye :size="14" class="mr-2" />
-              {{ t("files.actions.open") }}
+              {{ t("files.actions.openInStudio") }}
+            </ContextMenuItem>
+            <ContextMenuItem class="cursor-pointer" @click="emit('chat', file)">
+              <MessageCircle :size="14" class="mr-2" />
+              {{ t("files.actions.chat") }}
             </ContextMenuItem>
             <ContextMenuItem class="cursor-pointer" @click="emit('edit', file)">
               <Pencil :size="14" class="mr-2" />

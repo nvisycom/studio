@@ -21,6 +21,7 @@ node_modules/
 playwright-report/
 test-results/
 coverage/
+.lighthouse/
 
 # Build Output
 dist/
@@ -42,3 +43,5 @@ output/
 # Other
 .ignore*/
 LLM.md
+.claude
+CLAUDE.md

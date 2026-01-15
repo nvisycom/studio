@@ -8,7 +8,7 @@ const isYearly = ref(false);
 export function usePricing() {
 	const formatNumber = (num: number): string => {
 		if (num >= 1000) {
-			return (num / 1000).toFixed(num % 1000 === 0 ? 0 : 1) + "k";
+			return `${(num / 1000).toFixed(num % 1000 === 0 ? 0 : 1)}k`;
 		}
 		return num.toString();
 	};
@@ -25,8 +25,10 @@ export function usePricing() {
 		return Math.floor(finalPrice);
 	};
 
+	const freePrice = computed(() => getPrice("free"));
 	const basicPrice = computed(() => getPrice("basic"));
-	const professionalPrice = computed(() => getPrice("professional"));
+	const businessPrice = computed(() => getPrice("business"));
+	const enterprisePrice = computed(() => getPrice("enterprise"));
 
 	const toggleBilling = () => {
 		isYearly.value = !isYearly.value;
@@ -38,8 +40,10 @@ export function usePricing() {
 
 	return {
 		isYearly,
+		freePrice,
 		basicPrice,
-		professionalPrice,
+		businessPrice,
+		enterprisePrice,
 		formatNumber,
 		getPrice,
 		toggleBilling,

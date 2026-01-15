@@ -48,22 +48,22 @@ function formatUrl(url: string): string {
   <Table>
     <TableHeader>
       <TableRow>
-        <TableHead class="uppercase text-xs font-light tracking-wider">{{
+        <TableHead class="uppercase text-xs font-normal tracking-wider">{{
           t("integrations.table.headers.name")
         }}</TableHead>
-        <TableHead class="uppercase text-xs font-light tracking-wider">{{
+        <TableHead class="uppercase text-xs font-normal tracking-wider">{{
           t("integrations.table.headers.enabled")
         }}</TableHead>
-        <TableHead class="uppercase text-xs font-light tracking-wider">{{
+        <TableHead class="uppercase text-xs font-normal tracking-wider">{{
           t("integrations.table.headers.events")
         }}</TableHead>
-        <TableHead class="uppercase text-xs font-light tracking-wider">{{
+        <TableHead class="uppercase text-xs font-normal tracking-wider">{{
           t("integrations.table.headers.headers")
         }}</TableHead>
-        <TableHead class="uppercase text-xs font-light tracking-wider">{{
+        <TableHead class="uppercase text-xs font-normal tracking-wider">{{
           t("integrations.table.headers.created")
         }}</TableHead>
-        <TableHead class="uppercase text-xs font-light tracking-wider">{{
+        <TableHead class="uppercase text-xs font-normal tracking-wider">{{
           t("integrations.table.headers.lastDelivery")
         }}</TableHead>
       </TableRow>
@@ -80,7 +80,7 @@ function formatUrl(url: string): string {
                   {{ webhook.displayName }}
                 </p>
                 <p
-                  class="text-xs font-light text-neutral-600 dark:text-neutral-400 truncate font-mono"
+                  class="text-xs font-normal text-neutral-600 dark:text-neutral-400 truncate font-mono"
                 >
                   {{ formatUrl(webhook.url) }}
                 </p>
@@ -97,7 +97,7 @@ function formatUrl(url: string): string {
             </TableCell>
             <TableCell>
               <span
-                class="text-xs font-light text-neutral-600 dark:text-neutral-400"
+                class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
               >
                 {{
                   t("integrations.table.eventsCount", {
@@ -108,21 +108,21 @@ function formatUrl(url: string): string {
             </TableCell>
             <TableCell>
               <span
-                class="text-xs font-light text-neutral-600 dark:text-neutral-400"
+                class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
               >
                 {{ Object.keys(webhook.headers || {}).length }}
               </span>
             </TableCell>
             <TableCell>
               <span
-                class="text-sm font-light text-neutral-600 dark:text-neutral-400"
+                class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
               >
                 {{ formatRelativeTime(webhook.createdAt, t) }}
               </span>
             </TableCell>
             <TableCell>
               <span
-                class="text-sm font-light text-neutral-600 dark:text-neutral-400"
+                class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
               >
                 {{ formatRelativeTime(webhook.lastTriggeredAt, t) }}
               </span>

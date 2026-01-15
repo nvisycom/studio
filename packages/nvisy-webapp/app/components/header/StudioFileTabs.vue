@@ -95,7 +95,7 @@ function truncate(str: string, maxLength: number): string {
         <TooltipTrigger as-child>
           <div
             :class="[
-              'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-light ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer gap-2 group min-w-[100px] max-w-[180px]',
+              'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-normal ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer gap-2 group min-w-[100px] max-w-[180px]',
               activeFileId === file.fileId
                 ? 'bg-background text-foreground shadow'
                 : 'hover:bg-background/50 text-muted-foreground',
@@ -128,7 +128,7 @@ function truncate(str: string, maxLength: number): string {
       <DropdownMenu v-if="hasOverflow">
         <DropdownMenuTrigger as-child>
           <div
-            class="inline-flex items-center justify-center whitespace-nowrap rounded-md px-2 py-1 text-sm font-light ring-offset-background transition-all cursor-pointer gap-1 hover:bg-background/50 text-muted-foreground"
+            class="inline-flex items-center justify-center whitespace-nowrap rounded-md px-2 py-1 text-sm font-normal ring-offset-background transition-all cursor-pointer gap-1 hover:bg-background/50 text-muted-foreground"
           >
             <span class="text-xs">+{{ overflowFiles.length }}</span>
             <ChevronDown :size="14" />
@@ -166,7 +166,7 @@ function truncate(str: string, maxLength: number): string {
   <!-- Empty state when no file is open -->
   <div
     v-else
-    class="inline-flex h-9 items-center justify-center rounded-lg bg-muted px-3 text-muted-foreground text-sm font-light"
+    class="inline-flex h-9 items-center justify-center rounded-lg bg-muted px-3 text-muted-foreground text-sm font-normal"
   >
     No file selected
   </div>
