@@ -7,6 +7,10 @@ const withCI = !!process.env.CI;
 export default defineConfig({
 	testDir: "./e2e",
 	testMatch: ["**/*.spec.ts", "**/*.test.ts"],
+	// Run tests in parallel.
+	fullyParallel: true,
+	// Use half of available CPUs for workers.
+	workers: withCI ? "50%" : undefined,
 	// Maximum time one test can run for.
 	timeout: 30 * 1000,
 	expect: {

@@ -62,6 +62,7 @@ jobs:
             http://localhost:4321/about
             http://localhost:4321/pricing
           uploadArtifacts: true
+          artifactName: lighthouse-landing-${{ github.run_id }}
           temporaryPublicStorage: true
 
       - name: Stop Landing preview server
@@ -78,4 +79,5 @@ jobs:
           urls: |
             http://localhost:3000
           uploadArtifacts: true
+          artifactName: lighthouse-webapp-${{ github.run_id }}
           temporaryPublicStorage: true
