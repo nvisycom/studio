@@ -15,7 +15,7 @@
 		"ci": "biome ci ."
 	},
 	"dependencies": {
-		"@nuxtjs/color-mode": "^3.5.2",
+		"@nuxtjs/color-mode": "^4.0.0",
 		"@nuxtjs/device": "^3.2.4",
 		"@nuxtjs/i18n": "^10.1.0",
 		"@nvisy/config": "file:../nvisy-config",
