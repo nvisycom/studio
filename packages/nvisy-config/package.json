@@ -40,7 +40,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",
     "@types/node": "^25.0.8",
-    "@vitest/coverage-v8": "^4.0.13",
+    "@vitest/coverage-v8": "^4.0.17",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "vitest": "^4.0.13"
