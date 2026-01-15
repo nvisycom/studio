@@ -62,7 +62,7 @@ const caseStudies = (await getCollection("blog-posts"))
             {/* Footer */}
             <div class="relative flex items-center justify-between pt-4 border-t border-border mt-auto">
               <div class="flex items-center gap-2 text-xs text-muted-foreground">
-                <Clock className="w-3.5 h-3.5" />
+                <Clock class="w-3.5 h-3.5" />
                 <span>
                   {new Date(study.data.publishedAt).toLocaleDateString('en-US', {
                     month: 'short',
@@ -72,7 +72,7 @@ const caseStudies = (await getCollection("blog-posts"))
               </div>
               <div class="flex items-center gap-1 text-sm text-muted-foreground group-hover:text-foreground transition-colors">
                 Read
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                <ArrowRight class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </div>
             </div>
           </a>
@@ -81,7 +81,7 @@ const caseStudies = (await getCollection("blog-posts"))
     ) : (
       <div class="text-center py-16">
         <div class="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <Building2 className="w-8 h-8 text-muted-foreground" />
+          <Building2 class="w-8 h-8 text-muted-foreground" />
         </div>
         <p class="text-muted-foreground">
           Case studies coming soon. Check back for customer success stories.
@@ -96,7 +96,7 @@ const caseStudies = (await getCollection("blog-posts"))
           class="inline-flex items-center gap-2 text-sm font-medium hover:text-muted-foreground transition-colors"
         >
           View all stories
-          <ArrowRight className="w-4 h-4" />
+          <ArrowRight class="w-4 h-4" />
         </a>
       </div>
     )}

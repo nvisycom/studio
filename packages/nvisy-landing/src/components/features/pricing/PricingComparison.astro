@@ -152,7 +152,7 @@ const businessIndex = plans.findIndex((p) => p.popular);
           <!-- Category Label (if exists) -->
           {category.name && (
             <div class="flex flex-col lg:flex-row mt-10">
-              {plans.map((plan, planIdx) => (
+              {plans.map((_plan, planIdx) => (
                 <div class="flex-1 pb-3 px-5">
                   {planIdx === 0 && (
                     <span class="text-sm font-semibold uppercase tracking-wider text-foreground/50">
@@ -167,10 +167,10 @@ const businessIndex = plans.findIndex((p) => p.popular);
           <!-- Features rows -->
           {category.features.map((feature, featureIdx) => (
             <div class="flex flex-col lg:flex-row">
-              {plans.map((plan, planIdx) => {
+              {plans.map((_plan, planIdx) => {
                 const value = feature.values[planIdx];
                 const isAvailable = value !== false;
-                const displayText = typeof value === 'string' ? value : feature.label;
+                const displayText = typeof value === 'string' ? value : ('label' in feature ? feature.label : '');
 
                 return (
                   <div
@@ -181,9 +181,9 @@ const businessIndex = plans.findIndex((p) => p.popular);
                   >
                     <div class="flex items-center gap-2.5">
                       {isAvailable ? (
-                        <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                        <Check class="w-4 h-4 text-emerald-500 flex-shrink-0" />
                       ) : (
-                        <X className="w-4 h-4 text-foreground/30 flex-shrink-0" />
+                        <X class="w-4 h-4 text-foreground/30 flex-shrink-0" />
                       )}
                       <span class:list={[
                         "text-sm",
@@ -213,7 +213,7 @@ const businessIndex = plans.findIndex((p) => p.popular);
               ]}
             >
               {plan.buttonText}
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight class="w-4 h-4" />
             </button>
             {plan.popular ? (
               <a href="/contact" class="block text-center mt-4 text-base leading-6 text-foreground/70 hover:text-foreground transition-colors">

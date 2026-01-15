@@ -8,8 +8,8 @@ export interface Props {
 	titleHighlight?: string;
 	titleInline?: boolean;
 	description?: string;
-	primaryCta?: { text: string; href: string };
-	secondaryCta?: { text: string; href: string };
+	primaryCta?: { text: string; href: string } | undefined;
+	secondaryCta?: { text: string; href: string } | undefined;
 	centered?: boolean;
 	compact?: boolean;
 }

@@ -1,9 +1,8 @@
 ---
-import { Lock, Zap, Shield, Globe, BarChart3, Cpu } from "lucide-vue-next";
-import type { FunctionalComponent } from "vue";
+import { Lock, Zap, Shield, Globe, BarChart3, Cpu, type LucideIcon } from "lucide-vue-next";
 
 interface Feature {
-	icon: FunctionalComponent;
+	icon: LucideIcon;
 	title: string;
 	description: string;
 	span?: "wide";
@@ -13,6 +12,8 @@ export interface Props {
 	title?: string;
 	description?: string;
 	features?: Feature[];
+	category?: string;
+	featured?: boolean;
 }
 
 const {
