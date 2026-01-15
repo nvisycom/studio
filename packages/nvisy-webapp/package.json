@@ -16,7 +16,7 @@
 	},
 	"dependencies": {
 		"@nuxtjs/color-mode": "^4.0.0",
-		"@nuxtjs/device": "^3.2.4",
+		"@nuxtjs/device": "^4.0.0",
 		"@nuxtjs/i18n": "^10.1.0",
 		"@nvisy/config": "file:../nvisy-config",
 		"@nvisy/sdk": "^0.3.0",
