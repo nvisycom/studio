@@ -1,16 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { Mail, ArrowRight, ArrowLeft } from "lucide-vue-next";
+import { ArrowLeft, CheckCircle } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 
 useHead({ title: "Forgot Password" });
 
@@ -23,17 +16,12 @@ const email = ref("");
 const isLoading = ref(false);
 const isSubmitted = ref(false);
 
-/**
- * Handle forgot password form submission
- */
 async function handleForgotPassword(): Promise<void> {
 	isLoading.value = true;
 
 	try {
 		// TODO: Implement actual forgot password logic
-		// Simulate API call
 		await new Promise((resolve) => setTimeout(resolve, 1000));
-
 		isSubmitted.value = true;
 	} catch {
 		// TODO: Handle error
@@ -44,133 +32,90 @@ async function handleForgotPassword(): Promise<void> {
 </script>
 
 <template>
-  <div>
-    <!-- Back to Login -->
-    <Button variant="ghost" as-child class="mb-4 -ml-2">
-      <NuxtLink
-        to="/auth/login"
-        class="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100"
-      >
-        <ArrowLeft :size="16" class="mr-2" />
-        Back to login
-      </NuxtLink>
-    </Button>
+  <div class="space-y-6">
+    <!-- Back Link -->
+    <NuxtLink
+      to="/auth/login"
+      class="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+    >
+      <ArrowLeft :size="14" />
+      Back to login
+    </NuxtLink>
 
-    <!-- Header -->
-    <div class="mb-8">
-      <h1
-        class="text-4xl md:text-5xl font-normal leading-tight text-black dark:text-white"
-      >
-        Reset your password
-      </h1>
-      <p
-        class="text-lg md:text-xl leading-relaxed text-neutral-700 dark:text-neutral-300 font-medium"
-      >
-        Enter your email address and we'll send you a link to reset your
-        password
-      </p>
-    </div>
-
-    <!-- Forgot Password Card -->
-    <Card class="border-neutral-200 dark:border-neutral-800">
-      <CardHeader class="space-y-0 pb-4">
-        <CardTitle class="text-2xl font-normal text-black dark:text-white">
-          {{ isSubmitted ? "Check your email" : "Forgot password" }}
-        </CardTitle>
-        <CardDescription
-          class="text-base text-neutral-600 dark:text-neutral-400"
-        >
-          {{
-            isSubmitted
-              ? "We've sent you a password reset link"
-              : "We'll email you a reset link"
-          }}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <!-- Success Message -->
-        <div v-if="isSubmitted" class="space-y-4">
+    <!-- Success State -->
+    <template v-if="isSubmitted">
+      <div class="space-y-2 text-center">
+        <div class="flex justify-center mb-4">
           <div
-            class="p-4 rounded-lg bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800"
+            class="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center"
           >
-            <p class="text-sm text-green-800 dark:text-green-200">
-              We've sent a password reset link to
-              <strong>{{ email }}</strong
-              >. Please check your inbox and follow the instructions.
-            </p>
+            <CheckCircle :size="24" class="text-emerald-500" />
           </div>
+        </div>
+        <h1 class="text-2xl font-semibold tracking-tight">Check your email</h1>
+        <p class="text-sm text-muted-foreground">
+          We sent a password reset link to<br />
+          <span class="text-foreground font-medium">{{ email }}</span>
+        </p>
+      </div>
 
-          <div class="text-sm text-neutral-600 dark:text-neutral-400">
-            <p>
-              Didn't receive the email? Check your spam folder or
-              <button
-                @click="isSubmitted = false"
-                class="text-neutral-900 dark:text-white hover:underline font-medium"
-              >
-                try again
-              </button>
-            </p>
-          </div>
+      <div class="space-y-3">
+        <Button as-child class="w-full h-10">
+          <NuxtLink to="/auth/login"> Back to login </NuxtLink>
+        </Button>
 
-          <Button as-child class="w-full h-10">
-            <NuxtLink to="/auth/login">
-              <ArrowLeft :size="16" class="mr-2" />
-              Back to login
-            </NuxtLink>
-          </Button>
+        <p class="text-center text-xs text-muted-foreground">
+          Didn't receive the email?
+          <button
+            @click="isSubmitted = false"
+            class="text-foreground hover:underline font-medium"
+          >
+            Try again
+          </button>
+        </p>
+      </div>
+    </template>
+
+    <!-- Form State -->
+    <template v-else>
+      <!-- Header -->
+      <div class="space-y-2 text-center">
+        <h1 class="text-2xl font-semibold tracking-tight">Forgot password?</h1>
+        <p class="text-sm text-muted-foreground">
+          Enter your email and we'll send you a reset link
+        </p>
+      </div>
+
+      <!-- Form -->
+      <form @submit.prevent="handleForgotPassword" class="space-y-4">
+        <div class="space-y-2">
+          <Label for="email">Email</Label>
+          <Input
+            id="email"
+            v-model="email"
+            type="email"
+            placeholder="name@example.com"
+            class="h-10"
+            required
+            autocomplete="email"
+          />
         </div>
 
-        <!-- Form -->
-        <form v-else @submit.prevent="handleForgotPassword" class="space-y-4">
-          <!-- Email -->
-          <div class="space-y-2">
-            <Label
-              for="email"
-              class="text-sm font-normal text-neutral-700 dark:text-neutral-300"
-              >Email address</Label
-            >
-            <div class="relative">
-              <Mail
-                :size="16"
-                class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
-              />
-              <Input
-                id="email"
-                v-model="email"
-                type="email"
-                placeholder="name@company.com"
-                class="pl-9 h-10 border-neutral-300 dark:border-neutral-700"
-                required
-              />
-            </div>
-          </div>
+        <Button type="submit" class="w-full h-10" :disabled="isLoading">
+          {{ isLoading ? "Sending..." : "Send reset link" }}
+        </Button>
+      </form>
 
-          <!-- Submit Button -->
-          <Button type="submit" class="w-full h-10" :disabled="isLoading">
-            <span
-              v-if="!isLoading"
-              class="flex items-center justify-center gap-2"
-            >
-              Send reset link
-              <ArrowRight :size="16" />
-            </span>
-            <span v-else>Sending...</span>
-          </Button>
-
-          <!-- Login Link -->
-          <div class="text-center pt-2">
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              Remember your password?
-              <NuxtLink
-                to="/auth/login"
-                class="font-medium text-neutral-900 dark:text-white hover:underline ml-1"
-              >
-                Log in
-              </NuxtLink>
-            </p>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+      <!-- Login Link -->
+      <p class="text-center text-sm text-muted-foreground">
+        Remember your password?
+        <NuxtLink
+          to="/auth/login"
+          class="text-foreground hover:underline font-medium"
+        >
+          Sign in
+        </NuxtLink>
+      </p>
+    </template>
   </div>
 </template>

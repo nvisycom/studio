@@ -1,41 +1,76 @@
 <script setup lang="ts">
-import AppFooter from "@/components/AppFooter.vue";
-import GradientShader from "@/components/effects/GradientShader.vue";
+import ThemeToggle from "@/components/footer/ThemeToggle.vue";
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col overflow-hidden">
-    <!-- Main Content -->
-    <div class="flex-1 flex relative">
-      <!-- Full-width gradient background -->
-      <div class="absolute inset-0">
-        <GradientShader />
-      </div>
-
-      <!-- Bottom gradient fade to footer color -->
+  <div
+    class="min-h-screen flex flex-col bg-background relative overflow-hidden"
+  >
+    <!-- Subtle gradient background -->
+    <div class="absolute inset-0 pointer-events-none">
+      <!-- Top-left gradient blob -->
       <div
-        class="absolute bottom-0 left-0 right-0 h-[5vh] pointer-events-none z-[5]"
-        style="
-          background: linear-gradient(
-            to bottom,
-            transparent 0%,
-            hsl(var(--background)) 100%
-          );
-        "
+        class="absolute -top-[40%] -left-[20%] w-[70%] h-[70%] rounded-full bg-gradient-to-br from-violet-500/[0.07] to-transparent blur-3xl"
       />
-
-      <!-- Left Side: Empty space with gradient showing through -->
-      <div class="hidden lg:flex lg:w-1/2 relative" />
-
-      <!-- Right Side: Form -->
-      <div class="flex-1 flex items-center justify-center relative z-10">
-        <div class="w-full max-w-[480px]">
-          <slot />
-        </div>
-      </div>
+      <!-- Bottom-right gradient blob -->
+      <div
+        class="absolute -bottom-[40%] -right-[20%] w-[70%] h-[70%] rounded-full bg-gradient-to-tl from-blue-500/[0.07] to-transparent blur-3xl"
+      />
+      <!-- Grid pattern -->
+      <div
+        class="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--foreground)/0.02)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--foreground)/0.02)_1px,transparent_1px)] bg-[size:4rem_4rem]"
+      />
     </div>
 
+    <!-- Header -->
+    <header class="relative z-10 flex items-center justify-between px-6 py-4">
+      <NuxtLink to="/" class="flex items-center gap-2 group">
+        <span
+          class="text-xl font-semibold tracking-tight group-hover:opacity-80 transition-opacity"
+          >nvisy</span
+        >
+      </NuxtLink>
+      <ThemeToggle />
+    </header>
+
+    <!-- Main Content -->
+    <main
+      class="flex-1 flex items-center justify-center relative z-10 px-4 py-8"
+    >
+      <div class="w-full max-w-[400px]">
+        <slot />
+      </div>
+    </main>
+
     <!-- Footer -->
-    <AppFooter class="relative z-10" />
+    <footer
+      class="relative z-10 flex items-center justify-center px-6 py-4 text-xs text-muted-foreground"
+    >
+      <div class="flex items-center gap-4">
+        <a
+          href="https://nvisy.com/legal/privacy-policy"
+          target="_blank"
+          rel="noopener"
+          class="hover:text-foreground transition-colors"
+          >Privacy</a
+        >
+        <span class="text-muted-foreground/50">·</span>
+        <a
+          href="https://nvisy.com/legal/terms-of-service"
+          target="_blank"
+          rel="noopener"
+          class="hover:text-foreground transition-colors"
+          >Terms</a
+        >
+        <span class="text-muted-foreground/50">·</span>
+        <a
+          href="https://docs.nvisy.com"
+          target="_blank"
+          rel="noopener"
+          class="hover:text-foreground transition-colors"
+          >Docs</a
+        >
+      </div>
+    </footer>
   </div>
 </template>

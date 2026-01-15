@@ -9,12 +9,12 @@ export { default as EmptyMedia } from "./EmptyMedia.vue";
 export { default as EmptyTitle } from "./EmptyTitle.vue";
 
 export const emptyMediaVariants = cva(
-	"mb-2 flex shrink-0 items-center justify-center [&_svg]:pointer-events-none [&_svg]:shrink-0",
+	"mb-3 flex shrink-0 items-center justify-center [&_svg]:pointer-events-none [&_svg]:shrink-0",
 	{
 		variants: {
 			variant: {
-				default: "bg-transparent",
-				icon: "bg-muted text-foreground flex size-10 shrink-0 items-center justify-center rounded-lg [&_svg:not([class*='size-'])]:size-6",
+				default: "bg-transparent [&_svg]:text-muted-foreground",
+				icon: "bg-muted/50 text-muted-foreground flex size-10 shrink-0 items-center justify-center rounded-lg [&_svg:not([class*='size-'])]:size-5",
 			},
 		},
 		defaultVariants: {

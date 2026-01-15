@@ -1,0 +1,32 @@
+---
+export interface Props {
+	variant?: "gradient" | "line" | "dots" | "fade";
+	className?: string;
+}
+
+const { variant = "gradient", className = "" } = Astro.props;
+---
+
+{variant === "gradient" && (
+	<div class={`relative h-px w-full max-w-4xl mx-auto ${className}`}>
+		<div class="absolute inset-0 bg-gradient-to-r from-transparent via-border to-transparent" />
+	</div>
+)}
+
+{variant === "line" && (
+	<div class={`relative h-px w-full max-w-2xl mx-auto bg-border/50 ${className}`} />
+)}
+
+{variant === "dots" && (
+	<div class={`flex items-center justify-center gap-2 py-8 ${className}`}>
+		<div class="w-1.5 h-1.5 rounded-full bg-border" />
+		<div class="w-1.5 h-1.5 rounded-full bg-border" />
+		<div class="w-1.5 h-1.5 rounded-full bg-border" />
+	</div>
+)}
+
+{variant === "fade" && (
+	<div class={`relative h-24 w-full ${className}`}>
+		<div class="absolute inset-0 bg-gradient-to-b from-transparent via-accent/20 to-transparent" />
+	</div>
+)}

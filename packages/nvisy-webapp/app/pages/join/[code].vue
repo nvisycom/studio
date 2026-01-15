@@ -135,13 +135,10 @@ function handleDecline() {
   <div class="flex flex-1 flex-col items-center justify-center p-4 min-h-full">
     <div class="w-full max-w-xl">
       <!-- Loading State -->
-      <Card
-        v-if="isLoading"
-        class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-      >
+      <Card v-if="isLoading" class="py-0 pt-6 rounded-xl border-border/50">
         <CardContent class="flex flex-col items-center justify-center py-12">
-          <Loader2 class="h-8 w-8 animate-spin text-neutral-400 mb-4" />
-          <p class="text-neutral-600 dark:text-neutral-400">
+          <Loader2 :size="24" class="animate-spin text-muted-foreground mb-4" />
+          <p class="text-sm text-muted-foreground">
             {{ t("invite.loading") }}
           </p>
         </CardContent>
@@ -150,16 +147,14 @@ function handleDecline() {
       <!-- Error State -->
       <Card
         v-else-if="error"
-        class="py-0 pt-6 rounded-xl border-red-200 dark:border-red-900"
+        class="py-0 pt-6 rounded-xl border-red-200 dark:border-red-900/50"
       >
         <CardContent class="flex flex-col items-center justify-center py-12">
-          <XCircle class="h-12 w-12 text-red-500 mb-4" />
-          <h2 class="text-xl font-medium text-neutral-900 dark:text-white mb-2">
+          <XCircle class="size-10 text-red-500 mb-4" />
+          <h2 class="text-lg font-medium text-foreground mb-2">
             {{ t("invite.error.title") }}
           </h2>
-          <p
-            class="text-neutral-600 dark:text-neutral-400 text-center max-w-sm"
-          >
+          <p class="text-sm text-muted-foreground text-center max-w-sm">
             {{ t("invite.error.description") }}
           </p>
         </CardContent>
@@ -168,31 +163,26 @@ function handleDecline() {
       <!-- Expired State -->
       <Card
         v-else-if="isExpired"
-        class="py-0 pt-6 rounded-xl border-amber-200 dark:border-amber-900"
+        class="py-0 pt-6 rounded-xl border-amber-200 dark:border-amber-900/50"
       >
         <CardContent class="flex flex-col items-center justify-center py-12">
-          <Clock class="h-12 w-12 text-amber-500 mb-4" />
-          <h2 class="text-xl font-medium text-neutral-900 dark:text-white mb-2">
+          <Clock class="size-10 text-amber-500 mb-4" />
+          <h2 class="text-lg font-medium text-foreground mb-2">
             {{ t("invite.expired") }}
           </h2>
-          <p
-            class="text-neutral-600 dark:text-neutral-400 text-center max-w-sm"
-          >
+          <p class="text-sm text-muted-foreground text-center max-w-sm">
             {{ t("invite.expiredDescription") }}
           </p>
         </CardContent>
       </Card>
 
       <!-- Preview Card -->
-      <Card
-        v-else-if="preview"
-        class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-      >
+      <Card v-else-if="preview" class="py-0 pt-6 rounded-xl border-border/50">
         <CardHeader class="text-center pb-4">
-          <CardTitle class="text-4xl font-normal text-black dark:text-white">
+          <CardTitle class="text-2xl font-medium text-foreground">
             {{ t("invite.title") }}
           </CardTitle>
-          <CardDescription>
+          <CardDescription class="text-sm text-muted-foreground">
             {{ t("invite.subtitle") }}
           </CardDescription>
         </CardHeader>
@@ -202,14 +192,12 @@ function handleDecline() {
           <div class="flex items-center gap-4">
             <EntityAvatar :name="preview.displayName" size="lg" />
             <div class="flex-1 min-w-0">
-              <h3
-                class="text-lg font-normal text-neutral-900 dark:text-white truncate"
-              >
+              <h3 class="text-base font-medium text-foreground truncate">
                 {{ preview.displayName }}
               </h3>
               <p
                 v-if="preview.description"
-                class="text-sm font-normal text-neutral-600 dark:text-neutral-400 mt-0.5 line-clamp-2"
+                class="text-sm text-muted-foreground mt-0.5 line-clamp-2"
               >
                 {{ preview.description }}
               </p>
@@ -222,7 +210,7 @@ function handleDecline() {
               v-for="tag in preview.tags"
               :key="tag"
               variant="secondary"
-              class="text-xs font-normal"
+              class="text-xs"
             >
               {{ tag }}
             </Badge>
@@ -230,23 +218,22 @@ function handleDecline() {
 
           <!-- Role & Expiry Info -->
           <div
-            class="flex items-center justify-between text-sm font-normal text-neutral-600 dark:text-neutral-400"
+            class="flex items-center justify-between text-sm text-muted-foreground"
           >
             <div class="flex items-center gap-2">
               <component
                 :is="getRoleIcon(preview.invitedRole)"
-                class="h-4 w-4"
+                class="size-4"
               />
               <span
                 >{{ t("invite.yourRole") }}:
-                <span
-                  class="font-normal text-neutral-700 dark:text-neutral-300"
-                  >{{ t(`members.roles.${preview.invitedRole}`) }}</span
-                ></span
+                <span class="text-foreground">{{
+                  t(`members.roles.${preview.invitedRole}`)
+                }}</span></span
               >
             </div>
             <div class="flex items-center gap-2">
-              <Clock class="h-4 w-4" />
+              <Clock class="size-4" />
               <span>{{ formatExpiryTime(preview.expiresAt) }}</span>
             </div>
           </div>
@@ -262,7 +249,7 @@ function handleDecline() {
           <!-- Action Buttons -->
           <div class="flex gap-3 pt-4">
             <Button
-              class="flex-1 h-10 font-normal"
+              class="flex-1 h-9"
               :disabled="isProcessing"
               @click="handleAccept"
             >
@@ -280,7 +267,7 @@ function handleDecline() {
             </Button>
             <Button
               variant="outline"
-              class="flex-1 h-10 font-normal"
+              class="flex-1 h-9"
               :disabled="isProcessing"
               @click="handleDecline"
             >
@@ -299,11 +286,9 @@ function handleDecline() {
         </CardContent>
 
         <CardFooter
-          class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+          class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
         >
-          <p
-            class="text-sm font-normal text-neutral-600 dark:text-neutral-400 text-center w-full"
-          >
+          <p class="text-xs text-muted-foreground text-center w-full">
             {{ t("invite.footer") }}
           </p>
         </CardFooter>

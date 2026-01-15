@@ -160,7 +160,7 @@ function formatDuration(
     <div class="max-w-6xl mx-auto w-full">
       <!-- Loading State -->
       <div v-if="isLoading" class="flex items-center justify-center py-12">
-        <Loader2 class="h-8 w-8 animate-spin text-neutral-400" />
+        <Loader2 :size="24" class="animate-spin text-muted-foreground" />
       </div>
 
       <template v-else>
@@ -177,18 +177,18 @@ function formatDuration(
             <div class="relative">
               <Search
                 :size="16"
-                class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
               />
               <Input
                 v-model="searchQuery"
                 :placeholder="t('integrations.runs.searchPlaceholder')"
-                class="pl-10 font-normal"
+                class="pl-10 h-9"
               />
             </div>
           </div>
 
           <Select v-model="statusFilter">
-            <SelectTrigger class="w-[150px] text-sm font-normal">
+            <SelectTrigger class="w-[150px] h-9 text-sm">
               <SelectValue :placeholder="t('integrations.runs.status')" />
             </SelectTrigger>
             <SelectContent>
@@ -208,7 +208,7 @@ function formatDuration(
           </Select>
 
           <Select v-model="dateRange">
-            <SelectTrigger class="w-[150px] text-sm font-normal">
+            <SelectTrigger class="w-[150px] h-9 text-sm">
               <SelectValue :placeholder="t('integrations.runs.period')" />
             </SelectTrigger>
             <SelectContent>
@@ -229,15 +229,15 @@ function formatDuration(
         </div>
 
         <!-- Runs Table -->
-        <Card class="py-0 pt-6 pb-6 rounded-xl">
+        <Card class="py-0 pt-6 pb-6 rounded-xl border-border/50">
           <CardHeader>
             <div class="flex items-center justify-between">
               <div>
                 <CardTitle
-                  class="text-sm font-normal tracking-wider uppercase text-neutral-600 dark:text-neutral-400"
+                  class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
                   >{{ t("integrations.runs.title") }}</CardTitle
                 >
-                <CardDescription>
+                <CardDescription class="text-sm">
                   {{ filteredRuns.length }}
                   {{
                     t("integrations.runs.runsFound", {
@@ -255,7 +255,7 @@ function formatDuration(
                 size="sm"
                 @click="copyLogs"
                 :disabled="selectedRuns.size === 0"
-                class="flex items-center gap-2 font-normal"
+                class="flex items-center gap-2"
               >
                 <Check v-if="logsCopied" :size="16" class="text-green-500" />
                 <Copy v-else :size="16" />
@@ -317,21 +317,17 @@ function formatDuration(
                         />
                       </TableCell>
                       <TableCell>
-                        <code
-                          class="font-mono text-xs text-neutral-900 dark:text-white"
-                        >
+                        <code class="font-mono text-xs text-foreground">
                           {{ run.id.slice(0, 8) }}...
                         </code>
                       </TableCell>
                       <TableCell>
-                        <span
-                          class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
-                        >
+                        <span class="text-sm text-muted-foreground">
                           {{ getIntegrationName(run.integrationId) }}
                         </span>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" class="capitalize font-normal">
+                        <Badge variant="outline" class="capitalize">
                           {{ t(`integrations.runs.runType.${run.runType}`) }}
                         </Badge>
                       </TableCell>
@@ -352,21 +348,15 @@ function formatDuration(
                             :size="14"
                             class="text-red-500"
                           />
-                          <span
-                            class="text-xs text-neutral-900 dark:text-white capitalize"
-                          >
+                          <span class="text-xs text-foreground capitalize">
                             {{ t(`integrations.runs.status.${run.status}`) }}
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell
-                        class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
-                      >
+                      <TableCell class="text-xs text-muted-foreground">
                         {{ formatRelativeTime(run.startedAt, t) }}
                       </TableCell>
-                      <TableCell
-                        class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
-                      >
+                      <TableCell class="text-xs text-muted-foreground">
                         {{ formatDuration(run.startedAt, run.completedAt) }}
                       </TableCell>
                     </TableRow>
@@ -393,7 +383,7 @@ function formatDuration(
 
             <div
               v-if="filteredRuns.length === 0"
-              class="py-12 text-center font-normal text-neutral-500"
+              class="py-12 text-center text-sm text-muted-foreground"
             >
               {{ t("integrations.runs.noRunsFound") }}
             </div>

@@ -1,12 +1,24 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import { Hero, Features, Testimonials, CTA } from "@/components";
-import Industries from "@/components/sections/Industries.astro";
+import Hero from "@/components/sections/Hero.astro";
 import Stats from "@/components/sections/Stats.astro";
-import Security from "@/components/sections/Security.astro";
+import Features from "@/components/sections/Features.astro";
 import HowItWorks from "@/components/sections/HowItWorks.astro";
+import Industries from "@/components/sections/Industries.astro";
+import SocialProof from "@/components/sections/SocialProof.astro";
+import Testimonials from "@/components/sections/Testimonials.astro";
+import Security from "@/components/sections/Security.astro";
+import CTA from "@/components/sections/CTA.astro";
+import Integrations from "@/components/sections/Integrations.astro";
+import SectionDivider from "@/components/ui/SectionDivider.astro";
+import { getCollection } from "astro:content";
 
-// SEO and metadata
+// Get latest changelog entry
+const changelogEntries = (await getCollection("changelog")).sort(
+	(a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime()
+);
+const latestChangelog = changelogEntries[0];
+
 const pageTitle = "Home";
 const pageDescription =
 	"Transform documents into structured, actionable data with AI. Extract insights, ensure compliance, and automate document workflows at scale.";
@@ -18,81 +30,63 @@ const pageKeywords =
 	title={pageTitle}
 	description={pageDescription}
 	keywords={pageKeywords}
+	hideFooterBorder
 >
 	<main>
-		<!-- Hero Section -->
 		<Hero
-			title="Turn Documents Into Useful Data"
-			description="Transform any document into structured, actionable data with AI-powered precision. Extract insights and automate workflows at scale."
-			background="gradient"
-			buttons={[
-				{
-					text: "Start Free",
-					href: "https://app.nvisy.com/auth/signup",
-					variant: "primary",
-				},
-				{
-					text: "View Documentation",
-					href: "https://docs.nvisy.com",
-					variant: "secondary",
-				},
-			]}
+			badge="Now in public beta"
+			title="Document intelligence"
+			titleHighlight="for modern teams"
+			description="Transform any document into structured, actionable data. AI-powered extraction that just works."
+			primaryCta={{ text: "Start Free", href: "https://app.nvisy.com/auth/signup" }}
+			secondaryCta={latestChangelog ? { text: `New: ${latestChangelog.data.title}`, href: `/changelog/${latestChangelog.slug}` } : undefined}
 		/>
 
-		<!-- Stats Section -->
-		<Stats
-			stats={[
-				{ value: "99.5%", label: "Accuracy Rate" },
-				{ value: "10x", label: "Faster Processing" },
-				{ value: "500+", label: "Companies Trust Us" },
-				{ value: "1M+", label: "Documents Processed" },
-			]}
-			padding="md"
+		<SocialProof
+			title="Trusted by industry leaders"
+			subtitle="Join hundreds of companies protecting their sensitive data"
+			variant="grid"
 		/>
 
-		<!-- How It Works Section -->
-		<HowItWorks />
+		<Stats />
 
-		<!-- Features Section - Core Value Props -->
 		<Features
-			category="general"
-			featured={true}
-			title="Enterprise-Grade Document Intelligence"
-			description="Everything you need to extract value from documents at scale. Advanced AI meets strict compliance requirements."
+			title="Built for scale"
+			description="Everything you need to process documents at enterprise scale."
 		/>
 
-		<!-- Industries Section - Real-World Applications -->
+		<HowItWorks
+			title="How it works"
+			description="From document to data in three simple steps."
+		/>
+
+		<SectionDivider variant="gradient" className="my-8" />
+
 		<Industries
-			title="Built for Every Industry"
-			description="From legal firms to healthcare providers, organizations worldwide rely on Nvisy to unlock value from their documents while ensuring compliance."
+			title="Built for every industry"
+			description="From legal firms to healthcare providers, organizations worldwide rely on Nvisy."
 		/>
 
-		<!-- Testimonials Section -->
 		<Testimonials
-			title="Loved by Teams Worldwide"
-			description="Join hundreds of companies that trust Nvisy to transform their document workflows."
+			title="What our customers say"
+			description="See how teams are transforming their document workflows."
+			limit={6}
 		/>
 
-		<!-- Final CTA -->
+		<SectionDivider variant="gradient" className="my-8" />
+
+		<Integrations
+			title="Integrates with your stack"
+			description="Connect Nvisy with the tools you already use."
+		/>
+
 		<CTA
-			title="Ready to Get Started?"
-			description="Join 500+ companies already using Nvisy. Start with 100 free pages, no credit card required."
-			background="gradient"
-			buttons={[
-				{
-					text: "Start Free",
-					href: "https://app.nvisy.com/auth/signup",
-					variant: "primary",
-				},
-				{
-					text: "View Pricing",
-					href: "/pricing",
-					variant: "secondary",
-				},
-			]}
+			title="Ready to get started?"
+			description="Start with 100 free pages. No credit card required."
+			primaryCta={{ text: "Open App", href: "https://app.nvisy.com" }}
+			secondaryCta={{ text: "Download", href: "/products/studio" }}
 		/>
 
-		<!-- Security & Compliance -->
 		<Security />
 	</main>
 </Layout>

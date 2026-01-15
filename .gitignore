@@ -21,6 +21,7 @@ node_modules/
 playwright-report/
 test-results/
 coverage/
+.lighthouse/
 
 # Build Output
 dist/

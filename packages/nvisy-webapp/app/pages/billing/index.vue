@@ -134,24 +134,20 @@ function toggleAddon(addonId: string) {
       <!-- Plans Section -->
       <div class="mb-10">
         <div class="mb-6">
-          <h2 class="text-xl font-medium text-neutral-900 dark:text-white">
-            Plans
-          </h2>
-          <p class="text-sm font-normal text-neutral-600 dark:text-neutral-400">
+          <h2 class="text-sm font-medium text-foreground">Plans</h2>
+          <p class="text-xs text-muted-foreground">
             Choose the plan that works best for your team
           </p>
         </div>
 
-        <div class="grid gap-6 md:grid-cols-3">
+        <div class="grid gap-4 md:grid-cols-3">
           <Card
             v-for="plan in plans"
             :key="plan.id"
-            class="relative flex flex-col"
+            class="relative flex flex-col border-border/50"
             :class="[
               plan.popular ? 'border-primary ring-1 ring-primary' : '',
-              currentPlan === plan.id
-                ? 'bg-neutral-50 dark:bg-neutral-900'
-                : '',
+              currentPlan === plan.id ? 'bg-muted/30' : '',
             ]"
           >
             <!-- Popular badge -->
@@ -163,46 +159,38 @@ function toggleAddon(addonId: string) {
               Most Popular
             </Badge>
 
-            <CardHeader>
-              <CardTitle class="text-lg">{{ plan.name }}</CardTitle>
-              <CardDescription>{{ plan.description }}</CardDescription>
+            <CardHeader class="pb-4">
+              <CardTitle class="text-sm font-medium">{{ plan.name }}</CardTitle>
+              <CardDescription class="text-xs text-muted-foreground">{{
+                plan.description
+              }}</CardDescription>
             </CardHeader>
 
             <CardContent class="flex-1">
               <!-- Price -->
-              <div class="mb-6">
+              <div class="mb-4">
                 <template v-if="plan.price !== null">
-                  <span
-                    class="text-3xl font-medium text-neutral-900 dark:text-white"
-                  >
+                  <span class="text-2xl font-medium text-foreground">
                     ${{ plan.price }}
                   </span>
-                  <span
-                    class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
-                  >
-                    /month
-                  </span>
+                  <span class="text-sm text-muted-foreground"> /month </span>
                 </template>
                 <template v-else>
-                  <span
-                    class="text-xl font-medium text-neutral-900 dark:text-white"
-                  >
+                  <span class="text-lg font-medium text-foreground">
                     Custom Pricing
                   </span>
                 </template>
               </div>
 
               <!-- Features -->
-              <ul class="space-y-3">
+              <ul class="space-y-2">
                 <li
                   v-for="feature in plan.features"
                   :key="feature"
                   class="flex items-start gap-2 text-sm"
                 >
-                  <Check :size="16" class="text-green-500 mt-0.5 shrink-0" />
-                  <span class="text-neutral-700 dark:text-neutral-300">{{
-                    feature
-                  }}</span>
+                  <Check :size="14" class="text-green-500 mt-0.5 shrink-0" />
+                  <span class="text-muted-foreground">{{ feature }}</span>
                 </li>
               </ul>
             </CardContent>
@@ -240,10 +228,8 @@ function toggleAddon(addonId: string) {
       <!-- Add-ons Section -->
       <div>
         <div class="mb-6">
-          <h2 class="text-xl font-medium text-neutral-900 dark:text-white">
-            Add-ons
-          </h2>
-          <p class="text-sm font-normal text-neutral-600 dark:text-neutral-400">
+          <h2 class="text-sm font-medium text-foreground">Add-ons</h2>
+          <p class="text-xs text-muted-foreground">
             Enhance your workspace with additional features
           </p>
         </div>
@@ -252,12 +238,12 @@ function toggleAddon(addonId: string) {
           <Card
             v-for="addon in addons"
             :key="addon.id"
-            class="flex flex-col"
+            class="flex flex-col border-border/50"
             :class="addon.enabled ? 'border-primary bg-primary/5' : ''"
           >
-            <CardHeader class="pb-3">
+            <CardHeader class="pb-2">
               <div class="flex items-center justify-between">
-                <CardTitle class="text-lg font-normal flex items-center gap-2">
+                <CardTitle class="text-sm font-medium flex items-center gap-2">
                   {{ addon.name }}
                   <Badge v-if="addon.alpha" variant="secondary" class="text-xs">
                     ALPHA
@@ -268,38 +254,30 @@ function toggleAddon(addonId: string) {
                   @update:checked="toggleAddon(addon.id)"
                 />
               </div>
-              <CardDescription>
+              <CardDescription class="text-xs text-muted-foreground">
                 {{ addon.description }}
               </CardDescription>
             </CardHeader>
 
             <CardContent class="flex-1 pt-0 pb-3">
               <div class="flex items-baseline gap-1">
-                <span
-                  class="text-2xl font-medium text-neutral-900 dark:text-white"
-                >
+                <span class="text-xl font-medium text-foreground">
                   ${{ addon.price }}
                 </span>
-                <span
-                  class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
-                >
-                  /month
-                </span>
+                <span class="text-sm text-muted-foreground"> /month </span>
               </div>
             </CardContent>
 
             <CardFooter class="pt-0">
               <div class="w-full">
-                <div
-                  class="border-t border-neutral-200 dark:border-neutral-800 pt-3"
-                >
+                <div class="border-t border-border/50 pt-3">
                   <a
                     :href="addon.docUrl"
                     target="_blank"
-                    class="text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white flex items-center gap-1.5 transition-colors"
+                    class="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors"
                   >
                     {{ addon.docLabel }}
-                    <ExternalLink :size="14" />
+                    <ExternalLink :size="12" />
                   </a>
                 </div>
               </div>
@@ -310,7 +288,7 @@ function toggleAddon(addonId: string) {
 
       <!-- Footer note -->
       <div class="mt-8 text-center">
-        <p class="text-sm text-neutral-600 dark:text-neutral-400">
+        <p class="text-xs text-muted-foreground">
           All payments are securely processed through Stripe.
           <a
             href="https://nvisy.com/pricing"

@@ -11,8 +11,8 @@ export interface Props {
 }
 
 const {
-	title = "Trusted by Enterprise Leaders",
-	description = "See what our customers say about transforming their document security workflows.",
+	title = "Trusted by industry leaders",
+	description = "See what our customers say about transforming their document workflows.",
 	category,
 	featured = true,
 	limit,
@@ -37,92 +37,94 @@ if (limit) {
 }
 ---
 
-<section class="py-16 md:py-28 bg-white dark:bg-black">
+<section class="py-24 md:py-32">
   <div class="container mx-auto max-w-7xl px-4">
-    <div class="text-center mb-12 md:mb-16">
-      <h2 class="text-3xl md:text-4xl lg:text-5xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">
+    <div class="scroll-reveal text-center mb-16" data-reveal>
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
         {title}
       </h2>
-      <p class="text-base md:text-lg text-neutral-700 dark:text-neutral-300 font-medium max-w-2xl mx-auto px-4">
+      <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
         {description}
       </p>
     </div>
   </div>
 
   <!-- Scrolling Carousel Container - Full Width -->
-  <div class="w-full">
-    <div class="relative overflow-hidden">
-      <!-- Gradient Overlays -->
-      <div class="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-white dark:from-black to-transparent z-10 pointer-events-none"></div>
-      <div class="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-white dark:from-black to-transparent z-10 pointer-events-none"></div>
+  <div class="w-full relative">
+    <div class="relative overflow-hidden testimonials-container">
+      <!-- Side Gradient Overlays -->
+      <div class="absolute left-0 top-0 bottom-0 w-16 md:w-20 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
+      <div class="absolute right-0 top-0 bottom-0 w-16 md:w-20 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
+      <!-- Bottom fade to hide card borders/corners -->
+      <div class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-background to-transparent z-20 pointer-events-none"></div>
 
       <!-- Scrolling Track -->
       <div class="testimonials-marquee">
         <div class="testimonials-track">
           {allTestimonials.map((testimonial) => (
-            <div class="testimonial-card flex-shrink-0 w-[320px] md:w-[380px] bg-white dark:bg-black rounded-lg p-6 flex flex-col min-h-[280px] relative overflow-hidden">
-            <!-- Quote -->
-            <blockquote class="text-sm md:text-base text-neutral-700 dark:text-neutral-300 mb-4 leading-relaxed flex-grow">
-              {testimonial.quote}
-            </blockquote>
+            <div class="testimonial-card flex-shrink-0 w-[320px] md:w-[380px] rounded-lg p-6 flex flex-col min-h-[280px] relative overflow-hidden bg-white dark:bg-black border border-neutral-200/50 dark:border-neutral-800/50">
+              <!-- Quote -->
+              <blockquote class="text-sm md:text-base text-neutral-700 dark:text-neutral-300 mb-4 leading-relaxed flex-grow">
+                {testimonial.quote}
+              </blockquote>
 
-            <!-- Author Info -->
-            <div class="border-t border-neutral-200 dark:border-neutral-800 pt-4 mt-auto">
-              <div class="flex items-start gap-3">
-                <!-- Overlapping Avatars -->
-                <div class="flex-shrink-0 relative w-14">
-                  <!-- Company Logo (Left, Behind) -->
-                  {testimonial.companyLogo ? (
-                    <div class="absolute left-0 w-10 h-10 bg-white dark:bg-neutral-800 rounded-full flex items-center justify-center border-2 border-neutral-200 dark:border-neutral-700">
+              <!-- Author Info -->
+              <div class="border-t border-neutral-200 dark:border-neutral-800 pt-4 mt-auto">
+                <div class="flex items-start gap-3">
+                  <!-- Overlapping Avatars -->
+                  <div class="flex-shrink-0 relative w-14">
+                    <!-- Company Logo (Left, Behind) -->
+                    {testimonial.companyLogo ? (
+                      <div class="absolute left-0 w-10 h-10 bg-white dark:bg-neutral-800 rounded-full flex items-center justify-center border-2 border-neutral-200 dark:border-neutral-700">
+                        <img
+                          src={testimonial.companyLogo}
+                          alt={testimonial.company}
+                          class="w-6 h-6 object-contain opacity-80"
+                        />
+                      </div>
+                    ) : (
+                      <div class="absolute left-0 w-10 h-10 bg-neutral-100 dark:bg-neutral-700 rounded-full flex items-center justify-center border-2 border-neutral-200 dark:border-neutral-700">
+                        <span class="text-neutral-500 dark:text-neutral-400 font-semibold text-xs">
+                          {testimonial.company.charAt(0)}
+                        </span>
+                      </div>
+                    )}
+
+                    <!-- Person Avatar (Right, On Top) -->
+                    {testimonial.avatar ? (
                       <img
-                        src={testimonial.companyLogo}
-                        alt={testimonial.company}
-                        class="w-6 h-6 object-contain opacity-80"
+                        src={testimonial.avatar}
+                        alt={testimonial.author}
+                        class="absolute left-4 top-0 w-10 h-10 rounded-full object-cover border-2 border-white dark:border-black z-10"
                       />
-                    </div>
-                  ) : (
-                    <div class="absolute left-0 w-10 h-10 bg-neutral-100 dark:bg-neutral-700 rounded-full flex items-center justify-center border-2 border-neutral-200 dark:border-neutral-700">
-                      <span class="text-neutral-500 dark:text-neutral-400 font-semibold text-xs">
-                        {testimonial.company.charAt(0)}
-                      </span>
-                    </div>
-                  )}
+                    ) : (
+                      <div class="absolute left-4 top-0 w-10 h-10 bg-neutral-200 dark:bg-neutral-600 rounded-full flex items-center justify-center border-2 border-white dark:border-black z-10">
+                        <span class="text-neutral-600 dark:text-neutral-300 font-semibold text-sm">
+                          {testimonial.author.split(' ').map((name: string) => name.charAt(0)).join('')}
+                        </span>
+                      </div>
+                    )}
+                  </div>
 
-                  <!-- Person Avatar (Right, On Top) -->
-                  {testimonial.avatar ? (
-                    <img
-                      src={testimonial.avatar}
-                      alt={testimonial.author}
-                      class="absolute left-4 top-0 w-10 h-10 rounded-full object-cover border-2 border-white dark:border-black z-10"
-                    />
-                  ) : (
-                    <div class="absolute left-4 top-0 w-10 h-10 bg-neutral-200 dark:bg-neutral-600 rounded-full flex items-center justify-center border-2 border-white dark:border-black z-10">
-                      <span class="text-neutral-600 dark:text-neutral-300 font-semibold text-sm">
-                        {testimonial.author.split(' ').map((name: string) => name.charAt(0)).join('')}
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                <div class="flex-1 min-w-0">
-                  <h4 class="font-semibold text-neutral-900 dark:text-white text-sm">
-                    {testimonial.author}
-                  </h4>
-                  <p class="text-neutral-600 dark:text-neutral-400 text-sm">
-                    {testimonial.title}
-                  </p>
-                  <p class="text-neutral-500 dark:text-neutral-500 text-sm font-medium">
-                    {testimonial.company}
-                  </p>
+                  <div class="flex-1 min-w-0">
+                    <h4 class="font-semibold text-neutral-900 dark:text-white text-sm">
+                      {testimonial.author}
+                    </h4>
+                    <p class="text-neutral-600 dark:text-neutral-400 text-sm">
+                      {testimonial.title}
+                    </p>
+                    <p class="text-neutral-500 dark:text-neutral-500 text-sm font-medium">
+                      {testimonial.company}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
           ))}
         </div>
         <div class="testimonials-track" aria-hidden="true">
           {allTestimonials.map((testimonial) => (
-            <div class="testimonial-card flex-shrink-0 w-[320px] md:w-[380px] bg-white dark:bg-black rounded-lg p-6 flex flex-col min-h-[280px] relative overflow-hidden">
+            <div class="testimonial-card flex-shrink-0 w-[320px] md:w-[380px] rounded-lg p-6 flex flex-col min-h-[280px] relative overflow-hidden bg-white dark:bg-black border border-neutral-200/50 dark:border-neutral-800/50">
               <!-- Quote -->
               <blockquote class="text-sm md:text-base text-neutral-700 dark:text-neutral-300 mb-4 leading-relaxed flex-grow">
                 {testimonial.quote}
@@ -188,21 +190,21 @@ if (limit) {
 </section>
 
 <style>
-  .testimonials-marquee {
-    display: flex;
-    gap: 1.5rem;
+  .testimonials-container {
+    padding-bottom: 0;
   }
 
-  @media (min-width: 768px) {
-    .testimonials-marquee {
-      gap: 2rem;
-    }
+  .testimonials-marquee {
+    display: flex;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: -0.5rem;
   }
 
   .testimonials-track {
     display: flex;
-    gap: 1.5rem;
-    animation: marquee 100s linear infinite;
+    gap: 1rem;
+    animation: marquee 80s linear infinite;
     will-change: transform;
   }
 
@@ -210,46 +212,12 @@ if (limit) {
     animation-play-state: paused;
   }
 
-  @media (min-width: 768px) {
-    .testimonials-track {
-      gap: 2rem;
-    }
-  }
-
   @keyframes marquee {
     0% {
       transform: translateX(0);
     }
     100% {
-      transform: translateX(calc(-100% - 1.5rem));
+      transform: translateX(calc(-100% - 1rem));
     }
   }
-
-  @media (min-width: 768px) {
-    @keyframes marquee {
-      0% {
-        transform: translateX(0);
-      }
-      100% {
-        transform: translateX(calc(-100% - 2rem));
-      }
-    }
-  }
-
-  /* Fading border effect - top border solid, sides fade out */
-  .testimonial-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 0.5rem;
-    pointer-events: none;
-    border: 1px solid rgb(229 229 229);
-    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 100%);
-    mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 100%);
-  }
-
-  :global(.dark) .testimonial-card::before {
-    border-color: rgb(38 38 38);
-  }
-
 </style>

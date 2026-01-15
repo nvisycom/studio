@@ -5,9 +5,9 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 const colorMode = useColorMode();
 
 const themes = [
-  { value: "light", label: "Light", icon: Sun },
-  { value: "dark", label: "Dark", icon: Moon },
-  { value: "system", label: "System", icon: Monitor },
+	{ value: "light", label: "Light", icon: Sun },
+	{ value: "dark", label: "Dark", icon: Moon },
+	{ value: "system", label: "System", icon: Monitor },
 ];
 </script>
 

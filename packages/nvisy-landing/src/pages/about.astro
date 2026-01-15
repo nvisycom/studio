@@ -1,6 +1,6 @@
 ---
 import { Layout } from "@/layouts";
-import { CompanyStats, CTA, Press, Security, SocialProof } from "@/components";
+import { CompanyStats, CTA, Security, SocialProof } from "@/components";
 import { Shield, Building2, Zap, Target } from "lucide-vue-next";
 import TeamMember from "@/components/features/about/TeamMember.vue";
 import Blogposts from "@/components/sections/Blogposts.astro";
@@ -47,145 +47,146 @@ const values = [
 	},
 ];
 
-// Custom stats without team members
+// Custom stats
 const customStats = [
 	{ label: "Founded", value: "2025" },
 	{ label: "Enterprise Customers", value: "10+" },
 	{ label: "Documents Processed", value: "1M+" },
+	{ label: "Uptime", value: "99.9%" },
 ];
 ---
 
 <Layout
   title="About Us"
   description="Learn about Nvisy's mission to provide enterprise-grade AI-powered solutions for secure data processing and compliance."
+  hideFooterBorder
 >
   <!-- Mission & Story -->
-    <section aria-label="Mission and Story" class="container mx-auto px-4 py-12 md:py-20 pb-8 md:pb-12">
+  <section aria-label="Mission and Story" class="relative py-24 md:py-32 overflow-hidden">
+    <!-- Background effects -->
+    <div class="absolute inset-0 bg-gradient-radial" />
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,oklch(0.5_0_0/0.03)_1px,transparent_1px),linear-gradient(to_bottom,oklch(0.5_0_0/0.03)_1px,transparent_1px)] bg-[size:64px_64px]" />
+
+    <div class="container relative z-10 mx-auto px-4">
       <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-12 md:mb-16">
-          <h1 class="text-3xl md:text-4xl lg:text-5xl font-light text-neutral-900 dark:text-white mb-4 md:mb-6">
+        <div class="text-center mb-16">
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight mb-6">
             Our Mission
           </h1>
-          <p class="text-lg md:text-xl text-neutral-600 dark:text-neutral-300 leading-relaxed px-4">
+          <p class="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
             To help enterprise organizations transform documents into actionable data with AI-powered intelligence,
             enabling them to extract insights, ensure compliance, and accelerate business decisions.
           </p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-          <div class="text-center md:text-left">
-            <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 dark:text-white mb-6">
+          <div class="p-6 md:p-8 rounded-2xl border border-border bg-card/50 backdrop-blur-sm">
+            <h2 class="text-xl md:text-2xl font-semibold tracking-tight mb-4">
               The Challenge
             </h2>
-            <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4">
+            <p class="text-muted-foreground leading-relaxed mb-4">
               Enterprise organizations process millions of documents containing valuable information trapped in unstructured formats. Traditional methods are manual, error-prone, and don't scale with business needs.
             </p>
-            <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed">
+            <p class="text-muted-foreground leading-relaxed">
               The volume and complexity of documents continues to grow exponentially, while the need for actionable insights and compliance grows ever more critical.
             </p>
           </div>
 
-          <div class="text-center md:text-left">
-            <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 dark:text-white mb-6">
+          <div class="p-6 md:p-8 rounded-2xl border border-border bg-card/50 backdrop-blur-sm">
+            <h2 class="text-xl md:text-2xl font-semibold tracking-tight mb-4">
               Our Solution
             </h2>
-            <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4">
+            <p class="text-muted-foreground leading-relaxed mb-4">
               We've built an AI-powered platform that transforms documents into structured, actionable data with enterprise-grade accuracy and security.
             </p>
-            <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed">
+            <p class="text-muted-foreground leading-relaxed">
               From intelligent data extraction to compliance-ready processing, our solution integrates seamlessly into existing workflows while providing the transparency, auditability, and control that enterprises require.
             </p>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Company Stats -->
-    <CompanyStats stats={customStats} />
+  <!-- Company Stats -->
+  <CompanyStats stats={customStats} />
 
-    <!-- Social Proof -->
-    <SocialProof
-      title="Trusted by Industry Leaders"
-      subtitle="Join organizations that rely on Nvisy for secure, compliant document processing."
-    />
+  <!-- Social Proof -->
+  <SocialProof
+    title="Trusted by industry leaders"
+    subtitle="Join organizations that rely on Nvisy for secure, compliant document processing."
+  />
 
-    <!-- Values -->
-    <section aria-label="Company Values" class="container mx-auto px-4 py-12 md:py-20">
+  <!-- Values -->
+  <section aria-label="Company Values" class="py-24 md:py-32">
+    <div class="container mx-auto px-4">
       <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-12 md:mb-16">
-          <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 dark:text-white mb-4 md:mb-6">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
             Our Values
           </h2>
-          <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 max-w-3xl mx-auto px-4">
+          <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
             These principles guide every decision we make, from product development to customer relationships.
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {values.map(value => (
-            <div class="group text-center p-6 md:p-8 rounded-xl hover:-translate-y-1 transition-all duration-300">
-              <div class="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-700 group-hover:scale-110 transition-transform duration-300">
-                <value.icon class="w-8 h-8 text-neutral-700 dark:text-neutral-300" />
+            <div class="group relative p-6 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-300 text-center">
+              <!-- Subtle gradient on hover -->
+              <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-violet-500/5 to-fuchsia-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+              <div class="relative">
+                <div class="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-xl bg-muted">
+                  <value.icon className="w-6 h-6 text-muted-foreground" />
+                </div>
+                <h3 class="text-base font-medium mb-2">
+                  {value.title}
+                </h3>
+                <p class="text-sm text-muted-foreground leading-relaxed">
+                  {value.description}
+                </p>
               </div>
-              <h3 class="text-lg md:text-xl font-light text-neutral-900 dark:text-white mb-3">
-                {value.title}
-              </h3>
-              <p class="text-sm md:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                {value.description}
-              </p>
             </div>
           ))}
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Team -->
-    <section aria-label="Team" class="bg-neutral-50 dark:bg-black py-12 md:py-20">
-      <div class="container mx-auto px-4">
-        <div class="max-w-6xl mx-auto">
-          <div class="text-center mb-12 md:mb-16">
-            <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 dark:text-white mb-4 md:mb-6">
-              Meet the Team
-            </h2>
-            <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 max-w-3xl mx-auto px-4">
-              Driven by expertise in AI, enterprise software, and regulatory compliance.
-            </p>
-          </div>
+  <!-- Team -->
+  <section aria-label="Team" class="py-24 md:py-32 border-t border-border">
+    <div class="container mx-auto px-4">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
+            Meet the Team
+          </h2>
+          <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Driven by expertise in AI, enterprise software, and regulatory compliance.
+          </p>
+        </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 max-w-4xl mx-auto">
-            {teamMembers.map(member => (
-              <TeamMember client:load {...member} />
-            ))}
-          </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          {teamMembers.map(member => (
+            <TeamMember client:load {...member} />
+          ))}
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Press -->
-    <Press
-      title="In the News"
-      description="See what industry leaders and media are saying about Nvisy."
-    />
-
-    <!-- From Our Blog Section -->
-    <Blogposts
-      title="From Our Blog"
-      description="Read about our journey, insights, and the latest updates from the team"
-    />
+  <!-- From Our Blog Section -->
+  <Blogposts
+    title="From the blog"
+    description="Read about our journey, insights, and the latest updates from the team"
+  />
 
   <!-- Careers CTA -->
   <CTA
-    title="Join Our Team"
-    description="Help us build the future of enterprise data security. We're looking for talented professionals to drive innovation in compliance and automation."
-    background="gradient"
-    buttons={[
-      {
-        text: "View Open Positions",
-        href: "https://www.linkedin.com/company/nvisy/jobs/",
-        variant: "primary",
-        external: true
-      }
-    ]}
+    title="Join our team"
+    description="Help us build the future of enterprise document intelligence. We're looking for talented professionals to drive innovation."
+    primaryCta={{ text: "View Open Positions", href: "https://www.linkedin.com/company/nvisy/jobs/" }}
   />
 
   <Security />

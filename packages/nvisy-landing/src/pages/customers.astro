@@ -3,7 +3,6 @@ import { Layout } from "@/layouts";
 import {
 	Hero,
 	CTA,
-	SocialProof,
 	Testimonials,
 	CaseStudies,
 	Industries,
@@ -13,46 +12,27 @@ import {
 
 <Layout
   title="Customers"
-  description="See how organizations across industries use Nvisy to transform their document workflows. From financial services to healthcare, government to insurance."
+  description="See how organizations across industries use Nvisy to transform their document workflows."
+  hideFooterBorder
 >
   <Hero
-    title="Trusted by Industry Leaders"
-    description="Organizations worldwide rely on Nvisy to extract insights from documents, automate workflows, and meet compliance requirements. See how our customers are transforming their document processing."
-    background="gradient"
-    buttons={[
-      {
-        text: "Get Started",
-        href: "/pricing",
-        variant: "primary"
-      },
-      {
-        text: "View Documentation",
-        href: "https://docs.nvisy.com",
-        variant: "secondary"
-      }
-    ]}
+    title="Trusted by"
+    titleHighlight="industry leaders"
+    description="Organizations worldwide rely on Nvisy to extract insights from documents, automate workflows, and meet compliance requirements."
+    primaryCta={{ text: "Get Started", href: "/pricing" }}
+    secondaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com" }}
   />
 
-  <SocialProof />
   <Industries />
   <CaseStudies />
   <Testimonials />
+
   <CTA
-    title="Ready to Transform Your Document Workflows?"
+    title="Ready to transform your workflows?"
     description="Join leading organizations that trust Nvisy for their document processing needs."
-    buttons={[
-      {
-        text: "Get Started",
-        href: "/pricing",
-        variant: "primary"
-      },
-      {
-        text: "View Documentation",
-        href: "https://docs.nvisy.com",
-        variant: "secondary"
-      }
-    ]}
-    background="gradient"
+    primaryCta={{ text: "Get Started", href: "/pricing" }}
+    secondaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com" }}
   />
+
   <Security />
 </Layout>

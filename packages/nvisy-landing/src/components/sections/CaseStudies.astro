@@ -1,5 +1,5 @@
 ---
-import { ChevronRight, Building2, Clock } from "lucide-vue-next";
+import { ArrowRight, Building2, Clock } from "lucide-vue-next";
 import { getCollection } from "astro:content";
 
 export interface Props {
@@ -8,8 +8,8 @@ export interface Props {
 }
 
 const {
-	title = "Customer Success Stories",
-	description = "See how leading organizations are using Nvisy to protect sensitive information and streamline compliance workflows.",
+	title = "Customer success stories",
+	description = "See how leading organizations use Nvisy to protect sensitive information and streamline compliance.",
 } = Astro.props;
 
 // Fetch blog posts with "Case Study" category
@@ -19,45 +19,50 @@ const caseStudies = (await getCollection("blog-posts"))
 	.slice(0, 3);
 ---
 
-<section class="py-12 md:py-20 px-4 bg-white dark:bg-black">
-  <div class="container mx-auto max-w-6xl">
-    <div class="text-center mb-12 md:mb-16">
-      <h2 class="text-3xl md:text-4xl lg:text-5xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">
+<section class="py-24 md:py-32">
+  <div class="container mx-auto max-w-6xl px-4">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
         {title}
       </h2>
-      <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-300 max-w-3xl mx-auto leading-relaxed px-4">
+      <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
         {description}
       </p>
     </div>
 
     {caseStudies.length > 0 ? (
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {caseStudies.map((study) => (
           <a
             href={`/blog/${study.slug}`}
-            class="group bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 p-6 flex flex-col"
+            class="group relative p-6 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-300 flex flex-col"
           >
-            {/* Title and Category */}
-            <div class="flex items-start justify-between gap-3 mb-3">
-              <h3 class="text-lg font-light text-neutral-900 dark:text-white group-hover:text-neutral-700 dark:group-hover:text-neutral-300 transition-colors line-clamp-2">
-                {study.data.title}
-              </h3>
+            <!-- Subtle gradient on hover -->
+            <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-violet-500/5 to-fuchsia-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+            <div class="relative flex-1">
+              {/* Category badge */}
               {study.data.category && (
-                <span class="text-xs font-medium text-white bg-black dark:bg-white dark:text-black px-2 py-1 rounded whitespace-nowrap flex-shrink-0">
+                <span class="inline-block text-xs font-medium px-2 py-1 rounded-md bg-foreground text-background mb-4">
                   {study.data.category}
                 </span>
               )}
+
+              {/* Title */}
+              <h3 class="text-base font-medium mb-3 line-clamp-2">
+                {study.data.title}
+              </h3>
+
+              {/* Excerpt */}
+              <p class="text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-3 flex-grow">
+                {study.data.excerpt || study.data.description}
+              </p>
             </div>
 
-            {/* Excerpt */}
-            <p class="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4 line-clamp-3 flex-grow">
-              {study.data.excerpt || study.data.description}
-            </p>
-
             {/* Footer */}
-            <div class="flex items-center justify-between pt-4 border-t border-neutral-100 dark:border-neutral-800 mt-auto">
-              <div class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-500">
-                <Clock class="w-3 h-3" />
+            <div class="relative flex items-center justify-between pt-4 border-t border-border mt-auto">
+              <div class="flex items-center gap-2 text-xs text-muted-foreground">
+                <Clock className="w-3.5 h-3.5" />
                 <span>
                   {new Date(study.data.publishedAt).toLocaleDateString('en-US', {
                     month: 'short',
@@ -65,34 +70,33 @@ const caseStudies = (await getCollection("blog-posts"))
                   })}
                 </span>
               </div>
-              <div class="flex items-center gap-1 text-sm text-neutral-600 dark:text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
-                Read more
-                <ChevronRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <div class="flex items-center gap-1 text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                Read
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </div>
             </div>
           </a>
         ))}
       </div>
     ) : (
-      <div class="text-center py-12">
-        <div class="w-16 h-16 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Building2 class="w-8 h-8 text-neutral-400 dark:text-neutral-500" />
+      <div class="text-center py-16">
+        <div class="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <Building2 className="w-8 h-8 text-muted-foreground" />
         </div>
-        <p class="text-neutral-500 dark:text-neutral-400">
+        <p class="text-muted-foreground">
           Case studies coming soon. Check back for customer success stories.
         </p>
       </div>
     )}
 
-    {/* View All Link */}
     {caseStudies.length > 0 && (
       <div class="text-center mt-12">
         <a
           href="/blog"
-          class="inline-flex items-center gap-2 text-neutral-900 dark:text-white hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors font-medium"
+          class="inline-flex items-center gap-2 text-sm font-medium hover:text-muted-foreground transition-colors"
         >
           View all stories
-          <ChevronRight class="w-4 h-4" />
+          <ArrowRight className="w-4 h-4" />
         </a>
       </div>
     )}

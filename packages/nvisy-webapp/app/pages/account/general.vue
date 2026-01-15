@@ -182,22 +182,20 @@ function saveTimezone() {
 
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
-    <div class="max-w-4xl mx-auto w-full">
+    <div class="max-w-3xl mx-auto w-full">
       <!-- Loading State -->
       <div v-if="isLoading" class="flex items-center justify-center py-12">
-        <Loader2 :size="32" class="animate-spin text-neutral-400" />
+        <Loader2 :size="24" class="animate-spin text-muted-foreground" />
       </div>
 
       <div v-else class="space-y-6">
         <!-- Avatar Card -->
-        <Card
-          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-        >
+        <Card class="py-0 pt-6 border-border/50">
           <CardContent>
             <div class="flex items-start justify-between">
               <div class="space-y-1">
-                <Label>Avatar</Label>
-                <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                <Label class="text-sm font-medium">Avatar</Label>
+                <p class="text-sm text-muted-foreground">
                   Click to upload. Recommended: 256x256px. PNG, JPG, or GIF.
                 </p>
               </div>
@@ -206,7 +204,7 @@ function saveTimezone() {
                 class="group relative hover:opacity-80 transition-opacity cursor-pointer block"
               >
                 <template v-if="avatarUrl">
-                  <Avatar class="size-16">
+                  <Avatar class="size-14">
                     <AvatarImage :src="avatarUrl" />
                   </Avatar>
                 </template>
@@ -214,57 +212,59 @@ function saveTimezone() {
                 <div
                   class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
                 >
-                  <Upload :size="20" class="text-white" />
+                  <Upload :size="18" class="text-white" />
                 </div>
               </button>
             </div>
           </CardContent>
           <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+            class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
           >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
+            <p class="text-xs text-muted-foreground">
               Your profile picture will be visible to other team members.
             </p>
           </CardFooter>
         </Card>
 
         <!-- Profile Info Card -->
-        <Card
-          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-        >
-          <CardContent class="space-y-6">
+        <Card class="py-0 pt-6 border-border/50">
+          <CardContent class="space-y-5">
             <!-- Display Name -->
             <div class="space-y-2">
-              <Label for="displayName">Display Name</Label>
+              <Label for="displayName" class="text-sm font-medium"
+                >Display Name</Label
+              >
               <Input
                 id="displayName"
                 v-model="displayName"
                 placeholder="John Doe"
-                class="max-w-md"
+                class="max-w-md h-9"
               />
-              <p class="text-sm text-neutral-600 dark:text-neutral-400">
+              <p class="text-xs text-muted-foreground">
                 Your name as it appears across the platform. Max 64 characters.
               </p>
             </div>
 
             <!-- Company Name -->
             <div class="space-y-2">
-              <Label for="companyName">Company Name</Label>
+              <Label for="companyName" class="text-sm font-medium"
+                >Company Name</Label
+              >
               <Input
                 id="companyName"
                 v-model="companyName"
                 placeholder="Acme Inc."
-                class="max-w-md"
+                class="max-w-md h-9"
               />
-              <p class="text-sm text-neutral-600 dark:text-neutral-400">
+              <p class="text-xs text-muted-foreground">
                 May be displayed on documents and invoices.
               </p>
             </div>
           </CardContent>
           <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
+            class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl flex items-center justify-between"
           >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
+            <p class="text-xs text-muted-foreground">
               This information will be used across all your workspaces.
             </p>
             <Button size="sm" @click="saveProfile" :disabled="isUpdating">
@@ -275,42 +275,44 @@ function saveTimezone() {
         </Card>
 
         <!-- Email & Password Card -->
-        <Card
-          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-        >
-          <CardContent class="space-y-6">
+        <Card class="py-0 pt-6 border-border/50">
+          <CardContent class="space-y-5">
             <!-- Email Address -->
             <div class="space-y-2">
-              <Label for="email">Email Address</Label>
+              <Label for="email" class="text-sm font-medium"
+                >Email Address</Label
+              >
               <Input
                 id="email"
                 v-model="email"
                 type="email"
                 readonly
-                class="max-w-md bg-neutral-100 dark:bg-neutral-800 border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300"
+                class="max-w-md h-9 bg-muted/50 text-muted-foreground"
               />
-              <p class="text-sm text-neutral-600 dark:text-neutral-400">
+              <p class="text-xs text-muted-foreground">
                 To change your email address, please contact support.
               </p>
             </div>
 
             <!-- Password Update Section -->
-            <div class="border-t pt-6 space-y-4">
+            <div class="border-t border-border/50 pt-5 space-y-4">
               <!-- Current Password -->
               <div class="space-y-2">
-                <Label for="currentPassword">Current Password</Label>
+                <Label for="currentPassword" class="text-sm font-medium"
+                  >Current Password</Label
+                >
                 <div class="relative max-w-md">
                   <Input
                     id="currentPassword"
                     v-model="currentPassword"
                     :type="showCurrentPassword ? 'text' : 'password'"
                     placeholder="Enter current password"
-                    class="pr-10"
+                    class="pr-10 h-9"
                   />
                   <button
                     type="button"
                     @click="showCurrentPassword = !showCurrentPassword"
-                    class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <EyeOff v-if="showCurrentPassword" :size="16" />
                     <Eye v-else :size="16" />
@@ -320,44 +322,48 @@ function saveTimezone() {
 
               <!-- New Password -->
               <div class="space-y-2">
-                <Label for="newPassword">New Password</Label>
+                <Label for="newPassword" class="text-sm font-medium"
+                  >New Password</Label
+                >
                 <div class="relative max-w-md">
                   <Input
                     id="newPassword"
                     v-model="newPassword"
                     :type="showNewPassword ? 'text' : 'password'"
                     placeholder="Enter new password"
-                    class="pr-10"
+                    class="pr-10 h-9"
                   />
                   <button
                     type="button"
                     @click="showNewPassword = !showNewPassword"
-                    class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <EyeOff v-if="showNewPassword" :size="16" />
                     <Eye v-else :size="16" />
                   </button>
                 </div>
-                <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                <p class="text-xs text-muted-foreground">
                   Minimum 8 characters.
                 </p>
               </div>
 
               <!-- Confirm Password -->
               <div class="space-y-2">
-                <Label for="confirmPassword">Confirm New Password</Label>
+                <Label for="confirmPassword" class="text-sm font-medium"
+                  >Confirm New Password</Label
+                >
                 <div class="relative max-w-md">
                   <Input
                     id="confirmPassword"
                     v-model="confirmPassword"
                     :type="showConfirmPassword ? 'text' : 'password'"
                     placeholder="Confirm new password"
-                    class="pr-10"
+                    class="pr-10 h-9"
                   />
                   <button
                     type="button"
                     @click="showConfirmPassword = !showConfirmPassword"
-                    class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <EyeOff v-if="showConfirmPassword" :size="16" />
                     <Eye v-else :size="16" />
@@ -366,10 +372,7 @@ function saveTimezone() {
               </div>
 
               <!-- Error/Success Messages -->
-              <p
-                v-if="passwordError"
-                class="text-sm text-red-600 dark:text-red-400"
-              >
+              <p v-if="passwordError" class="text-sm text-destructive">
                 {{ passwordError }}
               </p>
               <p
@@ -381,9 +384,9 @@ function saveTimezone() {
             </div>
           </CardContent>
           <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
+            class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl flex items-center justify-between"
           >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
+            <p class="text-xs text-muted-foreground">
               You'll need to sign in again after changing your password.
             </p>
             <Button
@@ -402,22 +405,24 @@ function saveTimezone() {
         </Card>
 
         <!-- Timezone Card -->
-        <Card
-          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-        >
+        <Card class="py-0 pt-6 border-border/50">
           <CardContent>
             <div class="space-y-2">
-              <Label for="timezone">Timezone</Label>
+              <Label for="timezone" class="text-sm font-medium">Timezone</Label>
               <DropdownMenu>
                 <DropdownMenuTrigger as-child>
                   <Button
                     variant="outline"
-                    class="w-full max-w-md justify-between text-left font-normal"
+                    size="sm"
+                    class="w-full max-w-md justify-between text-left font-normal h-9"
                   >
-                    <span class="truncate">{{
+                    <span class="truncate text-sm">{{
                       getTimezoneLabel(timezone)
                     }}</span>
-                    <ChevronDown :size="16" class="shrink-0 ml-2" />
+                    <ChevronDown
+                      :size="14"
+                      class="shrink-0 ml-2 text-muted-foreground"
+                    />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
@@ -428,21 +433,21 @@ function saveTimezone() {
                     v-for="tz in timezones"
                     :key="tz.value"
                     @click="timezone = tz.value"
-                    class="cursor-pointer"
+                    class="cursor-pointer text-sm"
                   >
                     {{ tz.label }}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <p class="text-sm text-neutral-600 dark:text-neutral-400">
+              <p class="text-xs text-muted-foreground">
                 All timestamps will be displayed in this timezone.
               </p>
             </div>
           </CardContent>
           <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
+            class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl flex items-center justify-between"
           >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
+            <p class="text-xs text-muted-foreground">
               Changes will take effect immediately.
             </p>
             <Button size="sm" @click="saveTimezone"> Save </Button>

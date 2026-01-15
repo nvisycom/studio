@@ -1,0 +1,166 @@
+---
+import { Check, X, ArrowRight } from "lucide-vue-next";
+
+const plans = [
+  { id: "free", name: "Free", buttonText: "Get Started" },
+  { id: "basic", name: "Basic", buttonText: "Start Free Trial" },
+  { id: "business", name: "Business", popular: true, buttonText: "Start Free Trial" },
+  { id: "enterprise", name: "Enterprise", buttonText: "Contact Sales" },
+];
+
+const categories = [
+  {
+    name: null,
+    features: [
+      { values: ["100 documents/mo", "2,500 documents/mo", "25,000 documents/mo", "Unlimited documents"] },
+      { values: ["1GB storage", "10GB storage", "50GB storage", "Unlimited storage"] },
+      { values: ["1 workspace", "5 workspaces", "Unlimited workspaces", "Unlimited workspaces"] },
+      { values: ["1 team member", "5 team members", "25 team members", "Unlimited members"] },
+    ],
+  },
+  {
+    name: "Document Intelligence",
+    features: [
+      { values: ["OCR extraction", "OCR extraction", "OCR extraction", "OCR extraction"] },
+      { values: ["Table extraction", "Table extraction", "Table extraction", "Table extraction"] },
+      { label: "Custom schemas", values: [false, true, true, true] },
+      { label: "Batch processing", values: [false, true, true, true] },
+      { label: "Multi-language support", values: [false, false, true, true] },
+    ],
+  },
+  {
+    name: "Integrations",
+    features: [
+      { values: ["REST API", "REST API", "REST API", "REST API"] },
+      { label: "Webhooks", values: [false, true, true, true] },
+      { label: "Cloud storage", values: [false, true, true, true] },
+      { label: "Custom integrations", values: [false, false, false, true] },
+    ],
+  },
+  {
+    name: "Security & Compliance",
+    features: [
+      { values: ["SSL encryption", "SSL encryption", "SSL encryption", "SSL encryption"] },
+      { label: "SSO/SAML", values: [false, false, true, true] },
+      { label: "Audit logs", values: [false, false, true, true] },
+      { label: "On-premise deployment", values: [false, false, false, true] },
+      { label: "Custom SLA", values: [false, false, false, true] },
+    ],
+  },
+  {
+    name: "Support",
+    features: [
+      { values: ["Community support", "Community support", "Community support", "Community support"] },
+      { label: "Email support", values: [false, true, true, true] },
+      { label: "Priority support", values: [false, false, true, true] },
+      { label: "Dedicated account manager", values: [false, false, false, true] },
+      { label: "24/7 phone support", values: [false, false, false, true] },
+    ],
+  },
+];
+
+const businessIndex = plans.findIndex(p => p.popular);
+---
+
+<section class="py-20 md:py-24">
+  <div class="container mx-auto px-4">
+    <div class="max-w-6xl mx-auto relative">
+      <!-- Business column border - single continuous element -->
+      <div
+        class="hidden lg:block absolute top-0 bottom-0 border-2 border-foreground/20 rounded-2xl shadow-xl pointer-events-none"
+        style={`left: calc(${businessIndex * 25}%); width: 25%; z-index: 1;`}
+      />
+
+      <!-- Plan names header -->
+      <div class="flex flex-col lg:flex-row">
+        {plans.map((plan) => (
+          <div class="flex-1 p-5">
+            <span class="text-2xl font-normal">
+              {plan.name}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <!-- Categories -->
+      {categories.map((category, catIdx) => (
+        <>
+          <!-- Category Label (if exists) -->
+          {category.name && (
+            <div class="flex flex-col lg:flex-row mt-10">
+              {plans.map((plan, planIdx) => (
+                <div class="flex-1 pb-3 px-5">
+                  {planIdx === 0 && (
+                    <span class="text-sm font-semibold uppercase tracking-wider text-foreground/50">
+                      {category.name}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          <!-- Features rows -->
+          {category.features.map((feature, featureIdx) => (
+            <div class="flex flex-col lg:flex-row">
+              {plans.map((plan, planIdx) => {
+                const value = feature.values[planIdx];
+                const isAvailable = value !== false;
+                const displayText = typeof value === 'string' ? value : feature.label;
+
+                return (
+                  <div
+                    class:list={[
+                      "flex-1 px-5 py-2",
+                      catIdx === 0 && featureIdx === 0 && "pt-4",
+                    ]}
+                  >
+                    <div class="flex items-center gap-2.5">
+                      {isAvailable ? (
+                        <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                      ) : (
+                        <X className="w-4 h-4 text-foreground/30 flex-shrink-0" />
+                      )}
+                      <span class:list={[
+                        "text-sm",
+                        isAvailable ? "text-foreground/70" : "text-foreground/30"
+                      ]}>
+                        {displayText}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </>
+      ))}
+
+      <!-- CTA Buttons row -->
+      <div class="flex flex-col lg:flex-row mt-10">
+        {plans.map((plan) => (
+          <div class="flex-1 px-5 pb-5">
+            <button
+              class:list={[
+                "w-full font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]",
+                plan.popular
+                  ? "bg-foreground text-background hover:bg-foreground/90 shadow-sm py-3 px-6"
+                  : "bg-accent hover:bg-accent/80 text-foreground py-2.5 px-5",
+              ]}
+            >
+              {plan.buttonText}
+              <ArrowRight className="w-4 h-4" />
+            </button>
+            {plan.popular ? (
+              <a href="/contact" class="block text-center mt-4 text-base leading-6 text-foreground/70 hover:text-foreground transition-colors">
+                or contact sales
+              </a>
+            ) : (
+              <div class="mt-4 h-6"></div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

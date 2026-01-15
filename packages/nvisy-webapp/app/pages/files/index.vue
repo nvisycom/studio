@@ -1,31 +1,31 @@
 <script setup lang="ts">
 import type { File as NvisyFile, UpdateFile } from "@nvisy/sdk/datatypes";
 import {
-  ChevronDown,
-  FileText,
-  Filter,
-  LayoutGrid,
-  List,
-  Loader2,
-  Search,
-  Upload,
+	ChevronDown,
+	FileText,
+	Filter,
+	LayoutGrid,
+	List,
+	Loader2,
+	Search,
+	Upload,
 } from "lucide-vue-next";
 import { computed, ref } from "vue";
 import { toast } from "vue-sonner";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
-  DeleteFileDialog,
-  EditFileDialog,
-  FilesGridView,
-  FilesTableView,
-  UploadFilesDialog,
+	DeleteFileDialog,
+	EditFileDialog,
+	FilesGridView,
+	FilesTableView,
+	UploadFilesDialog,
 } from "~/components/pages/files";
 
 const { t } = useI18n();
@@ -33,23 +33,23 @@ const { t } = useI18n();
 useHead({ title: "Files" });
 
 definePageMeta({
-  pageCategory: "Files",
+	pageCategory: "Files",
 });
 
 const {
-  files,
-  isLoading,
-  error,
-  deleteFileAsync,
-  isDeleting,
-  updateFileAsync,
-  isUpdating,
-  uploadFilesAsync,
-  downloadFile,
-  downloadMultiple,
-  loadMore,
-  hasMore,
-  isLoadingMore,
+	files,
+	isLoading,
+	error,
+	deleteFileAsync,
+	isDeleting,
+	updateFileAsync,
+	isUpdating,
+	uploadFilesAsync,
+	downloadFile,
+	downloadMultiple,
+	loadMore,
+	hasMore,
+	isLoadingMore,
 } = useFiles();
 
 const searchQuery = ref("");
@@ -65,44 +65,44 @@ const fileToEdit = ref<NvisyFile | null>(null);
 const isUploadingDrop = ref(false);
 
 const statusFilters = computed(() => [
-  { label: t("files.filters.anyStatus"), value: "any" },
-  { label: t("files.filters.pending"), value: "pending" },
-  { label: t("files.filters.processing"), value: "processing" },
-  { label: t("files.filters.ready"), value: "ready" },
-  { label: t("files.filters.canceled"), value: "canceled" },
+	{ label: t("files.filters.anyStatus"), value: "any" },
+	{ label: t("files.filters.pending"), value: "pending" },
+	{ label: t("files.filters.processing"), value: "processing" },
+	{ label: t("files.filters.ready"), value: "ready" },
+	{ label: t("files.filters.canceled"), value: "canceled" },
 ]);
 
 const filteredFiles = computed(() => {
-  let filtered = files.value || [];
+	let filtered = files.value || [];
 
-  if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter((file) =>
-      file.displayName.toLowerCase().includes(query),
-    );
-  }
+	if (searchQuery.value.trim()) {
+		const query = searchQuery.value.toLowerCase();
+		filtered = filtered.filter((file) =>
+			file.displayName.toLowerCase().includes(query),
+		);
+	}
 
-  if (filterStatus.value !== "any") {
-    filtered = filtered.filter((file) => file.status === filterStatus.value);
-  }
+	if (filterStatus.value !== "any") {
+		filtered = filtered.filter((file) => file.status === filterStatus.value);
+	}
 
-  return filtered;
+	return filtered;
 });
 
 const hasFilters = computed(() => {
-  return searchQuery.value.trim() || filterStatus.value !== "any";
+	return searchQuery.value.trim() || filterStatus.value !== "any";
 });
 
 // Selection
 const {
-  selected: selectedFiles,
-  allSelected,
-  toggle: toggleFileSelection,
-  toggleAll: toggleSelectAll,
-  clear: clearSelection,
+	selected: selectedFiles,
+	allSelected,
+	toggle: toggleFileSelection,
+	toggleAll: toggleSelectAll,
+	clear: clearSelection,
 } = useSelection({
-  items: filteredFiles,
-  getKey: (f) => f.fileId,
+	items: filteredFiles,
+	getKey: (f) => f.fileId,
 });
 
 const selectedFilesCount = computed(() => selectedFiles.value.size);
@@ -112,178 +112,178 @@ const hasSelection = computed(() => selectedFilesCount.value > 0);
 const { openFile: openFileInStudio } = useStudioFiles();
 
 function viewFile(fileId: string) {
-  // Find the file to pass metadata
-  const file = files.value?.find((f) => f.fileId === fileId);
-  openFileInStudio(fileId, file);
-  navigateTo("/studio");
+	// Find the file to pass metadata
+	const file = files.value?.find((f) => f.fileId === fileId);
+	openFileInStudio(fileId, file);
+	navigateTo("/studio");
 }
 
 function chatAboutFile(file: NvisyFile) {
-  // Navigate to chat page with file context
-  navigateTo(`/files/chat?fileId=${file.fileId}`);
+	// Navigate to chat page with file context
+	navigateTo(`/files/chat?fileId=${file.fileId}`);
 }
 
 function handleBulkOpen() {
-  if (!hasSelection.value) return;
-  const fileIds = Array.from(selectedFiles.value);
-  // Open each selected file in the studio
-  for (const fileId of fileIds) {
-    const file = files.value?.find((f) => f.fileId === fileId);
-    openFileInStudio(fileId, file);
-  }
-  navigateTo("/studio");
+	if (!hasSelection.value) return;
+	const fileIds = Array.from(selectedFiles.value);
+	// Open each selected file in the studio
+	for (const fileId of fileIds) {
+		const file = files.value?.find((f) => f.fileId === fileId);
+		openFileInStudio(fileId, file);
+	}
+	navigateTo("/studio");
 }
 
 async function handleDownloadFile(file: NvisyFile) {
-  try {
-    await downloadFile(file.fileId, file.displayName);
-    toast.success(t("files.messages.downloadStarted"));
-  } catch {
-    toast.error(t("files.errors.downloadFailed"));
-  }
+	try {
+		await downloadFile(file.fileId, file.displayName);
+		toast.success(t("files.messages.downloadStarted"));
+	} catch {
+		toast.error(t("files.errors.downloadFailed"));
+	}
 }
 
 async function handleBulkDownload(format: "zip" | "tar") {
-  if (!hasSelection.value) return;
-  try {
-    await downloadMultiple(Array.from(selectedFiles.value), format);
-    toast.success(t("files.messages.downloadStarted"));
-  } catch {
-    toast.error(t("files.errors.downloadFailed"));
-  }
+	if (!hasSelection.value) return;
+	try {
+		await downloadMultiple(Array.from(selectedFiles.value), format);
+		toast.success(t("files.messages.downloadStarted"));
+	} catch {
+		toast.error(t("files.errors.downloadFailed"));
+	}
 }
 
 function openDeleteDialog(file?: NvisyFile) {
-  fileToDelete.value = file || null;
-  deleteDialogOpen.value = true;
+	fileToDelete.value = file || null;
+	deleteDialogOpen.value = true;
 }
 
 function openBulkDeleteDialog() {
-  fileToDelete.value = null;
-  deleteDialogOpen.value = true;
+	fileToDelete.value = null;
+	deleteDialogOpen.value = true;
 }
 
 async function confirmDelete() {
-  try {
-    if (fileToDelete.value) {
-      await deleteFileAsync(fileToDelete.value.fileId);
-      toast.success(t("files.messages.fileDeleted"));
-    } else if (hasSelection.value) {
-      for (const fileId of Array.from(selectedFiles.value)) {
-        await deleteFileAsync(fileId);
-      }
-      toast.success(t("files.messages.filesDeleted"));
-      clearSelection();
-    }
-  } catch {
-    toast.error(t("files.errors.deleteFailed"));
-  } finally {
-    deleteDialogOpen.value = false;
-    fileToDelete.value = null;
-  }
+	try {
+		if (fileToDelete.value) {
+			await deleteFileAsync(fileToDelete.value.fileId);
+			toast.success(t("files.messages.fileDeleted"));
+		} else if (hasSelection.value) {
+			for (const fileId of Array.from(selectedFiles.value)) {
+				await deleteFileAsync(fileId);
+			}
+			toast.success(t("files.messages.filesDeleted"));
+			clearSelection();
+		}
+	} catch {
+		toast.error(t("files.errors.deleteFailed"));
+	} finally {
+		deleteDialogOpen.value = false;
+		fileToDelete.value = null;
+	}
 }
 
 function openEditDialog(file: NvisyFile) {
-  fileToEdit.value = file;
-  editDialogOpen.value = true;
+	fileToEdit.value = file;
+	editDialogOpen.value = true;
 }
 
 async function confirmEdit(data: UpdateFile) {
-  if (!fileToEdit.value) return;
-  try {
-    await updateFileAsync({
-      fileId: fileToEdit.value.fileId,
-      updates: data,
-    });
-    toast.success(t("files.messages.fileUpdated"));
-  } catch {
-    toast.error(t("files.errors.updateFailed"));
-  } finally {
-    editDialogOpen.value = false;
-    fileToEdit.value = null;
-  }
+	if (!fileToEdit.value) return;
+	try {
+		await updateFileAsync({
+			fileId: fileToEdit.value.fileId,
+			updates: data,
+		});
+		toast.success(t("files.messages.fileUpdated"));
+	} catch {
+		toast.error(t("files.errors.updateFailed"));
+	} finally {
+		editDialogOpen.value = false;
+		fileToEdit.value = null;
+	}
 }
 
 function openUploadDialog() {
-  uploadDialogOpen.value = true;
+	uploadDialogOpen.value = true;
 }
 
 function handleUploadComplete() {
-  toast.success(t("files.messages.filesUploaded"));
-  uploadDialogOpen.value = false;
-  isDraggingOver.value = false;
+	toast.success(t("files.messages.filesUploaded"));
+	uploadDialogOpen.value = false;
+	isDraggingOver.value = false;
 }
 
 function handleDragEnter(e: DragEvent) {
-  e.preventDefault();
-  if (e.dataTransfer?.types.includes("Files")) {
-    isDraggingOver.value = true;
-  }
+	e.preventDefault();
+	if (e.dataTransfer?.types.includes("Files")) {
+		isDraggingOver.value = true;
+	}
 }
 
 function handleDragOver(e: DragEvent) {
-  e.preventDefault();
+	e.preventDefault();
 }
 
 function handleDragLeave(e: DragEvent) {
-  e.preventDefault();
-  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-  if (
-    e.clientX <= rect.left ||
-    e.clientX >= rect.right ||
-    e.clientY <= rect.top ||
-    e.clientY >= rect.bottom
-  ) {
-    isDraggingOver.value = false;
-  }
+	e.preventDefault();
+	const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+	if (
+		e.clientX <= rect.left ||
+		e.clientX >= rect.right ||
+		e.clientY <= rect.top ||
+		e.clientY >= rect.bottom
+	) {
+		isDraggingOver.value = false;
+	}
 }
 
 async function handleDrop(e: DragEvent) {
-  e.preventDefault();
-  isDraggingOver.value = false;
+	e.preventDefault();
+	isDraggingOver.value = false;
 
-  const droppedFiles = e.dataTransfer?.files;
-  if (droppedFiles && droppedFiles.length > 0) {
-    isUploadingDrop.value = true;
-    try {
-      await uploadFilesAsync(Array.from(droppedFiles));
-      toast.success(t("files.messages.filesUploaded"));
-    } catch {
-      toast.error(t("files.errors.uploadFailed"));
-    } finally {
-      isUploadingDrop.value = false;
-    }
-  }
+	const droppedFiles = e.dataTransfer?.files;
+	if (droppedFiles && droppedFiles.length > 0) {
+		isUploadingDrop.value = true;
+		try {
+			await uploadFilesAsync(Array.from(droppedFiles));
+			toast.success(t("files.messages.filesUploaded"));
+		} catch {
+			toast.error(t("files.errors.uploadFailed"));
+		} finally {
+			isUploadingDrop.value = false;
+		}
+	}
 }
 
 function selectStatusFilter(value: string) {
-  filterStatus.value = value;
+	filterStatus.value = value;
 }
 
 function clearFilters() {
-  searchQuery.value = "";
-  filterStatus.value = "any";
+	searchQuery.value = "";
+	filterStatus.value = "any";
 }
 
 function handleLoadMore() {
-  if (hasMore.value && !isLoadingMore.value) {
-    loadMore();
-  }
+	if (hasMore.value && !isLoadingMore.value) {
+		loadMore();
+	}
 }
 
 function handleGridScroll(event: Event) {
-  const target = event.target as HTMLElement;
-  const { scrollTop, scrollHeight, clientHeight } = target;
-  const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-  if (distanceFromBottom < 100) {
-    handleLoadMore();
-  }
+	const target = event.target as HTMLElement;
+	const { scrollTop, scrollHeight, clientHeight } = target;
+	const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+	if (distanceFromBottom < 100) {
+		handleLoadMore();
+	}
 }
 </script>
 
 <template>
   <div
-    class="flex flex-col gap-4 p-4 pt-4 pb-6 relative h-[calc(100vh-8rem)]"
+    class="flex flex-col gap-4 p-4 pt-4 pb-6 relative h-[calc(100vh-5.5rem)]"
     @dragenter="handleDragEnter"
     @dragover="handleDragOver"
     @dragleave="handleDragLeave"
@@ -292,15 +292,15 @@ function handleGridScroll(event: Event) {
     <div class="max-w-7xl mx-auto w-full flex flex-col flex-1 min-h-0">
       <!-- Loading State -->
       <div v-if="isLoading" class="flex justify-center items-center py-12">
-        <Loader2 :size="32" class="animate-spin text-neutral-400" />
+        <Loader2 :size="24" class="animate-spin text-muted-foreground" />
       </div>
 
       <!-- Error State -->
       <div
         v-else-if="error"
-        class="p-4 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 rounded-lg"
+        class="p-4 bg-destructive/10 border border-destructive/20 rounded-lg"
       >
-        <p class="text-red-600 dark:text-red-400">
+        <p class="text-sm text-destructive">
           {{ error.message || t("files.errors.loadFailed") }}
         </p>
       </div>
@@ -308,13 +308,9 @@ function handleGridScroll(event: Event) {
       <template v-else>
         <!-- Search, Filters, and Actions -->
         <div
-          class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center mb-6"
+          class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center mb-4"
         >
-          <Button
-            variant="outline"
-            @click="openUploadDialog"
-            class="font-normal"
-          >
+          <Button variant="default" size="sm" @click="openUploadDialog">
             <Upload :size="16" class="mr-2" />
             {{ t("files.actions.upload") }}
           </Button>
@@ -322,12 +318,12 @@ function handleGridScroll(event: Event) {
           <div class="relative flex-1">
             <Search
               :size="16"
-              class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+              class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             />
             <Input
               v-model="searchQuery"
               :placeholder="t('files.filters.search')"
-              class="pl-10 font-normal"
+              class="pl-10 h-9 text-sm"
             />
           </div>
 
@@ -335,22 +331,25 @@ function handleGridScroll(event: Event) {
             <DropdownMenuTrigger as-child>
               <Button
                 variant="outline"
-                class="justify-between min-w-[160px] font-normal"
+                size="sm"
+                class="justify-between min-w-[140px]"
               >
-                <Filter :size="14" class="mr-2 text-neutral-400" />
-                {{
-                  statusFilters.find((f) => f.value === filterStatus)?.label ||
-                  t("files.filters.anyStatus")
-                }}
-                <ChevronDown :size="16" class="ml-2" />
+                <Filter :size="14" class="mr-2 text-muted-foreground" />
+                <span class="text-sm">
+                  {{
+                    statusFilters.find((f) => f.value === filterStatus)
+                      ?.label || t("files.filters.anyStatus")
+                  }}
+                </span>
+                <ChevronDown :size="14" class="ml-2 text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" class="w-[160px]">
+            <DropdownMenuContent align="end" class="w-[140px]">
               <DropdownMenuItem
                 v-for="filter in statusFilters"
                 :key="filter.value"
                 @click="selectStatusFilter(filter.value)"
-                class="cursor-pointer font-normal"
+                class="cursor-pointer text-sm"
               >
                 {{ filter.label }}
               </DropdownMenuItem>
@@ -358,24 +357,24 @@ function handleGridScroll(event: Event) {
           </DropdownMenu>
 
           <!-- View Toggle -->
-          <div class="flex items-center border rounded-md">
+          <div class="flex items-center border border-border/50 rounded-md">
             <Button
               variant="ghost"
               size="sm"
-              class="rounded-r-none px-3"
+              class="rounded-r-none px-2.5 h-9"
               :class="{ 'bg-muted': viewMode === 'list' }"
               @click="viewMode = 'list'"
             >
-              <List :size="16" />
+              <List :size="16" class="text-muted-foreground" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
-              class="rounded-l-none px-3"
+              class="rounded-l-none px-2.5 h-9"
               :class="{ 'bg-muted': viewMode === 'grid' }"
               @click="viewMode = 'grid'"
             >
-              <LayoutGrid :size="16" />
+              <LayoutGrid :size="16" class="text-muted-foreground" />
             </Button>
           </div>
         </div>
@@ -391,15 +390,15 @@ function handleGridScroll(event: Event) {
           >
             <div
               v-if="isDraggingOver"
-              class="absolute inset-0 z-50 flex items-center justify-center bg-background/50 backdrop-blur-[2px] rounded-lg border border-neutral-200 dark:border-neutral-800"
+              class="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-lg border-2 border-dashed border-border"
             >
               <div class="text-center -mt-16">
                 <Upload
-                  :size="40"
+                  :size="32"
                   :stroke-width="1.5"
-                  class="mx-auto mb-4 text-neutral-900 dark:text-neutral-400"
+                  class="mx-auto mb-3 text-muted-foreground"
                 />
-                <p class="text-xl font-normal text-foreground">
+                <p class="text-sm font-medium text-foreground">
                   {{ t("files.dialogs.upload.dropHint") }}
                 </p>
               </div>
@@ -415,15 +414,15 @@ function handleGridScroll(event: Event) {
           >
             <div
               v-if="isUploadingDrop"
-              class="absolute inset-0 z-50 flex items-center justify-center bg-background/50 backdrop-blur-[2px] rounded-lg border border-neutral-200 dark:border-neutral-800"
+              class="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-lg border border-border"
             >
               <div class="text-center -mt-16">
                 <Loader2
-                  :size="40"
+                  :size="24"
                   :stroke-width="1.5"
-                  class="mx-auto mb-4 text-neutral-900 dark:text-neutral-400 animate-spin"
+                  class="mx-auto mb-3 text-muted-foreground animate-spin"
                 />
-                <p class="text-xl font-normal text-foreground">
+                <p class="text-sm font-medium text-foreground">
                   {{ t("files.dialogs.upload.uploading") }}
                 </p>
               </div>
@@ -472,18 +471,19 @@ function handleGridScroll(event: Event) {
         </div>
 
         <!-- Empty State -->
-        <div v-else class="py-12 text-center flex-1">
+        <div
+          v-else
+          class="py-16 text-center flex-1 flex flex-col items-center justify-center"
+        >
           <div
-            class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
+            class="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-muted/50"
           >
-            <FileText class="h-6 w-6 text-neutral-400 dark:text-neutral-500" />
+            <FileText class="h-5 w-5 text-muted-foreground" />
           </div>
-          <p class="font-normal text-neutral-700 dark:text-neutral-300 mb-1">
+          <p class="text-sm font-medium text-foreground mb-1">
             {{ t("files.table.empty.title") }}
           </p>
-          <p
-            class="font-normal text-sm text-neutral-600 dark:text-neutral-400 mb-4"
-          >
+          <p class="text-sm text-muted-foreground mb-4 max-w-sm">
             {{
               hasFilters
                 ? t("files.table.empty.filterDescription")
@@ -494,12 +494,11 @@ function handleGridScroll(event: Event) {
             v-if="hasFilters"
             variant="outline"
             size="sm"
-            class="font-normal"
             @click="clearFilters"
           >
             {{ t("files.actions.clearFilters") }}
           </Button>
-          <Button v-else @click="openUploadDialog" size="sm" class="font-normal">
+          <Button v-else @click="openUploadDialog" size="sm">
             <Upload :size="16" class="mr-2" />
             {{ t("files.actions.upload") }}
           </Button>

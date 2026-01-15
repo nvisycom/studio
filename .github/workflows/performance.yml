@@ -45,10 +45,24 @@ jobs:
           npm run build --workspace=@nvisy/landing
           npm run generate --workspace=@nvisy/webapp
 
-      - name: Run Lighthouse CI
+      - name: Run Lighthouse CI (Landing)
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            http://localhost:4321
+            http://localhost:4321/about
+            http://localhost:4321/pricing
+          startServerCommand: "npm run preview --workspace=@nvisy/landing"
+          startServerReadyPattern: "localhost"
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      - name: Run Lighthouse CI (Webapp)
         uses: treosh/lighthouse-ci-action@v12
         with:
           urls: |
             http://localhost:3000
+          startServerCommand: "npm run preview --workspace=@nvisy/webapp"
+          startServerReadyPattern: "localhost"
           uploadArtifacts: true
           temporaryPublicStorage: true

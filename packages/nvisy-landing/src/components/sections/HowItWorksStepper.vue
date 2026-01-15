@@ -75,19 +75,22 @@ watch(activeStep, (newStep) => {
         <!-- Step Button -->
         <button
           @click="setActiveStep(item.step)"
-          class="flex flex-col items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-2xl"
+          :aria-label="`Step ${item.step}: ${item.title}`"
+          :aria-current="activeStep === item.step ? 'step' : undefined"
+          class="flex flex-col items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-2xl"
         >
           <div
             :class="[
               'flex h-16 w-16 items-center justify-center rounded-2xl transition-all duration-300',
               activeStep >= item.step
-                ? 'bg-gradient-to-br from-blue-100 to-pink-100 dark:from-blue-900/60 dark:to-pink-900/60'
-                : 'bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700',
+                ? 'bg-accent'
+                : 'bg-accent/50 hover:bg-accent',
             ]"
           >
             <component
               :is="item.icon"
-              class="h-7 w-7 text-black dark:text-white"
+              class="h-7 w-7 text-foreground"
+              aria-hidden="true"
             />
           </div>
         </button>
@@ -97,9 +100,7 @@ watch(activeStep, (newStep) => {
           v-if="index < steps.length - 1"
           :class="[
             'absolute left-[calc(50%+40px)] right-[calc(-50%+40px)] top-8 h-0.5 rounded-full transition-all duration-300',
-            activeStep > item.step
-              ? 'bg-gradient-to-r from-blue-400 to-pink-400'
-              : 'bg-neutral-200 dark:bg-neutral-700',
+            activeStep > item.step ? 'bg-foreground/30' : 'bg-border',
           ]"
         />
 
@@ -109,14 +110,14 @@ watch(activeStep, (newStep) => {
             :class="[
               'text-lg font-medium transition-colors duration-300',
               activeStep === item.step
-                ? 'text-black dark:text-white'
-                : 'text-neutral-600 dark:text-neutral-400',
+                ? 'text-foreground'
+                : 'text-muted-foreground',
             ]"
           >
             {{ item.title }}
           </span>
           <span
-            class="mt-1 max-w-[180px] text-sm font-normal leading-relaxed text-neutral-600 dark:text-neutral-400"
+            class="mt-1 max-w-[180px] text-sm font-normal leading-relaxed text-muted-foreground"
           >
             {{ item.description }}
           </span>
@@ -128,7 +129,7 @@ watch(activeStep, (newStep) => {
     <Transition name="fade" mode="out-in">
       <div
         :key="currentImage.id"
-        class="relative rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800 shadow-2xl"
+        class="relative rounded-2xl overflow-hidden border border-border shadow-2xl"
       >
         <AspectRatio :ratio="16 / 9">
           <img

@@ -1,33 +1,35 @@
 @layer base {
-	:root,
-	html.dark pre:has(code),
-	html.dark pre:has(code) span {
-		color: var(--shiki-dark) !important;
-		background-color: var(--shiki-dark-bg) !important;
-		font-style: var(--shiki-dark-font-style) !important;
-		font-weight: var(--shiki-dark-font-weight) !important;
-		text-decoration: var(--shiki-dark-text-decoration) !important;
-	}
+  :root,
+  html.dark pre:has(code),
+  html.dark pre:has(code) span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+  }
 }
 
 pre {
-	border-radius: 0.5rem;
-	border-width: 1px;
-	background-color: transparent !important;
-	padding: 1em;
+  border-radius: 0.5rem;
+  border-width: 1px;
+  background-color: transparent !important;
+  padding: 1em;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 code {
-	/* TODO: Replace with astro.config. */
-	font-family: "JetBrains", monospace;
-	font-size: 1.125rem; /* 18px */
-	line-height: 1.75rem; /* 28px */
+  /* TODO: Replace with astro.config. */
+  font-family: "JetBrains", monospace;
+  font-size: 1.125rem; /* 18px */
+  line-height: 1.75rem; /* 28px */
 }
 
 /* SDK Showcase specific styling */
 [data-sdk-showcase] code {
-	font-size: 0.875rem !important; /* 14px */
-	line-height: 1.6rem !important;
+  font-size: 0.875rem !important; /* 14px */
+  line-height: 1.6rem !important;
 }
 
 /* Markdown content styling within prose containers */
@@ -37,162 +39,162 @@ article .prose h3,
 article .prose h4,
 article .prose h5,
 article .prose h6 {
-	font-weight: 700;
-	margin-top: 2rem;
-	margin-bottom: 1rem;
-	line-height: 1.25;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  line-height: 1.25;
 }
 
 article .prose h1 {
-	font-size: 2.25rem; /* 36px */
-	margin-top: 0;
+  font-size: 2.25rem; /* 36px */
+  margin-top: 0;
 }
 
 article .prose h2 {
-	font-size: 1.875rem; /* 30px */
+  font-size: 1.875rem; /* 30px */
 }
 
 article .prose h3 {
-	font-size: 1.5rem; /* 24px */
+  font-size: 1.5rem; /* 24px */
 }
 
 article .prose h4 {
-	font-size: 1.25rem; /* 20px */
+  font-size: 1.25rem; /* 20px */
 }
 
 article .prose h5,
 article .prose h6 {
-	font-size: 1rem; /* 16px */
+  font-size: 1rem; /* 16px */
 }
 
 article .prose p {
-	margin-bottom: 1.25rem;
+  margin-bottom: 1.25rem;
 }
 
 article .prose ul,
 article .prose ol {
-	margin-bottom: 1.25rem;
-	padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+  padding-left: 1.5rem;
 }
 
 article .prose ul {
-	list-style-type: disc;
+  list-style-type: disc;
 }
 
 article .prose ol {
-	list-style-type: decimal;
+  list-style-type: decimal;
 }
 
 article .prose li {
-	margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 article .prose li > p {
-	margin-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
 article .prose li:last-child {
-	margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 article .prose ul ul,
 article .prose ol ol,
 article .prose ul ol,
 article .prose ol ul {
-	margin-top: 0.5rem;
-	margin-bottom: 0;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
 }
 
 article .prose a {
-	color: #2563eb;
-	text-decoration: underline;
-	font-weight: 500;
+  color: #2563eb;
+  text-decoration: underline;
+  font-weight: 500;
 }
 
 article .prose a:hover {
-	color: #1d4ed8;
-	text-decoration: none;
+  color: #1d4ed8;
+  text-decoration: none;
 }
 
 article .prose strong {
-	font-weight: 700;
+  font-weight: 700;
 }
 
 article .prose em {
-	font-style: italic;
+  font-style: italic;
 }
 
 article .prose blockquote {
-	border-left: 4px solid #e5e7eb;
-	padding-left: 1rem;
-	margin: 1.5rem 0;
-	font-style: italic;
-	color: #6b7280;
+  border-left: 4px solid #e5e7eb;
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: #6b7280;
 }
 
 article .prose table {
-	width: 100%;
-	border-collapse: collapse;
-	margin: 1.5rem 0;
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
 }
 
 article .prose th,
 article .prose td {
-	border: 1px solid #e5e7eb;
-	padding: 0.75rem;
-	text-align: left;
+  border: 1px solid #e5e7eb;
+  padding: 0.75rem;
+  text-align: left;
 }
 
 article .prose th {
-	background-color: #f9fafb;
-	font-weight: 600;
+  background-color: #f9fafb;
+  font-weight: 600;
 }
 
 article .prose tr:nth-child(even) {
-	background-color: #f9fafb;
+  background-color: #f9fafb;
 }
 
 article .prose hr {
-	border: none;
-	border-top: 1px solid #e5e7eb;
-	margin: 2rem 0;
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 2rem 0;
 }
 
 article .prose img {
-	max-width: 100%;
-	height: auto;
-	border-radius: 0.5rem;
-	margin: 1.5rem 0;
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 1.5rem 0;
 }
 
 /* Dark mode support */
 .dark article .prose a {
-	color: #60a5fa !important;
-	text-decoration: underline !important;
+  color: #60a5fa !important;
+  text-decoration: underline !important;
 }
 
 .dark article .prose a:hover {
-	color: #93c5fd !important;
+  color: #93c5fd !important;
 }
 
 .dark article .prose blockquote {
-	border-left-color: #374151;
-	color: #9ca3af;
+  border-left-color: #374151;
+  color: #9ca3af;
 }
 
 .dark article .prose th,
 .dark article .prose td {
-	border-color: #374151;
+  border-color: #374151;
 }
 
 .dark article .prose th {
-	background-color: #1f2937;
+  background-color: #1f2937;
 }
 
 .dark article .prose tr:nth-child(even) {
-	background-color: #1f2937;
+  background-color: #1f2937;
 }
 
 .dark article .prose hr {
-	border-top-color: #374151;
+  border-top-color: #374151;
 }

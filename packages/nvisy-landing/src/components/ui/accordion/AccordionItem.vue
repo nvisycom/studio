@@ -6,7 +6,7 @@ import { AccordionItem, useForwardProps } from "reka-ui";
 import { cn } from "@/utils";
 
 const props = defineProps<
-	AccordionItemProps & { class?: HTMLAttributes["class"] }
+  AccordionItemProps & { class?: HTMLAttributes["class"] }
 >();
 
 const delegatedProps = reactiveOmit(props, "class");
@@ -18,7 +18,7 @@ const forwardedProps = useForwardProps(delegatedProps);
   <AccordionItem
     data-slot="accordion-item"
     v-bind="forwardedProps"
-    :class="cn('border-b last:border-b-0', props.class)"
+    :class="cn(props.class)"
   >
     <slot />
   </AccordionItem>

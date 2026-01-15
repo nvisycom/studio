@@ -1,0 +1,127 @@
+---
+import { Layout } from "@/layouts";
+import { Hero } from "@/components";
+import { getCollection } from "astro:content";
+import { Sparkles } from "lucide-vue-next";
+import ChangelogSections from "@/components/features/changelog/ChangelogSections.vue";
+
+const changelogEntries = (await getCollection("changelog")).sort(
+	(a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime()
+);
+
+const formatDate = (date: Date) => {
+	return date.toLocaleDateString("en-US", {
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	});
+};
+
+// Parse markdown content to extract sections
+function parseSections(body: string) {
+	const sections: Record<string, string[]> = {};
+	const lines = body.split('\n');
+	let currentSection: string | null = null;
+
+	for (const line of lines) {
+		// Check for ## headers (Features, Improvements, Fixes, Changes)
+		const headerMatch = line.match(/^##\s+(Features|Improvements|Fixes|Changes|Bug Fixes)/i);
+		if (headerMatch) {
+			currentSection = headerMatch[1].toLowerCase().replace('bug fixes', 'fixes');
+			sections[currentSection] = [];
+			continue;
+		}
+
+		// Check for list items under current section
+		if (currentSection && line.match(/^-\s+/)) {
+			const item = line.replace(/^-\s+/, '').replace(/\*\*([^*]+)\*\*/g, '$1');
+			if (item.trim()) {
+				sections[currentSection].push(item.trim());
+			}
+		}
+
+		// Stop at next ## that's not a tracked section
+		if (line.match(/^##\s+/) && !line.match(/^##\s+(Features|Improvements|Fixes|Changes|Bug Fixes)/i)) {
+			currentSection = null;
+		}
+	}
+
+	return sections;
+}
+
+// Process entries with parsed sections
+const entriesWithSections = changelogEntries.map(entry => ({
+	...entry,
+	sections: parseSections(entry.body || ''),
+}));
+---
+
+<Layout title="Changelog" description="Stay up to date with the latest updates, improvements, and fixes to nvisy.">
+	<Hero
+		title="Changelog"
+		description="Stay up to date with the latest updates, improvements, and fixes."
+		compact
+	/>
+
+	<section class="py-12 md:py-16">
+		<div class="container mx-auto px-4">
+			<div class="max-w-4xl mx-auto">
+				{entriesWithSections.length > 0 ? (
+					<div class="space-y-12">
+						{entriesWithSections.map((entry, index) => (
+							<article class="relative grid grid-cols-1 md:grid-cols-[160px_auto_1fr] gap-4 md:gap-0">
+								{/* Date column - left of timeline */}
+								<div class="md:pr-6 md:text-right">
+									<time class="text-sm text-muted-foreground">
+										{formatDate(entry.data.publishedAt)}
+									</time>
+									{entry.data.version && (
+										<div class="text-xs font-mono text-muted-foreground mt-1">
+											v{entry.data.version}
+										</div>
+									)}
+								</div>
+
+								{/* Timeline column - dot and line segment */}
+								<div class="hidden md:block w-8 relative">
+									{/* Line going down to next entry (not on last item) */}
+									{index < entriesWithSections.length - 1 && (
+										<div class="absolute left-1/2 -translate-x-1/2 top-[18px] h-[calc(100%+48px)] w-px bg-border" />
+									)}
+									{/* The dot - 8px top margin, 8px height, 4px ring = center at 12px, bottom of ring at 20px */}
+									<div class="w-2 h-2 mt-2 mx-auto rounded-full bg-foreground ring-1 ring-background relative z-10" />
+								</div>
+
+								{/* Content column */}
+								<div class="md:pl-6 max-w-xl">
+									{/* Title & Description */}
+									<a href={`/changelog/${entry.slug}`} class="group block mb-4">
+										<h2 class="text-xl font-semibold mb-2 group-hover:text-foreground/80 transition-colors">
+											{entry.data.title}
+										</h2>
+										<p class="text-muted-foreground leading-relaxed">
+											{entry.data.description}
+										</p>
+									</a>
+
+									{/* Collapsible Sections */}
+									{Object.keys(entry.sections).length > 0 && (
+										<ChangelogSections sections={entry.sections} client:load />
+									)}
+								</div>
+							</article>
+						))}
+					</div>
+				) : (
+					<div class="text-center py-20">
+						<div class="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-4">
+							<Sparkles className="w-8 h-8 text-muted-foreground" />
+						</div>
+						<h3 class="text-lg font-medium mb-2">No changelog entries yet</h3>
+						<p class="text-muted-foreground">Updates will appear here as they're published.</p>
+					</div>
+				)}
+			</div>
+		</div>
+	</section>
+</Layout>

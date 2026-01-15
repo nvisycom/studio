@@ -326,7 +326,7 @@ function handleSortingChange(
 
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
-    <div class="max-w-4xl mx-auto w-full">
+    <div class="max-w-3xl mx-auto w-full">
       <InviteMembersCard
         :is-sending="isSending"
         :is-generating="isGenerating"

@@ -11,15 +11,13 @@ export interface Props {
 	title?: string;
 	description?: string;
 	faqs?: FAQItem[];
-	maxWidth?: "3xl" | "4xl" | "5xl";
 	category?: string;
 	featured?: boolean;
 }
 
 const {
-	title = "Frequently Asked Questions",
+	title = "Frequently asked questions",
 	description = "Everything you need to know about our platform and services.",
-	maxWidth = "4xl",
 	category,
 	featured,
 	faqs: propFaqs,
@@ -65,22 +63,20 @@ if (!propFaqs) {
 			}));
 	}
 }
-
-const maxWidthClass = `max-w-${maxWidth}`;
 ---
 
-<section class="py-12 md:py-20 bg-white dark:bg-black">
+<section class="py-24 md:py-32">
   <div class="container mx-auto px-4">
-    <div class="text-center mb-12 md:mb-16">
-      <h2 class="text-3xl md:text-4xl lg:text-5xl font-light text-neutral-900 dark:text-white mb-4 md:mb-6">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
         {title}
       </h2>
-      <p class="text-base md:text-lg lg:text-xl text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto px-4">
+      <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
         {description}
       </p>
     </div>
 
-    <div class={`${maxWidthClass} mx-auto`}>
+    <div class="max-w-3xl mx-auto">
       <FAQAccordion client:load faqs={faqs} />
     </div>
   </div>

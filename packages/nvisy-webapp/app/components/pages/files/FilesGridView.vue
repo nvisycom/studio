@@ -1,43 +1,43 @@
 <script setup lang="ts">
 import {
-  FileText,
-  FileImage,
-  FileCode,
-  FileSpreadsheet,
-  Download,
-  Eye,
-  Trash2,
-  Pencil,
-  File as FileIcon,
-  MessageCircle,
+	FileText,
+	FileImage,
+	FileCode,
+	FileSpreadsheet,
+	Download,
+	Eye,
+	Trash2,
+	Pencil,
+	File as FileIcon,
+	MessageCircle,
 } from "lucide-vue-next";
 import type { File as NvisyFile } from "@nvisy/sdk/datatypes";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-  ContextMenuSeparator,
+	ContextMenu,
+	ContextMenuContent,
+	ContextMenuItem,
+	ContextMenuTrigger,
+	ContextMenuSeparator,
 } from "@/components/ui/context-menu";
 
 interface Props {
-  files: NvisyFile[];
-  selectedFiles: Set<string>;
-  selectedCount?: number;
+	files: NvisyFile[];
+	selectedFiles: Set<string>;
+	selectedCount?: number;
 }
 
 interface Emits {
-  (e: "toggle-selection", fileId: string): void;
-  (e: "view", fileId: string): void;
-  (e: "chat", file: NvisyFile): void;
-  (e: "edit", file: NvisyFile): void;
-  (e: "download", file: NvisyFile): void;
-  (e: "delete", file: NvisyFile): void;
-  (e: "bulk-open"): void;
-  (e: "bulk-download", format: "zip" | "tar"): void;
-  (e: "bulk-delete"): void;
-  (e: "scroll", event: Event): void;
+	(e: "toggle-selection", fileId: string): void;
+	(e: "view", fileId: string): void;
+	(e: "chat", file: NvisyFile): void;
+	(e: "edit", file: NvisyFile): void;
+	(e: "download", file: NvisyFile): void;
+	(e: "delete", file: NvisyFile): void;
+	(e: "bulk-open"): void;
+	(e: "bulk-download", format: "zip" | "tar"): void;
+	(e: "bulk-delete"): void;
+	(e: "scroll", event: Event): void;
 }
 
 const props = defineProps<Props>();
@@ -46,47 +46,47 @@ const emit = defineEmits<Emits>();
 const { t } = useI18n();
 
 function getFileIcon(fileName: string) {
-  const ext = fileName.split(".").pop()?.toLowerCase();
-  switch (ext) {
-    case "pdf":
-    case "doc":
-    case "docx":
-    case "txt":
-    case "md":
-      return FileText;
-    case "png":
-    case "jpg":
-    case "jpeg":
-    case "gif":
-    case "svg":
-    case "webp":
-      return FileImage;
-    case "json":
-    case "xml":
-    case "html":
-    case "css":
-    case "js":
-    case "ts":
-      return FileCode;
-    case "csv":
-    case "xlsx":
-    case "xls":
-      return FileSpreadsheet;
-    default:
-      return FileIcon;
-  }
+	const ext = fileName.split(".").pop()?.toLowerCase();
+	switch (ext) {
+		case "pdf":
+		case "doc":
+		case "docx":
+		case "txt":
+		case "md":
+			return FileText;
+		case "png":
+		case "jpg":
+		case "jpeg":
+		case "gif":
+		case "svg":
+		case "webp":
+			return FileImage;
+		case "json":
+		case "xml":
+		case "html":
+		case "css":
+		case "js":
+		case "ts":
+			return FileCode;
+		case "csv":
+		case "xlsx":
+		case "xls":
+			return FileSpreadsheet;
+		default:
+			return FileIcon;
+	}
 }
 
 function formatFileSize(bytes: number): string {
-  if (bytes === 0) return "0 B";
-  const k = 1024;
-  const sizes = ["B", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+	if (bytes === 0) return "0 B";
+	const k = 1024;
+	const sizes = ["B", "KB", "MB", "GB"];
+	const i = Math.floor(Math.log(bytes) / Math.log(k));
+	return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
 }
 
 function handleScroll(event: Event) {
-  emit("scroll", event);
+	emit("scroll", event);
 }
 </script>
 

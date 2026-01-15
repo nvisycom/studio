@@ -1,137 +1,49 @@
 ---
-import { Mail, ExternalLink } from "lucide-vue-next";
-import GithubIcon from "@/assets/icons/github.svg?raw";
-import type { ButtonProps } from "@/components/types";
-import { getButtonClasses } from "@/utils/buttonStyles";
-import {
-	getBackgroundClass,
-	type BackgroundVariant,
-} from "@/utils/backgroundStyles";
-import GradientShader from "@/components/effects/GradientShader.vue";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-vue-next";
 
 export interface Props {
 	title?: string;
 	description?: string;
-	buttons?: ButtonProps[];
-	centered?: boolean;
-	background?: BackgroundVariant;
-	maxWidth?: "sm" | "md" | "lg" | "xl" | "full";
+	primaryCta?: { text: string; href: string };
+	secondaryCta?: { text: string; href: string };
 }
 
 const {
 	title = "Ready to get started?",
-	description = "Join thousands of companies already using our platform to build better products faster.",
-	centered = true,
-	background = "gradient",
-	maxWidth = "xl",
-	buttons = [
-		{
-			text: "Start Free Trial",
-			variant: "primary",
-		},
-		{
-			text: "Book a Demo",
-			variant: "secondary",
-		},
-	],
+	description = "Join thousands of companies already using our platform.",
+	primaryCta = {
+		text: "Get Started",
+		href: "https://app.nvisy.com/auth/signup",
+	},
+	secondaryCta,
 } = Astro.props;
-
-const maxWidthClasses = {
-	sm: "max-w-2xl",
-	md: "max-w-4xl",
-	lg: "max-w-5xl",
-	xl: "max-w-6xl",
-	full: "max-w-none",
-};
-
-const isGradient = background === "gradient";
 ---
 
-<section class={`
-	${isGradient ? '' : getBackgroundClass(background)}
-	py-20 px-10
-	${isGradient ? 'relative overflow-hidden' : ''}
-`}>
-	{isGradient && <GradientShader client:load />}
+<section class="relative py-24 md:py-32 overflow-hidden bg-background">
+	<!-- Subtle gradient background -->
+	<div class="absolute inset-0 bg-gradient-to-t from-accent/30 via-accent/10 to-transparent" />
+	<div class="absolute inset-0 bg-[linear-gradient(to_right,oklch(0.5_0_0/0.02)_1px,transparent_1px),linear-gradient(to_bottom,oklch(0.5_0_0/0.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
 
-	<div class={`container mx-auto px-4 ${isGradient ? 'relative z-10' : ''}`}>
-		<div class={`
-			${centered ? "mx-auto text-center" : ""}
-			${maxWidthClasses[maxWidth]}
-		`}>
-			{title && (
-				<h2 class="text-4xl md:text-5xl lg:text-6xl font-normal leading-tight mb-4 md:mb-6 text-black dark:text-white">
-					{title}
-				</h2>
-			)}
-
-			<slot name="title" />
-
-			{description && (
-				<p class={`
-					text-lg md:text-xl mb-6 md:mb-8 leading-relaxed text-neutral-700 dark:text-neutral-300 font-medium
-					${centered ? "max-w-3xl mx-auto" : "max-w-3xl"}
-				`}>
-					{description}
-				</p>
-			)}
-
-			<slot name="description" />
-			<slot name="content" />
-
-			{(buttons.length > 0 || Astro.slots.has('buttons')) && (
-				<div class={`
-					flex flex-col sm:flex-row gap-4
-					${centered ? "justify-center" : "justify-start"}
-				`}>
-					{buttons.map((button) => (
-						button.href ? (
-							<a
-								href={button.href}
-								class={getButtonClasses(button.variant || "primary")}
-								aria-label={button.text}
-								{...(button.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-							>
-								{button.icon && (
-									<span class="flex-shrink-0">
-										{button.icon === "github" && <Fragment set:html={GithubIcon} />}
-										{button.icon === "mail" && <Mail class="w-5 h-5" />}
-										{button.icon === "external" && <ExternalLink class="w-5 h-5" />}
-									</span>
-								)}
-								{button.text}
-							</a>
-						) : (
-							<button
-								class={getButtonClasses(button.variant || "primary")}
-								onclick={button.onClick}
-								aria-label={button.text}
-							>
-								{button.icon && (
-									<span class="flex-shrink-0">
-										{button.icon === "github" && <Fragment set:html={GithubIcon} />}
-										{button.icon === "mail" && (
-											<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-											</svg>
-										)}
-										{button.icon === "external" && (
-											<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-											</svg>
-										)}
-									</span>
-								)}
-								{button.text}
-							</button>
-						)
-					))}
-
-					<slot name="buttons" />
-				</div>
-			)}
-
-			<slot name="footer" />
+	<div class="container relative z-10 mx-auto px-4">
+		<div class="scroll-reveal max-w-2xl mx-auto text-center" data-reveal>
+			<h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
+				{title}
+			</h2>
+			<p class="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
+				{description}
+			</p>
+			<div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+				<Button as="a" href={primaryCta.href} variant="glow" size="lg" class="group">
+					{primaryCta.text}
+					<ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+				</Button>
+				{secondaryCta && (
+					<Button as="a" href={secondaryCta.href} variant="outline" size="lg">
+						{secondaryCta.text}
+					</Button>
+				)}
+			</div>
 		</div>
 	</div>
 </section>

@@ -8,13 +8,14 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
 <Layout
   title="Nvisy Studio"
   description="Cross-platform desktop application for document processing. Works with Nvisy Server. Open source and built with Tauri and Vue."
+  hideFooterBorder
 >
   <Hero
-    title="Nvisy Studio"
-    description="Cross-platform desktop application with intuitive UI for document processing. Open source, lightweight, and built with Tauri and Vue for optimal performance."
-    background="gradient"
-    maxWidth="full"
-    buttons={[]}
+    title="Nvisy"
+    titleHighlight="Studio"
+    titleInline={true}
+    description="Cross-platform desktop application with intuitive UI for document processing. Open source, lightweight, and built with Tauri and Vue."
+    primaryCta={null}
   >
     <div slot="buttons" class="w-full">
       <DownloadButtons client:load />
@@ -29,71 +30,44 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
   />
 
   <!-- Built in the Open -->
-  <section class="py-12 md:py-20 px-4 bg-white dark:bg-black">
-    <div class="container mx-auto max-w-7xl">
-      <div class="mb-12 md:mb-16 text-center px-4 md:px-6">
-        <h2 class="text-3xl md:text-4xl lg:text-5xl font-light text-neutral-900 dark:text-white mb-3 md:mb-4">
-          Built in the Open
+  <section class="py-24 md:py-32 border-t border-border">
+    <div class="container mx-auto px-4">
+      <div class="max-w-5xl mx-auto text-center">
+        <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
+          Built in the open
         </h2>
-        <p class="text-base md:text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
+        <p class="text-lg text-muted-foreground max-w-2xl mx-auto mb-12">
           Nvisy Studio is open source and MIT licensed. Contribute to the project, report issues, or fork it for your own needs.
         </p>
-      </div>
 
-      <!-- Screenshot placeholder - add /public/images/studio-screenshot.png -->
-      <!--
-      <div class="mb-12 md:mb-16 max-w-5xl mx-auto">
-        <div class="rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800 shadow-2xl">
-          <AspectRatio ratio={16 / 9}>
-            <img
-              src="/images/studio-screenshot.png"
-              alt="Nvisy Studio interface"
-              class="w-full h-full object-cover"
-              loading="lazy"
-            />
-          </AspectRatio>
+        <div class="flex flex-col items-center gap-4">
+          <a
+            href="https://github.com/nvisycom/studio"
+            class="inline-flex items-center justify-center gap-2 bg-foreground text-background font-medium py-3 px-8 rounded-xl hover:opacity-90 transition-opacity"
+          >
+            <span class="w-5 h-5 flex-shrink-0 [&>svg]:w-full [&>svg]:h-full">
+              <Fragment set:html={GithubIcon} />
+            </span>
+            <span>View on GitHub</span>
+          </a>
+          <p class="text-sm text-muted-foreground">
+            Latest version: v1.0.0 · <a href="https://github.com/nvisycom/studio/releases" class="hover:text-foreground transition-colors underline">View all releases</a>
+          </p>
         </div>
-      </div>
-      -->
-
-      <div class="flex flex-col items-center gap-6">
-        <a
-          href="https://github.com/nvisycom/studio"
-          class="inline-flex items-center justify-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-black font-medium py-3 px-8 rounded-xl hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all duration-200 whitespace-nowrap"
-        >
-          <span class="w-5 h-5 flex-shrink-0 [&>svg]:w-full [&>svg]:h-full">
-            <Fragment set:html={GithubIcon} />
-          </span>
-          <span>View on GitHub</span>
-        </a>
-        <p class="text-sm text-neutral-500 dark:text-neutral-500">
-          Latest version: v1.0.0 • <a href="https://github.com/nvisycom/studio/releases" class="hover:text-neutral-700 dark:hover:text-neutral-400 transition-colors underline">View all releases</a>
-        </p>
       </div>
     </div>
   </section>
 
   <OpenSource
-    title="Open Source Ecosystem"
+    title="Open source ecosystem"
     description="Nvisy Studio is part of our open source ecosystem. Explore our other projects and contribute to the community."
   />
 
   <CTA
-    title="Ready to Get Started?"
-    description="Download Nvisy Studio and connect it to Nvisy Server. Get started in minutes."
-    buttons={[
-      {
-        text: "View Documentation",
-        href: "https://docs.nvisy.com/studio",
-        variant: "primary"
-      },
-      {
-        text: "View on GitHub",
-        href: "https://github.com/nvisycom/studio",
-        variant: "secondary"
-      }
-    ]}
-    background="gradient"
+    title="Ready to get started?"
+    description="Download Nvisy Studio and connect it to Nvisy Server."
+    primaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com/studio" }}
+    secondaryCta={{ text: "View on GitHub", href: "https://github.com/nvisycom/studio" }}
   />
   <Security />
 </Layout>

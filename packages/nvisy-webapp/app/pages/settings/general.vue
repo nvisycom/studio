@@ -226,25 +226,25 @@ const canDelete = computed(() => {
 
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
-    <div class="max-w-4xl mx-auto w-full">
+    <div class="max-w-3xl mx-auto w-full">
       <!-- Loading State -->
       <div
         v-if="isLoadingWorkspaces"
         class="flex items-center justify-center py-12"
       >
-        <Loader2 :size="32" class="animate-spin text-neutral-400" />
+        <Loader2 :size="24" class="animate-spin text-muted-foreground" />
       </div>
 
       <div v-else-if="currentWorkspace" class="space-y-6">
         <!-- Workspace Avatar -->
-        <Card
-          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-        >
+        <Card class="py-0 pt-6 rounded-xl border-border/50">
           <CardContent>
             <div class="flex items-start justify-between">
               <div class="space-y-1">
-                <Label>{{ t("settings.workspace.avatar.label") }}</Label>
-                <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                <Label class="text-sm font-medium">{{
+                  t("settings.workspace.avatar.label")
+                }}</Label>
+                <p class="text-xs text-muted-foreground">
                   {{ t("settings.workspace.avatar.description") }}
                 </p>
               </div>
@@ -262,38 +262,36 @@ const canDelete = computed(() => {
             </div>
           </CardContent>
           <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+            class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
           >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
+            <p class="text-xs text-muted-foreground">
               {{ t("settings.workspace.avatar.footer") }}
             </p>
           </CardFooter>
         </Card>
 
         <!-- Workspace Info Card -->
-        <Card
-          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-        >
+        <Card class="py-0 pt-6 rounded-xl border-border/50">
           <CardContent class="space-y-6">
             <!-- Workspace Name -->
             <div class="space-y-2">
-              <Label for="workspaceName">{{
+              <Label for="workspaceName" class="text-sm font-medium">{{
                 t("settings.workspace.name.label")
               }}</Label>
               <Input
                 id="workspaceName"
                 v-model="workspaceName"
                 :placeholder="t('settings.workspace.name.placeholder')"
-                class="max-w-md"
+                class="max-w-md h-9"
               />
-              <p class="text-sm text-neutral-600 dark:text-neutral-400">
+              <p class="text-xs text-muted-foreground">
                 {{ t("settings.workspace.name.description") }}
               </p>
             </div>
 
             <!-- Workspace Description -->
             <div class="space-y-2">
-              <Label for="workspaceDescription">{{
+              <Label for="workspaceDescription" class="text-sm font-medium">{{
                 t("settings.workspace.description.label")
               }}</Label>
               <Textarea
@@ -303,14 +301,14 @@ const canDelete = computed(() => {
                 class="max-w-md resize-none"
                 :rows="3"
               />
-              <p class="text-sm text-neutral-600 dark:text-neutral-400">
+              <p class="text-xs text-muted-foreground">
                 {{ t("settings.workspace.description.description") }}
               </p>
             </div>
 
             <!-- Workspace ID -->
             <div class="space-y-2">
-              <Label for="workspaceId">{{
+              <Label for="workspaceId" class="text-sm font-medium">{{
                 t("settings.workspace.id.label")
               }}</Label>
               <div class="flex gap-2 max-w-md">
@@ -318,13 +316,13 @@ const canDelete = computed(() => {
                   id="workspaceId"
                   :model-value="currentWorkspaceId ?? ''"
                   readonly
-                  class="flex-1 font-mono text-sm bg-neutral-100 dark:bg-neutral-800 border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300"
+                  class="flex-1 font-mono text-sm h-9 bg-muted/50 border-border/50 text-muted-foreground"
                 />
                 <Button
                   variant="outline"
                   size="sm"
                   @click="copyWorkspaceId"
-                  class="flex items-center justify-center w-10 h-10 p-0"
+                  class="flex items-center justify-center size-9 p-0"
                 >
                   <Check
                     v-if="copiedWorkspaceId"
@@ -334,15 +332,15 @@ const canDelete = computed(() => {
                   <Copy v-else :size="16" />
                 </Button>
               </div>
-              <p class="text-sm text-neutral-600 dark:text-neutral-400">
+              <p class="text-xs text-muted-foreground">
                 {{ t("settings.workspace.id.description") }}
               </p>
             </div>
           </CardContent>
           <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
+            class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl flex items-center justify-between"
           >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
+            <p class="text-xs text-muted-foreground">
               {{ t("settings.workspace.info.footer") }}
             </p>
             <Button
@@ -357,12 +355,13 @@ const canDelete = computed(() => {
         </Card>
 
         <!-- Workspace Options Card -->
-        <Card
-          class="py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-        >
-          <CardHeader>
-            <CardTitle>{{ t("settings.workspace.options.title") }}</CardTitle>
-            <CardDescription>{{
+        <Card class="py-0 pt-6 rounded-xl border-border/50">
+          <CardHeader class="pb-4">
+            <CardTitle
+              class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
+              >{{ t("settings.workspace.options.title") }}</CardTitle
+            >
+            <CardDescription class="text-sm">{{
               t("settings.workspace.options.description")
             }}</CardDescription>
           </CardHeader>
@@ -370,10 +369,10 @@ const canDelete = computed(() => {
             <!-- Require Approval -->
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
-                <Label>{{
+                <Label class="text-sm font-medium">{{
                   t("settings.workspace.options.requireApproval.label")
                 }}</Label>
-                <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                <p class="text-xs text-muted-foreground">
                   {{
                     t("settings.workspace.options.requireApproval.description")
                   }}
@@ -388,10 +387,10 @@ const canDelete = computed(() => {
             <!-- Enable Comments -->
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
-                <Label>{{
+                <Label class="text-sm font-medium">{{
                   t("settings.workspace.options.enableComments.label")
                 }}</Label>
-                <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                <p class="text-xs text-muted-foreground">
                   {{
                     t("settings.workspace.options.enableComments.description")
                   }}
@@ -404,9 +403,9 @@ const canDelete = computed(() => {
             </div>
           </CardContent>
           <CardFooter
-            class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl flex items-center justify-between"
+            class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl flex items-center justify-between"
           >
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
+            <p class="text-xs text-muted-foreground">
               {{ t("settings.workspace.options.footer") }}
             </p>
             <Button
@@ -422,23 +421,26 @@ const canDelete = computed(() => {
 
         <!-- Leave Workspace -->
         <Card
-          class="py-0 pt-6 border border-red-200 dark:border-red-900 rounded-xl"
+          class="py-0 pt-6 border border-red-200 dark:border-red-900/50 rounded-xl"
         >
-          <CardHeader>
-            <CardTitle>{{ t("settings.workspace.leave.title") }}</CardTitle>
-            <CardDescription>{{
+          <CardHeader class="pb-4">
+            <CardTitle
+              class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
+              >{{ t("settings.workspace.leave.title") }}</CardTitle
+            >
+            <CardDescription class="text-sm">{{
               t("settings.workspace.leave.description")
             }}</CardDescription>
           </CardHeader>
           <CardContent>
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
+            <p class="text-xs text-muted-foreground">
               {{ t("settings.workspace.leave.content") }}
             </p>
           </CardContent>
           <CardFooter
-            class="border-t pb-6 border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950 rounded-b-xl flex items-center justify-between"
+            class="border-t pb-6 border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30 rounded-b-xl flex items-center justify-between"
           >
-            <p class="text-sm text-red-600 dark:text-red-400">
+            <p class="text-xs text-red-600 dark:text-red-400">
               {{ t("settings.workspace.leave.warning") }}
             </p>
             <Button
@@ -456,23 +458,26 @@ const canDelete = computed(() => {
         <!-- Delete Workspace (only shown for owners) -->
         <Card
           v-if="isOwner"
-          class="py-0 pt-6 border border-red-200 dark:border-red-900 rounded-xl"
+          class="py-0 pt-6 border border-red-200 dark:border-red-900/50 rounded-xl"
         >
-          <CardHeader>
-            <CardTitle>{{ t("settings.workspace.delete.title") }}</CardTitle>
-            <CardDescription>{{
+          <CardHeader class="pb-4">
+            <CardTitle
+              class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
+              >{{ t("settings.workspace.delete.title") }}</CardTitle
+            >
+            <CardDescription class="text-sm">{{
               t("settings.workspace.delete.description")
             }}</CardDescription>
           </CardHeader>
           <CardContent>
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
+            <p class="text-xs text-muted-foreground">
               {{ t("settings.workspace.delete.content") }}
             </p>
           </CardContent>
           <CardFooter
-            class="border-t pb-6 border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950 rounded-b-xl flex items-center justify-between"
+            class="border-t pb-6 border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30 rounded-b-xl flex items-center justify-between"
           >
-            <p class="text-sm text-red-600 dark:text-red-400">
+            <p class="text-xs text-red-600 dark:text-red-400">
               {{ t("settings.workspace.delete.warning") }}
             </p>
             <Button
@@ -490,7 +495,7 @@ const canDelete = computed(() => {
 
       <!-- No workspace state -->
       <div v-else class="flex items-center justify-center py-12">
-        <p class="text-neutral-500 dark:text-neutral-400">
+        <p class="text-sm text-muted-foreground">
           {{ t("settings.workspace.noWorkspace") }}
         </p>
       </div>

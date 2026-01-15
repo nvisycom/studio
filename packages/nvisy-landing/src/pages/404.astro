@@ -1,74 +1,82 @@
 ---
 import { MinLayout } from "@/layouts";
-import GradientShader from "@/components/effects/GradientShader.vue";
 import ThemeToggle from "@/components/footer/ThemeToggle.vue";
 import { ArrowLeft, Home, RefreshCw } from "lucide-vue-next";
 ---
 
 <MinLayout title="Page not found" description="The page you're looking for doesn't exist or has been moved.">
-  <div slot="content" class="min-h-screen flex flex-col relative">
-    <!-- Gradient Background -->
-    <div class="absolute inset-0">
-      <GradientShader client:load />
+  <div slot="content" class="min-h-screen flex flex-col bg-background relative overflow-hidden">
+    <!-- Subtle gradient background -->
+    <div class="absolute inset-0 pointer-events-none">
+      <div class="absolute -top-[40%] -left-[20%] w-[70%] h-[70%] rounded-full bg-gradient-to-br from-violet-500/[0.07] to-transparent blur-3xl" />
+      <div class="absolute -bottom-[40%] -right-[20%] w-[70%] h-[70%] rounded-full bg-gradient-to-tl from-blue-500/[0.07] to-transparent blur-3xl" />
+      <div class="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--foreground)/0.02)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--foreground)/0.02)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
     </div>
 
-    <!-- Bottom gradient fade -->
-    <div
-      class="absolute bottom-0 left-0 right-0 h-[5vh] pointer-events-none z-[5] bg-gradient-to-b from-transparent to-white dark:to-black"
-    />
+    <!-- Header -->
+    <header class="relative z-10 flex items-center justify-between px-6 py-4">
+      <a href="/" class="flex items-center gap-2 group">
+        <span class="text-xl font-semibold tracking-tight group-hover:opacity-80 transition-opacity">nvisy</span>
+      </a>
+      <ThemeToggle client:load />
+    </header>
 
     <!-- Content -->
-    <div class="flex-1 flex items-center justify-center relative z-10 px-4">
-      <div class="flex flex-col items-center justify-center gap-6 text-center max-w-md p-6 md:p-12">
+    <main class="flex-1 flex items-center justify-center relative z-10 px-4">
+      <div class="text-center max-w-sm space-y-6">
         <!-- Error Code -->
-        <div class="mb-4">
-          <span class="text-[10rem] md:text-[14rem] lg:text-[18rem] font-bold leading-none text-black/20 dark:text-white/15">
-            404
-          </span>
+        <div class="text-8xl font-bold text-muted-foreground/20 select-none">
+          404
         </div>
 
-        <!-- Title -->
-        <h1 class="text-2xl md:text-3xl font-semibold text-black dark:text-white">
-          Page not found
-        </h1>
-
-        <!-- Description -->
-        <p class="text-base font-medium text-neutral-700 dark:text-neutral-300">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
+        <!-- Title & Description -->
+        <div class="space-y-2">
+          <h1 class="text-2xl font-semibold tracking-tight">
+            Page not found
+          </h1>
+          <p class="text-sm text-muted-foreground">
+            The page you're looking for doesn't exist or has been moved.
+          </p>
+        </div>
 
         <!-- Actions -->
-        <div class="flex items-center justify-center gap-3 mt-6">
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
           <a
             href="javascript:history.back()"
-            class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-black hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors text-sm font-medium whitespace-nowrap"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-border bg-background hover:bg-accent transition-colors text-sm font-medium"
           >
-            <ArrowLeft class="w-4 h-4 flex-shrink-0" />
-            <span>Go back</span>
+            <ArrowLeft className="w-4 h-4" />
+            Go back
           </a>
 
           <a
             href="javascript:location.reload()"
-            class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-black hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors text-sm font-medium whitespace-nowrap"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-border bg-background hover:bg-accent transition-colors text-sm font-medium"
           >
-            <RefreshCw class="w-4 h-4 flex-shrink-0" />
-            <span>Try again</span>
+            <RefreshCw className="w-4 h-4" />
+            Try again
           </a>
 
           <a
             href="/"
-            class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors text-sm font-medium whitespace-nowrap"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-foreground text-background hover:opacity-90 transition-opacity text-sm font-medium"
           >
-            <Home class="w-4 h-4 flex-shrink-0" />
-            <span>Go home</span>
+            <Home className="w-4 h-4" />
+            Home
           </a>
         </div>
       </div>
-    </div>
+    </main>
 
-    <!-- Footer with theme toggle -->
-    <div class="h-16 relative z-10 flex items-center justify-center">
-      <ThemeToggle client:load />
-    </div>
+    <!-- Footer -->
+    <footer class="relative z-10 flex items-center justify-center px-6 py-4 text-xs text-muted-foreground">
+      <div class="flex items-center gap-4">
+        <a href="/legal/privacy-policy" class="hover:text-foreground transition-colors">Privacy</a>
+        <span class="text-muted-foreground/50">·</span>
+        <a href="/legal/terms-of-service" class="hover:text-foreground transition-colors">Terms</a>
+        <span class="text-muted-foreground/50">·</span>
+        <a href="https://docs.nvisy.com" target="_blank" rel="noopener" class="hover:text-foreground transition-colors">Docs</a>
+      </div>
+    </footer>
   </div>
 </MinLayout>

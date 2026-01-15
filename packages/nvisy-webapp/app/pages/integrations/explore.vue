@@ -467,18 +467,18 @@ function notifyMe(_id: string | number) {
         <div class="relative flex-1">
           <Search
             :size="16"
-            class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+            class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
           />
           <Input
             v-model="searchQuery"
             :placeholder="t('integrations.forms.search.placeholder')"
-            class="pl-10 font-normal"
+            class="pl-10 h-9"
           />
         </div>
 
         <Select v-model="statusFilter">
-          <SelectTrigger class="w-[160px] text-sm font-normal">
-            <Filter :size="14" class="mr-2 text-neutral-400" />
+          <SelectTrigger class="w-[160px] h-9 text-sm">
+            <Filter :size="14" class="mr-2 text-muted-foreground" />
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -495,8 +495,8 @@ function notifyMe(_id: string | number) {
         </Select>
 
         <Select v-model="sortBy">
-          <SelectTrigger class="w-[180px] text-sm font-normal">
-            <ArrowUpDown :size="14" class="mr-2 text-neutral-400" />
+          <SelectTrigger class="w-[180px] h-9 text-sm">
+            <ArrowUpDown :size="14" class="mr-2 text-muted-foreground" />
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -519,9 +519,9 @@ function notifyMe(_id: string | number) {
           variant="outline"
           size="sm"
           :class="[
-            'font-normal transition-colors',
+            'transition-colors',
             selectedCategories.size === 0
-              ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border-neutral-900 dark:border-white'
+              ? 'bg-foreground text-background border-foreground'
               : '',
           ]"
           @click="clearCategoryFilters"
@@ -535,9 +535,9 @@ function notifyMe(_id: string | number) {
           variant="outline"
           size="sm"
           :class="[
-            'font-normal transition-colors',
+            'transition-colors',
             selectedCategories.has(category.key)
-              ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border-neutral-900 dark:border-white'
+              ? 'bg-foreground text-background border-foreground'
               : '',
           ]"
           @click="toggleCategory(category.key)"
@@ -553,16 +553,14 @@ function notifyMe(_id: string | number) {
       <!-- No Results -->
       <div v-if="filteredIntegrations.length === 0" class="py-12 text-center">
         <div
-          class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
+          class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
         >
-          <Puzzle class="h-6 w-6 text-neutral-400 dark:text-neutral-500" />
+          <Puzzle class="size-5 text-muted-foreground" />
         </div>
-        <p class="font-normal text-neutral-700 dark:text-neutral-300 mb-1">
+        <p class="text-sm text-foreground mb-1">
           {{ t("integrations.explore.noResults") }}
         </p>
-        <p
-          class="font-normal text-sm text-neutral-600 dark:text-neutral-400 mb-4"
-        >
+        <p class="text-xs text-muted-foreground mb-4">
           {{ t("integrations.explore.noResultsHint") }}
         </p>
         <Button
@@ -571,7 +569,6 @@ function notifyMe(_id: string | number) {
           "
           variant="outline"
           size="sm"
-          class="font-normal"
           @click="clearAllFilters"
         >
           {{ t("integrations.explore.clearFilters") }}

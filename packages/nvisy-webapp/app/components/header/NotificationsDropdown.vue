@@ -47,7 +47,7 @@ function formatRelativeTime(dateString: string): string {
       <Button
         variant="ghost"
         size="sm"
-        class="h-8 w-8 p-0 relative"
+        class="h-8 w-8 p-0 relative text-muted-foreground hover:text-foreground"
         title="Notifications"
       >
         <Bell :size="16" />
@@ -57,49 +57,39 @@ function formatRelativeTime(dateString: string): string {
         />
       </Button>
     </DropdownMenuTrigger>
-    <DropdownMenuContent align="end" class="w-[400px] p-0">
-      <div class="p-4 border-b border-neutral-200 dark:border-neutral-800">
-        <h3 class="font-medium text-base text-neutral-900 dark:text-white">
-          Notifications
-        </h3>
-        <p
-          class="text-sm font-normal text-neutral-600 dark:text-neutral-400 mt-0.5"
-        >
+    <DropdownMenuContent align="end" class="w-[380px] p-0">
+      <div class="p-4 border-b border-border/50">
+        <h3 class="font-medium text-sm text-foreground">Notifications</h3>
+        <p class="text-xs text-muted-foreground mt-0.5">
           Stay updated with your latest notifications
         </p>
       </div>
 
       <!-- Loading State -->
       <div v-if="isLoading" class="flex items-center justify-center py-12">
-        <Loader2 :size="24" class="animate-spin text-neutral-400" />
+        <Loader2 :size="20" class="animate-spin text-muted-foreground" />
       </div>
 
       <template v-else>
-        <div class="p-3 max-h-[400px] overflow-y-auto">
+        <div class="p-2 max-h-[400px] overflow-y-auto">
           <div
             v-if="notifications && notifications.length > 0"
-            class="space-y-2"
+            class="space-y-1"
           >
             <div
               v-for="notification in notifications"
               :key="notification.id"
-              class="p-3 rounded-lg border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors"
+              class="p-3 rounded-md hover:bg-muted/50 transition-colors cursor-pointer"
             >
               <div class="flex items-start justify-between gap-3">
                 <div class="flex-1 min-w-0">
-                  <p
-                    class="font-normal text-sm text-neutral-900 dark:text-white"
-                  >
+                  <p class="font-medium text-sm text-foreground">
                     {{ notification.title }}
                   </p>
-                  <p
-                    class="text-sm font-normal text-neutral-600 dark:text-neutral-400 mt-1"
-                  >
+                  <p class="text-sm text-muted-foreground mt-0.5 line-clamp-2">
                     {{ notification.message }}
                   </p>
-                  <p
-                    class="text-sm font-normal text-neutral-500 dark:text-neutral-500 mt-2"
-                  >
+                  <p class="text-xs text-muted-foreground/70 mt-1.5">
                     {{ formatRelativeTime(notification.createdAt) }}
                   </p>
                 </div>
@@ -107,10 +97,8 @@ function formatRelativeTime(dateString: string): string {
             </div>
           </div>
           <div v-else class="text-center py-12">
-            <Inbox :size="32" class="mx-auto text-neutral-400 mb-3" />
-            <p class="text-sm text-neutral-500 dark:text-neutral-400">
-              No notifications
-            </p>
+            <Inbox :size="28" class="mx-auto text-muted-foreground/50 mb-3" />
+            <p class="text-sm text-muted-foreground">No notifications</p>
           </div>
         </div>
       </template>
