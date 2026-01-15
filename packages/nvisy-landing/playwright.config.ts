@@ -9,8 +9,8 @@ export default defineConfig({
 	testMatch: ["**/*.spec.ts", "**/*.test.ts"],
 	// Run tests in parallel.
 	fullyParallel: true,
-	// Use half of available CPUs for workers.
-	workers: withCI ? "50%" : undefined,
+	// Use half of available CPUs for workers in CI.
+	...(withCI && { workers: "50%" }),
 	// Maximum time one test can run for.
 	timeout: 30 * 1000,
 	expect: {
