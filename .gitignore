@@ -43,3 +43,5 @@ output/
 # Other
 .ignore*/
 LLM.md
+.claude
+CLAUDE.md

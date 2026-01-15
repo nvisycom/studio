@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
 } from "@/components/ui/accordion";
 
 export interface FAQItem {
-  question: string;
-  answer: string;
+	question: string;
+	answer: string;
 }
 
 export interface Props {
-  faqs: FAQItem[];
+	faqs: FAQItem[];
 }
 
 const props = defineProps<Props>();

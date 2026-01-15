@@ -59,11 +59,15 @@ const runAnimation = () => {
 					if (currentStep === steps.value.length) {
 						setTimeout(() => {
 							// Set all steps to loading for spinner effect
-							steps.value.forEach((step) => (step.status = "loading"));
+							for (const step of steps.value) {
+								step.status = "loading";
+							}
 
 							setTimeout(() => {
 								// Reset all after spinner
-								steps.value.forEach((step) => (step.status = "pending"));
+								for (const step of steps.value) {
+									step.status = "pending";
+								}
 								currentStep = 0;
 							}, 800);
 						}, 1200);

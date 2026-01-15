@@ -6,7 +6,7 @@ import { Sparkles } from "lucide-vue-next";
 import ChangelogSections from "@/components/features/changelog/ChangelogSections.vue";
 
 const changelogEntries = (await getCollection("changelog")).sort(
-	(a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime()
+	(a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
 );
 
 const formatDate = (date: Date) => {
@@ -20,28 +20,35 @@ const formatDate = (date: Date) => {
 // Parse markdown content to extract sections
 function parseSections(body: string) {
 	const sections: Record<string, string[]> = {};
-	const lines = body.split('\n');
+	const lines = body.split("\n");
 	let currentSection: string | null = null;
 
 	for (const line of lines) {
 		// Check for ## headers (Features, Improvements, Fixes, Changes)
-		const headerMatch = line.match(/^##\s+(Features|Improvements|Fixes|Changes|Bug Fixes)/i);
+		const headerMatch = line.match(
+			/^##\s+(Features|Improvements|Fixes|Changes|Bug Fixes)/i,
+		);
 		if (headerMatch) {
-			currentSection = headerMatch[1].toLowerCase().replace('bug fixes', 'fixes');
+			currentSection = headerMatch[1]
+				.toLowerCase()
+				.replace("bug fixes", "fixes");
 			sections[currentSection] = [];
 			continue;
 		}
 
 		// Check for list items under current section
 		if (currentSection && line.match(/^-\s+/)) {
-			const item = line.replace(/^-\s+/, '').replace(/\*\*([^*]+)\*\*/g, '$1');
+			const item = line.replace(/^-\s+/, "").replace(/\*\*([^*]+)\*\*/g, "$1");
 			if (item.trim()) {
 				sections[currentSection].push(item.trim());
 			}
 		}
 
 		// Stop at next ## that's not a tracked section
-		if (line.match(/^##\s+/) && !line.match(/^##\s+(Features|Improvements|Fixes|Changes|Bug Fixes)/i)) {
+		if (
+			line.match(/^##\s+/) &&
+			!line.match(/^##\s+(Features|Improvements|Fixes|Changes|Bug Fixes)/i)
+		) {
 			currentSection = null;
 		}
 	}
@@ -50,9 +57,9 @@ function parseSections(body: string) {
 }
 
 // Process entries with parsed sections
-const entriesWithSections = changelogEntries.map(entry => ({
+const entriesWithSections = changelogEntries.map((entry) => ({
 	...entry,
-	sections: parseSections(entry.body || ''),
+	sections: parseSections(entry.body || ""),
 }));
 ---
 

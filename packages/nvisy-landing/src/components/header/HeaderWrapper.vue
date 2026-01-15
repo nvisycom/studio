@@ -7,39 +7,39 @@ let lastScrollY = 0;
 let ticking = false;
 
 const updateHeader = () => {
-  const scrollY = window.scrollY;
-  const scrollingDown = scrollY > lastScrollY;
+	const scrollY = window.scrollY;
+	const scrollingDown = scrollY > lastScrollY;
 
-  // Use hysteresis: different thresholds based on scroll direction
-  if (scrollingDown) {
-    if (scrollY > scrollThreshold) {
-      isScrolled.value = true;
-    }
-  } else {
-    if (scrollY < scrollThreshold - 20) {
-      isScrolled.value = false;
-    }
-  }
+	// Use hysteresis: different thresholds based on scroll direction
+	if (scrollingDown) {
+		if (scrollY > scrollThreshold) {
+			isScrolled.value = true;
+		}
+	} else {
+		if (scrollY < scrollThreshold - 20) {
+			isScrolled.value = false;
+		}
+	}
 
-  lastScrollY = scrollY;
-  ticking = false;
+	lastScrollY = scrollY;
+	ticking = false;
 };
 
 const handleScroll = () => {
-  if (!ticking) {
-    requestAnimationFrame(updateHeader);
-    ticking = true;
-  }
+	if (!ticking) {
+		requestAnimationFrame(updateHeader);
+		ticking = true;
+	}
 };
 
 onMounted(() => {
-  window.addEventListener("scroll", handleScroll, { passive: true });
-  lastScrollY = window.scrollY;
-  isScrolled.value = lastScrollY > scrollThreshold;
+	window.addEventListener("scroll", handleScroll, { passive: true });
+	lastScrollY = window.scrollY;
+	isScrolled.value = lastScrollY > scrollThreshold;
 });
 
 onUnmounted(() => {
-  window.removeEventListener("scroll", handleScroll);
+	window.removeEventListener("scroll", handleScroll);
 });
 </script>
 

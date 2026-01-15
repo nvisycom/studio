@@ -20,11 +20,12 @@ const { entry } = Astro.props;
 const { Content } = await entry.render();
 
 const allEntries = (await getCollection("changelog")).sort(
-	(a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime()
+	(a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
 );
 
 const currentIndex = allEntries.findIndex((e) => e.slug === entry.slug);
-const previousEntry = currentIndex < allEntries.length - 1 ? allEntries[currentIndex + 1] : null;
+const previousEntry =
+	currentIndex < allEntries.length - 1 ? allEntries[currentIndex + 1] : null;
 const nextEntry = currentIndex > 0 ? allEntries[currentIndex - 1] : null;
 
 const formatDate = (date: Date) => {

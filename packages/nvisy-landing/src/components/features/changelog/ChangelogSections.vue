@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import { ChevronDown } from "lucide-vue-next";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
 defineProps<{
-  sections: Record<string, string[]>;
+	sections: Record<string, string[]>;
 }>();
 
 const sectionConfig: Record<string, { label: string }> = {
-  features: { label: "Features" },
-  improvements: { label: "Improvements" },
-  fixes: { label: "Fixes" },
-  changes: { label: "Changes" },
+	features: { label: "Features" },
+	improvements: { label: "Improvements" },
+	fixes: { label: "Fixes" },
+	changes: { label: "Changes" },
 };
 </script>
 

@@ -1,39 +1,39 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import {
-	Upload,
-	X,
-	FileText,
-	Check,
-	AlertCircle,
-	Loader2,
+  Upload,
+  X,
+  FileText,
+  Check,
+  AlertCircle,
+  Loader2,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 
 interface UploadingFile {
-	id: string;
-	file: File;
-	status: "pending" | "uploading" | "success" | "error";
-	progress: number;
-	error?: string;
+  id: string;
+  file: File;
+  status: "pending" | "uploading" | "success" | "error";
+  progress: number;
+  error?: string;
 }
 
 interface Props {
-	open: boolean;
-	uploadFn: (files: File[]) => Promise<unknown>;
+  open: boolean;
+  uploadFn: (files: File[]) => Promise<unknown>;
 }
 
 interface Emits {
-	(e: "update:open", value: boolean): void;
-	(e: "uploaded"): void;
+  (e: "update:open", value: boolean): void;
+  (e: "uploaded"): void;
 }
 
 const props = defineProps<Props>();
@@ -47,105 +47,105 @@ const fileInputRef = ref<HTMLInputElement | null>(null);
 
 const hasFiles = computed(() => uploadingFiles.value.length > 0);
 const isUploading = computed(() =>
-	uploadingFiles.value.some((f) => f.status === "uploading"),
+  uploadingFiles.value.some((f) => f.status === "uploading"),
 );
 const allComplete = computed(
-	() =>
-		uploadingFiles.value.length > 0 &&
-		uploadingFiles.value.every(
-			(f) => f.status === "success" || f.status === "error",
-		),
+  () =>
+    uploadingFiles.value.length > 0 &&
+    uploadingFiles.value.every(
+      (f) => f.status === "success" || f.status === "error",
+    ),
 );
 
 function handleDragOver(e: DragEvent) {
-	e.preventDefault();
-	isDragging.value = true;
+  e.preventDefault();
+  isDragging.value = true;
 }
 
 function handleDragLeave() {
-	isDragging.value = false;
+  isDragging.value = false;
 }
 
 function handleDrop(e: DragEvent) {
-	e.preventDefault();
-	isDragging.value = false;
-	const files = e.dataTransfer?.files;
-	if (files) {
-		addFiles(Array.from(files));
-	}
+  e.preventDefault();
+  isDragging.value = false;
+  const files = e.dataTransfer?.files;
+  if (files) {
+    addFiles(Array.from(files));
+  }
 }
 
 function handleFileSelect(e: Event) {
-	const input = e.target as HTMLInputElement;
-	if (input.files) {
-		addFiles(Array.from(input.files));
-	}
-	input.value = "";
+  const input = e.target as HTMLInputElement;
+  if (input.files) {
+    addFiles(Array.from(input.files));
+  }
+  input.value = "";
 }
 
 function addFiles(files: File[]) {
-	const newFiles: UploadingFile[] = files.map((file) => ({
-		id: crypto.randomUUID(),
-		file,
-		status: "pending",
-		progress: 0,
-	}));
-	uploadingFiles.value.push(...newFiles);
+  const newFiles: UploadingFile[] = files.map((file) => ({
+    id: crypto.randomUUID(),
+    file,
+    status: "pending",
+    progress: 0,
+  }));
+  uploadingFiles.value.push(...newFiles);
 }
 
 function removeFile(id: string) {
-	uploadingFiles.value = uploadingFiles.value.filter((f) => f.id !== id);
+  uploadingFiles.value = uploadingFiles.value.filter((f) => f.id !== id);
 }
 
 function formatFileSize(bytes: number): string {
-	if (bytes === 0) return "0 B";
-	const k = 1024;
-	const sizes = ["B", "KB", "MB", "GB"];
-	const i = Math.floor(Math.log(bytes) / Math.log(k));
-	return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+  if (bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`;
 }
 
 async function startUpload() {
-	const pendingFiles = uploadingFiles.value.filter(
-		(f) => f.status === "pending",
-	);
-	if (pendingFiles.length === 0) return;
+  const pendingFiles = uploadingFiles.value.filter(
+    (f) => f.status === "pending",
+  );
+  if (pendingFiles.length === 0) return;
 
-	// Mark all as uploading
-	for (const file of pendingFiles) {
-		file.status = "uploading";
-		file.progress = 50; // Indeterminate progress
-	}
+  // Mark all as uploading
+  for (const file of pendingFiles) {
+    file.status = "uploading";
+    file.progress = 50; // Indeterminate progress
+  }
 
-	try {
-		// Upload all files at once
-		await props.uploadFn(pendingFiles.map((f) => f.file));
+  try {
+    // Upload all files at once
+    await props.uploadFn(pendingFiles.map((f) => f.file));
 
-		// Mark all as success
-		for (const file of pendingFiles) {
-			file.status = "success";
-			file.progress = 100;
-		}
+    // Mark all as success
+    for (const file of pendingFiles) {
+      file.status = "success";
+      file.progress = 100;
+    }
 
-		emit("uploaded");
-	} catch (error) {
-		// Mark all as error
-		for (const file of pendingFiles) {
-			file.status = "error";
-			file.error = error instanceof Error ? error.message : "Upload failed";
-		}
-	}
+    emit("uploaded");
+  } catch (error) {
+    // Mark all as error
+    for (const file of pendingFiles) {
+      file.status = "error";
+      file.error = error instanceof Error ? error.message : "Upload failed";
+    }
+  }
 }
 
 function handleClose() {
-	if (!isUploading.value) {
-		uploadingFiles.value = [];
-		emit("update:open", false);
-	}
+  if (!isUploading.value) {
+    uploadingFiles.value = [];
+    emit("update:open", false);
+  }
 }
 
 function handleBrowseClick() {
-	fileInputRef.value?.click();
+  fileInputRef.value?.click();
 }
 </script>
 

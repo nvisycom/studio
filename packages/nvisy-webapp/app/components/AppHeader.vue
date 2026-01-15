@@ -5,23 +5,24 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbList,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+// biome-ignore lint/style/useImportType: HeaderTabs is used at runtime via typeof
 import {
-	HeaderTabs,
-	FeedbackModal,
-	NotificationsDropdown,
+  HeaderTabs,
+  FeedbackModal,
+  NotificationsDropdown,
 } from "@/components/header";
 
 const route = useRoute();
 
 // Get page category from route meta
 const pageCategory = computed(
-	() => route.meta.pageCategory as string | undefined,
+  () => route.meta.pageCategory as string | undefined,
 );
 
 // Ref to HeaderTabs component
@@ -29,14 +30,14 @@ const headerTabsRef = ref<InstanceType<typeof HeaderTabs> | null>(null);
 
 // Check if header tabs are visible
 const hasVisibleTabs = computed(() => {
-	return headerTabsRef.value?.hasVisibleTabs ?? false;
+  return headerTabsRef.value?.hasVisibleTabs ?? false;
 });
 
 // Modal states
 const isFeedbackModalOpen = ref(false);
 
 function openFeedbackModal() {
-	isFeedbackModalOpen.value = true;
+  isFeedbackModalOpen.value = true;
 }
 </script>
 

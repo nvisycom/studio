@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
+	NavigationMenu,
+	NavigationMenuItem,
+	NavigationMenuLink,
+	NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import ProductsDropdown from "./DesktopProducts.vue";
 import ResourcesDropdown from "./DesktopResources.vue";

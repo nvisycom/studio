@@ -6,16 +6,17 @@ import { reactiveOmit } from "@vueuse/core";
 import { ToggleGroupItem, useForwardProps } from "reka-ui";
 import { inject } from "vue";
 import { cn } from "@/utils";
+// biome-ignore lint/style/useImportType: toggleVariants is used at runtime via typeof
 import { toggleVariants } from "@/components/ui/toggle";
 
 type ToggleGroupVariants = VariantProps<typeof toggleVariants>;
 
 const props = defineProps<
-	ToggleGroupItemProps & {
-		class?: HTMLAttributes["class"];
-		variant?: ToggleGroupVariants["variant"];
-		size?: ToggleGroupVariants["size"];
-	}
+  ToggleGroupItemProps & {
+    class?: HTMLAttributes["class"];
+    variant?: ToggleGroupVariants["variant"];
+    size?: ToggleGroupVariants["size"];
+  }
 >();
 
 const context = inject<ToggleGroupVariants>("toggleGroup");
@@ -31,13 +32,16 @@ const forwardedProps = useForwardProps(delegatedProps);
     :data-variant="context?.variant || variant"
     :data-size="context?.size || size"
     v-bind="forwardedProps"
-    :class="cn(
-      toggleVariants({
-        variant: context?.variant || variant,
-        size: context?.size || size,
-      }),
-      'min-w-0 flex-1 shrink-0 rounded-none shadow-none first:rounded-l-md last:rounded-r-md focus:z-10 focus-visible:z-10 border-0 border-r border-neutral-200 dark:border-neutral-700 last:border-r-0',
-      props.class)"
+    :class="
+      cn(
+        toggleVariants({
+          variant: context?.variant || variant,
+          size: context?.size || size,
+        }),
+        'min-w-0 flex-1 shrink-0 rounded-none shadow-none first:rounded-l-md last:rounded-r-md focus:z-10 focus-visible:z-10 border-0 border-r border-neutral-200 dark:border-neutral-700 last:border-r-0',
+        props.class,
+      )
+    "
   >
     <slot v-bind="slotProps" />
   </ToggleGroupItem>

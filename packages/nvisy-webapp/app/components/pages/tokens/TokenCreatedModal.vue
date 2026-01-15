@@ -4,22 +4,20 @@ import { Copy, Check } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 
 interface Props {
-	open: boolean;
-	token: string | null;
+  open: boolean;
+  token: string | null;
 }
 
-interface Emits {
-	(e: "update:open", value: boolean): void;
-}
+type Emits = (e: "update:open", value: boolean) => void;
 
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
@@ -29,20 +27,20 @@ const { t } = useI18n();
 const copied = ref(false);
 
 async function copyToken() {
-	if (!props.token) return;
+  if (!props.token) return;
 
-	try {
-		await navigator.clipboard.writeText(props.token);
-		copied.value = true;
-		setTimeout(() => {
-			copied.value = false;
-		}, 2000);
-	} catch (err) {}
+  try {
+    await navigator.clipboard.writeText(props.token);
+    copied.value = true;
+    setTimeout(() => {
+      copied.value = false;
+    }, 2000);
+  } catch (err) {}
 }
 
 function closeModal() {
-	emit("update:open", false);
-	copied.value = false;
+  emit("update:open", false);
+  copied.value = false;
 }
 </script>
 

@@ -8,22 +8,26 @@ on:
       - "packages/**"
       - "package.json"
       - "package-lock.json"
-      - ".github/workflows/security.yaml"
+      - ".github/workflows/security.yml"
   pull_request:
     paths:
       - "packages/**"
       - "package.json"
       - "package-lock.json"
-      - ".github/workflows/security.yaml"
+      - ".github/workflows/security.yml"
   schedule:
     - cron: "0 0 * * 0"
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   audit:
     name: Audit
     runs-on: ubuntu-latest
-
+    timeout-minutes: 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -32,7 +36,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 20
-          cache: "npm"
+          cache: npm
 
       - name: Run security audit
         run: npm audit --audit-level=moderate
@@ -43,7 +47,7 @@ jobs:
   license:
     name: License Check
     runs-on: ubuntu-latest
-
+    timeout-minutes: 10
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -52,7 +56,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 20
-          cache: "npm"
+          cache: npm
 
       - name: Install dependencies
         run: npm ci

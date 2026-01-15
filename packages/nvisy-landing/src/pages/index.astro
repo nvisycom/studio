@@ -15,7 +15,7 @@ import { getCollection } from "astro:content";
 
 // Get latest changelog entry
 const changelogEntries = (await getCollection("changelog")).sort(
-	(a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime()
+	(a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
 );
 const latestChangelog = changelogEntries[0];
 

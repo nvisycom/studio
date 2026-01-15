@@ -107,7 +107,7 @@ async function updateStatus() {
 
 		if (response.ok) {
 			const data = await response.json();
-			if (data && data.status) {
+			if (data?.status) {
 				currentStatus.value = data.status;
 				lastUpdated.value = new Date();
 			} else {
