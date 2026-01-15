@@ -12,11 +12,11 @@ import { toggleVariants } from "@/components/ui/toggle";
 type ToggleGroupVariants = VariantProps<typeof toggleVariants>;
 
 const props = defineProps<
-  ToggleGroupItemProps & {
-    class?: HTMLAttributes["class"];
-    variant?: ToggleGroupVariants["variant"];
-    size?: ToggleGroupVariants["size"];
-  }
+	ToggleGroupItemProps & {
+		class?: HTMLAttributes["class"];
+		variant?: ToggleGroupVariants["variant"];
+		size?: ToggleGroupVariants["size"];
+	}
 >();
 
 const context = inject<ToggleGroupVariants>("toggleGroup");

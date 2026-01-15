@@ -1,66 +1,66 @@
 <script setup lang="ts">
 import type { IntegrationRun } from "@nvisy/sdk/datatypes";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 
 interface Props {
-  open?: boolean;
-  run: IntegrationRun | null;
+	open?: boolean;
+	run: IntegrationRun | null;
 }
 
 type Emits = (e: "update:open", value: boolean) => void;
 
 const props = withDefaults(defineProps<Props>(), {
-  open: false,
+	open: false,
 });
 
 const emit = defineEmits<Emits>();
 
 function handleOpenChange(open: boolean) {
-  emit("update:open", open);
+	emit("update:open", open);
 }
 
 function getStatusColor(status: "pending" | "running" | "cancelled"): string {
-  switch (status) {
-    case "running":
-      return "text-blue-600 dark:text-blue-400";
-    case "pending":
-      return "text-yellow-600 dark:text-yellow-400";
-    case "cancelled":
-      return "text-red-600 dark:text-red-400";
-    default:
-      return "text-neutral-600 dark:text-neutral-400";
-  }
+	switch (status) {
+		case "running":
+			return "text-blue-600 dark:text-blue-400";
+		case "pending":
+			return "text-yellow-600 dark:text-yellow-400";
+		case "cancelled":
+			return "text-red-600 dark:text-red-400";
+		default:
+			return "text-neutral-600 dark:text-neutral-400";
+	}
 }
 
 function formatDateTime(dateString: string): string {
-  return new Date(dateString).toLocaleString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
+	return new Date(dateString).toLocaleString("en-US", {
+		month: "short",
+		day: "numeric",
+		year: "numeric",
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
+	});
 }
 
 function formatDuration(
-  startedAt: string,
-  completedAt: string | null | undefined,
+	startedAt: string,
+	completedAt: string | null | undefined,
 ): string {
-  if (!completedAt) return "-";
-  const start = new Date(startedAt).getTime();
-  const end = new Date(completedAt).getTime();
-  const diff = end - start;
-  const minutes = Math.floor(diff / 60000);
-  const seconds = Math.floor((diff % 60000) / 1000);
-  return `${minutes}m ${seconds}s`;
+	if (!completedAt) return "-";
+	const start = new Date(startedAt).getTime();
+	const end = new Date(completedAt).getTime();
+	const diff = end - start;
+	const minutes = Math.floor(diff / 60000);
+	const seconds = Math.floor((diff % 60000) / 1000);
+	return `${minutes}m ${seconds}s`;
 }
 </script>
 
