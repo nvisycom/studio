@@ -1,6 +1,8 @@
+#[cfg(target_os = "macos")]
+use tauri::TitleBarStyle;
 use tauri::{
-    App, AppHandle, Emitter, Manager, PhysicalPosition, PhysicalSize, TitleBarStyle, WebviewUrl,
-    WebviewWindow, WebviewWindowBuilder, Window, WindowEvent,
+    App, AppHandle, Emitter, Manager, PhysicalPosition, PhysicalSize, WebviewUrl, WebviewWindow,
+    WebviewWindowBuilder, Window, WindowEvent,
     menu::{Menu, MenuEvent, MenuItem, PredefinedMenuItem},
     tray::{MouseButton, MouseButtonState, TrayIcon, TrayIconBuilder, TrayIconEvent},
 };
@@ -144,18 +146,24 @@ fn show_editor_window(app: &AppHandle) {
         show_window(&window);
     } else {
         // Create new editor window (not pinned by default)
-        let window = WebviewWindowBuilder::new(app, "editor", WebviewUrl::App("/".into()))
+        let mut builder = WebviewWindowBuilder::new(app, "editor", WebviewUrl::App("/".into()))
             .title("Nvisy Workspace")
             .inner_size(1200.0, 800.0)
             .min_inner_size(900.0, 600.0)
-            .title_bar_style(TitleBarStyle::Overlay)
-            .hidden_title(true)
             .always_on_top(false)
             .visible(false)
             .resizable(true)
             .skip_taskbar(true)
-            .focused(true)
-            .build();
+            .focused(true);
+
+        #[cfg(target_os = "macos")]
+        {
+            builder = builder
+                .title_bar_style(TitleBarStyle::Overlay)
+                .hidden_title(true);
+        }
+
+        let window = builder.build();
 
         if let Ok(window) = window {
             position_editor_window_near_cursor(&window);
