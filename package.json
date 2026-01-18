@@ -2,7 +2,7 @@
   "name": "@nvisy/app",
   "private": true,
   "description": "Nvisy desktop application.",
-  "author": "Nvisy Software Team",
+  "author": "Nvisy Software",
   "license": "MIT",
   "workspaces": [
     "packages/*"

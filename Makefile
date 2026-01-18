@@ -24,6 +24,7 @@ clean: ## Cleans all build artifacts (Rust and npm).
 	$(call make-log,Cleaning npm artifacts...)
 	@rm -rf node_modules
 	@rm -rf packages/*/node_modules
+	@rm -f package-lock.json
 	$(call make-log,Node modules cleaned.)
 
 	$(call make-log,Cleaning Nuxt build artifacts...)
