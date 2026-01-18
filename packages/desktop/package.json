@@ -25,7 +25,7 @@
 	"dependencies": {
 		"@cloudworxx/tauri-plugin-mac-rounded-corners": "^1.1.1",
 		"@nuxt/devtools": "^3.1.1",
-		"@nuxt/image": "^1.11.0",
+		"@nuxt/image": "^2.0.0",
 		"@nuxtjs/color-mode": "^3.5.2",
 		"@nuxtjs/device": "^4.0.0",
 		"@nuxtjs/i18n": "^10.1.1",
