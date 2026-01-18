@@ -203,7 +203,7 @@ jobs:
 
       - name: Build Tauri app
         working-directory: packages/desktop
-        run: npm run tauri:build -- --target ${{ matrix.target }}
+        run: npx tauri build --config ./tauri/tauri.conf.json --target ${{ matrix.target }}
 
       - name: Upload build artifacts (Linux)
         if: github.ref == 'refs/heads/main' && matrix.name == 'linux-x64'
