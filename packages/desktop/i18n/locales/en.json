@@ -1,0 +1,140 @@
+{
+	"nav": {
+		"files": "Files",
+		"integrations": "Integrations",
+		"services": "Services",
+		"settings": "Settings",
+		"about": "About",
+		"update": "Update",
+		"quit": "Quit"
+	},
+	"files": {
+		"local": "Local Files",
+		"remote": "Remote Files",
+		"search": "Search files...",
+		"empty": {
+			"local": "No local files",
+			"remote": "No remote files"
+		},
+		"context": {
+			"open": "Open",
+			"upload": "Upload",
+			"download": "Download",
+			"delete": "Delete"
+		},
+		"dropzone": {
+			"title": "Drop files to upload",
+			"description": "Files will be added to your local folder"
+		}
+	},
+	"integrations": {
+		"empty": {
+			"title": "No integrations",
+			"description": "Connect your first integration to get started"
+		},
+		"context": {
+			"view": "View",
+			"edit": "Edit",
+			"enable": "Enable",
+			"disable": "Disable"
+		}
+	},
+	"services": {
+		"running": "Running",
+		"stopped": "Stopped",
+		"empty": {
+			"title": "No services",
+			"description": "No services are configured"
+		}
+	},
+	"settings": {
+		"tabs": {
+			"billing": "Billing",
+			"preferences": "Preferences",
+			"storage": "Storage"
+		},
+		"api": "API Configuration",
+		"baseUrl": "Base URL",
+		"baseUrlPlaceholder": "https://api.nvisy.com",
+		"apiToken": "API Token",
+		"apiTokenPlaceholder": "Enter your API token",
+		"localFolders": "Local Folders",
+		"remoteFolder": "Remote Folder",
+		"folderPath": "/path/to/folder",
+		"addFolder": "Add Folder",
+		"theme": "Theme",
+		"useGradient": "Use Gradient",
+		"light": "Light",
+		"dark": "Dark",
+		"system": "System",
+		"language": "Language",
+		"usage": "Usage",
+		"plan": "Plan",
+		"planDescription": "Full access to all features",
+		"upgrade": "Upgrade",
+		"credits": "Credits",
+		"storage": "Storage"
+	},
+	"auth": {
+		"title": "Connect to Nvisy",
+		"description": "Enter your API credentials to get started",
+		"baseUrl": "Base URL",
+		"apiToken": "API Token",
+		"connect": "Connect",
+		"connecting": "Connecting...",
+		"logout": "Log Out",
+		"optional": "optional",
+		"getToken": "Get your API token"
+	},
+	"about": {
+		"version": "Version",
+		"build": "Build",
+		"tauri": "Tauri",
+		"platform": "Platform",
+		"website": "Visit Website",
+		"changelog": "View Changelog",
+		"github": "GitHub Repository",
+		"rights": "All rights reserved."
+	},
+	"chat": {
+		"addDocument": "Add document",
+		"placeholder": "Ask about your documents...",
+		"mode": {
+			"chat": "Chat",
+			"edit": "Edit"
+		},
+		"context": {
+			"summarize": "Summarize",
+			"redact": "Redact",
+			"annotate": "Annotate",
+			"highlight": "Highlight"
+		},
+		"actions": {
+			"copy": "Copy",
+			"edit": "Edit",
+			"like": "Like",
+			"dislike": "Dislike",
+			"regenerate": "Regenerate"
+		}
+	},
+	"workspace": {
+		"alwaysOnTop": "Always on top",
+		"searchFiles": "Search files...",
+		"documents": "Documents",
+		"previewPlaceholder": "Document preview will appear here",
+		"noDocument": "No document selected",
+		"zoomIn": "Zoom in",
+		"zoomOut": "Zoom out",
+		"showSidebar": "Show sidebar",
+		"hideSidebar": "Hide sidebar"
+	},
+	"footer": {
+		"online": "Online",
+		"offline": "Offline",
+		"credits": "credits",
+		"syncing": "Syncing...",
+		"synced": "Synced",
+		"syncError": "Sync failed",
+		"notSynced": "Not synced"
+	}
+}

@@ -1,0 +1,50 @@
+# https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[workspace]
+resolver = "2"
+members = [
+    "./crates/client",
+    "./crates/socket",
+    "./packages/desktop/tauri",
+]
+
+[workspace.package]
+version = "0.1.0"
+rust-version = "1.89"
+edition = "2024"
+license = "MIT"
+publish = false
+
+authors = ["nvisy <contact@nvisy.com>"]
+repository = "https://github.com/nvisycom/nvisy"
+homepage = "https://github.com/nvisycom/nvisy"
+documentation = "https://docs.rs/nvisy"
+
+[workspace.dependencies]
+# Default features are disabled for certain dependencies to allow
+# downstream workspaces/crates to selectively enable them as needed.
+#
+# See for more details: https://github.com/rust-lang/cargo/issues/11329
+
+# Internal crates
+nvisy-desktop-client = { path = "./crates/client", version = "0.1.0" }
+nvisy-desktop-socket = { path = "./crates/socket", version = "0.1.0" }
+
+# Tauri
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = { version = "2", features = [] }
+tauri-plugin-store = { version = "2", features = [] }
+tauri-plugin-notification = { version = "2", features = [] }
+tauri-plugin-global-shortcut = { version = "2", features = [] }
+tauri-plugin-dialog = { version = "2", features = [] }
+tauri-build = { version = "2", features = [] }
+
+# (De)serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = [] }
+
+# Derive macros
+strum = { version = "0.27", features = ["derive"] }
+
+# Utilities
+open = { version = "5", features = [] }

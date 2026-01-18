@@ -1,0 +1,38 @@
+# https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[package]
+name = "nvisy"
+version = { workspace = true }
+rust-version = { workspace = true }
+edition = { workspace = true }
+license = { workspace = true }
+publish = { workspace = true }
+readme = "./README.md"
+
+authors = { workspace = true }
+repository = { workspace = true }
+homepage = { workspace = true }
+documentation = { workspace = true }
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "nvisy_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[dependencies]
+tauri = { workspace = true, features = ["tray-icon"] }
+tauri-plugin-opener = { workspace = true, features = [] }
+tauri-plugin-store = { workspace = true, features = [] }
+tauri-plugin-notification = { workspace = true, features = [] }
+tauri-plugin-global-shortcut = { workspace = true, features = [] }
+tauri-plugin-dialog = { workspace = true, features = [] }
+
+serde = { workspace = true, features = [] }
+serde_json = { workspace = true, features = [] }
+strum = { workspace = true, features = [] }
+open = { workspace = true, features = [] }
+
+[build-dependencies]
+tauri-build = { workspace = true, features = [] }
