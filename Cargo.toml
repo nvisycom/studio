@@ -35,6 +35,8 @@ tauri = { version = "2", features = [] }
 tauri-plugin-opener = { version = "2", features = [] }
 tauri-plugin-store = { version = "2", features = [] }
 tauri-plugin-notification = { version = "2", features = [] }
+tauri-plugin-global-shortcut = { version = "2", features = [] }
+tauri-plugin-dialog = { version = "2", features = [] }
 tauri-build = { version = "2", features = [] }
 
 # (De)serialization

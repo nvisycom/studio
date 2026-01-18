@@ -62,65 +62,83 @@
 </template>
 
 <script setup lang="ts">
-import {
-  Github,
-  Slack,
-  Cloud,
-  Database,
-  Eye,
-  Pencil,
-  Unplug,
-  Plug,
-  Puzzle,
-} from "lucide-vue-next";
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuSeparator,
-  ContextMenuTrigger,
-} from "~/components/ui/context-menu";
-import { Switch } from "~/components/ui/switch";
+import { Cloud, Database, Github, Slack } from "lucide-vue-next";
 
 // Mock integrations data with status and enabled state
 const integrations = ref([
-  { id: 1, name: "GitHub", description: "Repository sync", icon: Github, color: "#333", status: "green", enabled: true },
-  { id: 2, name: "Slack", description: "Notifications", icon: Slack, color: "#4A154B", status: "green", enabled: true },
-  { id: 3, name: "AWS S3", description: "Cloud storage", icon: Cloud, color: "#FF9900", status: "red", enabled: false },
-  { id: 4, name: "PostgreSQL", description: "Database", icon: Database, color: "#336791", status: "yellow", enabled: true },
+	{
+		id: 1,
+		name: "GitHub",
+		description: "Repository sync",
+		icon: Github,
+		color: "#333",
+		status: "green",
+		enabled: true,
+	},
+	{
+		id: 2,
+		name: "Slack",
+		description: "Notifications",
+		icon: Slack,
+		color: "#4A154B",
+		status: "green",
+		enabled: true,
+	},
+	{
+		id: 3,
+		name: "AWS S3",
+		description: "Cloud storage",
+		icon: Cloud,
+		color: "#FF9900",
+		status: "red",
+		enabled: false,
+	},
+	{
+		id: 4,
+		name: "PostgreSQL",
+		description: "Database",
+		icon: Database,
+		color: "#336791",
+		status: "yellow",
+		enabled: true,
+	},
 ]);
 
 // Helper function to get status color
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "green":
-      return "bg-green-500";
-    case "yellow":
-      return "bg-yellow-500";
-    case "red":
-      return "bg-red-500";
-    default:
-      return "bg-muted";
-  }
+const _getStatusColor = (status: string) => {
+	switch (status) {
+		case "green":
+			return "bg-green-500";
+		case "yellow":
+			return "bg-yellow-500";
+		case "red":
+			return "bg-red-500";
+		default:
+			return "bg-muted";
+	}
 };
 
 // Integration actions
-const viewIntegration = (integration: { id: number; name: string }) => {
-  // Open in browser
-  console.log("View:", integration.name);
-  window.open('https://app.nvisy.com/integrations', '_blank');
+const _viewIntegration = (integration: { id: number; name: string }) => {
+	// Open in browser
+	console.log("View:", integration.name);
+	window.open("https://app.nvisy.com/integrations", "_blank");
 };
 
-const editIntegration = (integration: { id: number; name: string }) => {
-  // Open in browser
-  console.log("Edit:", integration.name);
-  window.open('https://app.nvisy.com/integrations', '_blank');
+const _editIntegration = (integration: { id: number; name: string }) => {
+	// Open in browser
+	console.log("Edit:", integration.name);
+	window.open("https://app.nvisy.com/integrations", "_blank");
 };
 
-const toggleIntegration = (integration: { id: number; name: string; enabled: boolean }) => {
-  const idx = integrations.value.findIndex(i => i.id === integration.id);
-  if (idx !== -1) {
-    integrations.value[idx].enabled = !integrations.value[idx].enabled;
-  }
+const _toggleIntegration = (integration: {
+	id: number;
+	name: string;
+	enabled: boolean;
+}) => {
+	const idx = integrations.value.findIndex((i) => i.id === integration.id);
+	if (idx !== -1) {
+		integrations.value[idx].enabled = !integrations.value[idx].enabled;
+	}
 };
 </script>

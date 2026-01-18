@@ -18,18 +18,9 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronDown } from "lucide-vue-next";
-import { Button } from "~/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
-
 const { locale, setLocale } = useI18n();
 
-const currentLanguageLabel = computed(() => {
-  return locale.value === 'de' ? 'Deutsch' : 'English';
+const _currentLanguageLabel = computed(() => {
+	return locale.value === "de" ? "Deutsch" : "English";
 });
 </script>

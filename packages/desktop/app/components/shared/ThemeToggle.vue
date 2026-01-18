@@ -13,15 +13,12 @@
 </template>
 
 <script setup lang="ts">
-import { Sun, Moon, Monitor } from "lucide-vue-next";
-import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
-
 const colorMode = useColorMode();
 
-const currentTheme = computed({
-  get: () => colorMode.preference as string,
-  set: (value: string) => {
-    colorMode.preference = value as 'light' | 'dark' | 'system';
-  }
+const _currentTheme = computed({
+	get: () => colorMode.preference as string,
+	set: (value: string) => {
+		colorMode.preference = value as "light" | "dark" | "system";
+	},
 });
 </script>

@@ -69,45 +69,40 @@
 </template>
 
 <script setup lang="ts">
-import { Loader2, ExternalLink } from "lucide-vue-next";
-import { Button } from "~/components/ui/button";
-import ThemeToggle from "~/components/shared/ThemeToggle.vue";
-import LanguageSwitcher from "~/components/shared/LanguageSwitcher.vue";
-
 const emit = defineEmits<{
-  authenticated: [baseUrl: string, apiToken: string]
+	authenticated: [baseUrl: string, apiToken: string];
 }>();
 
-const baseUrl = ref('');
-const apiToken = ref('');
+const baseUrl = ref("");
+const apiToken = ref("");
 const isConnecting = ref(false);
-const error = ref('');
+const error = ref("");
 
-const DEFAULT_BASE_URL = 'https://api.nvisy.com';
+const DEFAULT_BASE_URL = "https://api.nvisy.com";
 
 const canConnect = computed(() => {
-  return apiToken.value.trim() !== '';
+	return apiToken.value.trim() !== "";
 });
 
-const connect = async () => {
-  if (!canConnect.value || isConnecting.value) return;
+const _connect = async () => {
+	if (!canConnect.value || isConnecting.value) return;
 
-  isConnecting.value = true;
-  error.value = '';
+	isConnecting.value = true;
+	error.value = "";
 
-  try {
-    // TODO: Implement actual API validation
-    await new Promise(resolve => setTimeout(resolve, 1000));
+	try {
+		// TODO: Implement actual API validation
+		await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Use default base URL if not provided
-    const finalBaseUrl = baseUrl.value.trim() || DEFAULT_BASE_URL;
+		// Use default base URL if not provided
+		const finalBaseUrl = baseUrl.value.trim() || DEFAULT_BASE_URL;
 
-    // Emit authenticated event
-    emit('authenticated', finalBaseUrl, apiToken.value);
-  } catch (e) {
-    error.value = 'Failed to connect. Please check your credentials.';
-  } finally {
-    isConnecting.value = false;
-  }
+		// Emit authenticated event
+		emit("authenticated", finalBaseUrl, apiToken.value);
+	} catch (_e) {
+		error.value = "Failed to connect. Please check your credentials.";
+	} finally {
+		isConnecting.value = false;
+	}
 };
 </script>

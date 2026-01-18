@@ -10,7 +10,7 @@
           class="w-12 h-12 drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]"
         />
         <div class="text-center">
-          <h1 class="text-sm font-medium">Nvisy Desktop</h1>
+          <h1 class="text-sm font-medium">Nvisy Studio</h1>
           <div class="flex items-center justify-center gap-1 mt-0.5">
             <span class="text-xs text-muted-foreground">v{{ appVersion }}</span>
             <Button variant="ghost" size="sm" class="h-5 w-5 p-0" @click="copyAllInfo">
@@ -64,29 +64,26 @@
 </template>
 
 <script setup lang="ts">
-import { ExternalLink, Copy, Check } from "lucide-vue-next";
-import { Button } from "~/components/ui/button";
-
-const currentYear = new Date().getFullYear();
+const _currentYear = new Date().getFullYear();
 const copied = ref(false);
 
 // App info
-const appVersion = '0.1.0';
-const buildNumber = '#1234';
-const tauriVersion = '2.0.0';
-const platform = 'macOS';
+const appVersion = "0.1.0";
+const buildNumber = "#1234";
+const tauriVersion = "2.0.0";
+const platform = "macOS";
 
-const copyAllInfo = async () => {
-  const info = `Nvisy Desktop/${appVersion} (${platform}; Tauri/${tauriVersion}; Build ${buildNumber})`;
+const _copyAllInfo = async () => {
+	const info = `Nvisy Studio/${appVersion} (${platform}; Tauri/${tauriVersion}; Build ${buildNumber})`;
 
-  try {
-    await navigator.clipboard.writeText(info);
-    copied.value = true;
-    setTimeout(() => {
-      copied.value = false;
-    }, 2000);
-  } catch (err) {
-    console.error('Failed to copy info:', err);
-  }
+	try {
+		await navigator.clipboard.writeText(info);
+		copied.value = true;
+		setTimeout(() => {
+			copied.value = false;
+		}, 2000);
+	} catch (err) {
+		console.error("Failed to copy info:", err);
+	}
 };
 </script>

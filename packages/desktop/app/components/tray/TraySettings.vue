@@ -142,33 +142,20 @@
 </template>
 
 <script setup lang="ts">
-import { FolderOpen, Plus, X, LogOut } from "lucide-vue-next";
-import { Button } from "~/components/ui/button";
-import { Progress } from "~/components/ui/progress";
-import { Switch } from "~/components/ui/switch";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "~/components/ui/accordion";
-import ThemeToggle from "~/components/shared/ThemeToggle.vue";
-import LanguageSwitcher from "~/components/shared/LanguageSwitcher.vue";
-import { getInitials } from "~/utils/naming";
-import { useAuth } from "~/composables/useAuth";
 import { useActiveTab } from "~/composables/useActiveTab";
+import { useAuth } from "~/composables/useAuth";
 import { useSettings } from "~/composables/useSettings";
 
 const { logout } = useAuth();
 const activeTab = useActiveTab();
-const { settings, setUseGradient, setLocalFolders, setRemoteFolder } = useSettings();
+const { settings, setUseGradient, setLocalFolders, setRemoteFolder } =
+	useSettings();
 
 // User data
-const user = ref({
-  name: "John Doe",
-  email: "john@example.com",
-  avatar: "",
+const _user = ref({
+	name: "John Doe",
+	email: "john@example.com",
+	avatar: "",
 });
 
 // Local folders - synced with settings
@@ -178,44 +165,51 @@ const localFolders = ref<string[]>([...settings.value.localFolders]);
 const remoteFolder = ref(settings.value.remoteFolder);
 
 // Watch for settings changes to update local state
-watch(() => settings.value.localFolders, (newVal) => {
-  localFolders.value = [...newVal];
-}, { deep: true });
+watch(
+	() => settings.value.localFolders,
+	(newVal) => {
+		localFolders.value = [...newVal];
+	},
+	{ deep: true },
+);
 
-watch(() => settings.value.remoteFolder, (newVal) => {
-  remoteFolder.value = newVal;
-});
+watch(
+	() => settings.value.remoteFolder,
+	(newVal) => {
+		remoteFolder.value = newVal;
+	},
+);
 
-const handleLogout = () => {
-  logout();
-  activeTab.value = 'files';
+const _handleLogout = () => {
+	logout();
+	activeTab.value = "files";
 };
 
 // Save functions
 const saveLocalFolders = () => {
-  setLocalFolders([...localFolders.value]);
+	setLocalFolders([...localFolders.value]);
 };
 
-const saveRemoteFolder = () => {
-  setRemoteFolder(remoteFolder.value);
+const _saveRemoteFolder = () => {
+	setRemoteFolder(remoteFolder.value);
 };
 
 // Folder management
-const addFolder = (type: 'local' | 'remote') => {
-  if (type === 'local') {
-    localFolders.value.push('');
-  }
+const _addFolder = (type: "local" | "remote") => {
+	if (type === "local") {
+		localFolders.value.push("");
+	}
 };
 
-const removeFolder = (type: 'local' | 'remote', index: number) => {
-  if (type === 'local') {
-    localFolders.value.splice(index, 1);
-    saveLocalFolders();
-  }
+const _removeFolder = (type: "local" | "remote", index: number) => {
+	if (type === "local") {
+		localFolders.value.splice(index, 1);
+		saveLocalFolders();
+	}
 };
 
-const browseFolder = (type: 'local' | 'remote', index: number) => {
-  console.log(`Browse ${type} folder for index:`, index);
-  // TODO: Implement Tauri folder picker
+const _browseFolder = (type: "local" | "remote", index: number) => {
+	console.log(`Browse ${type} folder for index:`, index);
+	// TODO: Implement Tauri folder picker
 };
 </script>

@@ -128,40 +128,16 @@
 
 <script setup lang="ts">
 import {
-  FileText,
-  FileCode,
-  FileImage,
-  FileArchive,
-  FileSpreadsheet,
-  FileVideo,
-  FileAudio,
-  FileType,
-  File,
-  FileX,
-  CloudOff,
-  Upload,
-  Download,
-  Search,
-  ExternalLink,
-  Trash2,
-  List,
-  FolderTree,
-  RefreshCw,
+	File,
+	FileArchive,
+	FileAudio,
+	FileCode,
+	FileImage,
+	FileSpreadsheet,
+	FileText,
+	FileType,
+	FileVideo,
 } from "lucide-vue-next";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "~/components/ui/accordion";
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuSeparator,
-  ContextMenuTrigger,
-} from "~/components/ui/context-menu";
-import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import { useDragDrop } from "~/composables/useDragDrop";
 
 // Drag and drop
@@ -171,18 +147,18 @@ const { droppedPaths, clearDroppedPaths } = useDragDrop();
 const searchQuery = ref("");
 
 // View mode (list or folder)
-const viewMode = ref("list");
+const _viewMode = ref("list");
 
 // Auto-sync toggle (uses "sync" value when enabled, empty when disabled)
 const autoSyncValue = ref("");
-const autoSync = computed(() => autoSyncValue.value === "sync");
+const _autoSync = computed(() => autoSyncValue.value === "sync");
 
 // Syncing state (true when actively syncing)
-const isSyncing = ref(false);
+const _isSyncing = ref(false);
 
 // Helper to get filename from path
 const getFileName = (path: string): string => {
-  return path.split('/').pop() || path;
+	return path.split("/").pop() || path;
 };
 
 // Next file ID counter
@@ -190,117 +166,175 @@ const nextFileId = ref(100);
 
 // Mock local files data
 const localFiles = ref([
-  { id: 1, name: "project-proposal.pdf", size: "2.4 MB", uploading: false, progress: 0 },
-  { id: 2, name: "app-screenshot.png", size: "1.1 MB", uploading: true, progress: 65 },
-  { id: 3, name: "README.md", size: "4.2 KB", uploading: false, progress: 0 },
-  { id: 4, name: "data.xlsx", size: "856 KB", uploading: false, progress: 0 },
+	{
+		id: 1,
+		name: "project-proposal.pdf",
+		size: "2.4 MB",
+		uploading: false,
+		progress: 0,
+	},
+	{
+		id: 2,
+		name: "app-screenshot.png",
+		size: "1.1 MB",
+		uploading: true,
+		progress: 65,
+	},
+	{ id: 3, name: "README.md", size: "4.2 KB", uploading: false, progress: 0 },
+	{ id: 4, name: "data.xlsx", size: "856 KB", uploading: false, progress: 0 },
 ]);
 
 // Watch for dropped file paths and add them to local files
 watch(droppedPaths, (paths) => {
-  if (paths.length > 0) {
-    for (const path of paths) {
-      const newFile = {
-        id: nextFileId.value++,
-        name: getFileName(path),
-        size: "...",
-        uploading: true,
-        progress: 0,
-      };
-      localFiles.value.unshift(newFile);
+	if (paths.length > 0) {
+		for (const path of paths) {
+			const newFile = {
+				id: nextFileId.value++,
+				name: getFileName(path),
+				size: "...",
+				uploading: true,
+				progress: 0,
+			};
+			localFiles.value.unshift(newFile);
 
-      // Simulate upload progress
-      const fileId = newFile.id;
-      const interval = setInterval(() => {
-        const fileToUpdate = localFiles.value.find(f => f.id === fileId);
-        if (fileToUpdate) {
-          fileToUpdate.progress += Math.random() * 15 + 5;
-          if (fileToUpdate.progress >= 100) {
-            fileToUpdate.progress = 100;
-            fileToUpdate.uploading = false;
-            fileToUpdate.size = "1.2 MB"; // Mock size after upload
-            clearInterval(interval);
-          }
-        } else {
-          clearInterval(interval);
-        }
-      }, 200);
-    }
-    clearDroppedPaths();
-  }
+			// Simulate upload progress
+			const fileId = newFile.id;
+			const interval = setInterval(() => {
+				const fileToUpdate = localFiles.value.find((f) => f.id === fileId);
+				if (fileToUpdate) {
+					fileToUpdate.progress += Math.random() * 15 + 5;
+					if (fileToUpdate.progress >= 100) {
+						fileToUpdate.progress = 100;
+						fileToUpdate.uploading = false;
+						fileToUpdate.size = "1.2 MB"; // Mock size after upload
+						clearInterval(interval);
+					}
+				} else {
+					clearInterval(interval);
+				}
+			}, 200);
+		}
+		clearDroppedPaths();
+	}
 });
 
 // Mock remote files data
 const remoteFiles = ref([
-  { id: 1, name: "backup-2024-01.zip", size: "15.8 MB", downloading: false, progress: 0 },
-  { id: 2, name: "config.json", size: "856 B", downloading: false, progress: 0 },
-  { id: 3, name: "assets.tar.gz", size: "8.2 MB", downloading: true, progress: 30 },
+	{
+		id: 1,
+		name: "backup-2024-01.zip",
+		size: "15.8 MB",
+		downloading: false,
+		progress: 0,
+	},
+	{
+		id: 2,
+		name: "config.json",
+		size: "856 B",
+		downloading: false,
+		progress: 0,
+	},
+	{
+		id: 3,
+		name: "assets.tar.gz",
+		size: "8.2 MB",
+		downloading: true,
+		progress: 30,
+	},
 ]);
 
 // Filtered files based on search
-const filteredLocalFiles = computed(() => {
-  if (!searchQuery.value) return localFiles.value;
-  return localFiles.value.filter(f =>
-    f.name.toLowerCase().includes(searchQuery.value.toLowerCase())
-  );
+const _filteredLocalFiles = computed(() => {
+	if (!searchQuery.value) return localFiles.value;
+	return localFiles.value.filter((f) =>
+		f.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
+	);
 });
 
-const filteredRemoteFiles = computed(() => {
-  if (!searchQuery.value) return remoteFiles.value;
-  return remoteFiles.value.filter(f =>
-    f.name.toLowerCase().includes(searchQuery.value.toLowerCase())
-  );
+const _filteredRemoteFiles = computed(() => {
+	if (!searchQuery.value) return remoteFiles.value;
+	return remoteFiles.value.filter((f) =>
+		f.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
+	);
 });
 
 // Helper function to get file icon based on extension
-const getFileIcon = (filename: string) => {
-  const ext = filename.split('.').pop()?.toLowerCase() || '';
+const _getFileIcon = (filename: string) => {
+	const ext = filename.split(".").pop()?.toLowerCase() || "";
 
-  if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'ico', 'bmp'].includes(ext)) {
-    return FileImage;
-  }
-  if (['js', 'ts', 'jsx', 'tsx', 'vue', 'py', 'rb', 'go', 'rs', 'java', 'c', 'cpp', 'h', 'css', 'scss', 'html', 'xml', 'sh', 'bash'].includes(ext)) {
-    return FileCode;
-  }
-  if (['zip', 'tar', 'gz', 'rar', '7z', 'bz2', 'xz'].includes(ext)) {
-    return FileArchive;
-  }
-  if (['xlsx', 'xls', 'csv', 'ods'].includes(ext)) {
-    return FileSpreadsheet;
-  }
-  if (['mp4', 'mov', 'avi', 'mkv', 'webm', 'flv', 'wmv'].includes(ext)) {
-    return FileVideo;
-  }
-  if (['mp3', 'wav', 'ogg', 'flac', 'aac', 'm4a'].includes(ext)) {
-    return FileAudio;
-  }
-  if (['pdf', 'doc', 'docx', 'odt', 'rtf'].includes(ext)) {
-    return FileText;
-  }
-  if (['txt', 'md', 'json', 'yaml', 'yml', 'toml', 'ini', 'conf', 'cfg'].includes(ext)) {
-    return FileType;
-  }
-  return File;
+	if (
+		["png", "jpg", "jpeg", "gif", "svg", "webp", "ico", "bmp"].includes(ext)
+	) {
+		return FileImage;
+	}
+	if (
+		[
+			"js",
+			"ts",
+			"jsx",
+			"tsx",
+			"vue",
+			"py",
+			"rb",
+			"go",
+			"rs",
+			"java",
+			"c",
+			"cpp",
+			"h",
+			"css",
+			"scss",
+			"html",
+			"xml",
+			"sh",
+			"bash",
+		].includes(ext)
+	) {
+		return FileCode;
+	}
+	if (["zip", "tar", "gz", "rar", "7z", "bz2", "xz"].includes(ext)) {
+		return FileArchive;
+	}
+	if (["xlsx", "xls", "csv", "ods"].includes(ext)) {
+		return FileSpreadsheet;
+	}
+	if (["mp4", "mov", "avi", "mkv", "webm", "flv", "wmv"].includes(ext)) {
+		return FileVideo;
+	}
+	if (["mp3", "wav", "ogg", "flac", "aac", "m4a"].includes(ext)) {
+		return FileAudio;
+	}
+	if (["pdf", "doc", "docx", "odt", "rtf"].includes(ext)) {
+		return FileText;
+	}
+	if (
+		["txt", "md", "json", "yaml", "yml", "toml", "ini", "conf", "cfg"].includes(
+			ext,
+		)
+	) {
+		return FileType;
+	}
+	return File;
 };
 
 // File actions
-const uploadFile = () => {
-  console.log("Upload file...");
+const _uploadFile = () => {
+	console.log("Upload file...");
 };
 
-const downloadFile = (file: { id: number; name: string }) => {
-  console.log("Download file:", file.name);
+const _downloadFile = (file: { id: number; name: string }) => {
+	console.log("Download file:", file.name);
 };
 
-const downloadAll = () => {
-  console.log("Download all remote files...");
+const _downloadAll = () => {
+	console.log("Download all remote files...");
 };
 
-const openFile = (file: { id: number; name: string }) => {
-  console.log("Open file:", file.name);
+const _openFile = (file: { id: number; name: string }) => {
+	console.log("Open file:", file.name);
 };
 
-const deleteFile = (file: { id: number; name: string }) => {
-  console.log("Delete file:", file.name);
+const _deleteFile = (file: { id: number; name: string }) => {
+	console.log("Delete file:", file.name);
 };
 </script>

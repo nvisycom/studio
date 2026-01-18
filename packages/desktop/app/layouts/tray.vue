@@ -29,7 +29,7 @@
     <!-- Content Layer -->
     <div class="relative h-full flex flex-col">
       <!-- Fixed Header -->
-      <AppHeader class="flex-shrink-0" />
+      <TrayHeader class="flex-shrink-0" />
 
       <!-- Main Content Area -->
       <main class="flex-1 flex flex-col overflow-hidden px-3 pb-2 pt-1">
@@ -39,20 +39,19 @@
       </main>
 
       <!-- Fixed Footer -->
-      <AppFooter class="flex-shrink-0" />
+      <TrayFooter class="flex-shrink-0" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import "~/assets/tailwind.css";
-import { Upload } from "lucide-vue-next";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { useSettings } from "~/composables/useSettings";
-import { useDragDrop } from "~/composables/useDragDrop";
 import { useActiveTab } from "~/composables/useActiveTab";
 import { useAuth } from "~/composables/useAuth";
+import { useDragDrop } from "~/composables/useDragDrop";
+import { useSettings } from "~/composables/useSettings";
 
 const { settings } = useSettings();
 const { isDragging, setupListeners, cleanupListeners } = useDragDrop();
@@ -61,31 +60,31 @@ const { isAuthenticated } = useAuth();
 
 // Setup Tauri drag-drop listeners and window hide check
 onMounted(async () => {
-  // Setup drag-drop listeners
-  await setupListeners();
+	// Setup drag-drop listeners
+	await setupListeners();
 
-  // Listen for check-hide-window event from Tauri
-  // Only hide if not currently dragging files
-  await listen("check-hide-window", async () => {
-    if (!isDragging.value) {
-      const appWindow = getCurrentWindow();
-      await appWindow.hide();
-    }
-  });
+	// Listen for check-hide-window event from Tauri
+	// Only hide if not currently dragging files
+	await listen("check-hide-window", async () => {
+		if (!isDragging.value) {
+			const appWindow = getCurrentWindow();
+			await appWindow.hide();
+		}
+	});
 });
 
 onUnmounted(() => {
-  cleanupListeners();
+	cleanupListeners();
 });
 
 // Auto-switch to files tab when dragging starts
 watch(isDragging, (dragging) => {
-  if (dragging && isAuthenticated.value) {
-    activeTab.value = 'files';
-  }
+	if (dragging && isAuthenticated.value) {
+		activeTab.value = "files";
+	}
 });
 
 definePageMeta({
-  layout: false,
+	layout: false,
 });
 </script>

@@ -30,14 +30,44 @@
 </template>
 
 <script setup lang="ts">
-import { Server, Database, HardDrive, Brain, Webhook } from "lucide-vue-next";
+import { Brain, Database, HardDrive, Server, Webhook } from "lucide-vue-next";
 
 // Services data
-const services = ref([
-  { id: 1, name: "API Server", description: "REST API", icon: Server, running: true },
-  { id: 2, name: "Database", description: "PostgreSQL", icon: Database, running: true },
-  { id: 3, name: "Object Store", description: "NATS", icon: HardDrive, running: true },
-  { id: 4, name: "Inference", description: "OCR, Embeddings, VLM", icon: Brain, running: true },
-  { id: 5, name: "Webhooks", description: "Event Notifications", icon: Webhook, running: true },
+const _services = ref([
+	{
+		id: 1,
+		name: "API Server",
+		description: "REST API",
+		icon: Server,
+		running: true,
+	},
+	{
+		id: 2,
+		name: "Database",
+		description: "PostgreSQL",
+		icon: Database,
+		running: true,
+	},
+	{
+		id: 3,
+		name: "Object Store",
+		description: "NATS",
+		icon: HardDrive,
+		running: true,
+	},
+	{
+		id: 4,
+		name: "Inference",
+		description: "OCR, Embeddings, VLM",
+		icon: Brain,
+		running: true,
+	},
+	{
+		id: 5,
+		name: "Webhooks",
+		description: "Event Notifications",
+		icon: Webhook,
+		running: true,
+	},
 ]);
 </script>

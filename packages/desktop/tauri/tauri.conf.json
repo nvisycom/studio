@@ -1,48 +1,49 @@
 {
-  "$schema": "https://schema.tauri.app/config/2",
-  "productName": "nvisy",
-  "version": "0.1.0",
-  "identifier": "nvisy.com",
-  "build": {
-    "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "npm run build",
-    "devUrl": "http://localhost:3000",
-    "frontendDist": "../dist"
-  },
-  "app": {
-    "windows": [
-      {
-        "title": "nvisy",
-        "width": 460,
-        "height": 680,
-        "minWidth": 400,
-        "minHeight": 680,
-        "maxWidth": 460,
-        "maxHeight": 680,
-        "decorations": false,
-        "resizable": false,
-        "fullscreen": false,
-        "maximizable": false,
-        "dragDropEnabled": true
-      }
-    ],
-    "trayIcon": {
-      "iconPath": "icons/32x32.png",
-      "iconAsTemplate": true
-    },
-    "security": {
-      "csp": null
-    }
-  },
-  "bundle": {
-    "active": true,
-    "targets": "all",
-    "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
-    ]
-  }
+	"$schema": "https://schema.tauri.app/config/2",
+	"productName": "nvisy",
+	"version": "0.1.0",
+	"identifier": "nvisy.com",
+	"build": {
+		"beforeDevCommand": "npm run dev",
+		"beforeBuildCommand": "npm run build",
+		"devUrl": "http://localhost:3000",
+		"frontendDist": "../dist"
+	},
+	"app": {
+		"windows": [
+			{
+				"title": "Nvisy",
+				"url": "/tray",
+				"width": 460,
+				"height": 680,
+				"minWidth": 400,
+				"minHeight": 680,
+				"maxWidth": 460,
+				"maxHeight": 680,
+				"decorations": false,
+				"resizable": false,
+				"fullscreen": false,
+				"maximizable": false,
+				"dragDropEnabled": true
+			}
+		],
+		"trayIcon": {
+			"iconPath": "icons/32x32.png",
+			"iconAsTemplate": true
+		},
+		"security": {
+			"csp": null
+		}
+	},
+	"bundle": {
+		"active": true,
+		"targets": "all",
+		"icon": [
+			"icons/32x32.png",
+			"icons/128x128.png",
+			"icons/128x128@2x.png",
+			"icons/icon.icns",
+			"icons/icon.ico"
+		]
+	}
 }
