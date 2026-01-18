@@ -5,9 +5,9 @@
 	"identifier": "nvisy.com",
 	"build": {
 		"beforeDevCommand": "npm run dev",
-		"beforeBuildCommand": "npm run build",
+		"beforeBuildCommand": "npm run generate",
 		"devUrl": "http://localhost:3000",
-		"frontendDist": "../dist"
+		"frontendDist": "../.output/public"
 	},
 	"app": {
 		"windows": [
