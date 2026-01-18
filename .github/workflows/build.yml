@@ -205,6 +205,35 @@ jobs:
         working-directory: packages/desktop
         run: npm run tauri:build -- --target ${{ matrix.target }}
 
+      - name: Upload build artifacts (Linux)
+        if: github.ref == 'refs/heads/main' && matrix.name == 'linux-x64'
+        uses: actions/upload-artifact@v4
+        with:
+          name: nvisy-${{ matrix.name }}
+          path: |
+            target/${{ matrix.target }}/release/bundle/appimage/*.AppImage
+            target/${{ matrix.target }}/release/bundle/deb/*.deb
+          retention-days: 7
+
+      - name: Upload build artifacts (Windows)
+        if: github.ref == 'refs/heads/main' && matrix.name == 'windows-x64'
+        uses: actions/upload-artifact@v4
+        with:
+          name: nvisy-${{ matrix.name }}
+          path: |
+            target/${{ matrix.target }}/release/bundle/msi/*.msi
+            target/${{ matrix.target }}/release/bundle/nsis/*.exe
+          retention-days: 7
+
+      - name: Upload build artifacts (macOS)
+        if: github.ref == 'refs/heads/main' && startsWith(matrix.name, 'macos')
+        uses: actions/upload-artifact@v4
+        with:
+          name: nvisy-${{ matrix.name }}
+          path: |
+            target/${{ matrix.target }}/release/bundle/dmg/*.dmg
+          retention-days: 7
+
   security:
     name: Security Audit
     runs-on: ubuntu-latest
