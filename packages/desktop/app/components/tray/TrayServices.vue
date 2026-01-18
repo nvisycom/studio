@@ -30,10 +30,16 @@
 </template>
 
 <script setup lang="ts">
-import { Brain, Database, HardDrive, Server, Webhook } from "lucide-vue-next";
+import {
+	Brain,
+	Database,
+	HardDrive,
+	Server,
+	Webhook,
+} from "lucide-vue-next";
 
 // Services data
-const _services = ref([
+const services = ref([
 	{
 		id: 1,
 		name: "API Server",

@@ -142,9 +142,21 @@
 </template>
 
 <script setup lang="ts">
+import { FolderOpen, LogOut, Plus, X } from "lucide-vue-next";
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from "~/components/ui/accordion";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Button } from "~/components/ui/button";
+import { Progress } from "~/components/ui/progress";
+import { Switch } from "~/components/ui/switch";
 import { useActiveTab } from "~/composables/useActiveTab";
 import { useAuth } from "~/composables/useAuth";
 import { useSettings } from "~/composables/useSettings";
+import { getInitials } from "~/utils/naming";
 
 const { logout } = useAuth();
 const activeTab = useActiveTab();
@@ -152,7 +164,7 @@ const { settings, setUseGradient, setLocalFolders, setRemoteFolder } =
 	useSettings();
 
 // User data
-const _user = ref({
+const user = ref({
 	name: "John Doe",
 	email: "john@example.com",
 	avatar: "",
@@ -180,7 +192,7 @@ watch(
 	},
 );
 
-const _handleLogout = () => {
+const handleLogout = () => {
 	logout();
 	activeTab.value = "files";
 };
@@ -190,25 +202,25 @@ const saveLocalFolders = () => {
 	setLocalFolders([...localFolders.value]);
 };
 
-const _saveRemoteFolder = () => {
+const saveRemoteFolder = () => {
 	setRemoteFolder(remoteFolder.value);
 };
 
 // Folder management
-const _addFolder = (type: "local" | "remote") => {
+const addFolder = (type: "local" | "remote") => {
 	if (type === "local") {
 		localFolders.value.push("");
 	}
 };
 
-const _removeFolder = (type: "local" | "remote", index: number) => {
+const removeFolder = (type: "local" | "remote", index: number) => {
 	if (type === "local") {
 		localFolders.value.splice(index, 1);
 		saveLocalFolders();
 	}
 };
 
-const _browseFolder = (type: "local" | "remote", index: number) => {
+const browseFolder = (type: "local" | "remote", index: number) => {
 	console.log(`Browse ${type} folder for index:`, index);
 	// TODO: Implement Tauri folder picker
 };

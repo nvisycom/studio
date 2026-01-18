@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from "vue";
+import type { HTMLAttributes } from "vue"
+import { cn } from '@/utils/tailwind'
 
 interface SkeletonProps {
-	class?: HTMLAttributes["class"];
+  class?: HTMLAttributes["class"]
 }
 
-const _props = defineProps<SkeletonProps>();
+const props = defineProps<SkeletonProps>()
 </script>
 
 <template>

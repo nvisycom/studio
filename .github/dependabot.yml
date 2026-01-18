@@ -1,6 +1,6 @@
 version: 2
 updates:
-  # Enable version updates for npm
+  # Version updates for npm packages
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
@@ -15,9 +15,16 @@ updates:
       prefix: "chore(deps)"
       prefix-development: "chore(deps-dev)"
     rebase-strategy: "auto"
-    versioning-strategy: "increase"
+    versioning-strategy: "auto"
+    groups:
+      npm-dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
-  # Enable version updates for cargo
+  # Version updates for Cargo packages
   - package-ecosystem: "cargo"
     directory: "/"
     schedule:
@@ -32,7 +39,13 @@ updates:
       prefix: "chore(deps)"
       prefix-development: "chore(deps-dev)"
     rebase-strategy: "auto"
-    versioning-strategy: "increase"
+    groups:
+      cargo-dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   # Version updates for GitHub Actions
   - package-ecosystem: "github-actions"
@@ -47,3 +60,7 @@ updates:
       - "chore"
     commit-message:
       prefix: "chore(actions)"
+    groups:
+      github-actions:
+        patterns:
+          - "*"

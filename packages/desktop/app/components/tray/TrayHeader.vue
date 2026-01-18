@@ -153,8 +153,31 @@
 </template>
 
 <script setup lang="ts">
+import {
+	ArrowLeft,
+	ChevronDown,
+	FileText,
+	Info,
+	Power,
+	Puzzle,
+	RefreshCw,
+	Server,
+	Settings,
+	Settings as SettingsIcon,
+} from "lucide-vue-next";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Button } from "~/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { useActiveTab } from "~/composables/useActiveTab";
 import { useAuth } from "~/composables/useAuth";
+import { getInitials } from "~/utils/naming";
 
 // Auth state
 const { isAuthenticated } = useAuth();
@@ -171,12 +194,12 @@ const isSettingsMode = computed(() => {
 });
 
 // Set active tab
-const _setActiveTab = (val: string | number) => {
+const setActiveTab = (val: string | number) => {
 	activeTab.value = val as string;
 };
 
 // User data
-const _user = ref({
+const user = ref({
 	name: "John Doe",
 	email: "john@example.com",
 	avatar: "",
@@ -189,22 +212,22 @@ const currentWorkspace = ref({
 });
 
 // Available workspaces
-const _workspaces = ref([
+const workspaces = ref([
 	{ id: "workspace-1", name: "My Workspace" },
 	{ id: "workspace-2", name: "My Very Long Workspace Name" },
 ]);
 
 // Notification badges
-const _fileNotifications = ref(2);
-const _integrationNotifications = ref(1);
+const fileNotifications = ref(2);
+const integrationNotifications = ref(1);
 
 // Select workspace
-const _selectWorkspace = (workspace: { id: string; name: string }) => {
+const selectWorkspace = (workspace: { id: string; name: string }) => {
 	currentWorkspace.value = workspace;
 };
 
 // Navigate to settings
-const _goToSettings = () => {
+const goToSettings = () => {
 	if (!isSettingsMode.value) {
 		previousMainTab.value = activeTab.value;
 	}
@@ -212,7 +235,7 @@ const _goToSettings = () => {
 };
 
 // Navigate to about
-const _goToAbout = () => {
+const goToAbout = () => {
 	if (!isSettingsMode.value) {
 		previousMainTab.value = activeTab.value;
 	}
@@ -220,16 +243,16 @@ const _goToAbout = () => {
 };
 
 // Go back to main navigation
-const _goBack = () => {
+const goBack = () => {
 	activeTab.value = previousMainTab.value;
 };
 
 // Actions
-const _checkForUpdates = () => {
+const checkForUpdates = () => {
 	console.log("Checking for updates...");
 };
 
-const _quit = () => {
+const quit = () => {
 	console.log("Quitting...");
 };
 </script>

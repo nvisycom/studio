@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { reactiveOmit } from "@vueuse/core";
-import type { DialogTitleProps } from "reka-ui";
-import type { HTMLAttributes } from "vue";
+import type { DialogTitleProps } from "reka-ui"
+import type { HTMLAttributes } from "vue"
+import { reactiveOmit } from "@vueuse/core"
+import { DialogTitle } from "reka-ui"
+import { cn } from '@/utils/tailwind'
 
-const props = defineProps<
-	DialogTitleProps & { class?: HTMLAttributes["class"] }
->();
+const props = defineProps<DialogTitleProps & { class?: HTMLAttributes["class"] }>()
 
-const _delegatedProps = reactiveOmit(props, "class");
+const delegatedProps = reactiveOmit(props, "class")
 </script>
 
 <template>

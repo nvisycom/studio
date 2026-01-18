@@ -15,7 +15,7 @@
 <script setup lang="ts">
 const colorMode = useColorMode();
 
-const _currentTheme = computed({
+const currentTheme = computed({
 	get: () => colorMode.preference as string,
 	set: (value: string) => {
 		colorMode.preference = value as "light" | "dark" | "system";

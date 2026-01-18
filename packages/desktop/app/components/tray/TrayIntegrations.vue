@@ -62,7 +62,25 @@
 </template>
 
 <script setup lang="ts">
-import { Cloud, Database, Github, Slack } from "lucide-vue-next";
+import {
+	Cloud,
+	Database,
+	Eye,
+	Github,
+	Pencil,
+	Plug,
+	Puzzle,
+	Slack,
+	Unplug,
+} from "lucide-vue-next";
+import {
+	ContextMenu,
+	ContextMenuContent,
+	ContextMenuItem,
+	ContextMenuSeparator,
+	ContextMenuTrigger,
+} from "~/components/ui/context-menu";
+import { Switch } from "~/components/ui/switch";
 
 // Mock integrations data with status and enabled state
 const integrations = ref([
@@ -105,7 +123,7 @@ const integrations = ref([
 ]);
 
 // Helper function to get status color
-const _getStatusColor = (status: string) => {
+const getStatusColor = (status: string) => {
 	switch (status) {
 		case "green":
 			return "bg-green-500";
@@ -119,19 +137,19 @@ const _getStatusColor = (status: string) => {
 };
 
 // Integration actions
-const _viewIntegration = (integration: { id: number; name: string }) => {
+const viewIntegration = (integration: { id: number; name: string }) => {
 	// Open in browser
 	console.log("View:", integration.name);
 	window.open("https://app.nvisy.com/integrations", "_blank");
 };
 
-const _editIntegration = (integration: { id: number; name: string }) => {
+const editIntegration = (integration: { id: number; name: string }) => {
 	// Open in browser
 	console.log("Edit:", integration.name);
 	window.open("https://app.nvisy.com/integrations", "_blank");
 };
 
-const _toggleIntegration = (integration: {
+const toggleIntegration = (integration: {
 	id: number;
 	name: string;
 	enabled: boolean;

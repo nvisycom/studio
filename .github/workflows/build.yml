@@ -2,9 +2,26 @@ name: Build
 
 on:
   push:
-    branches: [main, develop]
+    branches:
+      - "main"
+    paths:
+      - "packages/**"
+      - "crates/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/build.yml"
   pull_request:
-    branches: [main, develop]
+    paths:
+      - "packages/**"
+      - "crates/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/build.yml"
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -19,46 +36,23 @@ env:
   RUSTUP_MAX_RETRIES: 10
 
 jobs:
-  quality:
-    name: Code Quality
+  shellcheck:
+    name: Shellcheck
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-
+    timeout-minutes: 5
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 23
-          cache: npm
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@2.0.0
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run Biome checks
-        run: |
-          cd packages/desktop
-          npm run check
-
-      - name: Run Biome checks (config)
-        run: |
-          cd packages/config
-          npm run ci
-
-      - name: TypeScript type checking
-        run: |
-          cd packages/config
-          npm run test:types
-
-  test:
-    name: Tests
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     timeout-minutes: 10
-
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -70,55 +64,109 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build config package
+      - name: Lint and format check
+        run: npm run ci --workspaces --if-present
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - name: Install Linux dependencies
         run: |
-          cd packages/config
-          npm run build
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libssl-dev \
+            pkg-config
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Run Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build -w @nvisy/config
+
+      - name: Type check
+        run: npm run test:types --workspaces --if-present
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build -w @nvisy/config
 
       - name: Run tests
-        run: |
-          cd packages/config
-          npm test
-
-      - name: Run tests with coverage
-        run: |
-          cd packages/config
-          npm run test:cov
-
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v4
-        with:
-          file: ./packages/config/coverage/lcov.info
-          flags: config
-          name: config-coverage
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: npm run test --workspaces --if-present
 
   build:
-    name: Build (${{ matrix.os }})
+    name: Build (${{ matrix.name }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
-    needs: [quality, test]
-
+    needs: [lint, clippy, typecheck, test]
     strategy:
       fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            name: linux
+            name: linux-x64
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            name: windows
+            name: windows-x64
           - os: macos-latest
             target: x86_64-apple-darwin
-            name: macos
+            name: macos-x64
           - os: macos-latest
             target: aarch64-apple-darwin
             name: macos-arm64
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -153,26 +201,20 @@ jobs:
         run: npm ci
 
       - name: Build config package
-        run: |
-          cd packages/config
-          npm run build
+        run: npm run build -w @nvisy/config
 
       - name: Build frontend
-        run: |
-          cd packages/desktop
-          npm run build
+        run: npm run build -w @nvisy/desktop
 
       - name: Build Tauri app
-        run: |
-          cd packages/desktop
-          npm run tauri:build -- --target ${{ matrix.target }}
+        run: npm run tauri:build -w @nvisy/desktop -- --target ${{ matrix.target }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
 
       - name: Upload build artifacts (Linux)
-        if: matrix.name == 'linux'
+        if: matrix.name == 'linux-x64'
         uses: actions/upload-artifact@v4
         with:
           name: nvisy-${{ matrix.name }}
@@ -182,7 +224,7 @@ jobs:
           retention-days: 7
 
       - name: Upload build artifacts (Windows)
-        if: matrix.name == 'windows'
+        if: matrix.name == 'windows-x64'
         uses: actions/upload-artifact@v4
         with:
           name: nvisy-${{ matrix.name }}
@@ -198,17 +240,15 @@ jobs:
           name: nvisy-${{ matrix.name }}
           path: |
             packages/desktop/tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
-            packages/desktop/tauri/target/${{ matrix.target }}/release/bundle/macos/*.app
           retention-days: 7
 
   security:
     name: Security Audit
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: github.event_name == 'push' || github.event_name == 'schedule'
-
+    if: github.event_name == 'push'
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -227,55 +267,4 @@ jobs:
         run: npm audit --audit-level moderate
 
       - name: Run cargo audit
-        run: |
-          cd packages/desktop/tauri
-          cargo audit
-
-  benchmark:
-    name: Benchmarks
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 23
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build config package
-        run: |
-          cd packages/config
-          npm run build
-
-      - name: Run benchmarks
-        run: |
-          cd packages/config
-          npm run bench
-
-  build-status:
-    name: Build Status
-    runs-on: ubuntu-latest
-    needs: [quality, test, build]
-    if: always()
-
-    steps:
-      - name: Check build status
-        run: |
-          if [[ "${{ needs.quality.result }}" == "success" && "${{ needs.test.result }}" == "success" && "${{ needs.build.result }}" == "success" ]]; then
-            echo "✅ All builds passed!"
-            exit 0
-          else
-            echo "❌ Some builds failed:"
-            echo "Quality: ${{ needs.quality.result }}"
-            echo "Tests: ${{ needs.test.result }}"
-            echo "Build: ${{ needs.build.result }}"
-            exit 1
-          fi
+        run: cargo audit

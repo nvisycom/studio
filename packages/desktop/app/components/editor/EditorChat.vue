@@ -158,7 +158,7 @@ interface Message {
 	disliked?: boolean;
 }
 
-const _props = defineProps<{
+const props = defineProps<{
 	messages: Message[];
 	isTyping: boolean;
 	viewMode: "chat" | "edit";
@@ -172,16 +172,16 @@ const emit = defineEmits<{
 
 // Refs
 const inputRef = ref<HTMLTextAreaElement>();
-const _messagesContainer = ref<HTMLElement>();
+const messagesContainer = ref<HTMLElement>();
 
 // State
 const inputMessage = ref("");
-const _hoveredMessageId = ref<number | null>(null);
+const hoveredMessageId = ref<number | null>(null);
 const copiedMessageId = ref<number | null>(null);
-const _activeToolId = ref("chat");
+const activeToolId = ref("chat");
 
 // Tools panel
-const _tools = ref([{ id: "chat", name: "AI Chat", icon: Sparkles }]);
+const tools = ref([{ id: "chat", name: "AI Chat", icon: Sparkles }]);
 
 // Auto-focus input on mount
 onMounted(() => {
@@ -189,12 +189,12 @@ onMounted(() => {
 });
 
 // Format timestamp
-const _formatTime = (date: Date) => {
+const formatTime = (date: Date) => {
 	return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 };
 
 // Auto-resize textarea
-const _autoResize = () => {
+const autoResize = () => {
 	if (inputRef.value) {
 		inputRef.value.style.height = "auto";
 		const newHeight = Math.min(Math.max(inputRef.value.scrollHeight, 60), 120);
@@ -203,7 +203,7 @@ const _autoResize = () => {
 };
 
 // Copy message
-const _copyMessage = async (message: Message) => {
+const copyMessage = async (message: Message) => {
 	try {
 		await navigator.clipboard.writeText(message.content);
 		copiedMessageId.value = message.id;
@@ -216,18 +216,18 @@ const _copyMessage = async (message: Message) => {
 };
 
 // Like/dislike
-const _likeMessage = (message: Message) => {
+const likeMessage = (message: Message) => {
 	message.liked = !message.liked;
 	if (message.liked) message.disliked = false;
 };
 
-const _dislikeMessage = (message: Message) => {
+const dislikeMessage = (message: Message) => {
 	message.disliked = !message.disliked;
 	if (message.disliked) message.liked = false;
 };
 
 // Context action
-const _applyContextAction = (action: string) => {
+const applyContextAction = (action: string) => {
 	const prompts: Record<string, string> = {
 		summarize: "Summarize this document",
 		redact: "Redact sensitive information",
@@ -237,7 +237,7 @@ const _applyContextAction = (action: string) => {
 };
 
 // Send message
-const _sendMessage = () => {
+const sendMessage = () => {
 	const content = inputMessage.value.trim();
 	if (!content) return;
 	emit("send-message", content);

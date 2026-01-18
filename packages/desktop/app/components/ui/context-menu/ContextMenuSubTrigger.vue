@@ -7,7 +7,7 @@ import {
   ContextMenuSubTrigger,
   useForwardProps,
 } from "reka-ui"
-import { cn } from '@/utils/shadcn'
+import { cn } from '@/utils/tailwind'
 
 const props = defineProps<ContextMenuSubTriggerProps & { class?: HTMLAttributes["class"], inset?: boolean }>()
 

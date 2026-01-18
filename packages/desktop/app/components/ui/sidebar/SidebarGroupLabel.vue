@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { PrimitiveProps } from "reka-ui";
-import type { HTMLAttributes } from "vue";
+import type { PrimitiveProps } from "reka-ui"
+import type { HTMLAttributes } from "vue"
+import { Primitive } from "reka-ui"
+import { cn } from '@/utils/tailwind'
 
-const _props = defineProps<
-	PrimitiveProps & {
-		class?: HTMLAttributes["class"];
-	}
->();
+const props = defineProps<PrimitiveProps & {
+  class?: HTMLAttributes["class"]
+}>()
 </script>
 
 <template>

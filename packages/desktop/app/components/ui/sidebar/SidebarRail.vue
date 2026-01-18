@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from "vue";
-import { useSidebar } from "./utils";
+import type { HTMLAttributes } from "vue"
+import { cn } from '@/utils/tailwind'
+import { useSidebar } from "./utils"
 
-const _props = defineProps<{
-	class?: HTMLAttributes["class"];
-}>();
+const props = defineProps<{
+  class?: HTMLAttributes["class"]
+}>()
 
-const { toggleSidebar } = useSidebar();
+const { toggleSidebar } = useSidebar()
 </script>
 
 <template>

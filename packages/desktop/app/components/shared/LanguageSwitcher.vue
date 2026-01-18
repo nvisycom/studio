@@ -20,7 +20,7 @@
 <script setup lang="ts">
 const { locale, setLocale } = useI18n();
 
-const _currentLanguageLabel = computed(() => {
+const currentLanguageLabel = computed(() => {
 	return locale.value === "de" ? "Deutsch" : "English";
 });
 </script>

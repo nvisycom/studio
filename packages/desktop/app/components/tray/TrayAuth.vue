@@ -69,6 +69,9 @@
 </template>
 
 <script setup lang="ts">
+import { ExternalLink, Loader2 } from "lucide-vue-next";
+import { Button } from "~/components/ui/button";
+
 const emit = defineEmits<{
 	authenticated: [baseUrl: string, apiToken: string];
 }>();
@@ -84,7 +87,7 @@ const canConnect = computed(() => {
 	return apiToken.value.trim() !== "";
 });
 
-const _connect = async () => {
+const connect = async () => {
 	if (!canConnect.value || isConnecting.value) return;
 
 	isConnecting.value = true;

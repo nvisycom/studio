@@ -91,9 +91,9 @@ const chatRef = ref<InstanceType<typeof EditorChat>>();
 
 // State
 const isTyping = ref(false);
-const _viewMode = ref<"chat" | "edit">("chat");
+const viewMode = ref<"chat" | "edit">("chat");
 const alwaysOnTop = ref(false);
-const _sidebarCollapsed = ref(false);
+const sidebarCollapsed = ref(false);
 
 // Documents and tabs
 const documents = ref<Document[]>([]);
@@ -105,13 +105,13 @@ const messages = ref<Message[]>([]);
 let messageIdCounter = 0;
 
 // Computed
-const _activeDocument = computed(() => {
+const activeDocument = computed(() => {
 	if (!activeTabId.value) return null;
 	return documents.value.find((d) => d.path === activeTabId.value) || null;
 });
 
 // Toggle always on top
-const _toggleAlwaysOnTop = async () => {
+const toggleAlwaysOnTop = async () => {
 	const appWindow = getCurrentWindow();
 	alwaysOnTop.value = !alwaysOnTop.value;
 	try {
@@ -135,7 +135,7 @@ onMounted(async () => {
 });
 
 // Select document from Finder
-const _selectDocument = async () => {
+const selectDocument = async () => {
 	const selected = await open({
 		multiple: true,
 		filters: [
@@ -178,18 +178,18 @@ const closeDocumentTab = (tabId: string) => {
 };
 
 // Remove document
-const _removeDocument = (doc: Document) => {
+const removeDocument = (doc: Document) => {
 	documents.value = documents.value.filter((d) => d.path !== doc.path);
 	closeDocumentTab(doc.path);
 };
 
 // Edit message - set input to message content
-const _editMessage = (message: Message) => {
+const editMessage = (message: Message) => {
 	chatRef.value?.setInputMessage(message.content);
 };
 
 // Regenerate message
-const _regenerateMessage = async (message: Message) => {
+const regenerateMessage = async (message: Message) => {
 	const index = messages.value.findIndex((m) => m.id === message.id);
 	if (index > 0) {
 		messages.value = messages.value.slice(0, index);
@@ -206,7 +206,7 @@ const _regenerateMessage = async (message: Message) => {
 };
 
 // Send message
-const _sendMessage = async (content: string) => {
+const sendMessage = async (content: string) => {
 	messages.value.push({
 		id: messageIdCounter++,
 		role: "user",

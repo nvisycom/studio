@@ -8,7 +8,7 @@ import {
   ContextMenuRadioItem,
   useForwardPropsEmits,
 } from "reka-ui"
-import { cn } from '@/utils/shadcn'
+import { cn } from '@/utils/tailwind'
 
 const props = defineProps<ContextMenuRadioItemProps & { class?: HTMLAttributes["class"] }>()
 const emits = defineEmits<ContextMenuRadioItemEmits>()

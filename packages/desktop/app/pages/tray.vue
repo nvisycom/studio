@@ -19,7 +19,7 @@ import { useActiveTab } from "~/composables/useActiveTab";
 import { useAuth } from "~/composables/useAuth";
 import { useKeyboardShortcuts } from "~/composables/useKeyboardShortcuts";
 
-const _activeTab = useActiveTab();
+const activeTab = useActiveTab();
 const { isAuthenticated, authenticate } = useAuth();
 const { registerShortcuts, unregisterShortcuts } = useKeyboardShortcuts();
 
@@ -32,7 +32,7 @@ onUnmounted(() => {
 	unregisterShortcuts();
 });
 
-const _handleAuthenticated = (baseUrl: string, apiToken: string) => {
+const handleAuthenticated = (baseUrl: string, apiToken: string) => {
 	authenticate(baseUrl, apiToken);
 };
 

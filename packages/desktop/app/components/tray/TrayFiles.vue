@@ -128,6 +128,9 @@
 
 <script setup lang="ts">
 import {
+	CloudOff,
+	Download,
+	ExternalLink,
 	File,
 	FileArchive,
 	FileAudio,
@@ -137,7 +140,28 @@ import {
 	FileText,
 	FileType,
 	FileVideo,
+	FileX,
+	FolderTree,
+	List,
+	RefreshCw,
+	Search,
+	Trash2,
+	Upload,
 } from "lucide-vue-next";
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from "~/components/ui/accordion";
+import {
+	ContextMenu,
+	ContextMenuContent,
+	ContextMenuItem,
+	ContextMenuSeparator,
+	ContextMenuTrigger,
+} from "~/components/ui/context-menu";
+import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import { useDragDrop } from "~/composables/useDragDrop";
 
 // Drag and drop
@@ -147,14 +171,14 @@ const { droppedPaths, clearDroppedPaths } = useDragDrop();
 const searchQuery = ref("");
 
 // View mode (list or folder)
-const _viewMode = ref("list");
+const viewMode = ref("list");
 
 // Auto-sync toggle (uses "sync" value when enabled, empty when disabled)
 const autoSyncValue = ref("");
-const _autoSync = computed(() => autoSyncValue.value === "sync");
+const autoSync = computed(() => autoSyncValue.value === "sync");
 
 // Syncing state (true when actively syncing)
-const _isSyncing = ref(false);
+const isSyncing = ref(false);
 
 // Helper to get filename from path
 const getFileName = (path: string): string => {
@@ -244,14 +268,14 @@ const remoteFiles = ref([
 ]);
 
 // Filtered files based on search
-const _filteredLocalFiles = computed(() => {
+const filteredLocalFiles = computed(() => {
 	if (!searchQuery.value) return localFiles.value;
 	return localFiles.value.filter((f) =>
 		f.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
 	);
 });
 
-const _filteredRemoteFiles = computed(() => {
+const filteredRemoteFiles = computed(() => {
 	if (!searchQuery.value) return remoteFiles.value;
 	return remoteFiles.value.filter((f) =>
 		f.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
@@ -259,7 +283,7 @@ const _filteredRemoteFiles = computed(() => {
 });
 
 // Helper function to get file icon based on extension
-const _getFileIcon = (filename: string) => {
+const getFileIcon = (filename: string) => {
 	const ext = filename.split(".").pop()?.toLowerCase() || "";
 
 	if (
@@ -318,23 +342,23 @@ const _getFileIcon = (filename: string) => {
 };
 
 // File actions
-const _uploadFile = () => {
+const uploadFile = () => {
 	console.log("Upload file...");
 };
 
-const _downloadFile = (file: { id: number; name: string }) => {
+const downloadFile = (file: { id: number; name: string }) => {
 	console.log("Download file:", file.name);
 };
 
-const _downloadAll = () => {
+const downloadAll = () => {
 	console.log("Download all remote files...");
 };
 
-const _openFile = (file: { id: number; name: string }) => {
+const openFile = (file: { id: number; name: string }) => {
 	console.log("Open file:", file.name);
 };
 
-const _deleteFile = (file: { id: number; name: string }) => {
+const deleteFile = (file: { id: number; name: string }) => {
 	console.log("Delete file:", file.name);
 };
 </script>

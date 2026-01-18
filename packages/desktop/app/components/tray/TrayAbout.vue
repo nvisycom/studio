@@ -64,7 +64,10 @@
 </template>
 
 <script setup lang="ts">
-const _currentYear = new Date().getFullYear();
+import { Check, Copy, ExternalLink } from "lucide-vue-next";
+import { Button } from "~/components/ui/button";
+
+const currentYear = new Date().getFullYear();
 const copied = ref(false);
 
 // App info
@@ -73,7 +76,7 @@ const buildNumber = "#1234";
 const tauriVersion = "2.0.0";
 const platform = "macOS";
 
-const _copyAllInfo = async () => {
+const copyAllInfo = async () => {
 	const info = `Nvisy Studio/${appVersion} (${platform}; Tauri/${tauriVersion}; Build ${buildNumber})`;
 
 	try {

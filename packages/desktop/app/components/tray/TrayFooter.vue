@@ -54,6 +54,7 @@
 </template>
 
 <script setup lang="ts">
+import { HardDrive, RefreshCw, Zap } from "lucide-vue-next";
 import { useActiveTab } from "~/composables/useActiveTab";
 import { useAuth } from "~/composables/useAuth";
 import { useSyncStatus } from "~/composables/useSyncStatus";
@@ -63,28 +64,28 @@ const { isAuthenticated } = useAuth();
 const { syncStatus, isSyncing, formatLastSyncTime } = useSyncStatus();
 
 // Computed last sync time
-const _lastSyncFormatted = computed(() => formatLastSyncTime());
+const lastSyncFormatted = computed(() => formatLastSyncTime());
 
 // Service status
-const _serviceOnline = ref(true);
+const serviceOnline = ref(true);
 
 // Credits
-const _credits = ref(1250);
-const _creditsTotal = ref(5000);
+const credits = ref(1250);
+const creditsTotal = ref(5000);
 
 // Storage
-const _storageUsed = ref("2.4 GB");
-const _storageTotal = ref("10 GB");
+const storageUsed = ref("2.4 GB");
+const storageTotal = ref("10 GB");
 
-const _goToFiles = () => {
+const goToFiles = () => {
 	activeTab.value = "files";
 };
 
-const _goToServices = () => {
+const goToServices = () => {
 	activeTab.value = "services";
 };
 
-const _goToSettings = () => {
+const goToSettings = () => {
 	activeTab.value = "settings";
 };
 </script>

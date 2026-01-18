@@ -1,22 +1,16 @@
 <script setup lang="ts">
-import { reactiveOmit } from "@vueuse/core";
-import type {
-	SplitterResizeHandleEmits,
-	SplitterResizeHandleProps,
-} from "reka-ui";
-import { useForwardPropsEmits } from "reka-ui";
-import type { HTMLAttributes } from "vue";
+import type { SplitterResizeHandleEmits, SplitterResizeHandleProps } from "reka-ui"
+import type { HTMLAttributes } from "vue"
+import { reactiveOmit } from "@vueuse/core"
+import { GripVertical } from "lucide-vue-next"
+import { SplitterResizeHandle, useForwardPropsEmits } from "reka-ui"
+import { cn } from '@/utils/tailwind'
 
-const props = defineProps<
-	SplitterResizeHandleProps & {
-		class?: HTMLAttributes["class"];
-		withHandle?: boolean;
-	}
->();
-const emits = defineEmits<SplitterResizeHandleEmits>();
+const props = defineProps<SplitterResizeHandleProps & { class?: HTMLAttributes["class"], withHandle?: boolean }>()
+const emits = defineEmits<SplitterResizeHandleEmits>()
 
-const delegatedProps = reactiveOmit(props, "class", "withHandle");
-const _forwarded = useForwardPropsEmits(delegatedProps, emits);
+const delegatedProps = reactiveOmit(props, "class", "withHandle")
+const forwarded = useForwardPropsEmits(delegatedProps, emits)
 </script>
 
 <template>
