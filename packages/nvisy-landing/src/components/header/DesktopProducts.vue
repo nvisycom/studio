@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {
-	NavigationMenuContent,
-	NavigationMenuItem,
-	NavigationMenuLink,
-	NavigationMenuTrigger,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { ExternalLink } from "lucide-vue-next";
 import { products } from "./desktop-nav-data";
@@ -66,8 +66,8 @@ import { products } from "./desktop-nav-data";
                 v-for="product in products.opensource"
                 :key="product.title"
                 :href="product.href"
-                target="_blank"
-                rel="noopener noreferrer"
+                :target="product.isExternal ? '_blank' : undefined"
+                :rel="product.isExternal ? 'noopener noreferrer' : undefined"
                 class="block select-none rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent"
               >
                 <div class="flex items-center gap-3">
@@ -77,7 +77,10 @@ import { products } from "./desktop-nav-data";
                   <div class="flex-1">
                     <div class="text-sm font-medium flex items-center gap-1.5">
                       {{ product.title }}
-                      <ExternalLink class="w-3 h-3 text-muted-foreground" />
+                      <ExternalLink
+                        v-if="product.isExternal"
+                        class="w-3 h-3 text-muted-foreground"
+                      />
                     </div>
                     <div class="text-xs text-muted-foreground mt-0.5">
                       {{ product.description }}

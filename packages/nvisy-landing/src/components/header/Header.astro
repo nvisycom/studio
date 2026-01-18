@@ -5,7 +5,7 @@ import DesktopNavigation from "./DesktopNavigation.vue";
 import MobileNavigation from "./MobileNavigation.vue";
 ---
 
-<HeaderWrapper client:only="vue">
+<HeaderWrapper client:load transition:persist>
   <!-- Logo Section -->
   <Logo asLink={true} size="sm" />
 
@@ -18,13 +18,13 @@ import MobileNavigation from "./MobileNavigation.vue";
       href="https://docs.nvisy.com"
       target="_blank"
       rel="noopener noreferrer"
-      class="hidden sm:inline-flex items-center justify-center text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent px-4 py-2 rounded-lg transition-colors"
+      class="hidden sm:inline-flex items-center justify-center text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent px-3 py-1.5 rounded-md transition-colors"
     >
       Docs
     </a>
     <a
       href="https://app.nvisy.com/auth/login"
-      class="inline-flex items-center justify-center bg-foreground text-background hover:opacity-90 font-medium px-4 py-2 text-base rounded-lg transition-all shadow-sm"
+      class="inline-flex items-center justify-center bg-foreground text-background hover:opacity-90 font-medium px-5 py-1.5 text-sm rounded-md transition-all shadow-sm"
     >
       Open App
     </a>

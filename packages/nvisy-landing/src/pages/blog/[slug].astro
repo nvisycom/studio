@@ -60,13 +60,19 @@ const categoryIcons: Record<string, typeof Zap> = {
 
 <Layout title={entry.data.title} description={entry.data.description}>
   <!-- Article Header -->
-  <section class="relative pt-24 md:pt-32 pb-12 overflow-hidden">
+  <section class="relative pt-18 md:pt-24 pb-12 overflow-hidden">
     <!-- Background effects -->
     <div class="absolute inset-0 bg-gradient-radial" />
     <div class="absolute inset-0 bg-[linear-gradient(to_right,oklch(0.5_0_0/0.03)_1px,transparent_1px),linear-gradient(to_bottom,oklch(0.5_0_0/0.03)_1px,transparent_1px)] bg-[size:64px_64px]" />
 
     <div class="container relative z-10 mx-auto px-4">
       <div class="max-w-4xl mx-auto">
+        <!-- Back link -->
+        <a href="/blog" class="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">
+          <ChevronLeft class="w-4 h-4" />
+          Back to blog
+        </a>
+
         <!-- Meta -->
         <div class="flex flex-wrap items-center gap-3 mb-6">
           {entry.data.category && (
@@ -140,7 +146,7 @@ const categoryIcons: Record<string, typeof Zap> = {
   </section>
 
   <!-- Article Content -->
-  <section class="py-12">
+  <section class="py-2">
     <div class="container mx-auto px-4">
       <div class="max-w-4xl mx-auto">
         <article class="mb-16">

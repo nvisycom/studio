@@ -1,0 +1,141 @@
+---
+import { Layout } from "@/layouts";
+import { Hero, CTA, SDKExamples, OpenSource, Connect } from "@/components";
+import { ExternalLink } from "lucide-vue-next";
+
+import TypeScriptIcon from "@/assets/languages/typescript.svg?raw";
+import PythonIcon from "@/assets/languages/python.svg?raw";
+import RustIcon from "@/assets/languages/rust.svg?raw";
+
+const sdks = [
+	{
+		name: "TypeScript SDK",
+		language: "TypeScript / JavaScript",
+		icon: TypeScriptIcon,
+		description: "Modern SDK for Node.js and browser environments with full TypeScript support.",
+		href: "https://github.com/nvisycom/sdk-ts",
+		docsHref: "https://docs.nvisy.com/sdks/typescript",
+		features: ["Full TypeScript support", "Browser & Node.js", "Async/await API", "Tree-shakeable"],
+	},
+	{
+		name: "Python SDK",
+		language: "Python",
+		icon: PythonIcon,
+		description: "Native Python library with async support and type hints for modern Python applications.",
+		href: "https://github.com/nvisycom/sdk-py",
+		docsHref: "https://docs.nvisy.com/sdks/python",
+		features: ["Type hints", "Async support", "Python 3.8+", "Pydantic models"],
+	},
+	{
+		name: "Rust SDK",
+		language: "Rust",
+		icon: RustIcon,
+		description: "High-performance Rust library for systems programming and performance-critical applications.",
+		href: "https://github.com/nvisycom/sdk-rs",
+		docsHref: "https://docs.nvisy.com/sdks/rust",
+		features: ["Zero-cost abstractions", "Async runtime", "Memory safe", "Serde integration"],
+	},
+];
+---
+
+<Layout
+  title="SDKs"
+  description="Official Nvisy SDKs for TypeScript, Python, and Rust. Build document processing into your applications."
+  hideFooterBorder
+>
+  <Hero
+    title="SDKs"
+    titleHighlight="for developers"
+    description="Official client libraries to integrate Nvisy into your applications. Choose your language and start building."
+    primaryCta={{ text: "Get Started", href: "https://app.nvisy.com/auth/signup" }}
+    secondaryCta={{ text: "API Reference", href: "https://docs.nvisy.com/api" }}
+    compact
+  />
+
+  <!-- SDKs Grid -->
+  <section class="py-24 md:py-32">
+    <div class="container mx-auto max-w-5xl px-4">
+      <div class="grid gap-6">
+        {sdks.map((sdk) => (
+          <div class="group relative rounded-2xl border border-border bg-card/50 p-6 md:p-8 transition-all hover:bg-card/80 hover:border-border/80">
+            <div class="flex flex-col md:flex-row md:items-start gap-6">
+              <!-- SDK Icon -->
+              <div class="flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-xl bg-muted/50 border border-border flex items-center justify-center">
+                <div class="w-7 h-7 md:w-8 md:h-8 [&>svg]:w-full [&>svg]:h-full" set:html={sdk.icon} />
+              </div>
+
+              <!-- SDK Info -->
+              <div class="flex-1 space-y-4">
+                <div>
+                  <div class="flex items-center gap-3 mb-2">
+                    <h3 class="text-xl font-semibold">{sdk.name}</h3>
+                    <span class="text-xs font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                      {sdk.language}
+                    </span>
+                  </div>
+                  <p class="text-muted-foreground">{sdk.description}</p>
+                </div>
+
+                <!-- Features -->
+                <div class="flex flex-wrap gap-2">
+                  {sdk.features.map((feature) => (
+                    <span class="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">
+                      {feature}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Links -->
+              <div class="flex flex-row md:flex-col gap-3 md:min-w-[140px]">
+                <a
+                  href={sdk.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center justify-center gap-2 bg-foreground text-background hover:opacity-90 font-medium px-4 py-2 text-sm rounded-lg transition-all"
+                >
+                  GitHub
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+                <a
+                  href={sdk.docsHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center justify-center gap-2 border border-border hover:bg-accent font-medium px-4 py-2 text-sm rounded-lg transition-all"
+                >
+                  Docs
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- SDK Examples -->
+  <SDKExamples
+    title="Simple, powerful SDKs"
+    description="Integrate document processing in minutes with our easy-to-use SDKs."
+  />
+
+  <!-- Connect -->
+  <Connect
+    title="Flexible integration"
+    description="Use our SDKs alongside your favorite tools and services."
+  />
+
+  <!-- Open Source -->
+  <OpenSource
+    title="Built on open source"
+    description="Our SDKs and core tools are open source. Contribute, audit the code, and build with confidence."
+  />
+
+  <CTA
+    title="Need help getting started?"
+    description="Our documentation covers everything from installation to advanced usage patterns."
+    primaryCta={{ text: "Read the Docs", href: "https://docs.nvisy.com" }}
+    secondaryCta={{ text: "Contact Support", href: "mailto:support@nvisy.com" }}
+  />
+</Layout>

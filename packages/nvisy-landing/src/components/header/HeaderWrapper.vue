@@ -62,7 +62,7 @@ onUnmounted(() => {
     >
       <div
         class="flex items-center justify-between gap-8 transition-[height] duration-300 ease-out"
-        :class="[isScrolled ? 'h-12 md:h-14' : 'h-12 md:h-16']"
+        :class="[isScrolled ? 'h-11 md:h-12' : 'h-11 md:h-14']"
       >
         <slot />
       </div>

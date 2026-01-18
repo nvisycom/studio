@@ -1,6 +1,6 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, CTA, Security } from "@/components";
+import { Hero, CTA, Connect } from "@/components";
 import IntegrationsGrid from "@/components/features/integrations/IntegrationsGrid.vue";
 
 import AnthropicIcon from "@/assets/integration/anthropic.svg?raw";
@@ -126,6 +126,7 @@ const integrations = [
     description="Connect Nvisy with the tools you already use. Automate document workflows and sync data across your entire stack."
     primaryCta={{ text: "Get Started", href: "https://app.nvisy.com/auth/signup" }}
     secondaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com/integrations" }}
+    compact
   />
 
   <!-- Integrations Grid -->
@@ -135,12 +136,16 @@ const integrations = [
     </div>
   </section>
 
+  <!-- Connect -->
+  <Connect
+    title="Connect your workflow"
+    description="Seamlessly integrate Nvisy into your existing infrastructure with powerful APIs and webhooks."
+  />
+
   <CTA
     title="Need a different integration?"
     description="We're constantly adding new integrations. Let us know what you need or get started with what's available."
     primaryCta={{ text: "Get Started", href: "https://app.nvisy.com/auth/signup" }}
     secondaryCta={{ text: "Request Integration", href: "mailto:support@nvisy.com?subject=Integration Request" }}
   />
-
-  <Security />
 </Layout>

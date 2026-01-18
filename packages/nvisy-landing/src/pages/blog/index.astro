@@ -41,11 +41,13 @@ const categoryIcons: Record<string, typeof Zap> = {
 };
 ---
 
-<Layout title="Blog" description="Insights, stories, and updates from our team">
+<Layout title="Blog" description="Insights, stories, and updates from our team" hideFooterBorder>
   <Hero
     title="Stories &"
     titleHighlight="Insights"
+    titleInline={true}
     description="Discover the latest from our team. Engineering insights, product updates, and thought leadership."
+    compact
   />
 
   <!-- Main Content -->

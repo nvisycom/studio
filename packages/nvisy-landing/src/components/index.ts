@@ -8,7 +8,10 @@ export { default as SocialProof } from "./sections/SocialProof.astro";
 export { default as Testimonials } from "./sections/Testimonials.astro";
 export { default as Industries } from "./sections/Industries.astro";
 export { default as HowItWorks } from "./sections/HowItWorks.astro";
+export { default as Connect } from "./sections/Connect.astro";
+export { default as Integrations } from "./sections/Integrations.astro";
 export { default as OpenSource } from "./sections/OpenSource.astro";
+export { default as SDKExamples } from "./sections/SDKExamples.astro";
 export { default as Security } from "./sections/Security.astro";
 export { default as CaseStudies } from "./sections/CaseStudies.astro";
 

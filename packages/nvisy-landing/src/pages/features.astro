@@ -1,6 +1,12 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, CTA, OpenSource, Features, Security } from "@/components";
+import {
+	Hero,
+	CTA,
+	OpenSource,
+	Features as FeaturesSection,
+	Security,
+} from "@/components";
 import SDKExamples from "@/components/sections/SDKExamples.astro";
 import Connect from "@/components/sections/Connect.astro";
 import HowItWorks from "@/components/sections/HowItWorks.astro";
@@ -20,6 +26,7 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
     description="Enterprise-grade document processing with flexible deployment options. Deploy in our managed cloud or on your own infrastructure."
     primaryCta={{ text: "Start Free Trial", href: "/pricing" }}
     secondaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com" }}
+    compact
   />
 
   <section class="py-24 md:py-32 relative overflow-hidden">
@@ -184,7 +191,7 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
     </div>
   </section>
 
-  <Features
+  <FeaturesSection
     title="Built for enterprise scale"
     description="Advanced AI technology meets enterprise security requirements."
     category="general"

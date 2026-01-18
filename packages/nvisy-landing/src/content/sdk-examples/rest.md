@@ -4,7 +4,7 @@ language: bash
 filename: extract-document
 extension: sh
 githubUrl: https://github.com/nvisycom/docs
-order: 3
+order: 10
 ---
 
 ```bash

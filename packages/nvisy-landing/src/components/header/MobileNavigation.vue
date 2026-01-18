@@ -5,33 +5,33 @@ import { useMobileMenu } from "./useMobileMenu.ts";
 import { products } from "./mobile-nav-data";
 
 defineProps<{
-	menuOnly?: boolean;
+  menuOnly?: boolean;
 }>();
 
 const { mobileMenuOpen, toggleMobileMenu, closeMobileMenu } = useMobileMenu();
 
 // Disable body scroll when menu is open
 watch(mobileMenuOpen, (isOpen) => {
-	if (isOpen) {
-		document.body.style.overflow = "hidden";
-	} else {
-		document.body.style.overflow = "";
-	}
+  if (isOpen) {
+    document.body.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "";
+  }
 });
 
 // Close menu and restore scroll when resizing to desktop
 const handleResize = () => {
-	if (window.innerWidth >= 1024 && mobileMenuOpen.value) {
-		closeMobileMenu();
-	}
+  if (window.innerWidth >= 1024 && mobileMenuOpen.value) {
+    closeMobileMenu();
+  }
 };
 
 onMounted(() => {
-	window.addEventListener("resize", handleResize);
+  window.addEventListener("resize", handleResize);
 });
 
 onUnmounted(() => {
-	window.removeEventListener("resize", handleResize);
+  window.removeEventListener("resize", handleResize);
 });
 </script>
 
@@ -51,7 +51,7 @@ onUnmounted(() => {
   <!-- Mobile Navigation Menu - Full screen overlay -->
   <div
     v-if="menuOnly && mobileMenuOpen"
-    class="lg:hidden fixed inset-0 top-12 md:top-16 z-40 bg-background"
+    class="lg:hidden fixed inset-0 top-11 md:top-14 z-40 bg-background"
   >
     <nav class="h-full flex flex-col px-6 py-6">
       <!-- Product Section -->
@@ -63,9 +63,11 @@ onUnmounted(() => {
         </h3>
         <div class="space-y-0.5">
           <a
-            v-for="product in products.platforms"
+            v-for="product in [...products.platforms, ...products.opensource]"
             :key="product.title"
             :href="product.href"
+            :target="product.isExternal ? '_blank' : undefined"
+            :rel="product.isExternal ? 'noopener noreferrer' : undefined"
             class="block text-xl font-medium text-foreground hover:text-foreground/70 transition-colors py-1.5"
           >
             {{ product.title }}
@@ -96,16 +98,30 @@ onUnmounted(() => {
             Docs
           </a>
           <a
-            href="/integrations"
+            href="/blog"
             class="block text-xl font-medium text-foreground hover:text-foreground/70 transition-colors py-1.5"
           >
-            Integrations
+            Blog
           </a>
           <a
             href="/changelog"
             class="block text-xl font-medium text-foreground hover:text-foreground/70 transition-colors py-1.5"
           >
             Changelog
+          </a>
+          <a
+            href="/security"
+            class="block text-xl font-medium text-foreground hover:text-foreground/70 transition-colors py-1.5"
+          >
+            Security
+          </a>
+          <a
+            href="https://nvisy.openstatus.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="block text-xl font-medium text-foreground hover:text-foreground/70 transition-colors py-1.5"
+          >
+            Status
           </a>
         </div>
       </div>
@@ -131,10 +147,10 @@ onUnmounted(() => {
             Customers
           </a>
           <a
-            href="/blog"
+            href="/contact"
             class="block text-xl font-medium text-foreground hover:text-foreground/70 transition-colors py-1.5"
           >
-            Blog
+            Contact
           </a>
         </div>
       </div>

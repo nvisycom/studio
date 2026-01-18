@@ -1,29 +1,41 @@
 /**
  * Global authentication middleware
  * Redirects unauthenticated users to login page
+ * Redirects authenticated users away from auth pages
  */
 export default defineNuxtRouteMiddleware((to) => {
-	// Skip middleware on server-side (auth state is in localStorage)
-	if (import.meta.server) return;
+  // Skip middleware on server-side (auth state is in localStorage)
+  if (import.meta.server) return;
 
-	// Public routes that don't require authentication
-	const publicRoutes = [
-		"/auth/login",
-		"/auth/signup",
-		"/auth/forgot-password",
-		"/auth/reset-password",
-	];
+  // Auth routes (login/signup) - redirect to home if already authenticated
+  const authRoutes = ["/auth/login", "/auth/signup"];
 
-	const isPublicRoute = publicRoutes.some(
-		(route) => to.path === route || to.path.startsWith(`${route}/`),
-	);
+  // Public routes that don't require authentication
+  const publicRoutes = [
+    ...authRoutes,
+    "/auth/forgot-password",
+    "/auth/reset-password",
+  ];
 
-	if (isPublicRoute) return;
+  const isAuthRoute = authRoutes.some(
+    (route) => to.path === route || to.path.startsWith(`${route}/`),
+  );
 
-	// Check authentication
-	const { isAuthenticated } = useAuth();
+  const isPublicRoute = publicRoutes.some(
+    (route) => to.path === route || to.path.startsWith(`${route}/`),
+  );
 
-	if (!isAuthenticated.value) {
-		return navigateTo("/auth/login");
-	}
+  // Check authentication
+  const { isAuthenticated } = useAuth();
+
+  // Redirect authenticated users away from login/signup
+  if (isAuthRoute && isAuthenticated.value) {
+    return navigateTo("/");
+  }
+
+  if (isPublicRoute) return;
+
+  if (!isAuthenticated.value) {
+    return navigateTo("/auth/login");
+  }
 });
