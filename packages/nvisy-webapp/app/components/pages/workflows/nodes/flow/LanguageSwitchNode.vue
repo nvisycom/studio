@@ -4,114 +4,88 @@ import { Handle, Position } from "@vue-flow/core";
 import { Languages } from "lucide-vue-next";
 
 interface LanguageConfig {
-  id: string;
-  label: string;
-  code: string;
-  enabled: boolean;
+	id: string;
+	label: string;
+	code: string;
+	enabled: boolean;
 }
 
 interface Props {
-  data: {
-    label: string;
-    languages: LanguageConfig[];
-    invertMode?: boolean;
-  };
-  selected?: boolean;
+	data: {
+		label: string;
+		languages: LanguageConfig[];
+		invertMode?: boolean;
+	};
+	selected?: boolean;
 }
 
 const props = defineProps<Props>();
 
 const enabledLanguages = computed(() => {
-  return props.data?.languages?.filter((lang) => lang.enabled) || [];
+	return props.data?.languages?.filter((lang) => lang.enabled) || [];
 });
 
 const displayLimit = 3;
 const displayedLanguages = computed(() =>
-  enabledLanguages.value.slice(0, displayLimit),
+	enabledLanguages.value.slice(0, displayLimit),
 );
 const remainingCount = computed(() =>
-  Math.max(0, enabledLanguages.value.length - displayLimit),
+	Math.max(0, enabledLanguages.value.length - displayLimit),
 );
 
 const invertMode = computed(() => props.data?.invertMode ?? false);
-
-// Calculate vertical position for each handle
-function getHandleStyle(index: number, total: number) {
-  if (total === 1) {
-    return { top: "50%" };
-  }
-  // Distribute handles evenly with padding
-  const padding = 20; // percentage from top/bottom
-  const availableSpace = 100 - padding * 2;
-  const position = padding + (availableSpace / (total - 1)) * index;
-  return { top: `${position}%` };
-}
 </script>
 
 <template>
   <div
-    class="px-5 py-4 rounded-xl border-2 bg-card shadow-sm min-w-[220px] transition-all relative"
-    :class="[selected ? 'border-teal-500 shadow-lg' : 'border-teal-500/30']"
+    class="workflow-node workflow-node--switch"
+    :class="{ 'workflow-node--selected': selected }"
   >
-    <Handle
-      type="target"
-      :position="Position.Left"
-      class="!w-3.5 !h-3.5 !bg-foreground !border-2 !border-background"
-    />
+    <Handle type="target" :position="Position.Left" />
 
-    <div class="flex items-center gap-4">
-      <div
-        class="w-10 h-10 rounded-lg flex items-center justify-center bg-teal-500/10 text-teal-500"
-      >
-        <Languages class="w-5 h-5" />
+    <div class="workflow-node__header">
+      <div class="workflow-node__icon">
+        <Languages class="w-4 h-4" />
       </div>
-      <div>
-        <div
-          class="text-xs font-medium text-muted-foreground uppercase tracking-wider"
-        >
-          Flow
-        </div>
-        <div class="text-base font-semibold text-foreground">
-          {{ props.data?.label || "Language Switch" }}
-        </div>
-      </div>
+      <span class="workflow-node__label">{{
+        props.data?.label || "Language Switch"
+      }}</span>
     </div>
 
-    <!-- Language labels -->
-    <div
-      v-if="enabledLanguages.length > 0"
-      class="mt-3 flex flex-wrap gap-1.5 max-w-[180px]"
-    >
+    <div v-if="enabledLanguages.length > 0" class="workflow-node__tags">
       <span
         v-if="invertMode"
-        class="text-xs font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground"
+        class="workflow-node__tag workflow-node__tag--muted"
       >
         NOT
       </span>
       <span
         v-for="lang in displayedLanguages"
         :key="lang.id"
-        class="text-xs font-mono px-2 py-0.5 rounded bg-teal-500/10 text-teal-600 dark:text-teal-400"
+        class="workflow-node__tag"
       >
         {{ lang.code.toUpperCase() }}
       </span>
       <span
         v-if="remainingCount > 0"
-        class="text-xs font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground"
+        class="workflow-node__tag workflow-node__tag--muted"
       >
         +{{ remainingCount }}
       </span>
     </div>
 
-    <!-- Dynamic output handles for each enabled language -->
+    <!-- Two outputs: true (match) and false (no match) -->
     <Handle
-      v-for="(lang, index) in enabledLanguages"
-      :id="lang.id"
-      :key="lang.id"
+      id="true"
       type="source"
       :position="Position.Right"
-      class="!w-3.5 !h-3.5 !bg-teal-500 !border-2 !border-background"
-      :style="getHandleStyle(index, enabledLanguages.length)"
+      :style="{ top: '35%', transform: 'translate(50%, -50%)' }"
+    />
+    <Handle
+      id="false"
+      type="source"
+      :position="Position.Right"
+      :style="{ top: '65%', transform: 'translate(50%, -50%)' }"
     />
   </div>
 </template>

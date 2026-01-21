@@ -9,28 +9,28 @@ import type { PlanType } from "./pricing-data";
 const { isYearly, setPricingPeriod } = usePricing();
 
 const discountPercentage = computed(() =>
-  Math.round(pricingConfig.yearlyDiscount * 100),
+	Math.round(pricingConfig.yearlyDiscount * 100),
 );
 
 const showBillingToggle = (planId: string) => {
-  return planId === "basic" || planId === "business";
+	return planId === "basic" || planId === "business";
 };
 
 // Computed prices that react to isYearly changes
 const prices = computed(() => {
-  const result: Record<string, number | "custom"> = {};
-  for (const plan of plans) {
-    if (plan.price === "custom") {
-      result[plan.id] = "custom";
-    } else {
-      const basePrice = plan.price;
-      const finalPrice = isYearly.value
-        ? basePrice * (1 - pricingConfig.yearlyDiscount)
-        : basePrice;
-      result[plan.id] = Math.floor(finalPrice);
-    }
-  }
-  return result;
+	const result: Record<string, number | "custom"> = {};
+	for (const plan of plans) {
+		if (plan.price === "custom") {
+			result[plan.id] = "custom";
+		} else {
+			const basePrice = plan.price;
+			const finalPrice = isYearly.value
+				? basePrice * (1 - pricingConfig.yearlyDiscount)
+				: basePrice;
+			result[plan.id] = Math.floor(finalPrice);
+		}
+	}
+	return result;
 });
 
 const getPrice = (planId: PlanType) => prices.value[planId];

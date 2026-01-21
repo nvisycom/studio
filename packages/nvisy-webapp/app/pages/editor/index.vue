@@ -8,13 +8,13 @@ import WorkflowChatPanel from "~/components/pages/workflows/WorkflowChatPanel.vu
 useHead({ title: "Editor" });
 
 definePageMeta({
-  pageCategory: "Automation",
+	pageCategory: "Automation",
 });
 
 // Ensure at least one workflow is open
 const { ensureWorkflowOpen } = useEditorWorkflows();
 onMounted(() => {
-  ensureWorkflowOpen();
+	ensureWorkflowOpen();
 });
 
 // Canvas ref
@@ -34,63 +34,63 @@ const minChatWidth = 320;
 const maxChatWidth = 800;
 
 function toggleChat() {
-  if (isAnimating.value) return;
+	if (isAnimating.value) return;
 
-  isAnimating.value = true;
+	isAnimating.value = true;
 
-  if (chatVisible.value) {
-    // Save current width before closing
-    savedChatWidth.value = chatWidth.value;
-    chatWidth.value = 0;
-    setTimeout(() => {
-      chatVisible.value = false;
-      isAnimating.value = false;
-    }, 300);
-  } else {
-    // Restore saved width
-    chatVisible.value = true;
-    nextTick(() => {
-      chatWidth.value = savedChatWidth.value;
-      setTimeout(() => {
-        isAnimating.value = false;
-      }, 300);
-    });
-  }
+	if (chatVisible.value) {
+		// Save current width before closing
+		savedChatWidth.value = chatWidth.value;
+		chatWidth.value = 0;
+		setTimeout(() => {
+			chatVisible.value = false;
+			isAnimating.value = false;
+		}, 300);
+	} else {
+		// Restore saved width
+		chatVisible.value = true;
+		nextTick(() => {
+			chatWidth.value = savedChatWidth.value;
+			setTimeout(() => {
+				isAnimating.value = false;
+			}, 300);
+		});
+	}
 }
 
 function handleSelectConfigNode(node: Node | null) {
-  selectedConfigNode.value = node;
+	selectedConfigNode.value = node;
 }
 
 function handleUpdateNode(nodeId: string, data: Record<string, unknown>) {
-  canvasRef.value?.updateNodeData(nodeId, data);
+	canvasRef.value?.updateNodeData(nodeId, data);
 }
 
 // Resize handling
 function startResize(e: MouseEvent) {
-  if (isAnimating.value) return;
+	if (isAnimating.value) return;
 
-  isResizing.value = true;
-  const startX = e.clientX;
-  const startWidth = chatWidth.value;
+	isResizing.value = true;
+	const startX = e.clientX;
+	const startWidth = chatWidth.value;
 
-  function onMouseMove(e: MouseEvent) {
-    const delta = startX - e.clientX;
-    const newWidth = Math.min(
-      Math.max(startWidth + delta, minChatWidth),
-      maxChatWidth,
-    );
-    chatWidth.value = newWidth;
-  }
+	function onMouseMove(e: MouseEvent) {
+		const delta = startX - e.clientX;
+		const newWidth = Math.min(
+			Math.max(startWidth + delta, minChatWidth),
+			maxChatWidth,
+		);
+		chatWidth.value = newWidth;
+	}
 
-  function onMouseUp() {
-    isResizing.value = false;
-    document.removeEventListener("mousemove", onMouseMove);
-    document.removeEventListener("mouseup", onMouseUp);
-  }
+	function onMouseUp() {
+		isResizing.value = false;
+		document.removeEventListener("mousemove", onMouseMove);
+		document.removeEventListener("mouseup", onMouseUp);
+	}
 
-  document.addEventListener("mousemove", onMouseMove);
-  document.addEventListener("mouseup", onMouseUp);
+	document.addEventListener("mousemove", onMouseMove);
+	document.addEventListener("mouseup", onMouseUp);
 }
 </script>
 

@@ -5,22 +5,22 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 
 interface LanguageConfig {
-  id: string;
-  label: string;
-  code: string;
-  enabled: boolean;
+	id: string;
+	label: string;
+	code: string;
+	enabled: boolean;
 }
 
 interface Props {
-  data: {
-    languages: LanguageConfig[];
-    invertMode?: boolean;
-  };
+	data: {
+		languages: LanguageConfig[];
+		invertMode?: boolean;
+	};
 }
 
 const props = defineProps<Props>();
 const emit = defineEmits<{
-  update: [data: Record<string, unknown>];
+	update: [data: Record<string, unknown>];
 }>();
 
 const search = ref("");
@@ -28,28 +28,28 @@ const search = ref("");
 const languages = computed<LanguageConfig[]>(() => props.data?.languages || []);
 
 const filteredLanguages = computed(() => {
-  if (!search.value.trim()) {
-    return languages.value;
-  }
-  const searchLower = search.value.toLowerCase();
-  return languages.value.filter(
-    (lang) =>
-      lang.label.toLowerCase().includes(searchLower) ||
-      lang.code.toLowerCase().includes(searchLower),
-  );
+	if (!search.value.trim()) {
+		return languages.value;
+	}
+	const searchLower = search.value.toLowerCase();
+	return languages.value.filter(
+		(lang) =>
+			lang.label.toLowerCase().includes(searchLower) ||
+			lang.code.toLowerCase().includes(searchLower),
+	);
 });
 
 const invertMode = computed(() => props.data?.invertMode ?? false);
 
 function toggleLanguage(langId: string) {
-  const updatedLanguages = languages.value.map((lang) =>
-    lang.id === langId ? { ...lang, enabled: !lang.enabled } : lang,
-  );
-  emit("update", { ...props.data, languages: updatedLanguages });
+	const updatedLanguages = languages.value.map((lang) =>
+		lang.id === langId ? { ...lang, enabled: !lang.enabled } : lang,
+	);
+	emit("update", { ...props.data, languages: updatedLanguages });
 }
 
 function toggleInvertMode() {
-  emit("update", { ...props.data, invertMode: !invertMode.value });
+	emit("update", { ...props.data, invertMode: !invertMode.value });
 }
 </script>
 
@@ -101,7 +101,7 @@ function toggleInvertMode() {
       >
         <span class="flex items-center gap-2">
           <span
-            class="text-xs font-mono px-1.5 py-0.5 rounded bg-teal-500/10 text-teal-600 dark:text-teal-400"
+            class="text-xs font-mono px-1.5 py-0.5 rounded bg-muted text-muted-foreground"
           >
             {{ lang.code.toUpperCase() }}
           </span>

@@ -1,136 +1,142 @@
 <script setup lang="ts">
-import { Play, Save, Undo, Redo, Maximize } from "lucide-vue-next";
+import { useVueFlow } from "@vue-flow/core";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Kbd, KbdGroup } from "@/components/ui/kbd";
+	Undo2,
+	Redo2,
+	Trash2,
+	Play,
+	Save,
+	MoreHorizontal,
+} from "lucide-vue-next";
+import { Button } from "@/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+	DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 interface Props {
-  canUndo?: boolean;
-  canRedo?: boolean;
+	canUndo: boolean;
+	canRedo: boolean;
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  canUndo: false,
-  canRedo: false,
-});
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
-  "fit-view": [];
-  run: [];
-  save: [];
-  undo: [];
-  redo: [];
+	undo: [];
+	redo: [];
+	save: [];
+	run: [];
+	deleteSelected: [];
 }>();
 
-const { getKbdKey } = useKbd();
+const { getSelectedNodes, getSelectedEdges } = useVueFlow("workflow-canvas");
+
+function handleUndo() {
+	emit("undo");
+}
+
+function handleRedo() {
+	emit("redo");
+}
+
+function handleDelete() {
+	emit("deleteSelected");
+}
+
+function handleSave() {
+	emit("save");
+}
+
+function handleRun() {
+	emit("run");
+}
+
+const hasSelection = computed(
+	() => getSelectedNodes.value.length > 0 || getSelectedEdges.value.length > 0,
+);
 </script>
 
 <template>
-  <div
-    class="absolute top-4 left-4 z-10 flex items-center gap-2 bg-card border border-border rounded-lg p-1 shadow-sm"
-  >
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger as-child>
-          <button
-            class="p-2 hover:bg-accent rounded-md transition-colors"
-            @click="emit('run')"
-          >
-            <Play class="w-4 h-4" />
-          </button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Run Workflow</p>
-        </TooltipContent>
-      </Tooltip>
+  <div class="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+    <div
+      class="flex items-center gap-1 px-2 py-1.5 bg-card/80 backdrop-blur-sm border border-border rounded-lg shadow-sm"
+    >
+      <!-- Undo/Redo -->
+      <Button
+        variant="ghost"
+        size="sm"
+        class="h-7 w-7 p-0"
+        :disabled="!props.canUndo"
+        title="Undo (⌘Z)"
+        @click="handleUndo"
+      >
+        <Undo2 class="w-3.5 h-3.5" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        class="h-7 w-7 p-0"
+        :disabled="!props.canRedo"
+        title="Redo (⌘⇧Z)"
+        @click="handleRedo"
+      >
+        <Redo2 class="w-3.5 h-3.5" />
+      </Button>
 
-      <div class="w-px h-6 bg-border" />
+      <div class="w-px h-4 bg-border mx-1" />
 
-      <Tooltip>
-        <TooltipTrigger as-child>
-          <button
-            class="p-2 hover:bg-accent rounded-md transition-colors"
-            @click="emit('save')"
-          >
-            <Save class="w-4 h-4" />
-          </button>
-        </TooltipTrigger>
-        <TooltipContent class="flex items-center gap-2">
-          <span>Save</span>
-          <KbdGroup>
-            <Kbd>{{ getKbdKey("meta") }}</Kbd>
-            <Kbd>S</Kbd>
-          </KbdGroup>
-        </TooltipContent>
-      </Tooltip>
+      <!-- Delete -->
+      <Button
+        variant="ghost"
+        size="sm"
+        class="h-7 w-7 p-0"
+        :disabled="!hasSelection"
+        title="Delete selected"
+        @click="handleDelete"
+      >
+        <Trash2 class="w-3.5 h-3.5" />
+      </Button>
 
-      <Tooltip>
-        <TooltipTrigger as-child>
-          <button
-            class="p-2 rounded-md transition-colors"
-            :class="
-              props.canUndo
-                ? 'hover:bg-accent'
-                : 'opacity-40 cursor-not-allowed'
-            "
-            :disabled="!props.canUndo"
-            @click="props.canUndo && emit('undo')"
-          >
-            <Undo class="w-4 h-4" />
-          </button>
-        </TooltipTrigger>
-        <TooltipContent class="flex items-center gap-2">
-          <span>Undo</span>
-          <KbdGroup>
-            <Kbd>{{ getKbdKey("meta") }}</Kbd>
-            <Kbd>Z</Kbd>
-          </KbdGroup>
-        </TooltipContent>
-      </Tooltip>
+      <div class="w-px h-4 bg-border mx-1" />
 
-      <Tooltip>
-        <TooltipTrigger as-child>
-          <button
-            class="p-2 rounded-md transition-colors"
-            :class="
-              props.canRedo
-                ? 'hover:bg-accent'
-                : 'opacity-40 cursor-not-allowed'
-            "
-            :disabled="!props.canRedo"
-            @click="props.canRedo && emit('redo')"
-          >
-            <Redo class="w-4 h-4" />
-          </button>
-        </TooltipTrigger>
-        <TooltipContent class="flex items-center gap-2">
-          <span>Redo</span>
-          <KbdGroup>
-            <Kbd>{{ getKbdKey("meta") }}</Kbd>
-            <Kbd>Y</Kbd>
-          </KbdGroup>
-        </TooltipContent>
-      </Tooltip>
+      <!-- Save & Run -->
+      <Button
+        variant="ghost"
+        size="sm"
+        class="h-7 px-2 gap-1.5 text-xs"
+        title="Save workflow"
+        @click="handleSave"
+      >
+        <Save class="w-3.5 h-3.5" />
+        Save
+      </Button>
+      <Button
+        size="sm"
+        class="h-7 px-2 gap-1.5 text-xs"
+        title="Run workflow"
+        @click="handleRun"
+      >
+        <Play class="w-3.5 h-3.5" />
+        Run
+      </Button>
 
-      <div class="w-px h-6 bg-border" />
-
-      <Tooltip>
-        <TooltipTrigger as-child>
-          <button
-            class="p-2 hover:bg-accent rounded-md transition-colors"
-            @click="emit('fit-view')"
-          >
-            <Maximize class="w-4 h-4" />
-          </button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Fit View</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+      <!-- More options -->
+      <DropdownMenu>
+        <DropdownMenuTrigger as-child>
+          <Button variant="ghost" size="sm" class="h-7 w-7 p-0">
+            <MoreHorizontal class="w-3.5 h-3.5" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" class="w-40">
+          <DropdownMenuItem class="text-xs">Export as JSON</DropdownMenuItem>
+          <DropdownMenuItem class="text-xs">Import from JSON</DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem class="text-xs">Clear canvas</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   </div>
 </template>

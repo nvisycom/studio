@@ -6,14 +6,14 @@ import PythonIcon from "@/assets/languages/python.svg?raw";
 import RustIcon from "@/assets/languages/rust.svg?raw";
 
 interface SDK {
-  name: string;
-  language: string;
-  githubUrl: string;
-  order: number;
+	name: string;
+	language: string;
+	githubUrl: string;
+	order: number;
 }
 
 const props = defineProps<{
-  sdks: SDK[];
+	sdks: SDK[];
 }>();
 
 const activeTab = ref(0);
@@ -24,88 +24,88 @@ const codeContainerRef = ref<HTMLDivElement | null>(null);
 
 const activeSdk = computed(() => props.sdks[activeTab.value]);
 const activeCodeHtml = computed(
-  () => codeHtmlMap.value[activeSdk.value.name] || "",
+	() => codeHtmlMap.value[activeSdk.value.name] || "",
 );
 
 const switchTab = (index: number) => {
-  if (index === activeTab.value) return;
+	if (index === activeTab.value) return;
 
-  // Lock the current height before switching
-  if (codeContainerRef.value) {
-    const currentHeight = codeContainerRef.value.offsetHeight;
-    codeContainerRef.value.style.height = `${currentHeight}px`;
-    // Force reflow to ensure height is applied
-    void codeContainerRef.value.offsetHeight;
-  }
+	// Lock the current height before switching
+	if (codeContainerRef.value) {
+		const currentHeight = codeContainerRef.value.offsetHeight;
+		codeContainerRef.value.style.height = `${currentHeight}px`;
+		// Force reflow to ensure height is applied
+		void codeContainerRef.value.offsetHeight;
+	}
 
-  isTransitioning.value = true;
+	isTransitioning.value = true;
 
-  setTimeout(() => {
-    activeTab.value = index;
+	setTimeout(() => {
+		activeTab.value = index;
 
-    // After content switch, measure and animate to new height
-    requestAnimationFrame(() => {
-      if (codeContainerRef.value) {
-        // Get current fixed height
-        const currentHeight = codeContainerRef.value.offsetHeight;
+		// After content switch, measure and animate to new height
+		requestAnimationFrame(() => {
+			if (codeContainerRef.value) {
+				// Get current fixed height
+				const currentHeight = codeContainerRef.value.offsetHeight;
 
-        // Temporarily set to auto to measure new content
-        codeContainerRef.value.style.height = "auto";
-        const newHeight = codeContainerRef.value.offsetHeight;
+				// Temporarily set to auto to measure new content
+				codeContainerRef.value.style.height = "auto";
+				const newHeight = codeContainerRef.value.offsetHeight;
 
-        // Immediately set back to current height
-        codeContainerRef.value.style.height = `${currentHeight}px`;
+				// Immediately set back to current height
+				codeContainerRef.value.style.height = `${currentHeight}px`;
 
-        // Force reflow
-        void codeContainerRef.value.offsetHeight;
+				// Force reflow
+				void codeContainerRef.value.offsetHeight;
 
-        // Now animate to new height
-        codeContainerRef.value.style.height = `${newHeight}px`;
+				// Now animate to new height
+				codeContainerRef.value.style.height = `${newHeight}px`;
 
-        // After animation, remove fixed height
-        setTimeout(() => {
-          if (codeContainerRef.value) {
-            codeContainerRef.value.style.height = "";
-          }
-          isTransitioning.value = false;
-        }, 300);
-      }
-    });
-  }, 150);
+				// After animation, remove fixed height
+				setTimeout(() => {
+					if (codeContainerRef.value) {
+						codeContainerRef.value.style.height = "";
+					}
+					isTransitioning.value = false;
+				}, 300);
+			}
+		});
+	}, 150);
 };
 
 onMounted(() => {
-  // Listen for code-ready event from Astro
-  const container = document.querySelector("[data-sdk-showcase]");
-  if (container) {
-    container.addEventListener("code-ready", ((e: CustomEvent) => {
-      codeHtmlMap.value = e.detail;
-    }) as EventListener);
+	// Listen for code-ready event from Astro
+	const container = document.querySelector("[data-sdk-showcase]");
+	if (container) {
+		container.addEventListener("code-ready", ((e: CustomEvent) => {
+			codeHtmlMap.value = e.detail;
+		}) as EventListener);
 
-    // Also check if data is already available
-    const codeAttr = container.getAttribute("data-code-html");
-    if (codeAttr) {
-      try {
-        codeHtmlMap.value = JSON.parse(codeAttr);
-      } catch (e) {
-        console.error("Failed to parse code HTML data:", e);
-      }
-    }
-  }
+		// Also check if data is already available
+		const codeAttr = container.getAttribute("data-code-html");
+		if (codeAttr) {
+			try {
+				codeHtmlMap.value = JSON.parse(codeAttr);
+			} catch (e) {
+				console.error("Failed to parse code HTML data:", e);
+			}
+		}
+	}
 });
 
 const copyCode = async () => {
-  if (activeCodeHtml.value) {
-    // Extract text content from the rendered HTML
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = activeCodeHtml.value;
-    const codeText = tempDiv.querySelector("code")?.textContent || "";
-    await navigator.clipboard.writeText(codeText);
-    copied.value = true;
-    setTimeout(() => {
-      copied.value = false;
-    }, 2000);
-  }
+	if (activeCodeHtml.value) {
+		// Extract text content from the rendered HTML
+		const tempDiv = document.createElement("div");
+		tempDiv.innerHTML = activeCodeHtml.value;
+		const codeText = tempDiv.querySelector("code")?.textContent || "";
+		await navigator.clipboard.writeText(codeText);
+		copied.value = true;
+		setTimeout(() => {
+			copied.value = false;
+		}, 2000);
+	}
 };
 </script>
 

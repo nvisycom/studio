@@ -1,18 +1,25 @@
-/* Edge styling */
+/*
+ * Workflow Canvas Styles
+ * Shared styles for workflow editor components
+ */
+
+/* ===========================================
+   Edge Styling
+   =========================================== */
+
 .vue-flow__edge-path {
-  stroke: #71717a !important;
-  stroke-width: 2 !important;
+  stroke: var(--border) !important;
+  stroke-width: 1.5 !important;
   cursor: pointer;
+  transition:
+    stroke 0.15s ease,
+    stroke-width 0.15s ease;
 }
 
-.vue-flow__edge:hover .vue-flow__edge-path {
-  stroke: #ef4444 !important;
-  stroke-width: 3 !important;
-}
-
+.vue-flow__edge:hover .vue-flow__edge-path,
 .vue-flow__edge.selected .vue-flow__edge-path {
-  stroke: #ef4444 !important;
-  stroke-width: 3 !important;
+  stroke: var(--muted-foreground) !important;
+  stroke-width: 2 !important;
 }
 
 .vue-flow__edge {
@@ -24,40 +31,62 @@
   z-index: 5;
 }
 
-/* Handle/pin styling - make them bigger and ensure visibility */
+/* ===========================================
+   Handle/Pin Styling
+   =========================================== */
+
 .workflow-canvas .vue-flow__handle {
-  width: 14px !important;
-  height: 14px !important;
-  min-width: 14px !important;
-  min-height: 14px !important;
-  background: hsl(var(--foreground)) !important;
-  border: 3px solid hsl(var(--background)) !important;
+  width: 10px !important;
+  height: 10px !important;
+  min-width: 10px !important;
+  min-height: 10px !important;
+  background: var(--muted-foreground) !important;
+  border: 2px solid var(--background) !important;
   border-radius: 50% !important;
-  opacity: 1 !important;
   visibility: visible !important;
   z-index: 10 !important;
   pointer-events: all !important;
-  transform: translate(-50%, -50%);
+  transition: all 0.15s ease;
 }
 
 .workflow-canvas .vue-flow__handle:hover {
-  background: hsl(var(--primary)) !important;
+  background: var(--foreground) !important;
+  transform: scale(1.2);
+}
+
+/* Darken pins when hovering over parent node */
+.workflow-canvas .vue-flow__node:hover .vue-flow__handle {
+  background: var(--foreground) !important;
+}
+
+/* Darken pins when node is selected */
+.workflow-canvas .vue-flow__node.selected .vue-flow__handle {
+  background: var(--foreground) !important;
 }
 
 .workflow-canvas .vue-flow__handle-left {
   left: 0 !important;
-  top: 50% !important;
-  transform: translate(-50%, -50%) !important;
+  transform: translateX(-50%) !important;
 }
 
 .workflow-canvas .vue-flow__handle-right {
   right: 0 !important;
   left: auto !important;
-  top: 50% !important;
-  transform: translate(50%, -50%) !important;
+  transform: translateX(50%) !important;
 }
 
-/* Remove default vue-flow node wrapper styling (the ugly square border) */
+.workflow-canvas .vue-flow__handle-left:hover {
+  transform: translateX(-50%) scale(1.2) !important;
+}
+
+.workflow-canvas .vue-flow__handle-right:hover {
+  transform: translateX(50%) scale(1.2) !important;
+}
+
+/* ===========================================
+   Node Wrapper Reset
+   =========================================== */
+
 .workflow-canvas .vue-flow__node {
   background: none !important;
   border: none !important;
@@ -70,23 +99,124 @@
   box-shadow: none !important;
 }
 
-/* Ensure the selection outline follows rounded corners */
 .workflow-canvas .vue-flow__node:focus,
 .workflow-canvas .vue-flow__node:focus-visible {
   outline: none !important;
 }
 
-/* Add hover effect with rounded corners on node inner content */
-.workflow-canvas .vue-flow__node > div {
-  transition: box-shadow 0.2s ease;
+/* ===========================================
+   Shared Node Styles
+   =========================================== */
+
+/* Base node container */
+.workflow-node {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.875rem;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  min-width: 140px;
+  transition: all 0.15s ease;
 }
 
-.workflow-canvas .vue-flow__node:hover > div {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.workflow-node:hover {
+  border-color: var(--muted-foreground);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-/* Connection line styling */
+.dark .workflow-node:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.workflow-node--selected {
+  border-color: var(--foreground);
+  box-shadow: 0 0 0 1px var(--ring);
+}
+
+/* Switch nodes have column layout */
+.workflow-node--switch {
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 160px;
+}
+
+.workflow-node--switch .workflow-node__header {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+/* Node icon */
+.workflow-node__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.375rem;
+  background-color: var(--muted);
+  color: var(--muted-foreground);
+  flex-shrink: 0;
+}
+
+/* Node label */
+.workflow-node__label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+/* Tags container for switch nodes */
+.workflow-node__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  max-width: 180px;
+}
+
+/* Individual tag pill */
+.workflow-node__tag {
+  font-size: 0.6875rem;
+  font-family: var(--font-mono);
+  padding: 0.125rem 0.375rem;
+  border-radius: 9999px;
+  background-color: var(--muted);
+  color: var(--muted-foreground);
+}
+
+.workflow-node__tag--muted {
+  opacity: 0.6;
+}
+
+/* ===========================================
+   Connection Line
+   =========================================== */
+
 .vue-flow__connection-line {
-  stroke: hsl(var(--foreground));
-  stroke-width: 2;
+  stroke: var(--muted-foreground);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 3;
+}
+
+/* ===========================================
+   Selection Box
+   =========================================== */
+
+.vue-flow__selection {
+  background: transparent !important;
+  border: 1px dashed var(--muted-foreground) !important;
+}
+
+/* ===========================================
+   Background Pattern
+   =========================================== */
+
+.vue-flow__background pattern circle {
+  fill: oklch(from var(--muted-foreground) l c h / 0.2);
 }

@@ -1,29 +1,29 @@
 <script setup lang="ts">
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
 interface Props {
-  open: boolean;
-  workflowName: string;
+	open: boolean;
+	workflowName: string;
 }
 
 defineProps<Props>();
 
 const emit = defineEmits<{
-  "update:open": [value: boolean];
-  confirm: [];
+	"update:open": [value: boolean];
+	confirm: [];
 }>();
 
 function handleConfirm() {
-  emit("confirm");
+	emit("confirm");
 }
 </script>
 

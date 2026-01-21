@@ -5,33 +5,33 @@ import { useMobileMenu } from "./useMobileMenu.ts";
 import { products } from "./mobile-nav-data";
 
 defineProps<{
-  menuOnly?: boolean;
+	menuOnly?: boolean;
 }>();
 
 const { mobileMenuOpen, toggleMobileMenu, closeMobileMenu } = useMobileMenu();
 
 // Disable body scroll when menu is open
 watch(mobileMenuOpen, (isOpen) => {
-  if (isOpen) {
-    document.body.style.overflow = "hidden";
-  } else {
-    document.body.style.overflow = "";
-  }
+	if (isOpen) {
+		document.body.style.overflow = "hidden";
+	} else {
+		document.body.style.overflow = "";
+	}
 });
 
 // Close menu and restore scroll when resizing to desktop
 const handleResize = () => {
-  if (window.innerWidth >= 1024 && mobileMenuOpen.value) {
-    closeMobileMenu();
-  }
+	if (window.innerWidth >= 1024 && mobileMenuOpen.value) {
+		closeMobileMenu();
+	}
 };
 
 onMounted(() => {
-  window.addEventListener("resize", handleResize);
+	window.addEventListener("resize", handleResize);
 });
 
 onUnmounted(() => {
-  window.removeEventListener("resize", handleResize);
+	window.removeEventListener("resize", handleResize);
 });
 </script>
 

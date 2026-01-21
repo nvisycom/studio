@@ -4,14 +4,14 @@ import { ref, onMounted } from "vue";
 const isLoggedIn = ref(false);
 
 const checkAuthStatus = () => {
-  // Check for auth cookie set by app.nvisy.com
-  isLoggedIn.value = document.cookie
-    .split("; ")
-    .some((row) => row.startsWith("nvisy_auth="));
+	// Check for auth cookie set by app.nvisy.com
+	isLoggedIn.value = document.cookie
+		.split("; ")
+		.some((row) => row.startsWith("nvisy_auth="));
 };
 
 onMounted(() => {
-  checkAuthStatus();
+	checkAuthStatus();
 });
 </script>
 

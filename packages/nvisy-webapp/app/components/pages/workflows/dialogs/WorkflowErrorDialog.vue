@@ -1,23 +1,23 @@
 <script setup lang="ts">
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
 interface Props {
-  open: boolean;
-  messages: string[];
+	open: boolean;
+	messages: string[];
 }
 
 defineProps<Props>();
 
 const emit = defineEmits<{
-  "update:open": [value: boolean];
+	"update:open": [value: boolean];
 }>();
 </script>
 

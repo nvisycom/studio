@@ -3,40 +3,40 @@ import { ref, computed } from "vue";
 import { Badge } from "@/components/ui/badge";
 
 interface Integration {
-  name: string;
-  icon: string;
-  description: string;
-  status: "available" | "coming_soon";
-  category: string;
+	name: string;
+	icon: string;
+	description: string;
+	status: "available" | "coming_soon";
+	category: string;
 }
 
 const props = defineProps<{
-  integrations: Integration[];
+	integrations: Integration[];
 }>();
 
 const activeCategory = ref("all");
 
 const categories = [
-  { id: "all", label: "All" },
-  { id: "storage", label: "Storage" },
-  { id: "ai", label: "AI" },
-  { id: "automation", label: "Automation" },
-  { id: "communication", label: "Communication" },
-  { id: "productivity", label: "Productivity" },
+	{ id: "all", label: "All" },
+	{ id: "storage", label: "Storage" },
+	{ id: "ai", label: "AI" },
+	{ id: "automation", label: "Automation" },
+	{ id: "communication", label: "Communication" },
+	{ id: "productivity", label: "Productivity" },
 ];
 
 const filteredIntegrations = computed(() => {
-  if (activeCategory.value === "all") {
-    return props.integrations;
-  }
-  return props.integrations.filter((i) => i.category === activeCategory.value);
+	if (activeCategory.value === "all") {
+		return props.integrations;
+	}
+	return props.integrations.filter((i) => i.category === activeCategory.value);
 });
 
 const getCategoryCount = (categoryId: string) => {
-  if (categoryId === "all") {
-    return props.integrations.length;
-  }
-  return props.integrations.filter((i) => i.category === categoryId).length;
+	if (categoryId === "all") {
+		return props.integrations.length;
+	}
+	return props.integrations.filter((i) => i.category === categoryId).length;
 };
 </script>
 

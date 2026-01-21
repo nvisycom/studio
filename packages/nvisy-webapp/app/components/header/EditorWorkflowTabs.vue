@@ -2,16 +2,16 @@
 import { computed, ref, nextTick } from "vue";
 import { Workflow, X, Plus, ChevronDown, Pencil } from "lucide-vue-next";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,15 +19,15 @@ import { UnsavedChangesDialog } from "@/components/pages/workflows/dialogs";
 
 // Use editor workflows store for multiple open workflows
 const {
-  openWorkflows,
-  activeWorkflowId,
-  closeWorkflow,
-  getWorkflowForClose,
-  setActiveWorkflow,
-  moveWorkflowToFront,
-  createNewWorkflow,
-  ensureWorkflowOpen,
-  renameWorkflow,
+	openWorkflows,
+	activeWorkflowId,
+	closeWorkflow,
+	getWorkflowForClose,
+	setActiveWorkflow,
+	moveWorkflowToFront,
+	createNewWorkflow,
+	ensureWorkflowOpen,
+	renameWorkflow,
 } = useEditorWorkflows();
 
 // Unsaved changes dialog state
@@ -37,7 +37,7 @@ const pendingCloseWorkflowName = ref("");
 
 // Ensure at least one workflow is open on mount
 onMounted(() => {
-  ensureWorkflowOpen();
+	ensureWorkflowOpen();
 });
 
 // Rename state
@@ -50,111 +50,111 @@ const MAX_VISIBLE_TABS = 3;
 
 // Compute visible tabs and overflow tabs
 const visibleWorkflows = computed(() => {
-  if (openWorkflows.value.length <= MAX_VISIBLE_TABS) {
-    return openWorkflows.value;
-  }
+	if (openWorkflows.value.length <= MAX_VISIBLE_TABS) {
+		return openWorkflows.value;
+	}
 
-  // Always show the active workflow in visible tabs
-  const activeIndex = openWorkflows.value.findIndex(
-    (w) => w.workflowId === activeWorkflowId.value,
-  );
+	// Always show the active workflow in visible tabs
+	const activeIndex = openWorkflows.value.findIndex(
+		(w) => w.workflowId === activeWorkflowId.value,
+	);
 
-  if (activeIndex < MAX_VISIBLE_TABS) {
-    // Active workflow is already in the visible range
-    return openWorkflows.value.slice(0, MAX_VISIBLE_TABS);
-  }
+	if (activeIndex < MAX_VISIBLE_TABS) {
+		// Active workflow is already in the visible range
+		return openWorkflows.value.slice(0, MAX_VISIBLE_TABS);
+	}
 
-  // Active workflow is in overflow, swap it with the last visible tab
-  const visible = openWorkflows.value.slice(0, MAX_VISIBLE_TABS - 1);
-  const activeWorkflow = openWorkflows.value[activeIndex];
-  if (activeWorkflow) {
-    return [...visible, activeWorkflow];
-  }
-  return visible;
+	// Active workflow is in overflow, swap it with the last visible tab
+	const visible = openWorkflows.value.slice(0, MAX_VISIBLE_TABS - 1);
+	const activeWorkflow = openWorkflows.value[activeIndex];
+	if (activeWorkflow) {
+		return [...visible, activeWorkflow];
+	}
+	return visible;
 });
 
 const overflowWorkflows = computed(() => {
-  if (openWorkflows.value.length <= MAX_VISIBLE_TABS) {
-    return [];
-  }
+	if (openWorkflows.value.length <= MAX_VISIBLE_TABS) {
+		return [];
+	}
 
-  const visibleIds = new Set(
-    visibleWorkflows.value.map((w) => w?.workflowId).filter(Boolean),
-  );
-  return openWorkflows.value.filter((w) => w && !visibleIds.has(w.workflowId));
+	const visibleIds = new Set(
+		visibleWorkflows.value.map((w) => w?.workflowId).filter(Boolean),
+	);
+	return openWorkflows.value.filter((w) => w && !visibleIds.has(w.workflowId));
 });
 
 const hasOverflow = computed(() => overflowWorkflows.value.length > 0);
 
 function handleCloseWorkflow(workflowId: string) {
-  const workflow = getWorkflowForClose(workflowId);
-  if (!workflow) return;
+	const workflow = getWorkflowForClose(workflowId);
+	if (!workflow) return;
 
-  if (workflow.isDirty) {
-    // Show confirmation dialog
-    pendingCloseWorkflowId.value = workflowId;
-    pendingCloseWorkflowName.value = workflow.name;
-    unsavedDialogOpen.value = true;
-  } else {
-    // Close directly if no unsaved changes
-    closeWorkflow(workflowId);
-  }
+	if (workflow.isDirty) {
+		// Show confirmation dialog
+		pendingCloseWorkflowId.value = workflowId;
+		pendingCloseWorkflowName.value = workflow.name;
+		unsavedDialogOpen.value = true;
+	} else {
+		// Close directly if no unsaved changes
+		closeWorkflow(workflowId);
+	}
 }
 
 function handleConfirmClose() {
-  if (pendingCloseWorkflowId.value) {
-    closeWorkflow(pendingCloseWorkflowId.value);
-  }
-  pendingCloseWorkflowId.value = null;
-  pendingCloseWorkflowName.value = "";
-  unsavedDialogOpen.value = false;
+	if (pendingCloseWorkflowId.value) {
+		closeWorkflow(pendingCloseWorkflowId.value);
+	}
+	pendingCloseWorkflowId.value = null;
+	pendingCloseWorkflowName.value = "";
+	unsavedDialogOpen.value = false;
 }
 
 function handleSelectWorkflow(workflowId: string) {
-  setActiveWorkflow(workflowId);
+	setActiveWorkflow(workflowId);
 }
 
 function handleSelectFromDropdown(workflowId: string) {
-  moveWorkflowToFront(workflowId);
+	moveWorkflowToFront(workflowId);
 }
 
 function handleCreateNew() {
-  createNewWorkflow();
+	createNewWorkflow();
 }
 
 function startRename(workflowId: string, currentName: string) {
-  editingWorkflowId.value = workflowId;
-  editingName.value = currentName;
-  nextTick(() => {
-    renameInputRef.value?.focus();
-    renameInputRef.value?.select();
-  });
+	editingWorkflowId.value = workflowId;
+	editingName.value = currentName;
+	nextTick(() => {
+		renameInputRef.value?.focus();
+		renameInputRef.value?.select();
+	});
 }
 
 function finishRename() {
-  if (editingWorkflowId.value && editingName.value.trim()) {
-    renameWorkflow(editingWorkflowId.value, editingName.value.trim());
-  }
-  editingWorkflowId.value = null;
-  editingName.value = "";
+	if (editingWorkflowId.value && editingName.value.trim()) {
+		renameWorkflow(editingWorkflowId.value, editingName.value.trim());
+	}
+	editingWorkflowId.value = null;
+	editingName.value = "";
 }
 
 function cancelRename() {
-  editingWorkflowId.value = null;
-  editingName.value = "";
+	editingWorkflowId.value = null;
+	editingName.value = "";
 }
 
 function handleRenameKeydown(event: KeyboardEvent) {
-  if (event.key === "Enter") {
-    finishRename();
-  } else if (event.key === "Escape") {
-    cancelRename();
-  }
+	if (event.key === "Enter") {
+		finishRename();
+	} else if (event.key === "Escape") {
+		cancelRename();
+	}
 }
 
 function truncate(str: string, maxLength: number): string {
-  if (str.length <= maxLength) return str;
-  return `${str.slice(0, maxLength - 3)}...`;
+	if (str.length <= maxLength) return str;
+	return `${str.slice(0, maxLength - 3)}...`;
 }
 </script>
 

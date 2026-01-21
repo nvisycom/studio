@@ -1,95 +1,95 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
-  ExternalLink,
-  Loader2,
-  Workflow,
-  Plus,
-  MoreHorizontal,
-  Pencil,
-  Trash2,
-  Copy,
-  History,
+	ExternalLink,
+	Loader2,
+	Workflow,
+	Plus,
+	MoreHorizontal,
+	Pencil,
+	Trash2,
+	Copy,
+	History,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
 
 useHead({ title: "Workflows" });
 
 definePageMeta({
-  pageCategory: "Automation",
+	pageCategory: "Automation",
 });
 
 // Mock data for workflows - replace with actual API call
 const isLoading = ref(false);
 const workflows = ref([
-  {
-    id: "wf-1",
-    name: "Document Processing Pipeline",
-    description: "Extract and process documents from uploads",
-    status: "active",
-    lastRun: "2024-01-20T10:30:00Z",
-    createdAt: "2024-01-15T08:00:00Z",
-    runsCount: 156,
-  },
-  {
-    id: "wf-2",
-    name: "Invoice Extraction",
-    description: "Extract data from invoice PDFs",
-    status: "active",
-    lastRun: "2024-01-20T09:15:00Z",
-    createdAt: "2024-01-10T14:30:00Z",
-    runsCount: 89,
-  },
-  {
-    id: "wf-3",
-    name: "Contract Analysis",
-    description: "Analyze and summarize contracts",
-    status: "paused",
-    lastRun: "2024-01-18T16:45:00Z",
-    createdAt: "2024-01-05T11:00:00Z",
-    runsCount: 42,
-  },
+	{
+		id: "wf-1",
+		name: "Document Processing Pipeline",
+		description: "Extract and process documents from uploads",
+		status: "active",
+		lastRun: "2024-01-20T10:30:00Z",
+		createdAt: "2024-01-15T08:00:00Z",
+		runsCount: 156,
+	},
+	{
+		id: "wf-2",
+		name: "Invoice Extraction",
+		description: "Extract data from invoice PDFs",
+		status: "active",
+		lastRun: "2024-01-20T09:15:00Z",
+		createdAt: "2024-01-10T14:30:00Z",
+		runsCount: 89,
+	},
+	{
+		id: "wf-3",
+		name: "Contract Analysis",
+		description: "Analyze and summarize contracts",
+		status: "paused",
+		lastRun: "2024-01-18T16:45:00Z",
+		createdAt: "2024-01-05T11:00:00Z",
+		runsCount: 42,
+	},
 ]);
 
 function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+	return new Date(dateString).toLocaleDateString("en-US", {
+		month: "short",
+		day: "numeric",
+		year: "numeric",
+		hour: "2-digit",
+		minute: "2-digit",
+	});
 }
 
 function toggleWorkflowStatus(workflowId: string, active: boolean) {
-  const workflow = workflows.value.find((w) => w.id === workflowId);
-  if (workflow) {
-    workflow.status = active ? "active" : "paused";
-  }
+	const workflow = workflows.value.find((w) => w.id === workflowId);
+	if (workflow) {
+		workflow.status = active ? "active" : "paused";
+	}
 }
 </script>
 

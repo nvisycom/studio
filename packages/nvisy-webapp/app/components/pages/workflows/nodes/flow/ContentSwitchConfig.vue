@@ -5,50 +5,50 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 
 interface ContentTypeConfig {
-  id: string;
-  label: string;
-  enabled: boolean;
+	id: string;
+	label: string;
+	enabled: boolean;
 }
 
 interface Props {
-  data: {
-    contentTypes: ContentTypeConfig[];
-    invertMode?: boolean;
-  };
+	data: {
+		contentTypes: ContentTypeConfig[];
+		invertMode?: boolean;
+	};
 }
 
 const props = defineProps<Props>();
 const emit = defineEmits<{
-  update: [data: Record<string, unknown>];
+	update: [data: Record<string, unknown>];
 }>();
 
 const search = ref("");
 
 const contentTypes = computed<ContentTypeConfig[]>(
-  () => props.data?.contentTypes || [],
+	() => props.data?.contentTypes || [],
 );
 
 const filteredContentTypes = computed(() => {
-  if (!search.value.trim()) {
-    return contentTypes.value;
-  }
-  const searchLower = search.value.toLowerCase();
-  return contentTypes.value.filter((ct) =>
-    ct.label.toLowerCase().includes(searchLower),
-  );
+	if (!search.value.trim()) {
+		return contentTypes.value;
+	}
+	const searchLower = search.value.toLowerCase();
+	return contentTypes.value.filter((ct) =>
+		ct.label.toLowerCase().includes(searchLower),
+	);
 });
 
 const invertMode = computed(() => props.data?.invertMode ?? false);
 
 function toggleContentType(ctId: string) {
-  const updatedContentTypes = contentTypes.value.map((ct) =>
-    ct.id === ctId ? { ...ct, enabled: !ct.enabled } : ct,
-  );
-  emit("update", { ...props.data, contentTypes: updatedContentTypes });
+	const updatedContentTypes = contentTypes.value.map((ct) =>
+		ct.id === ctId ? { ...ct, enabled: !ct.enabled } : ct,
+	);
+	emit("update", { ...props.data, contentTypes: updatedContentTypes });
 }
 
 function toggleInvertMode() {
-  emit("update", { ...props.data, invertMode: !invertMode.value });
+	emit("update", { ...props.data, invertMode: !invertMode.value });
 }
 </script>
 
@@ -101,7 +101,7 @@ function toggleInvertMode() {
         @click="toggleContentType(ct.id)"
       >
         <span
-          class="text-xs font-mono px-2 py-0.5 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400"
+          class="text-xs font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground"
         >
           {{ ct.label }}
         </span>

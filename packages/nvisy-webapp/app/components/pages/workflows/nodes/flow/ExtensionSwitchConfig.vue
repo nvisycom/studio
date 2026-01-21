@@ -5,50 +5,50 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 
 interface ExtensionConfig {
-  id: string;
-  label: string;
-  enabled: boolean;
+	id: string;
+	label: string;
+	enabled: boolean;
 }
 
 interface Props {
-  data: {
-    extensions: ExtensionConfig[];
-    invertMode?: boolean;
-  };
+	data: {
+		extensions: ExtensionConfig[];
+		invertMode?: boolean;
+	};
 }
 
 const props = defineProps<Props>();
 const emit = defineEmits<{
-  update: [data: Record<string, unknown>];
+	update: [data: Record<string, unknown>];
 }>();
 
 const search = ref("");
 
 const extensions = computed<ExtensionConfig[]>(
-  () => props.data?.extensions || [],
+	() => props.data?.extensions || [],
 );
 
 const filteredExtensions = computed(() => {
-  if (!search.value.trim()) {
-    return extensions.value;
-  }
-  const searchLower = search.value.toLowerCase();
-  return extensions.value.filter((ext) =>
-    ext.label.toLowerCase().includes(searchLower),
-  );
+	if (!search.value.trim()) {
+		return extensions.value;
+	}
+	const searchLower = search.value.toLowerCase();
+	return extensions.value.filter((ext) =>
+		ext.label.toLowerCase().includes(searchLower),
+	);
 });
 
 const invertMode = computed(() => props.data?.invertMode ?? false);
 
 function toggleExtension(extId: string) {
-  const updatedExtensions = extensions.value.map((ext) =>
-    ext.id === extId ? { ...ext, enabled: !ext.enabled } : ext,
-  );
-  emit("update", { ...props.data, extensions: updatedExtensions });
+	const updatedExtensions = extensions.value.map((ext) =>
+		ext.id === extId ? { ...ext, enabled: !ext.enabled } : ext,
+	);
+	emit("update", { ...props.data, extensions: updatedExtensions });
 }
 
 function toggleInvertMode() {
-  emit("update", { ...props.data, invertMode: !invertMode.value });
+	emit("update", { ...props.data, invertMode: !invertMode.value });
 }
 </script>
 
@@ -101,7 +101,7 @@ function toggleInvertMode() {
         @click="toggleExtension(ext.id)"
       >
         <span
-          class="text-xs font-mono px-2 py-0.5 rounded bg-orange-500/10 text-orange-600 dark:text-orange-400"
+          class="text-xs font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground"
         >
           .{{ ext.label }}
         </span>

@@ -2,46 +2,46 @@
 import { ref } from "vue";
 import type { SidebarProps } from "@/components/ui/sidebar";
 import {
-  Puzzle,
-  Settings,
-  Users,
-  CreditCard,
-  BarChart3,
-  MessagesSquare,
-  LayoutDashboard,
-  FolderOpen,
-  FileSearch,
-  Compass,
-  PenTool,
-  Workflow,
-  SquareTerminal,
+	Puzzle,
+	Settings,
+	Users,
+	CreditCard,
+	BarChart3,
+	MessagesSquare,
+	LayoutDashboard,
+	FolderOpen,
+	FileSearch,
+	Compass,
+	PenTool,
+	Workflow,
+	SquareTerminal,
 } from "lucide-vue-next";
 import NavMain from "@/components/sidebar/NavMain.vue";
 import NavUser from "@/components/sidebar/NavUser.vue";
 import WorkspaceSwitcher from "@/components/sidebar/WorkspaceSwitcher.vue";
 import HelpChat from "@/components/HelpChat.vue";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarRail,
-  SidebarSeparator,
-  useSidebar,
+	Sidebar,
+	SidebarContent,
+	SidebarFooter,
+	SidebarHeader,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	SidebarRail,
+	SidebarSeparator,
+	useSidebar,
 } from "@/components/ui/sidebar";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 const props = withDefaults(defineProps<SidebarProps>(), {
-  collapsible: "icon",
+	collapsible: "icon",
 });
 
 const { t } = useI18n();
@@ -55,82 +55,82 @@ const { displayName, emailAddress } = useAccount();
 const { currentWorkspaceId, currentWorkspace } = useWorkspaces();
 const hasWorkspace = computed(() => !!currentWorkspaceId.value);
 const isAdminOrOwner = computed(() => {
-  const role = currentWorkspace.value?.memberRole;
-  return role === "owner" || role === "admin";
+	const role = currentWorkspace.value?.memberRole;
+	return role === "owner" || role === "admin";
 });
 
 const userData = computed(() => ({
-  name: displayName.value || "Guest",
-  email: emailAddress.value || "",
-  avatar: "",
+	name: displayName.value || "Guest",
+	email: emailAddress.value || "",
+	avatar: "",
 }));
 
 // Navigation data
 const navWorkspace = computed(() => [
-  {
-    title: t("sidebar.files"),
-    url: "/files",
-    icon: FolderOpen,
-    isActive: false,
-  },
-  {
-    title: t("sidebar.studio"),
-    url: "/studio",
-    icon: PenTool,
-    isActive: false,
-  },
-  {
-    title: t("sidebar.team"),
-    url: "/team",
-    icon: Users,
-    isActive: false,
-  },
+	{
+		title: t("sidebar.files"),
+		url: "/files",
+		icon: FolderOpen,
+		isActive: false,
+	},
+	{
+		title: t("sidebar.studio"),
+		url: "/studio",
+		icon: PenTool,
+		isActive: false,
+	},
+	{
+		title: t("sidebar.team"),
+		url: "/team",
+		icon: Users,
+		isActive: false,
+	},
 ]);
 
 const navAutomation = computed(() => [
-  {
-    title: t("sidebar.workflows"),
-    url: "/workflows",
-    icon: Workflow,
-    isActive: false,
-  },
-  {
-    title: t("sidebar.editor"),
-    url: "/editor",
-    icon: SquareTerminal,
-    isActive: false,
-  },
-  {
-    title: t("sidebar.integrations"),
-    url: "/integrations",
-    icon: Puzzle,
-    isActive: false,
-  },
-  {
-    title: t("sidebar.explore"),
-    url: "/integrations/explore",
-    icon: Compass,
-    isActive: false,
-  },
+	{
+		title: t("sidebar.workflows"),
+		url: "/workflows",
+		icon: Workflow,
+		isActive: false,
+	},
+	{
+		title: t("sidebar.editor"),
+		url: "/editor",
+		icon: SquareTerminal,
+		isActive: false,
+	},
+	{
+		title: t("sidebar.integrations"),
+		url: "/integrations",
+		icon: Puzzle,
+		isActive: false,
+	},
+	{
+		title: t("sidebar.explore"),
+		url: "/integrations/explore",
+		icon: Compass,
+		isActive: false,
+	},
 ]);
 
 const navObservability = computed(() => [
-  {
-    title: t("sidebar.analytics"),
-    url: "/analytics",
-    icon: BarChart3,
-    isActive: false,
-  },
-  {
-    title: t("sidebar.logs"),
-    url: "/analytics/logs",
-    icon: FileSearch,
-    isActive: false,
-  },
+	{
+		title: t("sidebar.analytics"),
+		url: "/analytics",
+		icon: BarChart3,
+		isActive: false,
+	},
+	{
+		title: t("sidebar.logs"),
+		url: "/analytics/logs",
+		icon: FileSearch,
+		isActive: false,
+	},
 ]);
 
 function openHelpChat() {
-  helpChatRef.value?.toggleChat();
+	helpChatRef.value?.toggleChat();
 }
 </script>
 

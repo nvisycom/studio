@@ -77,7 +77,10 @@ function canReachOutput(
 /**
  * Validate a workflow for common issues
  */
-export function validateWorkflow(nodes: Node[], edges: Edge[]): ValidationResult {
+export function validateWorkflow(
+	nodes: Node[],
+	edges: Edge[],
+): ValidationResult {
 	const errors: ValidationError[] = [];
 	const warnings: ValidationError[] = [];
 
@@ -133,6 +136,10 @@ export function validateWorkflow(nodes: Node[], edges: Edge[]): ValidationResult
 				});
 			}
 		}
+		// Cache Slot nodes are allowed to be disconnected (used for data teleportation)
+		else if (node.type === "cache_slot") {
+			// No validation needed - cache slots can be disconnected
+		}
 		// Other nodes should have both
 		else {
 			if (!hasIncoming && !hasOutgoing) {
@@ -157,9 +164,9 @@ export function validateWorkflow(nodes: Node[], edges: Edge[]): ValidationResult
 		}
 	}
 
-	// Check for nodes not reachable from any input
+	// Check for nodes not reachable from any input (skip cache slots)
 	for (const node of nodes) {
-		if (node.type !== "input") {
+		if (node.type !== "input" && node.type !== "cache_slot") {
 			if (!isReachableFromInput(node.id, nodes, edges)) {
 				warnings.push({
 					type: "warning",
@@ -170,9 +177,9 @@ export function validateWorkflow(nodes: Node[], edges: Edge[]): ValidationResult
 		}
 	}
 
-	// Check for nodes that can't reach any output
+	// Check for nodes that can't reach any output (skip cache slots)
 	for (const node of nodes) {
-		if (node.type !== "output") {
+		if (node.type !== "output" && node.type !== "cache_slot") {
 			if (!canReachOutput(node.id, nodes, edges)) {
 				warnings.push({
 					type: "warning",
