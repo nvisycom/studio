@@ -1,0 +1,92 @@
+/* Edge styling */
+.vue-flow__edge-path {
+  stroke: #71717a !important;
+  stroke-width: 2 !important;
+  cursor: pointer;
+}
+
+.vue-flow__edge:hover .vue-flow__edge-path {
+  stroke: #ef4444 !important;
+  stroke-width: 3 !important;
+}
+
+.vue-flow__edge.selected .vue-flow__edge-path {
+  stroke: #ef4444 !important;
+  stroke-width: 3 !important;
+}
+
+.vue-flow__edge {
+  pointer-events: all;
+  cursor: pointer;
+}
+
+.vue-flow__edges {
+  z-index: 5;
+}
+
+/* Handle/pin styling - make them bigger and ensure visibility */
+.workflow-canvas .vue-flow__handle {
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+  min-height: 14px !important;
+  background: hsl(var(--foreground)) !important;
+  border: 3px solid hsl(var(--background)) !important;
+  border-radius: 50% !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 10 !important;
+  pointer-events: all !important;
+  transform: translate(-50%, -50%);
+}
+
+.workflow-canvas .vue-flow__handle:hover {
+  background: hsl(var(--primary)) !important;
+}
+
+.workflow-canvas .vue-flow__handle-left {
+  left: 0 !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+.workflow-canvas .vue-flow__handle-right {
+  right: 0 !important;
+  left: auto !important;
+  top: 50% !important;
+  transform: translate(50%, -50%) !important;
+}
+
+/* Remove default vue-flow node wrapper styling (the ugly square border) */
+.workflow-canvas .vue-flow__node {
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.workflow-canvas .vue-flow__node.selected {
+  box-shadow: none !important;
+}
+
+/* Ensure the selection outline follows rounded corners */
+.workflow-canvas .vue-flow__node:focus,
+.workflow-canvas .vue-flow__node:focus-visible {
+  outline: none !important;
+}
+
+/* Add hover effect with rounded corners on node inner content */
+.workflow-canvas .vue-flow__node > div {
+  transition: box-shadow 0.2s ease;
+}
+
+.workflow-canvas .vue-flow__node:hover > div {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Connection line styling */
+.vue-flow__connection-line {
+  stroke: hsl(var(--foreground));
+  stroke-width: 2;
+}

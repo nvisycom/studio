@@ -97,7 +97,8 @@ const securityPractices = [
     titleInline={true}
     description="Enterprise-grade security built into every layer. Your data protection is our top priority."
     primaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com/security" }}
-    secondaryCta={{ text: "Contact Sales", href: "/contact" }}
+    secondaryCta={{ text: "Legal & Policies", href: "/legal" }}
+    compact
   />
 
   <!-- Security Features -->
@@ -184,31 +185,6 @@ const securityPractices = [
                 </div>
                 <p class="text-muted-foreground">{compliance.description}</p>
               </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Security Practices -->
-  <section class="py-24 md:py-32 border-t border-border">
-    <div class="container mx-auto px-4">
-      <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
-            Security Practices
-          </h2>
-          <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Our commitment to security extends beyond technology to our people and processes.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {securityPractices.map((practice) => (
-            <div class="flex items-center gap-3 p-4 rounded-xl border border-border bg-card/50">
-              <Shield class="w-5 h-5 text-emerald-500 flex-shrink-0" />
-              <span class="text-muted-foreground">{practice}</span>
             </div>
           ))}
         </div>

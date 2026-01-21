@@ -74,12 +74,17 @@ const getCategoryCount = (categoryId: string) => {
         <div
           v-for="(integration, index) in filteredIntegrations"
           :key="integration.name"
-          class="group relative p-6 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:bg-card/80 card-glow"
+          class="group relative p-6 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:border-border/60 transition-all duration-300"
           :style="{ animationDelay: `${index * 30}ms` }"
         >
-          <div class="flex items-start gap-4">
+          <!-- Gradient background on hover -->
+          <div
+            class="absolute inset-0 rounded-2xl bg-gradient-to-br from-sky-100/80 to-pink-100/80 dark:from-sky-900/30 dark:to-pink-900/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          />
+
+          <div class="relative z-10 flex items-start gap-4">
             <div
-              class="w-12 h-12 rounded-xl bg-muted dark:bg-foreground/15 flex items-center justify-center flex-shrink-0"
+              class="w-12 h-12 rounded-xl bg-foreground/5 flex items-center justify-center flex-shrink-0 group-hover:bg-foreground/10 transition-colors duration-300"
             >
               <div
                 class="w-7 h-7 text-foreground dark:text-foreground [&>svg]:w-full [&>svg]:h-full"

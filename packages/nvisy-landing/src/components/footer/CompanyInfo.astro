@@ -5,6 +5,7 @@ import OpenStatus from "./OpenStatus.vue";
 import GithubIcon from "@/assets/icons/github.svg";
 import BlueskyIcon from "@/assets/icons/bluesky.svg";
 import LinkedinIcon from "@/assets/icons/linkedin.svg";
+import DiscordIcon from "@/assets/icons/discord.svg";
 import { Mail } from "lucide-vue-next";
 
 export interface Props {
@@ -23,6 +24,11 @@ const socialLinks = [
 		name: "GitHub",
 		href: "https://github.com/nvisycom",
 		Icon: GithubIcon,
+	},
+	{
+		name: "Discord",
+		href: "https://discord.gg/kunumbtCSB",
+		Icon: DiscordIcon,
 	},
 	{
 		name: "Bluesky",

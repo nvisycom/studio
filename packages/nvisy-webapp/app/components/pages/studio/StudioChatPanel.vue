@@ -1,33 +1,32 @@
 <script setup lang="ts">
 import type { Component } from "vue";
 import {
-	Send,
-	ChevronDown,
-	Maximize2,
-	Split,
-	Merge,
-	Edit3,
-	FileOutput,
-	Highlighter,
-	MessageSquare,
-	GripHorizontal,
+  Send,
+  ChevronDown,
+  Split,
+  Merge,
+  Edit3,
+  FileOutput,
+  Highlighter,
+  MessageSquare,
+  GripHorizontal,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Kbd } from "@/components/ui/kbd";
 
 interface ChatMessage {
-	id: string;
-	role: "user" | "assistant";
-	content: string;
+  id: string;
+  role: "user" | "assistant";
+  content: string;
 }
 
 interface Layer {
-	id: string;
-	name: string;
-	icon: Component;
-	page: number;
-	fileName: string;
+  id: string;
+  name: string;
+  icon: Component;
+  page: number;
+  fileName: string;
 }
 
 const { t } = useI18n();
@@ -42,129 +41,129 @@ const minInputHeight = 150;
 const maxInputHeight = 500;
 
 const tools = computed(() => [
-	{
-		id: "highlight",
-		name: t("studio.chat.tools.highlight"),
-		icon: Highlighter,
-		shortcut: "H",
-	},
-	{
-		id: "annotate",
-		name: t("studio.chat.tools.annotate"),
-		icon: MessageSquare,
-		shortcut: "N",
-	},
+  {
+    id: "highlight",
+    name: t("studio.chat.tools.highlight"),
+    icon: Highlighter,
+    shortcut: "H",
+  },
+  {
+    id: "annotate",
+    name: t("studio.chat.tools.annotate"),
+    icon: MessageSquare,
+    shortcut: "N",
+  },
 ]);
 
 function selectTool(toolId: string) {
-	selectedTool.value = selectedTool.value === toolId ? null : toolId;
+  selectedTool.value = selectedTool.value === toolId ? null : toolId;
 }
 
 const chatMessages = ref<ChatMessage[]>([
-	{
-		id: "1",
-		role: "assistant",
-		content: "How can I help you with this document?",
-	},
+  {
+    id: "1",
+    role: "assistant",
+    content: "How can I help you with this document?",
+  },
 ]);
 
 const layers = ref<Layer[]>([
-	{ id: "1", name: "Split", icon: Split, page: 1, fileName: "contract.pdf" },
-	{ id: "2", name: "Edit", icon: Edit3, page: 2, fileName: "invoice.pdf" },
-	{
-		id: "3",
-		name: "Extract",
-		icon: FileOutput,
-		page: 3,
-		fileName: "report.pdf",
-	},
-	{ id: "4", name: "Merge", icon: Merge, page: 4, fileName: "document.pdf" },
+  { id: "1", name: "Split", icon: Split, page: 1, fileName: "contract.pdf" },
+  { id: "2", name: "Edit", icon: Edit3, page: 2, fileName: "invoice.pdf" },
+  {
+    id: "3",
+    name: "Extract",
+    icon: FileOutput,
+    page: 3,
+    fileName: "report.pdf",
+  },
+  { id: "4", name: "Merge", icon: Merge, page: 4, fileName: "document.pdf" },
 ]);
 
 function selectChange(layerId: string) {
-	console.log("Reviewing change:", layerId);
+  console.log("Reviewing change:", layerId);
 }
 
 function deleteLayer(layerId: string) {
-	const index = layers.value.findIndex((l) => l.id === layerId);
-	if (index !== -1) {
-		layers.value.splice(index, 1);
-	}
+  const index = layers.value.findIndex((l) => l.id === layerId);
+  if (index !== -1) {
+    layers.value.splice(index, 1);
+  }
 }
 
 function acceptChange(layerId: string) {
-	deleteLayer(layerId);
+  deleteLayer(layerId);
 }
 
 function rejectChange(layerId: string) {
-	deleteLayer(layerId);
+  deleteLayer(layerId);
 }
 
 function acceptAllChanges() {
-	layers.value = [];
-	changesOpen.value = false;
+  layers.value = [];
+  changesOpen.value = false;
 }
 
 function rejectAllChanges() {
-	layers.value = [];
-	changesOpen.value = false;
+  layers.value = [];
+  changesOpen.value = false;
 }
 
 // Keyboard shortcuts
 defineShortcuts({
-	meta_shift_a: () => {
-		if (layers.value.length > 0) acceptAllChanges();
-	},
-	meta_shift_r: () => {
-		if (layers.value.length > 0) rejectAllChanges();
-	},
-	meta_shift_h: () => selectTool("highlight"),
-	meta_shift_n: () => selectTool("annotate"),
+  meta_shift_a: () => {
+    if (layers.value.length > 0) acceptAllChanges();
+  },
+  meta_shift_r: () => {
+    if (layers.value.length > 0) rejectAllChanges();
+  },
+  meta_shift_h: () => selectTool("highlight"),
+  meta_shift_n: () => selectTool("annotate"),
 });
 
 function sendMessage() {
-	if (!chatMessage.value.trim()) return;
+  if (!chatMessage.value.trim()) return;
 
-	chatMessages.value.push({
-		id: Date.now().toString(),
-		role: "user",
-		content: chatMessage.value,
-	});
+  chatMessages.value.push({
+    id: Date.now().toString(),
+    role: "user",
+    content: chatMessage.value,
+  });
 
-	setTimeout(() => {
-		chatMessages.value.push({
-			id: `${Date.now() + 1}`,
-			role: "assistant",
-			content: "I'm processing your request...",
-		});
-	}, 500);
+  setTimeout(() => {
+    chatMessages.value.push({
+      id: `${Date.now() + 1}`,
+      role: "assistant",
+      content: "I'm processing your request...",
+    });
+  }, 500);
 
-	chatMessage.value = "";
+  chatMessage.value = "";
 }
 
 // Resize handling
 function startResize(e: MouseEvent) {
-	isResizing.value = true;
-	const startY = e.clientY;
-	const startHeight = inputHeight.value;
+  isResizing.value = true;
+  const startY = e.clientY;
+  const startHeight = inputHeight.value;
 
-	function onMouseMove(e: MouseEvent) {
-		const delta = startY - e.clientY;
-		const newHeight = Math.min(
-			Math.max(startHeight + delta, minInputHeight),
-			maxInputHeight,
-		);
-		inputHeight.value = newHeight;
-	}
+  function onMouseMove(e: MouseEvent) {
+    const delta = startY - e.clientY;
+    const newHeight = Math.min(
+      Math.max(startHeight + delta, minInputHeight),
+      maxInputHeight,
+    );
+    inputHeight.value = newHeight;
+  }
 
-	function onMouseUp() {
-		isResizing.value = false;
-		document.removeEventListener("mousemove", onMouseMove);
-		document.removeEventListener("mouseup", onMouseUp);
-	}
+  function onMouseUp() {
+    isResizing.value = false;
+    document.removeEventListener("mousemove", onMouseMove);
+    document.removeEventListener("mouseup", onMouseUp);
+  }
 
-	document.addEventListener("mousemove", onMouseMove);
-	document.addEventListener("mouseup", onMouseUp);
+  document.addEventListener("mousemove", onMouseMove);
+  document.addEventListener("mouseup", onMouseUp);
 }
 </script>
 
@@ -360,16 +359,6 @@ function startResize(e: MouseEvent) {
             </Button>
           </div>
           <div class="flex items-center gap-1">
-            <Button
-              as-child
-              variant="outline"
-              size="sm"
-              class="h-7 w-7 p-0 cursor-pointer"
-            >
-              <NuxtLink to="/files/chat" title="Open full chat">
-                <Maximize2 :size="14" />
-              </NuxtLink>
-            </Button>
             <Button
               size="sm"
               class="h-7 w-7 p-0 cursor-pointer"

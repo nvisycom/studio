@@ -9,28 +9,28 @@ import type { PlanType } from "./pricing-data";
 const { isYearly, setPricingPeriod } = usePricing();
 
 const discountPercentage = computed(() =>
-	Math.round(pricingConfig.yearlyDiscount * 100),
+  Math.round(pricingConfig.yearlyDiscount * 100),
 );
 
 const showBillingToggle = (planId: string) => {
-	return planId === "basic" || planId === "business";
+  return planId === "basic" || planId === "business";
 };
 
 // Computed prices that react to isYearly changes
 const prices = computed(() => {
-	const result: Record<string, number | "custom"> = {};
-	for (const plan of plans) {
-		if (plan.price === "custom") {
-			result[plan.id] = "custom";
-		} else {
-			const basePrice = plan.price;
-			const finalPrice = isYearly.value
-				? basePrice * (1 - pricingConfig.yearlyDiscount)
-				: basePrice;
-			result[plan.id] = Math.floor(finalPrice);
-		}
-	}
-	return result;
+  const result: Record<string, number | "custom"> = {};
+  for (const plan of plans) {
+    if (plan.price === "custom") {
+      result[plan.id] = "custom";
+    } else {
+      const basePrice = plan.price;
+      const finalPrice = isYearly.value
+        ? basePrice * (1 - pricingConfig.yearlyDiscount)
+        : basePrice;
+      result[plan.id] = Math.floor(finalPrice);
+    }
+  }
+  return result;
 });
 
 const getPrice = (planId: PlanType) => prices.value[planId];
@@ -131,17 +131,12 @@ const getPrice = (planId: PlanType) => prices.value[planId];
         <!-- Spacer for Free plan to align -->
         <div v-else class="mb-5 h-5"></div>
 
-        <!-- Storage & Queries info -->
-        <div class="bg-accent/50 rounded-xl p-3 mb-5">
-          <div class="space-y-1.5 text-sm">
-            <div class="flex justify-between">
-              <span class="text-foreground/70">Storage</span>
-              <span class="font-medium">{{ plan.storage }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-foreground/70">Queries/month</span>
-              <span class="font-medium">{{ plan.queries }}</span>
-            </div>
+        <!-- Pages highlight -->
+        <div class="bg-accent/50 rounded-xl p-4 mb-5 text-center">
+          <div class="text-2xl font-semibold">{{ plan.pages }}</div>
+          <div class="text-sm text-foreground/70">pages / month</div>
+          <div class="text-xs text-foreground/50 mt-1">
+            {{ plan.storage }} storage
           </div>
         </div>
 
@@ -153,7 +148,7 @@ const getPrice = (planId: PlanType) => prices.value[planId];
             class="flex items-center gap-2.5"
           >
             <Check class="w-4 h-4 text-emerald-500 flex-shrink-0" />
-            <span class="text-sm text-foreground/70">{{ feature }}</span>
+            <span class="text-sm text-foreground/80">{{ feature }}</span>
           </li>
         </ul>
 
