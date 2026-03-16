@@ -1,5 +1,5 @@
 ---
-name: REST API
+name: Curl
 language: bash
 filename: redact-document
 extension: sh

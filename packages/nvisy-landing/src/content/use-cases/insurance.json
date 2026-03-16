@@ -1,26 +1,26 @@
 [
 	{
 		"title": "Claims Document Redaction",
-		"description": "Redact policyholder PII from claims documentation before sharing with third-party adjusters, legal counsel, or fraud investigators."
+		"description": "Redact policyholder SSNs, policy numbers, and medical details from claims files before sharing with adjusters."
 	},
 	{
 		"title": "Underwriting Data Protection",
-		"description": "Redact sensitive data from underwriting documents, medical records, and financial statements before cross-department or external sharing."
+		"description": "Strip applicant financials and medical history from underwriting files shared across departments."
 	},
 	{
-		"title": "Fraud Investigation Redaction",
-		"description": "Remove irrelevant PII from claim details and supporting documentation shared with fraud investigation units while preserving case-relevant data."
+		"title": "Fraud Investigation Support",
+		"description": "Remove irrelevant PII from claim documentation routed to fraud investigation units while preserving case evidence."
 	},
 	{
-		"title": "Regulatory Submission Preparation",
-		"description": "Redact sensitive policyholder data from documents before submission to state insurance department audits and regulatory filings."
+		"title": "Regulatory Filing Prep",
+		"description": "Redact policyholder data from documents submitted to state insurance departments and regulatory audits."
 	},
 	{
-		"title": "Litigation Support",
-		"description": "Redact privileged and sensitive information from policyholder documents prepared for litigation, arbitration, or legal discovery processes."
+		"title": "Litigation Discovery",
+		"description": "Redact privileged and sensitive policyholder information from documents produced for legal discovery."
 	},
 	{
-		"title": "Agent Data Sharing",
-		"description": "Redact sensitive policyholder data before sharing policy information and claim updates with agents and brokers."
+		"title": "Broker & Agent Sharing",
+		"description": "Remove sensitive policyholder details before sharing policy updates and claim summaries with distribution partners."
 	}
 ]

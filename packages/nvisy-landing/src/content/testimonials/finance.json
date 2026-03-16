@@ -1,18 +1,1 @@
-[
-	{
-		"quote": "Nvisy reduced our redaction time by 80% while maintaining 100% compliance. The AI accuracy is remarkable — it catches sensitive data our team missed.",
-		"author": "Sarah Chen",
-		"title": "Chief Compliance Officer",
-		"company": "TechCorp Financial",
-		"order": 1,
-		"featured": true
-	},
-	{
-		"quote": "ROI was immediate. What used to take our team 3 days now takes 30 minutes. The accuracy rate exceeds our manual processes, and compliance audits are effortless.",
-		"author": "James Thompson",
-		"title": "Head of Risk Management",
-		"company": "Global Banking Corp",
-		"order": 2,
-		"featured": true
-	}
-]
+[]

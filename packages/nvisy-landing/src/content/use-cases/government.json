@@ -1,26 +1,26 @@
 [
 	{
-		"title": "FOIA Redaction",
-		"description": "Automatically redact exempt information from documents before release under Freedom of Information Act requests, ensuring privacy compliance at scale."
+		"title": "FOIA Response Redaction",
+		"description": "Redact exempt information from public records requests — names, addresses, case numbers — before release."
 	},
 	{
-		"title": "Public Records Sanitization",
-		"description": "Redact PII from court documents, police reports, and administrative records before public release or digitization."
+		"title": "Citizen Records Processing",
+		"description": "Remove PII from benefit applications, tax filings, and permit documents when transferring between agencies."
 	},
 	{
-		"title": "Case File Redaction",
-		"description": "Remove sensitive information from case files, investigation reports, and legal documents before inter-agency sharing or discovery."
+		"title": "Law Enforcement Reports",
+		"description": "Redact witness identities, victim information, and officer details from incident reports shared publicly."
 	},
 	{
-		"title": "Citizen Data Protection",
-		"description": "Redact PII from citizen applications, permits, licenses, and service requests to protect personal data across government systems."
+		"title": "Contract & Procurement",
+		"description": "Strip proprietary terms and personal data from bids, contracts, and procurement documents before public disclosure."
 	},
 	{
-		"title": "Contract Redaction",
-		"description": "Redact proprietary and sensitive terms from procurement documents, bids, and contracts before public disclosure or cross-agency sharing."
+		"title": "Inter-Agency Data Sharing",
+		"description": "Redact sensitive fields from datasets shared across departments while keeping operational data intact."
 	},
 	{
-		"title": "Internal Communication Sanitization",
-		"description": "Redact sensitive data from internal emails, memos, and reports before archiving, FOIA responses, or knowledge management systems."
+		"title": "Public Meeting Records",
+		"description": "Remove citizen PII from meeting transcripts and correspondence before posting to public portals."
 	}
 ]

@@ -1,6 +1,7 @@
 ---
-import { Check } from "lucide-vue-next";
+import { Check, ArrowRight } from "lucide-vue-next";
 import { plans } from "./pricing-data";
+import { buttonClasses } from "./shared";
 
 // Cards: Free(0), Starter(1), Business(2, popular), Enterprise(3)
 // Mobile 1-col: [Free|Starter|Business|Enterprise] stacked
@@ -61,28 +62,26 @@ function cardClasses(index: number, popular: boolean): string[] {
     {plans.map((plan, index) => (
       <div
         class:list={[
-          "relative flex flex-col px-6 py-8 lg:px-8",
+          "relative flex flex-col px-6 pt-10 pb-8 lg:px-8",
           ...cardClasses(index, !!plan.popular),
         ]}
       >
         <!-- Plan name -->
-        <h3 class="text-2xl font-semibold tracking-tight mb-3">{plan.name}</h3>
+        <h3 class="text-3xl font-medium tracking-tight mb-3">{plan.name}</h3>
 
         <!-- Price -->
         <div class="mb-4">
           {plan.price === "custom" ? (
-            <span class="text-3xl font-semibold tracking-tight">Contact us</span>
+            <span class="text-lg text-foreground/50">Contact us</span>
           ) : (
             <>
-              <span class="text-3xl font-semibold tracking-tight">${plan.price}</span>
+              <span class="text-[1.75rem] font-semibold tracking-tight">${plan.price}</span>
               {plan.price > 0 && (
-                <span class="text-sm text-foreground/50 ml-1">/month</span>
+                <span class="text-lg text-foreground/50 ml-1">/month</span>
               )}
             </>
           )}
         </div>
-
-        <p class="text-sm text-foreground/50 mb-6">{plan.description}</p>
 
         <!-- Features checklist -->
         <ul class="flex flex-col gap-2.5 flex-grow mb-8">
@@ -95,15 +94,10 @@ function cardClasses(index: number, popular: boolean): string[] {
         </ul>
 
         <!-- CTA Button at bottom -->
-        <div class="mt-auto">
+        <div class="mt-auto pt-8 -mx-2">
           <a
             href={plan.buttonHref}
-            class:list={[
-              "w-full text-sm font-medium rounded-lg py-2.5 px-4 text-center transition-colors block",
-              plan.popular
-                ? "bg-foreground text-background hover:bg-foreground/90"
-                : "bg-foreground/10 text-foreground hover:bg-foreground/15",
-            ]}
+            class:list={buttonClasses(plan.popular)}
           >
             {plan.buttonText}
           </a>

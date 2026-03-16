@@ -1,6 +1,6 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, CTA, Connect } from "@/components";
+import { Hero, CTA, Security } from "@/components";
 import IntegrationsGrid from "@/components/sections/IntegrationsGrid.vue";
 
 import AnthropicIcon from "@/assets/integration/anthropic.svg?raw";
@@ -21,108 +21,104 @@ const integrations = [
 	{
 		name: "Anthropic",
 		icon: AnthropicIcon,
-		description: "Claude-powered entity detection for redaction.",
+		description: "Use Claude models for entity detection and classification.",
 		status: "available" as const,
 		category: "ai",
-	},
-	{
-		name: "Discord",
-		icon: DiscordIcon,
-		description: "Receive redaction notifications in your Discord channels.",
-		status: "coming_soon" as const,
-		category: "communication",
-	},
-	{
-		name: "Dropbox",
-		icon: DropboxIcon,
-		description: "Connect Dropbox folders for automated redaction workflows.",
-		status: "available" as const,
-		category: "storage",
-	},
-	{
-		name: "Google Drive",
-		icon: GoogleDriveIcon,
-		description: "Redact documents directly from your Google Drive folders.",
-		status: "available" as const,
-		category: "storage",
-	},
-	{
-		name: "Make",
-		icon: MakeIcon,
-		description:
-			"Build complex automation scenarios with Make (formerly Integromat).",
-		status: "available" as const,
-		category: "automation",
-	},
-	{
-		name: "Microsoft OneDrive",
-		icon: OneDriveIcon,
-		description: "Sync with OneDrive for seamless redaction workflows.",
-		status: "available" as const,
-		category: "storage",
-	},
-	{
-		name: "Microsoft Teams",
-		icon: TeamsIcon,
-		description: "Integrate redaction workflows into Microsoft Teams.",
-		status: "available" as const,
-		category: "communication",
-	},
-	{
-		name: "n8n",
-		icon: N8nIcon,
-		description: "Open-source workflow automation with full control.",
-		status: "available" as const,
-		category: "automation",
-	},
-	{
-		name: "Notion",
-		icon: NotionIcon,
-		description: "Automatically export redaction reports to Notion databases.",
-		status: "available" as const,
-		category: "productivity",
 	},
 	{
 		name: "OpenAI",
 		icon: OpenAIIcon,
-		description: "Enhanced entity detection with GPT models for redaction.",
+		description: "Use GPT models for entity detection and classification.",
 		status: "available" as const,
 		category: "ai",
 	},
 	{
+		name: "Google Drive",
+		icon: GoogleDriveIcon,
+		description: "Watch folders and redact new files automatically.",
+		status: "available" as const,
+		category: "storage",
+	},
+	{
+		name: "Dropbox",
+		icon: DropboxIcon,
+		description: "Trigger redaction when files are added or updated.",
+		status: "available" as const,
+		category: "storage",
+	},
+	{
+		name: "Microsoft OneDrive",
+		icon: OneDriveIcon,
+		description: "Redact files stored in OneDrive and SharePoint.",
+		status: "available" as const,
+		category: "storage",
+	},
+	{
 		name: "S3-Compatible Storage",
 		icon: MinioIcon,
-		description:
-			"Connect any S3-compatible storage including AWS S3, MinIO, and others.",
+		description: "Connect AWS S3, MinIO, or any S3-compatible object store.",
 		status: "available" as const,
 		category: "storage",
 	},
 	{
 		name: "Slack",
 		icon: SlackIcon,
-		description:
-			"Get notified when redaction is complete and share results with your team.",
+		description: "Send redaction results and alerts to Slack channels.",
 		status: "available" as const,
+		category: "communication",
+	},
+	{
+		name: "Microsoft Teams",
+		icon: TeamsIcon,
+		description: "Post redaction notifications to Teams channels.",
+		status: "available" as const,
+		category: "communication",
+	},
+	{
+		name: "Discord",
+		icon: DiscordIcon,
+		description: "Receive redaction notifications in Discord channels.",
+		status: "coming_soon" as const,
 		category: "communication",
 	},
 	{
 		name: "Zapier",
 		icon: ZapierIcon,
-		description: "Connect Nvisy to 5,000+ apps with Zapier workflows.",
+		description: "Connect to 5,000+ apps with no-code workflows.",
 		status: "available" as const,
 		category: "automation",
+	},
+	{
+		name: "Make",
+		icon: MakeIcon,
+		description: "Build multi-step automation scenarios visually.",
+		status: "available" as const,
+		category: "automation",
+	},
+	{
+		name: "n8n",
+		icon: N8nIcon,
+		description: "Self-hostable workflow automation with full control.",
+		status: "available" as const,
+		category: "automation",
+	},
+	{
+		name: "Notion",
+		icon: NotionIcon,
+		description: "Export redaction reports to Notion databases.",
+		status: "available" as const,
+		category: "productivity",
 	},
 ];
 ---
 
 <Layout
   title="Integrations"
-  description="Connect Nvisy with your favorite tools. Automate redaction workflows with 50+ integrations."
+  description="Connect Nvisy with your favorite tools. Automate redaction workflows with built-in integrations."
   hideFooterBorder
 >
   <Hero
     title="Integrations"
-    titleHighlight="for your stack"
     description="Connect Nvisy with the tools you already use. Automate redaction workflows and sync data across your entire stack."
     primaryCta={{ text: "Get Started", href: "https://app.nvisy.com/auth/signup" }}
     secondaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com/integrations" }}
@@ -136,16 +132,11 @@ const integrations = [
     </div>
   </section>
 
-  <!-- Connect -->
-  <Connect
-    title="Connect your workflow"
-    description="Seamlessly integrate Nvisy into your existing infrastructure with powerful APIs and webhooks."
-  />
-
   <CTA
     title="Need a different integration?"
     description="We're constantly adding new integrations. Let us know what you need or get started with what's available."
     primaryCta={{ text: "Get Started", href: "https://app.nvisy.com/auth/signup" }}
     secondaryCta={{ text: "Request Integration", href: "mailto:support@nvisy.com?subject=Integration Request" }}
   />
+  <Security />
 </Layout>

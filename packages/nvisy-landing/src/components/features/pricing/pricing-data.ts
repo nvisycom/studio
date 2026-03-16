@@ -39,7 +39,7 @@ export const plans: PricingPlan[] = [
 		price: 49,
 		highlights: ["5,000 credits / month", "5 workspaces", "Unlimited members"],
 		features: [
-			"Everything in Free",
+			"All Free features",
 			"Audio, CSV, JSON & XLSX",
 			"Batch processing",
 			"Compliance reports",
@@ -60,7 +60,7 @@ export const plans: PricingPlan[] = [
 			"Unlimited members",
 		],
 		features: [
-			"Everything in Starter",
+			"All Starter features",
 			"SSO/SAML",
 			"HIPAA & CCPA",
 			"Webhooks & Integrations",
@@ -83,7 +83,7 @@ export const plans: PricingPlan[] = [
 			"Unlimited members",
 		],
 		features: [
-			"Everything in Business",
+			"All Business features",
 			"Self-hosted deployment",
 			"Custom integrations",
 			"Custom SLA",

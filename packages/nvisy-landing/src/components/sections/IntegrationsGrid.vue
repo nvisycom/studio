@@ -31,13 +31,6 @@ const filteredIntegrations = computed(() => {
 	}
 	return props.integrations.filter((i) => i.category === activeCategory.value);
 });
-
-const getCategoryCount = (categoryId: string) => {
-	if (categoryId === "all") {
-		return props.integrations.length;
-	}
-	return props.integrations.filter((i) => i.category === categoryId).length;
-};
 </script>
 
 <template>
@@ -48,20 +41,14 @@ const getCategoryCount = (categoryId: string) => {
         v-for="category in categories"
         :key="category.id"
         @click="activeCategory = category.id"
-        class="px-4 py-2 text-sm rounded-full transition-all duration-200 flex items-center gap-2"
+        class="px-4 py-2 text-sm rounded-full transition-all duration-200"
         :class="[
           activeCategory === category.id
             ? 'bg-foreground text-background'
             : 'bg-accent text-muted-foreground hover:text-foreground hover:bg-accent/80',
         ]"
       >
-        <span>{{ category.label }}</span>
-        <span
-          class="text-xs opacity-60"
-          :class="activeCategory === category.id ? 'opacity-80' : ''"
-        >
-          {{ getCategoryCount(category.id) }}
-        </span>
+        {{ category.label }}
       </button>
     </div>
 
@@ -72,17 +59,11 @@ const getCategoryCount = (categoryId: string) => {
     >
       <TransitionGroup name="integration">
         <div
-          v-for="(integration, index) in filteredIntegrations"
+          v-for="integration in filteredIntegrations"
           :key="integration.name"
-          class="group relative p-6 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:border-border/60 transition-all duration-300"
-          :style="{ animationDelay: `${index * 30}ms` }"
+          class="group relative p-6 rounded-2xl border border-border bg-card/50 hover:border-border/60 hover:bg-card/80 transition-all duration-300"
         >
-          <!-- Gradient background on hover -->
-          <div
-            class="absolute inset-0 rounded-2xl bg-gradient-to-br from-sky-100/80 to-pink-100/80 dark:from-sky-900/30 dark:to-pink-900/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          />
-
-          <div class="relative z-10 flex items-start gap-4">
+          <div class="flex items-start gap-4">
             <div
               class="w-12 h-12 rounded-xl bg-foreground/5 flex items-center justify-center flex-shrink-0 group-hover:bg-foreground/10 transition-colors duration-300"
             >

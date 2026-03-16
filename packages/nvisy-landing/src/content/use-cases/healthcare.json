@@ -1,26 +1,26 @@
 [
 	{
 		"title": "Clinical Record De-identification",
-		"description": "Automatically de-identify clinical notes, discharge summaries, and care plans by redacting PHI for quality improvement, training, or case studies."
+		"description": "Strip patient names, MRNs, and dates from clinical notes and discharge summaries for quality reviews or training."
 	},
 	{
-		"title": "Research Data Preparation",
-		"description": "Redact patient identifiers from medical documents to create de-identified datasets for research studies, clinical trials, and publications while maintaining HIPAA compliance."
+		"title": "Research Dataset Preparation",
+		"description": "De-identify medical records for clinical trials and publications while maintaining HIPAA Safe Harbor compliance."
 	},
 	{
-		"title": "Insurance Claims Redaction",
-		"description": "Remove sensitive patient data from insurance claims, prior authorization requests, and billing documentation before external sharing."
+		"title": "Insurance Claims Processing",
+		"description": "Remove patient PII from claims forms and prior authorization requests before sending to payers."
 	},
 	{
-		"title": "Patient Portal Protection",
-		"description": "Redact sensitive provider notes and third-party information from medical records before sharing with patients through patient portals."
+		"title": "Patient Portal Sharing",
+		"description": "Redact third-party and provider notes from medical records before making them available to patients."
 	},
 	{
-		"title": "Legal & Compliance Redaction",
-		"description": "Redact PHI from medical records prepared for legal proceedings, malpractice cases, or regulatory investigations while preserving relevant clinical data."
+		"title": "Legal & Malpractice Discovery",
+		"description": "Redact PHI from medical records produced for legal proceedings while preserving clinically relevant data."
 	},
 	{
-		"title": "Quality Improvement De-identification",
-		"description": "De-identify patient data in clinical datasets used for quality improvement initiatives, outcome analysis, and population health studies."
+		"title": "Population Health Analytics",
+		"description": "De-identify patient datasets for outcome analysis and population health studies without re-identification risk."
 	}
 ]
