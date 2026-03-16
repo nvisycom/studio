@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { Upload, Cpu, FileCheck, Download } from "lucide-vue-next";
+import { Upload, FileSearch, FileCheck, ShieldCheck } from "lucide-vue-next";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const steps = [
@@ -8,38 +8,40 @@ const steps = [
 		step: 1,
 		id: "upload",
 		title: "Upload",
-		description:
-			"Drag and drop any document - PDFs, images, scans. We handle them all.",
+		description: "Upload any file — PDFs, images, audio, video, CSV, or JSON.",
 		icon: Upload,
 		image: "/screenshots/upload.png",
-		imageAlt: "Upload documents interface",
+		imageAlt: "Upload files interface",
 	},
 	{
 		step: 2,
-		id: "process",
-		title: "Process",
-		description: "Our AI analyzes and extracts structured data in seconds.",
-		icon: Cpu,
+		id: "detect",
+		title: "Detect",
+		description:
+			"Our AI scans for PII, PHI, financial data, and 50+ sensitive entity types.",
+		icon: FileSearch,
 		image: "/screenshots/review.png",
-		imageAlt: "Processing documents interface",
+		imageAlt: "Detect sensitive data interface",
 	},
 	{
 		step: 3,
 		id: "review",
 		title: "Review",
-		description: "Verify extractions with our intuitive review interface.",
+		description:
+			"Review detected entities, adjust redaction rules, and confirm before applying.",
 		icon: FileCheck,
 		image: "/screenshots/redact.png",
-		imageAlt: "Review extractions interface",
+		imageAlt: "Review detected entities interface",
 	},
 	{
 		step: 4,
-		id: "export",
-		title: "Export",
-		description: "Download as JSON, CSV, or integrate via API.",
-		icon: Download,
+		id: "redact",
+		title: "Redact",
+		description:
+			"Download redacted files or integrate via API. Full audit trail included.",
+		icon: ShieldCheck,
 		image: "/screenshots/export.png",
-		imageAlt: "Export documents interface",
+		imageAlt: "Redacted output interface",
 	},
 ];
 

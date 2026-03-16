@@ -1,26 +1,26 @@
 [
 	{
-		"title": "FOIA Requests",
-		"description": "Process Freedom of Information Act requests by automatically extracting and structuring document data for efficient response preparation."
+		"title": "FOIA Redaction",
+		"description": "Automatically redact exempt information from documents before release under Freedom of Information Act requests, ensuring privacy compliance at scale."
 	},
 	{
-		"title": "Public Records",
-		"description": "Extract structured data from court documents, police reports, and administrative records for digitization and searchability."
+		"title": "Public Records Sanitization",
+		"description": "Redact PII from court documents, police reports, and administrative records before public release or digitization."
 	},
 	{
-		"title": "Case Management",
-		"description": "Extract key information from case files, investigation reports, and legal documents for inter-agency sharing and case coordination."
+		"title": "Case File Redaction",
+		"description": "Remove sensitive information from case files, investigation reports, and legal documents before inter-agency sharing or discovery."
 	},
 	{
-		"title": "Citizen Services",
-		"description": "Process citizen applications, permits, licenses, and service requests by extracting structured data for faster processing."
+		"title": "Citizen Data Protection",
+		"description": "Redact PII from citizen applications, permits, licenses, and service requests to protect personal data across government systems."
 	},
 	{
-		"title": "Procurement & Contracts",
-		"description": "Extract key terms and data from procurement documents, bids, and contracts for analysis and compliance tracking."
+		"title": "Contract Redaction",
+		"description": "Redact proprietary and sensitive terms from procurement documents, bids, and contracts before public disclosure or cross-agency sharing."
 	},
 	{
-		"title": "Internal Communications",
-		"description": "Extract and structure data from internal emails, memos, and reports for knowledge management and searchability."
+		"title": "Internal Communication Sanitization",
+		"description": "Redact sensitive data from internal emails, memos, and reports before archiving, FOIA responses, or knowledge management systems."
 	}
 ]

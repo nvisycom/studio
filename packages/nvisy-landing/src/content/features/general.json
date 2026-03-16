@@ -1,42 +1,42 @@
 [
 	{
-		"title": "AI-Powered Document Intelligence",
-		"description": "Powered by latest Claude and GPT models for unmatched accuracy. Automatically extract, classify, and structure data from any document. Identify {PII|Personally Identifiable Information}, {PHI|Protected Health Information}, and key business data across all formats.",
+		"title": "AI-Powered Redaction",
+		"description": "Powered by latest Claude and GPT models for unmatched accuracy. Automatically detect and redact {PII|Personally Identifiable Information}, {PHI|Protected Health Information}, and 50+ sensitive entity types across all file formats.",
 		"icon": "zap",
 		"order": 1,
 		"featured": true
 	},
 	{
-		"title": "Enterprise Security & Compliance",
+		"title": "Security & Compliance",
 		"description": "{AES-256|Advanced Encryption Standard with 256-bit keys} encryption, zero-trust architecture, and private processing. {GDPR|General Data Protection Regulation} compliant with SOC 2, ISO 27001, {HIPAA|Health Insurance Portability and Accountability Act}, and CCPA readiness.",
 		"icon": "shield-check",
 		"order": 2,
 		"featured": true
 	},
 	{
-		"title": "Developer Friendly APIs",
-		"description": "{RESTful APIs|Representational State Transfer - web service architecture} with comprehensive documentation, TypeScript and Python {SDKs|Software Development Kits}. Integration takes minutes, not weeks.",
-		"icon": "code",
+		"title": "Multimodal Format Support",
+		"description": "Redact sensitive data across documents (PDF, DOCX), images (PNG, JPG, TIFF), data files (CSV, JSON, XLSX), audio (MP3, WAV), and video (MP4). Consistent accuracy across all formats.",
+		"icon": "layers",
 		"order": 3,
 		"featured": true
 	},
 	{
-		"title": "Seamless Integrations",
-		"description": "Connect with Google Drive, Dropbox, AWS S3, and popular platforms. Automate workflows with {webhooks|HTTP callbacks that trigger when events occur} and real-time processing.",
-		"icon": "link",
+		"title": "Flexible Redaction Strategies",
+		"description": "Choose from blackout, masking, tokenization, or synthetic data replacement. Define custom redaction rules per entity type and apply consistently across your organization.",
+		"icon": "settings",
 		"order": 4,
 		"featured": true
 	},
 	{
-		"title": "Flexible Deployment Options",
-		"description": "Choose cloud-hosted, {on-premises|Software installed and run on your own servers}, or {hybrid deployment|Combination of cloud and on-premises infrastructure}. Works with both cloud APIs and self-hosted servers.",
-		"icon": "server",
+		"title": "Developer APIs",
+		"description": "{RESTful APIs|Representational State Transfer - web service architecture} with comprehensive documentation, TypeScript and Python {SDKs|Software Development Kits}. Integrate redaction into your workflows in minutes.",
+		"icon": "code",
 		"order": 5,
 		"featured": true
 	},
 	{
-		"title": "Structured Data Output",
-		"description": "Transform unstructured documents into clean, structured data. Export to JSON, CSV, or integrate directly with your databases and {data pipelines|Automated workflows for processing and moving data}.",
+		"title": "Audit Trails",
+		"description": "Complete audit logs for every redaction operation. Track what was redacted, when, and by whom. Export compliance reports for {GDPR|General Data Protection Regulation}, HIPAA, and CCPA audits.",
 		"icon": "clipboard-check",
 		"order": 6,
 		"featured": true

@@ -1,11 +1,11 @@
 ---
 import {
-	Lock,
-	Zap,
+	Layers,
 	Shield,
-	Globe,
+	ScanSearch,
+	ShieldCheck,
+	Brush,
 	BarChart3,
-	Cpu,
 	type LucideIcon,
 } from "lucide-vue-next";
 
@@ -25,46 +25,48 @@ export interface Props {
 }
 
 const {
-	title = "Built for scale",
-	description = "Everything you need to process documents at enterprise scale.",
+	title = "Built for compliance",
+	description = "Everything you need to protect sensitive data at enterprise scale.",
 	features: propFeatures,
 } = Astro.props;
 
 const defaultFeatures: Feature[] = [
 	{
-		icon: Zap,
-		title: "Lightning Fast",
+		icon: Layers,
+		title: "Multimodal Redaction",
 		description:
-			"Process thousands of documents in seconds with our optimized AI pipeline.",
+			"Redact PII and PHI across PDFs, DOCX, images, CSV, JSON, audio, and video.",
 	},
 	{
 		icon: Shield,
 		title: "Enterprise Security",
 		description:
-			"Bank-grade encryption, SOC 2 compliance, and zero data retention.",
+			"Bank-grade encryption, SOC 2 compliance, and zero data retention for redacted files.",
 		span: "wide",
 	},
 	{
-		icon: Cpu,
-		title: "AI-Powered Extraction",
-		description: "State-of-the-art models trained on millions of documents.",
-	},
-	{
-		icon: Globe,
-		title: "Global Infrastructure",
-		description: "Deployed across 12 regions worldwide. Sub-100ms latency.",
-	},
-	{
-		icon: Lock,
-		title: "Privacy First",
+		icon: ScanSearch,
+		title: "AI-Powered Detection",
 		description:
-			"GDPR and CCPA compliant. Process sensitive documents with confidence.",
+			"Detect 50+ entity types: names, SSNs, addresses, medical records, financial data.",
+	},
+	{
+		icon: ShieldCheck,
+		title: "Privacy Compliance",
+		description:
+			"GDPR, HIPAA, CCPA, and SOC 2 compliant. Full audit trails for every redaction.",
+	},
+	{
+		icon: Brush,
+		title: "Flexible Masking",
+		description:
+			"Blackout, mask, tokenize, or replace sensitive data with synthetic values.",
 	},
 	{
 		icon: BarChart3,
-		title: "Real-time Analytics",
+		title: "Redaction Analytics",
 		description:
-			"Monitor processing metrics and optimize workflows with detailed insights.",
+			"Track redaction metrics, entity distributions, and compliance coverage across your files.",
 		span: "wide",
 	},
 ];

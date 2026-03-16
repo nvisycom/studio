@@ -1,0 +1,128 @@
+---
+import { Layout } from "@/layouts";
+import { Hero, CTA, OpenSource, Security } from "@/components";
+import { Zap, Shield, Layers, ShieldCheck, Lock, Cpu } from "lucide-vue-next";
+import GithubIcon from "@/assets/icons/github.svg?raw";
+---
+
+<Layout
+  title="Nvisy Runtime"
+  description="Self-hosted data redaction engine for automated PII and PHI removal. Deploy on your infrastructure for complete data sovereignty."
+  hideFooterBorder
+>
+  <Hero
+    title="Nvisy"
+    titleHighlight="Runtime"
+    titleInline={true}
+    description="Self-hosted redaction engine for automated PII and PHI removal. Deploy on your infrastructure for complete data sovereignty."
+    primaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com/runtime" }}
+    secondaryCta={null}
+    compact
+  >
+    <a slot="buttons" href="https://github.com/nvisycom/runtime" class="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-6 py-3 text-sm font-medium hover:bg-accent transition-colors">
+      <span class="w-4 h-4 flex-shrink-0 [&>svg]:w-full [&>svg]:h-full">
+        <Fragment set:html={GithubIcon} />
+      </span>
+      View on GitHub
+    </a>
+    <p slot="content" class="text-sm text-muted-foreground mt-6">
+      Latest version: v1.0.0 · <a href="https://github.com/nvisycom/runtime/releases" class="hover:text-foreground transition-colors underline">View all releases</a>
+    </p>
+  </Hero>
+
+  <!-- Capabilities -->
+  <section class="relative py-24 md:py-32 overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-accent/30 to-transparent" />
+    <div class="container relative z-10 mx-auto px-4">
+      <div class="max-w-2xl mx-auto text-center mb-16">
+        <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
+          Built for production redaction
+        </h2>
+        <p class="text-lg text-muted-foreground">
+          Detect and redact sensitive data at scale with deterministic, repeatable results.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
+        <div class="scroll-reveal group relative p-6 md:p-8 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:border-border/60 transition-all duration-300 md:col-span-2" style="--reveal-delay: 0ms;" data-reveal>
+          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-sky-100/80 to-pink-100/80 dark:from-sky-900/30 dark:to-pink-900/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div class="relative z-10">
+            <div class="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center mb-4 group-hover:bg-foreground/10 transition-colors duration-300">
+              <ShieldCheck class="w-5 h-5 text-foreground" />
+            </div>
+            <h3 class="text-lg font-semibold mb-2 tracking-tight">Multimodal Redaction</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">Process PDFs, images, audio, and video. Get redacted files with full audit trails for compliance verification.</p>
+          </div>
+        </div>
+
+        <div class="scroll-reveal group relative p-6 md:p-8 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:border-border/60 transition-all duration-300" style="--reveal-delay: 100ms;" data-reveal>
+          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-sky-100/80 to-pink-100/80 dark:from-sky-900/30 dark:to-pink-900/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div class="relative z-10">
+            <div class="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center mb-4 group-hover:bg-foreground/10 transition-colors duration-300">
+              <Zap class="w-5 h-5 text-foreground" />
+            </div>
+            <h3 class="text-lg font-semibold mb-2 tracking-tight">High throughput</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">Process thousands of pages per minute with parallel execution and efficient resource management.</p>
+          </div>
+        </div>
+
+        <div class="scroll-reveal group relative p-6 md:p-8 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:border-border/60 transition-all duration-300" style="--reveal-delay: 200ms;" data-reveal>
+          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-sky-100/80 to-pink-100/80 dark:from-sky-900/30 dark:to-pink-900/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div class="relative z-10">
+            <div class="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center mb-4 group-hover:bg-foreground/10 transition-colors duration-300">
+              <Shield class="w-5 h-5 text-foreground" />
+            </div>
+            <h3 class="text-lg font-semibold mb-2 tracking-tight">Deterministic output</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">Same input, same redaction. Repeatable results for compliance and auditing.</p>
+          </div>
+        </div>
+
+        <div class="scroll-reveal group relative p-6 md:p-8 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:border-border/60 transition-all duration-300 md:col-span-2" style="--reveal-delay: 300ms;" data-reveal>
+          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-sky-100/80 to-pink-100/80 dark:from-sky-900/30 dark:to-pink-900/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div class="relative z-10">
+            <div class="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center mb-4 group-hover:bg-foreground/10 transition-colors duration-300">
+              <Lock class="w-5 h-5 text-foreground" />
+            </div>
+            <h3 class="text-lg font-semibold mb-2 tracking-tight">Data Sovereignty</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">All processing happens on your infrastructure. No data leaves your environment. Air-gapped deployments supported.</p>
+          </div>
+        </div>
+
+        <div class="scroll-reveal group relative p-6 md:p-8 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:border-border/60 transition-all duration-300" style="--reveal-delay: 400ms;" data-reveal>
+          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-sky-100/80 to-pink-100/80 dark:from-sky-900/30 dark:to-pink-900/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div class="relative z-10">
+            <div class="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center mb-4 group-hover:bg-foreground/10 transition-colors duration-300">
+              <Layers class="w-5 h-5 text-foreground" />
+            </div>
+            <h3 class="text-lg font-semibold mb-2 tracking-tight">Deploy anywhere</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">Run in Nvisy Cloud, self-host on your infrastructure, or embed directly into your application.</p>
+          </div>
+        </div>
+
+        <div class="scroll-reveal group relative p-6 md:p-8 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:border-border/60 transition-all duration-300" style="--reveal-delay: 500ms;" data-reveal>
+          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-sky-100/80 to-pink-100/80 dark:from-sky-900/30 dark:to-pink-900/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div class="relative z-10">
+            <div class="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center mb-4 group-hover:bg-foreground/10 transition-colors duration-300">
+              <Cpu class="w-5 h-5 text-foreground" />
+            </div>
+            <h3 class="text-lg font-semibold mb-2 tracking-tight">Built with Rust</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">Memory-safe, minimal footprint. No garbage collection pauses, predictable latency under load.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <OpenSource
+    title="Open source ecosystem"
+    description="Nvisy Runtime is part of our open source ecosystem. Explore our other projects and contribute to the community."
+  />
+
+  <CTA
+    title="Ready for self-hosted redaction?"
+    description="Deploy Nvisy Runtime in your infrastructure or use Nvisy Cloud for a managed experience."
+    primaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com/runtime" }}
+    secondaryCta={{ text: "View on GitHub", href: "https://github.com/nvisycom/runtime" }}
+  />
+  <Security />
+</Layout>

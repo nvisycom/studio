@@ -1,7 +1,7 @@
 ---
 name: TypeScript
 language: typescript
-filename: extract-document
+filename: redact-document
 extension: ts
 githubUrl: https://github.com/nvisycom/sdk-ts
 order: 1
@@ -15,13 +15,13 @@ const client = new NvisyClient({
   apiKey: process.env.NVISY_API_KEY,
 });
 
-// Extract structured data from a document
-const result = await client.documents.extract({
-  file: "./invoice.pdf",
-  extractionTypes: ["INVOICE", "LINE_ITEMS", "TOTALS"],
-  outputFormat: "json",
+// Redact sensitive data from a document
+const result = await client.documents.redact({
+  file: "./patient-record.pdf",
+  entityTypes: ["PII", "PHI", "FINANCIAL"],
+  strategy: "blackout",
 });
 
-console.log("Document processed:", result.documentId);
-console.log("Extracted data:", result.data);
+console.log("Document redacted:", result.documentId);
+console.log("Entities found:", result.entitiesRedacted);
 ```

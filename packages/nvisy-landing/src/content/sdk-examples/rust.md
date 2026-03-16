@@ -1,13 +1,13 @@
 ---
 name: Rust
 language: rust
-filename: extract_document
+filename: redact_document
 extension: rs
 githubUrl: https://github.com/nvisycom/sdk-rs
 order: 3
 ---
 ```rust
-use nvisy::{NvisyClient, ExtractDocument, Result};
+use nvisy::{NvisyClient, RedactDocument, Result};
 use std::env;
 
 #[tokio::main]
@@ -17,15 +17,15 @@ async fn main() -> Result<()> {
         env::var("NVISY_API_KEY").expect("NVISY_API_KEY must be set")
     );
 
-    // Extract structured data from a document
-    let result = client.extract_documents(ExtractDocument {
-        file: "./invoice.pdf".into(),
-        extraction_types: vec!["INVOICE", "LINE_ITEMS", "TOTALS"],
-        output_format: "json".into(),
+    // Redact sensitive data from a document
+    let result = client.redact_document(RedactDocument {
+        file: "./patient-record.pdf".into(),
+        entity_types: vec!["PII", "PHI", "FINANCIAL"],
+        strategy: "blackout".into(),
     }).await?;
 
-    println!("Document processed: {}", result.document_id);
-    println!("Extracted data: {:?}", result.data);
+    println!("Document redacted: {}", result.document_id);
+    println!("Entities found: {}", result.entities_redacted);
 
     Ok(())
 }

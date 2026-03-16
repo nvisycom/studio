@@ -111,9 +111,9 @@ onUnmounted(() => {
               </Badge>
             </div>
 
-            <!-- extracted -->
+            <!-- redacted -->
             <div
-              v-else-if="event.type === 'extracted'"
+              v-else-if="event.type === 'redacted'"
               class="flex items-center gap-1.5 flex-wrap"
             >
               <Badge
@@ -135,7 +135,7 @@ onUnmounted(() => {
               >
                 {{ event.author }}
               </Badge>
-              <span class="text-muted-foreground">extracted</span>
+              <span class="text-muted-foreground">redacted</span>
               <Badge
                 variant="secondary"
                 class="text-xs bg-accent text-foreground border-border/50"

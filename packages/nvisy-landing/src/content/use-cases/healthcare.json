@@ -1,26 +1,26 @@
 [
 	{
-		"title": "Clinical Documentation",
-		"description": "Extract structured data from clinical notes, discharge summaries, and care plans for quality improvement, training, or case studies."
+		"title": "Clinical Record De-identification",
+		"description": "Automatically de-identify clinical notes, discharge summaries, and care plans by redacting PHI for quality improvement, training, or case studies."
 	},
 	{
-		"title": "Medical Research",
-		"description": "Transform patient documents into structured datasets for research studies, clinical trials, and publications while maintaining HIPAA compliance."
+		"title": "Research Data Preparation",
+		"description": "Redact patient identifiers from medical documents to create de-identified datasets for research studies, clinical trials, and publications while maintaining HIPAA compliance."
 	},
 	{
-		"title": "Insurance & Billing",
-		"description": "Extract key data from insurance claims, prior authorization requests, and billing documentation for faster processing and fewer errors."
+		"title": "Insurance Claims Redaction",
+		"description": "Remove sensitive patient data from insurance claims, prior authorization requests, and billing documentation before external sharing."
 	},
 	{
-		"title": "Patient Portals",
-		"description": "Automatically structure medical records for sharing with patients, family members, or authorized representatives through patient portals."
+		"title": "Patient Portal Protection",
+		"description": "Redact sensitive provider notes and third-party information from medical records before sharing with patients through patient portals."
 	},
 	{
-		"title": "Legal & Compliance",
-		"description": "Extract and structure medical records for legal proceedings, malpractice cases, or regulatory investigations with comprehensive data capture."
+		"title": "Legal & Compliance Redaction",
+		"description": "Redact PHI from medical records prepared for legal proceedings, malpractice cases, or regulatory investigations while preserving relevant clinical data."
 	},
 	{
-		"title": "Quality Improvement",
-		"description": "Create structured datasets for quality improvement initiatives, outcome analysis, and population health studies."
+		"title": "Quality Improvement De-identification",
+		"description": "De-identify patient data in clinical datasets used for quality improvement initiatives, outcome analysis, and population health studies."
 	}
 ]

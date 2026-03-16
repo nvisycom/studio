@@ -3,7 +3,7 @@ import { Check, X, ArrowRight } from "lucide-vue-next";
 
 const plans = [
 	{ id: "free", name: "Free", buttonText: "Get Started" },
-	{ id: "basic", name: "Basic", buttonText: "Start Free Trial" },
+	{ id: "starter", name: "Starter", buttonText: "Start Free Trial" },
 	{
 		id: "business",
 		name: "Business",
@@ -18,27 +18,14 @@ const categories = [
 		name: null,
 		features: [
 			{
-				values: [
-					"100 pages/mo",
-					"2,500 pages/mo",
-					"25,000 pages/mo",
-					"Unlimited pages",
-				],
+				values: ["$0 / month", "$49 / month", "$199 / month", "Custom pricing"],
 			},
 			{
 				values: [
-					"1GB storage",
-					"10GB storage",
-					"50GB storage",
-					"Unlimited storage",
-				],
-			},
-			{
-				values: [
-					"Unlimited workspaces",
-					"Unlimited workspaces",
-					"Unlimited workspaces",
-					"Unlimited workspaces",
+					"500 credits / month",
+					"5,000 credits / month",
+					"25,000 credits / month",
+					"Unlimited credits",
 				],
 			},
 			{
@@ -49,60 +36,64 @@ const categories = [
 					"Unlimited members",
 				],
 			},
+		],
+	},
+	{
+		name: "Redaction Capabilities",
+		features: [
+			{
+				values: [
+					"PII & PHI detection",
+					"PII & PHI detection",
+					"PII & PHI detection",
+					"PII & PHI detection",
+				],
+			},
+			{
+				values: [
+					"50+ entity types",
+					"50+ entity types",
+					"50+ entity types",
+					"50+ entity types",
+				],
+			},
+			{ label: "Custom redaction rules", values: [false, false, true, true] },
+			{ label: "Batch processing", values: [false, true, true, true] },
 		],
 	},
 	{
 		name: "Supported Formats",
 		features: [
 			{
-				values: ["PDF, DOCX", "PDF, DOCX", "PDF, DOCX", "PDF, DOCX"],
+				values: ["PDF & DOCX", "PDF & DOCX", "PDF & DOCX", "PDF & DOCX"],
 			},
 			{
 				values: [
-					"Images (PNG, JPG, SVG)",
-					"Images (PNG, JPG, SVG)",
-					"Images (PNG, JPG, SVG)",
-					"Images (PNG, JPG, SVG)",
+					"Images (PNG, JPG, TIFF)",
+					"Images (PNG, JPG, TIFF)",
+					"Images (PNG, JPG, TIFF)",
+					"Images (PNG, JPG, TIFF)",
 				],
 			},
-			{ label: "Spreadsheets (XLSX, CSV)", values: [false, true, true, true] },
-			{ label: "JSON & CSV export", values: [false, true, true, true] },
+			{ label: "Audio (MP3, WAV)", values: [false, true, true, true] },
+			{ label: "Video (MP4)", values: [false, true, true, true] },
+			{ label: "Data (CSV, JSON, XLSX)", values: [false, true, true, true] },
 		],
 	},
 	{
-		name: "Document Intelligence",
+		name: "Compliance & Audit",
 		features: [
 			{
 				values: [
-					"OCR (text recognition)",
-					"OCR (text recognition)",
-					"OCR (text recognition)",
-					"OCR (text recognition)",
+					"GDPR compliant",
+					"GDPR compliant",
+					"GDPR compliant",
+					"GDPR compliant",
 				],
 			},
-			{
-				values: [
-					"Table & Layout detection",
-					"Table & Layout detection",
-					"Table & Layout detection",
-					"Table & Layout detection",
-				],
-			},
-			{
-				values: [
-					"Multi-language support",
-					"Multi-language support",
-					"Multi-language support",
-					"Multi-language support",
-				],
-			},
-			{ label: "AI summarization", values: [false, true, true, true] },
-			{
-				label: "Graph & Relation extraction",
-				values: [false, true, true, true],
-			},
-			{ label: "Batch processing", values: [false, true, true, true] },
-			{ label: "Custom schemas", values: [false, false, true, true] },
+			{ label: "Audit logs", values: [false, false, true, true] },
+			{ label: "Compliance reports", values: [false, false, true, true] },
+			{ label: "HIPAA & CCPA", values: [false, false, true, true] },
 		],
 	},
 	{
@@ -121,7 +112,7 @@ const categories = [
 		],
 	},
 	{
-		name: "Security & Compliance",
+		name: "Security",
 		features: [
 			{
 				values: [
@@ -131,9 +122,8 @@ const categories = [
 					"TLS encryption",
 				],
 			},
-			{ label: "Audit logs", values: [false, true, true, true] },
 			{ label: "SSO/SAML", values: [false, false, true, true] },
-			{ label: "On-premise deployment", values: [false, false, false, true] },
+			{ label: "Self-hosted deployment", values: [false, false, false, true] },
 			{ label: "Custom SLA", values: [false, false, false, true] },
 		],
 	},
@@ -143,20 +133,11 @@ const categories = [
 			{
 				values: [
 					"Community support",
-					"Community support",
-					"Community support",
-					"Community support",
+					"Email support",
+					"Priority support",
+					"Priority support",
 				],
 			},
-			{
-				values: [
-					"Email & Discord support",
-					"Email & Discord support",
-					"Email & Discord support",
-					"Email & Discord support",
-				],
-			},
-			{ label: "Priority support", values: [false, false, true, true] },
 			{
 				label: "Dedicated account manager",
 				values: [false, false, false, true],
@@ -174,7 +155,7 @@ const businessIndex = plans.findIndex((p) => p.popular);
       <!-- Business column border - single continuous element -->
       <div
         class="hidden lg:block absolute top-0 bottom-0 border-2 border-foreground/20 rounded-2xl shadow-xl pointer-events-none"
-        style={`left: calc(${businessIndex * 25}%); width: 25%; z-index: 1;`}
+        style={`left: calc(${businessIndex} * 100% / ${plans.length}); width: calc(100% / ${plans.length}); z-index: 1;`}
       />
 
       <!-- Plan names header -->

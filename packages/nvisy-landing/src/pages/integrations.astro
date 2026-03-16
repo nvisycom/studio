@@ -21,28 +21,28 @@ const integrations = [
 	{
 		name: "Anthropic",
 		icon: AnthropicIcon,
-		description: "Claude-powered document understanding and analysis.",
+		description: "Claude-powered entity detection for redaction.",
 		status: "available" as const,
 		category: "ai",
 	},
 	{
 		name: "Discord",
 		icon: DiscordIcon,
-		description: "Receive processing notifications in your Discord channels.",
+		description: "Receive redaction notifications in your Discord channels.",
 		status: "coming_soon" as const,
 		category: "communication",
 	},
 	{
 		name: "Dropbox",
 		icon: DropboxIcon,
-		description: "Connect Dropbox folders for automated document processing.",
+		description: "Connect Dropbox folders for automated redaction workflows.",
 		status: "available" as const,
 		category: "storage",
 	},
 	{
 		name: "Google Drive",
 		icon: GoogleDriveIcon,
-		description: "Process documents directly from your Google Drive folders.",
+		description: "Redact documents directly from your Google Drive folders.",
 		status: "available" as const,
 		category: "storage",
 	},
@@ -57,14 +57,14 @@ const integrations = [
 	{
 		name: "Microsoft OneDrive",
 		icon: OneDriveIcon,
-		description: "Sync with OneDrive for seamless document workflows.",
+		description: "Sync with OneDrive for seamless redaction workflows.",
 		status: "available" as const,
 		category: "storage",
 	},
 	{
 		name: "Microsoft Teams",
 		icon: TeamsIcon,
-		description: "Integrate document processing into your Teams workflows.",
+		description: "Integrate redaction workflows into Microsoft Teams.",
 		status: "available" as const,
 		category: "communication",
 	},
@@ -78,14 +78,14 @@ const integrations = [
 	{
 		name: "Notion",
 		icon: NotionIcon,
-		description: "Automatically export extracted data to Notion databases.",
+		description: "Automatically export redaction reports to Notion databases.",
 		status: "available" as const,
 		category: "productivity",
 	},
 	{
 		name: "OpenAI",
 		icon: OpenAIIcon,
-		description: "Enhanced extraction with GPT models for complex documents.",
+		description: "Enhanced entity detection with GPT models for redaction.",
 		status: "available" as const,
 		category: "ai",
 	},
@@ -101,7 +101,7 @@ const integrations = [
 		name: "Slack",
 		icon: SlackIcon,
 		description:
-			"Get notified when documents are processed and share results with your team.",
+			"Get notified when redaction is complete and share results with your team.",
 		status: "available" as const,
 		category: "communication",
 	},
@@ -117,13 +117,13 @@ const integrations = [
 
 <Layout
   title="Integrations"
-  description="Connect Nvisy with your favorite tools. Automate document workflows with 50+ integrations."
+  description="Connect Nvisy with your favorite tools. Automate redaction workflows with 50+ integrations."
   hideFooterBorder
 >
   <Hero
     title="Integrations"
     titleHighlight="for your stack"
-    description="Connect Nvisy with the tools you already use. Automate document workflows and sync data across your entire stack."
+    description="Connect Nvisy with the tools you already use. Automate redaction workflows and sync data across your entire stack."
     primaryCta={{ text: "Get Started", href: "https://app.nvisy.com/auth/signup" }}
     secondaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com/integrations" }}
     compact

@@ -3,8 +3,7 @@ export interface PricingPlan {
 	name: string;
 	description: string;
 	price: number | "custom";
-	pages: string;
-	storage: string;
+	priceUnit: "credit" | "custom" | "free";
 	features: string[];
 	buttonText: string;
 	buttonVariant: "primary" | "secondary" | "outline";
@@ -12,12 +11,8 @@ export interface PricingPlan {
 	badge?: string;
 }
 
-export interface PricingConfig {
-	yearlyDiscount: number;
-}
-
 // Plan types
-export type PlanType = "free" | "basic" | "business" | "enterprise";
+export type PlanType = "free" | "starter" | "business" | "enterprise";
 
 export const plans: PricingPlan[] = [
 	{
@@ -25,28 +20,30 @@ export const plans: PricingPlan[] = [
 		name: "Free",
 		description: "For individuals getting started",
 		price: 0,
-		pages: "100",
-		storage: "1GB",
+		priceUnit: "free",
 		features: [
-			"PDF & DOCX support",
-			"OCR & Table extraction",
-			"Image & Layout extraction",
+			"500 credits / month",
+			"PDF & DOCX redaction",
+			"Image redaction",
+			"REST API & SDKs",
+			"Community support",
 		],
 		buttonText: "Get Started",
 		buttonVariant: "outline",
 	},
 	{
-		id: "basic",
-		name: "Basic",
-		description: "For small teams and projects",
-		price: 29,
-		pages: "2,500",
-		storage: "10GB",
+		id: "starter",
+		name: "Starter",
+		description: "For small teams and startups",
+		price: 49,
+		priceUnit: "credit",
 		features: [
-			"Spreadsheet extraction",
-			"JSON & CSV export",
-			"Summarization",
+			"5,000 credits / month",
+			"Everything in Free",
+			"Audio & video redaction",
+			"CSV, JSON & XLSX",
 			"Batch processing",
+			"Email support",
 		],
 		buttonText: "Start Free Trial",
 		buttonVariant: "outline",
@@ -55,11 +52,13 @@ export const plans: PricingPlan[] = [
 		id: "business",
 		name: "Business",
 		description: "For growing businesses",
-		price: 99,
-		pages: "25,000",
-		storage: "50GB",
+		price: 199,
+		priceUnit: "credit",
 		features: [
-			"Custom schemas",
+			"25,000 credits / month",
+			"Everything in Starter",
+			"Custom redaction rules",
+			"Audit logs & compliance reports",
 			"Webhooks & Integrations",
 			"SSO/SAML",
 			"Priority support",
@@ -74,19 +73,16 @@ export const plans: PricingPlan[] = [
 		name: "Enterprise",
 		description: "For large organizations",
 		price: "custom",
-		pages: "Unlimited",
-		storage: "Unlimited",
+		priceUnit: "custom",
 		features: [
-			"On-premise deployment",
+			"Unlimited credits",
+			"Everything in Business",
+			"Self-hosted deployment",
+			"Custom integrations",
 			"Dedicated account manager",
 			"Custom SLA",
-			"Custom integrations",
 		],
 		buttonText: "Contact Sales",
 		buttonVariant: "outline",
 	},
 ];
-
-export const pricingConfig: PricingConfig = {
-	yearlyDiscount: 0.2, // 20% discount
-};

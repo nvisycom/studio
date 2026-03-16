@@ -20,9 +20,9 @@ const latestChangelog = changelogEntries[0];
 
 const pageTitle = "Home";
 const pageDescription =
-	"Transform documents into structured, actionable data with AI. Extract insights, ensure compliance, and automate document workflows at scale.";
+	"Automatically detect and redact sensitive data across documents, images, audio, and video. Enterprise-grade PII/PHI protection.";
 const pageKeywords =
-	"document processing, AI data extraction, document intelligence, data automation, compliance, document workflow";
+	"data redaction, PII redaction, PHI redaction, privacy compliance, GDPR, HIPAA, CCPA";
 ---
 
 <Layout
@@ -34,9 +34,9 @@ const pageKeywords =
 	<main>
 		<Hero
 			badge="Now in public beta"
-			title="Document intelligence"
-			titleHighlight="for modern teams"
-			description="Transform any document into structured, actionable data. AI-powered extraction that just works."
+			title="Automated data"
+			titleHighlight="redaction"
+			description="Detect and remove sensitive data from documents, images, audio, and video. AI-powered PII and PHI redaction for privacy compliance."
 			primaryCta={{ text: "Start Free", href: "https://app.nvisy.com/auth/signup" }}
 			secondaryCta={latestChangelog ? { text: `New: ${latestChangelog.data.title}`, href: `/changelog/${latestChangelog.slug}` } : undefined}
 		/>
@@ -50,18 +50,18 @@ const pageKeywords =
 		<Stats />
 
 		<Features
-			title="Built for scale"
-			description="Everything you need to process documents at enterprise scale."
+			title="Built for compliance"
+			description="Everything you need to protect sensitive data at enterprise scale."
 		/>
 
 		<HowItWorks
 			title="How it works"
-			description="From document to data in three simple steps."
+			description="From upload to redacted output in four simple steps."
 		/>
 
 		<Testimonials
 			title="What our customers say"
-			description="See how teams are transforming their document workflows."
+			description="See how teams are automating their data redaction workflows."
 			limit={6}
 		/>
 
@@ -73,10 +73,10 @@ const pageKeywords =
 		/>
 
 		<CTA
-			title="Ready to get started?"
-			description="Start with 100 free pages. No credit card required."
+			title="Ready to protect your data?"
+			description="Start with free credits. No credit card required."
 			primaryCta={{ text: "Open App", href: "https://app.nvisy.com" }}
-			secondaryCta={{ text: "Download", href: "/download" }}
+			secondaryCta={{ text: "Self-Host", href: "/runtime" }}
 		/>
 
 		<Security />

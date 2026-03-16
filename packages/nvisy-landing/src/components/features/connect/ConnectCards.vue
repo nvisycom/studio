@@ -28,7 +28,7 @@ const cards: ConnectCard[] = [
 		id: "webhooks",
 		title: "Webhooks",
 		description:
-			"Build powerful automations with real-time webhooks. Receive instant notifications for document processing events and trigger custom workflows.",
+			"Build powerful automations with real-time webhooks. Receive instant notifications for redaction events and trigger custom workflows.",
 		icon: Webhook,
 		href: "https://docs.nvisy.com/webhooks",
 		component: WebhookAnimation,

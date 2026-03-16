@@ -25,7 +25,7 @@
 	},
 	{
 		"question": "How do you handle data privacy regulations?",
-		"answer": "We're designed with privacy by default. Our platform supports GDPR, CCPA, HIPAA, and other major privacy regulations. We process data in region-specific data centers, support data residency requirements, and provide comprehensive audit logs for compliance reporting.",
+		"answer": "We're designed with privacy by default. Our platform supports GDPR, CCPA, HIPAA, and other major privacy regulations. Automated redaction ensures PII and PHI are removed before data leaves secure environments. We process data in region-specific data centers, support data residency requirements, and provide comprehensive audit logs for compliance reporting.",
 		"order": 5,
 		"featured": true
 	}

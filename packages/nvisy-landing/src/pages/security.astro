@@ -24,7 +24,7 @@ const securityFeatures = [
 	{
 		title: "Zero Data Retention",
 		description:
-			"Documents are processed in memory and never stored. Your data is deleted immediately after processing.",
+			"Documents are redacted in memory and never stored. Your data is deleted immediately after processing.",
 		icon: Eye,
 	},
 	{
@@ -70,6 +70,11 @@ const compliances = [
 		status: "in-progress",
 	},
 	{
+		name: "CCPA",
+		description: "California Consumer Privacy Act",
+		status: "completed",
+	},
+	{
 		name: "ISO 27001",
 		description: "Information Security Management",
 		status: "planned",
@@ -88,7 +93,7 @@ const securityPractices = [
 
 <Layout
   title="Security"
-  description="Learn about Nvisy's enterprise-grade security measures, compliance certifications, and data protection practices."
+  description="Learn about Nvisy's enterprise-grade security measures for data redaction, compliance certifications, and data protection practices."
   hideFooterBorder
 >
   <Hero

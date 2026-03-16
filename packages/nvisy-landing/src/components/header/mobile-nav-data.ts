@@ -6,13 +6,13 @@ export const products: ProductSection = {
 		{
 			title: "Features",
 			href: "/features",
-			description: "Explore platform capabilities",
+			description: "Redaction capabilities & formats",
 			icon: Server,
 		},
 		{
-			title: "Download",
-			href: "/download",
-			description: "Get the desktop app",
+			title: "Runtime",
+			href: "/runtime",
+			description: "Self-hosted redaction engine",
 			icon: Terminal,
 		},
 	],

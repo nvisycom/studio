@@ -1,7 +1,7 @@
 ---
 name: Python
 language: python
-filename: extract_document
+filename: redact_document
 extension: py
 githubUrl: https://github.com/nvisycom/sdk-py
 order: 2
@@ -14,13 +14,13 @@ import os
 # Initialize the client
 client = NvisyClient(api_key=os.getenv('NVISY_API_KEY'))
 
-# Extract structured data from a document
-result = client.documents.extract(
-    file='./invoice.pdf',
-    extraction_types=['INVOICE', 'LINE_ITEMS', 'TOTALS'],
-    output_format='json'
+# Redact sensitive data from a document
+result = client.documents.redact(
+    file='./patient-record.pdf',
+    entity_types=['PII', 'PHI', 'FINANCIAL'],
+    strategy='blackout'
 )
 
-print(f'Document processed: {result.document_id}')
-print(f'Extracted data: {result.data}')
+print(f'Document redacted: {result.document_id}')
+print(f'Entities found: {result.entities_redacted}')
 ```

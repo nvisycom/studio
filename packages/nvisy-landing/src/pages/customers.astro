@@ -6,21 +6,29 @@ import {
 	Testimonials,
 	CaseStudies,
 	Industries,
+	SocialProof,
 	Security,
 } from "@/components";
 ---
 
 <Layout
   title="Customers"
-  description="See how organizations across industries use Nvisy to transform their document workflows."
+  description="See how organizations across industries use Nvisy to protect sensitive data and meet privacy compliance requirements."
   hideFooterBorder
 >
   <Hero
     title="Trusted by"
     titleHighlight="industry leaders"
-    description="Organizations worldwide rely on Nvisy to extract insights from documents, automate workflows, and meet compliance requirements."
+    description="Organizations worldwide rely on Nvisy to redact sensitive data, protect PII and PHI, and meet privacy compliance requirements."
     primaryCta={{ text: "Get Started", href: "/pricing" }}
     secondaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com" }}
+  />
+
+  <SocialProof
+    title="Trusted by industry leaders"
+    subtitle="Join hundreds of companies protecting their sensitive data"
+    variant="grid"
+    disableLink
   />
 
   <Industries />
@@ -28,8 +36,8 @@ import {
   <Testimonials />
 
   <CTA
-    title="Ready to transform your workflows?"
-    description="Join leading organizations that trust Nvisy for their document processing needs."
+    title="Ready to protect your data?"
+    description="Join leading organizations that trust Nvisy for their data redaction and privacy compliance needs."
     primaryCta={{ text: "Get Started", href: "/pricing" }}
     secondaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com" }}
   />

@@ -1,39 +1,6 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { plans, pricingConfig } from "./pricing-data";
-import { usePricing } from "./usePricing";
+import { plans } from "./pricing-data";
 import { Check, ArrowRight } from "lucide-vue-next";
-import { Switch } from "@/components/ui/switch";
-import type { PlanType } from "./pricing-data";
-
-const { isYearly, setPricingPeriod } = usePricing();
-
-const discountPercentage = computed(() =>
-	Math.round(pricingConfig.yearlyDiscount * 100),
-);
-
-const showBillingToggle = (planId: string) => {
-	return planId === "basic" || planId === "business";
-};
-
-// Computed prices that react to isYearly changes
-const prices = computed(() => {
-	const result: Record<string, number | "custom"> = {};
-	for (const plan of plans) {
-		if (plan.price === "custom") {
-			result[plan.id] = "custom";
-		} else {
-			const basePrice = plan.price;
-			const finalPrice = isYearly.value
-				? basePrice * (1 - pricingConfig.yearlyDiscount)
-				: basePrice;
-			result[plan.id] = Math.floor(finalPrice);
-		}
-	}
-	return result;
-});
-
-const getPrice = (planId: PlanType) => prices.value[planId];
 </script>
 
 <template>
@@ -46,9 +13,9 @@ const getPrice = (planId: PlanType) => prices.value[planId];
         class="relative group flex flex-col transition-all duration-300 flex-1"
         :class="[
           plan.popular
-            ? 'bg-card border-2 border-foreground/20 shadow-xl p-8 lg:-my-4 lg:-mx-2 z-10 rounded-2xl'
+            ? 'bg-card border-2 border-foreground/20 shadow-xl p-10 lg:-my-4 lg:-mx-2 z-10 rounded-2xl'
             : [
-                'bg-card/50 border border-border hover:border-border/80 hover:bg-card/80 p-6',
+                'bg-card/50 border border-border hover:border-border/80 hover:bg-card/80 p-8',
                 index === 0 &&
                   'rounded-t-2xl lg:rounded-l-2xl lg:rounded-tr-none',
                 index === plans.length - 1 &&
@@ -68,8 +35,8 @@ const getPrice = (planId: PlanType) => prices.value[planId];
         </div>
 
         <!-- Plan header -->
-        <div class="mb-5" :class="plan.popular ? 'mt-2' : ''">
-          <h3 class="text-2xl font-normal mb-1">
+        <div class="mb-6" :class="plan.popular ? 'mt-2' : ''">
+          <h3 class="text-3xl font-semibold tracking-tight mb-2">
             {{ plan.name }}
           </h3>
           <p class="text-sm text-foreground/70">
@@ -78,74 +45,27 @@ const getPrice = (planId: PlanType) => prices.value[planId];
         </div>
 
         <!-- Price Display -->
-        <div class="mb-5">
-          <template v-if="getPrice(plan.id) === 'custom'">
-            <span
-              class="font-semibold"
-              :class="plan.popular ? 'text-4xl' : 'text-3xl'"
-              >Custom</span
-            >
+        <div class="mb-8">
+          <template v-if="plan.priceUnit === 'custom'">
+            <span class="text-4xl font-semibold">Custom</span>
           </template>
-          <template v-else-if="getPrice(plan.id) === 0">
-            <span
-              class="font-semibold"
-              :class="plan.popular ? 'text-4xl' : 'text-3xl'"
-              >Free</span
-            >
+          <template v-else-if="plan.priceUnit === 'free'">
+            <span class="text-4xl font-semibold">Free</span>
           </template>
           <template v-else>
-            <span
-              class="font-semibold"
-              :class="plan.popular ? 'text-4xl' : 'text-3xl'"
-            >
-              ${{ getPrice(plan.id) }}
+            <span class="text-4xl font-semibold">
+              ${{ plan.price }}
             </span>
             <span class="text-foreground/60 ml-1 text-sm">/month</span>
           </template>
         </div>
 
-        <!-- Billing Toggle for Basic/Business -->
-        <div
-          v-if="showBillingToggle(plan.id)"
-          class="flex items-center gap-3 mb-5"
-        >
-          <Switch
-            v-model:checked="isYearly"
-            class="data-[state=checked]:bg-emerald-500"
-          />
-          <span class="text-sm text-foreground/70">
-            Annual billing
-            <span
-              class="text-emerald-600 dark:text-emerald-400 font-medium ml-1"
-            >
-              -{{ discountPercentage }}%
-            </span>
-          </span>
-        </div>
-
-        <!-- Yearly billing note for Enterprise -->
-        <div v-else-if="plan.id === 'enterprise'" class="mb-5">
-          <span class="text-sm text-foreground/70">Billed annually</span>
-        </div>
-
-        <!-- Spacer for Free plan to align -->
-        <div v-else class="mb-5 h-5"></div>
-
-        <!-- Pages highlight -->
-        <div class="bg-accent/50 rounded-xl p-4 mb-5 text-center">
-          <div class="text-2xl font-semibold">{{ plan.pages }}</div>
-          <div class="text-sm text-foreground/70">pages / month</div>
-          <div class="text-xs text-foreground/50 mt-1">
-            {{ plan.storage }} storage
-          </div>
-        </div>
-
         <!-- Features List -->
-        <ul class="space-y-2.5 mb-6 flex-grow">
+        <ul class="space-y-3.5 mb-10 flex-grow">
           <li
             v-for="feature in plan.features"
             :key="feature"
-            class="flex items-center gap-2.5"
+            class="flex items-center gap-3"
           >
             <Check class="w-4 h-4 text-emerald-500 flex-shrink-0" />
             <span class="text-sm text-foreground/80">{{ feature }}</span>
@@ -158,8 +78,8 @@ const getPrice = (planId: PlanType) => prices.value[planId];
             class="w-full font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
             :class="[
               plan.popular
-                ? 'bg-foreground text-background hover:bg-foreground/90 shadow-sm py-3 px-6'
-                : 'bg-accent hover:bg-accent/80 text-foreground py-2.5 px-5',
+                ? 'bg-foreground text-background hover:bg-foreground/90 shadow-sm py-3.5 px-6'
+                : 'bg-accent hover:bg-accent/80 text-foreground py-3 px-5',
             ]"
           >
             {{ plan.buttonText }}
