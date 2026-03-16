@@ -286,7 +286,7 @@
 	}
 	html,
 	body {
-		font-family: "Barlow", ui-sans-serif, system-ui, sans-serif;
+		font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 		@apply bg-background text-foreground antialiased;
 	}
 	code,
