@@ -1,87 +1,112 @@
 ---
-import { Check, ArrowRight } from "lucide-vue-next";
+import { Check } from "lucide-vue-next";
 import { plans } from "./pricing-data";
-import { buttonClasses } from "./shared";
+
+// Cards: Free(0), Starter(1), Business(2, popular), Enterprise(3)
+// Mobile 1-col: [Free|Starter|Business|Enterprise] stacked
+// Tablet 2x2:  [Free, Starter] / [Business, Enterprise]
+// Desktop 4-col: [Free, Starter, Business, Enterprise] in a row
+// Business (popular) always has its own rounded-2xl border, so adjacent
+// non-popular cards remove their touching border and don't round that edge.
+
+function cardClasses(index: number, popular: boolean): string[] {
+	if (popular) {
+		return [
+			"border-2 border-foreground/20 rounded-2xl lg:-my-4 z-10 shadow-lg",
+		];
+	}
+
+	const cls = ["border border-border"];
+
+	// --- Mobile (1-col) ---
+	// 0=Free: round top
+	// 3=Enterprise: round bottom
+	// 1=Starter: no rounding (between Free and Business)
+	if (index === 0) cls.push("rounded-t-2xl");
+	if (index === 3) cls.push("rounded-b-2xl");
+	if (index > 0) cls.push("-mt-px");
+
+	// --- Tablet (2x2) ---
+	// 0=Free: TL only. 1=Starter: TR only. 3=Enterprise: BR only.
+	// Business(2) is popular, handled above.
+	// Reset mobile rounding, apply 2x2 corners.
+	if (index === 0) {
+		cls.push("md:rounded-none md:rounded-tl-2xl");
+	} else if (index === 1) {
+		cls.push("md:rounded-none md:rounded-tr-2xl md:-ml-px md:mt-0");
+	} else if (index === 3) {
+		// Enterprise sits at row2-col2, Business(popular) is row2-col1
+		cls.push("md:rounded-none md:rounded-br-2xl md:mt-0");
+	}
+
+	// --- Desktop (4-col) ---
+	// [Free, Starter, |Business|, Enterprise]
+	// Free: round left. Enterprise: round right.
+	// Starter: no rounding, remove right border (touches Business).
+	// Enterprise: no rounding on left (touches Business), round right.
+	if (index === 0) {
+		cls.push("lg:rounded-none lg:rounded-l-2xl lg:mt-0");
+	} else if (index === 1) {
+		cls.push("lg:rounded-none lg:-ml-px lg:border-r-0 lg:mt-0");
+	} else if (index === 3) {
+		cls.push("lg:rounded-none lg:rounded-r-2xl lg:border-l-0 lg:mt-0");
+	}
+
+	return cls;
+}
 ---
 
 <div class="container mx-auto px-4 py-8">
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto items-stretch">
+  <div class="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto items-stretch">
     {plans.map((plan, index) => (
       <div
         class:list={[
-          "relative group flex flex-col transition-all duration-300",
-          plan.popular
-            ? "bg-card border-2 border-foreground/20 shadow-xl p-10 lg:-my-4 lg:-mx-2 z-10 rounded-2xl"
-            : [
-                "bg-card/50 border border-border hover:border-border/80 hover:bg-card/80 p-8",
-                index === 0 && "rounded-t-2xl md:rounded-tl-2xl md:rounded-tr-none lg:rounded-l-2xl lg:rounded-tr-none",
-                index === 1 && "border-t-0 md:border-t md:border-l-0 md:rounded-tr-2xl lg:rounded-tr-none",
-                index === plans.length - 1 && "rounded-b-2xl md:rounded-bl-none md:rounded-br-2xl lg:rounded-r-2xl lg:rounded-bl-none",
-                index === plans.length - 2 && "md:rounded-bl-2xl lg:rounded-bl-none",
-                index > 0 && !plan.popular && "border-t-0 md:border-t lg:border-l-0",
-              ],
-          ]
-        }
+          "relative flex flex-col px-6 py-8 lg:px-8",
+          ...cardClasses(index, !!plan.popular),
+        ]}
       >
-        <!-- Popular badge -->
-        {plan.badge && (
-          <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-foreground text-background text-xs font-medium rounded-full">
-            {plan.badge}
-          </div>
-        )}
+        <!-- Plan name -->
+        <h3 class="text-2xl font-semibold tracking-tight mb-3">{plan.name}</h3>
 
-        <!-- Plan header -->
-        <div class:list={["mb-6", plan.popular && "mt-2"]}>
-          <h3 class="text-3xl font-semibold tracking-tight mb-2">
-            {plan.name}
-          </h3>
-          <p class="text-sm text-foreground/70">
-            {plan.description}
-          </p>
-        </div>
-
-        <!-- Price Display -->
-        <div class="mb-8">
-          {plan.priceUnit === "custom" ? (
-            <span class="text-4xl font-semibold">Custom</span>
-          ) : plan.priceUnit === "free" ? (
-            <span class="text-4xl font-semibold">Free</span>
+        <!-- Price -->
+        <div class="mb-4">
+          {plan.price === "custom" ? (
+            <span class="text-3xl font-semibold tracking-tight">Contact us</span>
           ) : (
             <>
-              <span class="text-4xl font-semibold">${plan.price}</span>
-              <span class="text-foreground/60 ml-1 text-sm">/month</span>
+              <span class="text-3xl font-semibold tracking-tight">${plan.price}</span>
+              {plan.price > 0 && (
+                <span class="text-sm text-foreground/50 ml-1">/month</span>
+              )}
             </>
           )}
         </div>
 
-        <!-- Features List -->
-        <ul class="space-y-3.5 mb-10 flex-grow">
+        <p class="text-sm text-foreground/50 mb-6">{plan.description}</p>
+
+        <!-- Features checklist -->
+        <ul class="flex flex-col gap-2.5 flex-grow mb-8">
           {plan.features.map((feature) => (
-            <li class="flex items-center gap-3">
-              <Check class="w-4 h-4 text-emerald-500 flex-shrink-0" />
-              <span class="text-sm text-foreground/80">{feature}</span>
+            <li class="flex items-start gap-2.5">
+              <Check class="w-3.5 h-3.5 text-emerald-500 flex-shrink-0 mt-0.5" />
+              <span class="text-sm text-foreground/70">{feature}</span>
             </li>
           ))}
         </ul>
 
-        <!-- CTA Button -->
+        <!-- CTA Button at bottom -->
         <div class="mt-auto">
           <a
             href={plan.buttonHref}
-            class:list={buttonClasses(plan.popular)}
+            class:list={[
+              "w-full text-sm font-medium rounded-lg py-2.5 px-4 text-center transition-colors block",
+              plan.popular
+                ? "bg-foreground text-background hover:bg-foreground/90"
+                : "bg-foreground/10 text-foreground hover:bg-foreground/15",
+            ]}
           >
             {plan.buttonText}
-            <ArrowRight class="w-4 h-4" />
           </a>
-
-          {plan.id === "enterprise" && (
-            <a
-              href="mailto:sales@nvisy.com"
-              class="block text-center mt-4 text-base leading-6 text-foreground/70 hover:text-foreground transition-colors"
-            >
-              or email sales directly
-            </a>
-          )}
         </div>
       </div>
     ))}

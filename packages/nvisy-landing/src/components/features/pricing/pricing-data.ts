@@ -3,7 +3,7 @@ export interface PricingPlan {
 	name: string;
 	description: string;
 	price: number | "custom";
-	priceUnit: "credit" | "custom" | "free";
+	highlights: string[];
 	features: string[];
 	buttonText: string;
 	buttonHref: string;
@@ -20,15 +20,13 @@ export const plans: PricingPlan[] = [
 		name: "Free",
 		description: "For individuals getting started",
 		price: 0,
-		priceUnit: "free",
+		highlights: ["500 credits / month", "2 workspaces", "Unlimited members"],
 		features: [
-			"500 credits / month",
-			"PDF & DOCX redaction",
-			"Image redaction",
+			"PDF, DOCX & image redaction",
 			"Custom redaction policy",
-			"User-provided context",
-			"Audit logs",
+			"Google & Microsoft SSO",
 			"REST API & SDKs",
+			"Audit logs",
 			"Community support",
 		],
 		buttonText: "Get Started",
@@ -39,12 +37,10 @@ export const plans: PricingPlan[] = [
 		name: "Starter",
 		description: "For small teams and startups",
 		price: 49,
-		priceUnit: "credit",
+		highlights: ["5,000 credits / month", "5 workspaces", "Unlimited members"],
 		features: [
-			"5,000 credits / month",
 			"Everything in Free",
-			"Audio redaction",
-			"CSV, JSON & XLSX",
+			"Audio, CSV, JSON & XLSX",
 			"Batch processing",
 			"Compliance reports",
 			"Webhooks & Integrations",
@@ -58,15 +54,20 @@ export const plans: PricingPlan[] = [
 		name: "Business",
 		description: "For growing businesses",
 		price: 199,
-		priceUnit: "credit",
-		features: [
+		highlights: [
 			"25,000 credits / month",
+			"Unlimited workspaces",
+			"Unlimited members",
+		],
+		features: [
 			"Everything in Starter",
 			"SSO/SAML",
 			"HIPAA & CCPA",
+			"Webhooks & Integrations",
+			"Compliance reports",
 			"Priority support",
 		],
-		buttonText: "Get Business",
+		buttonText: "Start Trial",
 		buttonHref: "https://app.nvisy.com/auth/signup",
 		popular: true,
 		badge: "Most Popular",
@@ -76,13 +77,15 @@ export const plans: PricingPlan[] = [
 		name: "Enterprise",
 		description: "For large organizations",
 		price: "custom",
-		priceUnit: "custom",
-		features: [
+		highlights: [
 			"Unlimited credits",
+			"Unlimited workspaces",
+			"Unlimited members",
+		],
+		features: [
 			"Everything in Business",
 			"Self-hosted deployment",
 			"Custom integrations",
-			"Dedicated account manager",
 			"Custom SLA",
 		],
 		buttonText: "Contact Sales",
