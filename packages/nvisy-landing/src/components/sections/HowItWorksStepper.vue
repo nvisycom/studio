@@ -8,7 +8,7 @@ const steps = [
 		step: 1,
 		id: "upload",
 		title: "Upload",
-		description: "Upload any file — PDFs, images, audio, video, CSV, or JSON.",
+		description: "Upload any file — PDFs, images, audio, CSV, or JSON.",
 		icon: Upload,
 		image: "/screenshots/upload.png",
 		imageAlt: "Upload files interface",

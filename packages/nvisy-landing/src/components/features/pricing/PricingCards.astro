@@ -1,0 +1,89 @@
+---
+import { Check, ArrowRight } from "lucide-vue-next";
+import { plans } from "./pricing-data";
+import { buttonClasses } from "./shared";
+---
+
+<div class="container mx-auto px-4 py-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto items-stretch">
+    {plans.map((plan, index) => (
+      <div
+        class:list={[
+          "relative group flex flex-col transition-all duration-300",
+          plan.popular
+            ? "bg-card border-2 border-foreground/20 shadow-xl p-10 lg:-my-4 lg:-mx-2 z-10 rounded-2xl"
+            : [
+                "bg-card/50 border border-border hover:border-border/80 hover:bg-card/80 p-8",
+                index === 0 && "rounded-t-2xl md:rounded-tl-2xl md:rounded-tr-none lg:rounded-l-2xl lg:rounded-tr-none",
+                index === 1 && "border-t-0 md:border-t md:border-l-0 md:rounded-tr-2xl lg:rounded-tr-none",
+                index === plans.length - 1 && "rounded-b-2xl md:rounded-bl-none md:rounded-br-2xl lg:rounded-r-2xl lg:rounded-bl-none",
+                index === plans.length - 2 && "md:rounded-bl-2xl lg:rounded-bl-none",
+                index > 0 && !plan.popular && "border-t-0 md:border-t lg:border-l-0",
+              ],
+          ]
+        }
+      >
+        <!-- Popular badge -->
+        {plan.badge && (
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-foreground text-background text-xs font-medium rounded-full">
+            {plan.badge}
+          </div>
+        )}
+
+        <!-- Plan header -->
+        <div class:list={["mb-6", plan.popular && "mt-2"]}>
+          <h3 class="text-3xl font-semibold tracking-tight mb-2">
+            {plan.name}
+          </h3>
+          <p class="text-sm text-foreground/70">
+            {plan.description}
+          </p>
+        </div>
+
+        <!-- Price Display -->
+        <div class="mb-8">
+          {plan.priceUnit === "custom" ? (
+            <span class="text-4xl font-semibold">Custom</span>
+          ) : plan.priceUnit === "free" ? (
+            <span class="text-4xl font-semibold">Free</span>
+          ) : (
+            <>
+              <span class="text-4xl font-semibold">${plan.price}</span>
+              <span class="text-foreground/60 ml-1 text-sm">/month</span>
+            </>
+          )}
+        </div>
+
+        <!-- Features List -->
+        <ul class="space-y-3.5 mb-10 flex-grow">
+          {plan.features.map((feature) => (
+            <li class="flex items-center gap-3">
+              <Check class="w-4 h-4 text-emerald-500 flex-shrink-0" />
+              <span class="text-sm text-foreground/80">{feature}</span>
+            </li>
+          ))}
+        </ul>
+
+        <!-- CTA Button -->
+        <div class="mt-auto">
+          <a
+            href={plan.buttonHref}
+            class:list={buttonClasses(plan.popular)}
+          >
+            {plan.buttonText}
+            <ArrowRight class="w-4 h-4" />
+          </a>
+
+          {plan.id === "enterprise" && (
+            <a
+              href="mailto:sales@nvisy.com"
+              class="block text-center mt-4 text-base leading-6 text-foreground/70 hover:text-foreground transition-colors"
+            >
+              or email sales directly
+            </a>
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>

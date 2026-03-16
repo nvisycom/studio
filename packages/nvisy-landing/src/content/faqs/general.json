@@ -13,7 +13,7 @@
 	},
 	{
 		"question": "What file formats do you support?",
-		"answer": "We support a wide range of formats including documents (PDF, DOCX), images (PNG, JPG, TIFF), data files (CSV, JSON, XLSX), audio (MP3, WAV), and video (MP4). Our AI-powered redaction works consistently across all supported formats.",
+		"answer": "We support a wide range of formats including documents (PDF, DOCX), images (PNG, JPG), data files (CSV, JSON, XLSX), and audio (MP3, WAV). Our AI-powered redaction works consistently across all supported formats.",
 		"order": 3,
 		"featured": true
 	},

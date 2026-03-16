@@ -15,7 +15,7 @@
 	},
 	{
 		"title": "Multimodal Format Support",
-		"description": "Redact sensitive data across documents (PDF, DOCX), images (PNG, JPG, TIFF), data files (CSV, JSON, XLSX), audio (MP3, WAV), and video (MP4). Consistent accuracy across all formats.",
+		"description": "Redact sensitive data across documents (PDF, DOCX), images (PNG, JPG), data files (CSV, JSON, XLSX), and audio (MP3, WAV). Consistent accuracy across all formats.",
 		"icon": "layers",
 		"order": 3,
 		"featured": true

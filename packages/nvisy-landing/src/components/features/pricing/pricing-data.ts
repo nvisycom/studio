@@ -6,7 +6,7 @@ export interface PricingPlan {
 	priceUnit: "credit" | "custom" | "free";
 	features: string[];
 	buttonText: string;
-	buttonVariant: "primary" | "secondary" | "outline";
+	buttonHref: string;
 	popular?: boolean;
 	badge?: string;
 }
@@ -25,11 +25,14 @@ export const plans: PricingPlan[] = [
 			"500 credits / month",
 			"PDF & DOCX redaction",
 			"Image redaction",
+			"Custom redaction policy",
+			"User-provided context",
+			"Audit logs",
 			"REST API & SDKs",
 			"Community support",
 		],
 		buttonText: "Get Started",
-		buttonVariant: "outline",
+		buttonHref: "https://app.nvisy.com/auth/signup",
 	},
 	{
 		id: "starter",
@@ -40,13 +43,15 @@ export const plans: PricingPlan[] = [
 		features: [
 			"5,000 credits / month",
 			"Everything in Free",
-			"Audio & video redaction",
+			"Audio redaction",
 			"CSV, JSON & XLSX",
 			"Batch processing",
+			"Compliance reports",
+			"Webhooks & Integrations",
 			"Email support",
 		],
 		buttonText: "Start Free Trial",
-		buttonVariant: "outline",
+		buttonHref: "https://app.nvisy.com/auth/signup",
 	},
 	{
 		id: "business",
@@ -57,14 +62,12 @@ export const plans: PricingPlan[] = [
 		features: [
 			"25,000 credits / month",
 			"Everything in Starter",
-			"Custom redaction rules",
-			"Audit logs & compliance reports",
-			"Webhooks & Integrations",
 			"SSO/SAML",
+			"HIPAA & CCPA",
 			"Priority support",
 		],
-		buttonText: "Start Free Trial",
-		buttonVariant: "primary",
+		buttonText: "Get Business",
+		buttonHref: "https://app.nvisy.com/auth/signup",
 		popular: true,
 		badge: "Most Popular",
 	},
@@ -83,6 +86,6 @@ export const plans: PricingPlan[] = [
 			"Custom SLA",
 		],
 		buttonText: "Contact Sales",
-		buttonVariant: "outline",
+		buttonHref: "/contact",
 	},
 ];

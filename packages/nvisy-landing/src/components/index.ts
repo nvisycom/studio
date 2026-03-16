@@ -15,6 +15,6 @@ export { default as SDKExamples } from "./sections/SDKExamples.astro";
 export { default as Security } from "./sections/Security.astro";
 export { default as CaseStudies } from "./sections/CaseStudies.astro";
 
-export { default as PricingCards } from "./features/pricing/PricingCards.vue";
+export { default as PricingCards } from "./features/pricing/PricingCards.astro";
 export { default as PricingComparison } from "./features/pricing/PricingComparison.astro";
 export { default as LegalCard } from "./features/legal/LegalCard.astro";

@@ -20,7 +20,7 @@ const latestChangelog = changelogEntries[0];
 
 const pageTitle = "Home";
 const pageDescription =
-	"Automatically detect and redact sensitive data across documents, images, audio, and video. Enterprise-grade PII/PHI protection.";
+	"Automatically detect and redact sensitive data across documents, images, and audio. Enterprise-grade PII/PHI protection.";
 const pageKeywords =
 	"data redaction, PII redaction, PHI redaction, privacy compliance, GDPR, HIPAA, CCPA";
 ---
@@ -36,7 +36,7 @@ const pageKeywords =
 			badge="Now in public beta"
 			title="Automated data"
 			titleHighlight="redaction"
-			description="Detect and remove sensitive data from documents, images, audio, and video. AI-powered PII and PHI redaction for privacy compliance."
+			description="Detect and remove sensitive data from documents, images, and audio. AI-powered PII and PHI redaction for privacy compliance."
 			primaryCta={{ text: "Start Free", href: "https://app.nvisy.com/auth/signup" }}
 			secondaryCta={latestChangelog ? { text: `New: ${latestChangelog.data.title}`, href: `/changelog/${latestChangelog.slug}` } : undefined}
 		/>
@@ -76,7 +76,7 @@ const pageKeywords =
 			title="Ready to protect your data?"
 			description="Start with free credits. No credit card required."
 			primaryCta={{ text: "Open App", href: "https://app.nvisy.com" }}
-			secondaryCta={{ text: "Self-Host", href: "/runtime" }}
+			secondaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com" }}
 		/>
 
 		<Security />

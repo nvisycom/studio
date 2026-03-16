@@ -19,7 +19,7 @@
 	},
 	{
 		"question": "What's the difference between Free, Starter, and Business plans?",
-		"answer": "Starter adds audio & video redaction, CSV/JSON/XLSX support, and batch processing on top of Free. Business adds custom redaction rules, audit logs, compliance reports, webhooks, SSO/SAML, and priority support on top of Starter.",
+		"answer": "Starter adds audio redaction, CSV/JSON/XLSX support, batch processing, compliance reports, and webhooks on top of Free. Business adds SSO/SAML, HIPAA & CCPA compliance, and priority support on top of Starter.",
 		"order": 4,
 		"featured": true
 	},
