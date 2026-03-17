@@ -6,7 +6,7 @@ import GithubIcon from "@/assets/icons/github.svg";
 import BlueskyIcon from "@/assets/icons/bluesky.svg";
 import LinkedinIcon from "@/assets/icons/linkedin.svg";
 import DiscordIcon from "@/assets/icons/discord.svg";
-import { Mail } from "lucide-vue-next";
+import MailIcon from "@/assets/icons/mail.svg";
 
 export interface Props {
 	companyName?: string;
@@ -18,7 +18,7 @@ const socialLinks = [
 	{
 		name: "Email",
 		href: "mailto:hello@nvisy.com",
-		Icon: Mail,
+		Icon: MailIcon,
 	},
 	{
 		name: "GitHub",
@@ -48,7 +48,7 @@ const socialLinks = [
     <Logo size="md" asLink={true} companyName={companyName} />
   </div>
   <p class="text-sm text-muted-foreground max-w-xs leading-relaxed">
-    Turn unstructured documents into structured data with AI-powered precision.
+    Automated data redaction for documents, images, and audio. Detect and remove sensitive information at scale.
   </p>
   <div class="flex gap-1 mt-6">
     {socialLinks.map((social) => (

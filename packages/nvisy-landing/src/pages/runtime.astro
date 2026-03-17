@@ -1,8 +1,49 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, CTA, OpenSource, Security } from "@/components";
+import { Hero, CTA, OpenSource, Security, Features } from "@/components";
 import { Zap, Shield, Lock, Cpu, Layers, ShieldCheck } from "lucide-vue-next";
 import GithubIcon from "@/assets/icons/github.svg?raw";
+
+const capabilities = [
+	{
+		icon: ShieldCheck,
+		title: "Multimodal Redaction",
+		description:
+			"Process documents, images, and audio. Get redacted files with full audit trails for compliance verification.",
+		span: "wide" as const,
+	},
+	{
+		icon: Zap,
+		title: "High Throughput",
+		description:
+			"Process thousands of pages per minute with parallel execution and efficient resource management.",
+	},
+	{
+		icon: Shield,
+		title: "Deterministic Output",
+		description:
+			"Same input, same redaction. Repeatable results for compliance and auditing.",
+	},
+	{
+		icon: Lock,
+		title: "Data Sovereignty",
+		description:
+			"All processing happens on your infrastructure. No data leaves your environment. Air-gapped deployments supported.",
+		span: "wide" as const,
+	},
+	{
+		icon: Layers,
+		title: "Deploy Anywhere",
+		description:
+			"Self-host on your infrastructure or embed directly into your application via our SDKs.",
+	},
+	{
+		icon: Cpu,
+		title: "Built with Rust",
+		description:
+			"Memory-safe, minimal footprint. No garbage collection pauses, predictable latency under load.",
+	},
+];
 ---
 
 <Layout
@@ -30,78 +71,11 @@ import GithubIcon from "@/assets/icons/github.svg?raw";
     </p>
   </Hero>
 
-  <!-- Capabilities -->
-  <section class="relative py-24 md:py-32 overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-accent/30 to-transparent" />
-    <div class="container relative z-10 mx-auto px-4">
-      <div class="max-w-2xl mx-auto text-center mb-16">
-        <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
-          Built for production redaction
-        </h2>
-        <p class="text-lg text-muted-foreground">
-          Detect and redact sensitive data at scale with deterministic, repeatable results.
-        </p>
-      </div>
-
-      {(() => {
-        const cards = [
-          {
-            icon: ShieldCheck,
-            title: "Multimodal Redaction",
-            description: "Process documents, images, and audio. Get redacted files with full audit trails for compliance verification.",
-            wide: true,
-          },
-          {
-            icon: Zap,
-            title: "High Throughput",
-            description: "Process thousands of pages per minute with parallel execution and efficient resource management.",
-          },
-          {
-            icon: Shield,
-            title: "Deterministic Output",
-            description: "Same input, same redaction. Repeatable results for compliance and auditing.",
-          },
-          {
-            icon: Lock,
-            title: "Data Sovereignty",
-            description: "All processing happens on your infrastructure. No data leaves your environment. Air-gapped deployments supported.",
-            wide: true,
-          },
-          {
-            icon: Layers,
-            title: "Deploy Anywhere",
-            description: "Self-host on your infrastructure or embed directly into your application via our SDKs.",
-          },
-          {
-            icon: Cpu,
-            title: "Built with Rust",
-            description: "Memory-safe, minimal footprint. No garbage collection pauses, predictable latency under load.",
-          },
-        ];
-
-        return (
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
-            {cards.map((card, i) => (
-              <div
-                class:list={[
-                  "scroll-reveal group relative p-6 md:p-8 rounded-2xl border border-border bg-card/50 hover:border-border/60 transition-all duration-300",
-                  card.wide && "md:col-span-2",
-                ]}
-                style={`--reveal-delay: ${i * 100}ms;`}
-                data-reveal
-              >
-                <div class="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center mb-4 group-hover:bg-foreground/10 transition-colors duration-300">
-                  <card.icon class="w-5 h-5 text-foreground" />
-                </div>
-                <h3 class="text-lg font-semibold mb-2 tracking-tight">{card.title}</h3>
-                <p class="text-sm text-muted-foreground leading-relaxed">{card.description}</p>
-              </div>
-            ))}
-          </div>
-        );
-      })()}
-    </div>
-  </section>
+  <Features
+    title="Built for production redaction"
+    description="Detect and redact sensitive data at scale with deterministic, repeatable results."
+    features={capabilities}
+  />
 
   <OpenSource
     title="Open source, Apache 2.0"
