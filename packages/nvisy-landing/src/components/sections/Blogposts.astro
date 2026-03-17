@@ -54,7 +54,7 @@ const categoryIcons: Record<string, typeof Zap> = {
 						const IconComponent = categoryIcons[post.data.category || ''] || File;
 						return (
 							<article class="group">
-								<a href={`/blog/${post.slug}`} class="block">
+								<a href={`/blog/${post.id}`} class="block">
 									<div class="relative p-6 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-300">
 										<!-- Subtle gradient on hover -->
 										<div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-violet-500/5 to-fuchsia-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

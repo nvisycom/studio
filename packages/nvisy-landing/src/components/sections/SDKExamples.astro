@@ -1,5 +1,5 @@
 ---
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
 import SDKShowcase from "./SDKShowcase.vue";
 
 export interface Props {
@@ -19,7 +19,7 @@ const sortedSdks = sdkEntries.sort((a, b) => a.data.order - b.data.order);
 // Render each SDK entry to get Content component
 const sdksData = await Promise.all(
 	sortedSdks.map(async (entry) => {
-		const { Content } = await entry.render();
+		const { Content } = await render(entry);
 		return {
 			name: entry.data.name,
 			language: entry.data.language,

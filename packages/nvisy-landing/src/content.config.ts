@@ -1,4 +1,5 @@
 import { defineCollection, z } from "astro:content";
+import { glob } from "astro/loaders";
 
 const blogSchema = z.object({
 	title: z.string(),
@@ -14,7 +15,7 @@ const blogSchema = z.object({
 
 export type BlogItem = z.infer<typeof blogSchema>;
 const blogPosts = defineCollection({
-	type: "content",
+	loader: glob({ pattern: "**/*.{md,mdx}", base: "src/content/blog-posts" }),
 	schema: blogSchema,
 });
 
@@ -28,7 +29,7 @@ const legalSchema = z.object({
 
 export type LegalItem = z.infer<typeof legalSchema>;
 const legalDocs = defineCollection({
-	type: "content",
+	loader: glob({ pattern: "**/*.{md,mdx}", base: "src/content/legal-docs" }),
 	schema: legalSchema,
 });
 
@@ -41,7 +42,7 @@ const faqSchema = z.object({
 
 export type FAQItem = z.infer<typeof faqSchema>;
 const faqs = defineCollection({
-	type: "data",
+	loader: glob({ pattern: "**/*.json", base: "src/content/faqs" }),
 	schema: z.array(faqSchema),
 });
 
@@ -59,7 +60,7 @@ const testimonialSchema = z.object({
 
 export type TestimonialItem = z.infer<typeof testimonialSchema>;
 const testimonials = defineCollection({
-	type: "data",
+	loader: glob({ pattern: "**/*.json", base: "src/content/testimonials" }),
 	schema: z.array(testimonialSchema),
 });
 
@@ -73,7 +74,7 @@ const featureSchema = z.object({
 
 export type FeatureItem = z.infer<typeof featureSchema>;
 const features = defineCollection({
-	type: "data",
+	loader: glob({ pattern: "**/*.json", base: "src/content/features" }),
 	schema: z.array(featureSchema),
 });
 
@@ -88,7 +89,7 @@ const sdkExampleSchema = z.object({
 
 export type SDKExampleItem = z.infer<typeof sdkExampleSchema>;
 const sdkExamples = defineCollection({
-	type: "content",
+	loader: glob({ pattern: "**/*.md", base: "src/content/sdk-examples" }),
 	schema: sdkExampleSchema,
 });
 
@@ -100,7 +101,7 @@ const useCaseSchema = z.object({
 
 export type UseCaseItem = z.infer<typeof useCaseSchema>;
 const useCases = defineCollection({
-	type: "data",
+	loader: glob({ pattern: "**/*.json", base: "src/content/use-cases" }),
 	schema: z.array(useCaseSchema),
 });
 
@@ -115,7 +116,7 @@ const changelogSchema = z.object({
 
 export type ChangelogItem = z.infer<typeof changelogSchema>;
 const changelog = defineCollection({
-	type: "content",
+	loader: glob({ pattern: "**/*.md", base: "src/content/changelog" }),
 	schema: changelogSchema,
 });
 

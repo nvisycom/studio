@@ -34,7 +34,7 @@ const caseStudies = (await getCollection("blog-posts"))
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {caseStudies.map((study) => (
           <a
-            href={`/blog/${study.slug}`}
+            href={`/blog/${study.id}`}
             class="group relative p-6 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-300 flex flex-col"
           >
             <!-- Subtle gradient on hover -->

@@ -17,7 +17,7 @@ import {
 const blogEntries = (await getCollection("blog-posts"))
 	.map((entry) => ({
 		...entry,
-		readingTime: calculateReadingTime(entry.body),
+		readingTime: calculateReadingTime(entry.body || ""),
 	}))
 	.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
 
@@ -82,7 +82,7 @@ const categoryIcons: Record<string, typeof Zap> = {
                   class="blog-post group"
                   data-category={slugifyCategory(post.data.category || '')}
                 >
-                  <a href={`/blog/${post.slug}`} class="block h-full">
+                  <a href={`/blog/${post.id}`} class="block h-full">
                     <div class="relative h-full p-6 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-300 flex flex-col min-h-[320px]">
                       <!-- Subtle gradient on hover -->
                       <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-violet-500/5 to-fuchsia-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
