@@ -118,11 +118,6 @@ function viewFile(fileId: string) {
 	navigateTo("/studio");
 }
 
-function chatAboutFile(file: NvisyFile) {
-	// Navigate to chat page with file context
-	navigateTo(`/files/chat?fileId=${file.fileId}`);
-}
-
 function handleBulkOpen() {
 	if (!hasSelection.value) return;
 	const fileIds = Array.from(selectedFiles.value);
@@ -440,7 +435,6 @@ function handleGridScroll(event: Event) {
             @toggle-select-all="toggleSelectAll"
             @toggle-selection="toggleFileSelection"
             @view="viewFile"
-            @chat="chatAboutFile"
             @edit="openEditDialog"
             @download="handleDownloadFile"
             @delete="openDeleteDialog"
@@ -462,7 +456,6 @@ function handleGridScroll(event: Event) {
             @bulk-download="handleBulkDownload"
             @bulk-delete="openBulkDeleteDialog"
             @view="viewFile"
-            @chat="chatAboutFile"
             @edit="openEditDialog"
             @download="handleDownloadFile"
             @delete="openDeleteDialog"

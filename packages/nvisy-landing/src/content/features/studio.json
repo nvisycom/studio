@@ -8,7 +8,7 @@
 	},
 	{
 		"title": "Secure by Default",
-		"description": "Your documents stay on your machine until you choose to process them. Complete control over your data.",
+		"description": "Your documents stay on your machine. Redact locally with complete control over your data.",
 		"icon": "shield",
 		"featured": true,
 		"order": 2
@@ -29,7 +29,7 @@
 	},
 	{
 		"title": "Batch Processing",
-		"description": "Process multiple documents at once with progress tracking.",
+		"description": "Redact multiple documents at once with progress tracking.",
 		"icon": "file-text",
 		"featured": true,
 		"order": 5

@@ -3,9 +3,10 @@ import Logo from "../Logo.astro";
 import HeaderWrapper from "./HeaderWrapper.vue";
 import DesktopNavigation from "./DesktopNavigation.vue";
 import MobileNavigation from "./MobileNavigation.vue";
+import AuthButtons from "./AuthButtons.vue";
 ---
 
-<HeaderWrapper client:only="vue">
+<HeaderWrapper client:load transition:persist>
   <!-- Logo Section -->
   <Logo asLink={true} size="sm" />
 
@@ -14,20 +15,7 @@ import MobileNavigation from "./MobileNavigation.vue";
 
   <!-- Auth Button Section -->
   <div class="flex items-center gap-2">
-    <a
-      href="https://docs.nvisy.com"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="hidden sm:inline-flex items-center justify-center text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent px-4 py-2 rounded-lg transition-colors"
-    >
-      Docs
-    </a>
-    <a
-      href="https://app.nvisy.com/auth/login"
-      class="inline-flex items-center justify-center bg-foreground text-background hover:opacity-90 font-medium px-4 py-2 text-base rounded-lg transition-all shadow-sm"
-    >
-      Open App
-    </a>
+    <AuthButtons client:load />
 
     <!-- Mobile Navigation Component -->
     <MobileNavigation client:load />

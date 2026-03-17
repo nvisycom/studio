@@ -4,34 +4,36 @@ export const footerSections: FooterSection[] = [
 	{
 		title: "Product",
 		links: [
-			{ name: "Nvisy Server", href: "/products/server" },
-			{ name: "Nvisy Studio", href: "/products/studio" },
-			{
-				name: "Documentation",
-				href: "https://docs.nvisy.com",
-				isExternal: true,
-			},
-			{
-				name: "API Reference",
-				href: "https://docs.nvisy.com/api-reference",
-				isExternal: true,
-			},
+			{ name: "Features", href: "/features" },
+			{ name: "Runtime", href: "/runtime" },
+			{ name: "Integrations", href: "/integrations" },
+			{ name: "Pricing", href: "/pricing" },
 		],
 	},
 	{
 		title: "Resources",
 		links: [
+			{
+				name: "Documentation",
+				href: "https://docs.nvisy.com",
+				isExternal: true,
+			},
 			{ name: "Blog", href: "/blog" },
 			{ name: "Changelog", href: "/changelog" },
-			{ name: "Customers", href: "/customers" },
-			{ name: "Integrations", href: "/integrations" },
-			{ name: "Pricing", href: "/pricing" },
+			{ name: "Security", href: "/security" },
+			{
+				name: "Status",
+				href: "https://nvisy.openstatus.dev",
+				isExternal: true,
+			},
 		],
 	},
 	{
 		title: "Company",
 		links: [
 			{ name: "About", href: "/about" },
+			{ name: "Customers", href: "/customers" },
+			{ name: "Contact", href: "/contact" },
 			{
 				name: "Careers",
 				href: "https://www.linkedin.com/company/nvisy/jobs/",

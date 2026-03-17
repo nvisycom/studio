@@ -1,14 +1,14 @@
 ---
 import { CTA } from "@/components";
 import { Layout } from "@/layouts";
-import { getCollection, type CollectionEntry } from "astro:content";
+import { getCollection, render, type CollectionEntry } from "astro:content";
 import { Clock, FileText } from "lucide-vue-next";
 
 export async function getStaticPaths() {
 	try {
 		const legalEntries = await getCollection("legal-docs");
 		return legalEntries.map((entry) => ({
-			params: { slug: entry.slug },
+			params: { slug: entry.id },
 			props: { entry },
 		}));
 	} catch (error: unknown) {
@@ -23,7 +23,7 @@ interface Props {
 }
 
 const { entry } = Astro.props;
-const { Content } = await entry.render();
+const { Content } = await render(entry);
 ---
 
 <Layout title={entry.data.title} description={(entry.data as any).description || entry.data.title}>

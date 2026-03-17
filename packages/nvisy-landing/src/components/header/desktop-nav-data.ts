@@ -6,11 +6,9 @@ import type {
 import {
 	BookOpen,
 	Braces,
-	Code,
 	FileText,
 	History,
 	Puzzle,
-	Scale,
 	Server,
 	Terminal,
 	Users,
@@ -19,32 +17,30 @@ import {
 export const products: ProductSection = {
 	platforms: [
 		{
-			title: "Nvisy Server",
-			href: "/products/server",
-			description: "Cloud & on-premise deployment",
+			title: "Features",
+			href: "/features",
+			description: "Redaction capabilities & formats",
 			icon: Server,
 		},
 		{
-			title: "Nvisy Studio",
-			href: "/products/studio",
-			description: "Cross-platform desktop app",
+			title: "Runtime",
+			href: "/runtime",
+			description: "Self-hosted redaction engine",
 			icon: Terminal,
 		},
 	],
 	opensource: [
 		{
-			title: "TypeScript SDK",
-			href: "https://github.com/nvisycom/sdk-ts",
-			description: "Modern JavaScript/TypeScript SDK",
+			title: "SDKs",
+			href: "/sdks",
+			description: "Libraries for every language",
 			icon: Braces,
-			isExternal: true,
 		},
 		{
-			title: "Python SDK",
-			href: "https://github.com/nvisycom/sdk-py",
-			description: "Native Python library",
-			icon: Code,
-			isExternal: true,
+			title: "Integrations",
+			href: "/integrations",
+			description: "Connect your tools",
+			icon: Puzzle,
 		},
 	],
 };
@@ -62,12 +58,6 @@ export const resources: ResourceSection = {
 			description: "Guides & API docs",
 			icon: BookOpen,
 			isExternal: true,
-		},
-		{
-			title: "Integrations",
-			href: "/integrations",
-			description: "Connect your tools",
-			icon: Puzzle,
 		},
 		{
 			title: "Changelog",
@@ -88,12 +78,6 @@ export const resources: ResourceSection = {
 			href: "/blog",
 			description: "News & updates",
 			icon: FileText,
-		},
-		{
-			title: "Legal",
-			href: "/legal",
-			description: "Policies & legal documents",
-			icon: Scale,
 		},
 	],
 };

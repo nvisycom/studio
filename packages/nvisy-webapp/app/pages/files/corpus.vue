@@ -173,7 +173,7 @@ function confirmDelete() {
                 in the index
               </CardDescription>
             </div>
-            <NuxtLink to="/documents">
+            <NuxtLink to="/files">
               <Button size="sm" variant="outline"> View Documents </Button>
             </NuxtLink>
           </div>

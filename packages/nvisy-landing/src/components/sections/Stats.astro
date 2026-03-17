@@ -11,9 +11,9 @@ export interface Props {
 const { stats } = Astro.props;
 
 const defaultStats: Stat[] = [
-	{ value: "99.5%", label: "Accuracy" },
+	{ value: "99.5%", label: "Redaction Accuracy" },
 	{ value: "<100ms", label: "Latency" },
-	{ value: "10M+", label: "Documents" },
+	{ value: "10M+", label: "Files Redacted" },
 	{ value: "500+", label: "Companies" },
 ];
 

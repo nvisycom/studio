@@ -1,6 +1,6 @@
 ---
-import { getCollection } from "astro:content";
-import SDKShowcase from "@/components/features/sdk/SDKShowcase.vue";
+import { getCollection, render } from "astro:content";
+import SDKShowcase from "./SDKShowcase.vue";
 
 export interface Props {
 	title?: string;
@@ -9,7 +9,7 @@ export interface Props {
 
 const {
 	title = "Simple, powerful SDKs",
-	description = "Integrate document processing in minutes with our easy-to-use SDKs. Built for developers, by developers.",
+	description = "Integrate data redaction in minutes with our easy-to-use SDKs. Built for developers, by developers.",
 } = Astro.props;
 
 // Fetch SDK content and render Content components
@@ -19,7 +19,7 @@ const sortedSdks = sdkEntries.sort((a, b) => a.data.order - b.data.order);
 // Render each SDK entry to get Content component
 const sdksData = await Promise.all(
 	sortedSdks.map(async (entry) => {
-		const { Content } = await entry.render();
+		const { Content } = await render(entry);
 		return {
 			name: entry.data.name,
 			language: entry.data.language,

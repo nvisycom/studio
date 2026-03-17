@@ -22,8 +22,8 @@ pre {
 code {
 	/* TODO: Replace with astro.config. */
 	font-family: "JetBrains", monospace;
-	font-size: 1.125rem; /* 18px */
-	line-height: 1.75rem; /* 28px */
+	font-size: 0.875rem; /* 14px */
+	line-height: 1.5rem; /* 24px */
 }
 
 /* SDK Showcase specific styling */

@@ -1,0 +1,36 @@
+---
+import { Layout } from "@/layouts";
+import { Hero, CTA, SDKExamples, OpenSource, Security } from "@/components";
+---
+
+<Layout
+  title="SDKs"
+  description="Official Nvisy SDKs for TypeScript, Python, and Rust. Build data redaction into your applications."
+  hideFooterBorder
+>
+  <Hero
+    title="SDKs"
+    description="Official client libraries to integrate Nvisy redaction into your applications. Choose your language and start building."
+    primaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com" }}
+    secondaryCta={{ text: "API Reference", href: "https://docs.nvisy.com/api" }}
+    compact
+  />
+
+  <SDKExamples
+    title="Simple, powerful SDKs"
+    description="Integrate data redaction in minutes with our easy-to-use SDKs."
+  />
+
+  <OpenSource
+    title="Built on open source"
+    description="Our SDKs and core tools are open source. Contribute, audit the code, and build with confidence."
+  />
+
+  <CTA
+    title="Need help getting started?"
+    description="Our documentation covers everything from installation to advanced usage patterns."
+    primaryCta={{ text: "Read the Docs", href: "https://docs.nvisy.com" }}
+    secondaryCta={{ text: "Contact Support", href: "mailto:support@nvisy.com" }}
+  />
+  <Security />
+</Layout>

@@ -1,5 +1,5 @@
 ---
-import { Shield } from "lucide-vue-next";
+import { Shield, ArrowRight } from "lucide-vue-next";
 
 const compliances = [
 	{ name: "GDPR", status: "completed" },
@@ -11,10 +11,11 @@ const compliances = [
 <section class="py-12 bg-background">
   <div class="container mx-auto max-w-5xl px-4">
     <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-      <div class="flex items-center gap-3 text-muted-foreground">
+      <a href="/security" class="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors">
         <Shield class="w-5 h-5" />
         <span class="text-sm font-medium">Enterprise-grade security & compliance</span>
-      </div>
+        <ArrowRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+      </a>
 
       <div class="flex flex-wrap items-center justify-center gap-6">
         {compliances.map((compliance) => (

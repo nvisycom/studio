@@ -8,18 +8,18 @@ export interface Props {
 	titleHighlight?: string;
 	titleInline?: boolean;
 	description?: string;
-	primaryCta?: { text: string; href: string } | undefined;
-	secondaryCta?: { text: string; href: string } | undefined;
+	primaryCta?: { text: string; href: string } | null | undefined;
+	secondaryCta?: { text: string; href: string } | null | undefined;
 	centered?: boolean;
 	compact?: boolean;
 }
 
 const {
 	badge,
-	title = "Document intelligence",
+	title = "Automated data redaction",
 	titleHighlight,
 	titleInline = false,
-	description = "Transform any document into structured, actionable data.",
+	description = "Detect and remove sensitive data from documents, images, and audio.",
 	primaryCta = {
 		text: "Get Started",
 		href: "https://app.nvisy.com/auth/signup",

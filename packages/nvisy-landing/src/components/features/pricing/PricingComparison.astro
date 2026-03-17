@@ -1,103 +1,64 @@
 ---
 import { Check, X, ArrowRight } from "lucide-vue-next";
+import { plans } from "./pricing-data";
+import { buttonClasses } from "./shared";
 
-const plans = [
-	{ id: "free", name: "Free", buttonText: "Get Started" },
-	{ id: "basic", name: "Basic", buttonText: "Start Free Trial" },
-	{
-		id: "business",
-		name: "Business",
-		popular: true,
-		buttonText: "Start Free Trial",
-	},
-	{ id: "enterprise", name: "Enterprise", buttonText: "Contact Sales" },
-];
+// Derive from plan highlights to avoid duplication
+const creditValues = plans.map(
+	(p) => p.highlights.find((h) => h.includes("credits")) ?? "Unlimited credits",
+);
+
+const workspaceValues = plans.map(
+	(p) =>
+		p.highlights.find((h) => h.includes("workspaces")) ??
+		"Unlimited workspaces",
+);
 
 const categories = [
 	{
 		name: null,
+		features: [{ values: creditValues }, { values: workspaceValues }],
+	},
+	{
+		name: "Redaction Capabilities",
 		features: [
-			{
-				values: [
-					"100 documents/mo",
-					"2,500 documents/mo",
-					"25,000 documents/mo",
-					"Unlimited documents",
-				],
-			},
-			{
-				values: [
-					"1GB storage",
-					"10GB storage",
-					"50GB storage",
-					"Unlimited storage",
-				],
-			},
-			{
-				values: [
-					"1 workspace",
-					"5 workspaces",
-					"Unlimited workspaces",
-					"Unlimited workspaces",
-				],
-			},
-			{
-				values: [
-					"1 team member",
-					"5 team members",
-					"25 team members",
-					"Unlimited members",
-				],
-			},
+			{ label: "PII & PHI detection", values: [true, true, true, true] },
+			{ label: "Custom redaction policy", values: [true, true, true, true] },
+			{ label: "User-provided context", values: [true, true, true, true] },
+			{ label: "Batch processing", values: [false, true, true, true] },
 		],
 	},
 	{
-		name: "Document Intelligence",
+		name: "Supported Formats",
 		features: [
-			{
-				values: [
-					"OCR extraction",
-					"OCR extraction",
-					"OCR extraction",
-					"OCR extraction",
-				],
-			},
-			{
-				values: [
-					"Table extraction",
-					"Table extraction",
-					"Table extraction",
-					"Table extraction",
-				],
-			},
-			{ label: "Custom schemas", values: [false, true, true, true] },
-			{ label: "Batch processing", values: [false, true, true, true] },
-			{ label: "Multi-language support", values: [false, false, true, true] },
+			{ label: "Documents (PDF, DOCX)", values: [true, true, true, true] },
+			{ label: "Images (PNG, JPG)", values: [true, true, true, true] },
+			{ label: "Audio (MP3, WAV)", values: [false, true, true, true] },
+			{ label: "Data (CSV, JSON, XLSX)", values: [false, true, true, true] },
+		],
+	},
+	{
+		name: "Compliance & Audit",
+		features: [
+			{ label: "Audit logs", values: [true, true, true, true] },
+			{ label: "Compliance reports", values: [false, true, true, true] },
+			{ label: "HIPAA & CCPA", values: [false, false, true, true] },
 		],
 	},
 	{
 		name: "Integrations",
 		features: [
-			{ values: ["REST API", "REST API", "REST API", "REST API"] },
-			{ label: "Webhooks", values: [false, true, true, true] },
-			{ label: "Cloud storage", values: [false, true, true, true] },
+			{ label: "REST API & SDKs", values: [true, true, true, true] },
+			{ label: "Webhooks & Integrations", values: [false, true, true, true] },
 			{ label: "Custom integrations", values: [false, false, false, true] },
 		],
 	},
 	{
-		name: "Security & Compliance",
+		name: "Security",
 		features: [
-			{
-				values: [
-					"SSL encryption",
-					"SSL encryption",
-					"SSL encryption",
-					"SSL encryption",
-				],
-			},
+			{ label: "Google & Microsoft SSO", values: [true, true, true, true] },
 			{ label: "SSO/SAML", values: [false, false, true, true] },
-			{ label: "Audit logs", values: [false, false, true, true] },
-			{ label: "On-premise deployment", values: [false, false, false, true] },
+			{ label: "Self-hosted deployment", values: [false, false, false, true] },
 			{ label: "Custom SLA", values: [false, false, false, true] },
 		],
 	},
@@ -107,18 +68,11 @@ const categories = [
 			{
 				values: [
 					"Community support",
-					"Community support",
-					"Community support",
-					"Community support",
+					"Email support",
+					"Priority support",
+					"Priority support",
 				],
 			},
-			{ label: "Email support", values: [false, true, true, true] },
-			{ label: "Priority support", values: [false, false, true, true] },
-			{
-				label: "Dedicated account manager",
-				values: [false, false, false, true],
-			},
-			{ label: "24/7 phone support", values: [false, false, false, true] },
 		],
 	},
 ];
@@ -128,20 +82,19 @@ const businessIndex = plans.findIndex((p) => p.popular);
 
 <section class="py-20 md:py-24">
   <div class="container mx-auto px-4">
-    <div class="max-w-6xl mx-auto relative">
-      <!-- Business column border - single continuous element -->
+    <!-- Desktop: full comparison grid -->
+    <div class="hidden lg:block max-w-6xl mx-auto relative">
+      <!-- Business column highlight -->
       <div
-        class="hidden lg:block absolute top-0 bottom-0 border-2 border-foreground/20 rounded-2xl shadow-xl pointer-events-none"
-        style={`left: calc(${businessIndex * 25}%); width: 25%; z-index: 1;`}
+        class="absolute top-0 bottom-0 border-2 border-foreground/20 rounded-2xl shadow-xl pointer-events-none"
+        style={`left: calc(${businessIndex} * 100% / ${plans.length}); width: calc(100% / ${plans.length}); z-index: 1;`}
       />
 
       <!-- Plan names header -->
-      <div class="flex flex-col lg:flex-row">
+      <div class="flex">
         {plans.map((plan) => (
           <div class="flex-1 p-5">
-            <span class="text-2xl font-normal">
-              {plan.name}
-            </span>
+            <span class="text-2xl font-normal">{plan.name}</span>
           </div>
         ))}
       </div>
@@ -149,9 +102,8 @@ const businessIndex = plans.findIndex((p) => p.popular);
       <!-- Categories -->
       {categories.map((category, catIdx) => (
         <>
-          <!-- Category Label (if exists) -->
           {category.name && (
-            <div class="flex flex-col lg:flex-row mt-10">
+            <div class="flex mt-10">
               {plans.map((_plan, planIdx) => (
                 <div class="flex-1 pb-3 px-5">
                   {planIdx === 0 && (
@@ -164,13 +116,12 @@ const businessIndex = plans.findIndex((p) => p.popular);
             </div>
           )}
 
-          <!-- Features rows -->
           {category.features.map((feature, featureIdx) => (
-            <div class="flex flex-col lg:flex-row">
+            <div class="flex">
               {plans.map((_plan, planIdx) => {
                 const value = feature.values[planIdx];
                 const isAvailable = value !== false;
-                const displayText = typeof value === 'string' ? value : ('label' in feature ? feature.label : '');
+                const displayText = typeof value === "string" ? value : ("label" in feature ? feature.label : "");
 
                 return (
                   <div
@@ -187,7 +138,7 @@ const businessIndex = plans.findIndex((p) => p.popular);
                       )}
                       <span class:list={[
                         "text-sm",
-                        isAvailable ? "text-foreground/70" : "text-foreground/30"
+                        isAvailable ? "text-foreground/70" : "text-foreground/30",
                       ]}>
                         {displayText}
                       </span>
@@ -201,30 +152,84 @@ const businessIndex = plans.findIndex((p) => p.popular);
       ))}
 
       <!-- CTA Buttons row -->
-      <div class="flex flex-col lg:flex-row mt-10">
+      <div class="flex mt-10">
         {plans.map((plan) => (
           <div class="flex-1 px-5 pb-5">
-            <button
-              class:list={[
-                "w-full font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]",
-                plan.popular
-                  ? "bg-foreground text-background hover:bg-foreground/90 shadow-sm py-3 px-6"
-                  : "bg-accent hover:bg-accent/80 text-foreground py-2.5 px-5",
-              ]}
+            <a
+              href={plan.buttonHref}
+              class:list={buttonClasses(plan.popular)}
             >
               {plan.buttonText}
               <ArrowRight class="w-4 h-4" />
-            </button>
-            {plan.popular ? (
-              <a href="/contact" class="block text-center mt-4 text-base leading-6 text-foreground/70 hover:text-foreground transition-colors">
-                or contact sales
-              </a>
-            ) : (
-              <div class="mt-4 h-6"></div>
-            )}
+            </a>
           </div>
         ))}
       </div>
+    </div>
+
+    <!-- Tablet/Mobile: per-plan feature cards (2x2 on md, 1-column on small) -->
+    <div class="lg:hidden max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+      {plans.map((plan) => {
+        const planIdx = plans.indexOf(plan);
+        // On mobile, only show rows that differ between plans to save space
+        const mobileCategories = categories.map((cat) => ({
+          ...cat,
+          features: cat.features.filter((f) => !f.values.every((v) => v === f.values[0])),
+        })).filter((cat) => cat.features.length > 0);
+
+        return (
+          <div
+            class:list={[
+              "rounded-2xl p-6",
+              plan.popular
+                ? "bg-card border-2 border-foreground/20 shadow-xl"
+                : "bg-card/50 border border-border",
+            ]}
+          >
+            <h3 class="text-xl font-semibold mb-1">{plan.name}</h3>
+            <p class="text-sm text-foreground/60 mb-4">{plan.description}</p>
+
+            {mobileCategories.map((category) => (
+              <>
+                {category.name && (
+                  <p class="text-xs font-semibold uppercase tracking-wider text-foreground/50 mt-5 mb-2">
+                    {category.name}
+                  </p>
+                )}
+                {category.features.map((feature) => {
+                  const value = feature.values[planIdx];
+                  const isAvailable = value !== false;
+                  const displayText = typeof value === "string" ? value : ("label" in feature ? feature.label : "");
+
+                  return (
+                    <div class="flex items-center gap-2.5 py-1">
+                      {isAvailable ? (
+                        <Check class="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                      ) : (
+                        <X class="w-3.5 h-3.5 text-foreground/30 flex-shrink-0" />
+                      )}
+                      <span class:list={[
+                        "text-sm",
+                        isAvailable ? "text-foreground/70" : "text-foreground/30",
+                      ]}>
+                        {displayText}
+                      </span>
+                    </div>
+                  );
+                })}
+              </>
+            ))}
+
+            <a
+              href={plan.buttonHref}
+              class:list={[...buttonClasses(plan.popular), "mt-6"]}
+            >
+              {plan.buttonText}
+              <ArrowRight class="w-4 h-4" />
+            </a>
+          </div>
+        );
+      })}
     </div>
   </div>
 </section>

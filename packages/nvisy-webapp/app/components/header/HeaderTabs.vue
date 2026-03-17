@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StudioFileTabs from "./StudioFileTabs.vue";
+import EditorWorkflowTabs from "./EditorWorkflowTabs.vue";
 import {
 	Settings,
 	Key,
@@ -15,7 +16,7 @@ import {
 	Database,
 	PlayCircle,
 	FolderOpen,
-	MessageCircle,
+	Workflow,
 } from "lucide-vue-next";
 
 const route = useRoute();
@@ -28,8 +29,14 @@ const showIntegrationTabs = computed(() =>
 
 const showFilesTabs = computed(() => route.path.startsWith("/files"));
 
+// Workflows pages show workflow tabs
+const showWorkflowsTabs = computed(() => route.path.startsWith("/workflows"));
+
 // Studio pages show file tabs only (not navigation tabs)
 const showStudioTabs = computed(() => route.path.startsWith("/studio"));
+
+// Editor pages show workflow tabs
+const showEditorTabs = computed(() => route.path.startsWith("/editor"));
 
 const showSettingsTabs = computed(() => route.path.startsWith("/settings"));
 
@@ -66,8 +73,12 @@ const currentIntegrationTabValue = computed(() => {
 
 const currentFilesTab = computed(() => {
 	if (route.path === "/files/corpus") return "corpus";
-	if (route.path === "/files/chat") return "chat";
 	return "files";
+});
+
+const currentWorkflowsTab = computed(() => {
+	if (route.path === "/workflows/runs") return "runs";
+	return "workflows";
 });
 
 const isStudioPage = computed(() => route.path === "/studio");
@@ -77,7 +88,9 @@ const hasVisibleTabs = computed(() => {
 	return (
 		showIntegrationTabs.value ||
 		showFilesTabs.value ||
+		showWorkflowsTabs.value ||
 		showStudioTabs.value ||
+		showEditorTabs.value ||
 		showSettingsTabs.value ||
 		showAccountTabs.value ||
 		showAnalyticsTabs.value
@@ -130,10 +143,22 @@ defineExpose({
           {{ t("header.tabs.files.corpus") }}
         </NuxtLink>
       </TabsTrigger>
-      <TabsTrigger value="chat" as-child>
-        <NuxtLink to="/files/chat" class="flex items-center gap-2">
-          <MessageCircle :size="16" />
-          {{ t("header.tabs.files.chat") }}
+    </TabsList>
+  </Tabs>
+
+  <!-- Workflows Tabs -->
+  <Tabs v-else-if="showWorkflowsTabs" :model-value="currentWorkflowsTab">
+    <TabsList>
+      <TabsTrigger value="workflows" as-child>
+        <NuxtLink to="/workflows" class="flex items-center gap-2">
+          <Workflow :size="16" />
+          {{ t("header.tabs.workflows.index") }}
+        </NuxtLink>
+      </TabsTrigger>
+      <TabsTrigger value="runs" as-child>
+        <NuxtLink to="/workflows/runs" class="flex items-center gap-2">
+          <PlayCircle :size="16" />
+          {{ t("header.tabs.workflows.runs") }}
         </NuxtLink>
       </TabsTrigger>
     </TabsList>
@@ -141,6 +166,9 @@ defineExpose({
 
   <!-- Studio File Tabs (shown on all studio pages including chat) -->
   <StudioFileTabs v-else-if="showStudioTabs" />
+
+  <!-- Editor Workflow Tabs -->
+  <EditorWorkflowTabs v-else-if="showEditorTabs" />
 
   <!-- Settings Tabs (Workspace Settings) -->
   <Tabs v-else-if="showSettingsTabs" :model-value="currentSettingsTab">

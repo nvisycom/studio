@@ -8,8 +8,11 @@
 			},
 			"files": {
 				"index": "Index",
-				"corpus": "Corpus",
-				"chat": "Chat"
+				"corpus": "Corpus"
+			},
+			"workflows": {
+				"index": "Workflows",
+				"runs": "Runs"
 			},
 			"settings": {
 				"general": "General",
@@ -1096,6 +1099,8 @@
 		"automation": "Automation",
 		"integrations": "Integrations",
 		"explore": "Explore",
+		"workflows": "Workflows",
+		"editor": "Editor",
 		"observability": "Observability",
 		"analytics": "Analytics",
 		"logs": "Logs",

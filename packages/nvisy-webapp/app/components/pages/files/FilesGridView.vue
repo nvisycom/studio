@@ -9,7 +9,6 @@ import {
 	Trash2,
 	Pencil,
 	File as FileIcon,
-	MessageCircle,
 } from "lucide-vue-next";
 import type { File as NvisyFile } from "@nvisy/sdk/datatypes";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -30,7 +29,6 @@ interface Props {
 interface Emits {
 	(e: "toggle-selection", fileId: string): void;
 	(e: "view", fileId: string): void;
-	(e: "chat", file: NvisyFile): void;
 	(e: "edit", file: NvisyFile): void;
 	(e: "download", file: NvisyFile): void;
 	(e: "delete", file: NvisyFile): void;
@@ -195,10 +193,6 @@ function handleScroll(event: Event) {
             >
               <Eye :size="14" class="mr-2" />
               {{ t("files.actions.openInStudio") }}
-            </ContextMenuItem>
-            <ContextMenuItem class="cursor-pointer" @click="emit('chat', file)">
-              <MessageCircle :size="14" class="mr-2" />
-              {{ t("files.actions.chat") }}
             </ContextMenuItem>
             <ContextMenuItem class="cursor-pointer" @click="emit('edit', file)">
               <Pencil :size="14" class="mr-2" />

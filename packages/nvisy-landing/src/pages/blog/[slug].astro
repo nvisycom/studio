@@ -1,6 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
 import {
 	ChevronLeft,
 	ChevronRight,
@@ -21,7 +21,7 @@ export async function getStaticPaths() {
 	try {
 		const blogEntries = await getCollection("blog-posts");
 		return blogEntries.map((entry) => ({
-			params: { slug: entry.slug },
+			params: { slug: entry.id },
 			props: { entry },
 		}));
 	} catch (error: unknown) {
@@ -31,21 +31,21 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await entry.render();
+const { Content } = await render(entry);
 
-const readingTime = calculateReadingTime(entry.body);
+const readingTime = calculateReadingTime(entry.body || "");
 
 const allPosts = (await getCollection("blog-posts")).sort(
 	(a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
 );
 
-const currentIndex = allPosts.findIndex((post) => post.slug === entry.slug);
+const currentIndex = allPosts.findIndex((post) => post.id === entry.id);
 const previousPost =
 	currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
 const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
 
 const relatedPosts = allPosts
-	.filter((post) => post.slug !== entry.slug)
+	.filter((post) => post.id !== entry.id)
 	.slice(0, 3);
 
 const categoryIcons: Record<string, typeof Zap> = {
@@ -60,13 +60,19 @@ const categoryIcons: Record<string, typeof Zap> = {
 
 <Layout title={entry.data.title} description={entry.data.description}>
   <!-- Article Header -->
-  <section class="relative pt-24 md:pt-32 pb-12 overflow-hidden">
+  <section class="relative pt-18 md:pt-24 pb-12 overflow-hidden">
     <!-- Background effects -->
     <div class="absolute inset-0 bg-gradient-radial" />
     <div class="absolute inset-0 bg-[linear-gradient(to_right,oklch(0.5_0_0/0.03)_1px,transparent_1px),linear-gradient(to_bottom,oklch(0.5_0_0/0.03)_1px,transparent_1px)] bg-[size:64px_64px]" />
 
     <div class="container relative z-10 mx-auto px-4">
       <div class="max-w-4xl mx-auto">
+        <!-- Back link -->
+        <a href="/blog" class="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">
+          <ChevronLeft class="w-4 h-4" />
+          Back to blog
+        </a>
+
         <!-- Meta -->
         <div class="flex flex-wrap items-center gap-3 mb-6">
           {entry.data.category && (
@@ -140,7 +146,7 @@ const categoryIcons: Record<string, typeof Zap> = {
   </section>
 
   <!-- Article Content -->
-  <section class="py-12">
+  <section class="py-2">
     <div class="container mx-auto px-4">
       <div class="max-w-4xl mx-auto">
         <article class="mb-16">
@@ -167,7 +173,7 @@ const categoryIcons: Record<string, typeof Zap> = {
           <nav class="border-t border-border pt-12 mb-16">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               {previousPost && (
-                <a href={`/blog/${previousPost.slug}`} class="group p-4 rounded-xl border border-border hover:bg-card/50 transition-colors">
+                <a href={`/blog/${previousPost.id}`} class="group p-4 rounded-xl border border-border hover:bg-card/50 transition-colors">
                   <div class="text-xs text-muted-foreground mb-2 flex items-center gap-1">
                     <ChevronLeft class="w-3 h-3" />
                     Previous
@@ -178,7 +184,7 @@ const categoryIcons: Record<string, typeof Zap> = {
                 </a>
               )}
               {nextPost && (
-                <a href={`/blog/${nextPost.slug}`} class="group p-4 rounded-xl border border-border hover:bg-card/50 transition-colors md:text-right md:col-start-2">
+                <a href={`/blog/${nextPost.id}`} class="group p-4 rounded-xl border border-border hover:bg-card/50 transition-colors md:text-right md:col-start-2">
                   <div class="text-xs text-muted-foreground mb-2 flex items-center gap-1 md:justify-end">
                     Next
                     <ChevronRight class="w-3 h-3" />
@@ -201,7 +207,7 @@ const categoryIcons: Record<string, typeof Zap> = {
                 const IconComponent = categoryIcons[post.data.category || ''] || File;
                 return (
                   <article class="group">
-                    <a href={`/blog/${post.slug}`} class="block">
+                    <a href={`/blog/${post.id}`} class="block">
                       <div class="relative p-5 rounded-2xl border border-border bg-card/50 hover:bg-card/80 transition-all duration-300">
                         <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-violet-500/5 to-fuchsia-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 

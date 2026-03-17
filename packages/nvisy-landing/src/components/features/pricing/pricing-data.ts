@@ -3,21 +3,16 @@ export interface PricingPlan {
 	name: string;
 	description: string;
 	price: number | "custom";
+	highlights: string[];
 	features: string[];
 	buttonText: string;
-	buttonVariant: "primary" | "secondary" | "outline";
-	storage?: string;
-	queries?: string;
+	buttonHref: string;
 	popular?: boolean;
 	badge?: string;
 }
 
-export interface PricingConfig {
-	yearlyDiscount: number;
-}
-
 // Plan types
-export type PlanType = "free" | "basic" | "business" | "enterprise";
+export type PlanType = "free" | "starter" | "business" | "enterprise";
 
 export const plans: PricingPlan[] = [
 	{
@@ -25,48 +20,55 @@ export const plans: PricingPlan[] = [
 		name: "Free",
 		description: "For individuals getting started",
 		price: 0,
-		storage: "1GB",
-		queries: "100",
+		highlights: ["500 credits / month", "2 workspaces", "Unlimited members"],
 		features: [
-			"1 workspace",
-			"Basic document processing",
+			"PDF, DOCX & image redaction",
+			"Custom redaction policy",
+			"Google & Microsoft SSO",
+			"REST API & SDKs",
+			"Audit logs",
 			"Community support",
-			"7-day data retention",
 		],
 		buttonText: "Get Started",
-		buttonVariant: "outline",
+		buttonHref: "https://app.nvisy.com/auth/signup",
 	},
 	{
-		id: "basic",
-		name: "Basic",
-		description: "For small teams and projects",
-		price: 29,
-		storage: "10GB",
-		queries: "2,500",
+		id: "starter",
+		name: "Starter",
+		description: "For small teams and startups",
+		price: 49,
+		highlights: ["5,000 credits / month", "5 workspaces", "Unlimited members"],
 		features: [
-			"5 workspaces",
-			"Team collaboration",
-			"API access",
+			"All Free features",
+			"Audio, CSV, JSON & XLSX",
+			"Batch processing",
+			"Compliance reports",
+			"Webhooks & Integrations",
 			"Email support",
 		],
 		buttonText: "Start Free Trial",
-		buttonVariant: "outline",
+		buttonHref: "https://app.nvisy.com/auth/signup",
 	},
 	{
 		id: "business",
 		name: "Business",
 		description: "For growing businesses",
-		price: 99,
-		storage: "50GB",
-		queries: "25,000",
-		features: [
+		price: 199,
+		highlights: [
+			"25,000 credits / month",
 			"Unlimited workspaces",
-			"Integrations & Webhooks",
-			"Priority support",
-			"Advanced analytics",
+			"Unlimited members",
 		],
-		buttonText: "Start Free Trial",
-		buttonVariant: "primary",
+		features: [
+			"All Starter features",
+			"SSO/SAML",
+			"HIPAA & CCPA",
+			"Webhooks & Integrations",
+			"Compliance reports",
+			"Priority support",
+		],
+		buttonText: "Start Trial",
+		buttonHref: "https://app.nvisy.com/auth/signup",
 		popular: true,
 		badge: "Most Popular",
 	},
@@ -75,19 +77,18 @@ export const plans: PricingPlan[] = [
 		name: "Enterprise",
 		description: "For large organizations",
 		price: "custom",
-		storage: "Unlimited",
-		queries: "Unlimited",
+		highlights: [
+			"Unlimited credits",
+			"Unlimited workspaces",
+			"Unlimited members",
+		],
 		features: [
-			"Everything in Business",
-			"On-premise deployment",
-			"24/7 dedicated support",
+			"All Business features",
+			"Self-hosted deployment",
+			"Custom integrations",
 			"Custom SLA",
 		],
 		buttonText: "Contact Sales",
-		buttonVariant: "outline",
+		buttonHref: "/contact",
 	},
 ];
-
-export const pricingConfig: PricingConfig = {
-	yearlyDiscount: 0.2, // 20% discount
-};

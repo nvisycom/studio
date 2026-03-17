@@ -11,14 +11,15 @@ import {
 import { Layout } from "@/layouts";
 ---
 
-<Layout title="Pricing" description="Choose the perfect plan for your needs. Simple, transparent pricing with no hidden fees." hideFooterBorder>
+<Layout title="Pricing" description="Usage-based pricing for data redaction. Start free with 500 credits per month." hideFooterBorder>
   <Hero
     title="Pricing"
-    description="Start free and scale as you grow. No hidden fees or surprise charges."
+    description="Use Nvisy for free with your whole team. Upgrade to enable unlimited workspaces, enhanced security controls, and additional features."
+    primaryCta={null}
     compact
   />
 
-  <PricingCards client:load />
+  <PricingCards />
 
   <SocialProof
     showTitle={false}
@@ -34,9 +35,9 @@ import { Layout } from "@/layouts";
   />
 
   <CTA
-    title="Ready to get started?"
-    description="Join thousands of companies already using our platform."
-    primaryCta={{ text: "Start Free Trial", href: "https://app.nvisy.com/auth/signup" }}
+    title="Ready to protect your data?"
+    description="Deploy automated redaction in minutes. No credit card required."
+    primaryCta={{ text: "Start Free", href: "https://app.nvisy.com/auth/signup" }}
     secondaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com" }}
   />
 

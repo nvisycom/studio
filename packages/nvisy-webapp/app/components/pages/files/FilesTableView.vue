@@ -11,7 +11,6 @@ import {
 	Trash2,
 	Pencil,
 	File as FileIcon,
-	MessageCircle,
 } from "lucide-vue-next";
 import type { File as NvisyFile } from "@nvisy/sdk/datatypes";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -42,7 +41,6 @@ interface Emits {
 	(e: "toggle-select-all"): void;
 	(e: "toggle-selection", fileId: string): void;
 	(e: "view", fileId: string): void;
-	(e: "chat", file: NvisyFile): void;
 	(e: "edit", file: NvisyFile): void;
 	(e: "download", file: NvisyFile): void;
 	(e: "delete", file: NvisyFile): void;
@@ -315,13 +313,6 @@ function handleRowContextMenu(event: MouseEvent, file: NvisyFile) {
           >
             <Eye :size="14" class="mr-2" />
             {{ t("files.actions.openInStudio") }}
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            class="cursor-pointer"
-            @click="emit('chat', contextMenuFile)"
-          >
-            <MessageCircle :size="14" class="mr-2" />
-            {{ t("files.actions.chat") }}
           </DropdownMenuItem>
           <DropdownMenuItem
             class="cursor-pointer"

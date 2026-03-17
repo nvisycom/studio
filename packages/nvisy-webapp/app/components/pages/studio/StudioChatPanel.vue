@@ -3,7 +3,6 @@ import type { Component } from "vue";
 import {
 	Send,
 	ChevronDown,
-	Maximize2,
 	Split,
 	Merge,
 	Edit3,
@@ -360,16 +359,6 @@ function startResize(e: MouseEvent) {
             </Button>
           </div>
           <div class="flex items-center gap-1">
-            <Button
-              as-child
-              variant="outline"
-              size="sm"
-              class="h-7 w-7 p-0 cursor-pointer"
-            >
-              <NuxtLink to="/files/chat" title="Open full chat">
-                <Maximize2 :size="14" />
-              </NuxtLink>
-            </Button>
             <Button
               size="sm"
               class="h-7 w-7 p-0 cursor-pointer"

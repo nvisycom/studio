@@ -1,26 +1,26 @@
 [
 	{
-		"title": "Claims Processing",
-		"description": "Extract policyholder data from claims documentation for faster processing when sharing with third-party adjusters, legal counsel, or fraud investigators."
+		"title": "Claims Document Redaction",
+		"description": "Redact policyholder SSNs, policy numbers, and medical details from claims files before sharing with adjusters."
 	},
 	{
-		"title": "Underwriting",
-		"description": "Extract key data from underwriting documents, medical records, and financial statements for faster risk assessment."
+		"title": "Underwriting Data Protection",
+		"description": "Strip applicant financials and medical history from underwriting files shared across departments."
 	},
 	{
-		"title": "Fraud Investigation",
-		"description": "Extract and structure claim details and supporting documentation for fraud investigation units with comprehensive data capture."
+		"title": "Fraud Investigation Support",
+		"description": "Remove irrelevant PII from claim documentation routed to fraud investigation units while preserving case evidence."
 	},
 	{
-		"title": "Regulatory Compliance",
-		"description": "Transform policy and claims documents into structured data for state insurance department audits and regulatory filings."
+		"title": "Regulatory Filing Prep",
+		"description": "Redact policyholder data from documents submitted to state insurance departments and regulatory audits."
 	},
 	{
-		"title": "Litigation Support",
-		"description": "Extract key information from policyholder documents for litigation, arbitration, or legal discovery processes."
+		"title": "Litigation Discovery",
+		"description": "Redact privileged and sensitive policyholder information from documents produced for legal discovery."
 	},
 	{
-		"title": "Agent & Broker Sharing",
-		"description": "Extract and share structured policy information and claim updates with agents and brokers for better service."
+		"title": "Broker & Agent Sharing",
+		"description": "Remove sensitive policyholder details before sharing policy updates and claim summaries with distribution partners."
 	}
 ]

@@ -1,0 +1,74 @@
+---
+import { Layout } from "@/layouts";
+import { Hero, CTA, OpenSource, Security, Features } from "@/components";
+import DownloadButtons from "@/components/features/studio/DownloadButtons.vue";
+import GithubIcon from "@/assets/icons/github.svg?raw";
+---
+
+<Layout
+  title="Nvisy Studio"
+  description="Cross-platform desktop application for data redaction. Works with Nvisy Server. Open source and built with Tauri and Vue."
+  hideFooterBorder
+>
+  <Hero
+    title="Nvisy"
+    titleHighlight="Studio"
+    titleInline={true}
+    description="Cross-platform desktop application with intuitive UI for data redaction. Open source, lightweight, and built with Tauri and Vue."
+    primaryCta={null}
+    compact
+  >
+    <div slot="buttons" class="w-full">
+      <DownloadButtons client:load />
+    </div>
+  </Hero>
+
+  <Features
+    title="Why Nvisy Studio?"
+    description="A lightweight, secure desktop application that combines native performance with modern web technologies."
+    category="studio"
+    featured={true}
+  />
+
+  <!-- Built in the Open -->
+  <section class="py-24 md:py-32 border-t border-border">
+    <div class="container mx-auto px-4">
+      <div class="max-w-5xl mx-auto text-center">
+        <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
+          Built in the open
+        </h2>
+        <p class="text-lg text-muted-foreground max-w-2xl mx-auto mb-12">
+          Nvisy Studio is open source and MIT licensed. Contribute to the project, report issues, or fork it for your own needs.
+        </p>
+
+        <div class="flex flex-col items-center gap-4">
+          <a
+            href="https://github.com/nvisycom/studio"
+            class="inline-flex items-center justify-center gap-2 bg-foreground text-background font-medium py-3 px-8 rounded-xl hover:opacity-90 transition-opacity"
+          >
+            <span class="w-5 h-5 flex-shrink-0 [&>svg]:w-full [&>svg]:h-full">
+              <Fragment set:html={GithubIcon} />
+            </span>
+            <span>View on GitHub</span>
+          </a>
+          <p class="text-sm text-muted-foreground">
+            Latest version: v1.0.0 · <a href="https://github.com/nvisycom/studio/releases" class="hover:text-foreground transition-colors underline">View all releases</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <OpenSource
+    title="Open source ecosystem"
+    description="Nvisy Studio is part of our open source ecosystem. Explore our other projects and contribute to the community."
+  />
+
+  <CTA
+    title="Ready to get started?"
+    description="Download Nvisy Studio and connect it to Nvisy Server."
+    primaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com/studio" }}
+    secondaryCta={{ text: "View on GitHub", href: "https://github.com/nvisycom/studio" }}
+  />
+  <Security />
+</Layout>

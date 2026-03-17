@@ -1,35 +1,33 @@
 import type { ProductSection } from "./nav-types";
-import { Braces, Code, Server, Terminal } from "lucide-vue-next";
+import { Braces, Puzzle, Server, Terminal } from "lucide-vue-next";
 
 export const products: ProductSection = {
 	platforms: [
 		{
-			title: "Nvisy Server",
-			href: "/products/server",
-			description: "Cloud & on-premise deployment",
+			title: "Features",
+			href: "/features",
+			description: "Redaction capabilities & formats",
 			icon: Server,
 		},
 		{
-			title: "Nvisy Studio",
-			href: "/products/studio",
-			description: "Cross-platform desktop app",
+			title: "Runtime",
+			href: "/runtime",
+			description: "Self-hosted redaction engine",
 			icon: Terminal,
 		},
 	],
 	opensource: [
 		{
-			title: "TypeScript SDK",
-			href: "https://github.com/nvisycom/sdk-ts",
-			description: "Modern JavaScript/TypeScript SDK",
+			title: "SDKs",
+			href: "/sdks",
+			description: "Libraries for every language",
 			icon: Braces,
-			isExternal: true,
 		},
 		{
-			title: "Python SDK",
-			href: "https://github.com/nvisycom/sdk-py",
-			description: "Native Python library",
-			icon: Code,
-			isExternal: true,
+			title: "Integrations",
+			href: "/integrations",
+			description: "Connect your tools",
+			icon: Puzzle,
 		},
 	],
 };

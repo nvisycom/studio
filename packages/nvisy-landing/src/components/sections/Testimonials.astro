@@ -1,6 +1,6 @@
 ---
 import { getCollection, getEntry } from "astro:content";
-import type { TestimonialItem } from "@/content/config";
+import type { TestimonialItem } from "@/content.config";
 
 export interface Props {
 	title?: string;
@@ -35,8 +35,12 @@ let allTestimonials: TestimonialItem[] = (await getTestimonials(category))
 if (limit) {
 	allTestimonials = allTestimonials.slice(0, limit);
 }
+
+// Don't render if too few testimonials for a meaningful carousel
+const minTestimonials = 4;
 ---
 
+{allTestimonials.length >= minTestimonials && (
 <section class="py-24 md:py-32">
   <div class="container mx-auto max-w-7xl px-4">
     <div class="scroll-reveal text-center mb-16" data-reveal>
@@ -221,3 +225,4 @@ if (limit) {
     }
   }
 </style>
+)}

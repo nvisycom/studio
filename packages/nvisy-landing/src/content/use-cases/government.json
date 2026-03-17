@@ -1,26 +1,26 @@
 [
 	{
-		"title": "FOIA Requests",
-		"description": "Process Freedom of Information Act requests by automatically extracting and structuring document data for efficient response preparation."
+		"title": "FOIA Response Redaction",
+		"description": "Redact exempt information from public records requests — names, addresses, case numbers — before release."
 	},
 	{
-		"title": "Public Records",
-		"description": "Extract structured data from court documents, police reports, and administrative records for digitization and searchability."
+		"title": "Citizen Records Processing",
+		"description": "Remove PII from benefit applications, tax filings, and permit documents when transferring between agencies."
 	},
 	{
-		"title": "Case Management",
-		"description": "Extract key information from case files, investigation reports, and legal documents for inter-agency sharing and case coordination."
+		"title": "Law Enforcement Reports",
+		"description": "Redact witness identities, victim information, and officer details from incident reports shared publicly."
 	},
 	{
-		"title": "Citizen Services",
-		"description": "Process citizen applications, permits, licenses, and service requests by extracting structured data for faster processing."
+		"title": "Contract & Procurement",
+		"description": "Strip proprietary terms and personal data from bids, contracts, and procurement documents before public disclosure."
 	},
 	{
-		"title": "Procurement & Contracts",
-		"description": "Extract key terms and data from procurement documents, bids, and contracts for analysis and compliance tracking."
+		"title": "Inter-Agency Data Sharing",
+		"description": "Redact sensitive fields from datasets shared across departments while keeping operational data intact."
 	},
 	{
-		"title": "Internal Communications",
-		"description": "Extract and structure data from internal emails, memos, and reports for knowledge management and searchability."
+		"title": "Public Meeting Records",
+		"description": "Remove citizen PII from meeting transcripts and correspondence before posting to public portals."
 	}
 ]
