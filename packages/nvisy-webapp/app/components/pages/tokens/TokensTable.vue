@@ -2,19 +2,19 @@
 import type { ApiToken } from "@nvisy/sdk/datatypes";
 import { Trash2, Edit, Key } from "lucide-vue-next";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-  ContextMenuSeparator,
+	ContextMenu,
+	ContextMenuContent,
+	ContextMenuItem,
+	ContextMenuTrigger,
+	ContextMenuSeparator,
 } from "@/components/ui/context-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
@@ -24,18 +24,18 @@ import { formatRelativeTime, formatRelativeTimeFuture } from "@/utils/date";
 const truncateId = (id: string): string => id.slice(0, 8);
 
 interface Props {
-  tokens: ApiToken[];
-  selectedTokens: Set<string>;
-  allSelected: boolean;
-  currentTokenId?: string | null;
+	tokens: ApiToken[];
+	selectedTokens: Set<string>;
+	allSelected: boolean;
+	currentTokenId?: string | null;
 }
 
 interface Emits {
-  (e: "toggleSelectAll"): void;
-  (e: "toggleToken", tokenId: string): void;
-  (e: "deleteToken", token: ApiToken): void;
-  (e: "deleteSelected"): void;
-  (e: "renameToken", token: ApiToken): void;
+	(e: "toggleSelectAll"): void;
+	(e: "toggleToken", tokenId: string): void;
+	(e: "deleteToken", token: ApiToken): void;
+	(e: "deleteSelected"): void;
+	(e: "renameToken", token: ApiToken): void;
 }
 
 const props = defineProps<Props>();
@@ -45,49 +45,49 @@ const { t } = useI18n();
 
 // Helper functions
 const isTokenSelected = (tokenId: string): boolean =>
-  props.selectedTokens.has(tokenId);
+	props.selectedTokens.has(tokenId);
 
 const isCurrentToken = (tokenId: string): boolean =>
-  props.currentTokenId === tokenId;
+	props.currentTokenId === tokenId;
 
 const canSelectToken = (token: ApiToken): boolean => !isCurrentToken(token.id);
 
 const isTokenExpired = (token: ApiToken): boolean => {
-  if (!token.expiredAt) return false;
-  return new Date(token.expiredAt) < new Date();
+	if (!token.expiredAt) return false;
+	return new Date(token.expiredAt) < new Date();
 };
 
 function handleRowClick(token: ApiToken) {
-  if (canSelectToken(token)) {
-    emit("toggleToken", token.id);
-  }
+	if (canSelectToken(token)) {
+		emit("toggleToken", token.id);
+	}
 }
 
 const formatDate = (date: string | null | undefined): string => {
-  if (!date) return t("tokens.table.info.never");
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "2-digit",
-  }).format(new Date(date));
+	if (!date) return t("tokens.table.info.never");
+	return new Intl.DateTimeFormat("en-GB", {
+		day: "2-digit",
+		month: "2-digit",
+		year: "2-digit",
+	}).format(new Date(date));
 };
 
 const getSessionTypeColor = (type: string): string => {
-  const colors: Record<string, string> = {
-    web: "bg-blue-500",
-    api: "bg-purple-500",
-    cli: "bg-orange-500",
-  };
-  return colors[type.toLowerCase()] || "bg-neutral-500";
+	const colors: Record<string, string> = {
+		web: "bg-blue-500",
+		api: "bg-purple-500",
+		cli: "bg-orange-500",
+	};
+	return colors[type.toLowerCase()] || "bg-neutral-500";
 };
 
 const getSessionTypeInitial = (type: string): string => {
-  const initials: Record<string, string> = {
-    web: "W",
-    api: "A",
-    cli: "C",
-  };
-  return initials[type.toLowerCase()] || "T";
+	const initials: Record<string, string> = {
+		web: "W",
+		api: "A",
+		cli: "C",
+	};
+	return initials[type.toLowerCase()] || "T";
 };
 </script>
 
