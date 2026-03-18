@@ -75,24 +75,6 @@ packages/
 └── nvisy-webapp/     # Web application (Nuxt + Vue)
 ```
 
-## Tech Stack
-
-| Category | Technology |
-|----------|------------|
-| Landing | Astro 6, Vue 3 |
-| Webapp | Nuxt 4, Vue 3 |
-| Styling | Tailwind CSS 4, shadcn-vue |
-| Testing | Vitest (unit), Playwright (E2E) |
-| Linting | Biome |
-| Types | TypeScript 5 (strict) |
-
-## Code Style
-
-- **Biome** handles formatting and linting — TAB indentation, double quotes
-- **Vue**: Composition API with `<script setup>`
-- **TypeScript**: Strict mode enabled
-- Path aliases: `@/*` maps to `src/` (landing) or `app/` (webapp)
-
 ## Pull Requests
 
 1. Create a feature branch from `main`
