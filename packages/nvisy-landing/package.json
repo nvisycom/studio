@@ -23,15 +23,15 @@
 	},
 	"dependencies": {
 		"@astrojs/check": "^0.9.8",
-		"@astrojs/mdx": "^5.0.1",
+		"@astrojs/mdx": "^5.0.2",
 		"@astrojs/sitemap": "^3.7.1",
 		"@astrojs/vue": "^6.0.1",
 		"@nvisy/config": "file:../nvisy-config",
 		"@nvisy/shared": "file:../nvisy-shared",
 		"@plausible-analytics/tracker": "^0.4.4",
-		"@tailwindcss/vite": "^4.2.1",
+		"@tailwindcss/vite": "^4.2.2",
 		"@vueuse/core": "^14.2.1",
-		"astro": "^6.0.5",
+		"astro": "^6.0.8",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"lucide-vue-next": "^0.577.0",
@@ -42,11 +42,11 @@
 		"vue": "^3.5.30"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.4.7",
+		"@biomejs/biome": "^2.4.8",
 		"@playwright/test": "^1.58.2",
 		"@types/node": "^25.5.0",
 		"@vitest/coverage-v8": "^4.1.0",
-		"jsdom": "^29.0.0",
+		"jsdom": "^29.0.1",
 		"sharp": "^0.34.5",
 		"typescript": "^5.9.3",
 		"vitest": "^4.1.0"
