@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import * as constant from "@/constants.ts";
+import * as constant from "./constants.ts";
 
 describe("constant", () => {
 	it("should export constants", () => {

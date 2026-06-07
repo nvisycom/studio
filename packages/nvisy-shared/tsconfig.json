@@ -17,9 +17,6 @@
 		"declaration": true,
 		"declarationDir": "dist",
 		"outDir": "./dist",
-		"paths": {
-			"@/*": ["./src/*"]
-		},
 
 		"esModuleInterop": true,
 		"isolatedModules": true,

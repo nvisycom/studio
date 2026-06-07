@@ -3,5 +3,8 @@
 	"private": true,
 	"workspaces": [
 		"packages/*"
-	]
+	],
+	"overrides": {
+		"vite": "^7.3.2"
+	}
 }
