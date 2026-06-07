@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { Check, Copy, ExternalLink, Package } from "lucide-vue-next";
+import { Check, Copy, ExternalLink, Package } from "@lucide/vue";
 import TypeScriptIcon from "@/assets/languages/typescript.svg?raw";
 import PythonIcon from "@/assets/languages/python.svg?raw";
 import RustIcon from "@/assets/languages/rust.svg?raw";

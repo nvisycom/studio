@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { Handle, Position } from "@vue-flow/core";
-import { Split } from "lucide-vue-next";
+import { Split } from "@lucide/vue";
 
 interface ExtensionConfig {
 	id: string;

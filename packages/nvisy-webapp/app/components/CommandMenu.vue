@@ -20,7 +20,7 @@ import {
 	Sun,
 	MessageSquare,
 	Copy,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 import {
 	Command,
 	CommandEmpty,

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { MessageSquare } from "lucide-vue-next";
+import { MessageSquare } from "@lucide/vue";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,6 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-// biome-ignore lint/style/useImportType: HeaderTabs is used at runtime via typeof
 import {
 	HeaderTabs,
 	FeedbackModal,

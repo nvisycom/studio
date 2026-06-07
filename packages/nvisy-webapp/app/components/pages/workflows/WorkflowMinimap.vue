@@ -2,7 +2,7 @@
 import { ref, computed } from "vue";
 import { MiniMap } from "@vue-flow/minimap";
 import { useVueFlow, type GraphNode } from "@vue-flow/core";
-import { Map, X, Plus, Minus } from "lucide-vue-next";
+import { MapIcon, X, Plus, Minus } from "@lucide/vue";
 
 import "@vue-flow/minimap/dist/style.css";
 
@@ -89,7 +89,7 @@ const canZoomOut = computed(() => viewport.value.zoom > MIN_ZOOM);
         title="Show minimap"
         @click="toggleMinimap"
       >
-        <Map class="w-3.5 h-3.5" />
+        <MapIcon class="w-3.5 h-3.5" />
       </button>
     </Transition>
 

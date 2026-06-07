@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { Handle, Position } from "@vue-flow/core";
-import { Languages } from "lucide-vue-next";
+import { Languages } from "@lucide/vue";
 
 interface LanguageConfig {
 	id: string;

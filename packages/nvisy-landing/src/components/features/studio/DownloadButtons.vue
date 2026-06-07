@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
-import { Download, Apple, Monitor } from "lucide-vue-next";
+import { Download, Apple, Monitor } from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 
 interface DownloadOption {

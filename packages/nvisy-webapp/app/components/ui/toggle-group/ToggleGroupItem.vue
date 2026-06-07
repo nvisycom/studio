@@ -6,7 +6,6 @@ import { reactiveOmit } from "@vueuse/core";
 import { ToggleGroupItem, useForwardProps } from "reka-ui";
 import { inject } from "vue";
 import { cn } from "@/utils/shadcn";
-// biome-ignore lint/style/useImportType: toggleVariants is used at runtime via typeof
 import { toggleVariants } from "@/components/ui/toggle";
 
 type ToggleGroupVariants = VariantProps<typeof toggleVariants>;

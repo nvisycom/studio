@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Member, WorkspaceRole } from "@nvisy/sdk/datatypes";
-import { Loader2 } from "lucide-vue-next";
+import { Loader2 } from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,

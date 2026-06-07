@@ -1,22 +1,15 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.4.7/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.4.16/schema.json",
+	"root": false,
+	"extends": "//",
 	"vcs": {
-		"enabled": false,
-		"clientKind": "git",
 		"useIgnoreFile": false
 	},
 	"files": {
-		"ignoreUnknown": false,
 		"includes": ["**", "!.output", "!.nuxt"]
 	},
-	"formatter": {
-		"enabled": true,
-		"indentStyle": "tab"
-	},
 	"linter": {
-		"enabled": true,
 		"rules": {
-			"recommended": true,
 			"correctness": {
 				"noUnusedVariables": "off",
 				"noUnusedImports": "off"
@@ -27,11 +20,6 @@
 			"style": {
 				"noNonNullAssertion": "off"
 			}
-		}
-	},
-	"javascript": {
-		"formatter": {
-			"quoteStyle": "double"
 		}
 	},
 	"css": {
@@ -48,5 +36,27 @@
 	},
 	"assist": {
 		"enabled": false
-	}
+	},
+	"overrides": [
+		{
+			"includes": ["app/components/ui/**"],
+			"linter": {
+				"rules": {
+					"correctness": {
+						"noVueDuplicateKeys": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["**/*.vue"],
+			"linter": {
+				"rules": {
+					"style": {
+						"useImportType": "off"
+					}
+				}
+			}
+		}
+	]
 }

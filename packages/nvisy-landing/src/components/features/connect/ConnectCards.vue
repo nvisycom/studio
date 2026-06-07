@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Plug2, Webhook } from "lucide-vue-next";
+import { Plug2, Webhook } from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 import IntegrationAnimation from "./IntegrationAnimation.vue";
 import WebhookAnimation from "./WebhookAnimation.vue";

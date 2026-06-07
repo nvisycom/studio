@@ -21,7 +21,7 @@ import {
 	BookOpen,
 	DatabaseZap,
 	Link,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 import DiscordIcon from "@/components/icons/DiscordIcon.vue";
 import SlackIcon from "@/components/icons/SlackIcon.vue";
 // Node components

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
-import { Calendar } from "lucide-vue-next";
+import { Calendar } from "@lucide/vue";
 import { Badge } from "@/components/ui/badge";
 import { webhookEvents, type WebhookEvent } from "./webhooks";
 

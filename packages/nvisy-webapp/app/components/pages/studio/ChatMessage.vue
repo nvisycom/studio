@@ -7,7 +7,7 @@ import {
 	ThumbsDown,
 	RefreshCw,
 	Pencil,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 
 interface Message {

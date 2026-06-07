@@ -7,7 +7,7 @@ import type {
 	SortOrder,
 	WorkspaceRole,
 } from "@nvisy/sdk/datatypes";
-import { Search, ChevronDown, Loader2 } from "lucide-vue-next";
+import { Search, ChevronDown, Loader2 } from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MembersTable, InvitesTable } from "~/components/pages/team";

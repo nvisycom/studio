@@ -1,5 +1,5 @@
 import type { FunctionalComponent } from "vue";
-import { Cloud, Cpu, Send } from "lucide-vue-next";
+import { Cloud, Cpu, Send } from "@lucide/vue";
 
 export interface IntegrationStep {
 	id: number;

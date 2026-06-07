@@ -8,7 +8,7 @@ import {
 	FileJson,
 	GitBranch,
 	Workflow,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 
 interface Props {
 	data: {

@@ -1,5 +1,5 @@
 import type { ProductSection } from "./nav-types";
-import { Braces, Puzzle, Server, Terminal } from "lucide-vue-next";
+import { Braces, Puzzle, Server, Terminal } from "@lucide/vue";
 
 export const products: ProductSection = {
 	platforms: [

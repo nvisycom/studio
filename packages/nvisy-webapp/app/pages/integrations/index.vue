@@ -5,7 +5,7 @@ import {
 	Loader2,
 	Plug,
 	PlugZap,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 import { toast } from "vue-sonner";
 import type {
 	Integration,

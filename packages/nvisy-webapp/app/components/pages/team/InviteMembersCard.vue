@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { InviteExpiration, WorkspaceRole } from "@nvisy/sdk/datatypes";
-import { Copy, Check, ChevronDown, Loader2, Send } from "lucide-vue-next";
+import { Copy, Check, ChevronDown, Loader2, Send } from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {

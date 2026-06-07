@@ -10,7 +10,7 @@ import {
 	ExternalLink,
 	User,
 	Key,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 import { EntityAvatar } from "@/components/common";
 import {
 	DropdownMenu,

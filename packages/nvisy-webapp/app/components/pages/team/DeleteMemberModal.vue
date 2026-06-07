@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Member } from "@nvisy/sdk/datatypes";
-import { AlertCircle } from "lucide-vue-next";
+import { AlertCircle } from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,

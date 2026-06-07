@@ -2,7 +2,7 @@
 import { Layout } from "@/layouts";
 import { Hero } from "@/components";
 import { getCollection } from "astro:content";
-import { Sparkles } from "lucide-vue-next";
+import { Sparkles } from "@lucide/vue";
 import ChangelogSections from "@/components/features/changelog/ChangelogSections.vue";
 
 const changelogEntries = (await getCollection("changelog")).sort(

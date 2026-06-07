@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ChartConfig } from "@/components/ui/chart";
 import { VisArea, VisAxis, VisLine, VisXYContainer } from "@unovis/vue";
-import { Upload, Download } from "lucide-vue-next";
+import { Upload, Download } from "@lucide/vue";
 import {
 	ChartContainer,
 	ChartCrosshair,

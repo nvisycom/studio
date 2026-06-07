@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Integration } from "@nvisy/sdk/datatypes";
-import { Edit, Trash2, HardDrive, Webhook, Box } from "lucide-vue-next";
+import { Edit, Trash2, HardDrive, Webhook, Box } from "@lucide/vue";
 import { Badge } from "@/components/ui/badge";
 import {
 	Table,

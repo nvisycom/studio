@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Layers, User } from "lucide-vue-next";
+import { Layers, User } from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 import CreateWorkspaceModal from "@/components/sidebar/CreateWorkspaceModal.vue";
 

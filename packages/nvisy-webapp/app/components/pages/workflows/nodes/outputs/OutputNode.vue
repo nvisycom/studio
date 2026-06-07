@@ -8,7 +8,7 @@ import {
 	MessageSquare,
 	Waypoints,
 	DatabaseZap,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 
 interface Props {
 	data: {

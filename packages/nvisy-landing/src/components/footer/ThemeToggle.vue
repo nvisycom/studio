@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { Sun, Moon, Monitor } from "lucide-vue-next";
+import { Sun, Moon, Monitor } from "@lucide/vue";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 type Theme = "light" | "dark" | "system";

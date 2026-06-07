@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
-import { Check, Calendar } from "lucide-vue-next";
+import { Check, Calendar } from "@lucide/vue";
 import { Spinner } from "@/components/ui/spinner";
 import { Badge } from "@/components/ui/badge";
 import { integrationSteps } from "./integrations";

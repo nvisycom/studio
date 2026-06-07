@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Webhook } from "@nvisy/sdk/datatypes";
-import { AlertCircle, Loader2 } from "lucide-vue-next";
+import { AlertCircle, Loader2 } from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,

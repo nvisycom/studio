@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, nextTick } from "vue";
 import type { Node } from "@vue-flow/core";
-import { GripVertical } from "lucide-vue-next";
+import { GripVertical } from "@lucide/vue";
 import { WorkflowCanvas } from "~/components/pages/workflows";
 import WorkflowChatPanel from "~/components/pages/workflows/WorkflowChatPanel.vue";
 

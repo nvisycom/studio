@@ -7,7 +7,7 @@ import {
 	Clock,
 	XCircle,
 	FileText,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 import {
 	Table,
 	TableBody,

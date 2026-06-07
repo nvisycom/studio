@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Webhook } from "@nvisy/sdk/datatypes";
-import { Edit, Play, Trash2 } from "lucide-vue-next";
+import { Edit, Play, Trash2 } from "@lucide/vue";
 import { Switch } from "@/components/ui/switch";
 import {
 	Table,

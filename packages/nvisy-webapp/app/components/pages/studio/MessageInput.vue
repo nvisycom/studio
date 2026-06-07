@@ -7,7 +7,7 @@ import {
 	Upload,
 	Sparkles,
 	FileText,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 

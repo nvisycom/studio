@@ -5,7 +5,7 @@ import type {
 	ApiTokenWithJWT,
 	TokenExpiration,
 } from "@nvisy/sdk/datatypes";
-import { ChevronDown, Key, Loader2 } from "lucide-vue-next";
+import { ChevronDown, Key, Loader2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 
 function getErrorMessage(err: unknown, fallback: string): string {

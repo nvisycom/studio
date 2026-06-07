@@ -8,7 +8,7 @@ import {
 	Edit3,
 	FileOutput,
 	Merge,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";

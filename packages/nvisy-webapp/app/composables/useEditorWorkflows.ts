@@ -167,7 +167,7 @@ export function useEditorWorkflows() {
 	// Mark workflow as clean (saved)
 	function markClean(workflowId: string) {
 		const workflow = openWorkflows.value.get(workflowId);
-		if (workflow && workflow.isDirty) {
+		if (workflow?.isDirty) {
 			openWorkflows.value.set(workflowId, { ...workflow, isDirty: false });
 			persistState();
 		}

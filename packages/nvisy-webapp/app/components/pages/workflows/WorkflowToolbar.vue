@@ -1,13 +1,6 @@
 <script setup lang="ts">
 import { useVueFlow } from "@vue-flow/core";
-import {
-	Undo2,
-	Redo2,
-	Trash2,
-	Play,
-	Save,
-	MoreHorizontal,
-} from "lucide-vue-next";
+import { Undo2, Redo2, Trash2, Play, Save, MoreHorizontal } from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,

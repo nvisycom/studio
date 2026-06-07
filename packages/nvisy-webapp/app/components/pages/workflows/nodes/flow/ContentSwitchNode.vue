@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { Handle, Position } from "@vue-flow/core";
-import { FileType } from "lucide-vue-next";
+import { FileType } from "@lucide/vue";
 
 interface ContentTypeConfig {
 	id: string;

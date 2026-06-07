@@ -9,7 +9,7 @@ import {
 	Trash2,
 	Pencil,
 	File as FileIcon,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 import type { File as NvisyFile } from "@nvisy/sdk/datatypes";
 import { Checkbox } from "@/components/ui/checkbox";
 import {

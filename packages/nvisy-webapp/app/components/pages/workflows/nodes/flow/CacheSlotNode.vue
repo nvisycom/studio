@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Handle, Position } from "@vue-flow/core";
-import { Link } from "lucide-vue-next";
+import { Link } from "@lucide/vue";
 
 interface Props {
 	data: {

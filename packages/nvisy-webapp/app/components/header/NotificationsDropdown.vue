@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Bell, Loader2, Inbox } from "lucide-vue-next";
+import { Bell, Loader2, Inbox } from "@lucide/vue";
 
 const notificationsTab = ref("inbox");
 const isOpen = ref(false);

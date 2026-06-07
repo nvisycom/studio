@@ -10,7 +10,7 @@ import {
 	Highlighter,
 	MessageSquare,
 	GripHorizontal,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Kbd } from "@/components/ui/kbd";

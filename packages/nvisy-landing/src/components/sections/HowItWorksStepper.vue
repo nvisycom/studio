@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { Upload, FileSearch, FileCheck, ShieldCheck } from "lucide-vue-next";
+import { Upload, FileSearch, FileCheck, ShieldCheck } from "@lucide/vue";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const steps = [

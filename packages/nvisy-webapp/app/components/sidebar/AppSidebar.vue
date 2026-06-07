@@ -15,7 +15,7 @@ import {
 	PenTool,
 	Workflow,
 	SquareTerminal,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 import NavMain from "@/components/sidebar/NavMain.vue";
 import NavUser from "@/components/sidebar/NavUser.vue";
 import WorkspaceSwitcher from "@/components/sidebar/WorkspaceSwitcher.vue";

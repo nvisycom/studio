@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, nextTick } from "vue";
 import type { Node, Edge } from "@vue-flow/core";
-import { Trash2, Copy, Pencil, Settings, Search } from "lucide-vue-next";
+import { Trash2, Copy, Pencil, Settings, Search } from "@lucide/vue";
 import {
 	DropdownMenu,
 	DropdownMenuContent,

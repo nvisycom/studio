@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import type { Node } from "@vue-flow/core";
-import { Send, GripHorizontal, Settings } from "lucide-vue-next";
+import { Send, GripHorizontal, Settings } from "@lucide/vue";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getConfigPanelForNodeType } from "./nodeRegistry";

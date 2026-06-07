@@ -11,7 +11,7 @@ import {
 	Play,
 	Clock,
 	XCircle,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 import { formatRelativeTime } from "@/utils/date";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

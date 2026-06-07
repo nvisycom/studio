@@ -2,7 +2,7 @@
 import type { ChartConfig } from "@/components/ui/chart";
 import { Donut } from "@unovis/ts";
 import { VisDonut, VisSingleContainer } from "@unovis/vue";
-import { Database, Cpu, HardDrive, Network } from "lucide-vue-next";
+import { Database, Cpu, HardDrive, Network } from "@lucide/vue";
 import {
 	ChartContainer,
 	ChartTooltip,

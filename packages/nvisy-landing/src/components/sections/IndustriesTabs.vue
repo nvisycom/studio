@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { Building2, Landmark, HeartPulse, ShieldCheck } from "lucide-vue-next";
+import { Building2, Landmark, HeartPulse, ShieldCheck } from "@lucide/vue";
 import type { FunctionalComponent } from "vue";
 
 interface UseCase {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import type { ApiToken } from "@nvisy/sdk/datatypes";
-import { Edit } from "lucide-vue-next";
+import { Edit } from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,

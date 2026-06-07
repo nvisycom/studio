@@ -17,7 +17,7 @@ import {
 	PlayCircle,
 	FolderOpen,
 	Workflow,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 
 const route = useRoute();
 const { t } = useI18n();

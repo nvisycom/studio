@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { Search } from "lucide-vue-next";
+import { Search } from "@lucide/vue";
 import {
 	Card,
 	CardContent,

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { NvisyApiError } from "@nvisy/sdk";
-import { Upload, Copy, Check, Loader2 } from "lucide-vue-next";
+import { Upload, Copy, Check, Loader2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, markRaw } from "vue";
 import { Handle, Position } from "@vue-flow/core";
-import { Webhook, Mail } from "lucide-vue-next";
+import { Webhook, Mail } from "@lucide/vue";
 import DiscordIcon from "@/components/icons/DiscordIcon.vue";
 import SlackIcon from "@/components/icons/SlackIcon.vue";
 

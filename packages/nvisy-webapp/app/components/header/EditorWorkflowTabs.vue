@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, nextTick } from "vue";
-import { Workflow, X, Plus, ChevronDown, Pencil } from "lucide-vue-next";
+import { Workflow, X, Plus, ChevronDown, Pencil } from "@lucide/vue";
 import {
 	Tooltip,
 	TooltipContent,

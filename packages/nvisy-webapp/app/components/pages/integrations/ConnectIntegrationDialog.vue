@@ -11,7 +11,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import type { LucideIcon } from "lucide-vue-next";
+import type { LucideIcon } from "@lucide/vue";
 
 interface Integration {
 	id: number;

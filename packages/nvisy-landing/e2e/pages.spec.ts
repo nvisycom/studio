@@ -7,8 +7,11 @@ const pages = [
 	{ path: "/customers", title: /Customers/ },
 	{ path: "/blog", title: /Blog/ },
 	{ path: "/legal", title: /Legal/ },
-	{ path: "/products/server", title: /Server/ },
-	{ path: "/products/studio", title: /Studio/ },
+	{ path: "/features", title: /Features/ },
+	{ path: "/runtime", title: /Runtime/ },
+	{ path: "/sdks", title: /SDKs/ },
+	{ path: "/integrations", title: /Integrations/ },
+	{ path: "/security", title: /Security/ },
 ];
 
 test.describe("Pages Load Successfully", () => {

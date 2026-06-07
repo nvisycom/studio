@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Member } from "@nvisy/sdk/datatypes";
-import { Users, Trash2, UserCog } from "lucide-vue-next";
+import { Users, Trash2, UserCog } from "@lucide/vue";
 import { EntityAvatar } from "@/components/common";
 import { Checkbox } from "@/components/ui/checkbox";
 import {

@@ -9,7 +9,7 @@ import {
 	Loader2,
 	Search,
 	Upload,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 import { computed, ref } from "vue";
 import { toast } from "vue-sonner";
 import { Button } from "@/components/ui/button";

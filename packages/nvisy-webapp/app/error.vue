@@ -1,14 +1,9 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { ArrowLeft, Home, RefreshCw } from "lucide-vue-next";
+import type { NuxtError } from "#app";
+import { ArrowLeft, Home, RefreshCw } from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/footer/ThemeToggle.vue";
-
-interface NuxtError {
-	statusCode: number;
-	message: string;
-	stack?: string;
-}
 
 const props = defineProps<{
 	error: NuxtError;

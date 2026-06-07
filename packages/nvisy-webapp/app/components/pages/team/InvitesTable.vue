@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Invite } from "@nvisy/sdk/datatypes";
-import { Mail, X, Copy, Trash2 } from "lucide-vue-next";
+import { Mail, X, Copy, Trash2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { EntityAvatar } from "@/components/common";
 import { Checkbox } from "@/components/ui/checkbox";

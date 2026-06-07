@@ -6,7 +6,7 @@ import {
 } from "@/components/footer";
 import { Separator } from "@/components/ui/separator";
 import { Toaster } from "@/components/ui/sonner";
-import { ExternalLink } from "lucide-vue-next";
+import { ExternalLink } from "@lucide/vue";
 import "vue-sonner/style.css";
 </script>
 

@@ -1,10 +1,5 @@
 <script setup lang="ts">
-import {
-	ZoomIn,
-	ZoomOut,
-	PanelRightClose,
-	PanelRightOpen,
-} from "lucide-vue-next";
+import { ZoomIn, ZoomOut, PanelRightClose, PanelRightOpen } from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 
 interface Props {

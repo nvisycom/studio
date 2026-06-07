@@ -1,4 +1,4 @@
-import { ref, computed, watch, type Ref } from "vue";
+import { ref, shallowRef, computed, watch, type Ref } from "vue";
 import type { Node, Edge } from "@vue-flow/core";
 
 interface HistoryState {
@@ -10,7 +10,10 @@ const MAX_HISTORY_SIZE = 50;
 const DEBOUNCE_DELAY = 300; // ms to wait before committing to history
 
 // Per-workflow history stacks - using reactive refs
-const historyStacks = ref<
+// shallowRef: the Map is mutated imperatively and reactivity is driven
+// explicitly via historyVersion, so deep reactivity on the cloned Node[]/Edge[]
+// snapshots is unwanted overhead (and triggers excessively-deep type recursion).
+const historyStacks = shallowRef<
 	Map<
 		string,
 		{

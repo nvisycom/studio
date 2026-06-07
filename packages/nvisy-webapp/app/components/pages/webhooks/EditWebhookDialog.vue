@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Webhook, WebhookEvent } from "@nvisy/sdk/datatypes";
-import { Loader2, Plus, X } from "lucide-vue-next";
+import { Loader2, Plus, X } from "@lucide/vue";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";

@@ -12,7 +12,7 @@ import {
 	Server,
 	Terminal,
 	Users,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 
 export const products: ProductSection = {
 	platforms: [

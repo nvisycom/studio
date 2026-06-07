@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { HardDrive, Zap, Files } from "lucide-vue-next";
+import { HardDrive, Zap, Files } from "@lucide/vue";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface Props {

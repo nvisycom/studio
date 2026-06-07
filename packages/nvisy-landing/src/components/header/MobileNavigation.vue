@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { watch, onMounted, onUnmounted } from "vue";
-import { Menu, X } from "lucide-vue-next";
+import { Menu, X } from "@lucide/vue";
 import { useMobileMenu } from "./useMobileMenu.ts";
 import { products } from "./mobile-nav-data";
 

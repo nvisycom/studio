@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { X, Send } from "lucide-vue-next";
+import { X, Send } from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 

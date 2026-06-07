@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from "vue";
-import { GripVertical } from "lucide-vue-next";
+import { GripVertical } from "@lucide/vue";
 import {
 	StudioDocumentPreview,
 	StudioChatPanel,

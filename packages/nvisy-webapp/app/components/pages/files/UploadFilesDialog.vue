@@ -1,13 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import {
-	Upload,
-	X,
-	FileText,
-	Check,
-	AlertCircle,
-	Loader2,
-} from "lucide-vue-next";
+import { Upload, X, FileText, Check, AlertCircle, Loader2 } from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,

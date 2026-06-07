@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronsUpDown, Plus, Layers } from "lucide-vue-next";
+import { ChevronsUpDown, Plus, Layers } from "@lucide/vue";
 import {
 	DropdownMenu,
 	DropdownMenuContent,

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ApiToken } from "@nvisy/sdk/datatypes";
-import { Trash2, Edit, Key } from "lucide-vue-next";
+import { Trash2, Edit, Key } from "@lucide/vue";
 import {
 	Table,
 	TableBody,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { NotificationEvent } from "@nvisy/sdk/datatypes";
 import { NvisyApiError } from "@nvisy/sdk";
-import { Loader2 } from "lucide-vue-next";
+import { Loader2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import {
 	Card,

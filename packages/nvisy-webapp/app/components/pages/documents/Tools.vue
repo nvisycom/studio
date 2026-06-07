@@ -9,7 +9,7 @@ import {
 	ChevronDown,
 	FileInput,
 	Edit3,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import {

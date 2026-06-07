@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { Check, Sparkles, Building2, ExternalLink } from "lucide-vue-next";
+import { Check, Sparkles, Building2, ExternalLink } from "@lucide/vue";
 import {
 	Card,
 	CardContent,

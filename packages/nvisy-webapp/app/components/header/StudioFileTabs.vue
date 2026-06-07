@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { FileText, X, Loader2, ChevronDown } from "lucide-vue-next";
+import { FileText, X, Loader2, ChevronDown } from "@lucide/vue";
 import {
 	Tooltip,
 	TooltipContent,

@@ -6,7 +6,7 @@ import {
 	getBezierPath,
 	type EdgeProps,
 } from "@vue-flow/core";
-import { Plus } from "lucide-vue-next";
+import { Plus } from "@lucide/vue";
 import type { Position } from "../types";
 
 const props = defineProps<EdgeProps>();

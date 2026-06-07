@@ -1,5 +1,5 @@
 import type { FunctionalComponent } from "vue";
-import { CheckCircle, Download, FileSearch, Upload } from "lucide-vue-next";
+import { CheckCircle, Download, FileSearch, Upload } from "@lucide/vue";
 
 export interface UploadedEvent {
 	type: "uploaded";

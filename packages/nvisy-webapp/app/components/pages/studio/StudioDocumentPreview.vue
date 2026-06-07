@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FileText, Loader2 } from "lucide-vue-next";
+import { FileText, Loader2 } from "@lucide/vue";
 import { ZoomControls } from "~/components/pages/documents";
 
 const props = defineProps<{

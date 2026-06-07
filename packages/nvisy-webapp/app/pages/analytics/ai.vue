@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { Download, Upload } from "lucide-vue-next";
+import { Download, Upload } from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 import {
 	Card,

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ExternalLink } from "lucide-vue-next";
+import { ExternalLink } from "@lucide/vue";
 import { Button } from "@/components/ui/button";
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 

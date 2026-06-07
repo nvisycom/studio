@@ -1,27 +1,14 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.4.7/schema.json",
-	"vcs": {
-		"enabled": false,
-		"clientKind": "git",
-		"useIgnoreFile": true
-	},
+	"$schema": "https://biomejs.dev/schemas/2.4.16/schema.json",
+	"root": false,
+	"extends": "//",
 	"files": {
-		"ignoreUnknown": false,
 		"includes": ["**", "!.astro", "!dist"]
-	},
-	"formatter": {
-		"enabled": true,
-		"indentStyle": "tab"
 	},
 	"assist": { "actions": { "source": { "organizeImports": "off" } } },
 	"linter": {
-		"enabled": true,
 		"includes": ["src/**", "!.astro", "!dist"],
 		"rules": {
-			"recommended": true,
-			"style": {
-				"recommended": true
-			},
 			"suspicious": {
 				"noUnknownAtRules": "off",
 				"noExplicitAny": "off"
@@ -35,15 +22,22 @@
 			}
 		}
 	},
-	"javascript": {
-		"formatter": {
-			"quoteStyle": "double"
-		}
-	},
 	"css": {
 		"parser": { "tailwindDirectives": true },
 		"formatter": {
 			"quoteStyle": "double"
 		}
-	}
+	},
+	"overrides": [
+		{
+			"includes": ["src/components/ui/**"],
+			"linter": {
+				"rules": {
+					"correctness": {
+						"noVueDuplicateKeys": "off"
+					}
+				}
+			}
+		}
+	]
 }

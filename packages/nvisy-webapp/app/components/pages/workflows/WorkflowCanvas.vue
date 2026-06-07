@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, watch, nextTick, computed, provide } from "vue";
-import { PanelRightClose, PanelRightOpen } from "lucide-vue-next";
+import { ref, shallowRef, watch, nextTick, computed, provide } from "vue";
+import { PanelRightClose, PanelRightOpen } from "@lucide/vue";
 import { VueFlow, useVueFlow, type Node, type Edge } from "@vue-flow/core";
 import { Background } from "@vue-flow/background";
 import WorkflowMinimap from "./WorkflowMinimap.vue";
@@ -49,9 +49,12 @@ const emit = defineEmits<{
 // Get active workflow from composable
 const { activeWorkflowId, markDirty, markClean } = useEditorWorkflows();
 
-// Reactive nodes and edges
-const nodes = ref<Node[]>([]);
-const edges = ref<Edge[]>([]);
+// Reactive nodes and edges. shallowRef matches VueFlow's own shallow internal
+// state: these are synced wholesale via v-model (whole reassignment triggers
+// reactivity), so deep-unwrapping VueFlow's Node/Edge generics is both wasted
+// overhead and the source of excessively-deep type instantiation under vue-tsc.
+const nodes = shallowRef<Node[]>([]);
+const edges = shallowRef<Edge[]>([]);
 
 // Generate unique node ID combining workflow ID and timestamp
 function generateNodeId(): string {

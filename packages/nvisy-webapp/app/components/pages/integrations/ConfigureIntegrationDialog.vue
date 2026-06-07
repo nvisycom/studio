@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Integration, UpdateIntegration } from "@nvisy/sdk/datatypes";
-import { Loader2 } from "lucide-vue-next";
+import { Loader2 } from "@lucide/vue";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
