@@ -90,7 +90,7 @@ const getIndustryIcon = (iconName: string) => {
           >
             <!-- Subtle gradient on hover -->
             <div
-              class="absolute inset-0 rounded-2xl bg-gradient-to-br from-sky-100/80 to-pink-100/80 dark:from-sky-900/30 dark:to-pink-900/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              class="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/[0.04] to-transparent dark:from-foreground/[0.06] dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
             />
 
             <div class="relative flex-1 flex flex-col">

@@ -1,111 +1,70 @@
 ---
 import { getCollection } from "astro:content";
-import {
-	File,
-	Zap,
-	Code,
-	Palette,
-	Building,
-	FileText,
-	Shield,
-	ArrowRight,
-} from "@lucide/vue";
+import { ArrowRight } from "@lucide/vue";
 
 interface Props {
 	title?: string;
-	description?: string;
 	limit?: number;
 }
 
-const { title = "From the blog", description, limit = 3 } = Astro.props;
+const { title = "From the blog", limit = 3 } = Astro.props;
 
-// Get all blog entries and sort by publishedAt (newest first)
-const blogEntries = (await getCollection("blog-posts"))
+const entries = (await getCollection("blog-posts"))
 	.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
 	.slice(0, limit);
 
-const categoryIcons: Record<string, typeof Zap> = {
-	Engineering: Zap,
-	Development: Code,
-	Design: Palette,
-	Architecture: Building,
-	Compliance: Shield,
-	"Case Study": FileText,
-};
+const formatDate = (date: Date) =>
+	date.toLocaleDateString("en-US", {
+		year: "numeric",
+		month: "short",
+		day: "numeric",
+	});
 ---
 
-<section aria-label="Latest Blog Posts" class="py-24 md:py-32">
-	<div class="container mx-auto px-4">
-		<div class="text-center mb-16">
-			<h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
+<section class="border-b border-border bg-background">
+	<div class="container mx-auto px-5 py-20 md:py-28">
+		<!-- Header -->
+		<div class="flex items-center justify-between">
+			<h2 class="font-display text-3xl md:text-4xl font-medium tracking-[-0.02em]">
 				{title}
 			</h2>
-			{description && (
-				<p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-					{description}
-				</p>
-			)}
+			<a
+				href="/blog"
+				class="group inline-flex items-center gap-1.5 text-sm font-medium text-foreground/60 transition-colors hover:text-foreground"
+			>
+				View all
+				<ArrowRight
+					class="h-3.5 w-3.5 transition-transform group-hover:translate-x-[3px]"
+				/>
+			</a>
 		</div>
 
-		<div class="max-w-6xl mx-auto">
-			{blogEntries.length > 0 ? (
-				<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-					{blogEntries.map(post => {
-						const IconComponent = categoryIcons[post.data.category || ''] || File;
-						return (
-							<article class="group">
-								<a href={`/blog/${post.id}`} class="block">
-									<div class="relative p-6 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-300">
-										<!-- Subtle gradient on hover -->
-										<div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-violet-500/5 to-fuchsia-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-										<div class="relative">
-											<!-- Icon -->
-											<div class="w-10 h-10 rounded-xl bg-muted flex items-center justify-center mb-4">
-												<IconComponent class="w-5 h-5 text-muted-foreground" />
-											</div>
-
-											<!-- Title -->
-											<h3 class="text-base font-medium mb-2 line-clamp-2 group-hover:text-foreground/80 transition-colors">
-												{post.data.title}
-											</h3>
-
-											<!-- Date -->
-											<p class="text-sm text-muted-foreground">
-												{new Date(post.data.publishedAt).toLocaleDateString('en-US', {
-													year: 'numeric',
-													month: 'short',
-													day: 'numeric'
-												})}
-											</p>
-										</div>
-									</div>
-								</a>
-							</article>
-						);
-					})}
-				</div>
-			) : (
-				<div class="text-center py-16">
-					<div class="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-4">
-						<File class="w-8 h-8 text-muted-foreground" />
-					</div>
-					<h3 class="text-lg font-medium mb-2">No blog posts yet</h3>
-					<p class="text-muted-foreground">Check back soon for our latest insights and updates.</p>
-				</div>
-			)}
-
-			{blogEntries.length > 0 && (
-				<div class="text-center mt-12">
-					<a
-						href="/blog"
-						class="inline-flex items-center gap-2 text-sm font-medium hover:text-muted-foreground transition-colors"
-					>
-						View all posts
-						<ArrowRight class="w-4 h-4" />
-					</a>
-				</div>
-			)}
+		<!-- Entries (timeline row, borderless) -->
+		<div class="mt-12 border-t border-border">
+			<div class="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+				{
+					entries.map((entry) => (
+						<a
+							href={`/blog/${entry.id}`}
+							class="group relative block pt-6"
+						>
+							<span class="absolute left-0 top-0 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-foreground" />
+							<h3 class="text-base font-medium tracking-tight transition-colors group-hover:text-foreground/70">
+								{entry.data.title}
+							</h3>
+							<p class="mt-2 text-sm text-foreground/55 leading-relaxed line-clamp-2">
+								{entry.data.description}
+							</p>
+							<time
+								datetime={entry.data.publishedAt.toISOString()}
+								class="mt-4 block font-mono text-xs text-foreground/40"
+							>
+								{formatDate(entry.data.publishedAt)}
+							</time>
+						</a>
+					))
+				}
+			</div>
 		</div>
 	</div>
 </section>

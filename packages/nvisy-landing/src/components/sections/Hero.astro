@@ -34,25 +34,7 @@ const {
 	<!-- Base gradient background -->
 	<div class="absolute inset-0 bg-gradient-radial [mask-image:linear-gradient(to_bottom,black_50%,transparent_100%)]" />
 
-	<!-- Animated gradient mesh orbs -->
-	<div class="absolute inset-0 overflow-hidden">
-		<!-- Primary orb - purple/violet -->
-		<div class="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] animate-orb-float">
-			<div class="w-full h-full bg-gradient-to-b from-violet-500/15 via-fuchsia-500/10 to-transparent dark:from-violet-500/40 dark:via-fuchsia-500/20 dark:to-transparent rounded-full animate-pulse-glow" />
-		</div>
-
-		<!-- Secondary orb - blue/cyan (left) -->
-		<div class="absolute top-[5%] left-[10%] w-[500px] h-[400px] animate-orb-float-reverse">
-			<div class="w-full h-full bg-gradient-to-br from-blue-500/10 via-cyan-500/5 to-transparent dark:from-blue-500/25 dark:via-cyan-500/15 dark:to-transparent rounded-full animate-pulse-glow" style="animation-delay: -2s;" />
-		</div>
-
-		<!-- Tertiary orb - pink/rose (right) -->
-		<div class="absolute top-[15%] right-[5%] w-[450px] h-[350px] animate-orb-float" style="animation-delay: -5s;">
-			<div class="w-full h-full bg-gradient-to-bl from-pink-500/8 via-rose-500/5 to-transparent dark:from-pink-500/20 dark:via-rose-500/10 dark:to-transparent rounded-full animate-pulse-glow" style="animation-delay: -3s;" />
-		</div>
-	</div>
-
-	<!-- Subtle grid pattern with fade -->
+<!-- Subtle grid pattern with fade -->
 	<div class="absolute inset-0 bg-[linear-gradient(to_right,oklch(0.5_0_0/0.03)_1px,transparent_1px),linear-gradient(to_bottom,oklch(0.5_0_0/0.03)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:linear-gradient(to_bottom,black_50%,transparent_100%)]" />
 
 	<div class="container relative z-10 mx-auto px-4 py-12 md:py-16">

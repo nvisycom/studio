@@ -19,7 +19,7 @@ export const buttonVariants = cva(
 					"bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm",
 				glow: "bg-foreground text-background shadow-lg shadow-foreground/10 hover:shadow-xl hover:shadow-foreground/20 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-700",
 				"gradient-border":
-					"relative bg-background text-foreground hover:text-foreground border-0 before:absolute before:inset-0 before:rounded-[inherit] before:p-[1px] before:bg-gradient-to-r before:from-violet-500 before:via-fuchsia-500 before:to-pink-500 before:content-[''] before:-z-10 after:absolute after:inset-[1px] after:rounded-[calc(inherit-1px)] after:bg-background after:content-[''] after:-z-10 hover:before:from-violet-400 hover:before:via-fuchsia-400 hover:before:to-pink-400 shadow-sm hover:shadow-md hover:shadow-violet-500/10",
+					"relative bg-background text-foreground hover:text-foreground border-0 before:absolute before:inset-0 before:rounded-[inherit] before:p-[1px] before:bg-gradient-to-r before:from-foreground/40 before:via-foreground before:to-foreground/40 before:content-[''] before:-z-10 after:absolute after:inset-[1px] after:rounded-[calc(inherit-1px)] after:bg-background after:content-[''] after:-z-10 shadow-sm hover:shadow-md",
 			},
 			size: {
 				default: "h-9 px-4 text-sm rounded-lg",

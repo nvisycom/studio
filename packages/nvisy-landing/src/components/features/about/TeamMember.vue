@@ -14,58 +14,45 @@ interface Props {
 
 const props = defineProps<Props>();
 const initials = getInitials(props.name);
-
-// Generate unique gradient for each team member
-const gradients = [
-	"from-blue-400 to-purple-500",
-	"from-cyan-400 to-blue-500",
-	"from-purple-400 to-pink-500",
-	"from-green-400 to-cyan-500",
-	"from-orange-400 to-red-500",
-];
-
-// Use name hash to determine gradient
-const gradientIndex =
-	props.name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) %
-	gradients.length;
-const gradient = gradients[gradientIndex];
 </script>
 
 <template>
-  <div class="group flex flex-col items-center text-center">
-    <Avatar
-      class="w-40 h-40 md:w-48 md:h-48 mb-4 group-hover:scale-105 transition-transform duration-300"
-    >
-      <AvatarImage v-if="image" :src="image" :alt="name" />
+  <div class="flex flex-col rounded-xl border border-border bg-card p-6">
+    <Avatar class="mb-4 h-12 w-12 rounded-lg">
+      <AvatarImage v-if="image" :src="image" :alt="name" class="rounded-lg" />
       <AvatarFallback
-        :class="`text-4xl md:text-5xl font-bold bg-gradient-to-br ${gradient} text-white`"
+        class="rounded-lg bg-muted font-mono text-sm font-medium text-foreground/70"
       >
         {{ initials }}
       </AvatarFallback>
     </Avatar>
 
-    <h3
-      class="text-lg md:text-xl font-bold text-neutral-900 dark:text-white mb-1"
-    >
+    <h3 class="text-sm font-medium tracking-tight">
       {{ name }}
     </h3>
-
-    <p class="text-sm md:text-base text-neutral-600 dark:text-neutral-400 mb-4">
+    <p class="mt-0.5 text-[13px] text-foreground/50">
       {{ title }}
     </p>
 
-    <div class="flex items-center gap-4">
+    <div
+      v-if="linkedin || github"
+      class="mt-4 flex items-center gap-3"
+    >
       <a
         v-if="linkedin"
         :href="linkedin"
-        class="w-6 h-6 text-neutral-500 dark:text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-200 transition-colors"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="h-4 w-4 text-foreground/40 transition-colors hover:text-foreground [&>svg]:h-full [&>svg]:w-full"
         :aria-label="`${name}'s LinkedIn profile`"
         v-html="LinkedInIcon"
       />
       <a
         v-if="github"
         :href="github"
-        class="w-6 h-6 text-neutral-500 dark:text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-200 transition-colors"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="h-4 w-4 text-foreground/40 transition-colors hover:text-foreground [&>svg]:h-full [&>svg]:w-full"
         :aria-label="`${name}'s GitHub profile`"
         v-html="GitHubIcon"
       />
