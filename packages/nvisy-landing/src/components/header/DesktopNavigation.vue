@@ -11,10 +11,10 @@ import ResourcesDropdown from "./DesktopResources.vue";
 
 <template>
   <NavigationMenu
-    class="relative z-10 hidden lg:flex max-w-max flex-1 items-center justify-center ml-12"
+    class="relative z-10 hidden lg:flex max-w-max items-center"
   >
     <NavigationMenuList
-      class="group flex flex-1 list-none items-center justify-center gap-1"
+      class="group flex list-none items-center gap-0.5"
     >
       <!-- Products -->
       <ProductsDropdown />
@@ -26,7 +26,7 @@ import ResourcesDropdown from "./DesktopResources.vue";
       <NavigationMenuItem>
         <NavigationMenuLink
           href="/customers"
-          class="inline-flex h-9 w-max items-center justify-center rounded-lg bg-transparent px-4 py-2 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+          class="inline-flex h-8 w-max items-center justify-center rounded-md bg-transparent px-3 text-sm font-normal text-foreground/70 hover:text-foreground hover:bg-accent transition-colors"
         >
           Customers
         </NavigationMenuLink>
@@ -36,9 +36,19 @@ import ResourcesDropdown from "./DesktopResources.vue";
       <NavigationMenuItem>
         <NavigationMenuLink
           href="/pricing"
-          class="inline-flex h-9 w-max items-center justify-center rounded-lg bg-transparent px-4 py-2 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+          class="inline-flex h-8 w-max items-center justify-center rounded-md bg-transparent px-3 text-sm font-normal text-foreground/70 hover:text-foreground hover:bg-accent transition-colors"
         >
           Pricing
+        </NavigationMenuLink>
+      </NavigationMenuItem>
+
+      <!-- Contact -->
+      <NavigationMenuItem>
+        <NavigationMenuLink
+          href="/contact"
+          class="inline-flex h-8 w-max items-center justify-center rounded-md bg-transparent px-3 text-sm font-normal text-foreground/70 hover:text-foreground hover:bg-accent transition-colors"
+        >
+          Contact
         </NavigationMenuLink>
       </NavigationMenuItem>
     </NavigationMenuList>

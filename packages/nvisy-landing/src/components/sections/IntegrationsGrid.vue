@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { Badge } from "@/components/ui/badge";
 
 interface Integration {
 	name: string;
@@ -35,17 +34,17 @@ const filteredIntegrations = computed(() => {
 
 <template>
   <div>
-    <!-- Category filters -->
-    <div class="mb-8 flex flex-wrap items-center gap-2">
+    <!-- Category tabs -->
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-border pb-4">
       <button
         v-for="category in categories"
         :key="category.id"
         @click="activeCategory = category.id"
-        class="px-4 py-2 text-sm rounded-full transition-all duration-200"
+        class="text-sm transition-colors"
         :class="[
           activeCategory === category.id
-            ? 'bg-foreground text-background'
-            : 'bg-accent text-muted-foreground hover:text-foreground hover:bg-accent/80',
+            ? 'font-medium text-foreground'
+            : 'font-normal text-foreground/50 hover:text-foreground',
         ]"
       >
         {{ category.label }}
@@ -53,77 +52,79 @@ const filteredIntegrations = computed(() => {
     </div>
 
     <!-- Grid -->
-    <div
-      v-if="filteredIntegrations.length > 0"
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 min-h-[800px] content-start"
-    >
-      <TransitionGroup name="integration">
+    <div class="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <TransitionGroup name="int">
         <div
           v-for="integration in filteredIntegrations"
           :key="integration.name"
-          class="group relative p-6 rounded-2xl border border-border bg-card/50 hover:border-border/60 hover:bg-card/80 transition-all duration-300"
+          class="group flex items-start gap-4 rounded-xl border border-border bg-card p-6 transition-colors hover:border-foreground/20 hover:bg-muted/40"
         >
-          <div class="flex items-start gap-4">
-            <div
-              class="w-12 h-12 rounded-xl bg-foreground/5 flex items-center justify-center flex-shrink-0 group-hover:bg-foreground/10 transition-colors duration-300"
-            >
-              <div
-                class="w-7 h-7 text-foreground dark:text-foreground [&>svg]:w-full [&>svg]:h-full"
-                v-html="integration.icon"
-              />
+          <div
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border [&>svg]:h-5 [&>svg]:w-5"
+            v-html="integration.icon"
+          />
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2">
+              <h3 class="text-sm font-medium tracking-tight">
+                {{ integration.name }}
+              </h3>
+              <span
+                v-if="integration.status === 'coming_soon'"
+                class="rounded border border-border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-foreground/40"
+              >
+                Soon
+              </span>
             </div>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 mb-1">
-                <h3 class="font-semibold">{{ integration.name }}</h3>
-                <Badge
-                  v-if="integration.status === 'coming_soon'"
-                  variant="secondary"
-                  class="text-xs"
-                >
-                  Soon
-                </Badge>
-              </div>
-              <p class="text-sm text-muted-foreground">
-                {{ integration.description }}
-              </p>
-            </div>
+            <p class="mt-1 text-[13px] leading-relaxed text-foreground/55">
+              {{ integration.description }}
+            </p>
           </div>
         </div>
       </TransitionGroup>
-    </div>
-
-    <!-- Empty state -->
-    <div v-else class="text-center py-16">
-      <div class="text-muted-foreground mb-2">
-        No integrations in this category
-      </div>
-      <button
-        @click="activeCategory = 'all'"
-        class="mt-4 text-sm text-foreground underline underline-offset-4 hover:no-underline"
-      >
-        View all integrations
-      </button>
     </div>
   </div>
 </template>
 
 <style scoped>
-.integration-enter-active {
-  transition: all 0.3s ease;
+.int-enter-active {
+	transition:
+		opacity 0.3s ease,
+		transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.int-leave-active {
+	transition:
+		opacity 0.2s ease,
+		transform 0.2s ease;
+	/* take out of flow while leaving so siblings reflow smoothly */
+	position: absolute;
+	width: calc((100% - 1.5rem) / 3);
+}
+.int-enter-from,
+.int-leave-to {
+	opacity: 0;
+	transform: translateY(8px);
+}
+/* smoothly animate cards sliding to new positions on filter change */
+.int-move {
+	transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.integration-leave-active {
-  transition: all 0.2s ease;
-  position: absolute;
-  opacity: 0;
+@media (max-width: 1023px) {
+	.int-leave-active {
+		width: calc((100% - 0.75rem) / 2);
+	}
+}
+@media (max-width: 639px) {
+	.int-leave-active {
+		width: 100%;
+	}
 }
 
-.integration-enter-from {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-.integration-move {
-  transition: transform 0.3s ease;
+@media (prefers-reduced-motion: reduce) {
+	.int-enter-active,
+	.int-leave-active,
+	.int-move {
+		transition: none;
+	}
 }
 </style>

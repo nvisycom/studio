@@ -13,15 +13,12 @@ interface Feature {
 	icon: LucideIcon;
 	title: string;
 	description: string;
-	span?: "wide";
 }
 
 export interface Props {
 	title?: string;
 	description?: string;
 	features?: Feature[];
-	category?: string;
-	featured?: boolean;
 }
 
 const {
@@ -33,91 +30,78 @@ const {
 const defaultFeatures: Feature[] = [
 	{
 		icon: Layers,
-		title: "Multimodal Redaction",
+		title: "Multimodal redaction",
 		description:
 			"Redact PII and PHI across PDFs, DOCX, images, CSV, JSON, and audio.",
 	},
 	{
 		icon: Shield,
-		title: "Enterprise Security",
+		title: "Enterprise security",
 		description:
-			"Bank-grade encryption, SOC 2 compliance, and zero data retention for redacted files.",
-		span: "wide",
+			"Bank-grade encryption, SOC 2 compliance, and zero data retention.",
 	},
 	{
 		icon: ScanSearch,
-		title: "AI-Powered Detection",
+		title: "AI-powered detection",
 		description:
-			"Detect 50+ entity types: names, SSNs, addresses, medical records, financial data.",
+			"Detect 50+ entity types: names, SSNs, addresses, medical, financial.",
 	},
 	{
 		icon: ShieldCheck,
-		title: "Privacy Compliance",
+		title: "Privacy compliance",
 		description:
-			"GDPR, HIPAA, CCPA, and SOC 2 compliant. Full audit trails for every redaction.",
+			"GDPR, HIPAA, CCPA, and SOC 2 compliant, with full audit trails.",
 	},
 	{
 		icon: Brush,
-		title: "Flexible Masking",
+		title: "Flexible masking",
 		description:
-			"Blackout, mask, tokenize, or replace sensitive data with synthetic values.",
+			"Blackout, mask, tokenize, or replace data with synthetic values.",
 	},
 	{
 		icon: BarChart3,
-		title: "Redaction Analytics",
-		description:
-			"Track redaction metrics, entity distributions, and compliance coverage across your files.",
-		span: "wide",
+		title: "Redaction analytics",
+		description: "Track redaction metrics, entity distributions, and coverage.",
 	},
 ];
 
 const features = propFeatures || defaultFeatures;
 ---
 
-<section class="relative py-24 md:py-32 overflow-hidden">
-	<!-- Background -->
-	<div class="absolute inset-0 bg-gradient-to-b from-transparent via-accent/30 to-transparent" />
-
-	<div class="container relative z-10 mx-auto px-4">
+<section class="border-b border-border bg-background">
+	<div class="container mx-auto px-5 py-20 md:py-28">
 		<!-- Header -->
-		<div class="max-w-2xl mx-auto text-center mb-16">
-			<h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
+		<div class="max-w-2xl">
+			<h2
+				class="font-display text-3xl md:text-4xl font-medium tracking-[-0.02em] text-balance"
+			>
 				{title}
 			</h2>
-			<p class="text-lg text-muted-foreground">
+			<p class="mt-4 text-base text-foreground/60 leading-relaxed">
 				{description}
 			</p>
 		</div>
 
-		<!-- Bento Grid -->
-		<div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
-			{features.map((feature, index) => {
-				const Icon = feature.icon;
-				const spanClass = feature.span === "wide" ? "md:col-span-2" : "";
-				return (
-					<div
-						class={`scroll-reveal group relative p-6 md:p-8 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:border-border/60 transition-all duration-300 ${spanClass}`}
-						style={`--reveal-delay: ${index * 100}ms;`}
-						data-reveal
-					>
-						<!-- Gradient background on hover -->
-						<div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-sky-100/80 to-pink-100/80 dark:from-sky-900/30 dark:to-pink-900/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-						<!-- Content -->
-						<div class="relative z-10">
-							<div class="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center mb-4 group-hover:bg-foreground/10 transition-colors duration-300">
-								<Icon class="w-5 h-5 text-foreground" />
+		<!-- Feature grid -->
+		<div class="mt-12 grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-3">
+			{
+				features.map((feature) => {
+					const Icon = feature.icon;
+					return (
+						<div class="group bg-background p-6 transition-colors hover:bg-muted/40 md:p-8">
+							<div class="flex h-9 w-9 items-center justify-center rounded-md border border-border text-foreground/80">
+								<Icon class="h-[18px] w-[18px]" />
 							</div>
-							<h3 class="text-lg font-semibold mb-2 tracking-tight">
+							<h3 class="mt-5 text-base font-medium tracking-tight">
 								{feature.title}
 							</h3>
-							<p class="text-sm text-muted-foreground leading-relaxed">
+							<p class="mt-2 text-sm text-foreground/55 leading-relaxed">
 								{feature.description}
 							</p>
 						</div>
-					</div>
-				);
-			})}
+					);
+				})
+			}
 		</div>
 	</div>
 </section>

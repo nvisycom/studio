@@ -2,7 +2,7 @@
 import { watch, onMounted, onUnmounted } from "vue";
 import { Menu, X } from "@lucide/vue";
 import { useMobileMenu } from "./useMobileMenu.ts";
-import { products } from "./mobile-nav-data";
+import { products } from "./nav-data";
 
 defineProps<{
 	menuOnly?: boolean;
@@ -51,7 +51,7 @@ onUnmounted(() => {
   <!-- Mobile Navigation Menu - Full screen overlay -->
   <div
     v-if="menuOnly && mobileMenuOpen"
-    class="lg:hidden fixed inset-0 top-11 md:top-14 z-40 bg-background"
+    class="lg:hidden fixed inset-0 top-16 z-40 bg-background"
   >
     <nav class="h-full flex flex-col px-6 py-6">
       <!-- Product Section -->
@@ -63,7 +63,7 @@ onUnmounted(() => {
         </h3>
         <div class="space-y-0.5">
           <a
-            v-for="product in [...products.platforms, ...products.opensource]"
+            v-for="product in products.flatMap((c) => c.items)"
             :key="product.title"
             :href="product.href"
             :target="product.isExternal ? '_blank' : undefined"

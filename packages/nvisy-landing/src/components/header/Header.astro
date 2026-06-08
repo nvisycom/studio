@@ -1,26 +1,28 @@
 ---
 import Logo from "../Logo.astro";
-import HeaderWrapper from "./HeaderWrapper.vue";
 import DesktopNavigation from "./DesktopNavigation.vue";
 import MobileNavigation from "./MobileNavigation.vue";
 import AuthButtons from "./AuthButtons.vue";
 ---
 
-<HeaderWrapper client:load transition:persist>
-  <!-- Logo Section -->
-  <Logo asLink={true} size="sm" />
+<header
+  class="header-glass sticky top-0 z-50 w-full transform-gpu border-b border-border/60"
+>
+  <div class="container relative mx-auto px-4 md:px-8 lg:px-12">
+    <div class="flex h-16 items-center justify-between gap-8">
+      <Logo asLink={true} size="sm" />
 
-  <!-- Desktop Navigation Section -->
-  <DesktopNavigation client:load />
+      <div class="flex items-center gap-1">
+        <DesktopNavigation client:load />
 
-  <!-- Auth Button Section -->
-  <div class="flex items-center gap-2">
-    <AuthButtons client:load />
+        <div class="mx-2 hidden h-5 w-px bg-foreground/20 lg:block"></div>
 
-    <!-- Mobile Navigation Component -->
-    <MobileNavigation client:load />
+        <AuthButtons client:load />
+
+        <MobileNavigation client:load />
+      </div>
+    </div>
   </div>
 
-  <!-- Mobile Navigation Menu (Full Width) -->
-  <MobileNavigation slot="mobile-menu" menuOnly={true} client:load />
-</HeaderWrapper>
+  <MobileNavigation menuOnly={true} client:load />
+</header>

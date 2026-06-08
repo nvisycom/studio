@@ -63,13 +63,6 @@ const { Content } = await render(entry);
   <CTA
     title="Questions about our legal policies?"
     description="If you have questions about our legal documents or need clarification on our policies, please don't hesitate to reach out to our legal team."
-    background="solid"
-    buttons={[
-      {
-        text: "Email Us",
-        href: "mailto:hello@nvisy.com",
-        variant: "primary"
-      }
-    ]}
+    primaryCta={{ text: "Email Us", href: "mailto:hello@nvisy.com" }}
   />
 </Layout>

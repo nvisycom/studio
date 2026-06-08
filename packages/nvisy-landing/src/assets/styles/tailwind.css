@@ -18,6 +18,11 @@
 	--color-muted-foreground: var(--muted-foreground);
 	--color-accent: var(--accent);
 	--color-accent-foreground: var(--accent-foreground);
+	--color-brand: var(--brand);
+	--color-brand-hover: var(--brand-hover);
+	--color-brand-foreground: var(--brand-foreground);
+	--font-display: "Geist", "Inter", ui-sans-serif, system-ui, sans-serif;
+	--font-mono: "Geist Mono", "JetBrains", ui-monospace, monospace;
 	--color-destructive: var(--destructive);
 	--color-destructive-foreground: var(--destructive-foreground);
 	--color-border: var(--border);
@@ -217,7 +222,7 @@
 	--secondary: oklch(0.96 0 0);
 	--secondary-foreground: oklch(0.13 0 0);
 	--muted: oklch(0.96 0 0);
-	--muted-foreground: oklch(0.45 0 0);
+	--muted-foreground: oklch(0.55 0 0);
 	--accent: oklch(0.96 0 0);
 	--accent-foreground: oklch(0.13 0 0);
 	--destructive: oklch(0.55 0.2 25);
@@ -225,7 +230,7 @@
 	--border: oklch(0.91 0 0);
 	--input: oklch(0.91 0 0);
 	--ring: oklch(0.7 0 0);
-	--radius: 0.75rem;
+	--radius: 0.5rem;
 	--chart-1: oklch(0.65 0.22 41);
 	--chart-2: oklch(0.6 0.12 185);
 	--chart-3: oklch(0.4 0.07 227);
@@ -239,6 +244,20 @@
 	--sidebar-accent-foreground: oklch(0.13 0 0);
 	--sidebar-border: oklch(0.91 0 0);
 	--sidebar-ring: oklch(0.7 0 0);
+
+	/* Brand accent (indigo) — light */
+	--brand: #4f5bff;
+	--brand-hover: #3b48f5;
+	--brand-foreground: #ffffff;
+	--brand-glow: rgba(91, 108, 255, 0.35);
+	--grid-line: rgba(10, 10, 30, 0.04);
+
+	/* Header background — at top (faint) and scrolled (fuller) */
+	--header-bg-top: color-mix(in oklch, var(--background) 60%, transparent);
+	--header-bg: color-mix(in oklch, var(--background) 85%, transparent);
+
+	/* Footer background — opaque match of the header's lifted tone */
+	--footer-bg: var(--background);
 }
 
 /* Dark mode - Linear/Vercel style */
@@ -275,6 +294,20 @@
 	--sidebar-accent-foreground: oklch(0.95 0 0);
 	--sidebar-border: oklch(0.2 0.01 260);
 	--sidebar-ring: oklch(0.35 0 0);
+
+	/* Brand accent (indigo) — dark */
+	--brand: #6d7cff;
+	--brand-hover: #8390ff;
+	--brand-foreground: #ffffff;
+	--brand-glow: rgba(91, 108, 255, 0.55);
+	--grid-line: rgba(255, 255, 255, 0.035);
+
+	/* Header background — dark: lifted slightly above the near-black canvas */
+	--header-bg-top: oklch(0.1 0.01 260 / 0.6);
+	--header-bg: oklch(0.11 0.01 260 / 0.85);
+
+	/* Footer background — opaque match of the header's lifted tone */
+	--footer-bg: oklch(0.11 0.01 260);
 }
 
 @layer base {
@@ -286,7 +319,10 @@
 	}
 	html,
 	body {
-		font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+		font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+		/* Linear's signature: body sits at 510 (between regular and medium) */
+		font-weight: 510;
+		font-feature-settings: "cv11", "ss01";
 		@apply bg-background text-foreground antialiased;
 	}
 	code,
@@ -300,6 +336,53 @@
 }
 
 @layer utilities {
+	/* Hero background: fine fading grid (no glow). */
+	.hero-grid::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background-image:
+			linear-gradient(var(--grid-line) 1px, transparent 1px),
+			linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+		background-size: 56px 56px;
+		mask-image: radial-gradient(
+			ellipse 90% 70% at 50% 0%,
+			#000 30%,
+			transparent 80%
+		);
+		-webkit-mask-image: radial-gradient(
+			ellipse 90% 70% at 50% 0%,
+			#000 30%,
+			transparent 80%
+		);
+	}
+
+	/*
+	 * Sticky glassy header: blur is constant; border is always visible.
+	 * At the top there's a faint background; it fades to fuller glass on scroll.
+	 */
+	.header-glass {
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		background-color: var(--header-bg);
+		border-bottom-color: var(--border);
+	}
+
+	@supports (animation-timeline: scroll()) {
+		.header-glass {
+			background-color: var(--header-bg-top);
+			animation: header-glass-in linear both;
+			animation-timeline: scroll(root block);
+			animation-range: 0 80px;
+		}
+		@keyframes header-glass-in {
+			to {
+				background-color: var(--header-bg);
+			}
+		}
+	}
+
 	/* Gradient text - subtle */
 	.text-gradient {
 		@apply bg-clip-text text-transparent;

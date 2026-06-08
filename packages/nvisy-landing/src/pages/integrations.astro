@@ -1,6 +1,6 @@
 ---
 import { Layout } from "@/layouts";
-import { Hero, CTA, Security } from "@/components";
+import { CTA, Security } from "@/components";
 import IntegrationsGrid from "@/components/sections/IntegrationsGrid.vue";
 
 import AnthropicIcon from "@/assets/integration/anthropic.svg?raw";
@@ -117,18 +117,19 @@ const integrations = [
   description="Connect Nvisy with your favorite tools. Automate redaction workflows with built-in integrations."
   hideFooterBorder
 >
-  <Hero
-    title="Integrations"
-    description="Connect Nvisy with the tools you already use. Automate redaction workflows and sync data across your entire stack."
-    primaryCta={{ text: "Get Started", href: "https://app.nvisy.com/auth/signup" }}
-    secondaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com/integrations" }}
-    compact
-  />
+  <section class="border-b border-border bg-background">
+    <div class="container mx-auto px-5 pt-16 pb-20 md:pt-24 md:pb-28">
+      <!-- Minimal page header -->
+      <div class="max-w-2xl">
+        <h1 class="font-display text-4xl md:text-5xl font-medium tracking-[-0.03em]">
+          Integrations
+        </h1>
+      </div>
 
-  <!-- Integrations Grid -->
-  <section class="py-24 md:py-32">
-    <div class="container mx-auto max-w-6xl px-4">
-      <IntegrationsGrid integrations={integrations} client:load />
+      <!-- Grid with category tabs -->
+      <div class="mt-12">
+        <IntegrationsGrid integrations={integrations} client:load />
+      </div>
     </div>
   </section>
 

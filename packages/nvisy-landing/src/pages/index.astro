@@ -1,8 +1,8 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import Hero from "@/components/sections/Hero.astro";
-import Stats from "@/components/sections/Stats.astro";
-import Features from "@/components/sections/Features.astro";
+import HomeHero from "@/components/sections/HomeHero.astro";
+import Capabilities from "@/components/sections/Capabilities.astro";
+import Changelog from "@/components/sections/Changelog.astro";
 import HowItWorks from "@/components/sections/HowItWorks.astro";
 import SocialProof from "@/components/sections/SocialProof.astro";
 import Testimonials from "@/components/sections/Testimonials.astro";
@@ -10,13 +10,6 @@ import Security from "@/components/sections/Security.astro";
 import CTA from "@/components/sections/CTA.astro";
 import Integrations from "@/components/sections/Integrations.astro";
 import SectionDivider from "@/components/ui/SectionDivider.astro";
-import { getCollection } from "astro:content";
-
-// Get latest changelog entry
-const changelogEntries = (await getCollection("changelog")).sort(
-	(a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
-);
-const latestChangelog = changelogEntries[0];
 
 const pageTitle = "Home";
 const pageDescription =
@@ -32,27 +25,15 @@ const pageKeywords =
 	hideFooterBorder
 >
 	<main>
-		<Hero
-			badge="Now in public beta"
-			title="Automated data"
-			titleHighlight="redaction"
-			description="Detect and remove sensitive data from documents, images, and audio. AI-powered PII and PHI redaction for privacy compliance."
-			primaryCta={{ text: "Start Free", href: "https://app.nvisy.com/auth/signup" }}
-			secondaryCta={latestChangelog ? { text: `New: ${latestChangelog.data.title}`, href: `/changelog/${latestChangelog.id}` } : undefined}
+		<HomeHero
+			title="Redaction infrastructure"
+			titleHighlight="for sensitive data"
+			description="Built for teams that can't afford to leak a single field."
 		/>
 
-		<SocialProof
-			title="Trusted by industry leaders"
-			subtitle="Join hundreds of companies protecting their sensitive data"
-			variant="grid"
-		/>
+		<SocialProof title="Trusted by teams handling sensitive data" />
 
-		<Stats />
-
-		<Features
-			title="Built for compliance"
-			description="Everything you need to protect sensitive data at enterprise scale."
-		/>
+		<Capabilities />
 
 		<HowItWorks
 			title="How it works"
@@ -71,6 +52,8 @@ const pageKeywords =
 			title="Integrates with your stack"
 			description="Connect Nvisy with the tools you already use."
 		/>
+
+		<Changelog />
 
 		<CTA
 			title="Ready to protect your data?"

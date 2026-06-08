@@ -23,13 +23,13 @@ onMounted(() => {
         href="https://docs.nvisy.com"
         target="_blank"
         rel="noopener noreferrer"
-        class="hidden sm:inline-flex items-center justify-center text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent px-3 py-1.5 rounded-md transition-colors"
+        class="hidden sm:inline-flex items-center justify-center text-sm font-normal text-foreground/70 hover:text-foreground hover:bg-accent px-3 py-1.5 rounded-md transition-colors"
       >
         Docs
       </a>
       <a
         href="https://app.nvisy.com"
-        class="inline-flex items-center justify-center bg-foreground text-background hover:opacity-90 font-medium px-5 py-1.5 text-sm rounded-md transition-all shadow-sm"
+        class="inline-flex items-center justify-center bg-foreground text-background hover:opacity-90 font-normal px-4 py-1.5 text-sm rounded-md transition-all"
       >
         Open App
       </a>
@@ -39,13 +39,13 @@ onMounted(() => {
     <template v-else>
       <a
         href="https://app.nvisy.com/auth/login"
-        class="hidden sm:inline-flex items-center justify-center text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent px-3 py-1.5 rounded-md transition-colors"
+        class="hidden sm:inline-flex items-center justify-center text-sm font-normal text-foreground/70 hover:text-foreground hover:bg-accent px-3 py-1.5 rounded-md transition-colors"
       >
         Log in
       </a>
       <a
         href="https://app.nvisy.com/auth/signup"
-        class="inline-flex items-center justify-center bg-foreground text-background hover:opacity-90 font-medium px-5 py-1.5 text-sm rounded-md transition-all shadow-sm"
+        class="inline-flex items-center justify-center bg-foreground text-background hover:opacity-90 font-normal px-4 py-1.5 text-sm rounded-md transition-all"
       >
         Sign up
       </a>

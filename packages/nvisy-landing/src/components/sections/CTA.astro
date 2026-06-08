@@ -1,5 +1,4 @@
 ---
-import { Button } from "@/components/ui/button";
 import { ArrowRight } from "@lucide/vue";
 
 export interface Props {
@@ -7,8 +6,6 @@ export interface Props {
 	description?: string;
 	primaryCta?: { text: string; href: string };
 	secondaryCta?: { text: string; href: string };
-	background?: "gradient" | "solid";
-	buttons?: Array<{ text: string; href: string; variant?: string }>;
 }
 
 const {
@@ -22,29 +19,39 @@ const {
 } = Astro.props;
 ---
 
-<section class="relative py-24 md:py-32 overflow-hidden bg-background">
-	<!-- Subtle grid pattern -->
-	<div class="absolute inset-0 bg-[linear-gradient(to_right,oklch(0.5_0_0/0.02)_1px,transparent_1px),linear-gradient(to_bottom,oklch(0.5_0_0/0.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
+<section class="border-b border-border bg-background">
+	<div class="container mx-auto px-5 py-24 text-center md:py-36">
+		<h2
+			class="mx-auto max-w-[16ch] font-display text-6xl md:text-7xl font-medium tracking-[-0.035em] leading-[1.02] text-balance"
+		>
+			{title}
+		</h2>
+		<p
+			class="mx-auto mt-5 max-w-lg text-base md:text-lg font-light text-foreground/55 leading-relaxed text-pretty"
+		>
+			{description}
+		</p>
 
-	<div class="container relative z-10 mx-auto px-4">
-		<div class="scroll-reveal max-w-2xl mx-auto text-center" data-reveal>
-			<h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
-				{title}
-			</h2>
-			<p class="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
-				{description}
-			</p>
-			<div class="flex flex-col min-[480px]:flex-row items-center justify-center gap-3 px-4">
-				<Button as="a" href={primaryCta.href} variant="glow" size="lg" class="group">
-					{primaryCta.text}
-					<ArrowRight class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-				</Button>
-				{secondaryCta && (
-					<Button as="a" href={secondaryCta.href} variant="outline" size="lg">
+		<div class="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+			<a
+				href={primaryCta.href}
+				class="group inline-flex h-11 items-center justify-center gap-2 rounded-[10px] bg-foreground px-5 text-sm font-medium text-background transition-opacity hover:opacity-90"
+			>
+				{primaryCta.text}
+				<ArrowRight
+					class="h-4 w-4 transition-transform group-hover:translate-x-[3px]"
+				/>
+			</a>
+			{
+				secondaryCta && (
+					<a
+						href={secondaryCta.href}
+						class="inline-flex h-11 items-center justify-center rounded-[10px] border border-border bg-muted/50 px-5 text-sm font-medium text-foreground transition-colors hover:border-foreground/20 hover:bg-muted"
+					>
 						{secondaryCta.text}
-					</Button>
-				)}
-			</div>
+					</a>
+				)
+			}
 		</div>
 	</div>
 </section>

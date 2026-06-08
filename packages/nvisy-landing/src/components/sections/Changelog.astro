@@ -1,0 +1,72 @@
+---
+import { getCollection } from "astro:content";
+import { ArrowRight } from "@lucide/vue";
+
+export interface Props {
+	title?: string;
+	limit?: number;
+}
+
+const { title = "Changelog", limit = 3 } = Astro.props;
+
+const entries = (await getCollection("changelog"))
+	.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
+	.slice(0, limit);
+
+const formatDate = (date: Date) =>
+	date.toLocaleDateString("en-US", {
+		year: "numeric",
+		month: "short",
+		day: "numeric",
+	});
+---
+
+<section class="border-b border-border bg-background">
+	<div class="container mx-auto px-5 py-20 md:py-28">
+		<!-- Header -->
+		<div class="flex items-center justify-between">
+			<h2
+				class="font-display text-3xl md:text-4xl font-medium tracking-[-0.02em]"
+			>
+				{title}
+			</h2>
+			<a
+				href="/changelog"
+				class="group inline-flex items-center gap-1.5 text-sm font-medium text-foreground/60 transition-colors hover:text-foreground"
+			>
+				View all
+				<ArrowRight
+					class="h-3.5 w-3.5 transition-transform group-hover:translate-x-[3px]"
+				/>
+			</a>
+		</div>
+
+		<!-- Entries (timeline row, borderless) -->
+		<div class="mt-12 border-t border-border">
+			<div class="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+				{
+					entries.map((entry) => (
+						<a
+							href={`/changelog/${entry.id}`}
+							class="group relative block pt-6"
+						>
+							<span class="absolute left-0 top-0 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-foreground" />
+							<h3 class="text-base font-medium tracking-tight transition-colors group-hover:text-foreground/70">
+								{entry.data.title}
+							</h3>
+							<p class="mt-2 text-sm text-foreground/55 leading-relaxed line-clamp-2">
+								{entry.data.description}
+							</p>
+							<time
+								datetime={entry.data.publishedAt.toISOString()}
+								class="mt-4 block font-mono text-xs text-foreground/40"
+							>
+								{formatDate(entry.data.publishedAt)}
+							</time>
+						</a>
+					))
+				}
+			</div>
+		</div>
+	</div>
+</section>

@@ -1,0 +1,362 @@
+---
+export interface Props {
+	title?: string;
+	description?: string;
+}
+
+const {
+	title = "Everything you need to ship privacy-safe by default.",
+	description = "One API and console for detection, redaction, and the audit trail your compliance team will actually ask for.",
+} = Astro.props;
+
+// File formats for the Multimodal card. `kind` selects the icon.
+const formats = [
+	{ ext: "PDF", kind: "doc", on: true },
+	{ ext: "DOCX", kind: "doc", on: false },
+	{ ext: "PNG", kind: "image", on: true },
+	{ ext: "CSV", kind: "sheet", on: false },
+	{ ext: "WAV", kind: "audio", on: true },
+	{ ext: "JSON", kind: "code", on: false },
+];
+
+// Masking methods shown in the Flexible masking card.
+const maskRows = [
+	{ method: "blackout", kind: "redact", value: "412-90-3318" },
+	{ method: "mask", kind: "chip", value: "•••-••-3318" },
+	{ method: "hash", kind: "chip", value: "a3f9c1e8" },
+	{ method: "tokenize", kind: "chip-fg", value: "‹ssn_8f2a›" },
+];
+---
+
+<section class="border-b border-border bg-background">
+	<div class="container mx-auto px-5 py-20 md:py-28">
+		<!-- Section head -->
+		<div class="max-w-xl">
+			<h2
+				class="font-display text-3xl md:text-4xl font-medium tracking-[-0.03em] leading-[1.04] text-balance"
+			>
+				{title}
+			</h2>
+			<p class="mt-4 max-w-lg text-base text-foreground/60 leading-relaxed">
+				{description}
+			</p>
+		</div>
+
+		<!-- Bento grid -->
+		<div class="mt-12 grid grid-cols-1 gap-3.5 md:grid-cols-6">
+			<!-- Detection (span 4) -->
+			<article
+				class="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-foreground/20 md:col-span-4"
+			>
+				<div
+					class="flex flex-1 flex-col gap-5 px-7 pt-7 pb-2 sm:flex-row sm:items-center sm:gap-7"
+					style="min-height:168px"
+				>
+					<!-- Document with highlighted entities -->
+					<p class="flex-1 text-sm leading-[2] text-foreground/60">
+						Verified <span class="cap-hl">Sarah Chen</span> against SSN
+						<span class="cap-hl">412-90-3318</span>, seen
+						<span class="cap-hl">Mar 14 1987</span> at
+						<span class="cap-hl">1840 Folsom St</span>.
+					</p>
+
+					<!-- Detection results list -->
+					<div
+						class="w-full shrink-0 font-mono text-[11px] sm:w-[200px] sm:border-l sm:border-border sm:pl-6"
+					>
+						{
+							[
+								["NAME", "0.99"],
+								["US_SSN", "0.96"],
+								["DOB", "0.94"],
+								["ADDRESS", "0.92"],
+							].map(([type, conf]) => (
+								<div class="flex items-center justify-between border-b border-border/50 py-1.5 last:border-b-0">
+									<span class="text-foreground">{type}</span>
+									<span class="text-foreground/40">{conf}</span>
+								</div>
+							))
+						}
+					</div>
+				</div>
+				<div class="px-7 pt-4 pb-6">
+					<h3 class="text-[15px] font-medium tracking-[-0.02em]">
+						Context-aware detection
+					</h3>
+					<p class="mt-1.5 text-[13px] leading-relaxed text-foreground/55">
+						50+ PII, PHI, and financial entities, read in context rather than by
+						brittle regex. Tune the confidence floor per field.
+					</p>
+				</div>
+			</article>
+
+			<!-- Masking (span 2) -->
+			<article
+				class="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-foreground/20 md:col-span-2"
+			>
+				<div class="flex flex-1 items-center px-7 pt-7 pb-2" style="min-height:168px">
+					<div class="flex w-full flex-col gap-2.5 font-mono text-xs">
+						{
+							maskRows.map((row) => (
+								<div class="flex items-center gap-3">
+									<span class="w-[72px] shrink-0 text-foreground/40">
+										{row.method}
+									</span>
+									{row.kind === "redact" ? (
+										<span class="cap-redact">{row.value}</span>
+									) : (
+										<span
+											class:list={[
+												"cap-chip",
+												row.kind === "chip-fg" ? "text-foreground" : "",
+											]}
+										>
+											{row.value}
+										</span>
+									)}
+								</div>
+							))
+						}
+					</div>
+				</div>
+				<div class="px-7 pt-4 pb-6">
+					<h3 class="text-[15px] font-medium tracking-[-0.02em]">Flexible masking</h3>
+					<p class="mt-1.5 text-[13px] leading-relaxed text-foreground/55">
+						Mask, hash, encrypt, tokenize, or plug in custom anonymizers, per field.
+					</p>
+				</div>
+			</article>
+
+			<!-- Multimodal (span 2) -->
+			<article
+				class="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-foreground/20 md:col-span-2"
+			>
+				<div class="flex flex-1 items-center px-7 pt-7 pb-2" style="min-height:168px">
+					<div class="grid w-full grid-cols-3 gap-2.5">
+						{
+							formats.map((f) => (
+								<div
+									class:list={[
+										"flex aspect-[1/0.84] flex-col items-center justify-center gap-2 rounded-xl border font-mono text-[11px] tracking-wide",
+										f.on
+											? "border-foreground/25 bg-foreground/[0.06] text-foreground"
+											: "border-border bg-muted/50 text-foreground/35",
+									]}
+								>
+									<svg
+										width="18"
+										height="18"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="1.7"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										class="opacity-80"
+									>
+										{f.kind === "doc" && (
+											<>
+												<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+												<path d="M14 2v6h6" />
+											</>
+										)}
+										{f.kind === "image" && (
+											<>
+												<rect x="3" y="3" width="18" height="18" rx="2" />
+												<circle cx="8.5" cy="8.5" r="1.5" />
+												<path d="m21 15-5-5L5 21" />
+											</>
+										)}
+										{f.kind === "sheet" && (
+											<>
+												<rect x="3" y="3" width="18" height="18" rx="2" />
+												<path d="M3 9h18M3 15h18M9 3v18M15 3v18" />
+											</>
+										)}
+										{f.kind === "audio" && (
+											<path d="M3 12h3l2 6 4-14 2 8h7" />
+										)}
+										{f.kind === "code" && <path d="M8 4 4 12l4 8M16 4l4 8-4 8" />}
+									</svg>
+									<span>{f.ext}</span>
+								</div>
+							))
+						}
+					</div>
+				</div>
+				<div class="px-7 pt-4 pb-6">
+					<h3 class="text-[15px] font-medium tracking-[-0.02em]">Multimodal</h3>
+					<p class="mt-1.5 text-[13px] leading-relaxed text-foreground/55">
+						Documents, images, spreadsheets, and audio under one schema.
+					</p>
+				</div>
+			</article>
+
+			<!-- Retention (span 2) -->
+			<article
+				class="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-foreground/20 md:col-span-2"
+			>
+				<div class="flex flex-1 items-center px-7 pt-7 pb-2" style="min-height:168px">
+					<div class="flex w-full flex-col font-mono text-xs">
+						<div
+							class="flex items-center gap-3 border-b border-border/50 py-2.5 text-foreground/60"
+						>
+							<span class="h-[9px] w-[9px] shrink-0 rounded-full border border-foreground/30"></span>
+							Received<span class="ml-auto text-foreground/40">patient-intake.pdf</span>
+						</div>
+						<div
+							class="flex items-center gap-3 border-b border-border/50 py-2.5 text-foreground/60"
+						>
+							<span
+								class="h-[9px] w-[9px] shrink-0 rounded-full bg-[#2ecc71]"
+								style="box-shadow:0 0 0 3px rgba(46,204,113,0.18)"></span>
+							In-memory<span class="ml-auto text-foreground/40">processing</span>
+						</div>
+						<div class="flex items-center gap-3 py-2.5 text-foreground/40">
+							<span class="h-[9px] w-[9px] shrink-0 rounded-full border border-foreground/20"></span>
+							Discarded<span class="ml-auto text-foreground/30 line-through">0 bytes kept</span>
+						</div>
+					</div>
+				</div>
+				<div class="px-7 pt-4 pb-6">
+					<h3 class="text-[15px] font-medium tracking-[-0.02em]">Zero data retention</h3>
+					<p class="mt-1.5 text-[13px] leading-relaxed text-foreground/55">
+						Processed in memory, then gone. Or run it entirely in your own VPC.
+					</p>
+				</div>
+			</article>
+
+			<!-- Layered detection (span 2) -->
+			<article
+				class="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-foreground/20 md:col-span-2"
+			>
+				<div class="flex flex-1 items-center px-7 pt-7 pb-2" style="min-height:168px">
+					<div class="flex w-full flex-col items-center gap-2.5">
+						<div class="flex w-full justify-center gap-2">
+							{
+								["pattern", "dictionary", "checksum"].map((m) => (
+									<span class="rounded-md border border-border bg-muted/50 px-2.5 py-1.5 font-mono text-[10px] text-foreground/55">
+										{m}
+									</span>
+								))
+							}
+						</div>
+						<div class="h-4 w-px bg-border"></div>
+						<div class="flex w-full justify-center gap-2">
+							{
+								["NER", "OCR", "vision", "LLM"].map((m) => (
+									<span class="rounded-md border border-foreground/25 bg-foreground/[0.06] px-2.5 py-1.5 font-mono text-[10px] text-foreground">
+										{m}
+									</span>
+								))
+							}
+						</div>
+						<div class="h-4 w-px bg-border"></div>
+						<span
+							class="rounded-md border border-foreground/30 bg-foreground/[0.08] px-3 py-1.5 font-mono text-[10px] text-foreground"
+						>
+							verified
+						</span>
+					</div>
+				</div>
+				<div class="px-7 pt-4 pb-6">
+					<h3 class="text-[15px] font-medium tracking-[-0.02em]">Layered detection</h3>
+					<p class="mt-1.5 text-[13px] leading-relaxed text-foreground/55">
+						Multiple detection methods stack and cross-check each other, so nothing
+						slips through.
+					</p>
+				</div>
+			</article>
+
+			<!-- Audit trail (span 6, wide split) -->
+			<article
+				class="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-foreground/20 md:col-span-6 md:flex-row md:items-stretch"
+			>
+				<div
+					class="flex flex-col justify-center gap-4 border-b border-border p-8 md:w-[36%] md:min-w-[232px] md:border-b-0 md:border-r"
+				>
+					<h3 class="font-display text-xl font-medium tracking-[-0.025em]">
+						An audit trail for every field you touch
+					</h3>
+					<p class="text-[13px] leading-relaxed text-foreground/55">
+						Each redaction is logged with entity, confidence, action, and actor,
+						tamper-evident and exportable. Audits stop being fire drills.
+					</p>
+					<div class="flex flex-wrap gap-1.5">
+						{
+							["GDPR", "HIPAA", "CCPA", "SOC 2"].map((c) => (
+								<span class="rounded-md border border-border px-2.5 py-1 font-mono text-[11px] text-foreground/60">
+									{c}
+								</span>
+							))
+						}
+					</div>
+				</div>
+				<div class="flex flex-1 items-center px-7 py-6 min-w-0">
+					<div class="w-full font-mono text-xs">
+						<div
+							class="grid grid-cols-[58px_1fr_84px_92px_18px] gap-3.5 border-b border-border/50 pb-2.5 text-[9.5px] uppercase tracking-[0.12em] text-foreground/40"
+						>
+							<span>Time</span><span>Entity</span><span>Action</span><span>Source</span><span></span>
+						</div>
+						{
+							[
+								["09:42:01", "US_SSN", "blackout", "api:ingest"],
+								["09:42:01", "EMAIL", "mask", "api:ingest"],
+								["09:42:02", "CREDIT_CARD", "tokenize", "api:ingest"],
+								["09:42:02", "MEDICAL_REC", "blackout", "rule:phi"],
+								["09:42:03", "ADDRESS", "blackout", "rule:phi"],
+							].map((r) => (
+								<div class="grid grid-cols-[58px_1fr_84px_92px_18px] items-center gap-3.5 border-b border-border/50 py-2 text-foreground/60 last:border-b-0">
+									<span class="text-foreground/40">{r[0]}</span>
+									<span class="text-foreground">{r[1]}</span>
+									<span>{r[2]}</span>
+									<span class="text-foreground/40">{r[3]}</span>
+									<span class="text-[#2ecc71]">✓</span>
+								</div>
+							))
+						}
+					</div>
+				</div>
+			</article>
+		</div>
+	</div>
+</section>
+
+<style>
+	.cap-hl {
+		white-space: nowrap;
+		border-radius: 4px;
+		padding: 1px 5px;
+		background: color-mix(in oklch, var(--foreground) 8%, transparent);
+		box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--foreground) 18%, transparent);
+		color: var(--foreground);
+	}
+	.cap-chip {
+		white-space: nowrap;
+		border-radius: 6px;
+		padding: 4px 9px;
+		background: var(--muted);
+		box-shadow: inset 0 0 0 1px var(--border);
+		color: var(--foreground);
+	}
+	.cap-redact {
+		position: relative;
+		white-space: nowrap;
+		border-radius: 6px;
+		padding: 4px 9px;
+		color: transparent;
+		background: var(--foreground);
+	}
+	.cap-redact::after {
+		content: "";
+		position: absolute;
+		inset: 4px 6px;
+		border-radius: 2px;
+		background: repeating-linear-gradient(
+			90deg,
+			color-mix(in oklch, var(--background) 25%, transparent) 0 5px,
+			transparent 5px 10px
+		);
+	}
+</style>

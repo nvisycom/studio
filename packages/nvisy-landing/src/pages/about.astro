@@ -1,6 +1,6 @@
 ---
 import { Layout } from "@/layouts";
-import { CompanyStats, CTA, Security, SocialProof } from "@/components";
+import { CTA, Security, SocialProof } from "@/components";
 import { Shield, Building2, Zap, Target } from "@lucide/vue";
 import TeamMember from "@/components/features/about/TeamMember.vue";
 import Blogposts from "@/components/sections/Blogposts.astro";
@@ -45,14 +45,6 @@ const values = [
 			"Our success is measured by the tangible business value we deliver to our customers.",
 		icon: Target,
 	},
-];
-
-// Custom stats
-const customStats = [
-	{ label: "Founded", value: "2025" },
-	{ label: "Enterprise Customers", value: "10+" },
-	{ label: "Files Redacted", value: "1M+" },
-	{ label: "Uptime", value: "99.9%" },
 ];
 ---
 
@@ -108,14 +100,9 @@ const customStats = [
     </div>
   </section>
 
-  <!-- Company Stats -->
-  <CompanyStats stats={customStats} />
 
   <!-- Social Proof -->
-  <SocialProof
-    title="Trusted by industry leaders"
-    subtitle="Join organizations that rely on Nvisy for automated data redaction and privacy compliance."
-  />
+  <SocialProof title="Trusted by industry leaders" />
 
   <!-- Values -->
   <section aria-label="Company Values" class="py-24 md:py-32">

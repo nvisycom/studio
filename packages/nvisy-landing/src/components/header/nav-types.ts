@@ -1,24 +1,13 @@
-import type { Component } from "vue";
-
 export interface NavigationItem {
 	title: string;
 	href: string;
-	description?: string;
-	icon: Component;
+	description: string;
 	isExternal?: boolean;
 }
 
-export interface ProductSection {
-	platforms: NavigationItem[];
-	opensource: NavigationItem[];
+export interface NavigationColumn {
+	items: NavigationItem[];
 }
 
-export interface SolutionSection {
-	byUsecase: NavigationItem[];
-	byCompany: NavigationItem[];
-}
-
-export interface ResourceSection {
-	developers: NavigationItem[];
-	support: NavigationItem[];
-}
+/** A mega-menu is a set of columns (Linear-style). */
+export type NavigationMenuColumns = NavigationColumn[];

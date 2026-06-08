@@ -1,5 +1,3 @@
-export { default as CompanyStats } from "./sections/Stats.astro";
-export { default as Stats } from "./sections/Stats.astro";
 export { default as CTA } from "./sections/CTA.astro";
 export { default as FAQ } from "./sections/FAQ.astro";
 export { default as Features } from "./sections/Features.astro";

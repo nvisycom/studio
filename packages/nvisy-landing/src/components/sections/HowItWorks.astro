@@ -1,33 +1,65 @@
 ---
-import HowItWorksStepper from "./HowItWorksStepper.vue";
-
 export interface Props {
 	title?: string;
 	description?: string;
 }
 
 const {
-	title = "How It Works",
-	description = "Four simple steps from document to structured data",
+	title = "How it works",
+	description = "From upload to redacted output in four simple steps.",
 } = Astro.props;
+
+const steps = [
+	{
+		title: "Upload",
+		description: "Upload any file: PDFs, images, audio, CSV, or JSON.",
+	},
+	{
+		title: "Detect",
+		description: "AI scans for PII, PHI, financial data, and 50+ entity types.",
+	},
+	{
+		title: "Review",
+		description: "Review detected entities, adjust rules, and confirm.",
+	},
+	{
+		title: "Redact",
+		description: "Download redacted files or integrate via API.",
+	},
+];
 ---
 
-<section class="relative py-24 md:py-32 overflow-hidden">
-	<!-- Background -->
-	<div class="absolute inset-0 bg-gradient-to-b from-transparent via-accent/20 to-transparent" />
-
-	<div class="container relative z-10 mx-auto px-4">
-		<div class="scroll-reveal max-w-2xl mx-auto text-center mb-16" data-reveal>
-			<h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
+<section class="border-b border-border bg-background">
+	<div class="container mx-auto px-5 py-20 md:py-28">
+		<!-- Header -->
+		<div class="max-w-2xl">
+			<h2
+				class="font-display text-3xl md:text-4xl font-medium tracking-[-0.02em] text-balance"
+			>
 				{title}
 			</h2>
-			<p class="text-lg text-muted-foreground">
+			<p class="mt-4 text-base text-foreground/60 leading-relaxed">
 				{description}
 			</p>
 		</div>
 
-		<div class="scroll-reveal max-w-5xl mx-auto" style="--reveal-delay: 150ms;" data-reveal>
-			<HowItWorksStepper client:visible />
+		<!-- Steps -->
+		<div class="mt-14 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+			{
+				steps.map((step, i) => (
+					<div class="border-t border-border pt-5">
+						<div class="font-mono text-sm text-foreground/40">
+							{String(i + 1).padStart(2, "0")}
+						</div>
+						<h3 class="mt-4 text-base font-medium tracking-tight">
+							{step.title}
+						</h3>
+						<p class="mt-2 text-sm text-foreground/55 leading-relaxed">
+							{step.description}
+						</p>
+					</div>
+				))
+			}
 		</div>
 	</div>
 </section>
