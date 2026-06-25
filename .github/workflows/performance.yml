@@ -5,13 +5,19 @@ on:
     branches:
       - "main"
     paths:
-      - "packages/**"
+      - "app/**"
+      - "i18n/**"
+      - "public/**"
+      - "nuxt.config.ts"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/performance.yml"
   pull_request:
     paths:
-      - "packages/**"
+      - "app/**"
+      - "i18n/**"
+      - "public/**"
+      - "nuxt.config.ts"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/performance.yml"
@@ -42,41 +48,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build shared dependencies
+      - name: Build webapp
+        run: npm run generate
+
+      - name: Start preview server
         run: |
-          npm run build --workspace=@nvisy/config
-          npm run build --workspace=@nvisy/shared
-
-      - name: Build packages
-        run: |
-          npm run build --workspace=@nvisy/landing
-          npm run generate --workspace=@nvisy/webapp
-
-      - name: Start Landing preview server
-        run: |
-          npm run preview --workspace=@nvisy/landing &
-          npx wait-on http://localhost:4321 --timeout 60000
-
-      - name: Run Lighthouse CI (Landing)
-        uses: treosh/lighthouse-ci-action@v12
-        with:
-          urls: |
-            http://localhost:4321
-            http://localhost:4321/about
-            http://localhost:4321/pricing
-          uploadArtifacts: true
-          artifactName: lighthouse-landing-${{ github.run_id }}
-          temporaryPublicStorage: true
-
-      - name: Stop Landing preview server
-        run: pkill -f "preview.*landing" || true
-
-      - name: Start Webapp preview server
-        run: |
-          npm run preview --workspace=@nvisy/webapp &
+          npm run preview &
           npx wait-on http://localhost:3000 --timeout 60000
 
-      - name: Run Lighthouse CI (Webapp)
+      - name: Run Lighthouse CI
         uses: treosh/lighthouse-ci-action@v12
         with:
           urls: |

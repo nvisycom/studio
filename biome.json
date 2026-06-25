@@ -15,22 +15,30 @@
 			"!**/build",
 			"!**/.nuxt",
 			"!**/.nitro",
-			"!**/.output",
-			"!**/.astro",
-			"!output"
+			"!**/.output"
 		]
 	},
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "tab"
 	},
-	"assist": { "actions": { "source": { "organizeImports": "on" } } },
+	"assist": {
+		"enabled": false
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {
 			"recommended": true,
 			"style": {
-				"recommended": true
+				"recommended": true,
+				"noNonNullAssertion": "off"
+			},
+			"correctness": {
+				"noUnusedVariables": "off",
+				"noUnusedImports": "off"
+			},
+			"suspicious": {
+				"noExplicitAny": "off"
 			}
 		}
 	},
@@ -38,5 +46,39 @@
 		"formatter": {
 			"quoteStyle": "double"
 		}
-	}
+	},
+	"css": {
+		"parser": {
+			"cssModules": true,
+			"tailwindDirectives": true
+		},
+		"formatter": {
+			"enabled": false
+		},
+		"linter": {
+			"enabled": false
+		}
+	},
+	"overrides": [
+		{
+			"includes": ["app/components/ui/**"],
+			"linter": {
+				"rules": {
+					"correctness": {
+						"noVueDuplicateKeys": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["**/*.vue"],
+			"linter": {
+				"rules": {
+					"style": {
+						"useImportType": "off"
+					}
+				}
+			}
+		}
+	]
 }

@@ -1,41 +1,38 @@
-# Nvisy Portal
+# Portal
 
-Monorepo for Nvisy's web properties, built with Astro, Nuxt, and Vue.
+Web application for Nvisy — [app.nvisy.com](https://app.nvisy.com).
 
-## Packages
+A single-page application built with Nuxt and Vue, running in SPA mode against
+the Nvisy API. It is the authenticated product surface: dashboards, workflow
+runs, and account management, with the API wired in through the `@nvisy/sdk`
+client.
 
-| Package | Description | Tech |
-|---------|-------------|------|
-| `@nvisy/config` | Shared configuration and constants | TypeScript |
-| `@nvisy/shared` | Shared utilities and helpers | TypeScript |
-| `@nvisy/landing` | Landing page — [nvisy.com](https://nvisy.com) | Astro 6, Vue 3 |
-| `@nvisy/webapp` | Web application — [app.nvisy.com](https://app.nvisy.com) | Nuxt 4, Vue 3 |
+## Requirements
+
+- Node.js 22.18+
+- npm 10+
 
 ## Quick Start
 
 ```bash
 make install      # Install dependencies
-make build-deps   # Build shared libraries
-npm run dev --workspace=@nvisy/landing    # Start landing dev server
-npm run dev --workspace=@nvisy/webapp     # Start webapp dev server
+npm run dev       # Start dev server (port 3000)
 ```
 
 ## Commands
 
 ```bash
-make build        # Build all packages
+make build        # Build the app (output in ./output)
 make check        # Lint and format check (Biome)
 make clean        # Remove build artifacts and node_modules
-make repair       # Clean, reinstall, and rebuild
+make repair       # Clean and reinstall
+
+npm run typecheck # Type check (nuxt typecheck)
 ```
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions, development workflow, and code style guidelines.
 
 ## License
 
-Proprietary, see [LICENSE.txt](LICENSE.txt).
+Apache 2.0 License, see [LICENSE.txt](LICENSE.txt)
 
 ## Support
 

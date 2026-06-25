@@ -7,15 +7,16 @@ Thumbs.db
 .vscode/
 .idea/
 .zed/
+.fleet/
 
 # Node & JavaScript
 node_modules/
 .vite/
-.astro/
 .output/
 .nuxt/
 .nitro/
 .cache/
+.data/
 
 # Testing
 playwright-report/
@@ -35,6 +36,7 @@ output/
 # Logs
 *.log
 *.log*
+logs/
 
 # Generated
 *.pem

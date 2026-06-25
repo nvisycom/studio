@@ -1,9 +1,0 @@
-Lawyers.txt
-
-For compliance.
-Nvisy™ is a trademark of Nvisy Inc.
-If you're a creator/contributor to one of these packages, thanks!
-Last updated: 2025-09-06 13:44:48
-
-List of external dependencies and their licenses:
-
