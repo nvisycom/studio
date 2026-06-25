@@ -12,7 +12,7 @@ export interface Props {
 
 const {
 	title = "Trusted by industry leaders",
-	description = "See what our customers say about transforming their document workflows.",
+	description = "See what teams say about automating their data redaction workflows.",
 	category,
 	featured = true,
 	limit,
@@ -36,193 +36,51 @@ if (limit) {
 	allTestimonials = allTestimonials.slice(0, limit);
 }
 
-// Don't render if too few testimonials for a meaningful carousel
-const minTestimonials = 4;
+const minTestimonials = 3;
+
+const initials = (name: string) =>
+	name
+		.split(" ")
+		.map((n) => n.charAt(0))
+		.join("");
 ---
 
-{allTestimonials.length >= minTestimonials && (
-<section class="py-24 md:py-32">
-  <div class="container mx-auto max-w-7xl px-4">
-    <div class="scroll-reveal text-center mb-16" data-reveal>
-      <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
-        {title}
-      </h2>
-      <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-        {description}
-      </p>
-    </div>
-  </div>
+{
+	allTestimonials.length >= minTestimonials && (
+		<section class="border-b border-border bg-background">
+			<div class="container mx-auto px-5 py-20 md:py-28">
+				<div class="max-w-xl">
+					<h2 class="font-display text-3xl md:text-4xl font-medium tracking-[-0.02em]">
+						{title}
+					</h2>
+					<p class="mt-4 text-base text-foreground/60 leading-relaxed">
+						{description}
+					</p>
+				</div>
 
-  <!-- Scrolling Carousel Container - Full Width -->
-  <div class="w-full relative">
-    <div class="relative overflow-hidden testimonials-container">
-      <!-- Side Gradient Overlays -->
-      <div class="absolute left-0 top-0 bottom-0 w-16 md:w-20 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
-      <div class="absolute right-0 top-0 bottom-0 w-16 md:w-20 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
-      <!-- Bottom fade to hide card borders/corners -->
-      <div class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-background to-transparent z-20 pointer-events-none"></div>
-
-      <!-- Scrolling Track -->
-      <div class="testimonials-marquee">
-        <div class="testimonials-track">
-          {allTestimonials.map((testimonial) => (
-            <div class="testimonial-card flex-shrink-0 w-[320px] md:w-[380px] rounded-lg p-6 flex flex-col min-h-[280px] relative overflow-hidden bg-white dark:bg-black border border-neutral-200/50 dark:border-neutral-800/50">
-              <!-- Quote -->
-              <blockquote class="text-sm md:text-base text-neutral-700 dark:text-neutral-300 mb-4 leading-relaxed flex-grow">
-                {testimonial.quote}
-              </blockquote>
-
-              <!-- Author Info -->
-              <div class="border-t border-neutral-200 dark:border-neutral-800 pt-4 mt-auto">
-                <div class="flex items-start gap-3">
-                  <!-- Overlapping Avatars -->
-                  <div class="flex-shrink-0 relative w-14">
-                    <!-- Company Logo (Left, Behind) -->
-                    {testimonial.companyLogo ? (
-                      <div class="absolute left-0 w-10 h-10 bg-white dark:bg-neutral-800 rounded-full flex items-center justify-center border-2 border-neutral-200 dark:border-neutral-700">
-                        <img
-                          src={testimonial.companyLogo}
-                          alt={testimonial.company}
-                          class="w-6 h-6 object-contain opacity-80"
-                        />
-                      </div>
-                    ) : (
-                      <div class="absolute left-0 w-10 h-10 bg-neutral-100 dark:bg-neutral-700 rounded-full flex items-center justify-center border-2 border-neutral-200 dark:border-neutral-700">
-                        <span class="text-neutral-500 dark:text-neutral-400 font-semibold text-xs">
-                          {testimonial.company.charAt(0)}
-                        </span>
-                      </div>
-                    )}
-
-                    <!-- Person Avatar (Right, On Top) -->
-                    {testimonial.avatar ? (
-                      <img
-                        src={testimonial.avatar}
-                        alt={testimonial.author}
-                        class="absolute left-4 top-0 w-10 h-10 rounded-full object-cover border-2 border-white dark:border-black z-10"
-                      />
-                    ) : (
-                      <div class="absolute left-4 top-0 w-10 h-10 bg-neutral-200 dark:bg-neutral-600 rounded-full flex items-center justify-center border-2 border-white dark:border-black z-10">
-                        <span class="text-neutral-600 dark:text-neutral-300 font-semibold text-sm">
-                          {testimonial.author.split(' ').map((name: string) => name.charAt(0)).join('')}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div class="flex-1 min-w-0">
-                    <h4 class="font-semibold text-neutral-900 dark:text-white text-sm">
-                      {testimonial.author}
-                    </h4>
-                    <p class="text-neutral-600 dark:text-neutral-400 text-sm">
-                      {testimonial.title}
-                    </p>
-                    <p class="text-neutral-500 dark:text-neutral-500 text-sm font-medium">
-                      {testimonial.company}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div class="testimonials-track" aria-hidden="true">
-          {allTestimonials.map((testimonial) => (
-            <div class="testimonial-card flex-shrink-0 w-[320px] md:w-[380px] rounded-lg p-6 flex flex-col min-h-[280px] relative overflow-hidden bg-white dark:bg-black border border-neutral-200/50 dark:border-neutral-800/50">
-              <!-- Quote -->
-              <blockquote class="text-sm md:text-base text-neutral-700 dark:text-neutral-300 mb-4 leading-relaxed flex-grow">
-                {testimonial.quote}
-              </blockquote>
-
-              <!-- Author Info -->
-              <div class="border-t border-neutral-200 dark:border-neutral-800 pt-4 mt-auto">
-                <div class="flex items-start gap-3">
-                  <!-- Overlapping Avatars -->
-                  <div class="flex-shrink-0 relative w-14">
-                    <!-- Company Logo (Left, Behind) -->
-                    {testimonial.companyLogo ? (
-                      <div class="absolute left-0 w-10 h-10 bg-white dark:bg-neutral-800 rounded-full flex items-center justify-center border-2 border-neutral-200 dark:border-neutral-700">
-                        <img
-                          src={testimonial.companyLogo}
-                          alt={testimonial.company}
-                          class="w-6 h-6 object-contain opacity-80"
-                        />
-                      </div>
-                    ) : (
-                      <div class="absolute left-0 w-10 h-10 bg-neutral-100 dark:bg-neutral-700 rounded-full flex items-center justify-center border-2 border-neutral-200 dark:border-neutral-700">
-                        <span class="text-neutral-500 dark:text-neutral-400 font-semibold text-xs">
-                          {testimonial.company.charAt(0)}
-                        </span>
-                      </div>
-                    )}
-
-                    <!-- Person Avatar (Right, On Top) -->
-                    {testimonial.avatar ? (
-                      <img
-                        src={testimonial.avatar}
-                        alt={testimonial.author}
-                        class="absolute left-4 top-0 w-10 h-10 rounded-full object-cover border-2 border-white dark:border-black z-10"
-                      />
-                    ) : (
-                      <div class="absolute left-4 top-0 w-10 h-10 bg-neutral-200 dark:bg-neutral-600 rounded-full flex items-center justify-center border-2 border-white dark:border-black z-10">
-                        <span class="text-neutral-600 dark:text-neutral-300 font-semibold text-sm">
-                          {testimonial.author.split(' ').map((name: string) => name.charAt(0)).join('')}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div class="flex-1 min-w-0">
-                    <h4 class="font-semibold text-neutral-900 dark:text-white text-sm">
-                      {testimonial.author}
-                    </h4>
-                    <p class="text-neutral-600 dark:text-neutral-400 text-sm">
-                      {testimonial.title}
-                    </p>
-                    <p class="text-neutral-500 dark:text-neutral-500 text-sm font-medium">
-                      {testimonial.company}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<style>
-  .testimonials-container {
-    padding-bottom: 0;
-  }
-
-  .testimonials-marquee {
-    display: flex;
-    gap: 1rem;
-    padding-bottom: 1rem;
-    margin-bottom: -0.5rem;
-  }
-
-  .testimonials-track {
-    display: flex;
-    gap: 1rem;
-    animation: marquee 80s linear infinite;
-    will-change: transform;
-  }
-
-  .testimonials-marquee:hover .testimonials-track {
-    animation-play-state: paused;
-  }
-
-  @keyframes marquee {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(calc(-100% - 1rem));
-    }
-  }
-</style>
-)}
+				<div class="mt-12 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+					{allTestimonials.map((testimonial) => (
+						<figure class="flex flex-col rounded-xl border border-border bg-card p-6">
+							<blockquote class="flex-1 text-sm leading-relaxed text-foreground/70">
+								“{testimonial.quote}”
+							</blockquote>
+							<figcaption class="mt-6 flex items-center gap-3 border-t border-border/60 pt-5">
+								<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted font-mono text-xs font-medium text-foreground/70">
+									{initials(testimonial.author)}
+								</div>
+								<div class="min-w-0">
+									<div class="truncate text-sm font-medium tracking-tight">
+										{testimonial.author}
+									</div>
+									<div class="truncate text-[13px] text-foreground/50">
+										{testimonial.title}, {testimonial.company}
+									</div>
+								</div>
+							</figcaption>
+						</figure>
+					))}
+				</div>
+			</div>
+		</section>
+	)
+}

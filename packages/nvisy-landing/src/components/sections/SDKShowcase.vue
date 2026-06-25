@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { Check, Copy, ExternalLink, Package } from "@lucide/vue";
-import TypeScriptIcon from "@/assets/languages/typescript.svg?raw";
-import PythonIcon from "@/assets/languages/python.svg?raw";
-import RustIcon from "@/assets/languages/rust.svg?raw";
+import { Check, Copy, ExternalLink } from "@lucide/vue";
 
 interface SDK {
 	name: string;
@@ -112,66 +109,42 @@ const copyCode = async () => {
 <template>
   <div class="relative" data-sdk-showcase>
     <!-- Tabs & Actions Bar -->
-    <div class="flex items-center justify-between mb-4">
-      <!-- Language Tabs with Icons -->
-      <div class="flex items-center gap-2">
+    <div class="flex items-center justify-between border-b border-border pb-3 mb-4">
+      <!-- Language Tabs (text) -->
+      <div class="flex items-center gap-6">
         <button
           v-for="(sdk, index) in sdks"
           :key="sdk.name"
           @click="switchTab(index)"
-          class="px-4 py-2 text-sm font-medium rounded-lg transition-all flex items-center gap-2"
+          class="text-sm transition-colors"
           :class="[
             activeTab === index
-              ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900'
-              : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800',
+              ? 'font-medium text-foreground'
+              : 'font-normal text-foreground/50 hover:text-foreground',
           ]"
         >
-          <div
-            v-if="sdk.name === 'TypeScript'"
-            v-html="TypeScriptIcon"
-            class="w-4 h-4 hidden sm:block [&>svg]:w-full [&>svg]:h-full"
-            :class="activeTab === index ? 'sdk-icon-active' : 'sdk-icon'"
-          ></div>
-          <div
-            v-else-if="sdk.name === 'Python'"
-            v-html="PythonIcon"
-            class="w-4 h-4 hidden sm:block [&>svg]:w-full [&>svg]:h-full"
-            :class="activeTab === index ? 'sdk-icon-active' : 'sdk-icon'"
-          ></div>
-          <div
-            v-else-if="sdk.name === 'Rust'"
-            v-html="RustIcon"
-            class="w-4 h-4 hidden sm:block [&>svg]:w-full [&>svg]:h-full"
-            :class="activeTab === index ? 'sdk-icon-active' : 'sdk-icon'"
-          ></div>
-          <Package v-else class="w-4 h-4 hidden sm:block" />
-          <span>{{ sdk.name }}</span>
+          {{ sdk.name }}
         </button>
       </div>
 
       <!-- Actions -->
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-1">
         <a
           :href="activeSdk.githubUrl"
           target="_blank"
           rel="noopener noreferrer"
-          class="p-2 rounded-lg text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all"
+          class="rounded-md p-2 text-foreground/50 transition-colors hover:bg-muted hover:text-foreground"
           title="View on GitHub"
         >
-          <ExternalLink class="w-4 h-4" />
+          <ExternalLink class="h-4 w-4" />
         </a>
         <button
           @click="copyCode"
-          class="p-2 rounded-lg transition-all"
-          :class="[
-            copied
-              ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300'
-              : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800',
-          ]"
+          class="rounded-md p-2 text-foreground/50 transition-colors hover:bg-muted hover:text-foreground"
           :title="copied ? 'Copied!' : 'Copy code'"
         >
-          <Check v-if="copied" class="w-4 h-4" />
-          <Copy v-else class="w-4 h-4" />
+          <Check v-if="copied" class="h-4 w-4 text-[#2ecc71]" />
+          <Copy v-else class="h-4 w-4" />
         </button>
       </div>
     </div>
@@ -179,7 +152,7 @@ const copyCode = async () => {
     <!-- Code Display -->
     <div
       ref="codeContainerRef"
-      class="relative rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-800 transition-[height] duration-300 ease-out"
+      class="relative overflow-hidden rounded-xl border border-border transition-[height] duration-300 ease-out"
     >
       <div
         v-if="activeCodeHtml"
@@ -187,10 +160,7 @@ const copyCode = async () => {
         class="code-container transition-opacity duration-150"
         :class="isTransitioning ? 'opacity-0' : 'opacity-100'"
       />
-      <div
-        v-else
-        class="p-6 text-neutral-500 dark:text-neutral-400 bg-white dark:bg-neutral-900"
-      >
+      <div v-else class="bg-card p-6 font-mono text-sm text-foreground/40">
         Loading code...
       </div>
     </div>
@@ -210,13 +180,5 @@ const copyCode = async () => {
   padding: 1.5rem;
   border: none;
   border-radius: 0;
-}
-
-.sdk-icon {
-  filter: grayscale(100%);
-}
-
-.sdk-icon-active {
-  filter: grayscale(100%);
 }
 </style>

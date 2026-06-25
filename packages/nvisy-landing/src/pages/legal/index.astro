@@ -1,7 +1,7 @@
 ---
 import { Layout } from "@/layouts";
 import { getCollection, type CollectionEntry } from "astro:content";
-import { CTA, Hero, LegalCard, Security } from "@/components";
+import { Hero, LegalCard, Security } from "@/components";
 import { File } from "@lucide/vue";
 
 let legalEntries: CollectionEntry<"legal-docs">[] = [];
@@ -17,9 +17,8 @@ legalEntries.sort((a, b) => a.data.title.localeCompare(b.data.title));
 <Layout title="Legal" description="Legal documents and policies for our platform and services." hideFooterBorder>
   <Hero
     title="Legal"
-    titleHighlight="Information"
-    titleInline={true}
-    description="Access our legal documents, policies, and terms that govern our services."
+    description="The documents, policies, and terms that govern our services."
+    primaryCta={null}
     compact
   />
 
@@ -27,21 +26,11 @@ legalEntries.sort((a, b) => a.data.title.localeCompare(b.data.title));
     <div class="container mx-auto px-4">
       <div class="max-w-4xl mx-auto">
         {legalEntries.length > 0 ? (
-          <>
-            <div class="flex items-center justify-between mb-8">
-              <h2 class="text-lg font-medium">
-                Documents
-              </h2>
-              <span class="text-sm text-muted-foreground">
-                {legalEntries.length} document{legalEntries.length !== 1 ? 's' : ''}
-              </span>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {legalEntries.map((entry) => (
-                <LegalCard entry={entry} />
-              ))}
-            </div>
-          </>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {legalEntries.map((entry) => (
+              <LegalCard entry={entry} />
+            ))}
+          </div>
         ) : (
           <div class="text-center py-16">
             <div class="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -54,12 +43,6 @@ legalEntries.sort((a, b) => a.data.title.localeCompare(b.data.title));
       </div>
     </div>
   </section>
-
-  <CTA
-    title="Questions about our policies?"
-    description="If you have questions about our legal documents or need clarification, please reach out to our team."
-    primaryCta={{ text: "Email Us", href: "mailto:hello@nvisy.com" }}
-  />
 
   <Security />
 </Layout>

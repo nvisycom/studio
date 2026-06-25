@@ -1,12 +1,10 @@
 ---
 import { Layout } from "@/layouts";
 import {
-	Hero,
 	CTA,
 	Testimonials,
 	CaseStudies,
 	Industries,
-	SocialProof,
 	Security,
 } from "@/components";
 ---
@@ -16,25 +14,18 @@ import {
   description="See how organizations across industries use Nvisy to protect sensitive data and meet privacy compliance requirements."
   hideFooterBorder
 >
-  <Hero
+  <Industries
     title="Customers"
     description="From financial services to healthcare, Nvisy helps organizations redact PII and PHI across documents, images, and audio."
-    primaryCta={{ text: "Get Started", href: "https://app.nvisy.com/auth/signup" }}
-    secondaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com" }}
-    compact
   />
-
-  <SocialProof title="Organizations using Nvisy for data redaction" />
-
-  <Industries />
   <CaseStudies />
   <Testimonials />
 
   <CTA
     title="Ready to protect your data?"
     description="Start redacting sensitive data in minutes. No credit card required."
-    primaryCta={{ text: "Get Started", href: "https://app.nvisy.com/auth/signup" }}
-    secondaryCta={{ text: "View Documentation", href: "https://docs.nvisy.com" }}
+    primaryCta={{ text: "Get started", href: "https://app.nvisy.com/auth/signup" }}
+    secondaryCta={{ text: "View documentation", href: "https://docs.nvisy.com" }}
   />
 
   <Security />

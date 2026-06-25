@@ -31,16 +31,13 @@ const sdksData = await Promise.all(
 );
 ---
 
-<section class="relative py-24 md:py-32 overflow-hidden">
-  <!-- Background effects -->
-  <div class="absolute inset-0 bg-gradient-to-b from-transparent via-accent/10 to-transparent" />
-
-  <div class="container relative z-10 mx-auto max-w-5xl px-4">
-    <div class="scroll-reveal text-center mb-16" data-reveal>
-      <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
+<section class="border-b border-border bg-background">
+  <div class="container mx-auto px-5 py-20 md:py-28">
+    <div class="max-w-xl">
+      <h2 class="font-display text-3xl md:text-4xl font-medium tracking-[-0.02em]">
         {title}
       </h2>
-      <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+      <p class="mt-4 text-base text-foreground/60 leading-relaxed">
         {description}
       </p>
     </div>
@@ -54,6 +51,7 @@ const sdksData = await Promise.all(
 
     <!-- Vue component for interactivity -->
     <SDKShowcase
+      class="mt-12"
       sdks={sdksData.map((sdk) => ({
         name: sdk.name,
         language: sdk.language,
