@@ -30,7 +30,7 @@ npm run tauri -w @nvisy/desktop dev    # Desktop app in a Tauri window
 ```
 packages/console/   # shared Nuxt layer (design system, features, data layer)
 apps/web/           # web shell
-apps/desktop/       # desktop shell + src-tauri/
+apps/desktop/       # desktop shell + tauri/
 ```
 
 Shared code lives in `@nvisy/console` and is imported via the `#console` alias.
@@ -40,11 +40,11 @@ Each app's `@/` points at its own `app/` directory. New shared components go in
 ## Code Quality
 
 ```bash
-make check          # Lint and format (Biome) — src-tauri/ is excluded
+make check          # Lint and format (Biome) — tauri/ is excluded
 npm run typecheck   # Type check all workspaces
 ```
 
-Do not run Biome on `src-tauri/` — Rust and Tauri config files are managed by
+Do not run Biome on `tauri/` — Rust and Tauri config files are managed by
 the Rust toolchain.
 
 ## Build

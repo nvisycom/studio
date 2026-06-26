@@ -27,7 +27,7 @@ updates:
 
   # Version updates for Cargo (Tauri desktop app)
   - package-ecosystem: "cargo"
-    directory: "/apps/desktop/src-tauri"
+    directory: "/apps/desktop/tauri"
     schedule:
       interval: "weekly"
       timezone: "Europe/Berlin"
