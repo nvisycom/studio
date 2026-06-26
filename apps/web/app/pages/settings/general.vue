@@ -2,12 +2,12 @@
 import { NvisyApiError } from "@nvisy/sdk";
 import { Upload, Copy, Check, Loader2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import EntityAvatar from "@/components/common/EntityAvatar.vue";
+import { Button } from "#console/components/ui/button";
+import { Input } from "#console/components/ui/input";
+import { Label } from "#console/components/ui/label";
+import { Textarea } from "#console/components/ui/textarea";
+import { Switch } from "#console/components/ui/switch";
+import EntityAvatar from "#console/components/common/EntityAvatar.vue";
 import {
 	Card,
 	CardContent,
@@ -15,7 +15,7 @@ import {
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
+} from "#console/components/ui/card";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -25,7 +25,7 @@ import {
 	AlertDialogFooter,
 	AlertDialogHeader,
 	AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "#console/components/ui/alert-dialog";
 
 useHead({ title: "Workspace Settings" });
 

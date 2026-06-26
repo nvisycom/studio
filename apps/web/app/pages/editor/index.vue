@@ -2,8 +2,8 @@
 import { ref, nextTick } from "vue";
 import type { Node } from "@vue-flow/core";
 import { GripVertical } from "@lucide/vue";
-import { WorkflowCanvas } from "~/components/pages/workflows";
-import WorkflowChatPanel from "~/components/pages/workflows/WorkflowChatPanel.vue";
+import { WorkflowCanvas } from "#console/components/pages/workflows";
+import WorkflowChatPanel from "#console/components/pages/workflows/WorkflowChatPanel.vue";
 
 useHead({ title: "Editor" });
 

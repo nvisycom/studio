@@ -13,8 +13,8 @@ import {
 	XCircle,
 	Calendar,
 } from "@lucide/vue";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "#console/components/ui/button";
+import { Badge } from "#console/components/ui/badge";
 import {
 	Card,
 	CardContent,
@@ -22,7 +22,7 @@ import {
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
+} from "#console/components/ui/card";
 import {
 	Table,
 	TableBody,
@@ -30,17 +30,17 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@/components/ui/table";
+} from "#console/components/ui/table";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+} from "#console/components/ui/select";
+import { Input } from "#console/components/ui/input";
+import { Checkbox } from "#console/components/ui/checkbox";
+import { Label } from "#console/components/ui/label";
 import {
 	Dialog,
 	DialogContent,
@@ -48,13 +48,13 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@/components/ui/dialog";
-import { RangeCalendar } from "@/components/ui/range-calendar";
+} from "#console/components/ui/dialog";
+import { RangeCalendar } from "#console/components/ui/range-calendar";
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
-} from "@/components/ui/popover";
+} from "#console/components/ui/popover";
 
 useHead({ title: "Logs" });
 

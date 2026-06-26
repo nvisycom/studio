@@ -10,10 +10,10 @@ import {
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Checkbox } from "@/components/ui/checkbox";
+} from "#console/components/ui/card";
+import { Button } from "#console/components/ui/button";
+import { Switch } from "#console/components/ui/switch";
+import { Checkbox } from "#console/components/ui/checkbox";
 
 useHead({ title: "Notifications" });
 

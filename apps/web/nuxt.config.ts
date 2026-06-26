@@ -1,5 +1,3 @@
-import tailwindcss from "@tailwindcss/vite";
-
 const isDev = process.env.NODE_ENV === "development";
 const API_URL_DEV = "http://127.0.0.1:8080/";
 const API_URL_PROD = "https://api.nvisy.com/";
@@ -45,27 +43,7 @@ export default defineNuxtConfig({
 		},
 	},
 
-	css: ["~/assets/css/fonts.css", "~/assets/css/tailwind.css"],
-
-	modules: [
-		"shadcn-nuxt",
-		"@pinia/colada-nuxt",
-		"@pinia/nuxt",
-		"@nuxtjs/color-mode",
-		"@nuxtjs/device",
-		"@nuxtjs/i18n",
-	],
-
-	vite: {
-		plugins: [tailwindcss()],
-	},
-
-	colorMode: {
-		classSuffix: "",
-		storage: "cookie",
-		preference: "system",
-		fallback: "light",
-	},
+	modules: ["@nuxtjs/device", "@nuxtjs/i18n"],
 
 	i18n: {
 		strategy: "no_prefix",

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { toast } from "vue-sonner";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "#console/components/ui/sonner";
 import {
 	Dialog,
 	DialogContent,
@@ -9,7 +9,7 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@/components/ui/dialog";
+} from "#console/components/ui/dialog";
 import {
 	Select,
 	SelectContent,
@@ -17,11 +17,11 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+} from "#console/components/ui/select";
+import { Label } from "#console/components/ui/label";
+import { Input } from "#console/components/ui/input";
+import { Textarea } from "#console/components/ui/textarea";
+import { Button } from "#console/components/ui/button";
 
 const isOpen = defineModel<boolean>("open", { required: true });
 

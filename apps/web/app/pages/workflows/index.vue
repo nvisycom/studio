@@ -11,7 +11,7 @@ import {
 	Copy,
 	History,
 } from "@lucide/vue";
-import { Button } from "@/components/ui/button";
+import { Button } from "#console/components/ui/button";
 import {
 	Card,
 	CardContent,
@@ -19,7 +19,7 @@ import {
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
+} from "#console/components/ui/card";
 import {
 	Table,
 	TableBody,
@@ -27,15 +27,15 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@/components/ui/table";
+} from "#console/components/ui/table";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Switch } from "@/components/ui/switch";
+} from "#console/components/ui/dropdown-menu";
+import { Switch } from "#console/components/ui/switch";
 
 useHead({ title: "Workflows" });
 

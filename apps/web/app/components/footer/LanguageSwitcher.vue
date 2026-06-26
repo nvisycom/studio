@@ -5,7 +5,7 @@ import {
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "#console/components/ui/dropdown-menu";
 
 const { locale, locales, setLocale } = useI18n();
 

@@ -7,16 +7,16 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuShortcut,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "#console/components/ui/dropdown-menu";
 import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
 	useSidebar,
-} from "@/components/ui/sidebar";
-import { EntityAvatar } from "@/components/common";
-import { truncate } from "@/utils/naming";
-import CreateWorkspaceModal from "./CreateWorkspaceModal.vue";
+} from "#console/components/ui/sidebar";
+import { EntityAvatar } from "#console/components/common";
+import { truncate } from "#console/utils/naming";
+import CreateWorkspaceModal from "#console/components/common/CreateWorkspaceModal.vue";
 
 const { t } = useI18n();
 const { isMobile } = useSidebar();

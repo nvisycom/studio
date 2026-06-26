@@ -13,7 +13,7 @@ import type {
 	WebhookEvent,
 	UpdateIntegration,
 } from "@nvisy/sdk/datatypes";
-import { Button } from "@/components/ui/button";
+import { Button } from "#console/components/ui/button";
 import {
 	Card,
 	CardContent,
@@ -21,18 +21,18 @@ import {
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
+} from "#console/components/ui/card";
 import {
 	ConfigureIntegrationDialog,
 	DisconnectIntegrationDialog,
 	IntegrationsTable,
-} from "~/components/pages/integrations";
+} from "#console/components/pages/integrations";
 import {
 	WebhooksTable,
 	CreateWebhookDialog,
 	DeleteWebhookDialog,
 	EditWebhookDialog,
-} from "~/components/pages/webhooks";
+} from "#console/components/pages/webhooks";
 
 const { t } = useI18n();
 

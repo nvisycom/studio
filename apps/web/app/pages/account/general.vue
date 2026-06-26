@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Upload, ChevronDown, Loader2, Eye, EyeOff } from "@lucide/vue";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import EntityAvatar from "@/components/common/EntityAvatar.vue";
+import { Button } from "#console/components/ui/button";
+import { Input } from "#console/components/ui/input";
+import { Label } from "#console/components/ui/label";
+import { Avatar, AvatarImage } from "#console/components/ui/avatar";
+import EntityAvatar from "#console/components/common/EntityAvatar.vue";
 import {
 	Card,
 	CardContent,
@@ -12,13 +12,13 @@ import {
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
+} from "#console/components/ui/card";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "#console/components/ui/dropdown-menu";
 
 useHead({ title: "Account" });
 

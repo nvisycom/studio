@@ -12,21 +12,21 @@ import {
 } from "@lucide/vue";
 import { computed, ref } from "vue";
 import { toast } from "vue-sonner";
-import { Button } from "@/components/ui/button";
+import { Button } from "#console/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
+} from "#console/components/ui/dropdown-menu";
+import { Input } from "#console/components/ui/input";
 import {
 	DeleteFileDialog,
 	EditFileDialog,
 	FilesGridView,
 	FilesTableView,
 	UploadFilesDialog,
-} from "~/components/pages/files";
+} from "#console/components/pages/files";
 
 const { t } = useI18n();
 

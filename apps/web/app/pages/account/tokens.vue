@@ -24,8 +24,8 @@ import {
 	RenameTokenModal,
 	TokenCreatedModal,
 	TokensTable,
-} from "@/components/pages/tokens";
-import { Button } from "@/components/ui/button";
+} from "#console/components/pages/tokens";
+import { Button } from "#console/components/ui/button";
 import {
 	Card,
 	CardContent,
@@ -33,21 +33,21 @@ import {
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
+} from "#console/components/ui/card";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "#console/components/ui/dropdown-menu";
 import {
 	Empty,
 	EmptyDescription,
 	EmptyHeader,
 	EmptyTitle,
-} from "@/components/ui/empty";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "#console/components/ui/empty";
+import { Input } from "#console/components/ui/input";
+import { Label } from "#console/components/ui/label";
 
 useHead({ title: "API Tokens" });
 

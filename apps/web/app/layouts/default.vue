@@ -2,7 +2,7 @@
 import AppSidebar from "@/components/sidebar/AppSidebar.vue";
 import AppHeader from "@/components/AppHeader.vue";
 import AppFooter from "@/components/AppFooter.vue";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "#console/components/ui/sidebar";
 
 const route = useRoute();
 

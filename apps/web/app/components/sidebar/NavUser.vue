@@ -11,7 +11,7 @@ import {
 	User,
 	Key,
 } from "@lucide/vue";
-import { EntityAvatar } from "@/components/common";
+import { EntityAvatar } from "#console/components/common";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -19,16 +19,16 @@ import {
 	DropdownMenuItem,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "#console/components/ui/dropdown-menu";
 import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
 	useSidebar,
-} from "@/components/ui/sidebar";
-import { Kbd } from "@/components/ui/kbd";
+} from "#console/components/ui/sidebar";
+import { Kbd } from "#console/components/ui/kbd";
 import CommandMenu from "@/components/CommandMenu.vue";
-import CreateWorkspaceModal from "@/components/sidebar/CreateWorkspaceModal.vue";
+import CreateWorkspaceModal from "#console/components/common/CreateWorkspaceModal.vue";
 import HelpChat from "@/components/HelpChat.vue";
 
 const props = defineProps<{

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { Eye, EyeOff, CheckCircle } from "@lucide/vue";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "#console/components/ui/button";
+import { Input } from "#console/components/ui/input";
+import { Label } from "#console/components/ui/label";
 
 useHead({ title: "Reset Password" });
 

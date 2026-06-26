@@ -4,8 +4,8 @@ import {
 	LanguageSwitcher,
 	ThemeToggle,
 } from "@/components/footer";
-import { Separator } from "@/components/ui/separator";
-import { Toaster } from "@/components/ui/sonner";
+import { Separator } from "#console/components/ui/separator";
+import { Toaster } from "#console/components/ui/sonner";
 import { ExternalLink } from "@lucide/vue";
 import "vue-sonner/style.css";
 </script>

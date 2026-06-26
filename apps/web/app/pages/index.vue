@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { WithWorkspace, WithoutWorkspace } from "@/components/pages/overview";
+import {
+	WithWorkspace,
+	WithoutWorkspace,
+} from "#console/components/pages/overview";
 
 useHead({ title: "Overview" });
 

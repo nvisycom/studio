@@ -6,14 +6,14 @@ import {
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "#console/components/ui/tooltip";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+} from "#console/components/ui/dropdown-menu";
+import { Button } from "#console/components/ui/button";
 
 const router = useRouter();
 

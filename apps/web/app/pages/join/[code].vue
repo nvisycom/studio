@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useQuery, useMutation } from "@pinia/colada";
 import { Users, Shield, Clock, Check, XCircle, Loader2, X } from "@lucide/vue";
-import { Button } from "@/components/ui/button";
+import { Button } from "#console/components/ui/button";
 import {
 	Card,
 	CardContent,
@@ -9,9 +9,9 @@ import {
 	CardHeader,
 	CardTitle,
 	CardDescription,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { EntityAvatar } from "@/components/common";
+} from "#console/components/ui/card";
+import { Badge } from "#console/components/ui/badge";
+import { EntityAvatar } from "#console/components/common";
 import type { InvitePreview, WorkspaceRole } from "@nvisy/sdk/datatypes";
 
 useHead({ title: "Join Workspace" });

@@ -6,16 +6,16 @@ import {
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "#console/components/ui/tooltip";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { UnsavedChangesDialog } from "@/components/pages/workflows/dialogs";
+} from "#console/components/ui/dropdown-menu";
+import { Button } from "#console/components/ui/button";
+import { Input } from "#console/components/ui/input";
+import { UnsavedChangesDialog } from "#console/components/pages/workflows/dialogs";
 
 // Use editor workflows store for multiple open workflows
 const {

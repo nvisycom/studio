@@ -29,9 +29,9 @@ import {
 	CommandItem,
 	CommandList,
 	CommandSeparator,
-} from "@/components/ui/command";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Kbd } from "@/components/ui/kbd";
+} from "#console/components/ui/command";
+import { Dialog, DialogContent } from "#console/components/ui/dialog";
+import { Kbd } from "#console/components/ui/kbd";
 import { toast } from "vue-sonner";
 
 const router = useRouter();

@@ -3,9 +3,14 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
+} from "#console/components/ui/dropdown-menu";
+import {
+	Tabs,
+	TabsContent,
+	TabsList,
+	TabsTrigger,
+} from "#console/components/ui/tabs";
+import { Button } from "#console/components/ui/button";
 import { Bell, Loader2, Inbox } from "@lucide/vue";
 
 const notificationsTab = ref("inbox");

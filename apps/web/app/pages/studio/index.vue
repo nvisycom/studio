@@ -4,7 +4,7 @@ import { GripVertical } from "@lucide/vue";
 import {
 	StudioDocumentPreview,
 	StudioChatPanel,
-} from "~/components/pages/studio";
+} from "#console/components/pages/studio";
 
 useHead({ title: "Studio" });
 

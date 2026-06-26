@@ -12,16 +12,16 @@ import {
 	Puzzle,
 	Code,
 } from "@lucide/vue";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "#console/components/ui/button";
+import { Input } from "#console/components/ui/input";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui/select";
-import { IntegrationCard } from "~/components/pages/integrations";
+} from "#console/components/ui/select";
+import { IntegrationCard } from "#console/components/pages/integrations";
 
 const { t } = useI18n();
 

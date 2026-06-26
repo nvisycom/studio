@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import type { SidebarProps } from "@/components/ui/sidebar";
+import type { SidebarProps } from "#console/components/ui/sidebar";
 import {
 	Puzzle,
 	Settings,
@@ -31,14 +31,14 @@ import {
 	SidebarRail,
 	SidebarSeparator,
 	useSidebar,
-} from "@/components/ui/sidebar";
+} from "#console/components/ui/sidebar";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "#console/components/ui/dropdown-menu";
 
 const props = withDefaults(defineProps<SidebarProps>(), {
 	collapsible: "icon",

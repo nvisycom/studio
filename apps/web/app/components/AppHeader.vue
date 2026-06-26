@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { MessageSquare } from "@lucide/vue";
-import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
+import { Separator } from "#console/components/ui/separator";
+import { SidebarTrigger } from "#console/components/ui/sidebar";
+import { Button } from "#console/components/ui/button";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
 	BreadcrumbList,
 	BreadcrumbPage,
 	BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from "#console/components/ui/breadcrumb";
 import {
 	HeaderTabs,
 	FeedbackModal,

@@ -8,23 +8,23 @@ import {
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+} from "#console/components/ui/card";
+import { Button } from "#console/components/ui/button";
+import { Input } from "#console/components/ui/input";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui/select";
+} from "#console/components/ui/select";
 import {
 	DeleteDocumentDialog,
 	EditDocumentDialog,
 	StatsCards,
 	CorpusTable,
-} from "@/components/pages/files";
-import type { CorpusDocument } from "@/components/pages/files/CorpusTable.vue";
+} from "#console/components/pages/files";
+import type { CorpusDocument } from "#console/components/pages/files/CorpusTable.vue";
 
 useHead({ title: "Corpus" });
 

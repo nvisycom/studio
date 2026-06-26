@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { Eye, EyeOff, ExternalLink } from "@lucide/vue";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "#console/components/ui/button";
+import { Input } from "#console/components/ui/input";
+import { Label } from "#console/components/ui/label";
+import { Checkbox } from "#console/components/ui/checkbox";
 import { NvisyApiError } from "@nvisy/sdk";
 
 useHead({ title: "Sign Up" });

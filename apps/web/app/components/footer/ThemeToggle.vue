@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { Moon, Sun, Monitor } from "@lucide/vue";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import {
+	ToggleGroup,
+	ToggleGroupItem,
+} from "#console/components/ui/toggle-group";
 
 const colorMode = useColorMode();
 

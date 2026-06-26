@@ -1,25 +1,25 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { Download, Upload } from "@lucide/vue";
-import { Button } from "@/components/ui/button";
+import { Button } from "#console/components/ui/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
+} from "#console/components/ui/card";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui/select";
-import CreditsUsedChart from "~/components/pages/analytics/CreditsUsedChart.vue";
-import StorageUsedChart from "~/components/pages/analytics/StorageUsedChart.vue";
-import DocumentsUploadDownloadChart from "~/components/pages/analytics/DocumentsUploadDownloadChart.vue";
-import DocumentsEditVerifyChart from "~/components/pages/analytics/DocumentsEditVerifyChart.vue";
+} from "#console/components/ui/select";
+import CreditsUsedChart from "#console/components/pages/analytics/CreditsUsedChart.vue";
+import StorageUsedChart from "#console/components/pages/analytics/StorageUsedChart.vue";
+import DocumentsUploadDownloadChart from "#console/components/pages/analytics/DocumentsUploadDownloadChart.vue";
+import DocumentsEditVerifyChart from "#console/components/pages/analytics/DocumentsEditVerifyChart.vue";
 
 useHead({ title: "Analytics" });
 

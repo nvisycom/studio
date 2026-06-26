@@ -8,10 +8,10 @@ import {
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
+} from "#console/components/ui/card";
+import { Button } from "#console/components/ui/button";
+import { Badge } from "#console/components/ui/badge";
+import { Switch } from "#console/components/ui/switch";
 
 useHead({ title: "Billing" });
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "#console/components/ui/tabs";
 import StudioFileTabs from "./StudioFileTabs.vue";
 import EditorWorkflowTabs from "./EditorWorkflowTabs.vue";
 import {

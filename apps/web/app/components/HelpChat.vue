@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { X, Send } from "@lucide/vue";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "#console/components/ui/button";
+import { Textarea } from "#console/components/ui/textarea";
 
 interface Message {
 	id: string;

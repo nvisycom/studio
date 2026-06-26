@@ -12,23 +12,23 @@ import {
 	Clock,
 	XCircle,
 } from "@lucide/vue";
-import { formatRelativeTime } from "@/utils/date";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { formatRelativeTime } from "#console/utils/date";
+import { Button } from "#console/components/ui/button";
+import { Input } from "#console/components/ui/input";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
+} from "#console/components/ui/card";
 import {
 	ContextMenu,
 	ContextMenuContent,
 	ContextMenuItem,
 	ContextMenuTrigger,
 	ContextMenuSeparator,
-} from "@/components/ui/context-menu";
+} from "#console/components/ui/context-menu";
 import {
 	Table,
 	TableBody,
@@ -36,17 +36,17 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@/components/ui/table";
+} from "#console/components/ui/table";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
-import { RunDetailsModal } from "~/components/pages/integrations";
+} from "#console/components/ui/select";
+import { Checkbox } from "#console/components/ui/checkbox";
+import { Badge } from "#console/components/ui/badge";
+import { RunDetailsModal } from "#console/components/pages/integrations";
 
 const { t } = useI18n();
 

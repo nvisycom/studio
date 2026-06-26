@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { Download, Upload } from "@lucide/vue";
-import { Button } from "@/components/ui/button";
+import { Button } from "#console/components/ui/button";
 import {
 	Card,
 	CardContent,
@@ -9,18 +9,18 @@ import {
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
+} from "#console/components/ui/card";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui/select";
-import AiUsageChart from "~/components/pages/analytics/AiUsageChart.vue";
-import VlmCacheHitsChart from "~/components/pages/analytics/VlmCacheHitsChart.vue";
-import ErrorRateChart from "~/components/pages/analytics/ErrorRateChart.vue";
-import ResponseTimeChart from "~/components/pages/analytics/ResponseTimeChart.vue";
+} from "#console/components/ui/select";
+import AiUsageChart from "#console/components/pages/analytics/AiUsageChart.vue";
+import VlmCacheHitsChart from "#console/components/pages/analytics/VlmCacheHitsChart.vue";
+import ErrorRateChart from "#console/components/pages/analytics/ErrorRateChart.vue";
+import ResponseTimeChart from "#console/components/pages/analytics/ResponseTimeChart.vue";
 
 useHead({ title: "AI Analytics" });
 

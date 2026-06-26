@@ -30,7 +30,7 @@ import {
 	CancelMultipleInvitesModal,
 	InviteMembersCard,
 	TeamListCard,
-} from "~/components/pages/team";
+} from "#console/components/pages/team";
 
 useHead({ title: "Team" });
 

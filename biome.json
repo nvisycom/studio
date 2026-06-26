@@ -38,6 +38,9 @@
 				"noUnusedVariables": "off",
 				"noUnusedImports": "off"
 			},
+			"complexity": {
+				"noImportantStyles": "off"
+			},
 			"suspicious": {
 				"noExplicitAny": "off"
 			}
@@ -62,7 +65,7 @@
 	},
 	"overrides": [
 		{
-			"includes": ["app/components/ui/**"],
+			"includes": ["**/components/ui/**"],
 			"linter": {
 				"rules": {
 					"correctness": {
@@ -76,10 +79,10 @@
 		},
 		{
 			"includes": [
-				"app/pages/**",
-				"app/layouts/**",
-				"app/app.vue",
-				"app/error.vue"
+				"**/pages/**",
+				"**/layouts/**",
+				"**/app.vue",
+				"**/error.vue"
 			],
 			"linter": {
 				"rules": {
