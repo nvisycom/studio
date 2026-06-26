@@ -25,6 +25,31 @@ updates:
           - "minor"
           - "patch"
 
+  # Version updates for Cargo (Tauri desktop app)
+  - package-ecosystem: "cargo"
+    directory: "/apps/desktop/src-tauri"
+    schedule:
+      interval: "weekly"
+      timezone: "Europe/Berlin"
+      day: "monday"
+      time: "04:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "chore"
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+    rebase-strategy: "auto"
+    versioning-strategy: "auto"
+    # Group patch and minor updates together to reduce PR noise
+    groups:
+      rust-dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
   # Version updates for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
