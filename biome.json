@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.4.16/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.5.1/schema.json",
 	"root": true,
 	"vcs": {
 		"enabled": true,
@@ -15,7 +15,8 @@
 			"!**/build",
 			"!**/.nuxt",
 			"!**/.nitro",
-			"!**/.output"
+			"!**/.output",
+			"!**/*.svg"
 		]
 	},
 	"formatter": {
@@ -28,9 +29,9 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true,
+			"preset": "recommended",
 			"style": {
-				"recommended": true,
+				"preset": "recommended",
 				"noNonNullAssertion": "off"
 			},
 			"correctness": {
@@ -66,6 +67,24 @@
 				"rules": {
 					"correctness": {
 						"noVueDuplicateKeys": "off"
+					},
+					"style": {
+						"useVueMultiWordComponentNames": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"app/pages/**",
+				"app/layouts/**",
+				"app/app.vue",
+				"app/error.vue"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"useVueMultiWordComponentNames": "off"
 					}
 				}
 			}
