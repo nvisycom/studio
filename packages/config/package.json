@@ -1,0 +1,32 @@
+{
+	"name": "@nvisy/config",
+	"version": "0.1.0",
+	"type": "module",
+	"private": true,
+	"files": [
+		"./dist"
+	],
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"scripts": {
+		"build": "tsdown",
+		"test": "vitest run --passWithNoTests",
+		"test:watch": "vitest watch",
+		"test:types": "tsc --noEmit",
+		"test:cov": "vitest run --coverage",
+		"format": "biome format --write .",
+		"lint": "biome lint .",
+		"check": "biome check .",
+		"ci": "biome ci ."
+	},
+	"devDependencies": {
+		"tsdown": "^0.22.2"
+	}
+}
