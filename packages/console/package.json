@@ -1,0 +1,11 @@
+{
+	"name": "@nvisy/console",
+	"type": "module",
+	"private": true,
+	"main": "./nuxt.config.ts",
+	"dependencies": {},
+	"peerDependencies": {
+		"nuxt": "^4.4.8",
+		"vue": "^3.5.35"
+	}
+}
