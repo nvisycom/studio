@@ -1,5 +1,5 @@
 // Tauri desktop shell — extends the shared @nvisy/console layer.
-// Static SPA output is wrapped by the Tauri Rust shell in src-tauri/.
+// Static SPA output is wrapped by the Tauri Rust shell in tauri/.
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
 	extends: ["@nvisy/console"],

@@ -16,7 +16,7 @@
 			"!**/.nuxt",
 			"!**/.nitro",
 			"!**/.output",
-			"!**/src-tauri",
+			"!apps/*/tauri",
 			"!**/*.svg"
 		]
 	},

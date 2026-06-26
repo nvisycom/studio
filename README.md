@@ -52,7 +52,7 @@ packages/
 └── console/        # shared Nuxt layer (@nvisy/console)
 apps/
 ├── web/            # web shell (@nvisy/webapp)
-└── desktop/        # desktop shell + src-tauri/ (@nvisy/desktop)
+└── desktop/        # desktop shell + tauri/ (@nvisy/desktop)
 ```
 
 ## License

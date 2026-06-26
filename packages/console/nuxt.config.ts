@@ -21,11 +21,24 @@ export default defineNuxtConfig({
 	],
 
 	modules: [
-		"shadcn-nuxt",
 		"@nuxtjs/color-mode",
 		"@pinia/nuxt",
 		"@pinia/colada-nuxt",
 		"@nuxtjs/i18n",
+	],
+
+	// Register the shadcn-vue design system from the layer ourselves, following
+	// github.com/unovue/shadcn-vue-nuxt-layer).
+	// The `extensions: ['.vue']` is required so Nuxt does not also auto-import each
+	// dir's `index.ts` barrel, which would resolve to the same `Ui*` name and warn.
+	// We drop the `shadcn-nuxt` module: it resolves `componentDir` against the consuming
+	// app's root (not the layer), so it can't see these components.
+	components: [
+		{
+			path: `${layerDir}app/components/ui`,
+			extensions: [".vue"],
+			prefix: "Ui",
+		},
 	],
 
 	i18n: {
