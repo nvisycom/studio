@@ -53,7 +53,7 @@ jobs:
 
       - name: Start preview server
         run: |
-          npm run preview &
+          npm run preview -w @nvisy/webapp &
           npx wait-on http://localhost:3000 --timeout 60000
 
       - name: Run Lighthouse CI
