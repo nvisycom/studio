@@ -25,7 +25,7 @@ coverage/
 .lighthouse/
 
 # Build Output
-dist/
+dist
 build/
 output/
 
