@@ -24,18 +24,24 @@ install-tools: # Installs Lighthouse tools.
 .PHONY: build
 build: # Builds the web app (app.nvisy.com).
 	$(call log,Building app.nvisy.com...)
-	@npm run generate
+	@npm run generate -w @nvisy/webapp
 	$(call log,Copying build output to ./output folder...)
 	@mkdir -p ./output
-	@cp -r .output/public/* ./output/
+	@cp -r apps/web/.output/public/* ./output/
 	$(call log,Copied build output to ./output folder.)
+
+.PHONY: build-desktop
+build-desktop: # Builds the desktop app frontend (Tauri).
+	$(call log,Building desktop frontend...)
+	@npm run generate -w @nvisy/desktop
+	$(call log,Desktop frontend built at apps/desktop/.output/public.)
 
 .PHONY: clean
 clean: # Cleans build artifacts and dependencies.
 	$(call log,Cleaning build artifacts...)
 	@rm -rf node_modules
-	@rm -rf .output
-	@rm -rf .nuxt
+	@rm -rf packages/*/node_modules apps/*/node_modules
+	@rm -rf apps/*/.output apps/*/.nuxt
 	@rm -rf output
 	@rm -rf .lighthouse
 	$(call log,Cleaned build artifacts.)

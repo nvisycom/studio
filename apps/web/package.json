@@ -1,0 +1,20 @@
+{
+	"name": "@nvisy/webapp",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"build": "nuxt build",
+		"dev": "nuxt dev",
+		"generate": "nuxt generate",
+		"preview": "nuxt preview",
+		"postinstall": "nuxt prepare",
+		"typecheck": "nuxt typecheck ."
+	},
+	"dependencies": {
+		"@nvisy/console": "*",
+		"@nuxtjs/device": "^4.0.0",
+		"nuxt": "^4.4.8",
+		"vue": "^3.5.35",
+		"vue-router": "^5.1.0"
+	}
+}

@@ -5,21 +5,17 @@ on:
     branches:
       - "main"
     paths:
-      - "app/**"
-      - "i18n/**"
-      - "public/**"
+      - "apps/**"
+      - "packages/**"
       - "scripts/**"
-      - "nuxt.config.ts"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/build.yml"
   pull_request:
     paths:
-      - "app/**"
-      - "i18n/**"
-      - "public/**"
+      - "apps/**"
+      - "packages/**"
       - "scripts/**"
-      - "nuxt.config.ts"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/build.yml"

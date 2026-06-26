@@ -2,7 +2,7 @@
 Thumbs.db
 .DS_Store
 
-# Editors
+# IDE and Editors
 .vs/
 .vscode/
 .idea/
@@ -18,13 +18,24 @@ node_modules/
 .cache/
 .data/
 
+# Rust
+debug/
+target/
+**/*.rs.bk
+*.pdb
+rustc-ice-*.txt
+
+# Tauri
+gen/schemas/
+
 # Testing
 playwright-report/
 test-results/
 coverage/
+*.lcov
 .lighthouse/
 
-# Build Output
+# Build output
 dist
 build/
 output/
@@ -34,13 +45,17 @@ output/
 !.env.example
 
 # Logs
+logs/
 *.log
 *.log*
-logs/
 
-# Generated
+# Backup and temporary files
 *.pem
+*.bak
 *.backup
+*.tmp
+tmp/
+temp/
 
 # Other
 .ignore*/
