@@ -25,7 +25,28 @@ export default defineNuxtConfig({
 		"@nuxtjs/color-mode",
 		"@pinia/nuxt",
 		"@pinia/colada-nuxt",
+		"@nuxtjs/i18n",
 	],
+
+	i18n: {
+		strategy: "no_prefix",
+		detectBrowserLanguage: {
+			useCookie: true,
+			cookieKey: "i18n_redirected",
+			redirectOn: "root",
+		},
+
+		locales: [
+			{ code: "en", name: "English", file: "en.json" },
+			{ code: "de", name: "Deutsch", file: "de.json" },
+		],
+		defaultLocale: "en",
+
+		compilation: {
+			strictMessage: true,
+			escapeHtml: true,
+		},
+	},
 
 	vite: {
 		plugins: [tailwindcss()],
