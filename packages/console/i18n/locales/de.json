@@ -931,7 +931,8 @@
 				"headers": "Header",
 				"created": "Erstellt",
 				"lastDelivery": "Letzte Zustellung",
-				"connectedAt": "Verbunden Am"
+				"connectedAt": "Verbunden Am",
+				"provider": "Anbieter"
 			},
 			"actions": {
 				"edit": "Bearbeiten",
@@ -973,7 +974,8 @@
 				"activeLabel": "Aktiv",
 				"activeDescription": "Diese Integration aktivieren, um Daten zu synchronisieren und Workflows zu automatisieren",
 				"save": "Änderungen Speichern",
-				"cancel": "Abbrechen"
+				"cancel": "Abbrechen",
+				"providerLabel": "Anbieter"
 			},
 			"disconnect": {
 				"title": "{name} Trennen",
@@ -1086,7 +1088,20 @@
 			"status": {
 				"pending": "Ausstehend",
 				"running": "Läuft",
-				"cancelled": "Abgebrochen"
+				"cancelled": "Abgebrochen",
+				"analyzed": "Analysiert",
+				"completed": "Abgeschlossen",
+				"failed": "Fehlgeschlagen"
+			},
+			"statusAnalyzed": "Analysiert",
+			"statusCompleted": "Abgeschlossen",
+			"statusFailed": "Fehlgeschlagen",
+			"pipeline": "Pipeline",
+			"trigger": "Auslöser",
+			"triggerType": {
+				"manual": "Manuell",
+				"source": "Quelle",
+				"scheduled": "Geplant"
 			}
 		}
 	},

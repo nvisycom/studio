@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import type { IntegrationRun } from "@nvisy/sdk/datatypes";
+import type { PipelineRun } from "@nvisy/sdk/datatypes";
 import {
 	Search,
 	ArrowLeft,
@@ -9,7 +9,7 @@ import {
 	Check,
 	Loader2,
 	Play,
-	Clock,
+	CheckCircle2,
 	XCircle,
 } from "@lucide/vue";
 import { formatRelativeTime } from "#console/utils/date";
@@ -58,29 +58,25 @@ definePageMeta({
 
 // Use SDK composable
 const { runs, isLoading } = useRuns();
-const { integrations } = useIntegrations();
 
 const searchQuery = ref("");
 const statusFilter = ref("all");
 const dateRange = ref("24h");
 const selectedRuns = ref<Set<string>>(new Set());
 const isViewDetailsModalOpen = ref(false);
-const selectedRunForDetails = ref<IntegrationRun | null>(null);
+const selectedRunForDetails = ref<PipelineRun | null>(null);
 
 const filteredRuns = computed(() => {
 	let filtered = runs.value ?? [];
 
 	if (searchQuery.value.trim()) {
 		const query = searchQuery.value.toLowerCase();
-		filtered = filtered.filter((run) => {
-			const integration = integrations.value?.find(
-				(i) => i.integrationId === run.integrationId,
-			);
-			return (
-				integration?.integrationName.toLowerCase().includes(query) ||
-				run.id.toLowerCase().includes(query)
-			);
-		});
+		filtered = filtered.filter(
+			(run) =>
+				run.id.toLowerCase().includes(query) ||
+				run.pipelineId.toLowerCase().includes(query) ||
+				run.fileId.toLowerCase().includes(query),
+		);
 	}
 
 	if (statusFilter.value !== "all") {
@@ -91,14 +87,6 @@ const filteredRuns = computed(() => {
 		(a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
 	);
 });
-
-function getIntegrationName(integrationId: string | null | undefined): string {
-	if (!integrationId) return t("integrations.runs.unknown");
-	const integration = integrations.value?.find(
-		(i) => i.integrationId === integrationId,
-	);
-	return integration?.integrationName ?? t("integrations.runs.unknown");
-}
 
 function toggleRunSelection(runId: string) {
 	if (selectedRuns.value.has(runId)) {
@@ -132,12 +120,12 @@ function copyLogs() {
 	}, 2000);
 }
 
-function viewRunDetails(run: IntegrationRun) {
+function viewRunDetails(run: PipelineRun) {
 	selectedRunForDetails.value = run;
 	isViewDetailsModalOpen.value = true;
 }
 
-function copyRunDetails(_run: IntegrationRun) {
+function copyRunDetails(_run: PipelineRun) {
 	// TODO: Implement copy run details to clipboard
 }
 
@@ -195,11 +183,17 @@ function formatDuration(
               <SelectItem value="all" class="text-sm font-normal">{{
                 t("integrations.runs.allStatus")
               }}</SelectItem>
-              <SelectItem value="pending" class="text-sm font-normal">{{
-                t("integrations.runs.statusPending")
-              }}</SelectItem>
               <SelectItem value="running" class="text-sm font-normal">{{
                 t("integrations.runs.statusRunning")
+              }}</SelectItem>
+              <SelectItem value="analyzed" class="text-sm font-normal">{{
+                t("integrations.runs.statusAnalyzed")
+              }}</SelectItem>
+              <SelectItem value="completed" class="text-sm font-normal">{{
+                t("integrations.runs.statusCompleted")
+              }}</SelectItem>
+              <SelectItem value="failed" class="text-sm font-normal">{{
+                t("integrations.runs.statusFailed")
               }}</SelectItem>
               <SelectItem value="cancelled" class="text-sm font-normal">{{
                 t("integrations.runs.statusCancelled")
@@ -283,11 +277,11 @@ function formatDuration(
                   >
                   <TableHead
                     class="uppercase text-xs font-normal tracking-wider"
-                    >{{ t("integrations.runs.integration") }}</TableHead
+                    >{{ t("integrations.runs.pipeline") }}</TableHead
                   >
                   <TableHead
                     class="uppercase text-xs font-normal tracking-wider"
-                    >{{ t("integrations.runs.type") }}</TableHead
+                    >{{ t("integrations.runs.trigger") }}</TableHead
                   >
                   <TableHead
                     class="w-[100px] uppercase text-xs font-normal tracking-wider"
@@ -322,13 +316,15 @@ function formatDuration(
                         </code>
                       </TableCell>
                       <TableCell>
-                        <span class="text-sm text-muted-foreground">
-                          {{ getIntegrationName(run.integrationId) }}
-                        </span>
+                        <code class="font-mono text-xs text-muted-foreground">
+                          {{ run.pipelineId.slice(0, 8) }}...
+                        </code>
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline" class="capitalize">
-                          {{ t(`integrations.runs.runType.${run.runType}`) }}
+                          {{
+                            t(`integrations.runs.triggerType.${run.triggerType}`)
+                          }}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -338,13 +334,19 @@ function formatDuration(
                             :size="14"
                             class="text-blue-500"
                           />
-                          <Clock
-                            v-else-if="run.status === 'pending'"
+                          <CheckCircle2
+                            v-else-if="
+                              run.status === 'analyzed' ||
+                              run.status === 'completed'
+                            "
                             :size="14"
-                            class="text-yellow-500"
+                            class="text-green-500"
                           />
                           <XCircle
-                            v-else-if="run.status === 'cancelled'"
+                            v-else-if="
+                              run.status === 'failed' ||
+                              run.status === 'cancelled'
+                            "
                             :size="14"
                             class="text-red-500"
                           />

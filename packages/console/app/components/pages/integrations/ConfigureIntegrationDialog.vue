@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import type { Integration, UpdateIntegration } from "@nvisy/sdk/datatypes";
+import type { Connection, UpdateConnection } from "@nvisy/sdk/datatypes";
 import { Loader2 } from "@lucide/vue";
 import { Input } from "#console/components/ui/input";
 import { Button } from "#console/components/ui/button";
-import { Switch } from "#console/components/ui/switch";
 import {
 	Dialog,
 	DialogContent,
@@ -17,42 +16,37 @@ const { t } = useI18n();
 
 interface Props {
 	open?: boolean;
-	integration?: Integration | null;
+	connection?: Connection | null;
 	isLoading?: boolean;
 }
 
 interface Emits {
 	(e: "update:open", value: boolean): void;
-	(e: "update", updates: UpdateIntegration): void;
+	(e: "update", updates: UpdateConnection): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	open: false,
-	integration: null,
+	connection: null,
 	isLoading: false,
 });
 
 const emit = defineEmits<Emits>();
 
 // Form data
-const integrationName = ref("");
-const integrationDescription = ref("");
-const integrationActive = ref(true);
+const connectionName = ref("");
 
 // Computed validation
 const isFormValid = computed(() => {
-	return (
-		integrationName.value.trim().length > 0 &&
-		integrationDescription.value.trim().length > 0
-	);
+	return connectionName.value.trim().length > 0;
 });
 
-// Watch for integration prop changes to populate form
+// Watch for connection prop changes to populate form
 watch(
-	() => props.integration,
-	(newIntegration) => {
-		if (newIntegration && props.open) {
-			populateForm(newIntegration);
+	() => props.connection,
+	(newConnection) => {
+		if (newConnection && props.open) {
+			populateForm(newConnection);
 		}
 	},
 	{ immediate: true },
@@ -61,17 +55,15 @@ watch(
 watch(
 	() => props.open,
 	(isOpen) => {
-		if (isOpen && props.integration) {
-			populateForm(props.integration);
+		if (isOpen && props.connection) {
+			populateForm(props.connection);
 		}
 	},
 );
 
 // Functions
-function populateForm(integration: Integration) {
-	integrationName.value = integration.integrationName;
-	integrationDescription.value = integration.description;
-	integrationActive.value = integration.isActive;
+function populateForm(connection: Connection) {
+	connectionName.value = connection.name;
 }
 
 function handleOpenChange(open: boolean) {
@@ -82,18 +74,14 @@ function handleOpenChange(open: boolean) {
 }
 
 function resetForm() {
-	integrationName.value = "";
-	integrationDescription.value = "";
-	integrationActive.value = true;
+	connectionName.value = "";
 }
 
-function updateIntegration() {
-	if (!isFormValid.value || !props.integration) return;
+function updateConnection() {
+	if (!isFormValid.value || !props.connection) return;
 
-	const updates: UpdateIntegration = {
-		integrationName: integrationName.value,
-		description: integrationDescription.value,
-		isActive: integrationActive.value,
+	const updates: UpdateConnection = {
+		name: connectionName.value,
 	};
 
 	emit("update", updates);
@@ -111,7 +99,7 @@ function cancel() {
       <DialogHeader>
         <DialogTitle>{{
           t("integrations.dialogs.configure.title", {
-            name: integration?.integrationName,
+            name: connection?.name,
           })
         }}</DialogTitle>
         <DialogDescription>
@@ -120,7 +108,7 @@ function cancel() {
       </DialogHeader>
 
       <div class="space-y-6 py-6">
-        <!-- Integration Name -->
+        <!-- Connection Name -->
         <div>
           <label
             class="block text-sm font-medium text-neutral-900 dark:text-white mb-2"
@@ -128,41 +116,22 @@ function cancel() {
             {{ t("integrations.dialogs.configure.nameLabel") }}
           </label>
           <Input
-            v-model="integrationName"
+            v-model="connectionName"
             :placeholder="t('integrations.dialogs.configure.namePlaceholder')"
             class="text-neutral-900 dark:text-white"
           />
         </div>
 
-        <!-- Integration Description -->
-        <div>
+        <!-- Provider (read-only) -->
+        <div v-if="connection">
           <label
             class="block text-sm font-medium text-neutral-900 dark:text-white mb-2"
           >
-            {{ t("integrations.dialogs.configure.descriptionLabel") }}
+            {{ t("integrations.dialogs.configure.providerLabel") }}
           </label>
-          <Input
-            v-model="integrationDescription"
-            :placeholder="
-              t('integrations.dialogs.configure.descriptionPlaceholder')
-            "
-            class="text-neutral-900 dark:text-white"
-          />
-        </div>
-
-        <!-- Active Switch -->
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="font-medium text-neutral-900 dark:text-white">
-              {{ t("integrations.dialogs.configure.activeLabel") }}
-            </p>
-            <p
-              class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
-            >
-              {{ t("integrations.dialogs.configure.activeDescription") }}
-            </p>
-          </div>
-          <Switch v-model:checked="integrationActive" />
+          <p class="text-sm text-neutral-600 dark:text-neutral-400 capitalize">
+            {{ connection.provider }}
+          </p>
         </div>
       </div>
 
@@ -171,7 +140,7 @@ function cancel() {
           {{ t("integrations.dialogs.configure.cancel") }}
         </Button>
         <Button
-          @click="updateIntegration"
+          @click="updateConnection"
           :disabled="!isFormValid || isLoading"
         >
           <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />

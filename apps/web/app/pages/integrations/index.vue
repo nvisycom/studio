@@ -8,10 +8,10 @@ import {
 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import type {
-	Integration,
+	Connection,
 	Webhook,
 	WebhookEvent,
-	UpdateIntegration,
+	UpdateConnection,
 } from "@nvisy/sdk/datatypes";
 import { Button } from "#console/components/ui/button";
 import {
@@ -44,13 +44,13 @@ definePageMeta({
 
 // Use SDK composables
 const {
-	integrations,
-	isLoading: isLoadingIntegrations,
-	updateIntegrationAsync,
-	deleteIntegrationAsync,
+	connections,
+	isLoading: isLoadingConnections,
+	updateConnectionAsync,
+	deleteConnectionAsync,
 	isUpdating,
 	isDeleting,
-} = useIntegrations();
+} = useConnections();
 
 const {
 	webhooks,
@@ -62,36 +62,32 @@ const {
 	isCreating: isCreatingWebhook,
 } = useWebhooks();
 
-// Integration dialogs
+// Connection dialogs
 const isConfigureIntegrationDialogOpen = ref(false);
 const isDisconnectIntegrationDialogOpen = ref(false);
-const selectedIntegration = ref<Integration | null>(null);
+const selectedConnection = ref<Connection | null>(null);
 
-function openConfigureIntegrationDialog(integrationId: string) {
-	const integration = integrations.value?.find(
-		(i) => i.integrationId === integrationId,
-	);
-	if (integration) {
-		selectedIntegration.value = integration;
+function openConfigureIntegrationDialog(connectionId: string) {
+	const connection = connections.value?.find((c) => c.id === connectionId);
+	if (connection) {
+		selectedConnection.value = connection;
 		isConfigureIntegrationDialogOpen.value = true;
 	}
 }
 
-function openDisconnectIntegrationDialog(integrationId: string) {
-	const integration = integrations.value?.find(
-		(i) => i.integrationId === integrationId,
-	);
-	if (integration) {
-		selectedIntegration.value = integration;
+function openDisconnectIntegrationDialog(connectionId: string) {
+	const connection = connections.value?.find((c) => c.id === connectionId);
+	if (connection) {
+		selectedConnection.value = connection;
 		isDisconnectIntegrationDialogOpen.value = true;
 	}
 }
 
-async function handleUpdateIntegration(updates: UpdateIntegration) {
-	if (!selectedIntegration.value) return;
+async function handleUpdateIntegration(updates: UpdateConnection) {
+	if (!selectedConnection.value) return;
 	try {
-		await updateIntegrationAsync({
-			integrationId: selectedIntegration.value.integrationId,
+		await updateConnectionAsync({
+			connectionId: selectedConnection.value.id,
 			updates,
 		});
 		isConfigureIntegrationDialogOpen.value = false;
@@ -103,9 +99,9 @@ async function handleUpdateIntegration(updates: UpdateIntegration) {
 	}
 }
 
-async function handleDisconnectIntegration(integrationId: string) {
+async function handleDisconnectIntegration(connectionId: string) {
 	try {
-		await deleteIntegrationAsync(integrationId);
+		await deleteConnectionAsync(connectionId);
 		isDisconnectIntegrationDialogOpen.value = false;
 		toast.success(t("integrations.toast.integrationDisconnected"));
 	} catch (error) {
@@ -262,7 +258,7 @@ async function testWebhook(webhookId: string) {
     <div class="max-w-6xl mx-auto w-full">
       <!-- Loading State -->
       <div
-        v-if="isLoadingIntegrations || isLoadingWebhooks"
+        v-if="isLoadingConnections || isLoadingWebhooks"
         class="flex items-center justify-center py-12"
       >
         <Loader2 :size="24" class="animate-spin text-muted-foreground" />
@@ -271,7 +267,7 @@ async function testWebhook(webhookId: string) {
       <template v-else>
         <!-- Active Integrations -->
         <Card
-          v-if="integrations && integrations.length > 0"
+          v-if="connections && connections.length > 0"
           class="mb-8 py-0 pt-6 rounded-xl border-border/50"
         >
           <CardHeader>
@@ -285,7 +281,7 @@ async function testWebhook(webhookId: string) {
                 >
                 <CardDescription class="text-sm">{{
                   t("integrations.sections.connectedServices.description", {
-                    count: integrations.length,
+                    count: connections.length,
                   })
                 }}</CardDescription>
               </div>
@@ -315,7 +311,7 @@ async function testWebhook(webhookId: string) {
           </CardHeader>
           <CardContent>
             <IntegrationsTable
-              :integrations="integrations"
+              :connections="connections"
               @configure="openConfigureIntegrationDialog"
               @disconnect="openDisconnectIntegrationDialog"
             />
@@ -482,14 +478,14 @@ async function testWebhook(webhookId: string) {
         <!-- Dialogs -->
         <ConfigureIntegrationDialog
           v-model:open="isConfigureIntegrationDialogOpen"
-          :integration="selectedIntegration"
+          :connection="selectedConnection"
           :is-loading="isUpdating"
           @update="handleUpdateIntegration"
         />
 
         <DisconnectIntegrationDialog
           v-model:open="isDisconnectIntegrationDialogOpen"
-          :integration="selectedIntegration"
+          :connection="selectedConnection"
           :is-loading="isDeleting"
           @disconnect="handleDisconnectIntegration"
         />

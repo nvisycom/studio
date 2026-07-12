@@ -931,7 +931,8 @@
 				"headers": "Headers",
 				"created": "Created",
 				"lastDelivery": "Last Delivery",
-				"connectedAt": "Connected"
+				"connectedAt": "Connected",
+				"provider": "Provider"
 			},
 			"actions": {
 				"edit": "Edit",
@@ -973,7 +974,8 @@
 				"activeLabel": "Active",
 				"activeDescription": "Enable this integration to sync data and automate workflows",
 				"save": "Save Changes",
-				"cancel": "Cancel"
+				"cancel": "Cancel",
+				"providerLabel": "Provider"
 			},
 			"disconnect": {
 				"title": "Disconnect {name}",
@@ -1086,7 +1088,20 @@
 			"status": {
 				"pending": "Pending",
 				"running": "Running",
-				"cancelled": "Cancelled"
+				"cancelled": "Cancelled",
+				"analyzed": "Analyzed",
+				"completed": "Completed",
+				"failed": "Failed"
+			},
+			"statusAnalyzed": "Analyzed",
+			"statusCompleted": "Completed",
+			"statusFailed": "Failed",
+			"pipeline": "Pipeline",
+			"trigger": "Trigger",
+			"triggerType": {
+				"manual": "Manual",
+				"source": "Source",
+				"scheduled": "Scheduled"
 			}
 		}
 	},

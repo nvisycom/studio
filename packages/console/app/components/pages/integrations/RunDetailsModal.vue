@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IntegrationRun } from "@nvisy/sdk/datatypes";
+import type { PipelineRun, PipelineRunStatus } from "@nvisy/sdk/datatypes";
 import {
 	Dialog,
 	DialogContent,
@@ -11,7 +11,7 @@ import { Badge } from "#console/components/ui/badge";
 
 interface Props {
 	open?: boolean;
-	run: IntegrationRun | null;
+	run: PipelineRun | null;
 }
 
 type Emits = (e: "update:open", value: boolean) => void;
@@ -26,12 +26,16 @@ function handleOpenChange(open: boolean) {
 	emit("update:open", open);
 }
 
-function getStatusColor(status: "pending" | "running" | "cancelled"): string {
+function getStatusColor(status: PipelineRunStatus): string {
 	switch (status) {
 		case "running":
 			return "text-blue-600 dark:text-blue-400";
-		case "pending":
+		case "analyzed":
 			return "text-yellow-600 dark:text-yellow-400";
+		case "completed":
+			return "text-green-600 dark:text-green-400";
+		case "failed":
+			return "text-red-600 dark:text-red-400";
 		case "cancelled":
 			return "text-red-600 dark:text-red-400";
 		default:
@@ -92,10 +96,10 @@ function formatDuration(
               <p
                 class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1"
               >
-                Run Type
+                Trigger
               </p>
               <Badge variant="outline" class="capitalize">
-                {{ run.runType }}
+                {{ run.triggerType }}
               </Badge>
             </div>
           </div>

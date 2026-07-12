@@ -33,7 +33,7 @@ interface Emits {
 	(e: "download", file: NvisyFile): void;
 	(e: "delete", file: NvisyFile): void;
 	(e: "bulk-open"): void;
-	(e: "bulk-download", format: "zip" | "tar"): void;
+	(e: "bulk-download"): void;
 	(e: "bulk-delete"): void;
 	(e: "scroll", event: Event): void;
 }
@@ -96,22 +96,22 @@ function handleScroll(event: Event) {
     <div
       class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 p-4"
     >
-      <ContextMenu v-for="file in files" :key="file.fileId">
+      <ContextMenu v-for="file in files" :key="file.id">
         <ContextMenuTrigger as-child>
           <div
             class="group relative flex flex-col items-center p-4 rounded-lg border border-transparent hover:border-border hover:bg-muted/50 transition-colors cursor-pointer"
-            :class="{ 'bg-muted/50': selectedFiles.has(file.fileId) }"
-            @click="emit('toggle-selection', file.fileId)"
+            :class="{ 'bg-muted/50': selectedFiles.has(file.id) }"
+            @click="emit('toggle-selection', file.id)"
           >
             <!-- Selection Checkbox -->
             <div
               class="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity"
-              :class="{ 'opacity-100': selectedFiles.has(file.fileId) }"
+              :class="{ 'opacity-100': selectedFiles.has(file.id) }"
               @click.stop
             >
               <Checkbox
-                :model-value="selectedFiles.has(file.fileId)"
-                @update:model-value="emit('toggle-selection', file.fileId)"
+                :model-value="selectedFiles.has(file.id)"
+                @update:model-value="emit('toggle-selection', file.id)"
                 class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
               />
             </div>
@@ -135,17 +135,8 @@ function handleScroll(event: Event) {
               {{ file.displayName }}
             </p>
 
-            <!-- File Size and Status -->
+            <!-- File Size -->
             <div class="flex items-center gap-1.5 mt-1">
-              <span
-                class="w-2 h-2 rounded-full"
-                :class="{
-                  'bg-yellow-500': file.status === 'pending',
-                  'bg-blue-500': file.status === 'processing',
-                  'bg-green-500': file.status === 'ready',
-                  'bg-neutral-400': file.status === 'canceled',
-                }"
-              />
               <p
                 class="text-xs font-normal text-neutral-500 dark:text-neutral-400"
               >
@@ -156,24 +147,17 @@ function handleScroll(event: Event) {
         </ContextMenuTrigger>
         <ContextMenuContent>
           <!-- Bulk actions (when right-clicked file is in selection) -->
-          <template v-if="selectedFiles.has(file.fileId)">
+          <template v-if="selectedFiles.has(file.id)">
             <ContextMenuItem class="cursor-pointer" @click="emit('bulk-open')">
               <Eye :size="14" class="mr-2" />
               {{ t("files.actions.open") }} ({{ selectedCount }})
             </ContextMenuItem>
             <ContextMenuItem
               class="cursor-pointer"
-              @click="emit('bulk-download', 'zip')"
+              @click="emit('bulk-download')"
             >
               <Download :size="14" class="mr-2" />
-              {{ t("files.actions.downloadAsZip") }} ({{ selectedCount }})
-            </ContextMenuItem>
-            <ContextMenuItem
-              class="cursor-pointer"
-              @click="emit('bulk-download', 'tar')"
-            >
-              <Download :size="14" class="mr-2" />
-              {{ t("files.actions.downloadAsTar") }} ({{ selectedCount }})
+              {{ t("files.actions.download") }} ({{ selectedCount }})
             </ContextMenuItem>
             <ContextMenuSeparator />
             <ContextMenuItem
@@ -189,7 +173,7 @@ function handleScroll(event: Event) {
           <template v-else>
             <ContextMenuItem
               class="cursor-pointer"
-              @click="emit('view', file.fileId)"
+              @click="emit('view', file.id)"
             >
               <Eye :size="14" class="mr-2" />
               {{ t("files.actions.openInStudio") }}

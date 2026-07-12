@@ -62,8 +62,8 @@ const { leaveAsync, isLeaving } = useMembers();
 // Form state - use empty string as initial value
 const workspaceName = ref("");
 const workspaceDescription = ref("");
-const requireApproval = ref<boolean | null>(null);
-const enableComments = ref<boolean | null>(null);
+const requireApproval = ref<boolean | undefined>(undefined);
+const enableComments = ref<boolean | undefined>(undefined);
 const copiedWorkspaceId = ref(false);
 
 // Dialog state
@@ -97,8 +97,8 @@ watch(
 		formInitialized.value = false;
 		workspaceName.value = "";
 		workspaceDescription.value = "";
-		requireApproval.value = null;
-		enableComments.value = null;
+		requireApproval.value = undefined;
+		enableComments.value = undefined;
 	},
 );
 
@@ -116,7 +116,8 @@ const hasInfoChanges = computed(() => {
 
 // Check if options have changed
 const hasOptionsChanges = computed(() => {
-	if (!currentWorkspace.value || requireApproval.value === null) return false;
+	if (!currentWorkspace.value || requireApproval.value === undefined)
+		return false;
 	return (
 		requireApproval.value !== currentWorkspace.value.requireApproval ||
 		enableComments.value !== currentWorkspace.value.enableComments
@@ -143,7 +144,7 @@ async function saveWorkspaceInfo() {
 			workspaceId,
 			updates: {
 				displayName: workspaceName.value,
-				description: workspaceDescription.value || null,
+				description: workspaceDescription.value || undefined,
 			},
 		});
 		toast.success(t("settings.workspace.messages.saved"));

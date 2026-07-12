@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Integration } from "@nvisy/sdk/datatypes";
+import type { Connection } from "@nvisy/sdk/datatypes";
 import { AlertCircle, Loader2 } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import {
@@ -15,18 +15,18 @@ const { t } = useI18n();
 
 interface Props {
 	open?: boolean;
-	integration?: Integration | null;
+	connection?: Connection | null;
 	isLoading?: boolean;
 }
 
 interface Emits {
 	(e: "update:open", value: boolean): void;
-	(e: "disconnect", integrationId: string): void;
+	(e: "disconnect", connectionId: string): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	open: false,
-	integration: null,
+	connection: null,
 	isLoading: false,
 });
 
@@ -37,8 +37,8 @@ function handleOpenChange(open: boolean) {
 }
 
 function confirmDisconnect() {
-	if (!props.integration) return;
-	emit("disconnect", props.integration.integrationId);
+	if (!props.connection) return;
+	emit("disconnect", props.connection.id);
 }
 
 function cancel() {
@@ -56,7 +56,7 @@ function cancel() {
           </div>
           <DialogTitle>{{
             t("integrations.dialogs.disconnect.title", {
-              name: integration?.integrationName,
+              name: connection?.name,
             })
           }}</DialogTitle>
         </div>
@@ -70,11 +70,11 @@ function cancel() {
           class="p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
         >
           <p class="text-sm text-neutral-900 dark:text-white font-medium mb-1">
-            {{ integration?.integrationName }}
+            {{ connection?.name }}
           </p>
-          <p class="text-xs text-neutral-500 dark:text-neutral-500">
+          <p class="text-xs text-neutral-500 dark:text-neutral-500 capitalize">
             {{ t("integrations.dialogs.disconnect.provider") }}:
-            {{ integration?.integrationType }}
+            {{ connection?.provider }}
           </p>
         </div>
 

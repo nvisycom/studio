@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import type { Integration } from "@nvisy/sdk/datatypes";
+import type { Connection } from "@nvisy/sdk/datatypes";
 import { Edit, Trash2, HardDrive, Webhook, Box } from "@lucide/vue";
-import { Badge } from "#console/components/ui/badge";
 import {
 	Table,
 	TableBody,
@@ -22,17 +21,18 @@ import { formatRelativeTime } from "#console/utils/date";
 const { t } = useI18n();
 
 defineProps<{
-	integrations: Integration[];
+	connections: Connection[];
 }>();
 
 const emit = defineEmits<{
-	(e: "configure", integrationId: string): void;
-	(e: "disconnect", integrationId: string): void;
+	(e: "configure", connectionId: string): void;
+	(e: "disconnect", connectionId: string): void;
 }>();
 
-function getIntegrationIcon(type: string) {
-	switch (type) {
+function getProviderIcon(provider: string) {
+	switch (provider) {
 		case "storage":
+		case "s3":
 			return HardDrive;
 		case "webhook":
 			return Webhook;
@@ -41,9 +41,10 @@ function getIntegrationIcon(type: string) {
 	}
 }
 
-function getIntegrationColor(type: string): string {
-	switch (type) {
+function getProviderColor(provider: string): string {
+	switch (provider) {
 		case "storage":
+		case "s3":
 			return "bg-blue-600";
 		case "webhook":
 			return "bg-purple-600";
@@ -61,7 +62,7 @@ function getIntegrationColor(type: string): string {
           t("integrations.table.headers.name")
         }}</TableHead>
         <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("integrations.table.headers.status")
+          t("integrations.table.headers.provider")
         }}</TableHead>
         <TableHead class="uppercase text-xs font-normal tracking-wider">{{
           t("integrations.table.headers.connectedAt")
@@ -69,10 +70,7 @@ function getIntegrationColor(type: string): string {
       </TableRow>
     </TableHeader>
     <TableBody>
-      <ContextMenu
-        v-for="integration in integrations"
-        :key="integration.integrationId"
-      >
+      <ContextMenu v-for="connection in connections" :key="connection.id">
         <ContextMenuTrigger as-child>
           <TableRow
             class="hover:bg-neutral-50 dark:hover:bg-neutral-900 cursor-pointer"
@@ -82,40 +80,32 @@ function getIntegrationColor(type: string): string {
                 <div
                   :class="[
                     'w-10 h-10 rounded-lg flex items-center justify-center',
-                    getIntegrationColor(integration.integrationType),
+                    getProviderColor(connection.provider),
                   ]"
                 >
                   <component
-                    :is="getIntegrationIcon(integration.integrationType)"
+                    :is="getProviderIcon(connection.provider)"
                     :size="20"
                     class="text-white"
                   />
                 </div>
                 <div>
                   <p class="font-normal text-neutral-900 dark:text-white">
-                    {{ integration.integrationName }}
-                  </p>
-                  <p
-                    class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
-                  >
-                    {{ integration.description }}
+                    {{ connection.name }}
                   </p>
                 </div>
               </div>
             </TableCell>
             <TableCell>
-              <Badge :variant="integration.isActive ? 'default' : 'secondary'">
-                {{
-                  integration.isActive
-                    ? t("integrations.status.active")
-                    : t("integrations.status.inactive")
-                }}
-              </Badge>
+              <span
+                class="text-sm font-normal text-neutral-600 dark:text-neutral-400 capitalize"
+                >{{ connection.provider }}</span
+              >
             </TableCell>
             <TableCell>
               <span
                 class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
-                >{{ formatRelativeTime(integration.createdAt, t) }}</span
+                >{{ formatRelativeTime(connection.createdAt, t) }}</span
               >
             </TableCell>
           </TableRow>
@@ -123,7 +113,7 @@ function getIntegrationColor(type: string): string {
         <ContextMenuContent>
           <ContextMenuItem
             class="cursor-pointer"
-            @click="emit('configure', integration.integrationId)"
+            @click="emit('configure', connection.id)"
           >
             <Edit :size="14" class="mr-2" />
             {{ t("integrations.table.actions.configure") }}
@@ -131,7 +121,7 @@ function getIntegrationColor(type: string): string {
           <ContextMenuSeparator />
           <ContextMenuItem
             class="text-red-600 dark:text-red-400 cursor-pointer"
-            @click="emit('disconnect', integration.integrationId)"
+            @click="emit('disconnect', connection.id)"
           >
             <Trash2 :size="14" class="mr-2" />
             {{ t("integrations.table.actions.disconnect") }}

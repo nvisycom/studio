@@ -28,11 +28,11 @@ const WEBHOOK_EVENTS: WebhookEvent[] = [
 	"member:added",
 	"member:updated",
 	"member:deleted",
-	"integration:created",
-	"integration:updated",
-	"integration:deleted",
-	"integration:synced",
-	"integration:desynced",
+	"connection:created",
+	"connection:updated",
+	"connection:deleted",
+	"connection:synced",
+	"connection:desynced",
 ];
 
 interface Header {

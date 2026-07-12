@@ -170,22 +170,14 @@ export function useFiles(options: UseFilesOptions = {}) {
 		URL.revokeObjectURL(url);
 	}
 
-	async function downloadMultiple(fileIds: string[], format: "zip" | "tar") {
+	// Bulk download fetches each file individually.
+	async function downloadMultiple(fileIds: string[]) {
 		const client = $nvisyClient.value;
 		if (!client) throw new Error("Not authenticated");
-		const wId = effectiveWorkspaceId.value;
-		if (!wId) throw new Error("No workspace selected");
-		const response = await client.files.downloadFiles(wId, {
-			fileIds,
-			format,
-		});
-		const blob = await response.blob();
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement("a");
-		a.href = url;
-		a.download = `files.${format}`;
-		a.click();
-		URL.revokeObjectURL(url);
+		for (const fileId of fileIds) {
+			const file = allFiles.value.find((f) => f.id === fileId);
+			await downloadFile(fileId, file?.displayName ?? fileId);
+		}
 	}
 
 	return {

@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import type { File as NvisyFile, UpdateFile } from "@nvisy/sdk/datatypes";
 import {
-	ChevronDown,
 	FileText,
-	Filter,
 	LayoutGrid,
 	List,
 	Loader2,
@@ -13,12 +11,6 @@ import {
 import { computed, ref } from "vue";
 import { toast } from "vue-sonner";
 import { Button } from "#console/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "#console/components/ui/dropdown-menu";
 import { Input } from "#console/components/ui/input";
 import {
 	DeleteFileDialog,
@@ -53,7 +45,6 @@ const {
 } = useFiles();
 
 const searchQuery = ref("");
-const filterStatus = ref("any");
 const viewMode = ref<"list" | "grid">("list");
 const isDraggingOver = ref(false);
 
@@ -63,14 +54,6 @@ const uploadDialogOpen = ref(false);
 const fileToDelete = ref<NvisyFile | null>(null);
 const fileToEdit = ref<NvisyFile | null>(null);
 const isUploadingDrop = ref(false);
-
-const statusFilters = computed(() => [
-	{ label: t("files.filters.anyStatus"), value: "any" },
-	{ label: t("files.filters.pending"), value: "pending" },
-	{ label: t("files.filters.processing"), value: "processing" },
-	{ label: t("files.filters.ready"), value: "ready" },
-	{ label: t("files.filters.canceled"), value: "canceled" },
-]);
 
 const filteredFiles = computed(() => {
 	let filtered = files.value || [];
@@ -82,15 +65,11 @@ const filteredFiles = computed(() => {
 		);
 	}
 
-	if (filterStatus.value !== "any") {
-		filtered = filtered.filter((file) => file.status === filterStatus.value);
-	}
-
 	return filtered;
 });
 
 const hasFilters = computed(() => {
-	return searchQuery.value.trim() || filterStatus.value !== "any";
+	return searchQuery.value.trim().length > 0;
 });
 
 // Selection
@@ -102,7 +81,7 @@ const {
 	clear: clearSelection,
 } = useSelection({
 	items: filteredFiles,
-	getKey: (f) => f.fileId,
+	getKey: (f) => f.id,
 });
 
 const selectedFilesCount = computed(() => selectedFiles.value.size);
@@ -113,7 +92,7 @@ const { openFile: openFileInStudio } = useStudioFiles();
 
 function viewFile(fileId: string) {
 	// Find the file to pass metadata
-	const file = files.value?.find((f) => f.fileId === fileId);
+	const file = files.value?.find((f) => f.id === fileId);
 	openFileInStudio(fileId, file);
 	navigateTo("/studio");
 }
@@ -123,7 +102,7 @@ function handleBulkOpen() {
 	const fileIds = Array.from(selectedFiles.value);
 	// Open each selected file in the studio
 	for (const fileId of fileIds) {
-		const file = files.value?.find((f) => f.fileId === fileId);
+		const file = files.value?.find((f) => f.id === fileId);
 		openFileInStudio(fileId, file);
 	}
 	navigateTo("/studio");
@@ -131,17 +110,17 @@ function handleBulkOpen() {
 
 async function handleDownloadFile(file: NvisyFile) {
 	try {
-		await downloadFile(file.fileId, file.displayName);
+		await downloadFile(file.id, file.displayName);
 		toast.success(t("files.messages.downloadStarted"));
 	} catch {
 		toast.error(t("files.errors.downloadFailed"));
 	}
 }
 
-async function handleBulkDownload(format: "zip" | "tar") {
+async function handleBulkDownload() {
 	if (!hasSelection.value) return;
 	try {
-		await downloadMultiple(Array.from(selectedFiles.value), format);
+		await downloadMultiple(Array.from(selectedFiles.value));
 		toast.success(t("files.messages.downloadStarted"));
 	} catch {
 		toast.error(t("files.errors.downloadFailed"));
@@ -161,7 +140,7 @@ function openBulkDeleteDialog() {
 async function confirmDelete() {
 	try {
 		if (fileToDelete.value) {
-			await deleteFileAsync(fileToDelete.value.fileId);
+			await deleteFileAsync(fileToDelete.value.id);
 			toast.success(t("files.messages.fileDeleted"));
 		} else if (hasSelection.value) {
 			for (const fileId of Array.from(selectedFiles.value)) {
@@ -187,7 +166,7 @@ async function confirmEdit(data: UpdateFile) {
 	if (!fileToEdit.value) return;
 	try {
 		await updateFileAsync({
-			fileId: fileToEdit.value.fileId,
+			fileId: fileToEdit.value.id,
 			updates: data,
 		});
 		toast.success(t("files.messages.fileUpdated"));
@@ -251,13 +230,8 @@ async function handleDrop(e: DragEvent) {
 	}
 }
 
-function selectStatusFilter(value: string) {
-	filterStatus.value = value;
-}
-
 function clearFilters() {
 	searchQuery.value = "";
-	filterStatus.value = "any";
 }
 
 function handleLoadMore() {
@@ -321,35 +295,6 @@ function handleGridScroll(event: Event) {
               class="pl-10 h-9 text-sm"
             />
           </div>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <Button
-                variant="outline"
-                size="sm"
-                class="justify-between min-w-[140px]"
-              >
-                <Filter :size="14" class="mr-2 text-muted-foreground" />
-                <span class="text-sm">
-                  {{
-                    statusFilters.find((f) => f.value === filterStatus)
-                      ?.label || t("files.filters.anyStatus")
-                  }}
-                </span>
-                <ChevronDown :size="14" class="ml-2 text-muted-foreground" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" class="w-[140px]">
-              <DropdownMenuItem
-                v-for="filter in statusFilters"
-                :key="filter.value"
-                @click="selectStatusFilter(filter.value)"
-                class="cursor-pointer text-sm"
-              >
-                {{ filter.label }}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
 
           <!-- View Toggle -->
           <div class="flex items-center border border-border/50 rounded-md">
