@@ -23,8 +23,8 @@ const route = useRoute();
 const { t } = useI18n();
 
 // Check if current route should show tabs
-const showIntegrationTabs = computed(() =>
-	route.path.startsWith("/integrations"),
+const showConnectionTabs = computed(() =>
+	route.path.startsWith("/connections"),
 );
 
 const showFilesTabs = computed(() => route.path.startsWith("/files"));
@@ -44,10 +44,6 @@ const showAccountTabs = computed(() => route.path.startsWith("/account"));
 
 const showAnalyticsTabs = computed(() => route.path.startsWith("/analytics"));
 
-const currentIntegrationTab = computed(() =>
-	route.path === "/integrations/explore" ? "library" : "active",
-);
-
 const currentSettingsTab = computed(() => {
 	if (route.path === "/settings/notifications") return "notifications";
 	return "general";
@@ -65,9 +61,9 @@ const currentAnalyticsTab = computed(() => {
 	return "overview";
 });
 
-const currentIntegrationTabValue = computed(() => {
-	if (route.path === "/integrations/explore") return "explore";
-	if (route.path === "/integrations/runs") return "runs";
+const currentConnectionTabValue = computed(() => {
+	if (route.path === "/connections/explore") return "explore";
+	if (route.path === "/connections/runs") return "runs";
 	return "connections";
 });
 
@@ -86,7 +82,7 @@ const isStudioPage = computed(() => route.path === "/studio");
 // Computed to check if any tabs are visible
 const hasVisibleTabs = computed(() => {
 	return (
-		showIntegrationTabs.value ||
+		showConnectionTabs.value ||
 		showFilesTabs.value ||
 		showWorkflowsTabs.value ||
 		showStudioTabs.value ||
@@ -104,25 +100,25 @@ defineExpose({
 </script>
 
 <template>
-  <!-- Integration Tabs -->
-  <Tabs v-if="showIntegrationTabs" :model-value="currentIntegrationTabValue">
+  <!-- Connection Tabs -->
+  <Tabs v-if="showConnectionTabs" :model-value="currentConnectionTabValue">
     <TabsList>
       <TabsTrigger value="connections" as-child>
-        <NuxtLink to="/integrations" class="flex items-center gap-2">
+        <NuxtLink to="/connections" class="flex items-center gap-2">
           <Plug :size="16" />
-          {{ t("header.tabs.integrations.connections") }}
+          {{ t("header.tabs.connections.connections") }}
         </NuxtLink>
       </TabsTrigger>
       <TabsTrigger value="explore" as-child>
-        <NuxtLink to="/integrations/explore" class="flex items-center gap-2">
+        <NuxtLink to="/connections/explore" class="flex items-center gap-2">
           <Library :size="16" />
-          {{ t("header.tabs.integrations.explore") }}
+          {{ t("header.tabs.connections.explore") }}
         </NuxtLink>
       </TabsTrigger>
       <TabsTrigger value="runs" as-child>
-        <NuxtLink to="/integrations/runs" class="flex items-center gap-2">
+        <NuxtLink to="/connections/runs" class="flex items-center gap-2">
           <PlayCircle :size="16" />
-          {{ t("header.tabs.integrations.runs") }}
+          {{ t("header.tabs.connections.runs") }}
         </NuxtLink>
       </TabsTrigger>
     </TabsList>

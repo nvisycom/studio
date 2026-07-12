@@ -46,14 +46,14 @@ import {
 } from "#console/components/ui/select";
 import { Checkbox } from "#console/components/ui/checkbox";
 import { Badge } from "#console/components/ui/badge";
-import { RunDetailsModal } from "#console/components/pages/integrations";
+import { RunDetailsModal } from "#console/components/pages/connections";
 
 const { t } = useI18n();
 
-useHead({ title: "Integration Runs" });
+useHead({ title: "Connection Runs" });
 
 definePageMeta({
-	pageCategory: "Integrations",
+	pageCategory: "Connections",
 });
 
 // Use SDK composable
@@ -155,9 +155,9 @@ function formatDuration(
         <!-- Search and Filters -->
         <div class="flex items-center gap-3 mb-6 flex-wrap">
           <Button as-child variant="outline" class="font-normal">
-            <NuxtLink to="/integrations" class="flex items-center gap-2">
+            <NuxtLink to="/connections" class="flex items-center gap-2">
               <ArrowLeft :size="16" />
-              {{ t("integrations.runs.backToConnections") }}
+              {{ t("connections.runs.backToConnections") }}
             </NuxtLink>
           </Button>
 
@@ -169,7 +169,7 @@ function formatDuration(
               />
               <Input
                 v-model="searchQuery"
-                :placeholder="t('integrations.runs.searchPlaceholder')"
+                :placeholder="t('connections.runs.searchPlaceholder')"
                 class="pl-10 h-9"
               />
             </div>
@@ -177,46 +177,46 @@ function formatDuration(
 
           <Select v-model="statusFilter">
             <SelectTrigger class="w-[150px] h-9 text-sm">
-              <SelectValue :placeholder="t('integrations.runs.status')" />
+              <SelectValue :placeholder="t('connections.runs.status')" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all" class="text-sm font-normal">{{
-                t("integrations.runs.allStatus")
+                t("connections.runs.allStatus")
               }}</SelectItem>
               <SelectItem value="running" class="text-sm font-normal">{{
-                t("integrations.runs.statusRunning")
+                t("connections.runs.statusRunning")
               }}</SelectItem>
               <SelectItem value="analyzed" class="text-sm font-normal">{{
-                t("integrations.runs.statusAnalyzed")
+                t("connections.runs.statusAnalyzed")
               }}</SelectItem>
               <SelectItem value="completed" class="text-sm font-normal">{{
-                t("integrations.runs.statusCompleted")
+                t("connections.runs.statusCompleted")
               }}</SelectItem>
               <SelectItem value="failed" class="text-sm font-normal">{{
-                t("integrations.runs.statusFailed")
+                t("connections.runs.statusFailed")
               }}</SelectItem>
               <SelectItem value="cancelled" class="text-sm font-normal">{{
-                t("integrations.runs.statusCancelled")
+                t("connections.runs.statusCancelled")
               }}</SelectItem>
             </SelectContent>
           </Select>
 
           <Select v-model="dateRange">
             <SelectTrigger class="w-[150px] h-9 text-sm">
-              <SelectValue :placeholder="t('integrations.runs.period')" />
+              <SelectValue :placeholder="t('connections.runs.period')" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="1h" class="text-sm font-normal">{{
-                t("integrations.runs.lastHour")
+                t("connections.runs.lastHour")
               }}</SelectItem>
               <SelectItem value="24h" class="text-sm font-normal">{{
-                t("integrations.runs.last24Hours")
+                t("connections.runs.last24Hours")
               }}</SelectItem>
               <SelectItem value="7d" class="text-sm font-normal">{{
-                t("integrations.runs.last7Days")
+                t("connections.runs.last7Days")
               }}</SelectItem>
               <SelectItem value="30d" class="text-sm font-normal">{{
-                t("integrations.runs.last30Days")
+                t("connections.runs.last30Days")
               }}</SelectItem>
             </SelectContent>
           </Select>
@@ -229,18 +229,18 @@ function formatDuration(
               <div>
                 <CardTitle
                   class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
-                  >{{ t("integrations.runs.title") }}</CardTitle
+                  >{{ t("connections.runs.title") }}</CardTitle
                 >
                 <CardDescription class="text-sm">
                   {{ filteredRuns.length }}
                   {{
-                    t("integrations.runs.runsFound", {
+                    t("connections.runs.runsFound", {
                       count: filteredRuns.length,
                     })
                   }}
                   <span v-if="selectedRuns.size > 0">
                     · {{ selectedRuns.size }}
-                    {{ t("integrations.runs.selected") }}
+                    {{ t("connections.runs.selected") }}
                   </span>
                 </CardDescription>
               </div>
@@ -255,8 +255,8 @@ function formatDuration(
                 <Copy v-else :size="16" />
                 {{
                   logsCopied
-                    ? t("integrations.runs.copied")
-                    : t("integrations.runs.copyLogs")
+                    ? t("connections.runs.copied")
+                    : t("connections.runs.copyLogs")
                 }}
               </Button>
             </div>
@@ -273,27 +273,27 @@ function formatDuration(
                   </TableHead>
                   <TableHead
                     class="uppercase text-xs font-normal tracking-wider"
-                    >{{ t("integrations.runs.runId") }}</TableHead
+                    >{{ t("connections.runs.runId") }}</TableHead
                   >
                   <TableHead
                     class="uppercase text-xs font-normal tracking-wider"
-                    >{{ t("integrations.runs.pipeline") }}</TableHead
+                    >{{ t("connections.runs.pipeline") }}</TableHead
                   >
                   <TableHead
                     class="uppercase text-xs font-normal tracking-wider"
-                    >{{ t("integrations.runs.trigger") }}</TableHead
+                    >{{ t("connections.runs.trigger") }}</TableHead
                   >
                   <TableHead
                     class="w-[100px] uppercase text-xs font-normal tracking-wider"
-                    >{{ t("integrations.runs.statusHeader") }}</TableHead
+                    >{{ t("connections.runs.statusHeader") }}</TableHead
                   >
                   <TableHead
                     class="uppercase text-xs font-normal tracking-wider"
-                    >{{ t("integrations.runs.started") }}</TableHead
+                    >{{ t("connections.runs.started") }}</TableHead
                   >
                   <TableHead
                     class="w-[100px] uppercase text-xs font-normal tracking-wider"
-                    >{{ t("integrations.runs.duration") }}</TableHead
+                    >{{ t("connections.runs.duration") }}</TableHead
                   >
                 </TableRow>
               </TableHeader>
@@ -323,7 +323,7 @@ function formatDuration(
                       <TableCell>
                         <Badge variant="outline" class="capitalize">
                           {{
-                            t(`integrations.runs.triggerType.${run.triggerType}`)
+                            t(`connections.runs.triggerType.${run.triggerType}`)
                           }}
                         </Badge>
                       </TableCell>
@@ -351,7 +351,7 @@ function formatDuration(
                             class="text-red-500"
                           />
                           <span class="text-xs text-foreground capitalize">
-                            {{ t(`integrations.runs.status.${run.status}`) }}
+                            {{ t(`connections.runs.status.${run.status}`) }}
                           </span>
                         </div>
                       </TableCell>
@@ -369,14 +369,14 @@ function formatDuration(
                       @click="viewRunDetails(run)"
                     >
                       <Eye :size="14" class="mr-2" />
-                      {{ t("integrations.runs.viewDetails") }}
+                      {{ t("connections.runs.viewDetails") }}
                     </ContextMenuItem>
                     <ContextMenuItem
                       class="cursor-pointer"
                       @click="copyRunDetails(run)"
                     >
                       <Copy :size="14" class="mr-2" />
-                      {{ t("integrations.runs.copyLogs") }}
+                      {{ t("connections.runs.copyLogs") }}
                     </ContextMenuItem>
                   </ContextMenuContent>
                 </ContextMenu>
@@ -387,7 +387,7 @@ function formatDuration(
               v-if="filteredRuns.length === 0"
               class="py-12 text-center text-sm text-muted-foreground"
             >
-              {{ t("integrations.runs.noRunsFound") }}
+              {{ t("connections.runs.noRunsFound") }}
             </div>
           </CardContent>
         </Card>

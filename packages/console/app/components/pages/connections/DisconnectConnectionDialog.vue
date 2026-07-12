@@ -55,13 +55,13 @@ function cancel() {
             <AlertCircle :size="20" class="text-red-600 dark:text-red-400" />
           </div>
           <DialogTitle>{{
-            t("integrations.dialogs.disconnect.title", {
+            t("connections.dialogs.disconnect.title", {
               name: connection?.name,
             })
           }}</DialogTitle>
         </div>
         <DialogDescription>
-          {{ t("integrations.dialogs.disconnect.description") }}
+          {{ t("connections.dialogs.disconnect.description") }}
         </DialogDescription>
       </DialogHeader>
 
@@ -73,7 +73,7 @@ function cancel() {
             {{ connection?.name }}
           </p>
           <p class="text-xs text-neutral-500 dark:text-neutral-500 capitalize">
-            {{ t("integrations.dialogs.disconnect.provider") }}:
+            {{ t("connections.dialogs.disconnect.provider") }}:
             {{ connection?.provider }}
           </p>
         </div>
@@ -83,16 +83,16 @@ function cancel() {
         >
           <p class="text-sm text-amber-900 dark:text-amber-100">
             <span class="font-medium"
-              >{{ t("integrations.dialogs.disconnect.warningTitle") }}:</span
+              >{{ t("connections.dialogs.disconnect.warningTitle") }}:</span
             >
-            {{ t("integrations.dialogs.disconnect.warningDescription") }}
+            {{ t("connections.dialogs.disconnect.warningDescription") }}
           </p>
         </div>
       </div>
 
       <DialogFooter>
         <Button variant="outline" @click="cancel">
-          {{ t("integrations.dialogs.disconnect.cancel") }}
+          {{ t("connections.dialogs.disconnect.cancel") }}
         </Button>
         <Button
           variant="destructive"
@@ -100,7 +100,7 @@ function cancel() {
           @click="confirmDisconnect"
         >
           <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-          {{ t("integrations.dialogs.disconnect.confirm") }}
+          {{ t("connections.dialogs.disconnect.confirm") }}
         </Button>
       </DialogFooter>
     </DialogContent>

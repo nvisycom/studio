@@ -11,9 +11,9 @@ import {
 const { t } = useI18n();
 
 /**
- * Integration data structure
+ * Provider data structure (a third-party service that can be connected)
  */
-interface Integration {
+interface Provider {
 	id: string | number;
 	name: string;
 	description: string;
@@ -31,7 +31,7 @@ interface Integration {
  * Component props interface
  */
 interface Props {
-	integration: Integration;
+	provider: Provider;
 }
 
 /**
@@ -60,16 +60,14 @@ function getWebsiteName(url?: string): string {
 	}
 }
 
-const websiteName = computed(() =>
-	getWebsiteName(props.integration.externalUrl),
-);
+const websiteName = computed(() => getWebsiteName(props.provider.externalUrl));
 </script>
 
 <template>
   <Card
     :class="[
       'overflow-hidden border-neutral-200 dark:border-neutral-800 flex flex-col transition-all duration-200',
-      integration.status === 'unavailable'
+      provider.status === 'unavailable'
         ? 'opacity-50 hover:opacity-70'
         : 'hover:border-neutral-300 dark:hover:border-neutral-700 hover:shadow-md hover:scale-[1.02]',
     ]"
@@ -80,24 +78,24 @@ const websiteName = computed(() =>
         <div
           :class="[
             'w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-neutral-100 dark:bg-neutral-800',
-            integration.status === 'unavailable' ? 'grayscale' : '',
+            provider.status === 'unavailable' ? 'grayscale' : '',
           ]"
         >
           <img
-            :src="integration.icon"
-            :alt="integration.name"
+            :src="provider.icon"
+            :alt="provider.name"
             class="w-6 h-6 object-contain"
           />
         </div>
         <div class="flex-1 min-w-0">
           <CardTitle class="text-base font-normal truncate">
-            {{ integration.name }}
+            {{ provider.name }}
           </CardTitle>
           <p
-            v-if="integration.shortDescription"
+            v-if="provider.shortDescription"
             class="text-xs font-normal text-neutral-500 dark:text-neutral-400 truncate mt-0.5"
           >
-            {{ integration.shortDescription }}
+            {{ provider.shortDescription }}
           </p>
         </div>
       </div>
@@ -106,22 +104,22 @@ const websiteName = computed(() =>
       <div class="flex flex-wrap gap-1 mt-2">
         <!-- New badge -->
         <span
-          v-if="integration.isNew"
+          v-if="provider.isNew"
           class="text-[10px] text-white dark:text-neutral-900 bg-neutral-900 dark:bg-white px-1.5 py-0.5 rounded"
         >
-          {{ t("integrations.explore.badges.new") }}
+          {{ t("connections.explore.badges.new") }}
         </span>
         <!-- Popular badge -->
         <span
-          v-if="integration.isPopular && integration.status === 'available'"
+          v-if="provider.isPopular && provider.status === 'available'"
           class="text-[10px] text-white dark:text-neutral-900 bg-neutral-900 dark:bg-white px-1.5 py-0.5 rounded"
         >
-          {{ t("integrations.explore.badges.popular") }}
+          {{ t("connections.explore.badges.popular") }}
         </span>
         <!-- Regular tags (max 3) -->
-        <template v-if="integration.tags && integration.tags.length > 0">
+        <template v-if="provider.tags && provider.tags.length > 0">
           <span
-            v-for="tag in integration.tags.slice(0, 3)"
+            v-for="tag in provider.tags.slice(0, 3)"
             :key="tag"
             class="text-[10px] text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded"
           >
@@ -132,40 +130,40 @@ const websiteName = computed(() =>
     </CardHeader>
 
     <CardFooter class="pt-2 mt-auto">
-      <!-- Unavailable integration button -->
+      <!-- Unavailable provider button -->
       <Button
-        v-if="integration.status === 'unavailable'"
+        v-if="provider.status === 'unavailable'"
         variant="outline"
         class="w-full font-normal"
         disabled
       >
-        {{ t("integrations.actions.comingSoon") }}
+        {{ t("connections.actions.comingSoon") }}
       </Button>
-      <!-- External integration button -->
+      <!-- External provider button -->
       <Button
-        v-else-if="integration.status === 'available' && integration.isExternal"
+        v-else-if="provider.status === 'available' && provider.isExternal"
         as-child
         variant="outline"
         class="w-full font-normal"
       >
         <a
-          :href="integration.externalUrl"
+          :href="provider.externalUrl"
           target="_blank"
           rel="noopener noreferrer"
           class="flex items-center justify-center gap-2"
         >
-          {{ t("integrations.actions.visitName", { name: websiteName }) }}
+          {{ t("connections.actions.visitName", { name: websiteName }) }}
           <ExternalLink :size="14" />
         </a>
       </Button>
-      <!-- Internal integration button -->
+      <!-- Internal provider button -->
       <Button
-        v-else-if="integration.status === 'available'"
-        @click="emit('connect', integration.id)"
+        v-else-if="provider.status === 'available'"
+        @click="emit('connect', provider.id)"
         variant="outline"
         class="w-full font-normal"
       >
-        {{ t("integrations.actions.connect") }}
+        {{ t("connections.actions.connect") }}
       </Button>
     </CardFooter>
   </Card>

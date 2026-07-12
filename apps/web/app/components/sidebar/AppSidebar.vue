@@ -101,14 +101,14 @@ const navAutomation = computed(() => [
 		isActive: false,
 	},
 	{
-		title: t("sidebar.integrations"),
-		url: "/integrations",
+		title: t("sidebar.connections"),
+		url: "/connections",
 		icon: Puzzle,
 		isActive: false,
 	},
 	{
 		title: t("sidebar.explore"),
-		url: "/integrations/explore",
+		url: "/connections/explore",
 		icon: Compass,
 		isActive: false,
 	},

@@ -98,12 +98,12 @@ function cancel() {
     <DialogContent class="max-w-2xl">
       <DialogHeader>
         <DialogTitle>{{
-          t("integrations.dialogs.configure.title", {
+          t("connections.dialogs.configure.title", {
             name: connection?.name,
           })
         }}</DialogTitle>
         <DialogDescription>
-          {{ t("integrations.dialogs.configure.description") }}
+          {{ t("connections.dialogs.configure.description") }}
         </DialogDescription>
       </DialogHeader>
 
@@ -113,11 +113,11 @@ function cancel() {
           <label
             class="block text-sm font-medium text-neutral-900 dark:text-white mb-2"
           >
-            {{ t("integrations.dialogs.configure.nameLabel") }}
+            {{ t("connections.dialogs.configure.nameLabel") }}
           </label>
           <Input
             v-model="connectionName"
-            :placeholder="t('integrations.dialogs.configure.namePlaceholder')"
+            :placeholder="t('connections.dialogs.configure.namePlaceholder')"
             class="text-neutral-900 dark:text-white"
           />
         </div>
@@ -127,7 +127,7 @@ function cancel() {
           <label
             class="block text-sm font-medium text-neutral-900 dark:text-white mb-2"
           >
-            {{ t("integrations.dialogs.configure.providerLabel") }}
+            {{ t("connections.dialogs.configure.providerLabel") }}
           </label>
           <p class="text-sm text-neutral-600 dark:text-neutral-400 capitalize">
             {{ connection.provider }}
@@ -137,14 +137,14 @@ function cancel() {
 
       <DialogFooter>
         <Button variant="outline" @click="cancel">
-          {{ t("integrations.dialogs.configure.cancel") }}
+          {{ t("connections.dialogs.configure.cancel") }}
         </Button>
         <Button
           @click="updateConnection"
           :disabled="!isFormValid || isLoading"
         >
           <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-          {{ t("integrations.dialogs.configure.save") }}
+          {{ t("connections.dialogs.configure.save") }}
         </Button>
       </DialogFooter>
     </DialogContent>

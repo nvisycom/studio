@@ -23,10 +23,10 @@ import {
 	CardTitle,
 } from "#console/components/ui/card";
 import {
-	ConfigureIntegrationDialog,
-	DisconnectIntegrationDialog,
-	IntegrationsTable,
-} from "#console/components/pages/integrations";
+	ConfigureConnectionDialog,
+	DisconnectConnectionDialog,
+	ConnectionsTable,
+} from "#console/components/pages/connections";
 import {
 	WebhooksTable,
 	CreateWebhookDialog,
@@ -36,10 +36,10 @@ import {
 
 const { t } = useI18n();
 
-useHead({ title: "Integrations" });
+useHead({ title: "Connections" });
 
 definePageMeta({
-	pageCategory: "Integrations",
+	pageCategory: "Connections",
 });
 
 // Use SDK composables
@@ -63,49 +63,49 @@ const {
 } = useWebhooks();
 
 // Connection dialogs
-const isConfigureIntegrationDialogOpen = ref(false);
-const isDisconnectIntegrationDialogOpen = ref(false);
+const isConfigureConnectionDialogOpen = ref(false);
+const isDisconnectConnectionDialogOpen = ref(false);
 const selectedConnection = ref<Connection | null>(null);
 
-function openConfigureIntegrationDialog(connectionId: string) {
+function openConfigureConnectionDialog(connectionId: string) {
 	const connection = connections.value?.find((c) => c.id === connectionId);
 	if (connection) {
 		selectedConnection.value = connection;
-		isConfigureIntegrationDialogOpen.value = true;
+		isConfigureConnectionDialogOpen.value = true;
 	}
 }
 
-function openDisconnectIntegrationDialog(connectionId: string) {
+function openDisconnectConnectionDialog(connectionId: string) {
 	const connection = connections.value?.find((c) => c.id === connectionId);
 	if (connection) {
 		selectedConnection.value = connection;
-		isDisconnectIntegrationDialogOpen.value = true;
+		isDisconnectConnectionDialogOpen.value = true;
 	}
 }
 
-async function handleUpdateIntegration(updates: UpdateConnection) {
+async function handleUpdateConnection(updates: UpdateConnection) {
 	if (!selectedConnection.value) return;
 	try {
 		await updateConnectionAsync({
 			connectionId: selectedConnection.value.id,
 			updates,
 		});
-		isConfigureIntegrationDialogOpen.value = false;
-		toast.success(t("integrations.toast.integrationUpdated"));
+		isConfigureConnectionDialogOpen.value = false;
+		toast.success(t("connections.toast.connectionUpdated"));
 	} catch (error) {
-		toast.error(t("integrations.toast.integrationUpdateFailed"), {
+		toast.error(t("connections.toast.connectionUpdateFailed"), {
 			description: error instanceof Error ? error.message : undefined,
 		});
 	}
 }
 
-async function handleDisconnectIntegration(connectionId: string) {
+async function handleDisconnectConnection(connectionId: string) {
 	try {
 		await deleteConnectionAsync(connectionId);
-		isDisconnectIntegrationDialogOpen.value = false;
-		toast.success(t("integrations.toast.integrationDisconnected"));
+		isDisconnectConnectionDialogOpen.value = false;
+		toast.success(t("connections.toast.connectionDisconnected"));
 	} catch (error) {
-		toast.error(t("integrations.toast.integrationDisconnectFailed"), {
+		toast.error(t("connections.toast.connectionDisconnectFailed"), {
 			description: error instanceof Error ? error.message : undefined,
 		});
 	}
@@ -138,9 +138,9 @@ async function handleCreateWebhook(data: {
 			headers: data.headers,
 		});
 		isCreateDialogOpen.value = false;
-		toast.success(t("integrations.toast.webhookCreated"));
+		toast.success(t("connections.toast.webhookCreated"));
 	} catch (error) {
-		toast.error(t("integrations.toast.webhookCreateFailed"), {
+		toast.error(t("connections.toast.webhookCreateFailed"), {
 			description: error instanceof Error ? error.message : undefined,
 		});
 	}
@@ -167,9 +167,9 @@ async function handleUpdateWebhook(data: {
 			},
 		});
 		isEditDialogOpen.value = false;
-		toast.success(t("integrations.toast.webhookUpdated"));
+		toast.success(t("connections.toast.webhookUpdated"));
 	} catch (error) {
-		toast.error(t("integrations.toast.webhookUpdateFailed"), {
+		toast.error(t("connections.toast.webhookUpdateFailed"), {
 			description: error instanceof Error ? error.message : undefined,
 		});
 	}
@@ -179,9 +179,9 @@ async function handleDeleteWebhook(webhookId: string) {
 	try {
 		await deleteWebhookAsync(webhookId);
 		isDeleteDialogOpen.value = false;
-		toast.success(t("integrations.toast.webhookDeleted"));
+		toast.success(t("connections.toast.webhookDeleted"));
 	} catch (error) {
-		toast.error(t("integrations.toast.webhookDeleteFailed"), {
+		toast.error(t("connections.toast.webhookDeleteFailed"), {
 			description: error instanceof Error ? error.message : undefined,
 		});
 	}
@@ -213,11 +213,11 @@ async function toggleWebhookStatus(webhookId: string, active: boolean) {
 		});
 		toast.success(
 			active
-				? t("integrations.toast.webhookActivated")
-				: t("integrations.toast.webhookDeactivated"),
+				? t("connections.toast.webhookActivated")
+				: t("connections.toast.webhookDeactivated"),
 		);
 	} catch (error) {
-		toast.error(t("integrations.toast.webhookUpdateFailed"), {
+		toast.error(t("connections.toast.webhookUpdateFailed"), {
 			description: error instanceof Error ? error.message : undefined,
 		});
 	}
@@ -232,21 +232,21 @@ async function testWebhook(webhookId: string) {
 		const isSuccess = result.statusCode >= 200 && result.statusCode < 300;
 
 		if (isSuccess) {
-			toast.success(t("integrations.toast.webhookTestSuccess"), {
-				description: t("integrations.toast.webhookTestSuccessDescription", {
+			toast.success(t("connections.toast.webhookTestSuccess"), {
+				description: t("connections.toast.webhookTestSuccessDescription", {
 					statusCode: result.statusCode,
 					responseTimeMs: result.responseTimeMs,
 				}),
 			});
 		} else {
-			toast.error(t("integrations.toast.webhookTestFailed"), {
-				description: t("integrations.toast.webhookTestFailedDescription", {
+			toast.error(t("connections.toast.webhookTestFailed"), {
+				description: t("connections.toast.webhookTestFailedDescription", {
 					statusCode: result.statusCode,
 				}),
 			});
 		}
 	} catch (error) {
-		toast.error(t("integrations.toast.webhookTestFailed"), {
+		toast.error(t("connections.toast.webhookTestFailed"), {
 			description: error instanceof Error ? error.message : undefined,
 		});
 	}
@@ -265,7 +265,7 @@ async function testWebhook(webhookId: string) {
       </div>
 
       <template v-else>
-        <!-- Active Integrations -->
+        <!-- Active Connections -->
         <Card
           v-if="connections && connections.length > 0"
           class="mb-8 py-0 pt-6 rounded-xl border-border/50"
@@ -276,11 +276,11 @@ async function testWebhook(webhookId: string) {
                 <CardTitle
                   class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
                   >{{
-                    t("integrations.sections.connectedServices.title")
+                    t("connections.sections.connectedServices.title")
                   }}</CardTitle
                 >
                 <CardDescription class="text-sm">{{
-                  t("integrations.sections.connectedServices.description", {
+                  t("connections.sections.connectedServices.description", {
                     count: connections.length,
                   })
                 }}</CardDescription>
@@ -292,8 +292,8 @@ async function testWebhook(webhookId: string) {
                   size="sm"
                   class="font-normal"
                 >
-                  <NuxtLink to="/integrations/explore">
-                    {{ t("integrations.actions.explore") }}
+                  <NuxtLink to="/connections/explore">
+                    {{ t("connections.actions.explore") }}
                   </NuxtLink>
                 </Button>
                 <Button
@@ -302,32 +302,32 @@ async function testWebhook(webhookId: string) {
                   size="sm"
                   class="font-normal"
                 >
-                  <NuxtLink to="/integrations/runs">
-                    {{ t("integrations.actions.viewRuns") }}
+                  <NuxtLink to="/connections/runs">
+                    {{ t("connections.actions.viewRuns") }}
                   </NuxtLink>
                 </Button>
               </div>
             </div>
           </CardHeader>
           <CardContent>
-            <IntegrationsTable
+            <ConnectionsTable
               :connections="connections"
-              @configure="openConfigureIntegrationDialog"
-              @disconnect="openDisconnectIntegrationDialog"
+              @configure="openConfigureConnectionDialog"
+              @disconnect="openDisconnectConnectionDialog"
             />
           </CardContent>
           <CardFooter
             class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
           >
             <p class="text-xs text-muted-foreground">
-              {{ t("integrations.messages.integrationFooter") }}
+              {{ t("connections.messages.connectionFooter") }}
               <a
-                href="https://docs.nvisy.com/integrations"
+                href="https://docs.nvisy.com/connections"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="inline-flex items-center gap-1 text-foreground hover:underline font-medium"
               >
-                {{ t("integrations.messages.documentation") }}
+                {{ t("connections.messages.documentation") }}
                 <ExternalLink :size="12" />
               </a>
             </p>
@@ -341,11 +341,11 @@ async function testWebhook(webhookId: string) {
                 <CardTitle
                   class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
                   >{{
-                    t("integrations.sections.connectedServices.title")
+                    t("connections.sections.connectedServices.title")
                   }}</CardTitle
                 >
                 <CardDescription class="text-sm">{{
-                  t("integrations.sections.connectedServices.description", {
+                  t("connections.sections.connectedServices.description", {
                     count: 0,
                   })
                 }}</CardDescription>
@@ -357,9 +357,9 @@ async function testWebhook(webhookId: string) {
                   size="sm"
                   class="font-normal"
                 >
-                  <NuxtLink to="/integrations/explore">
+                  <NuxtLink to="/connections/explore">
                     <PlugZap :size="16" />
-                    {{ t("integrations.actions.explore") }}
+                    {{ t("connections.actions.explore") }}
                   </NuxtLink>
                 </Button>
               </div>
@@ -376,14 +376,14 @@ async function testWebhook(webhookId: string) {
                 <p class="text-sm text-foreground mb-1">
                   {{
                     t(
-                      "integrations.sections.connectedServices.noIntegrationsTitle",
+                      "connections.sections.connectedServices.noIntegrationsTitle",
                     )
                   }}
                 </p>
                 <p class="text-xs text-muted-foreground">
                   {{
                     t(
-                      "integrations.sections.connectedServices.noIntegrationsDescription",
+                      "connections.sections.connectedServices.noIntegrationsDescription",
                     )
                   }}
                 </p>
@@ -394,14 +394,14 @@ async function testWebhook(webhookId: string) {
             class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
           >
             <p class="text-xs text-muted-foreground">
-              {{ t("integrations.messages.integrationFooter") }}
+              {{ t("connections.messages.connectionFooter") }}
               <a
-                href="https://docs.nvisy.com/integrations"
+                href="https://docs.nvisy.com/connections"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="inline-flex items-center gap-1 text-foreground hover:underline font-medium"
               >
-                {{ t("integrations.messages.documentation") }}
+                {{ t("connections.messages.documentation") }}
                 <ExternalLink :size="12" />
               </a>
             </p>
@@ -415,10 +415,10 @@ async function testWebhook(webhookId: string) {
               <div>
                 <CardTitle
                   class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
-                  >{{ t("integrations.sections.webhooks.title") }}</CardTitle
+                  >{{ t("connections.sections.webhooks.title") }}</CardTitle
                 >
                 <CardDescription class="text-sm">{{
-                  t("integrations.sections.webhooks.description", {
+                  t("connections.sections.webhooks.description", {
                     count: webhooks?.length ?? 0,
                   })
                 }}</CardDescription>
@@ -447,11 +447,11 @@ async function testWebhook(webhookId: string) {
                   <WebhookIcon class="size-5 text-muted-foreground" />
                 </div>
                 <p class="text-sm text-foreground mb-1">
-                  {{ t("integrations.sections.webhooks.noWebhooksTitle") }}
+                  {{ t("connections.sections.webhooks.noWebhooksTitle") }}
                 </p>
                 <p class="text-xs text-muted-foreground">
                   {{
-                    t("integrations.sections.webhooks.noWebhooksDescription")
+                    t("connections.sections.webhooks.noWebhooksDescription")
                   }}
                 </p>
               </div>
@@ -461,14 +461,14 @@ async function testWebhook(webhookId: string) {
             class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
           >
             <p class="text-xs text-muted-foreground">
-              {{ t("integrations.messages.webhookFooter") }}
+              {{ t("connections.messages.webhookFooter") }}
               <a
                 href="https://docs.nvisy.com/webhooks"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="inline-flex items-center gap-1 text-foreground hover:underline font-medium"
               >
-                {{ t("integrations.messages.documentation") }}
+                {{ t("connections.messages.documentation") }}
                 <ExternalLink :size="12" />
               </a>
             </p>
@@ -476,18 +476,18 @@ async function testWebhook(webhookId: string) {
         </Card>
 
         <!-- Dialogs -->
-        <ConfigureIntegrationDialog
-          v-model:open="isConfigureIntegrationDialogOpen"
+        <ConfigureConnectionDialog
+          v-model:open="isConfigureConnectionDialogOpen"
           :connection="selectedConnection"
           :is-loading="isUpdating"
-          @update="handleUpdateIntegration"
+          @update="handleUpdateConnection"
         />
 
-        <DisconnectIntegrationDialog
-          v-model:open="isDisconnectIntegrationDialogOpen"
+        <DisconnectConnectionDialog
+          v-model:open="isDisconnectConnectionDialogOpen"
           :connection="selectedConnection"
           :is-loading="isDeleting"
-          @disconnect="handleDisconnectIntegration"
+          @disconnect="handleDisconnectConnection"
         />
 
         <EditWebhookDialog

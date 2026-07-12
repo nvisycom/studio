@@ -59,13 +59,13 @@ function getProviderColor(provider: string): string {
     <TableHeader>
       <TableRow>
         <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("integrations.table.headers.name")
+          t("connections.table.headers.name")
         }}</TableHead>
         <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("integrations.table.headers.provider")
+          t("connections.table.headers.provider")
         }}</TableHead>
         <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("integrations.table.headers.connectedAt")
+          t("connections.table.headers.connectedAt")
         }}</TableHead>
       </TableRow>
     </TableHeader>
@@ -116,7 +116,7 @@ function getProviderColor(provider: string): string {
             @click="emit('configure', connection.id)"
           >
             <Edit :size="14" class="mr-2" />
-            {{ t("integrations.table.actions.configure") }}
+            {{ t("connections.table.actions.configure") }}
           </ContextMenuItem>
           <ContextMenuSeparator />
           <ContextMenuItem
@@ -124,7 +124,7 @@ function getProviderColor(provider: string): string {
             @click="emit('disconnect', connection.id)"
           >
             <Trash2 :size="14" class="mr-2" />
-            {{ t("integrations.table.actions.disconnect") }}
+            {{ t("connections.table.actions.disconnect") }}
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>

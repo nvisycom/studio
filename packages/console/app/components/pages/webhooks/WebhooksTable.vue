@@ -49,22 +49,22 @@ function formatUrl(url: string): string {
     <TableHeader>
       <TableRow>
         <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("integrations.table.headers.name")
+          t("connections.table.headers.name")
         }}</TableHead>
         <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("integrations.table.headers.enabled")
+          t("connections.table.headers.enabled")
         }}</TableHead>
         <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("integrations.table.headers.events")
+          t("connections.table.headers.events")
         }}</TableHead>
         <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("integrations.table.headers.headers")
+          t("connections.table.headers.headers")
         }}</TableHead>
         <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("integrations.table.headers.created")
+          t("connections.table.headers.created")
         }}</TableHead>
         <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("integrations.table.headers.lastDelivery")
+          t("connections.table.headers.lastDelivery")
         }}</TableHead>
       </TableRow>
     </TableHeader>
@@ -100,7 +100,7 @@ function formatUrl(url: string): string {
                 class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
               >
                 {{
-                  t("integrations.table.eventsCount", {
+                  t("connections.table.eventsCount", {
                     count: webhook.events.length,
                   })
                 }}
@@ -135,14 +135,14 @@ function formatUrl(url: string): string {
             @click="emit('edit', webhook.webhookId)"
           >
             <Edit :size="14" class="mr-2" />
-            {{ t("integrations.table.actions.configure") }}
+            {{ t("connections.table.actions.configure") }}
           </ContextMenuItem>
           <ContextMenuItem
             class="cursor-pointer"
             @click="emit('test', webhook.webhookId)"
           >
             <Play :size="14" class="mr-2" />
-            {{ t("integrations.table.actions.test") }}
+            {{ t("connections.table.actions.test") }}
           </ContextMenuItem>
           <ContextMenuSeparator />
           <ContextMenuItem
@@ -150,7 +150,7 @@ function formatUrl(url: string): string {
             @click="emit('delete', webhook.webhookId)"
           >
             <Trash2 :size="14" class="mr-2" />
-            {{ t("integrations.table.actions.delete") }}
+            {{ t("connections.table.actions.delete") }}
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>

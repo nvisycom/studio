@@ -74,7 +74,7 @@ function formatDuration(
       <DialogHeader>
         <DialogTitle>Run Details</DialogTitle>
         <DialogDescription>
-          Detailed information about this integration run
+          Detailed information about this pipeline run
         </DialogDescription>
       </DialogHeader>
 

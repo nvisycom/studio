@@ -1,7 +1,7 @@
 {
 	"header": {
 		"tabs": {
-			"integrations": {
+			"connections": {
 				"connections": "Verbindungen",
 				"explore": "Erkunden",
 				"runs": "Ausführungen"
@@ -740,19 +740,19 @@
 			"description": "Dieser Einladungslink ist ungültig oder wurde widerrufen. Bitte überprüfen Sie den Link oder fordern Sie eine neue Einladung an."
 		}
 	},
-	"integrations": {
+	"connections": {
 		"page": {
-			"title": "Aktive Integrationen",
-			"description": "Verwalten Sie Ihre derzeit verbundenen Integrationen",
+			"title": "Aktive Verbindungen",
+			"description": "Verwalten Sie Ihre aktuell verbundenen Dienste",
 			"libraryTitle": "Integrationsbibliothek",
 			"libraryDescription": "Verbinden Sie Nvisy mit Ihren bevorzugten Tools und Diensten"
 		},
 		"sections": {
 			"connectedServices": {
 				"title": "Verbundene Dienste",
-				"description": "{count} Integration derzeit aktiv | {count} Integrationen derzeit aktiv",
-				"noIntegrationsTitle": "Noch keine aktiven Integrationen",
-				"noIntegrationsDescription": "Beginnen Sie, indem Sie unsere Integrationsbibliothek durchsuchen"
+				"description": "{count} Verbindung aktiv | {count} Verbindungen aktiv",
+				"noIntegrationsTitle": "Noch keine aktiven Verbindungen",
+				"noIntegrationsDescription": "Durchsuchen Sie verfügbare Anbieter, um zu beginnen"
 			},
 			"webhooks": {
 				"title": "Webhook-Endpunkte",
@@ -762,7 +762,7 @@
 			}
 		},
 		"actions": {
-			"explore": "Integrationen Erkunden",
+			"explore": "Anbieter erkunden",
 			"browse": "Bibliothek Durchsuchen",
 			"connect": "Verbinden",
 			"disconnect": "Trennen",
@@ -1031,15 +1031,15 @@
 			}
 		},
 		"messages": {
-			"integrationFooter": "Erfahren Sie mehr über Integrationen in unserer",
+			"connectionFooter": "Erfahren Sie mehr über Integrationen in unserer",
 			"webhookFooter": "Erfahren Sie mehr über Webhooks in unserer",
 			"documentation": "Dokumentation"
 		},
 		"toast": {
-			"integrationUpdated": "Integration erfolgreich aktualisiert",
-			"integrationUpdateFailed": "Integration konnte nicht aktualisiert werden",
-			"integrationDisconnected": "Integration getrennt",
-			"integrationDisconnectFailed": "Integration konnte nicht getrennt werden",
+			"connectionUpdated": "Integration erfolgreich aktualisiert",
+			"connectionUpdateFailed": "Integration konnte nicht aktualisiert werden",
+			"connectionDisconnected": "Integration getrennt",
+			"connectionDisconnectFailed": "Integration konnte nicht getrennt werden",
 			"webhookCreated": "Webhook erfolgreich erstellt",
 			"webhookCreateFailed": "Webhook konnte nicht erstellt werden",
 			"webhookUpdated": "Webhook erfolgreich aktualisiert",
@@ -1112,7 +1112,7 @@
 		"studio": "Studio",
 		"team": "Team",
 		"automation": "Automatisierung",
-		"integrations": "Integrationen",
+		"connections": "Verbindungen",
 		"explore": "Entdecken",
 		"workflows": "Workflows",
 		"editor": "Editor",

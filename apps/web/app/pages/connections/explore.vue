@@ -21,14 +21,14 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "#console/components/ui/select";
-import { IntegrationCard } from "#console/components/pages/integrations";
+import { ProviderCard } from "#console/components/pages/connections";
 
 const { t } = useI18n();
 
-useHead({ title: "Explore Integrations" });
+useHead({ title: "Explore Providers" });
 
 definePageMeta({
-	pageCategory: "Integrations",
+	pageCategory: "Connections",
 });
 
 /**
@@ -52,9 +52,9 @@ type TagKey =
 	| "sdk";
 
 /**
- * Integration data structure
+ * Provider data structure
  */
-interface Integration {
+interface Provider {
 	id: string;
 	nameKey: string;
 	descriptionKey: string;
@@ -84,38 +84,38 @@ const sortBy = ref<"popularity" | "nameAsc" | "nameDesc">("popularity");
 const categories = ref<Category[]>([
 	{
 		key: "cloud-storage",
-		nameKey: "integrations.explore.categories.cloudStorage.name",
+		nameKey: "connections.explore.categories.cloudStorage.name",
 		icon: Cloud,
 	},
 	{
 		key: "productivity",
-		nameKey: "integrations.explore.categories.productivity.name",
+		nameKey: "connections.explore.categories.productivity.name",
 		icon: MessageSquare,
 	},
 	{
 		key: "data-analytics",
-		nameKey: "integrations.explore.categories.dataAnalytics.name",
+		nameKey: "connections.explore.categories.dataAnalytics.name",
 		icon: Database,
 	},
 	{
 		key: "ai-enhancements",
-		nameKey: "integrations.explore.categories.ai.name",
+		nameKey: "connections.explore.categories.ai.name",
 		icon: Bot,
 	},
 	{
 		key: "sdk",
-		nameKey: "integrations.explore.categories.sdk.name",
+		nameKey: "connections.explore.categories.sdk.name",
 		icon: Code,
 	},
 ]);
 
-// All integrations as a flat list (only those with brand icons)
-const integrations = ref<Integration[]>([
+// All providers as a flat list (only those with brand icons)
+const providers = ref<Provider[]>([
 	// Cloud Storage
 	{
 		id: "google-drive",
-		nameKey: "integrations.explore.items.googleDrive.name",
-		descriptionKey: "integrations.explore.items.googleDrive.description",
+		nameKey: "connections.explore.items.googleDrive.name",
+		descriptionKey: "connections.explore.items.googleDrive.description",
 		icon: "/integration/google-drive.svg",
 		status: "available",
 		category: "cloud-storage",
@@ -124,8 +124,8 @@ const integrations = ref<Integration[]>([
 	},
 	{
 		id: "onedrive",
-		nameKey: "integrations.explore.items.oneDrive.name",
-		descriptionKey: "integrations.explore.items.oneDrive.description",
+		nameKey: "connections.explore.items.oneDrive.name",
+		descriptionKey: "connections.explore.items.oneDrive.description",
 		icon: "/integration/microsoft-onedrive.svg",
 		status: "available",
 		category: "cloud-storage",
@@ -134,8 +134,8 @@ const integrations = ref<Integration[]>([
 	},
 	{
 		id: "dropbox",
-		nameKey: "integrations.explore.items.dropbox.name",
-		descriptionKey: "integrations.explore.items.dropbox.description",
+		nameKey: "connections.explore.items.dropbox.name",
+		descriptionKey: "connections.explore.items.dropbox.description",
 		icon: "/integration/dropbox.svg",
 		status: "unavailable",
 		category: "cloud-storage",
@@ -144,9 +144,9 @@ const integrations = ref<Integration[]>([
 	},
 	{
 		id: "aws-s3",
-		nameKey: "integrations.explore.items.awsS3.name",
-		descriptionKey: "integrations.explore.items.awsS3.description",
-		shortDescriptionKey: "integrations.explore.items.awsS3.shortDescription",
+		nameKey: "connections.explore.items.awsS3.name",
+		descriptionKey: "connections.explore.items.awsS3.description",
+		shortDescriptionKey: "connections.explore.items.awsS3.shortDescription",
 		icon: "/integration/minio.svg",
 		status: "available",
 		category: "cloud-storage",
@@ -156,8 +156,8 @@ const integrations = ref<Integration[]>([
 	// Productivity
 	{
 		id: "slack",
-		nameKey: "integrations.explore.items.slack.name",
-		descriptionKey: "integrations.explore.items.slack.description",
+		nameKey: "connections.explore.items.slack.name",
+		descriptionKey: "connections.explore.items.slack.description",
 		icon: "/integration/slack.svg",
 		status: "unavailable",
 		category: "productivity",
@@ -166,8 +166,8 @@ const integrations = ref<Integration[]>([
 	},
 	{
 		id: "teams",
-		nameKey: "integrations.explore.items.teams.name",
-		descriptionKey: "integrations.explore.items.teams.description",
+		nameKey: "connections.explore.items.teams.name",
+		descriptionKey: "connections.explore.items.teams.description",
 		icon: "/integration/microsoft-teams.svg",
 		status: "unavailable",
 		category: "productivity",
@@ -176,8 +176,8 @@ const integrations = ref<Integration[]>([
 	},
 	{
 		id: "notion",
-		nameKey: "integrations.explore.items.notion.name",
-		descriptionKey: "integrations.explore.items.notion.description",
+		nameKey: "connections.explore.items.notion.name",
+		descriptionKey: "connections.explore.items.notion.description",
 		icon: "/integration/notion.svg",
 		status: "available",
 		category: "productivity",
@@ -187,8 +187,8 @@ const integrations = ref<Integration[]>([
 	},
 	{
 		id: "discord",
-		nameKey: "integrations.explore.items.discord.name",
-		descriptionKey: "integrations.explore.items.discord.description",
+		nameKey: "connections.explore.items.discord.name",
+		descriptionKey: "connections.explore.items.discord.description",
 		icon: "/integration/discord.svg",
 		status: "unavailable",
 		category: "productivity",
@@ -198,8 +198,8 @@ const integrations = ref<Integration[]>([
 	// Data & Analytics
 	{
 		id: "zapier",
-		nameKey: "integrations.explore.items.zapier.name",
-		descriptionKey: "integrations.explore.items.zapier.description",
+		nameKey: "connections.explore.items.zapier.name",
+		descriptionKey: "connections.explore.items.zapier.description",
 		icon: "/integration/zapier.svg",
 		status: "available",
 		category: "data-analytics",
@@ -210,8 +210,8 @@ const integrations = ref<Integration[]>([
 	},
 	{
 		id: "make",
-		nameKey: "integrations.explore.items.make.name",
-		descriptionKey: "integrations.explore.items.make.description",
+		nameKey: "connections.explore.items.make.name",
+		descriptionKey: "connections.explore.items.make.description",
 		icon: "/integration/make.svg",
 		status: "unavailable",
 		category: "data-analytics",
@@ -222,8 +222,8 @@ const integrations = ref<Integration[]>([
 	},
 	{
 		id: "n8n",
-		nameKey: "integrations.explore.items.n8n.name",
-		descriptionKey: "integrations.explore.items.n8n.description",
+		nameKey: "connections.explore.items.n8n.name",
+		descriptionKey: "connections.explore.items.n8n.description",
 		icon: "/integration/n8n.svg",
 		status: "unavailable",
 		category: "data-analytics",
@@ -235,8 +235,8 @@ const integrations = ref<Integration[]>([
 	// AI & Enhancements
 	{
 		id: "chatgpt",
-		nameKey: "integrations.explore.items.chatgpt.name",
-		descriptionKey: "integrations.explore.items.chatgpt.description",
+		nameKey: "connections.explore.items.chatgpt.name",
+		descriptionKey: "connections.explore.items.chatgpt.description",
 		icon: "/integration/openai.svg",
 		status: "unavailable",
 		category: "ai-enhancements",
@@ -245,8 +245,8 @@ const integrations = ref<Integration[]>([
 	},
 	{
 		id: "claude",
-		nameKey: "integrations.explore.items.claude.name",
-		descriptionKey: "integrations.explore.items.claude.description",
+		nameKey: "connections.explore.items.claude.name",
+		descriptionKey: "connections.explore.items.claude.description",
 		icon: "/integration/anthropic.svg",
 		status: "unavailable",
 		category: "ai-enhancements",
@@ -256,10 +256,10 @@ const integrations = ref<Integration[]>([
 	// SDKs
 	{
 		id: "javascript-sdk",
-		nameKey: "integrations.explore.items.javascriptSdk.name",
-		descriptionKey: "integrations.explore.items.javascriptSdk.description",
+		nameKey: "connections.explore.items.javascriptSdk.name",
+		descriptionKey: "connections.explore.items.javascriptSdk.description",
 		shortDescriptionKey:
-			"integrations.explore.items.javascriptSdk.shortDescription",
+			"connections.explore.items.javascriptSdk.shortDescription",
 		icon: "/integration/javascript.svg",
 		status: "available",
 		category: "sdk",
@@ -270,10 +270,9 @@ const integrations = ref<Integration[]>([
 	},
 	{
 		id: "python-sdk",
-		nameKey: "integrations.explore.items.pythonSdk.name",
-		descriptionKey: "integrations.explore.items.pythonSdk.description",
-		shortDescriptionKey:
-			"integrations.explore.items.pythonSdk.shortDescription",
+		nameKey: "connections.explore.items.pythonSdk.name",
+		descriptionKey: "connections.explore.items.pythonSdk.description",
+		shortDescriptionKey: "connections.explore.items.pythonSdk.shortDescription",
 		icon: "/integration/python.svg",
 		status: "unavailable",
 		category: "sdk",
@@ -282,62 +281,57 @@ const integrations = ref<Integration[]>([
 	},
 ]);
 
-// Get localized name for an integration
-function getIntegrationName(integration: Integration): string {
-	return t(integration.nameKey);
+// Get localized name for a provider
+function getProviderName(provider: Provider): string {
+	return t(provider.nameKey);
 }
 
-// Get localized description for an integration
-function getIntegrationDescription(integration: Integration): string {
-	return t(integration.descriptionKey);
+// Get localized description for a provider
+function getProviderDescription(provider: Provider): string {
+	return t(provider.descriptionKey);
 }
 
-// Get localized short description for an integration
-function getIntegrationShortDescription(
-	integration: Integration,
-): string | undefined {
-	return integration.shortDescriptionKey
-		? t(integration.shortDescriptionKey)
+// Get localized short description for a provider
+function getProviderShortDescription(provider: Provider): string | undefined {
+	return provider.shortDescriptionKey
+		? t(provider.shortDescriptionKey)
 		: undefined;
 }
 
 // Get localized tag name
 function getTagName(tagKey: TagKey): string {
-	return t(`integrations.explore.tags.${tagKey}`);
+	return t(`connections.explore.tags.${tagKey}`);
 }
 
-// Filter and sort integrations
-const filteredIntegrations = computed(() => {
+// Filter and sort providers
+const filteredProviders = computed(() => {
 	const query = searchQuery.value.toLowerCase().trim();
 
-	const filtered = integrations.value.filter((integration) => {
+	const filtered = providers.value.filter((provider) => {
 		// Category filter (multi-select)
 		if (
 			selectedCategories.value.size > 0 &&
-			!selectedCategories.value.has(integration.category)
+			!selectedCategories.value.has(provider.category)
 		) {
 			return false;
 		}
 
 		// Status filter
-		if (
-			statusFilter.value === "available" &&
-			integration.status !== "available"
-		) {
+		if (statusFilter.value === "available" && provider.status !== "available") {
 			return false;
 		}
 		if (
 			statusFilter.value === "unavailable" &&
-			integration.status !== "unavailable"
+			provider.status !== "unavailable"
 		) {
 			return false;
 		}
 
 		// Search filter
 		if (query) {
-			const name = getIntegrationName(integration).toLowerCase();
-			const description = getIntegrationDescription(integration).toLowerCase();
-			const tagNames = integration.tags
+			const name = getProviderName(provider).toLowerCase();
+			const description = getProviderDescription(provider).toLowerCase();
+			const tagNames = provider.tags
 				.map((tag) => getTagName(tag).toLowerCase())
 				.join(" ");
 			return (
@@ -350,7 +344,7 @@ const filteredIntegrations = computed(() => {
 		return true;
 	});
 
-	// Sort integrations
+	// Sort providers
 	return filtered.sort((a, b) => {
 		// Always put available first
 		if (a.status !== b.status) {
@@ -359,39 +353,36 @@ const filteredIntegrations = computed(() => {
 
 		switch (sortBy.value) {
 			case "nameAsc":
-				return getIntegrationName(a).localeCompare(getIntegrationName(b));
+				return getProviderName(a).localeCompare(getProviderName(b));
 			case "nameDesc":
-				return getIntegrationName(b).localeCompare(getIntegrationName(a));
+				return getProviderName(b).localeCompare(getProviderName(a));
 			default:
 				return b.popularity - a.popularity;
 		}
 	});
 });
 
-// Integrations filtered by search and status (but not category)
-const baseFilteredIntegrations = computed(() => {
+// Providers filtered by search and status (but not category)
+const baseFilteredProviders = computed(() => {
 	const query = searchQuery.value.toLowerCase().trim();
 
-	return integrations.value.filter((integration) => {
+	return providers.value.filter((provider) => {
 		// Status filter
-		if (
-			statusFilter.value === "available" &&
-			integration.status !== "available"
-		) {
+		if (statusFilter.value === "available" && provider.status !== "available") {
 			return false;
 		}
 		if (
 			statusFilter.value === "unavailable" &&
-			integration.status !== "unavailable"
+			provider.status !== "unavailable"
 		) {
 			return false;
 		}
 
 		// Search filter
 		if (query) {
-			const name = getIntegrationName(integration).toLowerCase();
-			const description = getIntegrationDescription(integration).toLowerCase();
-			const tagNames = integration.tags
+			const name = getProviderName(provider).toLowerCase();
+			const description = getProviderDescription(provider).toLowerCase();
+			const tagNames = provider.tags
 				.map((tag) => getTagName(tag).toLowerCase())
 				.join(" ");
 			return (
@@ -405,17 +396,14 @@ const baseFilteredIntegrations = computed(() => {
 	});
 });
 
-// Count integrations per category (respects search and status filters)
+// Count providers per category (respects search and status filters)
 function getCategoryCount(categoryKey: string): number {
-	return baseFilteredIntegrations.value.filter(
-		(i) => i.category === categoryKey,
-	).length;
+	return baseFilteredProviders.value.filter((i) => i.category === categoryKey)
+		.length;
 }
 
 // Total count for "All" button (respects search and status filters)
-const totalFilteredCount = computed(
-	() => baseFilteredIntegrations.value.length,
-);
+const totalFilteredCount = computed(() => baseFilteredProviders.value.length);
 
 // Toggle category selection (multi-select)
 function toggleCategory(key: string) {
@@ -440,8 +428,8 @@ function clearAllFilters() {
 	statusFilter.value = "all";
 }
 
-function connectIntegration(_id: string | number) {
-	// TODO: Implement integration connection
+function connectProvider(_id: string | number) {
+	// TODO: Implement provider connection
 }
 
 function notifyMe(_id: string | number) {
@@ -457,9 +445,9 @@ function notifyMe(_id: string | number) {
         class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center mb-6"
       >
         <Button as-child variant="outline" class="font-normal">
-          <NuxtLink to="/integrations" class="flex items-center gap-2">
+          <NuxtLink to="/connections" class="flex items-center gap-2">
             <ArrowLeft :size="16" />
-            {{ t("integrations.actions.backToConnections") }}
+            {{ t("connections.actions.backToConnections") }}
           </NuxtLink>
         </Button>
 
@@ -470,7 +458,7 @@ function notifyMe(_id: string | number) {
           />
           <Input
             v-model="searchQuery"
-            :placeholder="t('integrations.forms.search.placeholder')"
+            :placeholder="t('connections.forms.search.placeholder')"
             class="pl-10 h-9"
           />
         </div>
@@ -482,13 +470,13 @@ function notifyMe(_id: string | number) {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all" class="text-sm font-normal">
-              {{ t("integrations.explore.filters.allStatus") }}
+              {{ t("connections.explore.filters.allStatus") }}
             </SelectItem>
             <SelectItem value="available" class="text-sm font-normal">
-              {{ t("integrations.explore.filters.availableOnly") }}
+              {{ t("connections.explore.filters.availableOnly") }}
             </SelectItem>
             <SelectItem value="unavailable" class="text-sm font-normal">
-              {{ t("integrations.explore.filters.unavailableOnly") }}
+              {{ t("connections.explore.filters.unavailableOnly") }}
             </SelectItem>
           </SelectContent>
         </Select>
@@ -500,13 +488,13 @@ function notifyMe(_id: string | number) {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="popularity" class="text-sm font-normal">
-              {{ t("integrations.explore.sorting.popularity") }}
+              {{ t("connections.explore.sorting.popularity") }}
             </SelectItem>
             <SelectItem value="nameAsc" class="text-sm font-normal">
-              {{ t("integrations.explore.sorting.nameAsc") }}
+              {{ t("connections.explore.sorting.nameAsc") }}
             </SelectItem>
             <SelectItem value="nameDesc" class="text-sm font-normal">
-              {{ t("integrations.explore.sorting.nameDesc") }}
+              {{ t("connections.explore.sorting.nameDesc") }}
             </SelectItem>
           </SelectContent>
         </Select>
@@ -525,7 +513,7 @@ function notifyMe(_id: string | number) {
           ]"
           @click="clearCategoryFilters"
         >
-          {{ t("integrations.explore.allCategories") }}
+          {{ t("connections.explore.allCategories") }}
           <span class="ml-2 text-xs opacity-60">{{ totalFilteredCount }}</span>
         </Button>
         <Button
@@ -550,17 +538,17 @@ function notifyMe(_id: string | number) {
       </div>
 
       <!-- No Results -->
-      <div v-if="filteredIntegrations.length === 0" class="py-12 text-center">
+      <div v-if="filteredProviders.length === 0" class="py-12 text-center">
         <div
           class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
         >
           <Puzzle class="size-5 text-muted-foreground" />
         </div>
         <p class="text-sm text-foreground mb-1">
-          {{ t("integrations.explore.noResults") }}
+          {{ t("connections.explore.noResults") }}
         </p>
         <p class="text-xs text-muted-foreground mb-4">
-          {{ t("integrations.explore.noResultsHint") }}
+          {{ t("connections.explore.noResultsHint") }}
         </p>
         <Button
           v-if="
@@ -570,29 +558,29 @@ function notifyMe(_id: string | number) {
           size="sm"
           @click="clearAllFilters"
         >
-          {{ t("integrations.explore.clearFilters") }}
+          {{ t("connections.explore.clearFilters") }}
         </Button>
       </div>
 
-      <!-- Integration Cards Grid -->
+      <!-- Provider Cards Grid -->
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-        <IntegrationCard
-          v-for="integration in filteredIntegrations"
-          :key="integration.id"
-          :integration="{
-            id: integration.id,
-            name: getIntegrationName(integration),
-            description: getIntegrationDescription(integration),
-            shortDescription: getIntegrationShortDescription(integration),
-            icon: integration.icon,
-            status: integration.status,
-            tags: integration.tags.map((tag) => getTagName(tag)),
-            isNew: integration.isNew,
-            isPopular: integration.popularity >= 90,
-            isExternal: integration.isExternal,
-            externalUrl: integration.externalUrl,
+        <ProviderCard
+          v-for="provider in filteredProviders"
+          :key="provider.id"
+          :provider="{
+            id: provider.id,
+            name: getProviderName(provider),
+            description: getProviderDescription(provider),
+            shortDescription: getProviderShortDescription(provider),
+            icon: provider.icon,
+            status: provider.status,
+            tags: provider.tags.map((tag) => getTagName(tag)),
+            isNew: provider.isNew,
+            isPopular: provider.popularity >= 90,
+            isExternal: provider.isExternal,
+            externalUrl: provider.externalUrl,
           }"
-          @connect="connectIntegration"
+          @connect="connectProvider"
           @notify-me="notifyMe"
         />
       </div>

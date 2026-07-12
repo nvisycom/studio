@@ -55,11 +55,11 @@ function cancel() {
             <AlertCircle :size="20" class="text-red-600 dark:text-red-400" />
           </div>
           <DialogTitle>{{
-            t("integrations.dialogs.deleteWebhook.title")
+            t("connections.dialogs.deleteWebhook.title")
           }}</DialogTitle>
         </div>
         <DialogDescription>
-          {{ t("integrations.dialogs.deleteWebhook.description") }}
+          {{ t("connections.dialogs.deleteWebhook.description") }}
         </DialogDescription>
       </DialogHeader>
 
@@ -80,7 +80,7 @@ function cancel() {
 
       <DialogFooter>
         <Button variant="outline" @click="cancel">
-          {{ t("integrations.dialogs.deleteWebhook.cancel") }}
+          {{ t("connections.dialogs.deleteWebhook.cancel") }}
         </Button>
         <Button
           variant="destructive"
@@ -88,7 +88,7 @@ function cancel() {
           :disabled="isLoading"
         >
           <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-          {{ t("integrations.dialogs.deleteWebhook.confirm") }}
+          {{ t("connections.dialogs.deleteWebhook.confirm") }}
         </Button>
       </DialogFooter>
     </DialogContent>

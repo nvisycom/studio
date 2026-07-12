@@ -1,7 +1,7 @@
 {
 	"header": {
 		"tabs": {
-			"integrations": {
+			"connections": {
 				"connections": "Connections",
 				"explore": "Explore",
 				"runs": "Runs"
@@ -744,19 +744,19 @@
 			"description": "This invite link is invalid or has been revoked. Please check the link or request a new invite."
 		}
 	},
-	"integrations": {
+	"connections": {
 		"page": {
-			"title": "Active Integrations",
-			"description": "Manage your currently connected integrations",
+			"title": "Active Connections",
+			"description": "Manage your currently connected services",
 			"libraryTitle": "Integrations Library",
 			"libraryDescription": "Connect Nvisy with your favorite tools and services"
 		},
 		"sections": {
 			"connectedServices": {
 				"title": "Connected Services",
-				"description": "{count} integration currently active | {count} integrations currently active",
-				"noIntegrationsTitle": "No active integrations yet",
-				"noIntegrationsDescription": "Get started by browsing our integration library"
+				"description": "{count} connection currently active | {count} connections currently active",
+				"noIntegrationsTitle": "No active connections yet",
+				"noIntegrationsDescription": "Get started by browsing available providers"
 			},
 			"webhooks": {
 				"title": "Webhook Endpoints",
@@ -766,7 +766,7 @@
 			}
 		},
 		"actions": {
-			"explore": "Explore Integrations",
+			"explore": "Explore Providers",
 			"browse": "Browse Library",
 			"connect": "Connect",
 			"disconnect": "Disconnect",
@@ -1031,15 +1031,15 @@
 			}
 		},
 		"messages": {
-			"integrationFooter": "Learn more about integrations in our",
+			"connectionFooter": "Learn more about connections in our",
 			"webhookFooter": "Learn more about webhooks in our",
 			"documentation": "documentation"
 		},
 		"toast": {
-			"integrationUpdated": "Integration updated successfully",
-			"integrationUpdateFailed": "Failed to update integration",
-			"integrationDisconnected": "Integration disconnected",
-			"integrationDisconnectFailed": "Failed to disconnect integration",
+			"connectionUpdated": "Integration updated successfully",
+			"connectionUpdateFailed": "Failed to update integration",
+			"connectionDisconnected": "Integration disconnected",
+			"connectionDisconnectFailed": "Failed to disconnect integration",
 			"webhookCreated": "Webhook created successfully",
 			"webhookCreateFailed": "Failed to create webhook",
 			"webhookUpdated": "Webhook updated successfully",
@@ -1112,7 +1112,7 @@
 		"studio": "Studio",
 		"team": "Team",
 		"automation": "Automation",
-		"integrations": "Integrations",
+		"connections": "Connections",
 		"explore": "Explore",
 		"workflows": "Workflows",
 		"editor": "Editor",

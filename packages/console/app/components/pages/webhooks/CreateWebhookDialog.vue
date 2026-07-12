@@ -91,7 +91,7 @@ function isValidUrl(url: string): boolean {
 
 function validateUrl() {
 	if (webhookUrl.value.trim() && !isValidUrl(webhookUrl.value)) {
-		urlError.value = t("integrations.forms.webhook.urlError");
+		urlError.value = t("connections.forms.webhook.urlError");
 	} else {
 		urlError.value = "";
 	}
@@ -177,17 +177,17 @@ function cancel() {
         class="flex items-center gap-2 font-normal"
       >
         <Webhook :size="16" />
-        {{ t("integrations.actions.createWebhook") }}
+        {{ t("connections.actions.createWebhook") }}
       </Button>
     </DialogTrigger>
 
     <DialogContent class="max-w-2xl max-h-[90vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>{{
-          t("integrations.dialogs.createWebhook.title")
+          t("connections.dialogs.createWebhook.title")
         }}</DialogTitle>
         <DialogDescription>
-          {{ t("integrations.dialogs.createWebhook.description") }}
+          {{ t("connections.dialogs.createWebhook.description") }}
         </DialogDescription>
       </DialogHeader>
 
@@ -197,11 +197,11 @@ function cancel() {
           <label
             class="block text-sm font-medium text-neutral-900 dark:text-white mb-2"
           >
-            {{ t("integrations.forms.webhook.nameLabel") }}
+            {{ t("connections.forms.webhook.nameLabel") }}
           </label>
           <Input
             v-model="webhookName"
-            :placeholder="t('integrations.forms.webhook.namePlaceholder')"
+            :placeholder="t('connections.forms.webhook.namePlaceholder')"
             class="text-neutral-900 dark:text-white"
           />
         </div>
@@ -211,12 +211,12 @@ function cancel() {
           <label
             class="block text-sm font-medium text-neutral-900 dark:text-white mb-2"
           >
-            {{ t("integrations.forms.webhook.urlLabel") }}
+            {{ t("connections.forms.webhook.urlLabel") }}
           </label>
           <Input
             v-model="webhookUrl"
             type="url"
-            :placeholder="t('integrations.forms.webhook.urlPlaceholder')"
+            :placeholder="t('connections.forms.webhook.urlPlaceholder')"
             class="text-neutral-900 dark:text-white"
             @blur="validateUrl"
           />
@@ -234,7 +234,7 @@ function cancel() {
             <label
               class="block text-sm font-medium text-neutral-900 dark:text-white"
             >
-              {{ t("integrations.forms.webhook.headersLabel") }}
+              {{ t("connections.forms.webhook.headersLabel") }}
             </label>
             <Button
               type="button"
@@ -243,7 +243,7 @@ function cancel() {
               @click="addHeader"
             >
               <Plus :size="14" class="mr-1" />
-              {{ t("integrations.forms.webhook.addHeader") }}
+              {{ t("connections.forms.webhook.addHeader") }}
             </Button>
           </div>
           <div v-if="webhookHeaders.length > 0" class="space-y-2">
@@ -255,14 +255,14 @@ function cancel() {
               <Input
                 v-model="header.key"
                 :placeholder="
-                  t('integrations.forms.webhook.headerKeyPlaceholder')
+                  t('connections.forms.webhook.headerKeyPlaceholder')
                 "
                 class="flex-1 font-mono text-sm"
               />
               <Input
                 v-model="header.value"
                 :placeholder="
-                  t('integrations.forms.webhook.headerValuePlaceholder')
+                  t('connections.forms.webhook.headerValuePlaceholder')
                 "
                 class="flex-1 font-mono text-sm"
               />
@@ -277,7 +277,7 @@ function cancel() {
             </div>
           </div>
           <p v-else class="text-sm text-neutral-500 dark:text-neutral-400">
-            {{ t("integrations.forms.webhook.noHeaders") }}
+            {{ t("connections.forms.webhook.noHeaders") }}
           </p>
         </div>
 
@@ -309,18 +309,18 @@ function cancel() {
           <span class="text-sm text-neutral-600 dark:text-neutral-400">
             {{
               webhookActive
-                ? t("integrations.forms.webhook.enabledLabel")
-                : t("integrations.forms.webhook.disabledLabel")
+                ? t("connections.forms.webhook.enabledLabel")
+                : t("connections.forms.webhook.disabledLabel")
             }}
           </span>
         </div>
         <div class="flex items-center gap-2">
           <Button variant="outline" @click="cancel">
-            {{ t("integrations.dialogs.createWebhook.cancel") }}
+            {{ t("connections.dialogs.createWebhook.cancel") }}
           </Button>
           <Button @click="saveWebhook" :disabled="!isFormValid || isLoading">
             <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-            {{ t("integrations.dialogs.createWebhook.save") }}
+            {{ t("connections.dialogs.createWebhook.save") }}
           </Button>
         </div>
       </DialogFooter>
