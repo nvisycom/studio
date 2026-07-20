@@ -12,20 +12,19 @@
 		"ci": "biome ci ."
 	},
 	"dependencies": {
-		"@lucide/vue": "^1.17.0",
+		"@lucide/vue": "^1.25.0",
 		"@nuxtjs/color-mode": "^4.0.0",
-		"@nuxtjs/i18n": "^10.4.0",
-		"@nvisy/sdk": "^0.3.0",
-		"@pinia/colada": "^1.3.1",
-		"@pinia/colada-nuxt": "^1.0.1",
+		"@nuxtjs/i18n": "^10.4.1",
+		"@nvisy/sdk": "^0.4.0",
+		"@pinia/colada": "^1.4.2",
+		"@pinia/colada-nuxt": "^1.0.2",
 		"@pinia/nuxt": "^0.11.3",
-		"@unhead/vue": "^3.1.3",
-		"pinia": "^3.0.4",
-		"@tailwindcss/vite": "^4.3.0",
+		"@tailwindcss/vite": "^4.3.3",
 		"@tanstack/vue-table": "^8.21.3",
-		"@tanstack/vue-virtual": "^3.13.28",
-		"@unovis/ts": "^1.6.5",
-		"@unovis/vue": "^1.6.5",
+		"@tanstack/vue-virtual": "^3.13.32",
+		"@unhead/vue": "^3.2.1",
+		"@unovis/ts": "^1.6.7",
+		"@unovis/vue": "^1.6.7",
 		"@vue-flow/background": "^1.3.2",
 		"@vue-flow/controls": "^1.1.3",
 		"@vue-flow/core": "^1.48.2",
@@ -34,6 +33,7 @@
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"curtainsjs": "^8.1.6",
+		"pinia": "^3.0.4",
 		"reka-ui": "^2.9.9",
 		"tailwind-merge": "^3.6.0",
 		"tailwindcss": "^4.3.0",
@@ -41,7 +41,7 @@
 		"vue-sonner": "^2.0.9"
 	},
 	"peerDependencies": {
-		"nuxt": "^4.4.8",
-		"vue": "^3.5.35"
+		"nuxt": "^4.5.0",
+		"vue": "^3.5.40"
 	}
 }
