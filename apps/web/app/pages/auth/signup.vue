@@ -37,6 +37,7 @@ async function handleSignup(): Promise<void> {
 	try {
 		await signupAsync({
 			displayName: displayName.value,
+			username: email.value.split("@")[0] ?? email.value,
 			emailAddress: email.value,
 			password: password.value,
 			rememberMe: true,

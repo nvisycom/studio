@@ -7,26 +7,29 @@ import type { CreateConnection, UpdateConnection } from "@nvisy/sdk/datatypes";
 export function useConnections() {
 	const { $nvisyClient } = useNuxtApp();
 	const { authToken } = useAuth();
-	const { currentWorkspaceId } = useWorkspaces();
+	const { currentWorkspaceSlug } = useWorkspaces();
 
 	const connectionsQuery = useQuery({
-		key: () => ["connections", currentWorkspaceId.value],
+		key: () => ["connections", currentWorkspaceSlug.value],
 		query: async () => {
 			const client = $nvisyClient.value;
-			const workspaceId = currentWorkspaceId.value;
-			if (!client || !workspaceId) throw new Error("Not authenticated");
-			const result = await client.connections.listConnections(workspaceId);
+			const workspaceSlug = currentWorkspaceSlug.value;
+			if (!client || !workspaceSlug) throw new Error("Not authenticated");
+			const result = await client.connections.listConnections(workspaceSlug);
 			return result.items;
 		},
-		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceId.value,
+		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceSlug.value,
 	});
 
 	const createConnectionMutation = useMutation({
 		mutation: async (connection: CreateConnection) => {
 			const client = $nvisyClient.value;
-			const workspaceId = currentWorkspaceId.value;
-			if (!client || !workspaceId) throw new Error("Not authenticated");
-			return await client.connections.createConnection(workspaceId, connection);
+			const workspaceSlug = currentWorkspaceSlug.value;
+			if (!client || !workspaceSlug) throw new Error("Not authenticated");
+			return await client.connections.createConnection(
+				workspaceSlug,
+				connection,
+			);
 		},
 		onSuccess() {
 			connectionsQuery.refresh();
@@ -42,8 +45,13 @@ export function useConnections() {
 			updates: UpdateConnection;
 		}) => {
 			const client = $nvisyClient.value;
-			if (!client) throw new Error("Not authenticated");
-			return await client.connections.updateConnection(connectionId, updates);
+			const workspaceSlug = currentWorkspaceSlug.value;
+			if (!client || !workspaceSlug) throw new Error("Not authenticated");
+			return await client.connections.updateConnection(
+				workspaceSlug,
+				connectionId,
+				updates,
+			);
 		},
 		onSuccess() {
 			connectionsQuery.refresh();
@@ -53,8 +61,9 @@ export function useConnections() {
 	const deleteConnectionMutation = useMutation({
 		mutation: async (connectionId: string) => {
 			const client = $nvisyClient.value;
-			if (!client) throw new Error("Not authenticated");
-			await client.connections.deleteConnection(connectionId);
+			const workspaceSlug = currentWorkspaceSlug.value;
+			if (!client || !workspaceSlug) throw new Error("Not authenticated");
+			await client.connections.deleteConnection(workspaceSlug, connectionId);
 		},
 		onSuccess() {
 			connectionsQuery.refresh();

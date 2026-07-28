@@ -28,7 +28,7 @@ const showPassword = ref(false);
 async function handleLogin(): Promise<void> {
 	try {
 		await loginAsync({
-			emailAddress: email.value,
+			identifier: email.value,
 			password: password.value,
 			rememberMe: rememberMe.value,
 		});

@@ -69,7 +69,7 @@ function formatUrl(url: string): string {
       </TableRow>
     </TableHeader>
     <TableBody>
-      <ContextMenu v-for="webhook in webhooks" :key="webhook.webhookId">
+      <ContextMenu v-for="webhook in webhooks" :key="webhook.id">
         <ContextMenuTrigger as-child>
           <TableRow
             class="hover:bg-neutral-50 dark:hover:bg-neutral-900 cursor-pointer"
@@ -91,7 +91,7 @@ function formatUrl(url: string): string {
                 :model-value="webhook.status === 'active'"
                 :disabled="webhook.status === 'disabled'"
                 @update:model-value="
-                  emit('toggleStatus', webhook.webhookId, $event)
+                  emit('toggleStatus', webhook.id, $event)
                 "
               />
             </TableCell>
@@ -132,14 +132,14 @@ function formatUrl(url: string): string {
         <ContextMenuContent>
           <ContextMenuItem
             class="cursor-pointer"
-            @click="emit('edit', webhook.webhookId)"
+            @click="emit('edit', webhook.id)"
           >
             <Edit :size="14" class="mr-2" />
             {{ t("connections.table.actions.configure") }}
           </ContextMenuItem>
           <ContextMenuItem
             class="cursor-pointer"
-            @click="emit('test', webhook.webhookId)"
+            @click="emit('test', webhook.id)"
           >
             <Play :size="14" class="mr-2" />
             {{ t("connections.table.actions.test") }}
@@ -147,7 +147,7 @@ function formatUrl(url: string): string {
           <ContextMenuSeparator />
           <ContextMenuItem
             class="text-red-600 dark:text-red-400 cursor-pointer"
-            @click="emit('delete', webhook.webhookId)"
+            @click="emit('delete', webhook.id)"
           >
             <Trash2 :size="14" class="mr-2" />
             {{ t("connections.table.actions.delete") }}

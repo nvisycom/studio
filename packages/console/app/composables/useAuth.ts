@@ -101,7 +101,7 @@ export function useAuth() {
 		authCookie.value = null;
 
 		// Clear workspace cookie
-		const workspaceCookie = useCookie("current_workspace_id");
+		const workspaceCookie = useCookie("current_workspace_slug");
 		workspaceCookie.value = null;
 
 		navigateTo("/auth/login");

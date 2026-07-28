@@ -11,31 +11,47 @@ export interface UseFileOptions {
 export function useFile(options: UseFileOptions) {
 	const { $nvisyClient } = useNuxtApp();
 	const { authToken } = useAuth();
+	const { currentWorkspaceSlug } = useWorkspaces();
 
 	const effectiveFileId = computed(() => toValue(options.fileId) || "");
 
 	// Get file metadata
 	const fileQuery = useQuery({
-		key: () => ["file", effectiveFileId.value],
+		key: () => ["file", currentWorkspaceSlug.value, effectiveFileId.value],
 		query: async () => {
 			const client = $nvisyClient.value;
-			if (!client) throw new Error("Not authenticated");
-			return await client.files.getFile(effectiveFileId.value);
+			const workspaceSlug = currentWorkspaceSlug.value;
+			if (!client || !workspaceSlug) throw new Error("Not authenticated");
+			return await client.files.getFile(workspaceSlug, effectiveFileId.value);
 		},
-		enabled: () => !!effectiveFileId.value && !!authToken.value?.apiToken,
+		enabled: () =>
+			!!effectiveFileId.value &&
+			!!currentWorkspaceSlug.value &&
+			!!authToken.value?.apiToken,
 	});
 
 	// Download file content as blob URL for preview
 	const fileContentQuery = useQuery({
-		key: () => ["file-content", effectiveFileId.value],
+		key: () => [
+			"file-content",
+			currentWorkspaceSlug.value,
+			effectiveFileId.value,
+		],
 		query: async () => {
 			const client = $nvisyClient.value;
-			if (!client) throw new Error("Not authenticated");
-			const response = await client.files.downloadFile(effectiveFileId.value);
+			const workspaceSlug = currentWorkspaceSlug.value;
+			if (!client || !workspaceSlug) throw new Error("Not authenticated");
+			const response = await client.files.downloadFile(
+				workspaceSlug,
+				effectiveFileId.value,
+			);
 			const blob = await response.blob();
 			return URL.createObjectURL(blob);
 		},
-		enabled: () => !!effectiveFileId.value && !!authToken.value?.apiToken,
+		enabled: () =>
+			!!effectiveFileId.value &&
+			!!currentWorkspaceSlug.value &&
+			!!authToken.value?.apiToken,
 	});
 
 	// Clean up blob URL when component unmounts

@@ -52,8 +52,8 @@ const helpChatRef = ref();
 const { displayName, emailAddress } = useAccount();
 
 // Check if workspace is selected and get current role
-const { currentWorkspaceId, currentWorkspace } = useWorkspaces();
-const hasWorkspace = computed(() => !!currentWorkspaceId.value);
+const { currentWorkspaceSlug, currentWorkspace } = useWorkspaces();
+const hasWorkspace = computed(() => !!currentWorkspaceSlug.value);
 const isAdminOrOwner = computed(() => {
 	const role = currentWorkspace.value?.memberRole;
 	return role === "owner" || role === "admin";

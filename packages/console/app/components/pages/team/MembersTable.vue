@@ -45,7 +45,7 @@ function canSelectMember(member: Member): boolean {
 
 function handleRowClick(member: Member) {
 	if (canSelectMember(member)) {
-		emit("toggleMember", member.accountId);
+		emit("toggleMember", member.username);
 	}
 }
 </script>
@@ -81,7 +81,7 @@ function handleRowClick(member: Member) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        <ContextMenu v-for="member in members" :key="member.accountId">
+        <ContextMenu v-for="member in members" :key="member.username">
           <ContextMenuTrigger as-child>
             <TableRow
               :class="[
@@ -92,8 +92,8 @@ function handleRowClick(member: Member) {
             >
               <TableCell @click.stop>
                 <Checkbox
-                  :model-value="selectedMembers?.has(member.accountId) || false"
-                  @update:model-value="emit('toggleMember', member.accountId)"
+                  :model-value="selectedMembers?.has(member.username) || false"
+                  @update:model-value="emit('toggleMember', member.username)"
                   :disabled="!canSelectMember(member)"
                   class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                 />
@@ -146,7 +146,7 @@ function handleRowClick(member: Member) {
             <!-- Bulk actions when member is selected -->
             <template
               v-if="
-                selectedMembers?.has(member.accountId) &&
+                selectedMembers?.has(member.username) &&
                 selectedMembers.size > 1
               "
             >
@@ -165,7 +165,7 @@ function handleRowClick(member: Member) {
               <ContextMenuItem
                 class="cursor-pointer"
                 :disabled="!canSelectMember(member)"
-                @click="emit('edit', member.accountId)"
+                @click="emit('edit', member.username)"
               >
                 <UserCog :size="14" class="mr-2" />
                 {{ t("members.table.actions.edit") }}
@@ -174,7 +174,7 @@ function handleRowClick(member: Member) {
               <ContextMenuItem
                 class="text-red-600 dark:text-red-400 cursor-pointer"
                 :disabled="!canSelectMember(member)"
-                @click="emit('remove', member.accountId)"
+                @click="emit('remove', member.username)"
               >
                 <Trash2 :size="14" class="mr-2" />
                 {{ t("members.table.actions.delete") }}

@@ -17,6 +17,7 @@ const activeFileId = ref<string | null>(null);
 export function useStudioFiles() {
 	const { $nvisyClient } = useNuxtApp();
 	const { authToken } = useAuth();
+	const { currentWorkspaceSlug } = useWorkspaces();
 
 	// Get active file
 	const activeFile = computed(() => {
@@ -47,18 +48,19 @@ export function useStudioFiles() {
 		// Fetch file content
 		try {
 			const client = $nvisyClient.value;
-			if (!client || !authToken.value?.apiToken) {
+			const workspaceSlug = currentWorkspaceSlug.value;
+			if (!client || !workspaceSlug || !authToken.value?.apiToken) {
 				throw new Error("Not authenticated");
 			}
 
 			// Fetch file metadata if not provided
 			let fileData = file;
 			if (!fileData) {
-				fileData = await client.files.getFile(fileId);
+				fileData = await client.files.getFile(workspaceSlug, fileId);
 			}
 
 			// Download file content
-			const response = await client.files.downloadFile(fileId);
+			const response = await client.files.downloadFile(workspaceSlug, fileId);
 			const blob = await response.blob();
 			const contentUrl = URL.createObjectURL(blob);
 

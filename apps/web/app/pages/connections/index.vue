@@ -118,7 +118,7 @@ const isDeleteDialogOpen = ref(false);
 const selectedWebhook = ref<Webhook | null>(null);
 
 function findWebhookById(webhookId: string): Webhook | undefined {
-	return webhooks.value?.find((w) => w.webhookId === webhookId);
+	return webhooks.value?.find((w) => w.id === webhookId);
 }
 
 async function handleCreateWebhook(data: {
@@ -157,7 +157,7 @@ async function handleUpdateWebhook(data: {
 
 	try {
 		await updateWebhookAsync({
-			webhookId: selectedWebhook.value.webhookId,
+			webhookId: selectedWebhook.value.id,
 			updates: {
 				displayName: data.displayName,
 				url: data.url,

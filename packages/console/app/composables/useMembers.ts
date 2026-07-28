@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "@pinia/colada";
-import type { Member, UpdateMember, ListMembers } from "@nvisy/sdk/datatypes";
+import type { UpdateMember, ListMembers } from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for workspace member operations
@@ -7,42 +7,46 @@ import type { Member, UpdateMember, ListMembers } from "@nvisy/sdk/datatypes";
 export function useMembers(query?: Ref<ListMembers>) {
 	const { $nvisyClient } = useNuxtApp();
 	const { authToken } = useAuth();
-	const { currentWorkspaceId } = useWorkspaces();
+	const { currentWorkspaceSlug } = useWorkspaces();
 
 	const membersQuery = useQuery({
 		key: () => [
 			"members",
-			currentWorkspaceId.value,
+			currentWorkspaceSlug.value,
 			JSON.stringify(query?.value),
 		],
 		query: async () => {
 			const client = $nvisyClient.value;
-			const workspaceId = currentWorkspaceId.value;
+			const workspaceSlug = currentWorkspaceSlug.value;
 			if (!client) throw new Error("Not authenticated");
-			if (!workspaceId) throw new Error("No workspace selected");
+			if (!workspaceSlug) throw new Error("No workspace selected");
 			const result = await client.members.listMembers(
-				workspaceId,
+				workspaceSlug,
 				query?.value,
 			);
 			return result.items;
 		},
-		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceId.value,
+		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceSlug.value,
 		staleTime: 0,
 	});
 
 	const updateMemberMutation = useMutation({
 		mutation: async ({
-			accountId,
+			username,
 			updates,
 		}: {
-			accountId: string;
+			username: string;
 			updates: UpdateMember;
 		}) => {
 			const client = $nvisyClient.value;
-			const workspaceId = currentWorkspaceId.value;
+			const workspaceSlug = currentWorkspaceSlug.value;
 			if (!client) throw new Error("Not authenticated");
-			if (!workspaceId) throw new Error("No workspace selected");
-			return await client.members.updateMember(workspaceId, accountId, updates);
+			if (!workspaceSlug) throw new Error("No workspace selected");
+			return await client.members.updateMember(
+				workspaceSlug,
+				username,
+				updates,
+			);
 		},
 		onSuccess() {
 			membersQuery.refresh();
@@ -50,12 +54,12 @@ export function useMembers(query?: Ref<ListMembers>) {
 	});
 
 	const removeMemberMutation = useMutation({
-		mutation: async (accountId: string) => {
+		mutation: async (username: string) => {
 			const client = $nvisyClient.value;
-			const workspaceId = currentWorkspaceId.value;
+			const workspaceSlug = currentWorkspaceSlug.value;
 			if (!client) throw new Error("Not authenticated");
-			if (!workspaceId) throw new Error("No workspace selected");
-			await client.members.removeMember(workspaceId, accountId);
+			if (!workspaceSlug) throw new Error("No workspace selected");
+			await client.members.removeMember(workspaceSlug, username);
 		},
 		onSuccess() {
 			membersQuery.refresh();
@@ -65,10 +69,10 @@ export function useMembers(query?: Ref<ListMembers>) {
 	const leaveMutation = useMutation({
 		mutation: async () => {
 			const client = $nvisyClient.value;
-			const workspaceId = currentWorkspaceId.value;
+			const workspaceSlug = currentWorkspaceSlug.value;
 			if (!client) throw new Error("Not authenticated");
-			if (!workspaceId) throw new Error("No workspace selected");
-			await client.members.leaveWorkspace(workspaceId);
+			if (!workspaceSlug) throw new Error("No workspace selected");
+			await client.members.leaveWorkspace(workspaceSlug);
 		},
 		onSuccess() {
 			membersQuery.refresh();

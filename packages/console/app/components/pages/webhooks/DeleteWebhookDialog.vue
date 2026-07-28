@@ -38,7 +38,7 @@ function handleOpenChange(open: boolean) {
 
 function confirmDelete() {
 	if (!props.webhook) return;
-	emit("delete", props.webhook.webhookId);
+	emit("delete", props.webhook.id);
 }
 
 function cancel() {

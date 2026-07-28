@@ -74,7 +74,7 @@ const filteredRuns = computed(() => {
 		filtered = filtered.filter(
 			(run) =>
 				run.id.toLowerCase().includes(query) ||
-				run.pipelineId.toLowerCase().includes(query) ||
+				run.pipelineSlug.toLowerCase().includes(query) ||
 				run.fileId.toLowerCase().includes(query),
 		);
 	}
@@ -317,7 +317,7 @@ function formatDuration(
                       </TableCell>
                       <TableCell>
                         <code class="font-mono text-xs text-muted-foreground">
-                          {{ run.pipelineId.slice(0, 8) }}...
+                          {{ run.pipelineSlug.slice(0, 8) }}...
                         </code>
                       </TableCell>
                       <TableCell>

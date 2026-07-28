@@ -49,7 +49,7 @@ function getErrorMessage(err: unknown, fallback: string): string {
 // Composables
 const {
 	currentWorkspace,
-	currentWorkspaceId,
+	currentWorkspaceSlug,
 	isLoading: isLoadingWorkspaces,
 	updateWorkspaceAsync,
 	isUpdating,
@@ -63,7 +63,6 @@ const { leaveAsync, isLeaving } = useMembers();
 const workspaceName = ref("");
 const workspaceDescription = ref("");
 const requireApproval = ref<boolean | undefined>(undefined);
-const enableComments = ref<boolean | undefined>(undefined);
 const copiedWorkspaceId = ref(false);
 
 // Dialog state
@@ -82,7 +81,6 @@ watch(
 			workspaceName.value = workspace.displayName;
 			workspaceDescription.value = workspace.description ?? "";
 			requireApproval.value = workspace.requireApproval;
-			enableComments.value = workspace.enableComments;
 			formInitialized.value = true;
 		}
 	},
@@ -91,14 +89,13 @@ watch(
 
 // Reset form when workspace changes
 watch(
-	() => currentWorkspaceId.value,
+	() => currentWorkspaceSlug.value,
 	() => {
 		// Reset so the next workspace data triggers re-initialization
 		formInitialized.value = false;
 		workspaceName.value = "";
 		workspaceDescription.value = "";
 		requireApproval.value = undefined;
-		enableComments.value = undefined;
 	},
 );
 
@@ -118,16 +115,13 @@ const hasInfoChanges = computed(() => {
 const hasOptionsChanges = computed(() => {
 	if (!currentWorkspace.value || requireApproval.value === undefined)
 		return false;
-	return (
-		requireApproval.value !== currentWorkspace.value.requireApproval ||
-		enableComments.value !== currentWorkspace.value.enableComments
-	);
+	return requireApproval.value !== currentWorkspace.value.requireApproval;
 });
 
 // Functions
 function copyWorkspaceId() {
-	if (!currentWorkspaceId.value) return;
-	navigator.clipboard.writeText(currentWorkspaceId.value);
+	if (!currentWorkspaceSlug.value) return;
+	navigator.clipboard.writeText(currentWorkspaceSlug.value);
 	copiedWorkspaceId.value = true;
 	toast.success(t("settings.workspace.messages.idCopied"));
 	setTimeout(() => {
@@ -136,12 +130,12 @@ function copyWorkspaceId() {
 }
 
 async function saveWorkspaceInfo() {
-	const workspaceId = currentWorkspaceId.value;
-	if (!workspaceId) return;
+	const workspaceSlug = currentWorkspaceSlug.value;
+	if (!workspaceSlug) return;
 
 	try {
 		await updateWorkspaceAsync({
-			workspaceId,
+			workspaceSlug,
 			updates: {
 				displayName: workspaceName.value,
 				description: workspaceDescription.value || undefined,
@@ -156,15 +150,14 @@ async function saveWorkspaceInfo() {
 }
 
 async function saveWorkspaceOptions() {
-	const workspaceId = currentWorkspaceId.value;
-	if (!workspaceId) return;
+	const workspaceSlug = currentWorkspaceSlug.value;
+	if (!workspaceSlug) return;
 
 	try {
 		await updateWorkspaceAsync({
-			workspaceId,
+			workspaceSlug,
 			updates: {
 				requireApproval: requireApproval.value,
-				enableComments: enableComments.value,
 			},
 		});
 		toast.success(t("settings.workspace.messages.optionsSaved"));
@@ -203,10 +196,10 @@ async function handleLeaveWorkspace() {
 }
 
 async function handleDeleteWorkspace() {
-	if (!currentWorkspaceId.value) return;
+	if (!currentWorkspaceSlug.value) return;
 
 	try {
-		await deleteWorkspaceAsync(currentWorkspaceId.value);
+		await deleteWorkspaceAsync(currentWorkspaceSlug.value);
 		isDeleteDialogOpen.value = false;
 		deleteConfirmName.value = "";
 		toast.success(t("settings.workspace.messages.deleted"));
@@ -315,7 +308,7 @@ const canDelete = computed(() => {
               <div class="flex gap-2 max-w-md">
                 <Input
                   id="workspaceId"
-                  :model-value="currentWorkspaceId ?? ''"
+                  :model-value="currentWorkspaceSlug ?? ''"
                   readonly
                   class="flex-1 font-mono text-sm h-9 bg-muted/50 border-border/50 text-muted-foreground"
                 />
@@ -385,23 +378,6 @@ const canDelete = computed(() => {
               />
             </div>
 
-            <!-- Enable Comments -->
-            <div class="flex items-center justify-between">
-              <div class="space-y-0.5">
-                <Label class="text-sm font-medium">{{
-                  t("settings.workspace.options.enableComments.label")
-                }}</Label>
-                <p class="text-xs text-muted-foreground">
-                  {{
-                    t("settings.workspace.options.enableComments.description")
-                  }}
-                </p>
-              </div>
-              <Switch
-                :model-value="enableComments ?? false"
-                @update:model-value="enableComments = $event"
-              />
-            </div>
           </CardContent>
           <CardFooter
             class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl flex items-center justify-between"

@@ -18,9 +18,6 @@ const { t } = useI18n();
 
 // All available webhook events from SDK
 const WEBHOOK_EVENTS: WebhookEvent[] = [
-	"document:created",
-	"document:updated",
-	"document:deleted",
 	"file:created",
 	"file:updated",
 	"file:deleted",

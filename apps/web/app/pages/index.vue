@@ -11,8 +11,8 @@ definePageMeta({
 });
 
 // Workspace state
-const { currentWorkspaceId } = useWorkspaces();
-const hasWorkspace = computed(() => !!currentWorkspaceId.value);
+const { currentWorkspaceSlug } = useWorkspaces();
+const hasWorkspace = computed(() => !!currentWorkspaceSlug.value);
 </script>
 
 <template>

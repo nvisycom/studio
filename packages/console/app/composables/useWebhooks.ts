@@ -11,7 +11,7 @@ import type {
 export function useWebhooks() {
 	const { $nvisyClient } = useNuxtApp();
 	const { authToken } = useAuth();
-	const { currentWorkspaceId } = useWorkspaces();
+	const { currentWorkspaceSlug } = useWorkspaces();
 
 	// Local state for optimistic updates
 	const optimisticUpdates = ref<
@@ -19,15 +19,15 @@ export function useWebhooks() {
 	>({});
 
 	const webhooksQuery = useQuery({
-		key: () => ["webhooks", currentWorkspaceId.value],
+		key: () => ["webhooks", currentWorkspaceSlug.value],
 		query: async () => {
 			const client = $nvisyClient.value;
-			const workspaceId = currentWorkspaceId.value;
-			if (!client || !workspaceId) throw new Error("Not authenticated");
-			const result = await client.webhooks.listWebhooks(workspaceId);
+			const workspaceSlug = currentWorkspaceSlug.value;
+			if (!client || !workspaceSlug) throw new Error("Not authenticated");
+			const result = await client.webhooks.listWebhooks(workspaceSlug);
 			return result.items;
 		},
-		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceId.value,
+		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceSlug.value,
 	});
 
 	// Computed that applies optimistic updates on top of query data
@@ -36,16 +36,16 @@ export function useWebhooks() {
 		if (!data) return data;
 		return data.map((w) => ({
 			...w,
-			...optimisticUpdates.value[w.webhookId],
+			...optimisticUpdates.value[w.id],
 		})) as Webhook[];
 	});
 
 	const createWebhookMutation = useMutation({
 		mutation: async (webhook: CreateWebhook) => {
 			const client = $nvisyClient.value;
-			const workspaceId = currentWorkspaceId.value;
-			if (!client || !workspaceId) throw new Error("Not authenticated");
-			return await client.webhooks.createWebhook(workspaceId, webhook);
+			const workspaceSlug = currentWorkspaceSlug.value;
+			if (!client || !workspaceSlug) throw new Error("Not authenticated");
+			return await client.webhooks.createWebhook(workspaceSlug, webhook);
 		},
 		onSuccess() {
 			webhooksQuery.refresh();
@@ -61,8 +61,13 @@ export function useWebhooks() {
 			updates: UpdateWebhook;
 		}) => {
 			const client = $nvisyClient.value;
-			if (!client) throw new Error("Not authenticated");
-			return await client.webhooks.updateWebhook(webhookId, updates);
+			const workspaceSlug = currentWorkspaceSlug.value;
+			if (!client || !workspaceSlug) throw new Error("Not authenticated");
+			return await client.webhooks.updateWebhook(
+				workspaceSlug,
+				webhookId,
+				updates,
+			);
 		},
 		onMutate({ webhookId, updates }) {
 			// Optimistic update
@@ -95,8 +100,9 @@ export function useWebhooks() {
 	const deleteWebhookMutation = useMutation({
 		mutation: async (webhookId: string) => {
 			const client = $nvisyClient.value;
-			if (!client) throw new Error("Not authenticated");
-			await client.webhooks.deleteWebhook(webhookId);
+			const workspaceSlug = currentWorkspaceSlug.value;
+			if (!client || !workspaceSlug) throw new Error("Not authenticated");
+			await client.webhooks.deleteWebhook(workspaceSlug, webhookId);
 		},
 		onSuccess() {
 			webhooksQuery.refresh();
@@ -106,8 +112,9 @@ export function useWebhooks() {
 	const testWebhookMutation = useMutation({
 		mutation: async (webhookId: string) => {
 			const client = $nvisyClient.value;
-			if (!client) throw new Error("Not authenticated");
-			return await client.webhooks.testWebhook(webhookId);
+			const workspaceSlug = currentWorkspaceSlug.value;
+			if (!client || !workspaceSlug) throw new Error("Not authenticated");
+			return await client.webhooks.testWebhook(workspaceSlug, webhookId);
 		},
 	});
 

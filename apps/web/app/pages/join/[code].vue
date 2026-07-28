@@ -50,10 +50,10 @@ const acceptMutation = useMutation({
 	},
 	async onSuccess() {
 		// Refresh workspaces list and switch to the new workspace
-		const workspaceId = preview.value?.workspaceId;
-		if (workspaceId) {
+		const workspaceSlug = preview.value?.workspaceSlug;
+		if (workspaceSlug) {
 			await refreshWorkspaces();
-			selectWorkspace(workspaceId);
+			selectWorkspace(workspaceSlug);
 		}
 		navigateTo("/");
 	},

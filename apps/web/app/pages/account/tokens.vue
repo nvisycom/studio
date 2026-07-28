@@ -69,11 +69,9 @@ const {
 	isRevoking,
 } = useApiTokens();
 
-// Get current auth token to identify active session
-const { authToken } = useAuth();
-
-// Get the current session's token ID
-const currentTokenId = computed(() => authToken.value?.tokenId ?? null);
+// The auth token no longer carries the API token's id, so the current
+// session can't be singled out in the list.
+const currentTokenId = computed<string | null>(() => null);
 
 // Form state
 const tokenName = ref("");

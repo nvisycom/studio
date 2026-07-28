@@ -27,7 +27,7 @@ const MAX_NAME_LENGTH = 18;
 const {
 	workspaces,
 	currentWorkspace,
-	currentWorkspaceId,
+	currentWorkspaceSlug,
 	selectWorkspace,
 	isLoading,
 } = useWorkspaces();
@@ -88,12 +88,12 @@ function handleSelectWorkspace(workspaceId: string) {
         >
           <DropdownMenuItem
             v-for="(workspace, index) in workspaces"
-            :key="workspace.workspaceId"
+            :key="workspace.slug"
             class="flex items-center gap-2 px-2 py-1.5 mb-0.5 rounded-md cursor-pointer"
             :class="
-              workspace.workspaceId === currentWorkspaceId ? 'bg-accent' : ''
+              workspace.slug === currentWorkspaceSlug ? 'bg-accent' : ''
             "
-            @click="handleSelectWorkspace(workspace.workspaceId)"
+            @click="handleSelectWorkspace(workspace.slug)"
           >
             <EntityAvatar
               :name="workspace.displayName"

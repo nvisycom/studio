@@ -1,9 +1,5 @@
 import { useQuery, useMutation } from "@pinia/colada";
-import type {
-	Workspace,
-	CreateWorkspace,
-	UpdateWorkspace,
-} from "@nvisy/sdk/datatypes";
+import type { CreateWorkspace, UpdateWorkspace } from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for workspace operations
@@ -12,9 +8,12 @@ export function useWorkspaces() {
 	const { $nvisyClient } = useNuxtApp();
 	const { authToken } = useAuth();
 
-	const currentWorkspaceId = useCookie<string | null>("current_workspace_id", {
-		default: () => null,
-	});
+	const currentWorkspaceSlug = useCookie<string | null>(
+		"current_workspace_slug",
+		{
+			default: () => null,
+		},
+	);
 
 	const workspacesQuery = useQuery({
 		key: ["workspaces"],
@@ -27,7 +26,7 @@ export function useWorkspaces() {
 		enabled: () => !!authToken.value?.apiToken,
 	});
 
-	// Auto-select first workspace if none selected, or clear invalid workspace ID
+	// Auto-select first workspace if none selected, or clear invalid workspace slug
 	watch(
 		() => workspacesQuery.data.value,
 		(workspaces) => {
@@ -35,32 +34,32 @@ export function useWorkspaces() {
 
 			// If user has no workspaces, clear the cookie
 			if (workspaces.length === 0) {
-				currentWorkspaceId.value = null;
+				currentWorkspaceSlug.value = null;
 				return;
 			}
 
 			// If no workspace selected, select the first one
-			if (!currentWorkspaceId.value) {
-				currentWorkspaceId.value = workspaces[0]?.workspaceId ?? null;
+			if (!currentWorkspaceSlug.value) {
+				currentWorkspaceSlug.value = workspaces[0]?.slug ?? null;
 				return;
 			}
 
-			// If stored workspace ID doesn't exist in user's workspaces, select the first one
+			// If stored slug doesn't exist in user's workspaces, select the first one
 			const workspaceExists = workspaces.some(
-				(w) => w.workspaceId === currentWorkspaceId.value,
+				(w) => w.slug === currentWorkspaceSlug.value,
 			);
 			if (!workspaceExists) {
-				currentWorkspaceId.value = workspaces[0]?.workspaceId ?? null;
+				currentWorkspaceSlug.value = workspaces[0]?.slug ?? null;
 			}
 		},
 		{ immediate: true },
 	);
 
 	const currentWorkspace = computed(() => {
-		if (!workspacesQuery.data.value || !currentWorkspaceId.value) return null;
+		if (!workspacesQuery.data.value || !currentWorkspaceSlug.value) return null;
 		return (
 			workspacesQuery.data.value.find(
-				(w) => w.workspaceId === currentWorkspaceId.value,
+				(w) => w.slug === currentWorkspaceSlug.value,
 			) ?? null
 		);
 	});
@@ -73,21 +72,21 @@ export function useWorkspaces() {
 		},
 		onSuccess(data) {
 			workspacesQuery.refresh();
-			currentWorkspaceId.value = data.workspaceId;
+			currentWorkspaceSlug.value = data.slug;
 		},
 	});
 
 	const updateWorkspaceMutation = useMutation({
 		mutation: async ({
-			workspaceId,
+			workspaceSlug,
 			updates,
 		}: {
-			workspaceId: string;
+			workspaceSlug: string;
 			updates: UpdateWorkspace;
 		}) => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			return await client.workspaces.updateWorkspace(workspaceId, updates);
+			return await client.workspaces.updateWorkspace(workspaceSlug, updates);
 		},
 		onSuccess() {
 			workspacesQuery.refresh();
@@ -95,27 +94,27 @@ export function useWorkspaces() {
 	});
 
 	const deleteWorkspaceMutation = useMutation({
-		mutation: async (workspaceId: string) => {
+		mutation: async (workspaceSlug: string) => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			await client.workspaces.deleteWorkspace(workspaceId);
+			await client.workspaces.deleteWorkspace(workspaceSlug);
 		},
 		onSuccess() {
 			workspacesQuery.refresh();
-			if (currentWorkspaceId.value) {
+			if (currentWorkspaceSlug.value) {
 				const remaining = workspacesQuery.data.value?.filter(
-					(w) => w.workspaceId !== currentWorkspaceId.value,
+					(w) => w.slug !== currentWorkspaceSlug.value,
 				);
-				currentWorkspaceId.value =
+				currentWorkspaceSlug.value =
 					remaining && remaining.length > 0
-						? (remaining[0]?.workspaceId ?? null)
+						? (remaining[0]?.slug ?? null)
 						: null;
 			}
 		},
 	});
 
-	function selectWorkspace(workspaceId: string) {
-		currentWorkspaceId.value = workspaceId;
+	function selectWorkspace(workspaceSlug: string) {
+		currentWorkspaceSlug.value = workspaceSlug;
 	}
 
 	return {
@@ -126,7 +125,7 @@ export function useWorkspaces() {
 		refresh: workspacesQuery.refresh,
 
 		// Current workspace
-		currentWorkspaceId: readonly(currentWorkspaceId),
+		currentWorkspaceSlug: readonly(currentWorkspaceSlug),
 		currentWorkspace,
 		selectWorkspace,
 
