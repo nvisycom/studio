@@ -29,6 +29,21 @@ export function formatRelativeTime(
 }
 
 /**
+ * Format the elapsed time between two ISO timestamps as "Xm Ys".
+ * Returns "-" when the end timestamp is missing (e.g. still running).
+ */
+export function formatDuration(
+	startedAt: string,
+	completedAt: string | null | undefined,
+): string {
+	if (!completedAt) return "-";
+	const diff = new Date(completedAt).getTime() - new Date(startedAt).getTime();
+	const minutes = Math.floor(diff / 60000);
+	const seconds = Math.floor((diff % 60000) / 1000);
+	return `${minutes}m ${seconds}s`;
+}
+
+/**
  * Format a future date as a relative time string (e.g., "in 2 days", "in 3 months")
  * Uses i18n keys from common.time namespace
  */

@@ -10,18 +10,8 @@ import type {
 	InviteSortField,
 	SortOrder,
 } from "@nvisy/sdk/datatypes";
-import { NvisyApiError } from "@nvisy/sdk";
 import { toast } from "vue-sonner";
 
-function getErrorMessage(err: unknown, fallback: string): string {
-	if (err instanceof NvisyApiError) {
-		return err.message;
-	}
-	if (err instanceof Error) {
-		return err.message;
-	}
-	return fallback;
-}
 import {
 	DeleteMemberModal,
 	DeleteMultipleMembersModal,

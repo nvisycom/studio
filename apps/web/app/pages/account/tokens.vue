@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { NvisyApiError } from "@nvisy/sdk";
 import type {
 	ApiToken,
 	ApiTokenWithJWT,
@@ -7,16 +6,6 @@ import type {
 } from "@nvisy/sdk/datatypes";
 import { ChevronDown, Key, Loader2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
-
-function getErrorMessage(err: unknown, fallback: string): string {
-	if (err instanceof NvisyApiError) {
-		return err.message;
-	}
-	if (err instanceof Error) {
-		return err.message;
-	}
-	return fallback;
-}
 
 import {
 	DeleteMultipleTokensModal,

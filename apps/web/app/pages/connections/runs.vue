@@ -114,19 +114,6 @@ function viewRunDetails(run: PipelineRun) {
 function copyRunDetails(_run: PipelineRun) {
 	// TODO: Implement copy run details to clipboard
 }
-
-function formatDuration(
-	startedAt: string,
-	completedAt: string | null | undefined,
-): string {
-	if (!completedAt) return "-";
-	const start = new Date(startedAt).getTime();
-	const end = new Date(completedAt).getTime();
-	const diff = end - start;
-	const minutes = Math.floor(diff / 60000);
-	const seconds = Math.floor((diff % 60000) / 1000);
-	return `${minutes}m ${seconds}s`;
-}
 </script>
 
 <template>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { NvisyApiError } from "@nvisy/sdk";
 import { Upload, Copy, Check, Loader2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { Button } from "#console/components/ui/button";
@@ -35,16 +34,6 @@ definePageMeta({
 
 const { t } = useI18n();
 const router = useRouter();
-
-function getErrorMessage(err: unknown, fallback: string): string {
-	if (err instanceof NvisyApiError) {
-		return err.message;
-	}
-	if (err instanceof Error) {
-		return err.message;
-	}
-	return fallback;
-}
 
 // Composables
 const {

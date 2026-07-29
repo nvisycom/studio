@@ -1,16 +1,6 @@
 <script setup lang="ts">
 import type { ColumnDef } from "@tanstack/vue-table";
-import {
-	FileText,
-	FileImage,
-	FileCode,
-	FileSpreadsheet,
-	Download,
-	Eye,
-	Trash2,
-	Pencil,
-	File as FileIcon,
-} from "@lucide/vue";
+import { Download, Eye, Trash2, Pencil } from "@lucide/vue";
 import type { File as NvisyFile } from "@nvisy/sdk/datatypes";
 import { Checkbox } from "#console/components/ui/checkbox";
 import {
@@ -53,46 +43,6 @@ const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
-
-function getFileIcon(fileName: string) {
-	const ext = fileName.split(".").pop()?.toLowerCase();
-	switch (ext) {
-		case "pdf":
-		case "doc":
-		case "docx":
-		case "txt":
-		case "md":
-			return FileText;
-		case "png":
-		case "jpg":
-		case "jpeg":
-		case "gif":
-		case "svg":
-		case "webp":
-			return FileImage;
-		case "json":
-		case "xml":
-		case "html":
-		case "css":
-		case "js":
-		case "ts":
-			return FileCode;
-		case "csv":
-		case "xlsx":
-		case "xls":
-			return FileSpreadsheet;
-		default:
-			return FileIcon;
-	}
-}
-
-function formatFileSize(bytes: number): string {
-	if (bytes === 0) return "0 B";
-	const k = 1024;
-	const sizes = ["B", "KB", "MB", "GB"];
-	const i = Math.floor(Math.log(bytes) / Math.log(k));
-	return `${parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`;
-}
 
 function formatDate(dateStr: string | null | undefined): string {
 	if (!dateStr) return "—";
