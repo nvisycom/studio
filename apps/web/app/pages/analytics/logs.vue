@@ -407,7 +407,7 @@ function importLogs() {
                 <div class="flex items-center space-x-2">
                   <Checkbox
                     id="export-info"
-                    v-model:checked="exportEventTypes.info"
+                    v-model="exportEventTypes.info"
                   />
                   <label
                     for="export-info"
@@ -419,7 +419,7 @@ function importLogs() {
                 <div class="flex items-center space-x-2">
                   <Checkbox
                     id="export-warning"
-                    v-model:checked="exportEventTypes.warning"
+                    v-model="exportEventTypes.warning"
                   />
                   <label
                     for="export-warning"
@@ -431,7 +431,7 @@ function importLogs() {
                 <div class="flex items-center space-x-2">
                   <Checkbox
                     id="export-error"
-                    v-model:checked="exportEventTypes.error"
+                    v-model="exportEventTypes.error"
                   />
                   <label
                     for="export-error"

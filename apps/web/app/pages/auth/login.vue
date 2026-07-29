@@ -149,7 +149,7 @@ async function handleMicrosoftLogin(): Promise<void> {
 
       <!-- Remember Me -->
       <div class="flex items-center gap-2">
-        <Checkbox id="remember" v-model:checked="rememberMe" />
+        <Checkbox id="remember" v-model="rememberMe" />
         <Label
           for="remember"
           class="text-sm font-normal cursor-pointer text-muted-foreground"

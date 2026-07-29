@@ -153,22 +153,32 @@ export const useOpenstatusStore = defineStore("openstatus", () => {
 export function useOpenstatus() {
 	const store = useOpenstatusStore();
 
-	return {
-		// Reactive state from store (use storeToRefs for reactivity)
-		statusData: computed(() => store.statusData),
-		error: computed(() => store.error),
-		isLoading: computed(() => store.isLoading),
-		currentStatus: computed(() => store.currentStatus),
-		statusLabel: computed(() => store.statusLabel),
-		statusConfig: computed(() => store.statusConfig),
+	// State and getters are already reactive; storeToRefs preserves that without
+	// re-wrapping each one in a redundant computed.
+	const {
+		statusData,
+		error,
+		isLoading,
+		currentStatus,
+		statusLabel,
+		statusConfig,
+	} = storeToRefs(store);
 
-		// Additional computed helpers
-		isOperational: computed(() => store.currentStatus === "operational"),
-		hasError: computed(() => !!store.error),
+	return {
+		statusData,
+		error,
+		isLoading,
+		currentStatus,
+		statusLabel,
+		statusConfig,
+
+		// Genuinely derived helpers.
+		isOperational: computed(() => currentStatus.value === "operational"),
+		hasError: computed(() => !!error.value),
 		isHealthy: computed(
 			() =>
-				store.currentStatus === "operational" ||
-				store.currentStatus === "under_maintenance",
+				currentStatus.value === "operational" ||
+				currentStatus.value === "under_maintenance",
 		),
 		// Alias for refresh
 		fetchStatus: store.refresh,

@@ -18,7 +18,6 @@ export function useApiTokens() {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
 			const result = await client.apiTokens.listApiTokens();
-			console.log("API Tokens response:", result.items);
 			return result.items;
 		},
 		enabled: () => !!authToken.value?.apiToken,

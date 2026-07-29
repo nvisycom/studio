@@ -112,7 +112,6 @@ const filteredMembers = computed(() => {
 
 const pendingInvites = computed(() => {
 	if (!invites.value) return [];
-	console.log(invites.value);
 	return invites.value.filter((invite) => invite.inviteStatus === "pending");
 });
 

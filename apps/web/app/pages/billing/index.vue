@@ -250,8 +250,8 @@ function toggleAddon(addonId: string) {
                   </Badge>
                 </CardTitle>
                 <Switch
-                  :checked="addon.enabled"
-                  @update:checked="toggleAddon(addon.id)"
+                  :model-value="addon.enabled"
+                  @update:model-value="toggleAddon(addon.id)"
                 />
               </div>
               <CardDescription class="text-xs text-muted-foreground">

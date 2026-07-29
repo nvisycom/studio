@@ -54,7 +54,17 @@ export function useFile(options: UseFileOptions) {
 			!!authToken.value?.apiToken,
 	});
 
-	// Clean up blob URL when component unmounts
+	// Revoke the previous blob URL whenever the content changes (e.g. the
+	// reactive fileId switches), not just on unmount — otherwise each switch
+	// leaks the prior URL.
+	watch(
+		() => fileContentQuery.data.value,
+		(_current, previous) => {
+			if (previous) URL.revokeObjectURL(previous);
+		},
+	);
+
+	// Clean up the current blob URL when the component unmounts.
 	onUnmounted(() => {
 		if (fileContentQuery.data.value) {
 			URL.revokeObjectURL(fileContentQuery.data.value);

@@ -80,8 +80,8 @@ const layers = ref<Layer[]>([
 	{ id: "4", name: "Merge", icon: Merge, page: 4, fileName: "document.pdf" },
 ]);
 
-function selectChange(layerId: string) {
-	console.log("Reviewing change:", layerId);
+function selectChange(_layerId: string) {
+	// TODO: wire change selection once studio review is backed by real data
 }
 
 function deleteLayer(layerId: string) {

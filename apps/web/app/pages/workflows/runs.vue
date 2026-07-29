@@ -119,7 +119,6 @@ const runs = ref<WorkflowRun[]>([
 const searchQuery = ref("");
 const statusFilter = ref("all");
 const dateRange = ref("24h");
-const selectedRuns = ref<Set<string>>(new Set());
 
 const filteredRuns = computed(() => {
 	let filtered = runs.value;
@@ -142,27 +141,15 @@ const filteredRuns = computed(() => {
 	);
 });
 
-function toggleRunSelection(runId: string) {
-	if (selectedRuns.value.has(runId)) {
-		selectedRuns.value.delete(runId);
-	} else {
-		selectedRuns.value.add(runId);
-	}
-}
-
-function toggleAllRuns() {
-	if (selectedRuns.value.size === filteredRuns.value.length) {
-		selectedRuns.value.clear();
-	} else {
-		selectedRuns.value = new Set(filteredRuns.value.map((run) => run.id));
-	}
-}
-
-const allSelected = computed(
-	() =>
-		filteredRuns.value.length > 0 &&
-		selectedRuns.value.size === filteredRuns.value.length,
-);
+const {
+	selected: selectedRuns,
+	allSelected,
+	toggle: toggleRunSelection,
+	toggleAll: toggleAllRuns,
+} = useSelection({
+	items: filteredRuns,
+	getKey: (run) => run.id,
+});
 
 const logsCopied = ref(false);
 
@@ -173,8 +160,8 @@ function copyLogs() {
 	}, 2000);
 }
 
-function viewRunDetails(run: WorkflowRun) {
-	console.log("View details:", run);
+function viewRunDetails(_run: WorkflowRun) {
+	// TODO: open a run-details modal (see connections/runs.vue)
 }
 
 function copyRunDetails(_run: WorkflowRun) {
