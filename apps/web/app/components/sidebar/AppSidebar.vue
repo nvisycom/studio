@@ -48,9 +48,6 @@ const { t } = useI18n();
 const { state } = useSidebar();
 const helpChatRef = ref();
 
-// Get authenticated user data
-const { displayName, emailAddress } = useAccount();
-
 // Check if workspace is selected and get current role
 const { currentWorkspaceSlug, currentWorkspace } = useWorkspaces();
 const hasWorkspace = computed(() => !!currentWorkspaceSlug.value);
@@ -58,12 +55,6 @@ const isAdminOrOwner = computed(() => {
 	const role = currentWorkspace.value?.memberRole;
 	return role === "owner" || role === "admin";
 });
-
-const userData = computed(() => ({
-	name: displayName.value || "Guest",
-	email: emailAddress.value || "",
-	avatar: "",
-}));
 
 // Navigation data
 const navWorkspace = computed(() => [
@@ -219,7 +210,7 @@ function openHelpChat() {
       </div>
       <SidebarSeparator />
       <div class="h-[calc(2.75rem-1px)] px-2 flex items-center">
-        <NavUser :user="userData" />
+        <NavUser />
       </div>
     </SidebarFooter>
     <SidebarRail />
