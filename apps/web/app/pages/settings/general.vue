@@ -33,7 +33,6 @@ definePageMeta({
 });
 
 const { t } = useI18n();
-const router = useRouter();
 
 // Composables
 const {
@@ -176,7 +175,7 @@ async function handleLeaveWorkspace() {
 		await leaveAsync();
 		isLeaveDialogOpen.value = false;
 		toast.success(t("settings.workspace.messages.left"));
-		router.push("/");
+		navigateTo("/");
 	} catch (err) {
 		toast.error(t("settings.workspace.errors.leaveFailed"), {
 			description: getErrorMessage(err, t("common.errors.tryAgain")),
@@ -192,7 +191,7 @@ async function handleDeleteWorkspace() {
 		isDeleteDialogOpen.value = false;
 		deleteConfirmName.value = "";
 		toast.success(t("settings.workspace.messages.deleted"));
-		router.push("/");
+		navigateTo("/");
 	} catch (err) {
 		toast.error(t("settings.workspace.errors.deleteFailed"), {
 			description: getErrorMessage(err, t("common.errors.tryAgain")),

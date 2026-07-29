@@ -2,16 +2,7 @@
 import type { DateRange } from "reka-ui";
 import type { Ref } from "vue";
 import { getLocalTimeZone, today } from "@internationalized/date";
-import {
-	Download,
-	Upload,
-	Search,
-	Filter,
-	AlertCircle,
-	Info,
-	XCircle,
-	Calendar,
-} from "@lucide/vue";
+import { Download, Upload, Search, Filter, Info, Calendar } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import { Badge } from "#console/components/ui/badge";
 import {
@@ -186,17 +177,6 @@ const filteredLogs = computed(() => {
 
 	return filtered;
 });
-
-function getLevelIcon(level: string) {
-	switch (level) {
-		case "error":
-			return XCircle;
-		case "warning":
-			return AlertCircle;
-		default:
-			return Info;
-	}
-}
 
 function formatTimestamp(date: Date) {
 	return new Intl.DateTimeFormat("en-US", {

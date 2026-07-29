@@ -31,13 +31,6 @@ import {
 	SidebarSeparator,
 	useSidebar,
 } from "#console/components/ui/sidebar";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "#console/components/ui/dropdown-menu";
 
 const props = withDefaults(defineProps<SidebarProps>(), {
 	collapsible: "icon",

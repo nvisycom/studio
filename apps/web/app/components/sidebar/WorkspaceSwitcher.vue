@@ -24,19 +24,10 @@ const { isMobile } = useSidebar();
 const MAX_NAME_LENGTH = 18;
 
 // Use the workspaces composable
-const {
-	workspaces,
-	currentWorkspace,
-	currentWorkspaceSlug,
-	selectWorkspace,
-	isLoading,
-} = useWorkspaces();
+const { workspaces, currentWorkspace, currentWorkspaceSlug, selectWorkspace } =
+	useWorkspaces();
 
 const isCreateWorkspaceModalOpen = ref(false);
-
-function handleSelectWorkspace(workspaceId: string) {
-	selectWorkspace(workspaceId);
-}
 </script>
 
 <template>
@@ -93,7 +84,7 @@ function handleSelectWorkspace(workspaceId: string) {
             :class="
               workspace.slug === currentWorkspaceSlug ? 'bg-accent' : ''
             "
-            @click="handleSelectWorkspace(workspace.slug)"
+            @click="selectWorkspace(workspace.slug)"
           >
             <EntityAvatar
               :name="workspace.displayName"

@@ -40,7 +40,7 @@ export function loadWorkflowData(workflowId: string): WorkflowData {
 	}
 
 	// Try to load from localStorage (only available on client)
-	if (typeof window !== "undefined") {
+	if (import.meta.client) {
 		const saved = localStorage.getItem(`${STORAGE_KEY_PREFIX}${workflowId}`);
 		if (saved) {
 			try {
@@ -78,7 +78,7 @@ export function loadWorkflowData(workflowId: string): WorkflowData {
  */
 export function saveWorkflowData(workflowId: string, data: WorkflowData) {
 	workflowCache.set(workflowId, data);
-	if (typeof window !== "undefined") {
+	if (import.meta.client) {
 		localStorage.setItem(
 			`${STORAGE_KEY_PREFIX}${workflowId}`,
 			JSON.stringify(data),
@@ -91,7 +91,7 @@ export function saveWorkflowData(workflowId: string, data: WorkflowData) {
  */
 export function clearWorkflowData(workflowId: string) {
 	workflowCache.delete(workflowId);
-	if (typeof window !== "undefined") {
+	if (import.meta.client) {
 		localStorage.removeItem(`${STORAGE_KEY_PREFIX}${workflowId}`);
 	}
 }

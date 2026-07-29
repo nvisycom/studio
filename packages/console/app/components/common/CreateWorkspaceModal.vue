@@ -62,7 +62,9 @@ async function createWorkspace() {
 	try {
 		await createWorkspaceAsync(workspaceData);
 		open.value = false;
-	} catch (error) {}
+	} catch {
+		// Error surfaced reactively via createError in the template.
+	}
 }
 </script>
 

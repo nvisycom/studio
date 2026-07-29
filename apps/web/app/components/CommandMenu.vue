@@ -34,7 +34,6 @@ import { Dialog, DialogContent } from "#console/components/ui/dialog";
 import { Kbd } from "#console/components/ui/kbd";
 import { toast } from "vue-sonner";
 
-const router = useRouter();
 const { t } = useI18n();
 const colorMode = useColorMode();
 const { getKbdKey } = useKbd();
@@ -49,8 +48,7 @@ const emit = defineEmits<{
 	openSupport: [];
 }>();
 
-// Get current workspace and invite functionality
-const { currentWorkspace } = useWorkspaces();
+// Invite functionality
 const { generateCodeAsync, isGenerating } = useInvites();
 
 // Navigation items - matching sidebar structure
@@ -161,8 +159,8 @@ const quickActions = computed(() => [
 	},
 ]);
 
-function navigateTo(href: string) {
-	router.push(href);
+function goTo(href: string) {
+	navigateTo(href);
 	isOpen.value = false;
 }
 
@@ -175,7 +173,7 @@ async function executeAction(actionId: string) {
 			emit("uploadFile");
 			break;
 		case "invite-member":
-			navigateTo("/team");
+			goTo("/team");
 			return;
 		case "create-invite-code":
 			try {
@@ -187,7 +185,7 @@ async function executeAction(actionId: string) {
 				const inviteUrl = `${baseUrl}/join/${result.inviteCode}`;
 				await navigator.clipboard.writeText(inviteUrl);
 				toast.success(t("commandMenu.actions.inviteCodeCreated"));
-			} catch (err) {
+			} catch {
 				toast.error(t("commandMenu.actions.inviteCodeFailed"));
 			}
 			break;
@@ -212,15 +210,15 @@ defineShortcuts(
 		isOpen.value
 			? {}
 			: {
-					meta_o: () => navigateTo("/"),
-					meta_f: () => navigateTo("/files"),
-					meta_s: () => navigateTo("/studio"),
-					meta_t: () => navigateTo("/team"),
-					meta_i: () => navigateTo("/connections"),
-					meta_a: () => navigateTo("/analytics"),
-					meta_l: () => navigateTo("/analytics/logs"),
-					meta_b: () => navigateTo("/billing"),
-					meta_p: () => navigateTo("/account"),
+					meta_o: () => goTo("/"),
+					meta_f: () => goTo("/files"),
+					meta_s: () => goTo("/studio"),
+					meta_t: () => goTo("/team"),
+					meta_i: () => goTo("/connections"),
+					meta_a: () => goTo("/analytics"),
+					meta_l: () => goTo("/analytics/logs"),
+					meta_b: () => goTo("/billing"),
+					meta_p: () => goTo("/account"),
 					meta_n: () => executeAction("create-workspace"),
 					meta_u: () => executeAction("upload-file"),
 					meta_m: () => executeAction("invite-member"),
@@ -265,7 +263,7 @@ defineShortcuts(
               :key="item.href"
               :value="item.label.toLowerCase()"
               class="cursor-pointer"
-              @select="navigateTo(item.href)"
+              @select="goTo(item.href)"
             >
               <component :is="item.icon" class="mr-2 h-4 w-4" />
               <span>{{ item.label }}</span>
@@ -284,7 +282,7 @@ defineShortcuts(
               :key="item.href"
               :value="item.label.toLowerCase()"
               class="cursor-pointer"
-              @select="navigateTo(item.href)"
+              @select="goTo(item.href)"
             >
               <component :is="item.icon" class="mr-2 h-4 w-4" />
               <span>{{ item.label }}</span>
@@ -303,7 +301,7 @@ defineShortcuts(
               :key="item.href"
               :value="item.label.toLowerCase()"
               class="cursor-pointer"
-              @select="navigateTo(item.href)"
+              @select="goTo(item.href)"
             >
               <component :is="item.icon" class="mr-2 h-4 w-4" />
               <span>{{ item.label }}</span>
@@ -322,7 +320,7 @@ defineShortcuts(
               :key="item.href"
               :value="item.label.toLowerCase()"
               class="cursor-pointer"
-              @select="navigateTo(item.href)"
+              @select="goTo(item.href)"
             >
               <component :is="item.icon" class="mr-2 h-4 w-4" />
               <span>{{ item.label }}</span>
@@ -341,7 +339,7 @@ defineShortcuts(
               :key="item.href"
               :value="item.label.toLowerCase()"
               class="cursor-pointer"
-              @select="navigateTo(item.href)"
+              @select="goTo(item.href)"
             >
               <component :is="item.icon" class="mr-2 h-4 w-4" />
               <span>{{ item.label }}</span>

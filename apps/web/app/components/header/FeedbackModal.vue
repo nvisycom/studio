@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { toast } from "vue-sonner";
-import { Toaster } from "#console/components/ui/sonner";
 import {
 	Dialog,
 	DialogContent,
