@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useEventListener } from "@vueuse/core";
 import type { Component } from "vue";
 import {
 	Send,
@@ -141,29 +142,26 @@ function sendMessage() {
 	chatMessage.value = "";
 }
 
-// Resize handling
+// Resize handling. useEventListener auto-removes on scope dispose, so a
+// mid-drag unmount can't leak document listeners.
 function startResize(e: MouseEvent) {
 	isResizing.value = true;
 	const startY = e.clientY;
 	const startHeight = inputHeight.value;
 
-	function onMouseMove(e: MouseEvent) {
-		const delta = startY - e.clientY;
-		const newHeight = Math.min(
+	const stopMove = useEventListener(document, "mousemove", (ev: MouseEvent) => {
+		const delta = startY - ev.clientY;
+		inputHeight.value = Math.min(
 			Math.max(startHeight + delta, minInputHeight),
 			maxInputHeight,
 		);
-		inputHeight.value = newHeight;
-	}
+	});
 
-	function onMouseUp() {
+	const stopUp = useEventListener(document, "mouseup", () => {
 		isResizing.value = false;
-		document.removeEventListener("mousemove", onMouseMove);
-		document.removeEventListener("mouseup", onMouseUp);
-	}
-
-	document.addEventListener("mousemove", onMouseMove);
-	document.addEventListener("mouseup", onMouseUp);
+		stopMove();
+		stopUp();
+	});
 }
 </script>
 

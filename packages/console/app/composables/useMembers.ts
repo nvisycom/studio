@@ -3,7 +3,7 @@ import type { UpdateMember, ListMembers } from "@nvisy/sdk/datatypes";
 /**
  * Composable for workspace member operations
  */
-export function useMembers(query?: Ref<ListMembers>) {
+export function useMembers(query?: MaybeRef<ListMembers>) {
 	const { $nvisyClient } = useNuxtApp();
 	const { authToken } = useAuth();
 	const { currentWorkspaceSlug } = useWorkspaces();
@@ -12,7 +12,7 @@ export function useMembers(query?: Ref<ListMembers>) {
 		key: () => [
 			"members",
 			currentWorkspaceSlug.value,
-			JSON.stringify(query?.value),
+			JSON.stringify(toValue(query)),
 		],
 		query: async () => {
 			const client = $nvisyClient.value;
@@ -21,7 +21,7 @@ export function useMembers(query?: Ref<ListMembers>) {
 			if (!workspaceSlug) throw new Error("No workspace selected");
 			const result = await client.members.listMembers(
 				workspaceSlug,
-				query?.value,
+				toValue(query),
 			);
 			return result.items;
 		},

@@ -53,8 +53,8 @@ export function useFiles(options: UseFilesOptions = {}) {
 					limit: pageSize,
 				},
 			);
-			// Reset state on initial load
-			allFiles.value = result.items;
+			// The watcher below is the single source that syncs allFiles from
+			// query data; here we only track pagination cursors.
 			nextCursor.value = result.nextCursor ?? undefined;
 			hasMore.value = !!result.nextCursor;
 			return result.items;
@@ -117,6 +117,7 @@ export function useFiles(options: UseFilesOptions = {}) {
 
 	// Reset and reload files
 	function reset() {
+		allFiles.value = [];
 		nextCursor.value = undefined;
 		hasMore.value = true;
 		filesQuery.refetch();

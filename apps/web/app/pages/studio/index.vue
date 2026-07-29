@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useEventListener } from "@vueuse/core";
 import { GripVertical } from "@lucide/vue";
 import {
 	StudioDocumentPreview,
@@ -75,7 +76,8 @@ function toggleChat() {
 	}
 }
 
-// Resize handling
+// Resize handling. useEventListener auto-removes on scope dispose, so a
+// mid-drag unmount can't leak document listeners.
 function startResize(e: MouseEvent) {
 	if (isAnimating.value) return;
 
@@ -83,23 +85,19 @@ function startResize(e: MouseEvent) {
 	const startX = e.clientX;
 	const startWidth = chatWidth.value;
 
-	function onMouseMove(e: MouseEvent) {
-		const delta = startX - e.clientX;
-		const newWidth = Math.min(
+	const stopMove = useEventListener(document, "mousemove", (ev: MouseEvent) => {
+		const delta = startX - ev.clientX;
+		chatWidth.value = Math.min(
 			Math.max(startWidth + delta, minChatWidth),
 			maxChatWidth,
 		);
-		chatWidth.value = newWidth;
-	}
+	});
 
-	function onMouseUp() {
+	const stopUp = useEventListener(document, "mouseup", () => {
 		isResizing.value = false;
-		document.removeEventListener("mousemove", onMouseMove);
-		document.removeEventListener("mouseup", onMouseUp);
-	}
-
-	document.addEventListener("mousemove", onMouseMove);
-	document.addEventListener("mouseup", onMouseUp);
+		stopMove();
+		stopUp();
+	});
 }
 </script>
 

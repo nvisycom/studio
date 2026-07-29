@@ -37,7 +37,6 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	"update:activeTab": [tab: string];
 	"update:searchQuery": [query: string];
 	"update:roleFilter": [role: WorkspaceRole | null];
 	"update:sorting": [
@@ -110,7 +109,6 @@ const currentRoleFilterLabel = computed(() => {
 	return filter?.label ?? t("members.filters.anyRole");
 });
 
-watch(activeTab, (tab) => emit("update:activeTab", tab));
 watch(searchQuery, (query) => emit("update:searchQuery", query));
 watch(selectedRoleFilter, (role) => emit("update:roleFilter", role));
 

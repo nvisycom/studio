@@ -7,7 +7,7 @@ import type {
 /**
  * Composable for workspace invitation operations
  */
-export function useInvites(query?: Ref<ListInvites>) {
+export function useInvites(query?: MaybeRef<ListInvites>) {
 	const { $nvisyClient } = useNuxtApp();
 	const { authToken } = useAuth();
 	const { currentWorkspaceSlug } = useWorkspaces();
@@ -16,7 +16,7 @@ export function useInvites(query?: Ref<ListInvites>) {
 		key: () => [
 			"invites",
 			currentWorkspaceSlug.value,
-			JSON.stringify(query?.value),
+			JSON.stringify(toValue(query)),
 		],
 		query: async () => {
 			const client = $nvisyClient.value;
@@ -25,7 +25,7 @@ export function useInvites(query?: Ref<ListInvites>) {
 			if (!workspaceSlug) throw new Error("No workspace selected");
 			const result = await client.invites.listInvites(
 				workspaceSlug,
-				query?.value ?? { limit: 500 },
+				toValue(query) ?? { limit: 500 },
 			);
 			return result.items;
 		},

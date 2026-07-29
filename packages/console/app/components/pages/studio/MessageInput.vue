@@ -10,13 +10,13 @@ import {
 import { Button } from "#console/components/ui/button";
 import { Textarea } from "#console/components/ui/textarea";
 
-const props = defineProps<{
-	modelValue: string;
+const value = defineModel<string>({ required: true });
+
+defineProps<{
 	isEditing?: boolean;
 }>();
 
 const emit = defineEmits<{
-	"update:modelValue": [value: string];
 	send: [];
 	attach: [];
 	upload: [];
@@ -24,26 +24,10 @@ const emit = defineEmits<{
 	summarize: [];
 }>();
 
-const localValue = ref(props.modelValue);
-
-watch(
-	() => props.modelValue,
-	(newValue) => {
-		localValue.value = newValue;
-	},
-);
-
-function updateValue(event: Event) {
-	const target = event.target as HTMLTextAreaElement;
-	localValue.value = target.value;
-	emit("update:modelValue", target.value);
-}
-
 function handleSend() {
-	if (!localValue.value.trim()) return;
+	if (!value.value.trim()) return;
 	emit("send");
-	localValue.value = "";
-	emit("update:modelValue", "");
+	value.value = "";
 }
 </script>
 
@@ -52,8 +36,7 @@ function handleSend() {
     class="border border-neutral-200 dark:border-neutral-800 rounded-lg relative"
   >
     <Textarea
-      :model-value="localValue"
-      @input="updateValue"
+      v-model="value"
       placeholder="Type your message here."
       class="min-h-[120px] border-0 focus-visible:ring-0 resize-none pl-3 pr-12 pb-12"
       @keydown.enter.prevent="handleSend"
@@ -105,7 +88,7 @@ function handleSend() {
       <!-- Right side send/edit button -->
       <Button
         @click="handleSend"
-        :disabled="!localValue.trim()"
+        :disabled="!value.trim()"
         size="sm"
         :class="['h-8 w-8 p-0', isEditing && 'bg-blue-600 hover:bg-blue-700']"
       >
