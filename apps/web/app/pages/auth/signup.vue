@@ -20,12 +20,22 @@ const apiError = computed(() =>
 );
 
 // Form state
-const displayName = ref("");
+const username = ref("");
 const email = ref("");
 const password = ref("");
 const agreeToTerms = ref<boolean | "indeterminate">(false);
 const showPassword = ref(false);
 const termsError = ref(false);
+
+// Username: lowercase alphanumeric with single internal dashes.
+const USERNAME_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const usernameError = computed(() => {
+	const value = username.value.trim();
+	if (!value) return "";
+	return USERNAME_PATTERN.test(value)
+		? ""
+		: "Use lowercase letters, numbers, and single dashes between characters.";
+});
 
 async function handleSignup(): Promise<void> {
 	if (agreeToTerms.value !== true) {
@@ -34,10 +44,11 @@ async function handleSignup(): Promise<void> {
 	}
 	termsError.value = false;
 
+	if (usernameError.value) return;
+
 	try {
 		await signupAsync({
-			displayName: displayName.value,
-			username: email.value.split("@")[0] ?? email.value,
+			username: username.value.trim(),
 			emailAddress: email.value,
 			password: password.value,
 			rememberMe: true,
@@ -111,18 +122,23 @@ async function handleMicrosoftSignup(): Promise<void> {
 
     <!-- Form -->
     <form @submit.prevent="handleSignup" class="space-y-4">
-      <!-- Display Name -->
+      <!-- Username -->
       <div class="space-y-2">
-        <Label for="displayName">Name</Label>
+        <Label for="username">Username</Label>
         <Input
-          id="displayName"
-          v-model="displayName"
+          id="username"
+          v-model="username"
           type="text"
-          placeholder="John Doe"
+          placeholder="john-doe"
           class="h-10"
           required
-          autocomplete="name"
+          autocapitalize="none"
+          autocomplete="username"
+          :aria-invalid="!!usernameError"
         />
+        <p v-if="usernameError" class="text-sm text-destructive">
+          {{ usernameError }}
+        </p>
       </div>
 
       <!-- Email -->
