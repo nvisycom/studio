@@ -69,9 +69,11 @@ const {
 	isRevoking,
 } = useApiTokens();
 
-// The auth token no longer carries the API token's id, so the current
-// session can't be singled out in the list.
-const currentTokenId = computed<string | null>(() => null);
+// The token listing flags which token authenticated the current request,
+// so the active session can be marked and protected from bulk revoke.
+const currentTokenId = computed<string | null>(
+	() => tokens.value?.find((t) => t.current)?.id ?? null,
+);
 
 // Form state
 const tokenName = ref("");
