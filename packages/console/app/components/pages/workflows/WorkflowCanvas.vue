@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, shallowRef, watch, nextTick, computed, provide } from "vue";
 import { PanelRightClose, PanelRightOpen } from "@lucide/vue";
 import { VueFlow, useVueFlow, type Node, type Edge } from "@vue-flow/core";
 import { Background } from "@vue-flow/background";

@@ -1,4 +1,3 @@
-import { useMutation } from "@pinia/colada";
 import { login as sdkLogin, signup as sdkSignup } from "@nvisy/sdk/auth";
 import type { Login, Signup, AuthToken } from "@nvisy/sdk/datatypes";
 

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import type { SidebarProps } from "#console/components/ui/sidebar";
 import {
 	Puzzle,

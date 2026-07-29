@@ -1,4 +1,3 @@
-import { useQuery } from "@pinia/colada";
 import type { PipelineRun } from "@nvisy/sdk/datatypes";
 
 /**

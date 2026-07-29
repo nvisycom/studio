@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
 import { MiniMap } from "@vue-flow/minimap";
 import { useVueFlow, type GraphNode } from "@vue-flow/core";
 import { MapIcon, X, Plus, Minus } from "@lucide/vue";

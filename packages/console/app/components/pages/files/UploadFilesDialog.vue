@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
 import { Upload, X, FileText, Check, AlertCircle, Loader2 } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import {

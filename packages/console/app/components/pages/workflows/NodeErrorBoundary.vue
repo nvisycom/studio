@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, onErrorCaptured } from "vue";
 import { AlertTriangle } from "@lucide/vue";
 
 interface Props {

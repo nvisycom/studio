@@ -1,4 +1,3 @@
-import { useQuery } from "@pinia/colada";
 import type { File as NvisyFile } from "@nvisy/sdk/datatypes";
 
 export interface UseFileOptions {

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
 import type { Node } from "@vue-flow/core";
 import { Send, GripHorizontal, Settings } from "@lucide/vue";
 import { Textarea } from "#console/components/ui/textarea";

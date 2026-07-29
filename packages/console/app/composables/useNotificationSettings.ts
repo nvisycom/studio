@@ -1,4 +1,3 @@
-import { useQuery, useMutation } from "@pinia/colada";
 import type {
 	NotificationSettings,
 	UpdateNotificationSettings,

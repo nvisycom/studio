@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import { Search } from "@lucide/vue";
 import { Switch } from "#console/components/ui/switch";
 import { Input } from "#console/components/ui/input";

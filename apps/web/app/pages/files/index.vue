@@ -8,7 +8,6 @@ import {
 	Search,
 	Upload,
 } from "@lucide/vue";
-import { computed, ref } from "vue";
 import { toast } from "vue-sonner";
 import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";

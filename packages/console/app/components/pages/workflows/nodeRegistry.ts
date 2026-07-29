@@ -1,4 +1,4 @@
-import { markRaw, type Component } from "vue";
+import type { Component } from "vue";
 import type { NodeTypesObject, NodeComponent } from "@vue-flow/core";
 import {
 	Upload,

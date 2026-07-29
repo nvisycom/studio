@@ -1,4 +1,4 @@
-import { shallowRef, type Ref, type ComputedRef } from "vue";
+import type { Ref, ComputedRef } from "vue";
 
 export interface UseSelectionOptions<T, K> {
 	items: Ref<T[]> | ComputedRef<T[]>;

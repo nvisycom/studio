@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
 import { Layers, Loader2, ChevronDown } from "@lucide/vue";
 import type { CreateWorkspace } from "@nvisy/sdk/datatypes";
 import {

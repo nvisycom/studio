@@ -1,4 +1,3 @@
-import { useQuery, useMutation } from "@pinia/colada";
 import type { CreateConnection, UpdateConnection } from "@nvisy/sdk/datatypes";
 
 /**

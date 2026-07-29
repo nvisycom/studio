@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, nextTick } from "vue";
 import type { Node } from "@vue-flow/core";
 import { GripVertical } from "@lucide/vue";
 import { WorkflowCanvas } from "#console/components/pages/workflows";
