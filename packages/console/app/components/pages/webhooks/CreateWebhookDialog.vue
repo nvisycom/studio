@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Webhook, Loader2, Plus, X } from "@lucide/vue";
-import type { WebhookEvent } from "@nvisy/sdk/datatypes";
 import { Input } from "#console/components/ui/input";
 import { Button } from "#console/components/ui/button";
 import { Checkbox } from "#console/components/ui/checkbox";
@@ -14,154 +13,49 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "#console/components/ui/dialog";
+import type { WebhookFormPayload } from "#console/composables/useWebhookForm";
 
 const { t } = useI18n();
 
-// All available webhook events from SDK
-const WEBHOOK_EVENTS: WebhookEvent[] = [
-	"file:created",
-	"file:updated",
-	"file:deleted",
-	"member:added",
-	"member:updated",
-	"member:deleted",
-	"connection:created",
-	"connection:updated",
-	"connection:deleted",
-	"connection:synced",
-	"connection:desynced",
-];
+const open = defineModel<boolean>("open", { default: false });
 
-interface Header {
-	key: string;
-	value: string;
-}
-
-interface Props {
-	open?: boolean;
+defineProps<{
 	isLoading?: boolean;
-}
+}>();
 
-interface Emits {
-	(e: "update:open", value: boolean): void;
-	(
-		e: "create",
-		data: {
-			displayName: string;
-			url: string;
-			status: "active" | "paused";
-			events: WebhookEvent[];
-			headers: Record<string, string>;
-		},
-	): void;
-}
+const emit = defineEmits<{
+	create: [data: WebhookFormPayload];
+}>();
 
-const props = withDefaults(defineProps<Props>(), {
-	open: false,
-	isLoading: false,
-});
+const {
+	name,
+	url,
+	active,
+	events,
+	headers,
+	headerIds,
+	urlError,
+	addHeader,
+	removeHeader,
+	validateUrl,
+	isFormValid,
+	reset,
+	payload,
+} = useWebhookForm();
 
-const emit = defineEmits<Emits>();
-
-// Form data
-const webhookName = ref("");
-const webhookUrl = ref("");
-const webhookActive = ref(true);
-const webhookEvents = ref<Record<WebhookEvent, boolean>>(
-	Object.fromEntries(WEBHOOK_EVENTS.map((e) => [e, false])) as Record<
-		WebhookEvent,
-		boolean
-	>,
-);
-const webhookHeaders = ref<Header[]>([]);
-const urlError = ref("");
-
-// URL validation
-function isValidUrl(url: string): boolean {
-	try {
-		const parsed = new URL(url);
-		return parsed.protocol === "https:" || parsed.protocol === "http:";
-	} catch {
-		return false;
-	}
-}
-
-function validateUrl() {
-	if (webhookUrl.value.trim() && !isValidUrl(webhookUrl.value)) {
-		urlError.value = t("connections.forms.webhook.urlError");
-	} else {
-		urlError.value = "";
-	}
-}
-
-// Header management
-function addHeader() {
-	webhookHeaders.value.push({ key: "", value: "" });
-}
-
-function removeHeader(index: number) {
-	webhookHeaders.value.splice(index, 1);
-}
-
-// Computed validation
-const selectedEvents = computed(() =>
-	WEBHOOK_EVENTS.filter((e) => webhookEvents.value[e]),
-);
-
-const headersObject = computed(() => {
-	const headers: Record<string, string> = {};
-	for (const header of webhookHeaders.value) {
-		if (header.key.trim()) {
-			headers[header.key.trim()] = header.value;
-		}
-	}
-	return headers;
-});
-
-const isFormValid = computed(() => {
-	const urlValid =
-		webhookUrl.value.trim().length > 0 && isValidUrl(webhookUrl.value);
-	return (
-		urlValid &&
-		webhookName.value.trim().length > 0 &&
-		selectedEvents.value.length > 0
-	);
-});
-
-// Functions
-function handleOpenChange(open: boolean) {
-	if (!open) {
-		resetForm();
-	}
-	emit("update:open", open);
-}
-
-function resetForm() {
-	webhookName.value = "";
-	webhookUrl.value = "";
-	webhookActive.value = true;
-	webhookEvents.value = Object.fromEntries(
-		WEBHOOK_EVENTS.map((e) => [e, false]),
-	) as Record<WebhookEvent, boolean>;
-	webhookHeaders.value = [];
-	urlError.value = "";
+function handleOpenChange(value: boolean) {
+	if (!value) reset();
+	open.value = value;
 }
 
 function saveWebhook() {
 	if (!isFormValid.value) return;
-
-	emit("create", {
-		displayName: webhookName.value,
-		url: webhookUrl.value,
-		status: webhookActive.value ? "active" : "paused",
-		events: selectedEvents.value,
-		headers: headersObject.value,
-	});
+	emit("create", payload());
 }
 
 function cancel() {
-	resetForm();
-	emit("update:open", false);
+	reset();
+	open.value = false;
 }
 </script>
 
@@ -197,7 +91,7 @@ function cancel() {
             {{ t("connections.forms.webhook.nameLabel") }}
           </label>
           <Input
-            v-model="webhookName"
+            v-model="name"
             :placeholder="t('connections.forms.webhook.namePlaceholder')"
             class="text-neutral-900 dark:text-white"
           />
@@ -211,11 +105,11 @@ function cancel() {
             {{ t("connections.forms.webhook.urlLabel") }}
           </label>
           <Input
-            v-model="webhookUrl"
+            v-model="url"
             type="url"
             :placeholder="t('connections.forms.webhook.urlPlaceholder')"
             class="text-neutral-900 dark:text-white"
-            @blur="validateUrl"
+            @blur="validateUrl(t)"
           />
           <p
             v-if="urlError"
@@ -243,10 +137,10 @@ function cancel() {
               {{ t("connections.forms.webhook.addHeader") }}
             </Button>
           </div>
-          <div v-if="webhookHeaders.length > 0" class="space-y-2">
+          <div v-if="headers.length > 0" class="space-y-2">
             <div
-              v-for="(header, index) in webhookHeaders"
-              :key="index"
+              v-for="(header, index) in headers"
+              :key="headerIds[index]"
               class="flex items-center gap-2"
             >
               <Input
@@ -286,7 +180,7 @@ function cancel() {
               :key="event"
               class="flex items-center gap-2"
             >
-              <Checkbox :id="event" v-model="webhookEvents[event]" />
+              <Checkbox :id="event" v-model="events[event]" />
               <label
                 :for="event"
                 class="text-sm font-mono text-neutral-900 dark:text-white cursor-pointer"
@@ -302,10 +196,10 @@ function cancel() {
         class="flex items-center justify-between sm:justify-between"
       >
         <div class="flex items-center gap-2">
-          <Switch v-model="webhookActive" />
+          <Switch v-model="active" />
           <span class="text-sm text-neutral-600 dark:text-neutral-400">
             {{
-              webhookActive
+              active
                 ? t("connections.forms.webhook.enabledLabel")
                 : t("connections.forms.webhook.disabledLabel")
             }}

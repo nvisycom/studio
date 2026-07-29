@@ -28,7 +28,6 @@ import {
 import { Kbd } from "#console/components/ui/kbd";
 import CommandMenu from "@/components/CommandMenu.vue";
 import CreateWorkspaceModal from "#console/components/common/CreateWorkspaceModal.vue";
-import HelpChat from "@/components/HelpChat.vue";
 
 const { t } = useI18n();
 const { getKbdKey } = useKbd();
@@ -45,9 +44,9 @@ const secondaryLabel = computed(() =>
 	displayName.value ? (emailAddress.value ?? "") : "",
 );
 
+const { open: openHelpChat } = useHelpChat();
 const isCommandMenuOpen = ref(false);
 const isCreateWorkspaceOpen = ref(false);
-const helpChatRef = ref();
 const colorMode = useColorMode();
 
 function openCommandMenu() {
@@ -73,7 +72,7 @@ function handleUploadFile() {
 }
 
 function handleOpenSupport() {
-	helpChatRef.value?.toggleChat();
+	openHelpChat();
 }
 
 // Global keyboard shortcut for opening command menu
@@ -184,7 +183,4 @@ defineShortcuts({
 
   <!-- Create Workspace Modal -->
   <CreateWorkspaceModal v-model:open="isCreateWorkspaceOpen" />
-
-  <!-- Help Chat -->
-  <HelpChat ref="helpChatRef" />
 </template>

@@ -38,7 +38,7 @@ const props = withDefaults(defineProps<SidebarProps>(), {
 
 const { t } = useI18n();
 const { state } = useSidebar();
-const helpChatRef = ref();
+const { open: openHelpChat } = useHelpChat();
 
 // Check if workspace is selected and get current role
 const { currentWorkspaceSlug, currentWorkspace } = useWorkspaces();
@@ -111,10 +111,6 @@ const navObservability = computed(() => [
 		isActive: false,
 	},
 ]);
-
-function openHelpChat() {
-	helpChatRef.value?.toggleChat();
-}
 </script>
 
 <template>
@@ -209,5 +205,5 @@ function openHelpChat() {
   </Sidebar>
 
   <!-- Help Chat Popup -->
-  <HelpChat ref="helpChatRef" />
+  <HelpChat />
 </template>
