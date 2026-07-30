@@ -13,7 +13,6 @@ import {
 	Compass,
 	PenTool,
 	Workflow,
-	SquareTerminal,
 } from "@lucide/vue";
 import NavMain from "@/components/sidebar/NavMain.vue";
 import NavUser from "@/components/sidebar/NavUser.vue";
@@ -75,12 +74,6 @@ const navAutomation = computed(() => [
 		title: t("sidebar.workflows"),
 		url: "/workflows",
 		icon: Workflow,
-		isActive: false,
-	},
-	{
-		title: t("sidebar.editor"),
-		url: "/editor",
-		icon: SquareTerminal,
 		isActive: false,
 	},
 	{

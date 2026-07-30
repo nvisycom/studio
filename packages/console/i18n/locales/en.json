@@ -1115,7 +1115,6 @@
 		"connections": "Connections",
 		"explore": "Explore",
 		"workflows": "Workflows",
-		"editor": "Editor",
 		"observability": "Observability",
 		"analytics": "Analytics",
 		"logs": "Logs",
@@ -1162,6 +1161,67 @@
 			"profile": "Profile",
 			"tokens": "API Tokens",
 			"logout": "Log out"
+		}
+	},
+	"workflows": {
+		"title": "Pipelines",
+		"count": "{count} pipeline configured | {count} pipelines configured",
+		"footer": "Pipelines automate document detection and redaction.",
+		"learnMore": "Learn more",
+		"status": {
+			"draft": "Draft",
+			"enabled": "Enabled",
+			"disabled": "Disabled"
+		},
+		"table": {
+			"name": "Name",
+			"status": "Status",
+			"updated": "Updated"
+		},
+		"actions": {
+			"create": "Create Pipeline",
+			"delete": "Delete",
+			"viewRuns": "View Runs"
+		},
+		"empty": {
+			"title": "No pipelines yet",
+			"description": "Create your first pipeline to automate document processing."
+		},
+		"toast": {
+			"deleted": "Pipeline deleted",
+			"deleteFailed": "Failed to delete pipeline"
+		},
+		"create": {
+			"title": "Create Pipeline",
+			"description": "Configure a detection and redaction pipeline.",
+			"nameLabel": "Name",
+			"namePlaceholder": "Document Redaction",
+			"slugLabel": "Slug",
+			"slugPlaceholder": "document-redaction",
+			"slugHint": "Lowercase letters, numbers, and single dashes. URL-safe identifier.",
+			"descriptionLabel": "Description",
+			"descriptionPlaceholder": "What this pipeline does (optional).",
+			"detectionLabel": "Detection",
+			"engines": {
+				"pattern": {
+					"label": "Pattern",
+					"description": "Built-in regex and dictionary recognizers."
+				},
+				"ner": {
+					"label": "Named entities",
+					"description": "Named-entity recognition."
+				},
+				"llm": {
+					"label": "LLM",
+					"description": "Language-model assisted detection."
+				},
+				"language": {
+					"label": "Language detection",
+					"description": "Detect document language before analysis."
+				}
+			},
+			"cancel": "Cancel",
+			"submit": "Create"
 		}
 	}
 }

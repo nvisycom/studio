@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Tabs, TabsList, TabsTrigger } from "#console/components/ui/tabs";
 import StudioFileTabs from "./StudioFileTabs.vue";
-import EditorWorkflowTabs from "./EditorWorkflowTabs.vue";
 import {
 	Settings,
 	Key,
@@ -33,9 +32,6 @@ const showWorkflowsTabs = computed(() => route.path.startsWith("/workflows"));
 
 // Studio pages show file tabs only (not navigation tabs)
 const showStudioTabs = computed(() => route.path.startsWith("/studio"));
-
-// Editor pages show workflow tabs
-const showEditorTabs = computed(() => route.path.startsWith("/editor"));
 
 const showSettingsTabs = computed(() => route.path.startsWith("/settings"));
 
@@ -85,7 +81,6 @@ const hasVisibleTabs = computed(() => {
 		showFilesTabs.value ||
 		showWorkflowsTabs.value ||
 		showStudioTabs.value ||
-		showEditorTabs.value ||
 		showSettingsTabs.value ||
 		showAccountTabs.value ||
 		showAnalyticsTabs.value
@@ -161,9 +156,6 @@ defineExpose({
 
   <!-- Studio File Tabs (shown on all studio pages including chat) -->
   <StudioFileTabs v-else-if="showStudioTabs" />
-
-  <!-- Editor Workflow Tabs -->
-  <EditorWorkflowTabs v-else-if="showEditorTabs" />
 
   <!-- Settings Tabs (Workspace Settings) -->
   <Tabs v-else-if="showSettingsTabs" :model-value="currentSettingsTab">

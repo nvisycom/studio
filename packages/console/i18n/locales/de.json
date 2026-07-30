@@ -1115,7 +1115,6 @@
 		"connections": "Verbindungen",
 		"explore": "Entdecken",
 		"workflows": "Workflows",
-		"editor": "Editor",
 		"observability": "Beobachtbarkeit",
 		"analytics": "Analytik",
 		"logs": "Protokolle",
@@ -1162,6 +1161,67 @@
 			"profile": "Profil",
 			"tokens": "API-Tokens",
 			"logout": "Abmelden"
+		}
+	},
+	"workflows": {
+		"title": "Pipelines",
+		"count": "{count} Pipeline konfiguriert | {count} Pipelines konfiguriert",
+		"footer": "Pipelines automatisieren Dokumentenerkennung und -schwärzung.",
+		"learnMore": "Mehr erfahren",
+		"status": {
+			"draft": "Entwurf",
+			"enabled": "Aktiviert",
+			"disabled": "Deaktiviert"
+		},
+		"table": {
+			"name": "Name",
+			"status": "Status",
+			"updated": "Aktualisiert"
+		},
+		"actions": {
+			"create": "Pipeline erstellen",
+			"delete": "Löschen",
+			"viewRuns": "Ausführungen"
+		},
+		"empty": {
+			"title": "Noch keine Pipelines",
+			"description": "Erstellen Sie Ihre erste Pipeline zur automatischen Dokumentenverarbeitung."
+		},
+		"toast": {
+			"deleted": "Pipeline gelöscht",
+			"deleteFailed": "Pipeline konnte nicht gelöscht werden"
+		},
+		"create": {
+			"title": "Pipeline erstellen",
+			"description": "Konfigurieren Sie eine Erkennungs- und Schwärzungs-Pipeline.",
+			"nameLabel": "Name",
+			"namePlaceholder": "Dokumentenschwärzung",
+			"slugLabel": "Slug",
+			"slugPlaceholder": "dokumentenschwaerzung",
+			"slugHint": "Kleinbuchstaben, Zahlen und einzelne Bindestriche. URL-sicherer Bezeichner.",
+			"descriptionLabel": "Beschreibung",
+			"descriptionPlaceholder": "Was diese Pipeline tut (optional).",
+			"detectionLabel": "Erkennung",
+			"engines": {
+				"pattern": {
+					"label": "Muster",
+					"description": "Integrierte Regex- und Wörterbuch-Erkenner."
+				},
+				"ner": {
+					"label": "Benannte Entitäten",
+					"description": "Erkennung benannter Entitäten."
+				},
+				"llm": {
+					"label": "LLM",
+					"description": "Sprachmodellgestützte Erkennung."
+				},
+				"language": {
+					"label": "Spracherkennung",
+					"description": "Dokumentsprache vor der Analyse erkennen."
+				}
+			},
+			"cancel": "Abbrechen",
+			"submit": "Erstellen"
 		}
 	}
 }
