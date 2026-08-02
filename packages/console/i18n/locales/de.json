@@ -393,7 +393,15 @@
 			"pending": "Ausstehend",
 			"processing": "Verarbeitung",
 			"ready": "Bereit",
-			"canceled": "Abgebrochen"
+			"canceled": "Abgebrochen",
+			"modality": "Modalität",
+			"format": "Format",
+			"modalities": {
+				"text": "Text",
+				"image": "Bild",
+				"tabular": "Tabellarisch",
+				"audio": "Audio"
+			}
 		},
 		"sorting": {
 			"dateDesc": "Datum (Neueste)",

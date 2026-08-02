@@ -63,15 +63,17 @@ export function useFiles(options: UseFilesOptions = {}) {
 			!!effectiveWorkspaceSlug.value && !!authToken.value?.apiToken,
 	});
 
-	// Reset pagination state and force refetch when workspace changes
-	watch(effectiveWorkspaceSlug, (newId, oldId) => {
-		if (newId !== oldId) {
+	// Reset pagination and refetch when the workspace or query changes, so a
+	// stale cursor from a previous filter can't leak into loadMore.
+	watch(
+		[effectiveWorkspaceSlug, () => JSON.stringify(queryParams.value)],
+		() => {
 			allFiles.value = [];
 			nextCursor.value = undefined;
 			hasMore.value = true;
 			filesQuery.refetch();
-		}
-	});
+		},
+	);
 
 	// Sync allFiles with query data
 	// This handles initial load, navigation back to page, and refresh after mutations

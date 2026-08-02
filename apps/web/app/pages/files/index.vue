@@ -1,7 +1,14 @@
 <script setup lang="ts">
-import type { File as NvisyFile, UpdateFile } from "@nvisy/sdk/datatypes";
+import type {
+	File as NvisyFile,
+	UpdateFile,
+	ListFiles,
+	ModalityToken,
+	FormatToken,
+} from "@nvisy/sdk/datatypes";
 import {
 	FileText,
+	Filter,
 	LayoutGrid,
 	List,
 	Loader2,
@@ -11,6 +18,15 @@ import {
 import { toast } from "vue-sonner";
 import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
+import { Badge } from "#console/components/ui/badge";
+import {
+	DropdownMenu,
+	DropdownMenuCheckboxItem,
+	DropdownMenuContent,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "#console/components/ui/dropdown-menu";
 import {
 	DeleteFileDialog,
 	EditFileDialog,
@@ -27,6 +43,19 @@ definePageMeta({
 	pageCategory: "Files",
 });
 
+// Filter state — filtering is done server-side via the listFiles query.
+const searchQuery = ref("");
+const selectedModalities = ref<ModalityToken[]>([]);
+const selectedFormats = ref<FormatToken[]>([]);
+
+const filesQuery = computed<ListFiles>(() => ({
+	...(searchQuery.value.trim() && { search: searchQuery.value.trim() }),
+	...(selectedModalities.value.length && {
+		modality: selectedModalities.value,
+	}),
+	...(selectedFormats.value.length && { formats: selectedFormats.value }),
+}));
+
 const {
 	files,
 	isLoading,
@@ -41,9 +70,8 @@ const {
 	loadMore,
 	hasMore,
 	isLoadingMore,
-} = useFiles();
+} = useFiles({ query: filesQuery });
 
-const searchQuery = ref("");
 const viewMode = ref<"list" | "grid">("list");
 const isDraggingOver = ref(false);
 
@@ -54,22 +82,43 @@ const fileToDelete = ref<NvisyFile | null>(null);
 const fileToEdit = ref<NvisyFile | null>(null);
 const isUploadingDrop = ref(false);
 
-const filteredFiles = computed(() => {
-	let filtered = files.value || [];
+const MODALITY_TOKENS: ModalityToken[] = ["text", "image", "tabular", "audio"];
+const FORMAT_TOKENS: FormatToken[] = [
+	"csv",
+	"docx",
+	"htm",
+	"html",
+	"jpeg",
+	"jpg",
+	"json",
+	"log",
+	"png",
+	"tif",
+	"tiff",
+	"txt",
+	"wav",
+	"xlsx",
+	"xml",
+];
 
-	if (searchQuery.value.trim()) {
-		const query = searchQuery.value.toLowerCase();
-		filtered = filtered.filter((file) =>
-			file.displayName.toLowerCase().includes(query),
-		);
-	}
+function toggleModality(token: ModalityToken) {
+	const next = new Set(selectedModalities.value);
+	next.has(token) ? next.delete(token) : next.add(token);
+	selectedModalities.value = [...next];
+}
 
-	return filtered;
-});
+function toggleFormat(token: FormatToken) {
+	const next = new Set(selectedFormats.value);
+	next.has(token) ? next.delete(token) : next.add(token);
+	selectedFormats.value = [...next];
+}
 
-const hasFilters = computed(() => {
-	return searchQuery.value.trim().length > 0;
-});
+const hasFilters = computed(
+	() =>
+		searchQuery.value.trim().length > 0 ||
+		selectedModalities.value.length > 0 ||
+		selectedFormats.value.length > 0,
+);
 
 // Selection
 const {
@@ -79,7 +128,7 @@ const {
 	toggleAll: toggleSelectAll,
 	clear: clearSelection,
 } = useSelection({
-	items: filteredFiles,
+	items: files,
 	getKey: (f) => f.id,
 });
 
@@ -231,6 +280,8 @@ async function handleDrop(e: DragEvent) {
 
 function clearFilters() {
 	searchQuery.value = "";
+	selectedModalities.value = [];
+	selectedFormats.value = [];
 }
 
 function handleLoadMore() {
@@ -295,6 +346,75 @@ function handleGridScroll(event: Event) {
             />
           </div>
 
+          <!-- Modality Filter -->
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <Button variant="outline" size="sm" class="h-9 font-normal">
+                <Filter :size="14" class="mr-2 text-muted-foreground" />
+                {{ t("files.filters.modality") }}
+                <Badge
+                  v-if="selectedModalities.length"
+                  variant="secondary"
+                  class="ml-2"
+                >
+                  {{ selectedModalities.length }}
+                </Badge>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" class="w-44">
+              <DropdownMenuLabel>{{
+                t("files.filters.modality")
+              }}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem
+                v-for="token in MODALITY_TOKENS"
+                :key="token"
+                :model-value="selectedModalities.includes(token)"
+                class="capitalize"
+                @update:model-value="toggleModality(token)"
+                @select.prevent
+              >
+                {{ t(`files.filters.modalities.${token}`) }}
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <!-- Format Filter -->
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <Button variant="outline" size="sm" class="h-9 font-normal">
+                <Filter :size="14" class="mr-2 text-muted-foreground" />
+                {{ t("files.filters.format") }}
+                <Badge
+                  v-if="selectedFormats.length"
+                  variant="secondary"
+                  class="ml-2"
+                >
+                  {{ selectedFormats.length }}
+                </Badge>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              class="max-h-72 w-40 overflow-y-auto"
+            >
+              <DropdownMenuLabel>{{
+                t("files.filters.format")
+              }}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem
+                v-for="token in FORMAT_TOKENS"
+                :key="token"
+                :model-value="selectedFormats.includes(token)"
+                class="font-mono text-xs"
+                @update:model-value="toggleFormat(token)"
+                @select.prevent
+              >
+                {{ token }}
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <!-- View Toggle -->
           <div class="flex items-center border border-border/50 rounded-md">
             <Button
@@ -319,7 +439,7 @@ function handleGridScroll(event: Event) {
         </div>
 
         <!-- Files Content Area -->
-        <div v-if="filteredFiles.length > 0" class="relative flex-1 min-h-0">
+        <div v-if="files.length > 0" class="relative flex-1 min-h-0">
           <!-- Drag overlay -->
           <Transition
             enter-active-class="transition-opacity duration-200"
@@ -372,7 +492,7 @@ function handleGridScroll(event: Event) {
           <FilesTableView
             v-if="viewMode === 'list'"
             class="h-full"
-            :files="filteredFiles"
+            :files="files"
             :selected-files="selectedFiles"
             :all-selected="allSelected"
             :selected-count="selectedFilesCount"
@@ -392,7 +512,7 @@ function handleGridScroll(event: Event) {
           <FilesGridView
             v-else
             class="h-full"
-            :files="filteredFiles"
+            :files="files"
             :selected-files="selectedFiles"
             :selected-count="selectedFilesCount"
             @toggle-selection="toggleFileSelection"

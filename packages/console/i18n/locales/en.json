@@ -393,7 +393,15 @@
 			"pending": "Pending",
 			"processing": "Processing",
 			"ready": "Ready",
-			"canceled": "Canceled"
+			"canceled": "Canceled",
+			"modality": "Modality",
+			"format": "Format",
+			"modalities": {
+				"text": "Text",
+				"image": "Image",
+				"tabular": "Tabular",
+				"audio": "Audio"
+			}
 		},
 		"sorting": {
 			"dateDesc": "Date (Newest)",
