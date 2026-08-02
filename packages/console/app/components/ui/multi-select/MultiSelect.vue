@@ -10,6 +10,7 @@ import {
 	ComboboxInput,
 	ComboboxItem,
 	ComboboxList,
+	ComboboxTrigger,
 } from "#console/components/ui/combobox";
 
 interface Option {
@@ -39,14 +40,16 @@ function isSelected(value: T): boolean {
 
 <template>
   <Combobox v-model="model" multiple>
-    <ComboboxAnchor as-child>
-      <Button variant="outline" size="sm" class="h-9 font-normal">
-        <Filter :size="14" class="mr-2 text-muted-foreground" />
-        {{ props.label }}
-        <Badge v-if="model.length" variant="secondary" class="ml-2">
-          {{ model.length }}
-        </Badge>
-      </Button>
+    <ComboboxAnchor as-child class="w-auto">
+      <ComboboxTrigger as-child>
+        <Button variant="outline" size="sm" class="h-9 font-normal">
+          <Filter :size="14" class="mr-2 text-muted-foreground" />
+          {{ props.label }}
+          <Badge v-if="model.length" variant="secondary" class="ml-2">
+            {{ model.length }}
+          </Badge>
+        </Button>
+      </ComboboxTrigger>
     </ComboboxAnchor>
 
     <ComboboxList align="end" :class="props.contentClass ?? 'w-52'">

@@ -296,6 +296,71 @@ function handleGridScroll(event: Event) {
     @drop="handleDrop"
   >
     <div class="max-w-7xl mx-auto w-full flex flex-col flex-1 min-h-0">
+      <!-- Search, Filters, and Actions (always mounted, so a refetch
+           triggered by a filter change can't tear down an open dropdown) -->
+      <div
+        class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center mb-4"
+      >
+        <Button variant="default" size="sm" @click="openUploadDialog">
+          <Upload :size="16" class="mr-2" />
+          {{ t("files.actions.upload") }}
+        </Button>
+
+        <div class="relative flex-1">
+          <Search
+            :size="16"
+            class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+          />
+          <Input
+            v-model="searchQuery"
+            :placeholder="t('files.filters.search')"
+            class="pl-10 h-9 text-sm"
+          />
+        </div>
+
+        <!-- Modality Filter -->
+        <MultiSelect
+          v-model="selectedModalities"
+          :options="modalityOptions"
+          :label="t('files.filters.modality')"
+          content-class="w-44"
+          item-class="capitalize"
+        />
+
+        <!-- Format Filter (searchable) -->
+        <MultiSelect
+          v-model="selectedFormats"
+          :options="formatOptions"
+          :label="t('files.filters.format')"
+          searchable
+          :search-placeholder="t('files.filters.formatSearch')"
+          :empty-text="t('files.filters.noFormats')"
+          item-class="font-mono text-xs"
+        />
+
+        <!-- View Toggle -->
+        <div class="flex items-center border border-border/50 rounded-md">
+          <Button
+            variant="ghost"
+            size="sm"
+            class="rounded-r-none px-2.5 h-9"
+            :class="{ 'bg-muted': viewMode === 'list' }"
+            @click="viewMode = 'list'"
+          >
+            <List :size="16" class="text-muted-foreground" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            class="rounded-l-none px-2.5 h-9"
+            :class="{ 'bg-muted': viewMode === 'grid' }"
+            @click="viewMode = 'grid'"
+          >
+            <LayoutGrid :size="16" class="text-muted-foreground" />
+          </Button>
+        </div>
+      </div>
+
       <!-- Loading State -->
       <div v-if="isLoading" class="flex justify-center items-center py-12">
         <Loader2 :size="24" class="animate-spin text-muted-foreground" />
@@ -312,70 +377,6 @@ function handleGridScroll(event: Event) {
       </div>
 
       <template v-else>
-        <!-- Search, Filters, and Actions -->
-        <div
-          class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center mb-4"
-        >
-          <Button variant="default" size="sm" @click="openUploadDialog">
-            <Upload :size="16" class="mr-2" />
-            {{ t("files.actions.upload") }}
-          </Button>
-
-          <div class="relative flex-1">
-            <Search
-              :size="16"
-              class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-            />
-            <Input
-              v-model="searchQuery"
-              :placeholder="t('files.filters.search')"
-              class="pl-10 h-9 text-sm"
-            />
-          </div>
-
-          <!-- Modality Filter -->
-          <MultiSelect
-            v-model="selectedModalities"
-            :options="modalityOptions"
-            :label="t('files.filters.modality')"
-            content-class="w-44"
-            item-class="capitalize"
-          />
-
-          <!-- Format Filter (searchable) -->
-          <MultiSelect
-            v-model="selectedFormats"
-            :options="formatOptions"
-            :label="t('files.filters.format')"
-            searchable
-            :search-placeholder="t('files.filters.formatSearch')"
-            :empty-text="t('files.filters.noFormats')"
-            item-class="font-mono text-xs"
-          />
-
-          <!-- View Toggle -->
-          <div class="flex items-center border border-border/50 rounded-md">
-            <Button
-              variant="ghost"
-              size="sm"
-              class="rounded-r-none px-2.5 h-9"
-              :class="{ 'bg-muted': viewMode === 'list' }"
-              @click="viewMode = 'list'"
-            >
-              <List :size="16" class="text-muted-foreground" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              class="rounded-l-none px-2.5 h-9"
-              :class="{ 'bg-muted': viewMode === 'grid' }"
-              @click="viewMode = 'grid'"
-            >
-              <LayoutGrid :size="16" class="text-muted-foreground" />
-            </Button>
-          </div>
-        </div>
-
         <!-- Files Content Area -->
         <div v-if="files.length > 0" class="relative flex-1 min-h-0">
           <!-- Drag overlay -->
