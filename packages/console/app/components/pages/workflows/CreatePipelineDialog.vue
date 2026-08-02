@@ -32,19 +32,15 @@ const slug = ref("");
 const slugEdited = ref(false);
 const description = ref("");
 
-// Detection engines. Boolean recognizers plus the object-based engines we can
-// enable from a plain toggle (pattern/language); OCR/STT need connection config
-// and are configured elsewhere.
+// Recognizer engines to enable. pattern/ner/llm map to RecognizerParams.
 const usePattern = ref(true);
 const useNer = ref(true);
 const useLlm = ref(false);
-const useLanguage = ref(true);
 
 const engines = [
 	{ key: "pattern", model: usePattern },
 	{ key: "ner", model: useNer },
 	{ key: "llm", model: useLlm },
-	{ key: "language", model: useLanguage },
 ];
 
 // Slugify: lowercase alphanumeric with single internal dashes.
@@ -77,7 +73,6 @@ function reset() {
 	usePattern.value = true;
 	useNer.value = true;
 	useLlm.value = false;
-	useLanguage.value = true;
 }
 
 function handleOpenChange(value: boolean) {
@@ -100,11 +95,8 @@ function submit() {
 					pattern: { builtins: true, contextEnhanced: false },
 				}),
 			},
-			enrichers: {
-				...(useLanguage.value && { language: {} }),
-			},
-			// Required by the schema; engine defaults.
-			deduplication: { merging: "max", tiebreaker: "highest_confidence" },
+			// Required by the schema; engine defaults fill in the rest.
+			deduplication: {},
 			labelCatalog: {},
 		},
 	};

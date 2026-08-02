@@ -1214,10 +1214,6 @@
 				"llm": {
 					"label": "LLM",
 					"description": "Language-model assisted detection."
-				},
-				"language": {
-					"label": "Language detection",
-					"description": "Detect document language before analysis."
 				}
 			},
 			"cancel": "Cancel",
