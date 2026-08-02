@@ -8,7 +8,6 @@ import type {
 } from "@nvisy/sdk/datatypes";
 import {
 	FileText,
-	Filter,
 	LayoutGrid,
 	List,
 	Loader2,
@@ -18,15 +17,7 @@ import {
 import { toast } from "vue-sonner";
 import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
-import { Badge } from "#console/components/ui/badge";
-import {
-	DropdownMenu,
-	DropdownMenuCheckboxItem,
-	DropdownMenuContent,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "#console/components/ui/dropdown-menu";
+import { MultiSelect } from "#console/components/ui/multi-select";
 import {
 	DeleteFileDialog,
 	EditFileDialog,
@@ -101,17 +92,13 @@ const FORMAT_TOKENS: FormatToken[] = [
 	"xml",
 ];
 
-function toggleModality(token: ModalityToken) {
-	const next = new Set(selectedModalities.value);
-	next.has(token) ? next.delete(token) : next.add(token);
-	selectedModalities.value = [...next];
-}
-
-function toggleFormat(token: FormatToken) {
-	const next = new Set(selectedFormats.value);
-	next.has(token) ? next.delete(token) : next.add(token);
-	selectedFormats.value = [...next];
-}
+const modalityOptions = computed(() =>
+	MODALITY_TOKENS.map((value) => ({
+		value,
+		label: t(`files.filters.modalities.${value}`),
+	})),
+);
+const formatOptions = FORMAT_TOKENS.map((value) => ({ value, label: value }));
 
 const hasFilters = computed(
 	() =>
@@ -347,73 +334,24 @@ function handleGridScroll(event: Event) {
           </div>
 
           <!-- Modality Filter -->
-          <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <Button variant="outline" size="sm" class="h-9 font-normal">
-                <Filter :size="14" class="mr-2 text-muted-foreground" />
-                {{ t("files.filters.modality") }}
-                <Badge
-                  v-if="selectedModalities.length"
-                  variant="secondary"
-                  class="ml-2"
-                >
-                  {{ selectedModalities.length }}
-                </Badge>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" class="w-44">
-              <DropdownMenuLabel>{{
-                t("files.filters.modality")
-              }}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuCheckboxItem
-                v-for="token in MODALITY_TOKENS"
-                :key="token"
-                :model-value="selectedModalities.includes(token)"
-                class="capitalize"
-                @update:model-value="toggleModality(token)"
-                @select.prevent
-              >
-                {{ t(`files.filters.modalities.${token}`) }}
-              </DropdownMenuCheckboxItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <MultiSelect
+            v-model="selectedModalities"
+            :options="modalityOptions"
+            :label="t('files.filters.modality')"
+            content-class="w-44"
+            item-class="capitalize"
+          />
 
-          <!-- Format Filter -->
-          <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <Button variant="outline" size="sm" class="h-9 font-normal">
-                <Filter :size="14" class="mr-2 text-muted-foreground" />
-                {{ t("files.filters.format") }}
-                <Badge
-                  v-if="selectedFormats.length"
-                  variant="secondary"
-                  class="ml-2"
-                >
-                  {{ selectedFormats.length }}
-                </Badge>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              class="max-h-72 w-40 overflow-y-auto"
-            >
-              <DropdownMenuLabel>{{
-                t("files.filters.format")
-              }}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuCheckboxItem
-                v-for="token in FORMAT_TOKENS"
-                :key="token"
-                :model-value="selectedFormats.includes(token)"
-                class="font-mono text-xs"
-                @update:model-value="toggleFormat(token)"
-                @select.prevent
-              >
-                {{ token }}
-              </DropdownMenuCheckboxItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <!-- Format Filter (searchable) -->
+          <MultiSelect
+            v-model="selectedFormats"
+            :options="formatOptions"
+            :label="t('files.filters.format')"
+            searchable
+            :search-placeholder="t('files.filters.formatSearch')"
+            :empty-text="t('files.filters.noFormats')"
+            item-class="font-mono text-xs"
+          />
 
           <!-- View Toggle -->
           <div class="flex items-center border border-border/50 rounded-md">

@@ -389,11 +389,6 @@
 		},
 		"filters": {
 			"search": "Nach Name suchen...",
-			"anyStatus": "Alle Status",
-			"pending": "Ausstehend",
-			"processing": "Verarbeitung",
-			"ready": "Bereit",
-			"canceled": "Abgebrochen",
 			"modality": "Modalität",
 			"format": "Format",
 			"modalities": {
@@ -401,7 +396,9 @@
 				"image": "Bild",
 				"tabular": "Tabellarisch",
 				"audio": "Audio"
-			}
+			},
+			"formatSearch": "Formate suchen…",
+			"noFormats": "Keine Formate gefunden."
 		},
 		"sorting": {
 			"dateDesc": "Datum (Neueste)",
