@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import { X, Send } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import { Textarea } from "#console/components/ui/textarea";
@@ -11,7 +10,7 @@ interface Message {
 	timestamp: Date;
 }
 
-const isOpen = ref(false);
+const { isOpen, toggle: toggleChat } = useHelpChat();
 const messageInput = ref("");
 const messages = ref<Message[]>([
 	{
@@ -21,10 +20,6 @@ const messages = ref<Message[]>([
 		timestamp: new Date(),
 	},
 ]);
-
-function toggleChat() {
-	isOpen.value = !isOpen.value;
-}
 
 function sendMessage() {
 	if (!messageInput.value.trim()) return;
@@ -49,10 +44,6 @@ function sendMessage() {
 
 	messageInput.value = "";
 }
-
-defineExpose({
-	toggleChat,
-});
 </script>
 
 <template>

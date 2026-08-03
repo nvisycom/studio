@@ -1,7 +1,7 @@
 {
 	"header": {
 		"tabs": {
-			"integrations": {
+			"connections": {
 				"connections": "Verbindungen",
 				"explore": "Erkunden",
 				"runs": "Ausführungen"
@@ -389,11 +389,16 @@
 		},
 		"filters": {
 			"search": "Nach Name suchen...",
-			"anyStatus": "Alle Status",
-			"pending": "Ausstehend",
-			"processing": "Verarbeitung",
-			"ready": "Bereit",
-			"canceled": "Abgebrochen"
+			"modality": "Modalität",
+			"format": "Format",
+			"modalities": {
+				"text": "Text",
+				"image": "Bild",
+				"tabular": "Tabellarisch",
+				"audio": "Audio"
+			},
+			"formatSearch": "Formate suchen…",
+			"noFormats": "Keine Formate gefunden."
 		},
 		"sorting": {
 			"dateDesc": "Datum (Neueste)",
@@ -740,19 +745,19 @@
 			"description": "Dieser Einladungslink ist ungültig oder wurde widerrufen. Bitte überprüfen Sie den Link oder fordern Sie eine neue Einladung an."
 		}
 	},
-	"integrations": {
+	"connections": {
 		"page": {
-			"title": "Aktive Integrationen",
-			"description": "Verwalten Sie Ihre derzeit verbundenen Integrationen",
+			"title": "Aktive Verbindungen",
+			"description": "Verwalten Sie Ihre aktuell verbundenen Dienste",
 			"libraryTitle": "Integrationsbibliothek",
 			"libraryDescription": "Verbinden Sie Nvisy mit Ihren bevorzugten Tools und Diensten"
 		},
 		"sections": {
 			"connectedServices": {
 				"title": "Verbundene Dienste",
-				"description": "{count} Integration derzeit aktiv | {count} Integrationen derzeit aktiv",
-				"noIntegrationsTitle": "Noch keine aktiven Integrationen",
-				"noIntegrationsDescription": "Beginnen Sie, indem Sie unsere Integrationsbibliothek durchsuchen"
+				"description": "{count} Verbindung aktiv | {count} Verbindungen aktiv",
+				"noIntegrationsTitle": "Noch keine aktiven Verbindungen",
+				"noIntegrationsDescription": "Durchsuchen Sie verfügbare Anbieter, um zu beginnen"
 			},
 			"webhooks": {
 				"title": "Webhook-Endpunkte",
@@ -762,7 +767,7 @@
 			}
 		},
 		"actions": {
-			"explore": "Integrationen Erkunden",
+			"explore": "Anbieter erkunden",
 			"browse": "Bibliothek Durchsuchen",
 			"connect": "Verbinden",
 			"disconnect": "Trennen",
@@ -931,7 +936,8 @@
 				"headers": "Header",
 				"created": "Erstellt",
 				"lastDelivery": "Letzte Zustellung",
-				"connectedAt": "Verbunden Am"
+				"connectedAt": "Verbunden Am",
+				"provider": "Anbieter"
 			},
 			"actions": {
 				"edit": "Bearbeiten",
@@ -973,7 +979,8 @@
 				"activeLabel": "Aktiv",
 				"activeDescription": "Diese Integration aktivieren, um Daten zu synchronisieren und Workflows zu automatisieren",
 				"save": "Änderungen Speichern",
-				"cancel": "Abbrechen"
+				"cancel": "Abbrechen",
+				"providerLabel": "Anbieter"
 			},
 			"disconnect": {
 				"title": "{name} Trennen",
@@ -1029,15 +1036,15 @@
 			}
 		},
 		"messages": {
-			"integrationFooter": "Erfahren Sie mehr über Integrationen in unserer",
+			"connectionFooter": "Erfahren Sie mehr über Integrationen in unserer",
 			"webhookFooter": "Erfahren Sie mehr über Webhooks in unserer",
 			"documentation": "Dokumentation"
 		},
 		"toast": {
-			"integrationUpdated": "Integration erfolgreich aktualisiert",
-			"integrationUpdateFailed": "Integration konnte nicht aktualisiert werden",
-			"integrationDisconnected": "Integration getrennt",
-			"integrationDisconnectFailed": "Integration konnte nicht getrennt werden",
+			"connectionUpdated": "Integration erfolgreich aktualisiert",
+			"connectionUpdateFailed": "Integration konnte nicht aktualisiert werden",
+			"connectionDisconnected": "Integration getrennt",
+			"connectionDisconnectFailed": "Integration konnte nicht getrennt werden",
 			"webhookCreated": "Webhook erfolgreich erstellt",
 			"webhookCreateFailed": "Webhook konnte nicht erstellt werden",
 			"webhookUpdated": "Webhook erfolgreich aktualisiert",
@@ -1086,7 +1093,20 @@
 			"status": {
 				"pending": "Ausstehend",
 				"running": "Läuft",
-				"cancelled": "Abgebrochen"
+				"cancelled": "Abgebrochen",
+				"analyzed": "Analysiert",
+				"completed": "Abgeschlossen",
+				"failed": "Fehlgeschlagen"
+			},
+			"statusAnalyzed": "Analysiert",
+			"statusCompleted": "Abgeschlossen",
+			"statusFailed": "Fehlgeschlagen",
+			"pipeline": "Pipeline",
+			"trigger": "Auslöser",
+			"triggerType": {
+				"manual": "Manuell",
+				"source": "Quelle",
+				"scheduled": "Geplant"
 			}
 		}
 	},
@@ -1097,10 +1117,9 @@
 		"studio": "Studio",
 		"team": "Team",
 		"automation": "Automatisierung",
-		"integrations": "Integrationen",
+		"connections": "Verbindungen",
 		"explore": "Entdecken",
 		"workflows": "Workflows",
-		"editor": "Editor",
 		"observability": "Beobachtbarkeit",
 		"analytics": "Analytik",
 		"logs": "Protokolle",
@@ -1147,6 +1166,63 @@
 			"profile": "Profil",
 			"tokens": "API-Tokens",
 			"logout": "Abmelden"
+		}
+	},
+	"workflows": {
+		"title": "Pipelines",
+		"count": "{count} Pipeline konfiguriert | {count} Pipelines konfiguriert",
+		"footer": "Pipelines automatisieren Dokumentenerkennung und -schwärzung.",
+		"learnMore": "Mehr erfahren",
+		"status": {
+			"draft": "Entwurf",
+			"enabled": "Aktiviert",
+			"disabled": "Deaktiviert"
+		},
+		"table": {
+			"name": "Name",
+			"status": "Status",
+			"updated": "Aktualisiert"
+		},
+		"actions": {
+			"create": "Pipeline erstellen",
+			"delete": "Löschen",
+			"viewRuns": "Ausführungen"
+		},
+		"empty": {
+			"title": "Noch keine Pipelines",
+			"description": "Erstellen Sie Ihre erste Pipeline zur automatischen Dokumentenverarbeitung."
+		},
+		"toast": {
+			"deleted": "Pipeline gelöscht",
+			"deleteFailed": "Pipeline konnte nicht gelöscht werden"
+		},
+		"create": {
+			"title": "Pipeline erstellen",
+			"description": "Konfigurieren Sie eine Erkennungs- und Schwärzungs-Pipeline.",
+			"nameLabel": "Name",
+			"namePlaceholder": "Dokumentenschwärzung",
+			"slugLabel": "Slug",
+			"slugPlaceholder": "dokumentenschwaerzung",
+			"slugHint": "Kleinbuchstaben, Zahlen und einzelne Bindestriche. URL-sicherer Bezeichner.",
+			"descriptionLabel": "Beschreibung",
+			"descriptionPlaceholder": "Was diese Pipeline tut (optional).",
+			"detectionLabel": "Erkennung",
+			"engines": {
+				"pattern": {
+					"label": "Muster",
+					"description": "Integrierte Regex- und Wörterbuch-Erkenner."
+				},
+				"ner": {
+					"label": "Benannte Entitäten",
+					"description": "Erkennung benannter Entitäten."
+				},
+				"llm": {
+					"label": "LLM",
+					"description": "Sprachmodellgestützte Erkennung."
+				}
+			},
+			"cancel": "Abbrechen",
+			"submit": "Erstellen"
 		}
 	}
 }

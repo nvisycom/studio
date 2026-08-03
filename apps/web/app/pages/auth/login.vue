@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
 import { Eye, EyeOff } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
@@ -28,7 +27,7 @@ const showPassword = ref(false);
 async function handleLogin(): Promise<void> {
 	try {
 		await loginAsync({
-			emailAddress: email.value,
+			identifier: email.value,
 			password: password.value,
 			rememberMe: rememberMe.value,
 		});
@@ -149,7 +148,7 @@ async function handleMicrosoftLogin(): Promise<void> {
 
       <!-- Remember Me -->
       <div class="flex items-center gap-2">
-        <Checkbox id="remember" v-model:checked="rememberMe" />
+        <Checkbox id="remember" v-model="rememberMe" />
         <Label
           for="remember"
           class="text-sm font-normal cursor-pointer text-muted-foreground"

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { NvisyApiError } from "@nvisy/sdk";
 import { Upload, Copy, Check, Loader2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { Button } from "#console/components/ui/button";
@@ -34,22 +33,11 @@ definePageMeta({
 });
 
 const { t } = useI18n();
-const router = useRouter();
-
-function getErrorMessage(err: unknown, fallback: string): string {
-	if (err instanceof NvisyApiError) {
-		return err.message;
-	}
-	if (err instanceof Error) {
-		return err.message;
-	}
-	return fallback;
-}
 
 // Composables
 const {
 	currentWorkspace,
-	currentWorkspaceId,
+	currentWorkspaceSlug,
 	isLoading: isLoadingWorkspaces,
 	updateWorkspaceAsync,
 	isUpdating,
@@ -62,8 +50,7 @@ const { leaveAsync, isLeaving } = useMembers();
 // Form state - use empty string as initial value
 const workspaceName = ref("");
 const workspaceDescription = ref("");
-const requireApproval = ref<boolean | null>(null);
-const enableComments = ref<boolean | null>(null);
+const requireApproval = ref<boolean | undefined>(undefined);
 const copiedWorkspaceId = ref(false);
 
 // Dialog state
@@ -82,7 +69,6 @@ watch(
 			workspaceName.value = workspace.displayName;
 			workspaceDescription.value = workspace.description ?? "";
 			requireApproval.value = workspace.requireApproval;
-			enableComments.value = workspace.enableComments;
 			formInitialized.value = true;
 		}
 	},
@@ -91,14 +77,13 @@ watch(
 
 // Reset form when workspace changes
 watch(
-	() => currentWorkspaceId.value,
+	() => currentWorkspaceSlug.value,
 	() => {
 		// Reset so the next workspace data triggers re-initialization
 		formInitialized.value = false;
 		workspaceName.value = "";
 		workspaceDescription.value = "";
-		requireApproval.value = null;
-		enableComments.value = null;
+		requireApproval.value = undefined;
 	},
 );
 
@@ -116,17 +101,15 @@ const hasInfoChanges = computed(() => {
 
 // Check if options have changed
 const hasOptionsChanges = computed(() => {
-	if (!currentWorkspace.value || requireApproval.value === null) return false;
-	return (
-		requireApproval.value !== currentWorkspace.value.requireApproval ||
-		enableComments.value !== currentWorkspace.value.enableComments
-	);
+	if (!currentWorkspace.value || requireApproval.value === undefined)
+		return false;
+	return requireApproval.value !== currentWorkspace.value.requireApproval;
 });
 
 // Functions
 function copyWorkspaceId() {
-	if (!currentWorkspaceId.value) return;
-	navigator.clipboard.writeText(currentWorkspaceId.value);
+	if (!currentWorkspaceSlug.value) return;
+	navigator.clipboard.writeText(currentWorkspaceSlug.value);
 	copiedWorkspaceId.value = true;
 	toast.success(t("settings.workspace.messages.idCopied"));
 	setTimeout(() => {
@@ -135,15 +118,15 @@ function copyWorkspaceId() {
 }
 
 async function saveWorkspaceInfo() {
-	const workspaceId = currentWorkspaceId.value;
-	if (!workspaceId) return;
+	const workspaceSlug = currentWorkspaceSlug.value;
+	if (!workspaceSlug) return;
 
 	try {
 		await updateWorkspaceAsync({
-			workspaceId,
+			workspaceSlug,
 			updates: {
 				displayName: workspaceName.value,
-				description: workspaceDescription.value || null,
+				description: workspaceDescription.value || undefined,
 			},
 		});
 		toast.success(t("settings.workspace.messages.saved"));
@@ -155,15 +138,14 @@ async function saveWorkspaceInfo() {
 }
 
 async function saveWorkspaceOptions() {
-	const workspaceId = currentWorkspaceId.value;
-	if (!workspaceId) return;
+	const workspaceSlug = currentWorkspaceSlug.value;
+	if (!workspaceSlug) return;
 
 	try {
 		await updateWorkspaceAsync({
-			workspaceId,
+			workspaceSlug,
 			updates: {
 				requireApproval: requireApproval.value,
-				enableComments: enableComments.value,
 			},
 		});
 		toast.success(t("settings.workspace.messages.optionsSaved"));
@@ -193,7 +175,7 @@ async function handleLeaveWorkspace() {
 		await leaveAsync();
 		isLeaveDialogOpen.value = false;
 		toast.success(t("settings.workspace.messages.left"));
-		router.push("/");
+		navigateTo("/");
 	} catch (err) {
 		toast.error(t("settings.workspace.errors.leaveFailed"), {
 			description: getErrorMessage(err, t("common.errors.tryAgain")),
@@ -202,14 +184,14 @@ async function handleLeaveWorkspace() {
 }
 
 async function handleDeleteWorkspace() {
-	if (!currentWorkspaceId.value) return;
+	if (!currentWorkspaceSlug.value) return;
 
 	try {
-		await deleteWorkspaceAsync(currentWorkspaceId.value);
+		await deleteWorkspaceAsync(currentWorkspaceSlug.value);
 		isDeleteDialogOpen.value = false;
 		deleteConfirmName.value = "";
 		toast.success(t("settings.workspace.messages.deleted"));
-		router.push("/");
+		navigateTo("/");
 	} catch (err) {
 		toast.error(t("settings.workspace.errors.deleteFailed"), {
 			description: getErrorMessage(err, t("common.errors.tryAgain")),
@@ -314,7 +296,7 @@ const canDelete = computed(() => {
               <div class="flex gap-2 max-w-md">
                 <Input
                   id="workspaceId"
-                  :model-value="currentWorkspaceId ?? ''"
+                  :model-value="currentWorkspaceSlug ?? ''"
                   readonly
                   class="flex-1 font-mono text-sm h-9 bg-muted/50 border-border/50 text-muted-foreground"
                 />
@@ -384,23 +366,6 @@ const canDelete = computed(() => {
               />
             </div>
 
-            <!-- Enable Comments -->
-            <div class="flex items-center justify-between">
-              <div class="space-y-0.5">
-                <Label class="text-sm font-medium">{{
-                  t("settings.workspace.options.enableComments.label")
-                }}</Label>
-                <p class="text-xs text-muted-foreground">
-                  {{
-                    t("settings.workspace.options.enableComments.description")
-                  }}
-                </p>
-              </div>
-              <Switch
-                :model-value="enableComments ?? false"
-                @update:model-value="enableComments = $event"
-              />
-            </div>
           </CardContent>
           <CardFooter
             class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl flex items-center justify-between"

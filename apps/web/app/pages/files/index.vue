@@ -1,25 +1,23 @@
 <script setup lang="ts">
-import type { File as NvisyFile, UpdateFile } from "@nvisy/sdk/datatypes";
+import type {
+	File as NvisyFile,
+	UpdateFile,
+	ListFiles,
+	ModalityToken,
+	FormatToken,
+} from "@nvisy/sdk/datatypes";
 import {
-	ChevronDown,
 	FileText,
-	Filter,
 	LayoutGrid,
 	List,
 	Loader2,
 	Search,
 	Upload,
 } from "@lucide/vue";
-import { computed, ref } from "vue";
 import { toast } from "vue-sonner";
 import { Button } from "#console/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "#console/components/ui/dropdown-menu";
 import { Input } from "#console/components/ui/input";
+import { MultiSelect } from "#console/components/ui/multi-select";
 import {
 	DeleteFileDialog,
 	EditFileDialog,
@@ -36,6 +34,19 @@ definePageMeta({
 	pageCategory: "Files",
 });
 
+// Filter state — filtering is done server-side via the listFiles query.
+const searchQuery = ref("");
+const selectedModalities = ref<ModalityToken[]>([]);
+const selectedFormats = ref<FormatToken[]>([]);
+
+const filesQuery = computed<ListFiles>(() => ({
+	...(searchQuery.value.trim() && { search: searchQuery.value.trim() }),
+	...(selectedModalities.value.length && {
+		modality: selectedModalities.value,
+	}),
+	...(selectedFormats.value.length && { formats: selectedFormats.value }),
+}));
+
 const {
 	files,
 	isLoading,
@@ -50,10 +61,8 @@ const {
 	loadMore,
 	hasMore,
 	isLoadingMore,
-} = useFiles();
+} = useFiles({ query: filesQuery });
 
-const searchQuery = ref("");
-const filterStatus = ref("any");
 const viewMode = ref<"list" | "grid">("list");
 const isDraggingOver = ref(false);
 
@@ -64,34 +73,39 @@ const fileToDelete = ref<NvisyFile | null>(null);
 const fileToEdit = ref<NvisyFile | null>(null);
 const isUploadingDrop = ref(false);
 
-const statusFilters = computed(() => [
-	{ label: t("files.filters.anyStatus"), value: "any" },
-	{ label: t("files.filters.pending"), value: "pending" },
-	{ label: t("files.filters.processing"), value: "processing" },
-	{ label: t("files.filters.ready"), value: "ready" },
-	{ label: t("files.filters.canceled"), value: "canceled" },
-]);
+const MODALITY_TOKENS: ModalityToken[] = ["text", "image", "tabular", "audio"];
+const FORMAT_TOKENS: FormatToken[] = [
+	"csv",
+	"docx",
+	"htm",
+	"html",
+	"jpeg",
+	"jpg",
+	"json",
+	"log",
+	"png",
+	"tif",
+	"tiff",
+	"txt",
+	"wav",
+	"xlsx",
+	"xml",
+];
 
-const filteredFiles = computed(() => {
-	let filtered = files.value || [];
+const modalityOptions = computed(() =>
+	MODALITY_TOKENS.map((value) => ({
+		value,
+		label: t(`files.filters.modalities.${value}`),
+	})),
+);
+const formatOptions = FORMAT_TOKENS.map((value) => ({ value, label: value }));
 
-	if (searchQuery.value.trim()) {
-		const query = searchQuery.value.toLowerCase();
-		filtered = filtered.filter((file) =>
-			file.displayName.toLowerCase().includes(query),
-		);
-	}
-
-	if (filterStatus.value !== "any") {
-		filtered = filtered.filter((file) => file.status === filterStatus.value);
-	}
-
-	return filtered;
-});
-
-const hasFilters = computed(() => {
-	return searchQuery.value.trim() || filterStatus.value !== "any";
-});
+const hasFilters = computed(
+	() =>
+		searchQuery.value.trim().length > 0 ||
+		selectedModalities.value.length > 0 ||
+		selectedFormats.value.length > 0,
+);
 
 // Selection
 const {
@@ -101,8 +115,8 @@ const {
 	toggleAll: toggleSelectAll,
 	clear: clearSelection,
 } = useSelection({
-	items: filteredFiles,
-	getKey: (f) => f.fileId,
+	items: files,
+	getKey: (f) => f.id,
 });
 
 const selectedFilesCount = computed(() => selectedFiles.value.size);
@@ -113,7 +127,7 @@ const { openFile: openFileInStudio } = useStudioFiles();
 
 function viewFile(fileId: string) {
 	// Find the file to pass metadata
-	const file = files.value?.find((f) => f.fileId === fileId);
+	const file = files.value?.find((f) => f.id === fileId);
 	openFileInStudio(fileId, file);
 	navigateTo("/studio");
 }
@@ -123,7 +137,7 @@ function handleBulkOpen() {
 	const fileIds = Array.from(selectedFiles.value);
 	// Open each selected file in the studio
 	for (const fileId of fileIds) {
-		const file = files.value?.find((f) => f.fileId === fileId);
+		const file = files.value?.find((f) => f.id === fileId);
 		openFileInStudio(fileId, file);
 	}
 	navigateTo("/studio");
@@ -131,17 +145,17 @@ function handleBulkOpen() {
 
 async function handleDownloadFile(file: NvisyFile) {
 	try {
-		await downloadFile(file.fileId, file.displayName);
+		await downloadFile(file.id, file.displayName);
 		toast.success(t("files.messages.downloadStarted"));
 	} catch {
 		toast.error(t("files.errors.downloadFailed"));
 	}
 }
 
-async function handleBulkDownload(format: "zip" | "tar") {
+async function handleBulkDownload() {
 	if (!hasSelection.value) return;
 	try {
-		await downloadMultiple(Array.from(selectedFiles.value), format);
+		await downloadMultiple(Array.from(selectedFiles.value));
 		toast.success(t("files.messages.downloadStarted"));
 	} catch {
 		toast.error(t("files.errors.downloadFailed"));
@@ -161,7 +175,7 @@ function openBulkDeleteDialog() {
 async function confirmDelete() {
 	try {
 		if (fileToDelete.value) {
-			await deleteFileAsync(fileToDelete.value.fileId);
+			await deleteFileAsync(fileToDelete.value.id);
 			toast.success(t("files.messages.fileDeleted"));
 		} else if (hasSelection.value) {
 			for (const fileId of Array.from(selectedFiles.value)) {
@@ -187,7 +201,7 @@ async function confirmEdit(data: UpdateFile) {
 	if (!fileToEdit.value) return;
 	try {
 		await updateFileAsync({
-			fileId: fileToEdit.value.fileId,
+			fileId: fileToEdit.value.id,
 			updates: data,
 		});
 		toast.success(t("files.messages.fileUpdated"));
@@ -251,13 +265,10 @@ async function handleDrop(e: DragEvent) {
 	}
 }
 
-function selectStatusFilter(value: string) {
-	filterStatus.value = value;
-}
-
 function clearFilters() {
 	searchQuery.value = "";
-	filterStatus.value = "any";
+	selectedModalities.value = [];
+	selectedFormats.value = [];
 }
 
 function handleLoadMore() {
@@ -285,6 +296,71 @@ function handleGridScroll(event: Event) {
     @drop="handleDrop"
   >
     <div class="max-w-7xl mx-auto w-full flex flex-col flex-1 min-h-0">
+      <!-- Search, Filters, and Actions (always mounted, so a refetch
+           triggered by a filter change can't tear down an open dropdown) -->
+      <div
+        class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center mb-4"
+      >
+        <Button variant="default" size="sm" @click="openUploadDialog">
+          <Upload :size="16" class="mr-2" />
+          {{ t("files.actions.upload") }}
+        </Button>
+
+        <div class="relative flex-1">
+          <Search
+            :size="16"
+            class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+          />
+          <Input
+            v-model="searchQuery"
+            :placeholder="t('files.filters.search')"
+            class="pl-10 h-9 text-sm"
+          />
+        </div>
+
+        <!-- Modality Filter -->
+        <MultiSelect
+          v-model="selectedModalities"
+          :options="modalityOptions"
+          :label="t('files.filters.modality')"
+          content-class="w-44"
+          item-class="capitalize"
+        />
+
+        <!-- Format Filter (searchable) -->
+        <MultiSelect
+          v-model="selectedFormats"
+          :options="formatOptions"
+          :label="t('files.filters.format')"
+          searchable
+          :search-placeholder="t('files.filters.formatSearch')"
+          :empty-text="t('files.filters.noFormats')"
+          item-class="font-mono text-xs"
+        />
+
+        <!-- View Toggle -->
+        <div class="flex items-center border border-border/50 rounded-md">
+          <Button
+            variant="ghost"
+            size="sm"
+            class="rounded-r-none px-2.5 h-9"
+            :class="{ 'bg-muted': viewMode === 'list' }"
+            @click="viewMode = 'list'"
+          >
+            <List :size="16" class="text-muted-foreground" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            class="rounded-l-none px-2.5 h-9"
+            :class="{ 'bg-muted': viewMode === 'grid' }"
+            @click="viewMode = 'grid'"
+          >
+            <LayoutGrid :size="16" class="text-muted-foreground" />
+          </Button>
+        </div>
+      </div>
+
       <!-- Loading State -->
       <div v-if="isLoading" class="flex justify-center items-center py-12">
         <Loader2 :size="24" class="animate-spin text-muted-foreground" />
@@ -301,81 +377,8 @@ function handleGridScroll(event: Event) {
       </div>
 
       <template v-else>
-        <!-- Search, Filters, and Actions -->
-        <div
-          class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center mb-4"
-        >
-          <Button variant="default" size="sm" @click="openUploadDialog">
-            <Upload :size="16" class="mr-2" />
-            {{ t("files.actions.upload") }}
-          </Button>
-
-          <div class="relative flex-1">
-            <Search
-              :size="16"
-              class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-            />
-            <Input
-              v-model="searchQuery"
-              :placeholder="t('files.filters.search')"
-              class="pl-10 h-9 text-sm"
-            />
-          </div>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <Button
-                variant="outline"
-                size="sm"
-                class="justify-between min-w-[140px]"
-              >
-                <Filter :size="14" class="mr-2 text-muted-foreground" />
-                <span class="text-sm">
-                  {{
-                    statusFilters.find((f) => f.value === filterStatus)
-                      ?.label || t("files.filters.anyStatus")
-                  }}
-                </span>
-                <ChevronDown :size="14" class="ml-2 text-muted-foreground" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" class="w-[140px]">
-              <DropdownMenuItem
-                v-for="filter in statusFilters"
-                :key="filter.value"
-                @click="selectStatusFilter(filter.value)"
-                class="cursor-pointer text-sm"
-              >
-                {{ filter.label }}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <!-- View Toggle -->
-          <div class="flex items-center border border-border/50 rounded-md">
-            <Button
-              variant="ghost"
-              size="sm"
-              class="rounded-r-none px-2.5 h-9"
-              :class="{ 'bg-muted': viewMode === 'list' }"
-              @click="viewMode = 'list'"
-            >
-              <List :size="16" class="text-muted-foreground" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              class="rounded-l-none px-2.5 h-9"
-              :class="{ 'bg-muted': viewMode === 'grid' }"
-              @click="viewMode = 'grid'"
-            >
-              <LayoutGrid :size="16" class="text-muted-foreground" />
-            </Button>
-          </div>
-        </div>
-
         <!-- Files Content Area -->
-        <div v-if="filteredFiles.length > 0" class="relative flex-1 min-h-0">
+        <div v-if="files.length > 0" class="relative flex-1 min-h-0">
           <!-- Drag overlay -->
           <Transition
             enter-active-class="transition-opacity duration-200"
@@ -428,7 +431,7 @@ function handleGridScroll(event: Event) {
           <FilesTableView
             v-if="viewMode === 'list'"
             class="h-full"
-            :files="filteredFiles"
+            :files="files"
             :selected-files="selectedFiles"
             :all-selected="allSelected"
             :selected-count="selectedFilesCount"
@@ -448,7 +451,7 @@ function handleGridScroll(event: Event) {
           <FilesGridView
             v-else
             class="h-full"
-            :files="filteredFiles"
+            :files="files"
             :selected-files="selectedFiles"
             :selected-count="selectedFilesCount"
             @toggle-selection="toggleFileSelection"

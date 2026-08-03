@@ -1,4 +1,3 @@
-import { useMutation } from "@pinia/colada";
 import { login as sdkLogin, signup as sdkSignup } from "@nvisy/sdk/auth";
 import type { Login, Signup, AuthToken } from "@nvisy/sdk/datatypes";
 
@@ -85,6 +84,20 @@ export function useAuth() {
 		},
 	});
 
+	// Clear all local auth/session state without calling the API. Safe to call
+	// from a failed-request handler (won't trigger further requests).
+	function clearAuth() {
+		authToken.value = null;
+		if (import.meta.client) {
+			localStorage.removeItem(AUTH_STORAGE_KEY);
+		}
+		authCookie.value = null;
+
+		// Clear workspace cookie
+		const workspaceCookie = useCookie("current_workspace_slug");
+		workspaceCookie.value = null;
+	}
+
 	async function logout() {
 		const { $nvisyClient } = useNuxtApp();
 		const client = $nvisyClient.value;
@@ -96,14 +109,7 @@ export function useAuth() {
 			}
 		}
 
-		authToken.value = null;
-		localStorage.removeItem(AUTH_STORAGE_KEY);
-		authCookie.value = null;
-
-		// Clear workspace cookie
-		const workspaceCookie = useCookie("current_workspace_id");
-		workspaceCookie.value = null;
-
+		clearAuth();
 		navigateTo("/auth/login");
 	}
 
@@ -111,6 +117,7 @@ export function useAuth() {
 		// State
 		isAuthenticated,
 		authToken: readonly(authToken),
+		clearAuth,
 
 		// Login
 		login: loginMutation.mutate,

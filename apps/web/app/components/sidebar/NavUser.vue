@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import {
 	ChevronsUpDown,
 	LogOut,
@@ -29,24 +28,25 @@ import {
 import { Kbd } from "#console/components/ui/kbd";
 import CommandMenu from "@/components/CommandMenu.vue";
 import CreateWorkspaceModal from "#console/components/common/CreateWorkspaceModal.vue";
-import HelpChat from "@/components/HelpChat.vue";
-
-const props = defineProps<{
-	user: {
-		name: string;
-		email: string;
-		avatar: string;
-	};
-}>();
 
 const { t } = useI18n();
 const { getKbdKey } = useKbd();
 const { isMobile } = useSidebar();
 const { logout } = useAuth();
+const { displayName, emailAddress } = useAccount();
 
+// The display name is the primary label; fall back to the email. The email
+// only shows as the subtitle when it isn't already the primary label.
+const primaryLabel = computed(
+	() => displayName.value || emailAddress.value || "",
+);
+const secondaryLabel = computed(() =>
+	displayName.value ? (emailAddress.value ?? "") : "",
+);
+
+const { open: openHelpChat } = useHelpChat();
 const isCommandMenuOpen = ref(false);
 const isCreateWorkspaceOpen = ref(false);
-const helpChatRef = ref();
 const colorMode = useColorMode();
 
 function openCommandMenu() {
@@ -72,7 +72,7 @@ function handleUploadFile() {
 }
 
 function handleOpenSupport() {
-	helpChatRef.value?.toggleChat();
+	openHelpChat();
 }
 
 // Global keyboard shortcut for opening command menu
@@ -92,20 +92,17 @@ defineShortcuts({
             size="lg"
             class="data-[state=open]:bg-sidebar-accent/50"
           >
-            <EntityAvatar
-              :src="user.avatar"
-              :name="user.name"
-              size="sm"
-              class="rounded-md"
-            />
+            <EntityAvatar :name="primaryLabel" size="sm" class="rounded-md" />
             <div class="grid flex-1 text-left leading-tight">
               <span
                 class="truncate text-sm font-medium text-sidebar-foreground"
-                >{{ user.name }}</span
+                >{{ primaryLabel }}</span
               >
-              <span class="truncate text-xs text-sidebar-foreground/60">{{
-                user.email
-              }}</span>
+              <span
+                v-if="secondaryLabel"
+                class="truncate text-xs text-sidebar-foreground/60"
+                >{{ secondaryLabel }}</span
+              >
             </div>
             <ChevronsUpDown class="ml-auto size-4 text-sidebar-foreground/50" />
           </SidebarMenuButton>
@@ -186,7 +183,4 @@ defineShortcuts({
 
   <!-- Create Workspace Modal -->
   <CreateWorkspaceModal v-model:open="isCreateWorkspaceOpen" />
-
-  <!-- Help Chat -->
-  <HelpChat ref="helpChatRef" />
 </template>

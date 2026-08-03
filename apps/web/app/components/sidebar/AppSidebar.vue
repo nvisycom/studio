@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import type { SidebarProps } from "#console/components/ui/sidebar";
 import {
 	Puzzle,
@@ -14,7 +13,6 @@ import {
 	Compass,
 	PenTool,
 	Workflow,
-	SquareTerminal,
 } from "@lucide/vue";
 import NavMain from "@/components/sidebar/NavMain.vue";
 import NavUser from "@/components/sidebar/NavUser.vue";
@@ -32,13 +30,6 @@ import {
 	SidebarSeparator,
 	useSidebar,
 } from "#console/components/ui/sidebar";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "#console/components/ui/dropdown-menu";
 
 const props = withDefaults(defineProps<SidebarProps>(), {
 	collapsible: "icon",
@@ -46,24 +37,15 @@ const props = withDefaults(defineProps<SidebarProps>(), {
 
 const { t } = useI18n();
 const { state } = useSidebar();
-const helpChatRef = ref();
-
-// Get authenticated user data
-const { displayName, emailAddress } = useAccount();
+const { open: openHelpChat } = useHelpChat();
 
 // Check if workspace is selected and get current role
-const { currentWorkspaceId, currentWorkspace } = useWorkspaces();
-const hasWorkspace = computed(() => !!currentWorkspaceId.value);
+const { currentWorkspaceSlug, currentWorkspace } = useWorkspaces();
+const hasWorkspace = computed(() => !!currentWorkspaceSlug.value);
 const isAdminOrOwner = computed(() => {
 	const role = currentWorkspace.value?.memberRole;
 	return role === "owner" || role === "admin";
 });
-
-const userData = computed(() => ({
-	name: displayName.value || "Guest",
-	email: emailAddress.value || "",
-	avatar: "",
-}));
 
 // Navigation data
 const navWorkspace = computed(() => [
@@ -95,20 +77,14 @@ const navAutomation = computed(() => [
 		isActive: false,
 	},
 	{
-		title: t("sidebar.editor"),
-		url: "/editor",
-		icon: SquareTerminal,
-		isActive: false,
-	},
-	{
-		title: t("sidebar.integrations"),
-		url: "/integrations",
+		title: t("sidebar.connections"),
+		url: "/connections",
 		icon: Puzzle,
 		isActive: false,
 	},
 	{
 		title: t("sidebar.explore"),
-		url: "/integrations/explore",
+		url: "/connections/explore",
 		icon: Compass,
 		isActive: false,
 	},
@@ -128,10 +104,6 @@ const navObservability = computed(() => [
 		isActive: false,
 	},
 ]);
-
-function openHelpChat() {
-	helpChatRef.value?.toggleChat();
-}
 </script>
 
 <template>
@@ -219,12 +191,12 @@ function openHelpChat() {
       </div>
       <SidebarSeparator />
       <div class="h-[calc(2.75rem-1px)] px-2 flex items-center">
-        <NavUser :user="userData" />
+        <NavUser />
       </div>
     </SidebarFooter>
     <SidebarRail />
   </Sidebar>
 
   <!-- Help Chat Popup -->
-  <HelpChat ref="helpChatRef" />
+  <HelpChat />
 </template>

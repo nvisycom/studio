@@ -49,27 +49,27 @@ function formatUrl(url: string): string {
     <TableHeader>
       <TableRow>
         <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("integrations.table.headers.name")
+          t("connections.table.headers.name")
         }}</TableHead>
         <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("integrations.table.headers.enabled")
+          t("connections.table.headers.enabled")
         }}</TableHead>
         <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("integrations.table.headers.events")
+          t("connections.table.headers.events")
         }}</TableHead>
         <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("integrations.table.headers.headers")
+          t("connections.table.headers.headers")
         }}</TableHead>
         <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("integrations.table.headers.created")
+          t("connections.table.headers.created")
         }}</TableHead>
         <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("integrations.table.headers.lastDelivery")
+          t("connections.table.headers.lastDelivery")
         }}</TableHead>
       </TableRow>
     </TableHeader>
     <TableBody>
-      <ContextMenu v-for="webhook in webhooks" :key="webhook.webhookId">
+      <ContextMenu v-for="webhook in webhooks" :key="webhook.id">
         <ContextMenuTrigger as-child>
           <TableRow
             class="hover:bg-neutral-50 dark:hover:bg-neutral-900 cursor-pointer"
@@ -91,7 +91,7 @@ function formatUrl(url: string): string {
                 :model-value="webhook.status === 'active'"
                 :disabled="webhook.status === 'disabled'"
                 @update:model-value="
-                  emit('toggleStatus', webhook.webhookId, $event)
+                  emit('toggleStatus', webhook.id, $event)
                 "
               />
             </TableCell>
@@ -100,7 +100,7 @@ function formatUrl(url: string): string {
                 class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
               >
                 {{
-                  t("integrations.table.eventsCount", {
+                  t("connections.table.eventsCount", {
                     count: webhook.events.length,
                   })
                 }}
@@ -132,25 +132,25 @@ function formatUrl(url: string): string {
         <ContextMenuContent>
           <ContextMenuItem
             class="cursor-pointer"
-            @click="emit('edit', webhook.webhookId)"
+            @click="emit('edit', webhook.id)"
           >
             <Edit :size="14" class="mr-2" />
-            {{ t("integrations.table.actions.configure") }}
+            {{ t("connections.table.actions.configure") }}
           </ContextMenuItem>
           <ContextMenuItem
             class="cursor-pointer"
-            @click="emit('test', webhook.webhookId)"
+            @click="emit('test', webhook.id)"
           >
             <Play :size="14" class="mr-2" />
-            {{ t("integrations.table.actions.test") }}
+            {{ t("connections.table.actions.test") }}
           </ContextMenuItem>
           <ContextMenuSeparator />
           <ContextMenuItem
             class="text-red-600 dark:text-red-400 cursor-pointer"
-            @click="emit('delete', webhook.webhookId)"
+            @click="emit('delete', webhook.id)"
           >
             <Trash2 :size="14" class="mr-2" />
-            {{ t("integrations.table.actions.delete") }}
+            {{ t("connections.table.actions.delete") }}
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>

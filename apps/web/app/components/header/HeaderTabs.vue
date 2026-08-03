@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { computed } from "vue";
 import { Tabs, TabsList, TabsTrigger } from "#console/components/ui/tabs";
 import StudioFileTabs from "./StudioFileTabs.vue";
-import EditorWorkflowTabs from "./EditorWorkflowTabs.vue";
 import {
 	Settings,
 	Key,
@@ -23,8 +21,8 @@ const route = useRoute();
 const { t } = useI18n();
 
 // Check if current route should show tabs
-const showIntegrationTabs = computed(() =>
-	route.path.startsWith("/integrations"),
+const showConnectionTabs = computed(() =>
+	route.path.startsWith("/connections"),
 );
 
 const showFilesTabs = computed(() => route.path.startsWith("/files"));
@@ -35,18 +33,11 @@ const showWorkflowsTabs = computed(() => route.path.startsWith("/workflows"));
 // Studio pages show file tabs only (not navigation tabs)
 const showStudioTabs = computed(() => route.path.startsWith("/studio"));
 
-// Editor pages show workflow tabs
-const showEditorTabs = computed(() => route.path.startsWith("/editor"));
-
 const showSettingsTabs = computed(() => route.path.startsWith("/settings"));
 
 const showAccountTabs = computed(() => route.path.startsWith("/account"));
 
 const showAnalyticsTabs = computed(() => route.path.startsWith("/analytics"));
-
-const currentIntegrationTab = computed(() =>
-	route.path === "/integrations/explore" ? "library" : "active",
-);
 
 const currentSettingsTab = computed(() => {
 	if (route.path === "/settings/notifications") return "notifications";
@@ -65,9 +56,9 @@ const currentAnalyticsTab = computed(() => {
 	return "overview";
 });
 
-const currentIntegrationTabValue = computed(() => {
-	if (route.path === "/integrations/explore") return "explore";
-	if (route.path === "/integrations/runs") return "runs";
+const currentConnectionTabValue = computed(() => {
+	if (route.path === "/connections/explore") return "explore";
+	if (route.path === "/connections/runs") return "runs";
 	return "connections";
 });
 
@@ -86,11 +77,10 @@ const isStudioPage = computed(() => route.path === "/studio");
 // Computed to check if any tabs are visible
 const hasVisibleTabs = computed(() => {
 	return (
-		showIntegrationTabs.value ||
+		showConnectionTabs.value ||
 		showFilesTabs.value ||
 		showWorkflowsTabs.value ||
 		showStudioTabs.value ||
-		showEditorTabs.value ||
 		showSettingsTabs.value ||
 		showAccountTabs.value ||
 		showAnalyticsTabs.value
@@ -104,25 +94,25 @@ defineExpose({
 </script>
 
 <template>
-  <!-- Integration Tabs -->
-  <Tabs v-if="showIntegrationTabs" :model-value="currentIntegrationTabValue">
+  <!-- Connection Tabs -->
+  <Tabs v-if="showConnectionTabs" :model-value="currentConnectionTabValue">
     <TabsList>
       <TabsTrigger value="connections" as-child>
-        <NuxtLink to="/integrations" class="flex items-center gap-2">
+        <NuxtLink to="/connections" class="flex items-center gap-2">
           <Plug :size="16" />
-          {{ t("header.tabs.integrations.connections") }}
+          {{ t("header.tabs.connections.connections") }}
         </NuxtLink>
       </TabsTrigger>
       <TabsTrigger value="explore" as-child>
-        <NuxtLink to="/integrations/explore" class="flex items-center gap-2">
+        <NuxtLink to="/connections/explore" class="flex items-center gap-2">
           <Library :size="16" />
-          {{ t("header.tabs.integrations.explore") }}
+          {{ t("header.tabs.connections.explore") }}
         </NuxtLink>
       </TabsTrigger>
       <TabsTrigger value="runs" as-child>
-        <NuxtLink to="/integrations/runs" class="flex items-center gap-2">
+        <NuxtLink to="/connections/runs" class="flex items-center gap-2">
           <PlayCircle :size="16" />
-          {{ t("header.tabs.integrations.runs") }}
+          {{ t("header.tabs.connections.runs") }}
         </NuxtLink>
       </TabsTrigger>
     </TabsList>
@@ -166,9 +156,6 @@ defineExpose({
 
   <!-- Studio File Tabs (shown on all studio pages including chat) -->
   <StudioFileTabs v-else-if="showStudioTabs" />
-
-  <!-- Editor Workflow Tabs -->
-  <EditorWorkflowTabs v-else-if="showEditorTabs" />
 
   <!-- Settings Tabs (Workspace Settings) -->
   <Tabs v-else-if="showSettingsTabs" :model-value="currentSettingsTab">

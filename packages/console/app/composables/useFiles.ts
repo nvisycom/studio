@@ -1,4 +1,3 @@
-import { useQuery, useMutation } from "@pinia/colada";
 import type {
 	File as NvisyFile,
 	UpdateFile,
@@ -6,7 +5,7 @@ import type {
 } from "@nvisy/sdk/datatypes";
 
 export interface UseFilesOptions {
-	workspaceId?: MaybeRef<string | null>;
+	workspaceSlug?: MaybeRef<string | null>;
 	query?: MaybeRef<ListFiles>;
 	pageSize?: number;
 }
@@ -17,13 +16,13 @@ export interface UseFilesOptions {
 export function useFiles(options: UseFilesOptions = {}) {
 	const { $nvisyClient } = useNuxtApp();
 	const { authToken } = useAuth();
-	const { currentWorkspaceId } = useWorkspaces();
+	const { currentWorkspaceSlug } = useWorkspaces();
 
-	const effectiveWorkspaceId = computed(
+	const effectiveWorkspaceSlug = computed(
 		() =>
-			(options.workspaceId
-				? toValue(options.workspaceId)
-				: currentWorkspaceId.value) || "",
+			(options.workspaceSlug
+				? toValue(options.workspaceSlug)
+				: currentWorkspaceSlug.value) || "",
 	);
 
 	const pageSize = options.pageSize ?? 50;
@@ -41,34 +40,40 @@ export function useFiles(options: UseFilesOptions = {}) {
 	const filesQuery = useQuery({
 		key: () => [
 			"files",
-			effectiveWorkspaceId.value,
+			effectiveWorkspaceSlug.value,
 			JSON.stringify(queryParams.value),
 		],
 		query: async () => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			const result = await client.files.listFiles(effectiveWorkspaceId.value, {
-				...queryParams.value,
-				limit: pageSize,
-			});
-			// Reset state on initial load
-			allFiles.value = result.items;
+			const result = await client.files.listFiles(
+				effectiveWorkspaceSlug.value,
+				{
+					...queryParams.value,
+					limit: pageSize,
+				},
+			);
+			// The watcher below is the single source that syncs allFiles from
+			// query data; here we only track pagination cursors.
 			nextCursor.value = result.nextCursor ?? undefined;
 			hasMore.value = !!result.nextCursor;
 			return result.items;
 		},
-		enabled: () => !!effectiveWorkspaceId.value && !!authToken.value?.apiToken,
+		enabled: () =>
+			!!effectiveWorkspaceSlug.value && !!authToken.value?.apiToken,
 	});
 
-	// Reset pagination state and force refetch when workspace changes
-	watch(effectiveWorkspaceId, (newId, oldId) => {
-		if (newId !== oldId) {
+	// Reset pagination and refetch when the workspace or query changes, so a
+	// stale cursor from a previous filter can't leak into loadMore.
+	watch(
+		[effectiveWorkspaceSlug, () => JSON.stringify(queryParams.value)],
+		() => {
 			allFiles.value = [];
 			nextCursor.value = undefined;
 			hasMore.value = true;
 			filesQuery.refetch();
-		}
-	});
+		},
+	);
 
 	// Sync allFiles with query data
 	// This handles initial load, navigation back to page, and refresh after mutations
@@ -92,11 +97,14 @@ export function useFiles(options: UseFilesOptions = {}) {
 
 		isLoadingMore.value = true;
 		try {
-			const result = await client.files.listFiles(effectiveWorkspaceId.value, {
-				...queryParams.value,
-				after: nextCursor.value,
-				limit: pageSize,
-			});
+			const result = await client.files.listFiles(
+				effectiveWorkspaceSlug.value,
+				{
+					...queryParams.value,
+					after: nextCursor.value,
+					limit: pageSize,
+				},
+			);
 
 			if (result.items.length > 0) {
 				allFiles.value = [...allFiles.value, ...result.items];
@@ -111,6 +119,7 @@ export function useFiles(options: UseFilesOptions = {}) {
 
 	// Reset and reload files
 	function reset() {
+		allFiles.value = [];
 		nextCursor.value = undefined;
 		hasMore.value = true;
 		filesQuery.refetch();
@@ -125,8 +134,9 @@ export function useFiles(options: UseFilesOptions = {}) {
 			updates: UpdateFile;
 		}) => {
 			const client = $nvisyClient.value;
-			if (!client) throw new Error("Not authenticated");
-			return await client.files.updateFile(fileId, updates);
+			const workspaceSlug = effectiveWorkspaceSlug.value;
+			if (!client || !workspaceSlug) throw new Error("Not authenticated");
+			return await client.files.updateFile(workspaceSlug, fileId, updates);
 		},
 		onSuccess() {
 			reset();
@@ -136,8 +146,9 @@ export function useFiles(options: UseFilesOptions = {}) {
 	const deleteFileMutation = useMutation({
 		mutation: async (fileId: string) => {
 			const client = $nvisyClient.value;
-			if (!client) throw new Error("Not authenticated");
-			await client.files.deleteFile(fileId);
+			const workspaceSlug = effectiveWorkspaceSlug.value;
+			if (!client || !workspaceSlug) throw new Error("Not authenticated");
+			await client.files.deleteFile(workspaceSlug, fileId);
 		},
 		onSuccess() {
 			reset();
@@ -148,7 +159,7 @@ export function useFiles(options: UseFilesOptions = {}) {
 		mutation: async (files: File[]) => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			const wId = effectiveWorkspaceId.value;
+			const wId = effectiveWorkspaceSlug.value;
 			if (!wId) throw new Error("No workspace selected");
 			return await client.files.uploadFiles(wId, files);
 		},
@@ -159,8 +170,9 @@ export function useFiles(options: UseFilesOptions = {}) {
 
 	async function downloadFile(fileId: string, fileName: string) {
 		const client = $nvisyClient.value;
-		if (!client) throw new Error("Not authenticated");
-		const response = await client.files.downloadFile(fileId);
+		const workspaceSlug = effectiveWorkspaceSlug.value;
+		if (!client || !workspaceSlug) throw new Error("Not authenticated");
+		const response = await client.files.downloadFile(workspaceSlug, fileId);
 		const blob = await response.blob();
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement("a");
@@ -170,22 +182,14 @@ export function useFiles(options: UseFilesOptions = {}) {
 		URL.revokeObjectURL(url);
 	}
 
-	async function downloadMultiple(fileIds: string[], format: "zip" | "tar") {
+	// Bulk download fetches each file individually.
+	async function downloadMultiple(fileIds: string[]) {
 		const client = $nvisyClient.value;
 		if (!client) throw new Error("Not authenticated");
-		const wId = effectiveWorkspaceId.value;
-		if (!wId) throw new Error("No workspace selected");
-		const response = await client.files.downloadFiles(wId, {
-			fileIds,
-			format,
-		});
-		const blob = await response.blob();
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement("a");
-		a.href = url;
-		a.download = `files.${format}`;
-		a.click();
-		URL.revokeObjectURL(url);
+		for (const fileId of fileIds) {
+			const file = allFiles.value.find((f) => f.id === fileId);
+			await downloadFile(fileId, file?.displayName ?? fileId);
+		}
 	}
 
 	return {

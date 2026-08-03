@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
 import {
 	Dialog,
 	DialogContent,
@@ -70,7 +69,7 @@ function handleSave() {
       <div class="grid gap-4 py-4">
         <div class="flex items-center justify-between">
           <Label for="visual-support">Visual Support</Label>
-          <Switch id="visual-support" v-model:checked="localVisualSupport" />
+          <Switch id="visual-support" v-model="localVisualSupport" />
         </div>
         <div class="flex items-center justify-between">
           <Label for="content-segmentation">Content Segmentation</Label>

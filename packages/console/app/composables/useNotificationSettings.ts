@@ -1,4 +1,3 @@
-import { useQuery, useMutation } from "@pinia/colada";
 import type {
 	NotificationSettings,
 	UpdateNotificationSettings,
@@ -10,28 +9,28 @@ import type {
 export function useNotificationSettings() {
 	const { $nvisyClient } = useNuxtApp();
 	const { authToken } = useAuth();
-	const { currentWorkspaceId } = useWorkspaces();
+	const { currentWorkspaceSlug } = useWorkspaces();
 
 	const notificationSettingsQuery = useQuery({
-		key: () => ["notificationSettings", currentWorkspaceId.value],
+		key: () => ["notificationSettings", currentWorkspaceSlug.value],
 		query: async () => {
 			const client = $nvisyClient.value;
-			const workspaceId = currentWorkspaceId.value;
+			const workspaceSlug = currentWorkspaceSlug.value;
 			if (!client) throw new Error("Not authenticated");
-			if (!workspaceId) throw new Error("No workspace selected");
-			return await client.workspaces.getNotificationSettings(workspaceId);
+			if (!workspaceSlug) throw new Error("No workspace selected");
+			return await client.workspaces.getNotificationSettings(workspaceSlug);
 		},
-		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceId.value,
+		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceSlug.value,
 	});
 
 	const updateSettingsMutation = useMutation({
 		mutation: async (settings: UpdateNotificationSettings) => {
 			const client = $nvisyClient.value;
-			const workspaceId = currentWorkspaceId.value;
+			const workspaceSlug = currentWorkspaceSlug.value;
 			if (!client) throw new Error("Not authenticated");
-			if (!workspaceId) throw new Error("No workspace selected");
+			if (!workspaceSlug) throw new Error("No workspace selected");
 			return await client.workspaces.updateNotificationSettings(
-				workspaceId,
+				workspaceSlug,
 				settings,
 			);
 		},

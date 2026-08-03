@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from "vue";
 import type { NuxtError } from "#app";
 import { ArrowLeft, Home, RefreshCw } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";

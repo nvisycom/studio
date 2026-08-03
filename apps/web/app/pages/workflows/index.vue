@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import {
 	ExternalLink,
 	Loader2,
 	Workflow,
 	Plus,
 	MoreHorizontal,
-	Pencil,
 	Trash2,
-	Copy,
 	History,
 } from "@lucide/vue";
+import { toast } from "vue-sonner";
+import type { PipelineSummary } from "@nvisy/sdk/datatypes";
 import { Button } from "#console/components/ui/button";
+import { Badge } from "#console/components/ui/badge";
 import {
 	Card,
 	CardContent,
@@ -32,10 +32,11 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
-	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "#console/components/ui/dropdown-menu";
-import { Switch } from "#console/components/ui/switch";
+import { CreatePipelineDialog } from "#console/components/pages/workflows";
+
+const { t } = useI18n();
 
 useHead({ title: "Workflows" });
 
@@ -43,52 +44,33 @@ definePageMeta({
 	pageCategory: "Automation",
 });
 
-// Mock data for workflows - replace with actual API call
-const isLoading = ref(false);
-const workflows = ref([
-	{
-		id: "wf-1",
-		name: "Document Processing Pipeline",
-		description: "Extract and process documents from uploads",
-		status: "active",
-		lastRun: "2024-01-20T10:30:00Z",
-		createdAt: "2024-01-15T08:00:00Z",
-		runsCount: 156,
-	},
-	{
-		id: "wf-2",
-		name: "Invoice Extraction",
-		description: "Extract data from invoice PDFs",
-		status: "active",
-		lastRun: "2024-01-20T09:15:00Z",
-		createdAt: "2024-01-10T14:30:00Z",
-		runsCount: 89,
-	},
-	{
-		id: "wf-3",
-		name: "Contract Analysis",
-		description: "Analyze and summarize contracts",
-		status: "paused",
-		lastRun: "2024-01-18T16:45:00Z",
-		createdAt: "2024-01-05T11:00:00Z",
-		runsCount: 42,
-	},
-]);
+const {
+	pipelines,
+	isLoading,
+	createPipelineAsync,
+	isCreating,
+	deletePipelineAsync,
+} = usePipelines();
 
-function formatDate(dateString: string) {
-	return new Date(dateString).toLocaleDateString("en-US", {
-		month: "short",
-		day: "numeric",
-		year: "numeric",
-		hour: "2-digit",
-		minute: "2-digit",
-	});
-}
+const isCreateDialogOpen = ref(false);
 
-function toggleWorkflowStatus(workflowId: string, active: boolean) {
-	const workflow = workflows.value.find((w) => w.id === workflowId);
-	if (workflow) {
-		workflow.status = active ? "active" : "paused";
+const statusVariant: Record<
+	PipelineSummary["status"],
+	"default" | "secondary" | "outline"
+> = {
+	enabled: "default",
+	draft: "secondary",
+	disabled: "outline",
+};
+
+async function handleDelete(slug: string) {
+	try {
+		await deletePipelineAsync(slug);
+		toast.success(t("workflows.toast.deleted"));
+	} catch (err) {
+		toast.error(t("workflows.toast.deleteFailed"), {
+			description: getErrorMessage(err, t("common.errors.tryAgain")),
+		});
 	}
 }
 </script>
@@ -110,80 +92,64 @@ function toggleWorkflowStatus(workflowId: string, active: boolean) {
                 <CardTitle
                   class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
                 >
-                  Workflows
+                  {{ t("workflows.title") }}
                 </CardTitle>
                 <CardDescription class="text-sm">
-                  {{ workflows.length }} workflow{{
-                    workflows.length !== 1 ? "s" : ""
-                  }}
-                  configured
+                  {{ t("workflows.count", { count: pipelines?.length ?? 0 }) }}
                 </CardDescription>
               </div>
               <div class="flex items-center gap-2">
-                <Button
-                  as-child
-                  variant="outline"
-                  size="sm"
-                  class="font-normal"
-                >
+                <Button as-child variant="outline" size="sm" class="font-normal">
                   <NuxtLink to="/workflows/runs">
                     <History :size="16" />
-                    View Runs
+                    {{ t("workflows.actions.viewRuns") }}
                   </NuxtLink>
                 </Button>
                 <Button
-                  as-child
                   variant="outline"
                   size="sm"
                   class="font-normal"
+                  @click="isCreateDialogOpen = true"
                 >
-                  <NuxtLink to="/editor">
-                    <Plus :size="16" />
-                    Create Workflow
-                  </NuxtLink>
+                  <Plus :size="16" />
+                  {{ t("workflows.actions.create") }}
                 </Button>
               </div>
             </div>
           </CardHeader>
           <CardContent>
-            <Table v-if="workflows.length > 0">
+            <Table v-if="pipelines && pipelines.length > 0">
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Last Run</TableHead>
-                  <TableHead>Runs</TableHead>
-                  <TableHead class="w-[50px]"></TableHead>
+                  <TableHead>{{ t("workflows.table.name") }}</TableHead>
+                  <TableHead>{{ t("workflows.table.status") }}</TableHead>
+                  <TableHead>{{ t("workflows.table.updated") }}</TableHead>
+                  <TableHead class="w-[50px]" />
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow v-for="workflow in workflows" :key="workflow.id">
+                <TableRow v-for="pipeline in pipelines" :key="pipeline.slug">
                   <TableCell>
                     <div>
-                      <NuxtLink
-                        :to="`/editor?id=${workflow.id}`"
-                        class="font-medium hover:underline"
+                      <p class="font-medium">{{ pipeline.name }}</p>
+                      <p
+                        v-if="pipeline.description"
+                        class="text-xs text-muted-foreground"
                       >
-                        {{ workflow.name }}
-                      </NuxtLink>
-                      <p class="text-xs text-muted-foreground">
-                        {{ workflow.description }}
+                        {{ pipeline.description }}
                       </p>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Switch
-                      :model-value="workflow.status === 'active'"
-                      @update:model-value="
-                        (val) => toggleWorkflowStatus(workflow.id, val)
-                      "
-                    />
+                    <Badge
+                      :variant="statusVariant[pipeline.status]"
+                      class="capitalize"
+                    >
+                      {{ t(`workflows.status.${pipeline.status}`) }}
+                    </Badge>
                   </TableCell>
                   <TableCell class="text-muted-foreground text-sm">
-                    {{ formatDate(workflow.lastRun) }}
-                  </TableCell>
-                  <TableCell class="text-muted-foreground text-sm">
-                    {{ workflow.runsCount }}
+                    {{ formatRelativeTime(pipeline.updatedAt, t) }}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
@@ -193,22 +159,12 @@ function toggleWorkflowStatus(workflowId: string, active: boolean) {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" class="w-48">
-                        <DropdownMenuItem as-child class="cursor-pointer">
-                          <NuxtLink :to="`/editor?id=${workflow.id}`">
-                            <Pencil :size="14" class="mr-2" />
-                            Edit
-                          </NuxtLink>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem class="cursor-pointer">
-                          <Copy :size="14" class="mr-2" />
-                          Duplicate
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
                         <DropdownMenuItem
                           class="text-red-600 dark:text-red-400 cursor-pointer"
+                          @click="handleDelete(pipeline.slug)"
                         >
                           <Trash2 :size="14" class="mr-2" />
-                          Delete
+                          {{ t("workflows.actions.delete") }}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -225,15 +181,15 @@ function toggleWorkflowStatus(workflowId: string, active: boolean) {
                 >
                   <Workflow class="size-5 text-muted-foreground" />
                 </div>
-                <p class="text-sm text-foreground mb-1">No workflows yet</p>
-                <p class="text-xs text-muted-foreground mb-4">
-                  Create your first workflow to automate document processing
+                <p class="text-sm text-foreground mb-1">
+                  {{ t("workflows.empty.title") }}
                 </p>
-                <Button as-child size="sm">
-                  <NuxtLink to="/editor">
-                    <Plus :size="16" />
-                    Create Workflow
-                  </NuxtLink>
+                <p class="text-xs text-muted-foreground mb-4">
+                  {{ t("workflows.empty.description") }}
+                </p>
+                <Button size="sm" @click="isCreateDialogOpen = true">
+                  <Plus :size="16" />
+                  {{ t("workflows.actions.create") }}
                 </Button>
               </div>
             </div>
@@ -242,19 +198,25 @@ function toggleWorkflowStatus(workflowId: string, active: boolean) {
             class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
           >
             <p class="text-xs text-muted-foreground">
-              Workflows automate document processing pipelines.
+              {{ t("workflows.footer") }}
               <a
-                href="https://docs.nvisy.com/workflows"
+                href="https://docs.nvisy.com/pipelines"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="inline-flex items-center gap-1 text-foreground hover:underline font-medium"
               >
-                Learn more
+                {{ t("workflows.learnMore") }}
                 <ExternalLink :size="12" />
               </a>
             </p>
           </CardFooter>
         </Card>
+
+        <CreatePipelineDialog
+          v-model:open="isCreateDialogOpen"
+          :is-loading="isCreating"
+          @create="createPipelineAsync"
+        />
       </template>
     </div>
   </div>

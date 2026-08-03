@@ -27,9 +27,11 @@ export default defineNuxtRouteMiddleware((to) => {
 	if (!isAuthenticated.value) return;
 
 	// Check if workspace is selected
-	const currentWorkspaceId = useCookie<string | null>("current_workspace_id");
+	const currentWorkspaceSlug = useCookie<string | null>(
+		"current_workspace_slug",
+	);
 
-	if (!currentWorkspaceId.value) {
+	if (!currentWorkspaceSlug.value) {
 		return navigateTo("/");
 	}
 });

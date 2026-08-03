@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
 import { Layers, Loader2, ChevronDown } from "@lucide/vue";
 import type { CreateWorkspace } from "@nvisy/sdk/datatypes";
 import {
@@ -31,7 +30,6 @@ const { createWorkspaceAsync, isCreating, createError } = useWorkspaces();
 const displayName = ref("");
 const description = ref("");
 const requireApproval = ref(false);
-const enableComments = ref(true);
 
 // Advanced settings
 const advancedOpen = ref(false);
@@ -44,7 +42,6 @@ function resetForm() {
 	displayName.value = "";
 	description.value = "";
 	requireApproval.value = false;
-	enableComments.value = true;
 	advancedOpen.value = false;
 }
 
@@ -60,13 +57,14 @@ async function createWorkspace() {
 		displayName: displayName.value.trim(),
 		description: description.value.trim() || undefined,
 		requireApproval: requireApproval.value,
-		enableComments: enableComments.value,
 	};
 
 	try {
 		await createWorkspaceAsync(workspaceData);
 		open.value = false;
-	} catch (error) {}
+	} catch {
+		// Error surfaced reactively via createError in the template.
+	}
 }
 </script>
 
@@ -149,22 +147,6 @@ async function createWorkspace() {
                     id="require-approval"
                     :model-value="requireApproval"
                     @update:model-value="requireApproval = $event"
-                  />
-                </div>
-
-                <div class="flex items-center justify-between">
-                  <div class="space-y-0.5">
-                    <Label for="enable-comments">{{
-                      t("workspace.create.enableCommentsLabel")
-                    }}</Label>
-                    <p class="text-xs text-muted-foreground font-normal">
-                      {{ t("workspace.create.enableCommentsDescription") }}
-                    </p>
-                  </div>
-                  <Switch
-                    id="enable-comments"
-                    :model-value="enableComments"
-                    @update:model-value="enableComments = $event"
                   />
                 </div>
               </div>

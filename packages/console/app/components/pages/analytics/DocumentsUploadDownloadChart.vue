@@ -15,7 +15,7 @@ interface Props {
 	dateRange?: string;
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
 	dateRange: "7d",
 });
 

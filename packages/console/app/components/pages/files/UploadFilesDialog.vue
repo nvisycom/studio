@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
 import { Upload, X, FileText, Check, AlertCircle, Loader2 } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import {
@@ -88,14 +87,6 @@ function addFiles(files: File[]) {
 
 function removeFile(id: string) {
 	uploadingFiles.value = uploadingFiles.value.filter((f) => f.id !== id);
-}
-
-function formatFileSize(bytes: number): string {
-	if (bytes === 0) return "0 B";
-	const k = 1024;
-	const sizes = ["B", "KB", "MB", "GB"];
-	const i = Math.floor(Math.log(bytes) / Math.log(k));
-	return `${parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`;
 }
 
 async function startUpload() {

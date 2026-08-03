@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useQuery, useMutation } from "@pinia/colada";
 import { Users, Shield, Clock, Check, XCircle, Loader2, X } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import {
@@ -50,10 +49,10 @@ const acceptMutation = useMutation({
 	},
 	async onSuccess() {
 		// Refresh workspaces list and switch to the new workspace
-		const workspaceId = preview.value?.workspaceId;
-		if (workspaceId) {
+		const workspaceSlug = preview.value?.workspaceSlug;
+		if (workspaceSlug) {
 			await refreshWorkspaces();
-			selectWorkspace(workspaceId);
+			selectWorkspace(workspaceSlug);
 		}
 		navigateTo("/");
 	},

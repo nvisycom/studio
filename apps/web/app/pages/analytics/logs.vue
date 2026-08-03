@@ -1,18 +1,8 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
 import type { DateRange } from "reka-ui";
 import type { Ref } from "vue";
 import { getLocalTimeZone, today } from "@internationalized/date";
-import {
-	Download,
-	Upload,
-	Search,
-	Filter,
-	AlertCircle,
-	Info,
-	XCircle,
-	Calendar,
-} from "@lucide/vue";
+import { Download, Upload, Search, Filter, Info, Calendar } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import { Badge } from "#console/components/ui/badge";
 import {
@@ -187,17 +177,6 @@ const filteredLogs = computed(() => {
 
 	return filtered;
 });
-
-function getLevelIcon(level: string) {
-	switch (level) {
-		case "error":
-			return XCircle;
-		case "warning":
-			return AlertCircle;
-		default:
-			return Info;
-	}
-}
 
 function formatTimestamp(date: Date) {
 	return new Intl.DateTimeFormat("en-US", {
@@ -407,7 +386,7 @@ function importLogs() {
                 <div class="flex items-center space-x-2">
                   <Checkbox
                     id="export-info"
-                    v-model:checked="exportEventTypes.info"
+                    v-model="exportEventTypes.info"
                   />
                   <label
                     for="export-info"
@@ -419,7 +398,7 @@ function importLogs() {
                 <div class="flex items-center space-x-2">
                   <Checkbox
                     id="export-warning"
-                    v-model:checked="exportEventTypes.warning"
+                    v-model="exportEventTypes.warning"
                   />
                   <label
                     for="export-warning"
@@ -431,7 +410,7 @@ function importLogs() {
                 <div class="flex items-center space-x-2">
                   <Checkbox
                     id="export-error"
-                    v-model:checked="exportEventTypes.error"
+                    v-model="exportEventTypes.error"
                   />
                   <label
                     for="export-error"

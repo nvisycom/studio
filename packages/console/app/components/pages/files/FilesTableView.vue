@@ -1,17 +1,6 @@
 <script setup lang="ts">
-import { computed, h, ref } from "vue";
 import type { ColumnDef } from "@tanstack/vue-table";
-import {
-	FileText,
-	FileImage,
-	FileCode,
-	FileSpreadsheet,
-	Download,
-	Eye,
-	Trash2,
-	Pencil,
-	File as FileIcon,
-} from "@lucide/vue";
+import { Download, Eye, Trash2, Pencil } from "@lucide/vue";
 import type { File as NvisyFile } from "@nvisy/sdk/datatypes";
 import { Checkbox } from "#console/components/ui/checkbox";
 import {
@@ -45,7 +34,7 @@ interface Emits {
 	(e: "download", file: NvisyFile): void;
 	(e: "delete", file: NvisyFile): void;
 	(e: "bulk-open"): void;
-	(e: "bulk-download", format: "zip" | "tar"): void;
+	(e: "bulk-download"): void;
 	(e: "bulk-delete"): void;
 	(e: "load-more"): void;
 }
@@ -54,46 +43,6 @@ const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
-
-function getFileIcon(fileName: string) {
-	const ext = fileName.split(".").pop()?.toLowerCase();
-	switch (ext) {
-		case "pdf":
-		case "doc":
-		case "docx":
-		case "txt":
-		case "md":
-			return FileText;
-		case "png":
-		case "jpg":
-		case "jpeg":
-		case "gif":
-		case "svg":
-		case "webp":
-			return FileImage;
-		case "json":
-		case "xml":
-		case "html":
-		case "css":
-		case "js":
-		case "ts":
-			return FileCode;
-		case "csv":
-		case "xlsx":
-		case "xls":
-			return FileSpreadsheet;
-		default:
-			return FileIcon;
-	}
-}
-
-function formatFileSize(bytes: number): string {
-	if (bytes === 0) return "0 B";
-	const k = 1024;
-	const sizes = ["B", "KB", "MB", "GB"];
-	const i = Math.floor(Math.log(bytes) / Math.log(k));
-	return `${parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`;
-}
 
 function formatDate(dateStr: string | null | undefined): string {
 	if (!dateStr) return "—";
@@ -130,9 +79,8 @@ const columns = computed<ColumnDef<NvisyFile>[]>(() => [
 			}),
 		cell: ({ row }) =>
 			h(Checkbox, {
-				modelValue: props.selectedFiles.has(row.original.fileId),
-				"onUpdate:modelValue": () =>
-					emit("toggle-selection", row.original.fileId),
+				modelValue: props.selectedFiles.has(row.original.id),
+				"onUpdate:modelValue": () => emit("toggle-selection", row.original.id),
 				ariaLabel: "Select row",
 				class:
 					"border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary",
@@ -191,25 +139,6 @@ const columns = computed<ColumnDef<NvisyFile>[]>(() => [
 			),
 	},
 	{
-		accessorKey: "status",
-		size: 120,
-		header: () =>
-			h(
-				"span",
-				{ class: "uppercase text-xs font-normal tracking-wider" },
-				t("files.table.headers.status"),
-			),
-		cell: ({ row }) =>
-			h(
-				"span",
-				{
-					class:
-						"text-xs px-2 py-1 rounded text-neutral-700 dark:text-neutral-300 bg-neutral-200 dark:bg-neutral-800",
-				},
-				t(`files.filters.${row.original.status}`),
-			),
-	},
-	{
 		accessorKey: "createdAt",
 		size: 140,
 		header: () =>
@@ -256,10 +185,10 @@ function handleRowContextMenu(event: MouseEvent, file: NvisyFile) {
     <DataTable
       :columns="columns"
       :data="files"
-      :get-row-id="(row) => row.fileId"
+      :get-row-id="(row) => row.id"
       class="h-full"
       @load-more="emit('load-more')"
-      @row-click="(row) => emit('toggle-selection', row.fileId)"
+      @row-click="(row) => emit('toggle-selection', row.id)"
       @row-contextmenu="handleRowContextMenu"
     />
 
@@ -276,24 +205,17 @@ function handleRowContextMenu(event: MouseEvent, file: NvisyFile) {
       </DropdownMenuTrigger>
       <DropdownMenuContent v-if="contextMenuFile" align="start">
         <!-- Bulk actions (when right-clicked file is in selection) -->
-        <template v-if="selectedFiles.has(contextMenuFile.fileId)">
+        <template v-if="selectedFiles.has(contextMenuFile.id)">
           <DropdownMenuItem class="cursor-pointer" @click="emit('bulk-open')">
             <Eye :size="14" class="mr-2" />
             {{ t("files.actions.open") }} ({{ selectedCount }})
           </DropdownMenuItem>
           <DropdownMenuItem
             class="cursor-pointer"
-            @click="emit('bulk-download', 'zip')"
+            @click="emit('bulk-download')"
           >
             <Download :size="14" class="mr-2" />
-            {{ t("files.actions.downloadAsZip") }} ({{ selectedCount }})
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            class="cursor-pointer"
-            @click="emit('bulk-download', 'tar')"
-          >
-            <Download :size="14" class="mr-2" />
-            {{ t("files.actions.downloadAsTar") }} ({{ selectedCount }})
+            {{ t("files.actions.download") }} ({{ selectedCount }})
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
@@ -309,7 +231,7 @@ function handleRowContextMenu(event: MouseEvent, file: NvisyFile) {
         <template v-else>
           <DropdownMenuItem
             class="cursor-pointer"
-            @click="emit('view', contextMenuFile.fileId)"
+            @click="emit('view', contextMenuFile.id)"
           >
             <Eye :size="14" class="mr-2" />
             {{ t("files.actions.openInStudio") }}

@@ -1,7 +1,7 @@
 {
 	"header": {
 		"tabs": {
-			"integrations": {
+			"connections": {
 				"connections": "Connections",
 				"explore": "Explore",
 				"runs": "Runs"
@@ -389,11 +389,16 @@
 		},
 		"filters": {
 			"search": "Search by name...",
-			"anyStatus": "Any Status",
-			"pending": "Pending",
-			"processing": "Processing",
-			"ready": "Ready",
-			"canceled": "Canceled"
+			"modality": "Modality",
+			"format": "Format",
+			"modalities": {
+				"text": "Text",
+				"image": "Image",
+				"tabular": "Tabular",
+				"audio": "Audio"
+			},
+			"formatSearch": "Search formats…",
+			"noFormats": "No formats found."
 		},
 		"sorting": {
 			"dateDesc": "Date (Newest)",
@@ -744,19 +749,19 @@
 			"description": "This invite link is invalid or has been revoked. Please check the link or request a new invite."
 		}
 	},
-	"integrations": {
+	"connections": {
 		"page": {
-			"title": "Active Integrations",
-			"description": "Manage your currently connected integrations",
+			"title": "Active Connections",
+			"description": "Manage your currently connected services",
 			"libraryTitle": "Integrations Library",
 			"libraryDescription": "Connect Nvisy with your favorite tools and services"
 		},
 		"sections": {
 			"connectedServices": {
 				"title": "Connected Services",
-				"description": "{count} integration currently active | {count} integrations currently active",
-				"noIntegrationsTitle": "No active integrations yet",
-				"noIntegrationsDescription": "Get started by browsing our integration library"
+				"description": "{count} connection currently active | {count} connections currently active",
+				"noIntegrationsTitle": "No active connections yet",
+				"noIntegrationsDescription": "Get started by browsing available providers"
 			},
 			"webhooks": {
 				"title": "Webhook Endpoints",
@@ -766,7 +771,7 @@
 			}
 		},
 		"actions": {
-			"explore": "Explore Integrations",
+			"explore": "Explore Providers",
 			"browse": "Browse Library",
 			"connect": "Connect",
 			"disconnect": "Disconnect",
@@ -931,7 +936,8 @@
 				"headers": "Headers",
 				"created": "Created",
 				"lastDelivery": "Last Delivery",
-				"connectedAt": "Connected"
+				"connectedAt": "Connected",
+				"provider": "Provider"
 			},
 			"actions": {
 				"edit": "Edit",
@@ -973,7 +979,8 @@
 				"activeLabel": "Active",
 				"activeDescription": "Enable this integration to sync data and automate workflows",
 				"save": "Save Changes",
-				"cancel": "Cancel"
+				"cancel": "Cancel",
+				"providerLabel": "Provider"
 			},
 			"disconnect": {
 				"title": "Disconnect {name}",
@@ -1029,15 +1036,15 @@
 			}
 		},
 		"messages": {
-			"integrationFooter": "Learn more about integrations in our",
+			"connectionFooter": "Learn more about connections in our",
 			"webhookFooter": "Learn more about webhooks in our",
 			"documentation": "documentation"
 		},
 		"toast": {
-			"integrationUpdated": "Integration updated successfully",
-			"integrationUpdateFailed": "Failed to update integration",
-			"integrationDisconnected": "Integration disconnected",
-			"integrationDisconnectFailed": "Failed to disconnect integration",
+			"connectionUpdated": "Integration updated successfully",
+			"connectionUpdateFailed": "Failed to update integration",
+			"connectionDisconnected": "Integration disconnected",
+			"connectionDisconnectFailed": "Failed to disconnect integration",
 			"webhookCreated": "Webhook created successfully",
 			"webhookCreateFailed": "Failed to create webhook",
 			"webhookUpdated": "Webhook updated successfully",
@@ -1086,7 +1093,20 @@
 			"status": {
 				"pending": "Pending",
 				"running": "Running",
-				"cancelled": "Cancelled"
+				"cancelled": "Cancelled",
+				"analyzed": "Analyzed",
+				"completed": "Completed",
+				"failed": "Failed"
+			},
+			"statusAnalyzed": "Analyzed",
+			"statusCompleted": "Completed",
+			"statusFailed": "Failed",
+			"pipeline": "Pipeline",
+			"trigger": "Trigger",
+			"triggerType": {
+				"manual": "Manual",
+				"source": "Source",
+				"scheduled": "Scheduled"
 			}
 		}
 	},
@@ -1097,10 +1117,9 @@
 		"studio": "Studio",
 		"team": "Team",
 		"automation": "Automation",
-		"integrations": "Integrations",
+		"connections": "Connections",
 		"explore": "Explore",
 		"workflows": "Workflows",
-		"editor": "Editor",
 		"observability": "Observability",
 		"analytics": "Analytics",
 		"logs": "Logs",
@@ -1147,6 +1166,63 @@
 			"profile": "Profile",
 			"tokens": "API Tokens",
 			"logout": "Log out"
+		}
+	},
+	"workflows": {
+		"title": "Pipelines",
+		"count": "{count} pipeline configured | {count} pipelines configured",
+		"footer": "Pipelines automate document detection and redaction.",
+		"learnMore": "Learn more",
+		"status": {
+			"draft": "Draft",
+			"enabled": "Enabled",
+			"disabled": "Disabled"
+		},
+		"table": {
+			"name": "Name",
+			"status": "Status",
+			"updated": "Updated"
+		},
+		"actions": {
+			"create": "Create Pipeline",
+			"delete": "Delete",
+			"viewRuns": "View Runs"
+		},
+		"empty": {
+			"title": "No pipelines yet",
+			"description": "Create your first pipeline to automate document processing."
+		},
+		"toast": {
+			"deleted": "Pipeline deleted",
+			"deleteFailed": "Failed to delete pipeline"
+		},
+		"create": {
+			"title": "Create Pipeline",
+			"description": "Configure a detection and redaction pipeline.",
+			"nameLabel": "Name",
+			"namePlaceholder": "Document Redaction",
+			"slugLabel": "Slug",
+			"slugPlaceholder": "document-redaction",
+			"slugHint": "Lowercase letters, numbers, and single dashes. URL-safe identifier.",
+			"descriptionLabel": "Description",
+			"descriptionPlaceholder": "What this pipeline does (optional).",
+			"detectionLabel": "Detection",
+			"engines": {
+				"pattern": {
+					"label": "Pattern",
+					"description": "Built-in regex and dictionary recognizers."
+				},
+				"ner": {
+					"label": "Named entities",
+					"description": "Named-entity recognition."
+				},
+				"llm": {
+					"label": "LLM",
+					"description": "Language-model assisted detection."
+				}
+			},
+			"cancel": "Cancel",
+			"submit": "Create"
 		}
 	}
 }

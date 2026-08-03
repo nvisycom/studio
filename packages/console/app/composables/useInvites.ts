@@ -1,48 +1,45 @@
-import { useQuery, useMutation } from "@pinia/colada";
 import type {
-	Invite,
 	CreateInvite,
 	GenerateInviteCode,
-	InviteCode,
 	ListInvites,
 } from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for workspace invitation operations
  */
-export function useInvites(query?: Ref<ListInvites>) {
+export function useInvites(query?: MaybeRef<ListInvites>) {
 	const { $nvisyClient } = useNuxtApp();
 	const { authToken } = useAuth();
-	const { currentWorkspaceId } = useWorkspaces();
+	const { currentWorkspaceSlug } = useWorkspaces();
 
 	const invitesQuery = useQuery({
 		key: () => [
 			"invites",
-			currentWorkspaceId.value,
-			JSON.stringify(query?.value),
+			currentWorkspaceSlug.value,
+			JSON.stringify(toValue(query)),
 		],
 		query: async () => {
 			const client = $nvisyClient.value;
-			const workspaceId = currentWorkspaceId.value;
+			const workspaceSlug = currentWorkspaceSlug.value;
 			if (!client) throw new Error("Not authenticated");
-			if (!workspaceId) throw new Error("No workspace selected");
+			if (!workspaceSlug) throw new Error("No workspace selected");
 			const result = await client.invites.listInvites(
-				workspaceId,
-				query?.value ?? { limit: 500 },
+				workspaceSlug,
+				toValue(query) ?? { limit: 500 },
 			);
 			return result.items;
 		},
-		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceId.value,
+		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceSlug.value,
 		staleTime: 0,
 	});
 
 	const sendInviteMutation = useMutation({
 		mutation: async (invite: CreateInvite) => {
 			const client = $nvisyClient.value;
-			const workspaceId = currentWorkspaceId.value;
+			const workspaceSlug = currentWorkspaceSlug.value;
 			if (!client) throw new Error("Not authenticated");
-			if (!workspaceId) throw new Error("No workspace selected");
-			return await client.invites.sendInvite(workspaceId, invite);
+			if (!workspaceSlug) throw new Error("No workspace selected");
+			return await client.invites.sendInvite(workspaceSlug, invite);
 		},
 		onSuccess() {
 			invitesQuery.refresh();
@@ -52,8 +49,10 @@ export function useInvites(query?: Ref<ListInvites>) {
 	const cancelInviteMutation = useMutation({
 		mutation: async (inviteId: string) => {
 			const client = $nvisyClient.value;
+			const workspaceSlug = currentWorkspaceSlug.value;
 			if (!client) throw new Error("Not authenticated");
-			await client.invites.cancelInvite(inviteId);
+			if (!workspaceSlug) throw new Error("No workspace selected");
+			await client.invites.cancelInvite(workspaceSlug, inviteId);
 		},
 		onSuccess() {
 			invitesQuery.refresh();
@@ -63,10 +62,10 @@ export function useInvites(query?: Ref<ListInvites>) {
 	const generateCodeMutation = useMutation({
 		mutation: async (options: GenerateInviteCode) => {
 			const client = $nvisyClient.value;
-			const workspaceId = currentWorkspaceId.value;
+			const workspaceSlug = currentWorkspaceSlug.value;
 			if (!client) throw new Error("Not authenticated");
-			if (!workspaceId) throw new Error("No workspace selected");
-			return await client.invites.generateInviteCode(workspaceId, options);
+			if (!workspaceSlug) throw new Error("No workspace selected");
+			return await client.invites.generateInviteCode(workspaceSlug, options);
 		},
 	});
 

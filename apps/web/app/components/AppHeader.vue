@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
 import { MessageSquare } from "@lucide/vue";
 import { Separator } from "#console/components/ui/separator";
 import { SidebarTrigger } from "#console/components/ui/sidebar";

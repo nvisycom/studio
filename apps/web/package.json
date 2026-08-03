@@ -11,8 +11,9 @@
 		"typecheck": "nuxt typecheck ."
 	},
 	"dependencies": {
-		"@nvisy/console": "*",
 		"@nuxtjs/device": "^4.0.0",
+		"@nvisy/console": "*",
+		"@nvisy/sdk": "^0.7.0",
 		"nuxt": "^4.4.8",
 		"vue": "^3.5.35",
 		"vue-router": "^5.1.0"

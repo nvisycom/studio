@@ -10,18 +10,8 @@ import type {
 	InviteSortField,
 	SortOrder,
 } from "@nvisy/sdk/datatypes";
-import { NvisyApiError } from "@nvisy/sdk";
 import { toast } from "vue-sonner";
 
-function getErrorMessage(err: unknown, fallback: string): string {
-	if (err instanceof NvisyApiError) {
-		return err.message;
-	}
-	if (err instanceof Error) {
-		return err.message;
-	}
-	return fallback;
-}
 import {
 	DeleteMemberModal,
 	DeleteMultipleMembersModal,
@@ -105,14 +95,13 @@ const filteredMembers = computed(() => {
 	const query = searchQuery.value.toLowerCase();
 	return members.value.filter(
 		(member) =>
-			member.displayName.toLowerCase().includes(query) ||
+			member.displayName?.toLowerCase().includes(query) ||
 			member.emailAddress.toLowerCase().includes(query),
 	);
 });
 
 const pendingInvites = computed(() => {
 	if (!invites.value) return [];
-	console.log(invites.value);
 	return invites.value.filter((invite) => invite.inviteStatus === "pending");
 });
 
@@ -128,7 +117,7 @@ const filteredInvites = computed(() => {
 // Selection using composable
 const membersSelection = useSelection({
 	items: filteredMembers,
-	getKey: (m) => m.accountId,
+	getKey: (m) => m.username,
 	isSelectable: (m) => m.memberRole !== "owner",
 });
 
@@ -186,7 +175,7 @@ async function handleCopyLink(role: WorkspaceRole, expiry: InviteExpiration) {
 // ===== Member Deletion Functions =====
 
 function openDeleteMemberDialog(memberId: string) {
-	const member = members.value?.find((m) => m.accountId === memberId);
+	const member = members.value?.find((m) => m.username === memberId);
 	if (member) {
 		memberToDelete.value = member;
 		isDeleteMemberDialogOpen.value = true;
@@ -197,7 +186,7 @@ async function deleteMember() {
 	if (!memberToDelete.value) return;
 
 	try {
-		await removeMemberAsync(memberToDelete.value.accountId);
+		await removeMemberAsync(memberToDelete.value.username);
 		isDeleteMemberDialogOpen.value = false;
 		memberToDelete.value = null;
 		toast.success(t("members.messages.memberRemoved"));
@@ -209,7 +198,7 @@ async function deleteMember() {
 // ===== Member Edit Functions =====
 
 function openEditMemberDialog(memberId: string) {
-	const member = members.value?.find((m) => m.accountId === memberId);
+	const member = members.value?.find((m) => m.username === memberId);
 	if (member) {
 		memberToEdit.value = member;
 		isEditMemberDialogOpen.value = true;
@@ -221,7 +210,7 @@ async function editMember(role: WorkspaceRole) {
 
 	try {
 		await updateMemberAsync({
-			accountId: memberToEdit.value.accountId,
+			username: memberToEdit.value.username,
 			updates: { role },
 		});
 		isEditMemberDialogOpen.value = false;
@@ -233,9 +222,9 @@ async function editMember(role: WorkspaceRole) {
 }
 
 async function deleteSelectedMembers() {
-	const accountIds = Array.from(membersSelection.selected.value);
+	const usernames = Array.from(membersSelection.selected.value);
 	const results = await Promise.allSettled(
-		accountIds.map((accountId) => removeMemberAsync(accountId)),
+		usernames.map((username) => removeMemberAsync(username)),
 	);
 
 	const failed = results.filter((r) => r.status === "rejected");

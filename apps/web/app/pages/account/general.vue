@@ -31,7 +31,6 @@ const { account, isLoading, updateAccountAsync, isUpdating } = useAccount();
 // Form state
 const avatarUrl = ref("");
 const displayName = ref("");
-const companyName = ref("");
 const email = ref("");
 const timezone = ref("America/New_York");
 
@@ -52,7 +51,6 @@ watch(
 	(acc) => {
 		if (acc) {
 			displayName.value = acc.displayName || "";
-			companyName.value = acc.companyName || "";
 			email.value = acc.emailAddress || "";
 		}
 	},
@@ -130,7 +128,6 @@ async function saveProfile() {
 	try {
 		await updateAccountAsync({
 			displayName: displayName.value,
-			companyName: companyName.value,
 		});
 	} catch {
 		// Error is handled by the mutation
@@ -245,21 +242,6 @@ function saveTimezone() {
               </p>
             </div>
 
-            <!-- Company Name -->
-            <div class="space-y-2">
-              <Label for="companyName" class="text-sm font-medium"
-                >Company Name</Label
-              >
-              <Input
-                id="companyName"
-                v-model="companyName"
-                placeholder="Acme Inc."
-                class="max-w-md h-9"
-              />
-              <p class="text-xs text-muted-foreground">
-                May be displayed on documents and invoices.
-              </p>
-            </div>
           </CardContent>
           <CardFooter
             class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl flex items-center justify-between"

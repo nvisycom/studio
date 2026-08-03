@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { NotificationEvent } from "@nvisy/sdk/datatypes";
-import { NvisyApiError } from "@nvisy/sdk";
 import { Loader2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import {
@@ -22,16 +21,6 @@ definePageMeta({
 });
 
 const { t } = useI18n();
-
-function getErrorMessage(err: unknown, fallback: string): string {
-	if (err instanceof NvisyApiError) {
-		return err.message;
-	}
-	if (err instanceof Error) {
-		return err.message;
-	}
-	return fallback;
-}
 
 // Composable
 const { settings, isLoading, updateSettingsAsync, isUpdating } =

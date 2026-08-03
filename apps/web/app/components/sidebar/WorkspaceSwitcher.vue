@@ -24,19 +24,10 @@ const { isMobile } = useSidebar();
 const MAX_NAME_LENGTH = 18;
 
 // Use the workspaces composable
-const {
-	workspaces,
-	currentWorkspace,
-	currentWorkspaceId,
-	selectWorkspace,
-	isLoading,
-} = useWorkspaces();
+const { workspaces, currentWorkspace, currentWorkspaceSlug, selectWorkspace } =
+	useWorkspaces();
 
 const isCreateWorkspaceModalOpen = ref(false);
-
-function handleSelectWorkspace(workspaceId: string) {
-	selectWorkspace(workspaceId);
-}
 </script>
 
 <template>
@@ -88,12 +79,12 @@ function handleSelectWorkspace(workspaceId: string) {
         >
           <DropdownMenuItem
             v-for="(workspace, index) in workspaces"
-            :key="workspace.workspaceId"
+            :key="workspace.slug"
             class="flex items-center gap-2 px-2 py-1.5 mb-0.5 rounded-md cursor-pointer"
             :class="
-              workspace.workspaceId === currentWorkspaceId ? 'bg-accent' : ''
+              workspace.slug === currentWorkspaceSlug ? 'bg-accent' : ''
             "
-            @click="handleSelectWorkspace(workspace.workspaceId)"
+            @click="selectWorkspace(workspace.slug)"
           >
             <EntityAvatar
               :name="workspace.displayName"

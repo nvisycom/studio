@@ -107,13 +107,6 @@ const quickActions = [
             {{ t("overview.workspace.badges.requireApproval") }}
           </Badge>
           <Badge
-            v-if="currentWorkspace.enableComments"
-            variant="secondary"
-            class="text-xs"
-          >
-            {{ t("overview.workspace.badges.commentsEnabled") }}
-          </Badge>
-          <Badge
             v-for="tag in currentWorkspace.tags"
             :key="tag"
             variant="outline"

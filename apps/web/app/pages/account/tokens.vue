@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { NvisyApiError } from "@nvisy/sdk";
 import type {
 	ApiToken,
 	ApiTokenWithJWT,
@@ -7,16 +6,6 @@ import type {
 } from "@nvisy/sdk/datatypes";
 import { ChevronDown, Key, Loader2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
-
-function getErrorMessage(err: unknown, fallback: string): string {
-	if (err instanceof NvisyApiError) {
-		return err.message;
-	}
-	if (err instanceof Error) {
-		return err.message;
-	}
-	return fallback;
-}
 
 import {
 	DeleteMultipleTokensModal,
@@ -69,11 +58,11 @@ const {
 	isRevoking,
 } = useApiTokens();
 
-// Get current auth token to identify active session
-const { authToken } = useAuth();
-
-// Get the current session's token ID
-const currentTokenId = computed(() => authToken.value?.tokenId ?? null);
+// The token listing flags which token authenticated the current request,
+// so the active session can be marked and protected from bulk revoke.
+const currentTokenId = computed<string | null>(
+	() => tokens.value?.find((t) => t.current)?.id ?? null,
+);
 
 // Form state
 const tokenName = ref("");
