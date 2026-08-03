@@ -18,7 +18,7 @@
 		"@nvisy/sdk": "^0.7.0",
 		"@pinia/colada": "^1.4.2",
 		"@pinia/colada-nuxt": "^1.0.2",
-		"@pinia/nuxt": "^0.11.3",
+		"@pinia/nuxt": "^1.0.1",
 		"@tailwindcss/vite": "^4.3.3",
 		"@tanstack/vue-table": "^8.21.3",
 		"@tanstack/vue-virtual": "^3.13.35",
