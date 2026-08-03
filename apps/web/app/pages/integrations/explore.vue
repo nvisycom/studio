@@ -444,7 +444,7 @@ function notifyMe(_id: string | number) {
         class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center mb-6"
       >
         <Button as-child variant="outline" class="font-normal">
-          <NuxtLink to="/connections" class="flex items-center gap-2">
+          <NuxtLink to="/integrations" class="flex items-center gap-2">
             <ArrowLeft :size="16" />
             {{ t("connections.actions.backToConnections") }}
           </NuxtLink>

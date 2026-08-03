@@ -74,10 +74,10 @@ const automationItems = computed(() => [
 	{
 		label: t("sidebar.connections"),
 		icon: Puzzle,
-		href: "/connections",
+		href: "/integrations",
 		shortcut: "I",
 	},
-	{ label: t("sidebar.explore"), icon: Compass, href: "/connections/explore" },
+	{ label: t("sidebar.explore"), icon: Compass, href: "/integrations/explore" },
 ]);
 
 // Observability items
@@ -214,7 +214,7 @@ defineShortcuts(
 					meta_f: () => goTo("/files"),
 					meta_s: () => goTo("/studio"),
 					meta_t: () => goTo("/team"),
-					meta_i: () => goTo("/connections"),
+					meta_i: () => goTo("/integrations"),
 					meta_a: () => goTo("/analytics"),
 					meta_l: () => goTo("/analytics/logs"),
 					meta_b: () => goTo("/billing"),

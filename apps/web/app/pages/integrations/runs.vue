@@ -128,7 +128,7 @@ function copyRunDetails(_run: PipelineRun) {
         <!-- Search and Filters -->
         <div class="flex items-center gap-3 mb-6 flex-wrap">
           <Button as-child variant="outline" class="font-normal">
-            <NuxtLink to="/connections" class="flex items-center gap-2">
+            <NuxtLink to="/integrations" class="flex items-center gap-2">
               <ArrowLeft :size="16" />
               {{ t("connections.runs.backToConnections") }}
             </NuxtLink>
