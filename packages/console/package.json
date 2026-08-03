@@ -29,7 +29,7 @@
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"curtainsjs": "^8.1.6",
-		"pinia": "^3.0.4",
+		"pinia": "^4.0.2",
 		"reka-ui": "^2.10.1",
 		"tailwind-merge": "^3.6.0",
 		"tailwindcss": "^4.3.0",
