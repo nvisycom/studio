@@ -12,8 +12,8 @@ Thank you for your interest in contributing to the Nvisy console.
 ## Setup
 
 ```bash
-git clone https://github.com/nvisycom/portal.git
-cd portal
+git clone https://github.com/nvisycom/studio.git
+cd studio
 make install
 ```
 
