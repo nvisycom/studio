@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Policy } from "@nvisy/sdk/datatypes";
+import type { PolicySummary } from "@nvisy/sdk/datatypes";
 import {
 	Loader2,
 	Plus,
@@ -10,6 +10,7 @@ import {
 	ExternalLink,
 } from "@lucide/vue";
 import { formatRelativeTime } from "#console/utils/date";
+import { EntityAvatar } from "#console/components/common";
 import { Button } from "#console/components/ui/button";
 import {
 	Card,
@@ -60,17 +61,13 @@ definePageMeta({
 
 const { policies, isLoading, deletePolicyAsync, isDeleting } = usePolicies();
 
-const policyToDelete = ref<Policy | null>(null);
-
-function ruleCount(policy: Policy): number {
-	return policy.definition.rules?.length ?? 0;
-}
+const policyToDelete = ref<PolicySummary | null>(null);
 
 function openCreate() {
 	navigateTo(wLink("/policies/new"));
 }
 
-function openEdit(policy: Policy) {
+function openEdit(policy: PolicySummary) {
 	navigateTo(wLink(`/policies/${policy.slug}`));
 }
 
@@ -146,10 +143,10 @@ async function confirmDelete() {
                   {{ t("policies.table.name") }}
                 </TableHead>
                 <TableHead class="text-xs font-normal uppercase tracking-wider">
-                  {{ t("policies.table.rules") }}
+                  {{ t("policies.table.creator") }}
                 </TableHead>
                 <TableHead class="text-xs font-normal uppercase tracking-wider">
-                  {{ t("policies.table.version") }}
+                  {{ t("policies.table.created") }}
                 </TableHead>
                 <TableHead class="text-xs font-normal uppercase tracking-wider">
                   {{ t("policies.table.updated") }}
@@ -174,13 +171,19 @@ async function confirmDelete() {
                         </p>
                       </div>
                     </TableCell>
-                    <TableCell class="text-sm text-muted-foreground">
-                      {{
-                        t("policies.table.ruleCount", { count: ruleCount(policy) })
-                      }}
+                    <TableCell>
+                      <div class="flex items-center gap-2">
+                        <EntityAvatar
+                          :name="policy.creatorUsername"
+                          size="sm"
+                        />
+                        <span class="truncate text-sm text-muted-foreground">
+                          {{ policy.creatorUsername }}
+                        </span>
+                      </div>
                     </TableCell>
-                    <TableCell class="font-mono text-xs text-muted-foreground">
-                      {{ policy.version }}
+                    <TableCell class="text-sm text-muted-foreground">
+                      {{ formatRelativeTime(policy.createdAt, t) }}
                     </TableCell>
                     <TableCell class="text-sm text-muted-foreground">
                       {{ formatRelativeTime(policy.updatedAt, t) }}

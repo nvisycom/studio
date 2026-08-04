@@ -162,17 +162,6 @@ const providers = ref<Provider[]>([
 		popularity: 80,
 	},
 	{
-		id: "minio",
-		nameKey: "connections.explore.items.minio.name",
-		descriptionKey: "connections.explore.items.minio.description",
-		shortDescriptionKey: "connections.explore.items.minio.shortDescription",
-		icon: "/integration/minio.svg",
-		status: "available",
-		category: "cloud-storage",
-		tags: ["fileSync", "developer"],
-		popularity: 70,
-	},
-	{
 		id: "azure",
 		nameKey: "connections.explore.items.azure.name",
 		descriptionKey: "connections.explore.items.azure.description",

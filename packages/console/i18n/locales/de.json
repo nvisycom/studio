@@ -847,11 +847,6 @@
 					"shortDescription": "Amazon-Objektspeicher",
 					"description": "Einen Amazon-S3-Bucket verbinden"
 				},
-				"minio": {
-					"name": "MinIO",
-					"shortDescription": "S3-kompatibler Speicher",
-					"description": "Einen MinIO- oder anderen S3-kompatiblen Bucket verbinden"
-				},
 				"azure": {
 					"name": "Azure Blob Storage",
 					"shortDescription": "Microsoft-Objektspeicher",
@@ -1291,10 +1286,9 @@
 		},
 		"table": {
 			"name": "Name",
-			"rules": "Regeln",
-			"version": "Version",
+			"creator": "Ersteller",
+			"created": "Erstellt",
 			"updated": "Aktualisiert",
-			"ruleCount": "{count} Regel | {count} Regeln",
 			"menu": "Menü öffnen",
 			"edit": "Bearbeiten",
 			"delete": "Löschen"
@@ -1314,21 +1308,29 @@
 			"back": "Zurück zu Richtlinien",
 			"addRule": "Regel hinzufügen",
 			"ruleNamePlaceholder": "Regelname",
-			"noRules": "Noch keine Regeln.",
+			"moveUp": "Regel nach oben",
+			"moveDown": "Regel nach unten",
+			"removeRule": "Regel entfernen",
+			"noRules": "Erste Regel hinzufügen",
+			"when": "Wenn",
+			"then": "Dann",
 			"conditions": "Bedingungen",
 			"addCondition": "Bedingung hinzufügen",
-			"valuesPlaceholder": "komma,getrennt",
+			"valuesPlaceholder": "komma, getrennt",
 			"action": "Aktion",
-			"notePlaceholder": "Optionale Notiz",
+			"summary": {
+				"line": "Wenn {conditions}, {action}.",
+				"and": " und ",
+				"confidence": "Konfidenz mindestens {min} ist",
+				"label": "Label {values} ist",
+				"tag": "Tag {values} ist",
+				"redact": "schwärzen",
+				"redactModalities": "{list} schwärzen"
+			},
 			"predicate": {
 				"confidence": "Konfidenz ≥",
 				"labelOneOf": "Label ist eines von",
 				"tagOneOf": "Tag ist eines von"
-			},
-			"actionKind": {
-				"redact": "Schwärzen",
-				"suppress": "Unterdrücken",
-				"audit": "Prüfen"
 			},
 			"textKind": {
 				"replace": "Ersetzen",
@@ -1336,6 +1338,42 @@
 				"hash": "Hashen",
 				"erase": "Löschen",
 				"keep": "Behalten"
+			},
+			"imageKind": {
+				"blur": "Weichzeichnen",
+				"pixelate": "Verpixeln",
+				"erase": "Löschen",
+				"keep": "Behalten"
+			},
+			"audioKind": {
+				"silence": "Stummschalten",
+				"beep": "Piepton",
+				"erase": "Löschen",
+				"keep": "Behalten"
+			},
+			"modality": {
+				"text": "Text",
+				"image": "Bild",
+				"audio": "Audio",
+				"tabular": "Tabellarisch"
+			},
+			"addModality": "Medium hinzufügen",
+			"removeModality": "Medium entfernen",
+			"sigma": "Sigma",
+			"blockSize": "Block",
+			"hz": "Frequenz (Hz)",
+			"fallback": {
+				"label": "Fallback",
+				"hint": "Wird auf jede Übereinstimmung angewendet, die keine Regel behandelt hat.",
+				"applies": "wenn keine Regel oben zutrifft."
+			},
+			"labels": {
+				"label": "Label-Katalog",
+				"hint": "Entitäts-Labels, die diese Richtlinie erkennt.",
+				"add": "Label hinzufügen",
+				"namePlaceholder": "LABEL_NAME",
+				"descriptionPlaceholder": "Was dieses Label bedeutet (optional)",
+				"tagsPlaceholder": "Tags, durch Komma getrennt"
 			},
 			"cancel": "Abbrechen",
 			"submit": "Richtlinie erstellen"

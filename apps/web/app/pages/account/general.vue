@@ -35,6 +35,9 @@ const {
 	isUpdating,
 } = useAccount();
 
+// Username: lowercase alphanumeric with single internal dashes (matches signup).
+const USERNAME_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
 // Avatar placeholder must match the sidebar (NavUser): fall back to the email
 // address when no display name is set, so both show identical initials/color.
 const avatarLabel = computed(
@@ -44,7 +47,16 @@ const avatarLabel = computed(
 // Form state
 const avatarUrl = ref("");
 const displayName = ref("");
+const username = ref("");
 const email = ref("");
+
+const usernameError = computed(() => {
+	const value = username.value.trim();
+	if (!value) return "Username is required.";
+	return USERNAME_PATTERN.test(value)
+		? ""
+		: "Use lowercase letters, numbers, and single dashes between characters.";
+});
 const timezone = ref("America/New_York");
 
 // Password fields
@@ -64,6 +76,7 @@ watch(
 	(acc) => {
 		if (acc) {
 			displayName.value = acc.displayName || "";
+			username.value = acc.username || "";
 			email.value = acc.emailAddress || "";
 		}
 	},
@@ -138,9 +151,11 @@ function uploadAvatar() {
 }
 
 async function saveProfile() {
+	if (usernameError.value) return;
 	try {
 		await updateAccountAsync({
 			displayName: displayName.value,
+			username: username.value.trim(),
 		});
 	} catch {
 		// Error is handled by the mutation
@@ -250,6 +265,29 @@ function saveTimezone() {
               />
               <p class="text-xs text-muted-foreground">
                 Your name as it appears across the platform. Max 64 characters.
+              </p>
+            </div>
+
+            <!-- Username -->
+            <div class="space-y-2">
+              <Label for="username" class="text-sm font-medium"
+                >Username</Label
+              >
+              <Input
+                id="username"
+                v-model="username"
+                placeholder="john-doe"
+                class="max-w-md h-9"
+                autocapitalize="none"
+                autocomplete="username"
+                :aria-invalid="!!usernameError"
+              />
+              <p v-if="usernameError" class="text-xs text-destructive">
+                {{ usernameError }}
+              </p>
+              <p v-else class="text-xs text-muted-foreground">
+                Your public handle. Lowercase letters, numbers, and single
+                dashes.
               </p>
             </div>
 

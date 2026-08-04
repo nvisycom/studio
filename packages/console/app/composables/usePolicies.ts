@@ -20,6 +20,15 @@ export function usePolicies() {
 		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceSlug.value,
 	});
 
+	// Fetch a single policy with its full definition (the list only returns
+	// summaries).
+	async function getPolicy(policySlug: string) {
+		const client = $nvisyClient.value;
+		const workspaceSlug = currentWorkspaceSlug.value;
+		if (!client || !workspaceSlug) throw new Error("Not authenticated");
+		return await client.policies.getPolicy(workspaceSlug, policySlug);
+	}
+
 	const createPolicyMutation = useMutation({
 		mutation: async (policy: CreatePolicy) => {
 			const client = $nvisyClient.value;
@@ -68,6 +77,7 @@ export function usePolicies() {
 
 	return {
 		policies: policiesQuery.data,
+		getPolicy,
 		isLoading: policiesQuery.isLoading,
 		error: policiesQuery.error,
 		refresh: policiesQuery.refresh,

@@ -847,11 +847,6 @@
 					"shortDescription": "Amazon object storage",
 					"description": "Connect an Amazon S3 bucket"
 				},
-				"minio": {
-					"name": "MinIO",
-					"shortDescription": "S3-compatible storage",
-					"description": "Connect a MinIO or other S3-compatible bucket"
-				},
 				"azure": {
 					"name": "Azure Blob Storage",
 					"shortDescription": "Microsoft object storage",
@@ -1291,10 +1286,9 @@
 		},
 		"table": {
 			"name": "Name",
-			"rules": "Rules",
-			"version": "Version",
+			"creator": "Creator",
+			"created": "Created",
 			"updated": "Updated",
-			"ruleCount": "{count} rule | {count} rules",
 			"menu": "Open menu",
 			"edit": "Edit",
 			"delete": "Delete"
@@ -1314,21 +1308,29 @@
 			"back": "Back to policies",
 			"addRule": "Add rule",
 			"ruleNamePlaceholder": "Rule name",
-			"noRules": "No rules yet.",
+			"moveUp": "Move rule up",
+			"moveDown": "Move rule down",
+			"removeRule": "Remove rule",
+			"noRules": "Add your first rule",
+			"when": "When",
+			"then": "Then",
 			"conditions": "Conditions",
 			"addCondition": "Add condition",
-			"valuesPlaceholder": "comma,separated",
+			"valuesPlaceholder": "comma, separated",
 			"action": "Action",
-			"notePlaceholder": "Optional note",
+			"summary": {
+				"line": "When {conditions}, {action}.",
+				"and": " and ",
+				"confidence": "confidence is at least {min}",
+				"label": "label is {values}",
+				"tag": "tag is {values}",
+				"redact": "redact it",
+				"redactModalities": "redact {list}"
+			},
 			"predicate": {
 				"confidence": "Confidence ≥",
 				"labelOneOf": "Label is one of",
 				"tagOneOf": "Tag is one of"
-			},
-			"actionKind": {
-				"redact": "Redact",
-				"suppress": "Suppress",
-				"audit": "Audit"
 			},
 			"textKind": {
 				"replace": "Replace",
@@ -1336,6 +1338,42 @@
 				"hash": "Hash",
 				"erase": "Erase",
 				"keep": "Keep"
+			},
+			"imageKind": {
+				"blur": "Blur",
+				"pixelate": "Pixelate",
+				"erase": "Erase",
+				"keep": "Keep"
+			},
+			"audioKind": {
+				"silence": "Silence",
+				"beep": "Beep",
+				"erase": "Erase",
+				"keep": "Keep"
+			},
+			"modality": {
+				"text": "Text",
+				"image": "Image",
+				"audio": "Audio",
+				"tabular": "Tabular"
+			},
+			"addModality": "Add media",
+			"removeModality": "Remove media",
+			"sigma": "Sigma",
+			"blockSize": "Block",
+			"hz": "Frequency (Hz)",
+			"fallback": {
+				"label": "Fallback",
+				"hint": "Applied to any match no rule handled.",
+				"applies": "when no rule above matches."
+			},
+			"labels": {
+				"label": "Label catalog",
+				"hint": "Entity labels this policy recognizes.",
+				"add": "Add label",
+				"namePlaceholder": "LABEL_NAME",
+				"descriptionPlaceholder": "What this label means (optional)",
+				"tagsPlaceholder": "tags, comma separated"
 			},
 			"cancel": "Cancel",
 			"submit": "Create policy"

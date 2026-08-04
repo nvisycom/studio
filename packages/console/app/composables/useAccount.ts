@@ -30,6 +30,7 @@ export function useAccount() {
 
 	// Computed helpers for account data
 	const displayName = computed(() => accountQuery.data.value?.displayName);
+	const username = computed(() => accountQuery.data.value?.username);
 	const emailAddress = computed(() => accountQuery.data.value?.emailAddress);
 	const firstName = computed(() => displayName.value?.split(" ")[0] || "");
 
@@ -42,6 +43,7 @@ export function useAccount() {
 
 		// Computed helpers
 		displayName,
+		username,
 		emailAddress,
 		firstName,
 

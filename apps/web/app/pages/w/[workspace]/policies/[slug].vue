@@ -11,10 +11,17 @@ const route = useRoute();
 
 const slug = computed(() => route.params.slug as string);
 
-const { policies, isLoading, updatePolicyAsync, isUpdating } = usePolicies();
+const { getPolicy, updatePolicyAsync, isUpdating } = usePolicies();
 
-const policy = computed(
-	() => policies.value?.find((p) => p.slug === slug.value) ?? null,
+// Fetch the full policy (with its definition); the list only has summaries.
+const {
+	data: policy,
+	pending: isLoading,
+	error,
+} = useAsyncData(
+	() => `policy-${slug.value}`,
+	() => getPolicy(slug.value),
+	{ watch: [slug] },
 );
 
 useHead(() => ({ title: policy.value?.displayName ?? "Policy" }));
@@ -23,9 +30,9 @@ definePageMeta({
 	pageCategory: "Automation",
 });
 
-// If the list has loaded and the slug isn't found, bounce back to the list.
-watch([policies, policy], ([list, found]) => {
-	if (list && !found) navigateTo(wLink("/policies"), { replace: true });
+// Bounce back to the list if the policy can't be loaded.
+watch(error, (e) => {
+	if (e) navigateTo(wLink("/policies"), { replace: true });
 });
 
 async function handleUpdate(policySlug: string, updates: UpdatePolicy) {

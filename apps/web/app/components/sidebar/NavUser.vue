@@ -34,15 +34,16 @@ const { wLink } = useWorkspaceLink();
 const { getKbdKey } = useKbd();
 const { isMobile } = useSidebar();
 const { logout } = useAuth();
-const { displayName, emailAddress } = useAccount();
+const { displayName, username, emailAddress } = useAccount();
 
-// The display name is the primary label; fall back to the email. The email
-// only shows as the subtitle when it isn't already the primary label.
+// Primary label is the display name, falling back to the username, then the
+// email. The email shows as the subtitle whenever it isn't already the primary
+// label (i.e. as long as a display name or username is present).
 const primaryLabel = computed(
-	() => displayName.value || emailAddress.value || "",
+	() => displayName.value || username.value || emailAddress.value || "",
 );
 const secondaryLabel = computed(() =>
-	displayName.value ? (emailAddress.value ?? "") : "",
+	displayName.value || username.value ? (emailAddress.value ?? "") : "",
 );
 
 const { open: openHelpChat } = useHelpChat();

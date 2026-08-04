@@ -100,10 +100,13 @@ function handleRowClick(member: Member) {
               </TableCell>
               <TableCell>
                 <div class="flex items-center gap-3">
-                  <EntityAvatar :name="member.displayName" size="md" />
+                  <EntityAvatar
+                    :name="member.displayName || member.username"
+                    size="md"
+                  />
                   <div>
                     <p class="font-normal text-neutral-900 dark:text-white">
-                      {{ member.displayName }}
+                      {{ member.displayName || member.username }}
                     </p>
                     <p class="text-xs text-neutral-600 dark:text-neutral-400">
                       {{ member.emailAddress }}

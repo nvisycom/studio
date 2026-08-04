@@ -2,20 +2,37 @@
 import type { CreatePolicy, Policy, UpdatePolicy } from "@nvisy/sdk/datatypes";
 import type {
 	EditableRule,
+	EditableAction,
+	EditableLabel,
+	EditableOperator,
 	PredicateKind,
-	ActionKind,
+	Modality,
 	TextRedactionKind,
+	ImageRedactionKind,
+	AudioRedactionKind,
+	TabularRedactionKind,
 } from "#console/utils/policies";
 import {
 	buildCreatePolicy,
 	buildUpdatePolicy,
 	rulesFromDefinition,
+	fallbackFromDefinition,
+	labelsFromDefinition,
 } from "#console/utils/policies";
-import { Loader2, Plus, Trash2 } from "@lucide/vue";
+import {
+	Loader2,
+	Plus,
+	Trash2,
+	X,
+	Sparkles,
+	ChevronUp,
+	ChevronDown,
+} from "@lucide/vue";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
 import { Button } from "#console/components/ui/button";
 import { Textarea } from "#console/components/ui/textarea";
+import { Switch } from "#console/components/ui/switch";
 import {
 	Select,
 	SelectContent,
@@ -23,6 +40,12 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "#console/components/ui/select";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "#console/components/ui/dropdown-menu";
 
 const { t } = useI18n();
 
@@ -44,7 +67,7 @@ const PREDICATE_KINDS: PredicateKind[] = [
 	"labelOneOf",
 	"tagOneOf",
 ];
-const ACTION_KINDS: ActionKind[] = ["redact", "suppress", "audit"];
+const MODALITIES: Modality[] = ["text", "image", "audio", "tabular"];
 const TEXT_KINDS: TextRedactionKind[] = [
 	"replace",
 	"mask",
@@ -52,13 +75,70 @@ const TEXT_KINDS: TextRedactionKind[] = [
 	"erase",
 	"keep",
 ];
+const IMAGE_KINDS: ImageRedactionKind[] = ["blur", "pixelate", "erase", "keep"];
+const AUDIO_KINDS: AudioRedactionKind[] = ["silence", "beep", "erase", "keep"];
+const TABULAR_KINDS: TabularRedactionKind[] = [
+	"replace",
+	"mask",
+	"hash",
+	"erase",
+	"keep",
+];
+
+function defaultOperator(modality: Modality): EditableOperator {
+	switch (modality) {
+		case "image":
+			return { imageKind: "blur", sigma: 8 };
+		case "audio":
+			return { audioKind: "silence" };
+		case "tabular":
+			return { tabularKind: "replace", template: "[{label}]" };
+		default:
+			return { textKind: "replace", template: "[{label}]" };
+	}
+}
+
+// --- Redact modality tabs (per rule action) ---
+function activeModalities(action: EditableAction): Modality[] {
+	return MODALITIES.filter((m) => action.modalities?.[m]);
+}
+function addModality(action: EditableAction, modality: Modality) {
+	if (!action.modalities) action.modalities = {};
+	action.modalities[modality] = defaultOperator(modality);
+}
+function removeModality(action: EditableAction, modality: Modality) {
+	if (action.modalities) delete action.modalities[modality];
+}
+function availableModalities(action: EditableAction): Modality[] {
+	return MODALITIES.filter((m) => !action.modalities?.[m]);
+}
 
 const displayName = ref("");
 const slug = ref("");
 const slugEdited = ref(false);
 const description = ref("");
 const rules = ref<EditableRule[]>([]);
+const fallback = ref<EditableAction | null>(null);
+const labels = ref<EditableLabel[]>([]);
 const policyId = ref("");
+
+// --- Fallback (a ModalityRedactions, like a rule action) ---
+function toggleFallback(enabled: boolean) {
+	fallback.value = enabled
+		? { modalities: { text: { textKind: "replace", template: "[{label}]" } } }
+		: null;
+}
+
+// --- Labels catalog ---
+function addLabel() {
+	labels.value = [
+		...labels.value,
+		{ key: crypto.randomUUID(), name: "", tags: "" },
+	];
+}
+function removeLabel(key: string) {
+	labels.value = labels.value.filter((l) => l.key !== key);
+}
 
 function slugify(value: string): string {
 	return value
@@ -81,7 +161,9 @@ function newRule(): EditableRule {
 		key: crypto.randomUUID(),
 		name: "",
 		predicates: [{ kind: "confidence", min: 0.5 }],
-		action: { kind: "redact", textKind: "replace", template: "[{label}]" },
+		action: {
+			modalities: { text: { textKind: "replace", template: "[{label}]" } },
+		},
 	};
 }
 
@@ -90,6 +172,17 @@ function addRule() {
 }
 function removeRule(key: string) {
 	rules.value = rules.value.filter((r) => r.key !== key);
+}
+// Rules evaluate top-to-bottom (first match wins), so order is meaningful.
+function moveRule(index: number, delta: number) {
+	const target = index + delta;
+	if (target < 0 || target >= rules.value.length) return;
+	const next = [...rules.value];
+	const moved = next[index];
+	if (!moved) return;
+	next.splice(index, 1);
+	next.splice(target, 0, moved);
+	rules.value = next;
 }
 function addPredicate(rule: EditableRule) {
 	rule.predicates.push({ kind: "labelOneOf", values: "" });
@@ -118,6 +211,8 @@ watch(
 			description.value = policy.description ?? "";
 			const editable = rulesFromDefinition(policy.definition);
 			rules.value = editable.length > 0 ? editable : [newRule()];
+			fallback.value = fallbackFromDefinition(policy.definition);
+			labels.value = labelsFromDefinition(policy.definition);
 		} else {
 			policyId.value = crypto.randomUUID();
 			displayName.value = "";
@@ -125,6 +220,8 @@ watch(
 			slugEdited.value = false;
 			description.value = "";
 			rules.value = [newRule()];
+			fallback.value = null;
+			labels.value = [];
 		}
 	},
 	{ immediate: true },
@@ -138,12 +235,42 @@ function submit() {
 		slug: slug.value,
 		description: description.value,
 		rules: rules.value,
+		fallback: fallback.value,
+		labels: labels.value,
 	};
 	if (props.policy) {
 		emit("update", props.policy.slug, buildUpdatePolicy(input));
 	} else {
 		emit("create", buildCreatePolicy(input));
 	}
+}
+
+// Plain-English summary of a rule, shown under each card for legibility.
+function ruleSummary(rule: EditableRule): string {
+	const conds = rule.predicates
+		.map((p) => {
+			if (p.kind === "confidence")
+				return t("policies.editor.summary.confidence", {
+					min: p.min ?? 0,
+				});
+			const values = (p.values ?? "").trim() || "…";
+			return p.kind === "labelOneOf"
+				? t("policies.editor.summary.label", { values })
+				: t("policies.editor.summary.tag", { values });
+		})
+		.join(t("policies.editor.summary.and"));
+
+	const mods = activeModalities(rule.action);
+	const action =
+		mods.length === 0
+			? t("policies.editor.summary.redact")
+			: t("policies.editor.summary.redactModalities", {
+					list: mods
+						.map((m) => t(`policies.editor.modality.${m}`))
+						.join(t("policies.editor.summary.and")),
+				});
+
+	return t("policies.editor.summary.line", { conditions: conds, action });
 }
 </script>
 
@@ -200,148 +327,406 @@ function submit() {
       <div
         v-for="(rule, ruleIndex) in rules"
         :key="rule.key"
-        class="space-y-4 rounded-lg border border-border/60 p-4"
+        class="overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm"
       >
-        <div class="flex items-center gap-2">
+        <!-- Rule header -->
+        <div class="flex items-center gap-2.5 border-b border-border/60 px-4 py-3">
           <span
-            class="flex size-6 shrink-0 items-center justify-center rounded-md bg-muted text-xs font-medium text-muted-foreground"
+            class="flex size-6 shrink-0 items-center justify-center rounded-md bg-foreground text-xs font-semibold text-background tabular-nums"
           >
             {{ ruleIndex + 1 }}
           </span>
           <Input
             v-model="rule.name"
             :placeholder="t('policies.editor.ruleNamePlaceholder')"
-            class="flex-1"
+            class="h-8 flex-1 border-transparent bg-transparent px-1 text-sm font-medium shadow-none focus-visible:border-border focus-visible:bg-background"
           />
-          <Button
-            variant="ghost"
-            size="icon"
-            class="size-8 shrink-0"
-            @click="removeRule(rule.key)"
-          >
-            <Trash2 :size="15" class="text-muted-foreground" />
-          </Button>
-        </div>
-
-        <!-- Conditions -->
-        <div class="space-y-2 pl-8">
-          <p
-            class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
-          >
-            {{ t("policies.editor.conditions") }}
-          </p>
-          <div
-            v-for="(pred, i) in rule.predicates"
-            :key="i"
-            class="flex items-center gap-2"
-          >
-            <Select v-model="pred.kind">
-              <SelectTrigger class="w-[170px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem v-for="k in PREDICATE_KINDS" :key="k" :value="k">
-                  {{ t(`policies.editor.predicate.${k}`) }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            <Input
-              v-if="pred.kind === 'confidence'"
-              v-model.number="pred.min"
-              type="number"
-              step="0.05"
-              min="0"
-              max="1"
-              class="flex-1"
-            />
-            <Input
-              v-else
-              v-model="pred.values"
-              :placeholder="t('policies.editor.valuesPlaceholder')"
-              class="flex-1"
-            />
+          <div class="flex shrink-0 items-center">
             <Button
               variant="ghost"
               size="icon"
-              class="size-8 shrink-0"
-              :disabled="rule.predicates.length <= 1"
-              @click="removePredicate(rule, i)"
+              class="size-8 text-muted-foreground disabled:opacity-30"
+              :disabled="ruleIndex === 0"
+              :aria-label="t('policies.editor.moveUp')"
+              @click="moveRule(ruleIndex, -1)"
             >
-              <Trash2 :size="14" class="text-muted-foreground" />
+              <ChevronUp :size="15" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              class="size-8 text-muted-foreground disabled:opacity-30"
+              :disabled="ruleIndex === rules.length - 1"
+              :aria-label="t('policies.editor.moveDown')"
+              @click="moveRule(ruleIndex, 1)"
+            >
+              <ChevronDown :size="15" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              class="size-8 text-muted-foreground hover:text-destructive"
+              :aria-label="t('policies.editor.removeRule')"
+              @click="removeRule(rule.key)"
+            >
+              <Trash2 :size="15" />
             </Button>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            class="h-7 text-xs text-muted-foreground"
-            @click="addPredicate(rule)"
-          >
-            <Plus :size="13" class="mr-1" />
-            {{ t("policies.editor.addCondition") }}
-          </Button>
         </div>
 
-        <!-- Action -->
-        <div class="space-y-2 pl-8">
-          <p
-            class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
-          >
-            {{ t("policies.editor.action") }}
-          </p>
-          <div class="flex flex-wrap items-center gap-2">
-            <Select v-model="rule.action.kind">
-              <SelectTrigger class="w-[150px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem v-for="k in ACTION_KINDS" :key="k" :value="k">
-                  {{ t(`policies.editor.actionKind.${k}`) }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-
-            <template v-if="rule.action.kind === 'redact'">
-              <Select v-model="rule.action.textKind">
-                <SelectTrigger class="w-[130px]">
+        <div class="divide-y divide-border/60">
+          <!-- WHEN -->
+          <div class="space-y-2.5 px-4 py-3.5">
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
+              >
+                {{ t("policies.editor.when") }}
+              </span>
+              <span class="h-px flex-1 bg-border/50" />
+            </div>
+            <div
+              v-for="(pred, i) in rule.predicates"
+              :key="i"
+              class="flex items-center gap-2"
+            >
+              <Select v-model="pred.kind">
+                <SelectTrigger class="h-9 w-[180px] shrink-0">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem v-for="k in TEXT_KINDS" :key="k" :value="k">
-                    {{ t(`policies.editor.textKind.${k}`) }}
+                  <SelectItem v-for="k in PREDICATE_KINDS" :key="k" :value="k">
+                    {{ t(`policies.editor.predicate.${k}`) }}
                   </SelectItem>
                 </SelectContent>
               </Select>
               <Input
-                v-if="rule.action.textKind === 'replace'"
-                v-model="rule.action.template"
-                class="flex-1 font-mono text-sm"
-                placeholder="[{label}]"
+                v-if="pred.kind === 'confidence'"
+                v-model.number="pred.min"
+                type="number"
+                step="0.05"
+                min="0"
+                max="1"
+                class="h-9 flex-1"
               />
               <Input
-                v-else-if="rule.action.textKind === 'mask'"
-                v-model="rule.action.maskChar"
-                class="w-16 text-center font-mono"
-                maxlength="1"
-                placeholder="*"
+                v-else
+                v-model="pred.values"
+                :placeholder="t('policies.editor.valuesPlaceholder')"
+                class="h-9 flex-1 font-mono text-sm"
               />
-            </template>
+              <Button
+                variant="ghost"
+                size="icon"
+                class="size-9 shrink-0 text-muted-foreground"
+                :disabled="rule.predicates.length <= 1"
+                @click="removePredicate(rule, i)"
+              >
+                <X :size="15" />
+              </Button>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              class="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+              @click="addPredicate(rule)"
+            >
+              <Plus :size="13" class="mr-1" />
+              {{ t("policies.editor.addCondition") }}
+            </Button>
+          </div>
 
-            <Input
-              v-else
-              v-model="rule.action.note"
-              :placeholder="t('policies.editor.notePlaceholder')"
-              class="flex-1"
-            />
+          <!-- THEN -->
+          <div class="space-y-2.5 px-4 py-3.5">
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
+              >
+                {{ t("policies.editor.then") }}
+              </span>
+              <span class="h-px flex-1 bg-border/50" />
+            </div>
+
+            <!-- One redaction operator per configured modality -->
+            <div class="space-y-2">
+                <div
+                  v-for="m in activeModalities(rule.action)"
+                  :key="m"
+                  class="flex items-center gap-2"
+                >
+                  <span
+                    class="w-16 shrink-0 text-xs font-medium text-muted-foreground"
+                  >
+                    {{ t(`policies.editor.modality.${m}`) }}
+                  </span>
+
+                  <!-- Text / Tabular share the text vocabulary -->
+                  <template v-if="m === 'text' || m === 'tabular'">
+                    <Select
+                      v-if="m === 'text'"
+                      v-model="rule.action.modalities![m]!.textKind"
+                    >
+                      <SelectTrigger class="h-9 w-[130px] shrink-0">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem v-for="k in TEXT_KINDS" :key="k" :value="k">
+                          {{ t(`policies.editor.textKind.${k}`) }}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select
+                      v-else
+                      v-model="rule.action.modalities![m]!.tabularKind"
+                    >
+                      <SelectTrigger class="h-9 w-[130px] shrink-0">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem
+                          v-for="k in TABULAR_KINDS"
+                          :key="k"
+                          :value="k"
+                        >
+                          {{ t(`policies.editor.textKind.${k}`) }}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      v-if="
+                        (m === 'text'
+                          ? rule.action.modalities![m]!.textKind
+                          : rule.action.modalities![m]!.tabularKind) === 'replace'
+                      "
+                      v-model="rule.action.modalities![m]!.template"
+                      class="h-9 flex-1 font-mono text-sm"
+                      placeholder="[{label}]"
+                    />
+                    <Input
+                      v-else-if="
+                        (m === 'text'
+                          ? rule.action.modalities![m]!.textKind
+                          : rule.action.modalities![m]!.tabularKind) === 'mask'
+                      "
+                      v-model="rule.action.modalities![m]!.maskChar"
+                      class="h-9 w-16 text-center font-mono"
+                      maxlength="1"
+                      placeholder="*"
+                    />
+                    <div v-else class="flex-1" />
+                  </template>
+
+                  <!-- Image -->
+                  <template v-else-if="m === 'image'">
+                    <Select v-model="rule.action.modalities![m]!.imageKind">
+                      <SelectTrigger class="h-9 w-[130px] shrink-0">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem v-for="k in IMAGE_KINDS" :key="k" :value="k">
+                          {{ t(`policies.editor.imageKind.${k}`) }}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      v-if="rule.action.modalities![m]!.imageKind === 'blur'"
+                      v-model.number="rule.action.modalities![m]!.sigma"
+                      type="number"
+                      min="1"
+                      class="h-9 flex-1"
+                      :placeholder="t('policies.editor.sigma')"
+                    />
+                    <Input
+                      v-else-if="rule.action.modalities![m]!.imageKind === 'pixelate'"
+                      v-model.number="rule.action.modalities![m]!.blockSize"
+                      type="number"
+                      min="2"
+                      class="h-9 flex-1"
+                      :placeholder="t('policies.editor.blockSize')"
+                    />
+                    <div v-else class="flex-1" />
+                  </template>
+
+                  <!-- Audio -->
+                  <template v-else-if="m === 'audio'">
+                    <Select v-model="rule.action.modalities![m]!.audioKind">
+                      <SelectTrigger class="h-9 w-[130px] shrink-0">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem v-for="k in AUDIO_KINDS" :key="k" :value="k">
+                          {{ t(`policies.editor.audioKind.${k}`) }}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      v-if="rule.action.modalities![m]!.audioKind === 'beep'"
+                      v-model.number="rule.action.modalities![m]!.hz"
+                      type="number"
+                      min="1"
+                      class="h-9 flex-1"
+                      :placeholder="t('policies.editor.hz')"
+                    />
+                    <div v-else class="flex-1" />
+                  </template>
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    class="size-9 shrink-0 text-muted-foreground hover:text-destructive"
+                    :aria-label="t('policies.editor.removeModality')"
+                    @click="removeModality(rule.action, m)"
+                  >
+                    <X :size="15" />
+                  </Button>
+                </div>
+              </div>
+
+              <DropdownMenu v-if="availableModalities(rule.action).length">
+                <DropdownMenuTrigger as-child>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    class="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    <Plus :size="13" class="mr-1" />
+                    {{ t("policies.editor.addModality") }}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem
+                    v-for="m in availableModalities(rule.action)"
+                    :key="m"
+                    @click="addModality(rule.action, m)"
+                  >
+                    {{ t(`policies.editor.modality.${m}`) }}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+          </div>
+
+          <!-- Summary -->
+          <div class="flex items-start gap-2 bg-muted/40 px-4 py-2.5">
+            <Sparkles :size="13" class="mt-0.5 shrink-0 text-muted-foreground" />
+            <p class="text-xs leading-relaxed text-muted-foreground">
+              {{ ruleSummary(rule) }}
+            </p>
           </div>
         </div>
       </div>
 
-      <p
+      <button
         v-if="rules.length === 0"
-        class="rounded-lg border border-dashed border-border/60 py-6 text-center text-sm text-muted-foreground"
+        type="button"
+        class="flex w-full flex-col items-center gap-1 rounded-xl border border-dashed border-border/70 py-8 text-center text-sm text-muted-foreground transition-colors hover:border-border hover:bg-muted/30"
+        @click="addRule"
       >
+        <Plus :size="18" />
         {{ t("policies.editor.noRules") }}
-      </p>
+      </button>
+    </section>
+
+    <!-- Fallback -->
+    <section class="space-y-3">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-sm font-medium">
+            {{ t("policies.editor.fallback.label") }}
+          </h2>
+          <p class="text-xs text-muted-foreground">
+            {{ t("policies.editor.fallback.hint") }}
+          </p>
+        </div>
+        <Switch
+          :model-value="!!fallback"
+          @update:model-value="toggleFallback"
+        />
+      </div>
+      <div
+        v-if="fallback?.modalities.text"
+        class="flex flex-wrap items-center gap-2 rounded-lg border border-border/60 p-3"
+      >
+        <span class="w-16 shrink-0 text-xs font-medium text-muted-foreground">
+          {{ t("policies.editor.modality.text") }}
+        </span>
+        <Select v-model="fallback.modalities.text.textKind">
+          <SelectTrigger class="h-9 w-[130px] shrink-0">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="k in TEXT_KINDS" :key="k" :value="k">
+              {{ t(`policies.editor.textKind.${k}`) }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+        <Input
+          v-if="fallback.modalities.text.textKind === 'replace'"
+          v-model="fallback.modalities.text.template"
+          class="h-9 flex-1 font-mono text-sm"
+          placeholder="[{label}]"
+        />
+        <Input
+          v-else-if="fallback.modalities.text.textKind === 'mask'"
+          v-model="fallback.modalities.text.maskChar"
+          class="h-9 w-16 text-center font-mono"
+          maxlength="1"
+          placeholder="*"
+        />
+        <p v-else class="flex-1 text-xs text-muted-foreground">
+          {{ t("policies.editor.fallback.applies") }}
+        </p>
+      </div>
+    </section>
+
+    <!-- Labels catalog -->
+    <section class="space-y-3">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-sm font-medium">
+            {{ t("policies.editor.labels.label") }}
+          </h2>
+          <p class="text-xs text-muted-foreground">
+            {{ t("policies.editor.labels.hint") }}
+          </p>
+        </div>
+        <Button variant="outline" size="sm" @click="addLabel">
+          <Plus :size="14" class="mr-1.5" />
+          {{ t("policies.editor.labels.add") }}
+        </Button>
+      </div>
+      <div
+        v-for="label in labels"
+        :key="label.key"
+        class="flex items-start gap-2 rounded-lg border border-border/60 p-3"
+      >
+        <div class="flex flex-1 flex-col gap-2">
+          <div class="flex items-center gap-2">
+            <Input
+              v-model="label.name"
+              :placeholder="t('policies.editor.labels.namePlaceholder')"
+              class="h-9 w-[200px] shrink-0 font-mono text-sm"
+            />
+            <Input
+              v-model="label.description"
+              :placeholder="t('policies.editor.labels.descriptionPlaceholder')"
+              class="h-9 flex-1"
+            />
+          </div>
+          <Input
+            v-model="label.tags"
+            :placeholder="t('policies.editor.labels.tagsPlaceholder')"
+            class="h-9"
+          />
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          class="size-9 shrink-0 text-muted-foreground hover:text-destructive"
+          @click="removeLabel(label.key)"
+        >
+          <Trash2 :size="15" />
+        </Button>
+      </div>
     </section>
 
     <!-- Actions -->
