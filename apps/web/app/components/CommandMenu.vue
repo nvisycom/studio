@@ -32,9 +32,28 @@ import {
 } from "#console/components/ui/command";
 import { Dialog, DialogContent } from "#console/components/ui/dialog";
 import { Kbd } from "#console/components/ui/kbd";
+import type { Feature } from "#console/composables/useFeatures";
+import type { Component } from "vue";
 import { toast } from "vue-sonner";
 
+interface CommandLink {
+	label: string;
+	icon: Component;
+	href: string;
+	shortcut?: string;
+	feature?: Feature;
+}
+
+interface CommandAction {
+	id: string;
+	label: string;
+	icon: Component;
+	shortcut?: string;
+	feature?: Feature;
+}
+
 const { t } = useI18n();
+const { has } = useFeatures();
 const colorMode = useColorMode();
 const { getKbdKey } = useKbd();
 const { logout: performLogout } = useAuth();
@@ -97,15 +116,19 @@ const observabilityItems = computed(() => [
 ]);
 
 // Settings items
-const settingsItems = computed(() => [
-	{
-		label: t("sidebar.billing"),
-		icon: CreditCard,
-		href: "/billing",
-		shortcut: "B",
-	},
-	{ label: t("sidebar.settings"), icon: Settings, href: "/settings/general" },
-]);
+const settingsItems = computed(() => {
+	const items: CommandLink[] = [
+		{
+			label: t("sidebar.billing"),
+			icon: CreditCard,
+			href: "/billing",
+			shortcut: "B",
+			feature: "billing",
+		},
+		{ label: t("sidebar.settings"), icon: Settings, href: "/settings/general" },
+	];
+	return items.filter((item) => !item.feature || has(item.feature));
+});
 
 // Account items
 const accountItems = computed(() => [
@@ -123,41 +146,45 @@ const accountItems = computed(() => [
 ]);
 
 // Quick actions
-const quickActions = computed(() => [
-	{
-		id: "create-workspace",
-		label: t("commandMenu.actions.createWorkspace"),
-		icon: Plus,
-		shortcut: "N",
-	},
-	{
-		id: "upload-file",
-		label: t("commandMenu.actions.uploadFile"),
-		icon: Upload,
-		shortcut: "U",
-	},
-	{
-		id: "invite-member",
-		label: t("commandMenu.actions.inviteMember"),
-		icon: UserPlus,
-		shortcut: "M",
-	},
-	{
-		id: "create-invite-code",
-		label: t("commandMenu.actions.createInviteCode"),
-		icon: Copy,
-	},
-	{
-		id: "toggle-theme",
-		label: t("commandMenu.actions.toggleTheme"),
-		icon: colorMode.value === "dark" ? Sun : Moon,
-	},
-	{
-		id: "open-support",
-		label: t("commandMenu.actions.openSupport"),
-		icon: MessageSquare,
-	},
-]);
+const quickActions = computed(() => {
+	const actions: CommandAction[] = [
+		{
+			id: "create-workspace",
+			label: t("commandMenu.actions.createWorkspace"),
+			icon: Plus,
+			shortcut: "N",
+		},
+		{
+			id: "upload-file",
+			label: t("commandMenu.actions.uploadFile"),
+			icon: Upload,
+			shortcut: "U",
+		},
+		{
+			id: "invite-member",
+			label: t("commandMenu.actions.inviteMember"),
+			icon: UserPlus,
+			shortcut: "M",
+		},
+		{
+			id: "create-invite-code",
+			label: t("commandMenu.actions.createInviteCode"),
+			icon: Copy,
+		},
+		{
+			id: "toggle-theme",
+			label: t("commandMenu.actions.toggleTheme"),
+			icon: colorMode.value === "dark" ? Sun : Moon,
+		},
+		{
+			id: "open-support",
+			label: t("commandMenu.actions.openSupport"),
+			icon: MessageSquare,
+			feature: "support",
+		},
+	];
+	return actions.filter((item) => !item.feature || has(item.feature));
+});
 
 function goTo(href: string) {
 	navigateTo(href);
@@ -217,7 +244,7 @@ defineShortcuts(
 					meta_i: () => goTo("/integrations"),
 					meta_a: () => goTo("/analytics"),
 					meta_l: () => goTo("/analytics/logs"),
-					meta_b: () => goTo("/billing"),
+					...(has("billing") ? { meta_b: () => goTo("/billing") } : {}),
 					meta_p: () => goTo("/account"),
 					meta_n: () => executeAction("create-workspace"),
 					meta_u: () => executeAction("upload-file"),
