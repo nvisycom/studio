@@ -12,7 +12,7 @@ import {
 	Plug,
 	Compass,
 	Database,
-	PlayCircle,
+	History,
 	FolderOpen,
 	Workflow,
 } from "@lucide/vue";
@@ -111,7 +111,7 @@ defineExpose({
       </TabsTrigger>
       <TabsTrigger value="runs" as-child>
         <NuxtLink to="/integrations/runs" class="flex items-center gap-2">
-          <PlayCircle :size="16" />
+          <History :size="16" />
           {{ t("header.tabs.connections.runs") }}
         </NuxtLink>
       </TabsTrigger>
@@ -147,7 +147,7 @@ defineExpose({
       </TabsTrigger>
       <TabsTrigger value="runs" as-child>
         <NuxtLink to="/workflows/runs" class="flex items-center gap-2">
-          <PlayCircle :size="16" />
+          <History :size="16" />
           {{ t("header.tabs.workflows.runs") }}
         </NuxtLink>
       </TabsTrigger>

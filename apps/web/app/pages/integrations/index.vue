@@ -5,6 +5,8 @@ import {
 	Loader2,
 	Plug,
 	PlugZap,
+	Compass,
+	History,
 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import type {
@@ -48,6 +50,8 @@ const {
 	isLoading: isLoadingConnections,
 	updateConnectionAsync,
 	deleteConnectionAsync,
+	startSyncAsync,
+	verifyConnectionAsync,
 	isUpdating,
 	isDeleting,
 } = useConnections();
@@ -106,6 +110,52 @@ async function handleDisconnectConnection(connectionId: string) {
 		toast.success(t("connections.toast.connectionDisconnected"));
 	} catch (error) {
 		toast.error(t("connections.toast.connectionDisconnectFailed"), {
+			description: error instanceof Error ? error.message : undefined,
+		});
+	}
+}
+
+async function handleSyncConnection(connectionId: string) {
+	try {
+		await startSyncAsync(connectionId);
+		toast.success(t("connections.toast.syncStarted"));
+	} catch (error) {
+		toast.error(t("connections.toast.syncFailed"), {
+			description: error instanceof Error ? error.message : undefined,
+		});
+	}
+}
+
+async function handleToggleActive(connection: Connection) {
+	try {
+		await updateConnectionAsync({
+			connectionId: connection.id,
+			updates: { isActive: !connection.isActive },
+		});
+		toast.success(
+			connection.isActive
+				? t("connections.toast.connectionDisabled")
+				: t("connections.toast.connectionEnabled"),
+		);
+	} catch (error) {
+		toast.error(t("connections.toast.connectionUpdateFailed"), {
+			description: error instanceof Error ? error.message : undefined,
+		});
+	}
+}
+
+async function handleTestConnection(connectionId: string) {
+	try {
+		const result = await verifyConnectionAsync(connectionId);
+		if (result.reachable) {
+			toast.success(t("connections.toast.testReachable"));
+		} else {
+			toast.error(t("connections.toast.testUnreachable"), {
+				description: result.error,
+			});
+		}
+	} catch (error) {
+		toast.error(t("connections.toast.testFailed"), {
 			description: error instanceof Error ? error.message : undefined,
 		});
 	}
@@ -292,7 +342,11 @@ async function testWebhook(webhookId: string) {
                   size="sm"
                   class="font-normal"
                 >
-                  <NuxtLink to="/integrations/explore">
+                  <NuxtLink
+                    to="/integrations/explore"
+                    class="flex items-center gap-2"
+                  >
+                    <Compass :size="16" />
                     {{ t("connections.actions.explore") }}
                   </NuxtLink>
                 </Button>
@@ -302,7 +356,11 @@ async function testWebhook(webhookId: string) {
                   size="sm"
                   class="font-normal"
                 >
-                  <NuxtLink to="/integrations/runs">
+                  <NuxtLink
+                    to="/integrations/runs"
+                    class="flex items-center gap-2"
+                  >
+                    <History :size="16" />
                     {{ t("connections.actions.viewRuns") }}
                   </NuxtLink>
                 </Button>
@@ -314,6 +372,9 @@ async function testWebhook(webhookId: string) {
               :connections="connections"
               @configure="openConfigureConnectionDialog"
               @disconnect="openDisconnectConnectionDialog"
+              @sync="handleSyncConnection"
+              @test="handleTestConnection"
+              @toggle-active="handleToggleActive"
             />
           </CardContent>
           <CardFooter
@@ -357,8 +418,11 @@ async function testWebhook(webhookId: string) {
                   size="sm"
                   class="font-normal"
                 >
-                  <NuxtLink to="/integrations/explore">
-                    <PlugZap :size="16" />
+                  <NuxtLink
+                    to="/integrations/explore"
+                    class="flex items-center gap-2"
+                  >
+                    <Compass :size="16" />
                     {{ t("connections.actions.explore") }}
                   </NuxtLink>
                 </Button>
