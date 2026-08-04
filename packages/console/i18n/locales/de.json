@@ -755,7 +755,7 @@
 		"sections": {
 			"connectedServices": {
 				"title": "Verbundene Dienste",
-				"description": "{count} Verbindung aktiv | {count} Verbindungen aktiv",
+				"description": "{count} Verbindung konfiguriert | {count} Verbindungen konfiguriert",
 				"noIntegrationsTitle": "Noch keine aktiven Verbindungen",
 				"noIntegrationsDescription": "Durchsuchen Sie verfügbare Anbieter, um zu beginnen"
 			},
@@ -844,8 +844,23 @@
 				},
 				"awsS3": {
 					"name": "AWS S3",
-					"shortDescription": "MinIO, DigitalOcean, etc.",
-					"description": "Beliebigen S3-kompatiblen Objektspeicher verbinden"
+					"shortDescription": "Amazon-Objektspeicher",
+					"description": "Einen Amazon-S3-Bucket verbinden"
+				},
+				"minio": {
+					"name": "MinIO",
+					"shortDescription": "S3-kompatibler Speicher",
+					"description": "Einen MinIO- oder anderen S3-kompatiblen Bucket verbinden"
+				},
+				"azure": {
+					"name": "Azure Blob Storage",
+					"shortDescription": "Microsoft-Objektspeicher",
+					"description": "Einen Azure-Blob-Storage-Container verbinden"
+				},
+				"gcs": {
+					"name": "Google Cloud Storage",
+					"shortDescription": "Google-Objektspeicher",
+					"description": "Einen Google-Cloud-Storage-Bucket verbinden"
 				},
 				"slack": {
 					"name": "Slack",
@@ -942,14 +957,27 @@
 				"created": "Erstellt",
 				"lastDelivery": "Letzte Zustellung",
 				"connectedAt": "Verbunden Am",
-				"provider": "Anbieter"
+				"provider": "Anbieter",
+				"syncMode": "Sync",
+				"schedule": "Zeitplan",
+				"lastSynced": "Zuletzt synchronisiert"
+			},
+			"schedule": {
+				"scheduled": "Geplant",
+				"manual": "Manuell"
+			},
+			"status": {
+				"active": "Aktiv",
+				"paused": "Pausiert"
 			},
 			"actions": {
 				"edit": "Bearbeiten",
 				"delete": "Löschen",
-				"test": "Testen",
+				"test": "Verbindung testen",
+				"sync": "Jetzt synchronisieren",
 				"configure": "Konfigurieren",
-				"disconnect": "Trennen"
+				"disconnect": "Trennen",
+				"menu": "Menü öffnen"
 			},
 			"eventsCount": "{count} Ereignis | {count} Ereignisse"
 		},
@@ -985,7 +1013,51 @@
 				"activeDescription": "Diese Integration aktivieren, um Daten zu synchronisieren und Workflows zu automatisieren",
 				"save": "Änderungen Speichern",
 				"cancel": "Abbrechen",
-				"providerLabel": "Anbieter"
+				"providerLabel": "Anbieter",
+				"updateCredentials": "Zugangsdaten aktualisieren",
+				"credentialsHint": "Geschlossen lassen, um die vorhandenen Zugangsdaten zu behalten."
+			},
+			"connect": {
+				"title": "{name} verbinden",
+				"description": "Geben Sie Ihre Anbieter-Zugangsdaten ein, um diese Verbindung zu erstellen.",
+				"displayNamePlaceholder": "Meine Verbindung",
+				"rootPathPlaceholder": "optionales/präfix",
+				"scheduleCronPlaceholder": "0 * * * *",
+				"optional": "optional",
+				"sections": {
+					"credentials": "Zugangsdaten",
+					"sync": "Synchronisationseinstellungen"
+				},
+				"fields": {
+					"displayName": "Verbindungsname",
+					"rootPath": "Stammpfad",
+					"syncMode": "Synchronisationsmodus",
+					"deletionPolicy": "Löschrichtlinie",
+					"scheduleCron": "Zeitplan (Cron)",
+					"bucket": "Bucket",
+					"region": "Region",
+					"endpoint": "Endpunkt",
+					"accessKeyId": "Zugriffsschlüssel-ID",
+					"secretAccessKey": "Geheimer Zugriffsschlüssel",
+					"sessionToken": "Sitzungstoken",
+					"accountName": "Kontoname",
+					"container": "Container",
+					"accessKey": "Zugriffsschlüssel",
+					"sasToken": "SAS-Token",
+					"serviceAccountKeyJson": "Dienstkontoschlüssel (JSON)"
+				},
+				"syncModes": {
+					"import": "Import",
+					"export": "Export"
+				},
+				"deletionPolicies": {
+					"ignore": "Gelöschte Dateien ignorieren",
+					"delete": "Entfernte Dateien löschen"
+				},
+				"submit": "Verbinden",
+				"cancel": "Abbrechen",
+				"success": "Verbindung erstellt",
+				"error": "Verbindung konnte nicht erstellt werden"
 			},
 			"disconnect": {
 				"title": "{name} Trennen",
@@ -1050,6 +1122,13 @@
 			"connectionUpdateFailed": "Integration konnte nicht aktualisiert werden",
 			"connectionDisconnected": "Integration getrennt",
 			"connectionDisconnectFailed": "Integration konnte nicht getrennt werden",
+			"connectionEnabled": "Verbindung aktiviert",
+			"connectionDisabled": "Verbindung deaktiviert",
+			"syncStarted": "Synchronisierung gestartet",
+			"syncFailed": "Synchronisierung konnte nicht gestartet werden",
+			"testReachable": "Verbindung ist erreichbar",
+			"testUnreachable": "Verbindung ist nicht erreichbar",
+			"testFailed": "Verbindung konnte nicht getestet werden",
 			"webhookCreated": "Webhook erfolgreich erstellt",
 			"webhookCreateFailed": "Webhook konnte nicht erstellt werden",
 			"webhookUpdated": "Webhook erfolgreich aktualisiert",
@@ -1077,7 +1156,7 @@
 			"last24Hours": "Letzte 24 Stunden",
 			"last7Days": "Letzte 7 Tage",
 			"last30Days": "Letzte 30 Tage",
-			"runsFound": "Ausführung gefunden | Ausführungen gefunden",
+			"runsFound": "{count} Synchronisierung | {count} Synchronisierungen",
 			"selected": "ausgewählt",
 			"copyLogs": "Logs Kopieren",
 			"copied": "Kopiert!",
@@ -1108,10 +1187,24 @@
 			"statusFailed": "Fehlgeschlagen",
 			"pipeline": "Pipeline",
 			"trigger": "Auslöser",
+			"connection": "Verbindung",
+			"records": "Datensätze",
+			"loadMore": "Mehr laden",
+			"cancel": "Synchronisierung abbrechen",
+			"syncCancelled": "Synchronisierung abgebrochen",
+			"syncCancelFailed": "Synchronisierung konnte nicht abgebrochen werden",
 			"triggerType": {
 				"manual": "Manuell",
 				"source": "Quelle",
-				"scheduled": "Geplant"
+				"scheduled": "Geplant",
+				"webhook": "Webhook"
+			},
+			"syncStatus": {
+				"pending": "Ausstehend",
+				"running": "Läuft",
+				"completed": "Abgeschlossen",
+				"failed": "Fehlgeschlagen",
+				"cancelled": "Abgebrochen"
 			}
 		}
 	},
@@ -1189,6 +1282,32 @@
 		"title": "Pipelines",
 		"count": "{count} Pipeline konfiguriert | {count} Pipelines konfiguriert",
 		"footer": "Pipelines automatisieren Dokumentenerkennung und -schwärzung.",
+		"runs": {
+			"title": "Pipeline-Ausführungen",
+			"backToWorkflows": "Zurück zu Pipelines",
+			"status": "Status",
+			"allStatus": "Alle Status",
+			"statusHeader": "Status",
+			"pipeline": "Pipeline",
+			"file": "Datei",
+			"trigger": "Auslöser",
+			"started": "Gestartet",
+			"duration": "Dauer",
+			"runsFound": "{count} Ausführung | {count} Ausführungen",
+			"noRunsFound": "Keine Ausführungen gefunden",
+			"triggerType": {
+				"manual": "Manuell",
+				"source": "Quelle",
+				"scheduled": "Geplant"
+			},
+			"runStatus": {
+				"running": "Läuft",
+				"analyzed": "Analysiert",
+				"completed": "Abgeschlossen",
+				"failed": "Fehlgeschlagen",
+				"cancelled": "Abgebrochen"
+			}
+		},
 		"learnMore": "Mehr erfahren",
 		"status": {
 			"draft": "Entwurf",

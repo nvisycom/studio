@@ -20,9 +20,17 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "#console/components/ui/select";
-import { ProviderCard } from "#console/components/pages/connections";
+import {
+	ProviderCard,
+	ConnectConnectionDialog,
+} from "#console/components/pages/connections";
+import type { StorageProvider } from "#console/utils/connectionProviders";
+import { storageProviderForCard } from "#console/utils/connectionProviders";
+import type { CreateConnection } from "@nvisy/sdk/datatypes";
+import { toast } from "vue-sonner";
 
 const { t } = useI18n();
+const { createConnectionAsync, isCreating } = useConnections();
 
 useHead({ title: "Explore Providers" });
 
@@ -116,7 +124,7 @@ const providers = ref<Provider[]>([
 		nameKey: "connections.explore.items.googleDrive.name",
 		descriptionKey: "connections.explore.items.googleDrive.description",
 		icon: "/integration/google-drive.svg",
-		status: "available",
+		status: "unavailable",
 		category: "cloud-storage",
 		tags: ["fileSync", "import", "export"],
 		popularity: 95,
@@ -126,7 +134,7 @@ const providers = ref<Provider[]>([
 		nameKey: "connections.explore.items.oneDrive.name",
 		descriptionKey: "connections.explore.items.oneDrive.description",
 		icon: "/integration/microsoft-onedrive.svg",
-		status: "available",
+		status: "unavailable",
 		category: "cloud-storage",
 		tags: ["fileSync", "import", "export", "enterprise"],
 		popularity: 85,
@@ -146,11 +154,44 @@ const providers = ref<Provider[]>([
 		nameKey: "connections.explore.items.awsS3.name",
 		descriptionKey: "connections.explore.items.awsS3.description",
 		shortDescriptionKey: "connections.explore.items.awsS3.shortDescription",
-		icon: "/integration/minio.svg",
+		icon: "/integration/aws-s3.svg",
 		status: "available",
 		category: "cloud-storage",
 		tags: ["fileSync", "developer", "enterprise"],
 		popularity: 80,
+	},
+	{
+		id: "minio",
+		nameKey: "connections.explore.items.minio.name",
+		descriptionKey: "connections.explore.items.minio.description",
+		shortDescriptionKey: "connections.explore.items.minio.shortDescription",
+		icon: "/integration/minio.svg",
+		status: "available",
+		category: "cloud-storage",
+		tags: ["fileSync", "developer"],
+		popularity: 70,
+	},
+	{
+		id: "azure",
+		nameKey: "connections.explore.items.azure.name",
+		descriptionKey: "connections.explore.items.azure.description",
+		shortDescriptionKey: "connections.explore.items.azure.shortDescription",
+		icon: "/integration/azure.svg",
+		status: "available",
+		category: "cloud-storage",
+		tags: ["fileSync", "enterprise"],
+		popularity: 78,
+	},
+	{
+		id: "gcs",
+		nameKey: "connections.explore.items.gcs.name",
+		descriptionKey: "connections.explore.items.gcs.description",
+		shortDescriptionKey: "connections.explore.items.gcs.shortDescription",
+		icon: "/integration/gcs.svg",
+		status: "available",
+		category: "cloud-storage",
+		tags: ["fileSync", "enterprise"],
+		popularity: 76,
 	},
 	// Productivity
 	{
@@ -441,8 +482,32 @@ function clearAllFilters() {
 	statusFilter.value = "all";
 }
 
-function connectProvider(_id: string | number) {
-	// TODO: Implement provider connection
+// Connect dialog state
+const connectDialogOpen = ref(false);
+const connectProviderTag = ref<StorageProvider | null>(null);
+const connectProviderName = ref("");
+const connectProviderIcon = ref("");
+
+function connectProvider(id: string | number) {
+	const provider = storageProviderForCard(String(id));
+	if (!provider) return; // not a connectable provider
+
+	const card = providers.value.find((p) => p.id === id);
+	connectProviderTag.value = provider;
+	connectProviderName.value = card ? getProviderName(card) : "";
+	connectProviderIcon.value = card?.icon ?? "";
+	connectDialogOpen.value = true;
+}
+
+async function handleConnect(connection: CreateConnection) {
+	try {
+		await createConnectionAsync(connection);
+		connectDialogOpen.value = false;
+		toast.success(t("connections.dialogs.connect.success"));
+		await navigateTo("/integrations");
+	} catch {
+		toast.error(t("connections.dialogs.connect.error"));
+	}
 }
 
 function notifyMe(_id: string | number) {
@@ -597,6 +662,16 @@ function notifyMe(_id: string | number) {
           @notify-me="notifyMe"
         />
       </div>
+
+      <!-- Connect dialog -->
+      <ConnectConnectionDialog
+        v-model:open="connectDialogOpen"
+        :provider="connectProviderTag"
+        :provider-name="connectProviderName"
+        :provider-icon="connectProviderIcon"
+        :is-loading="isCreating"
+        @connect="handleConnect"
+      />
     </div>
   </div>
 </template>

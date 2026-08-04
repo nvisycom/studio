@@ -759,7 +759,7 @@
 		"sections": {
 			"connectedServices": {
 				"title": "Connected Services",
-				"description": "{count} connection currently active | {count} connections currently active",
+				"description": "{count} connection configured | {count} connections configured",
 				"noIntegrationsTitle": "No active connections yet",
 				"noIntegrationsDescription": "Get started by browsing available providers"
 			},
@@ -844,8 +844,23 @@
 				},
 				"awsS3": {
 					"name": "AWS S3",
-					"shortDescription": "MinIO, DigitalOcean, etc.",
-					"description": "Connect any S3-compatible object storage"
+					"shortDescription": "Amazon object storage",
+					"description": "Connect an Amazon S3 bucket"
+				},
+				"minio": {
+					"name": "MinIO",
+					"shortDescription": "S3-compatible storage",
+					"description": "Connect a MinIO or other S3-compatible bucket"
+				},
+				"azure": {
+					"name": "Azure Blob Storage",
+					"shortDescription": "Microsoft object storage",
+					"description": "Connect an Azure Blob Storage container"
+				},
+				"gcs": {
+					"name": "Google Cloud Storage",
+					"shortDescription": "Google object storage",
+					"description": "Connect a Google Cloud Storage bucket"
 				},
 				"slack": {
 					"name": "Slack",
@@ -942,14 +957,27 @@
 				"created": "Created",
 				"lastDelivery": "Last Delivery",
 				"connectedAt": "Connected",
-				"provider": "Provider"
+				"provider": "Provider",
+				"syncMode": "Sync",
+				"schedule": "Schedule",
+				"lastSynced": "Last synced"
+			},
+			"schedule": {
+				"scheduled": "Scheduled",
+				"manual": "Manual"
+			},
+			"status": {
+				"active": "Active",
+				"paused": "Paused"
 			},
 			"actions": {
 				"edit": "Edit",
 				"delete": "Delete",
-				"test": "Test",
+				"test": "Test connection",
+				"sync": "Sync now",
 				"configure": "Configure",
-				"disconnect": "Disconnect"
+				"disconnect": "Disconnect",
+				"menu": "Open menu"
 			},
 			"eventsCount": "{count} event | {count} events"
 		},
@@ -985,7 +1013,51 @@
 				"activeDescription": "Enable this integration to sync data and automate workflows",
 				"save": "Save Changes",
 				"cancel": "Cancel",
-				"providerLabel": "Provider"
+				"providerLabel": "Provider",
+				"updateCredentials": "Update credentials",
+				"credentialsHint": "Leave closed to keep the existing credentials."
+			},
+			"connect": {
+				"title": "Connect {name}",
+				"description": "Enter your provider credentials to create this connection.",
+				"displayNamePlaceholder": "My connection",
+				"rootPathPlaceholder": "optional/prefix",
+				"scheduleCronPlaceholder": "0 * * * *",
+				"optional": "optional",
+				"sections": {
+					"credentials": "Credentials",
+					"sync": "Sync settings"
+				},
+				"fields": {
+					"displayName": "Connection name",
+					"rootPath": "Root path",
+					"syncMode": "Sync mode",
+					"deletionPolicy": "Deletion policy",
+					"scheduleCron": "Schedule (cron)",
+					"bucket": "Bucket",
+					"region": "Region",
+					"endpoint": "Endpoint",
+					"accessKeyId": "Access key ID",
+					"secretAccessKey": "Secret access key",
+					"sessionToken": "Session token",
+					"accountName": "Account name",
+					"container": "Container",
+					"accessKey": "Access key",
+					"sasToken": "SAS token",
+					"serviceAccountKeyJson": "Service account key (JSON)"
+				},
+				"syncModes": {
+					"import": "Import",
+					"export": "Export"
+				},
+				"deletionPolicies": {
+					"ignore": "Ignore deleted files",
+					"delete": "Delete removed files"
+				},
+				"submit": "Connect",
+				"cancel": "Cancel",
+				"success": "Connection created",
+				"error": "Failed to create connection"
 			},
 			"disconnect": {
 				"title": "Disconnect {name}",
@@ -1050,6 +1122,13 @@
 			"connectionUpdateFailed": "Failed to update integration",
 			"connectionDisconnected": "Integration disconnected",
 			"connectionDisconnectFailed": "Failed to disconnect integration",
+			"connectionEnabled": "Connection enabled",
+			"connectionDisabled": "Connection disabled",
+			"syncStarted": "Sync started",
+			"syncFailed": "Failed to start sync",
+			"testReachable": "Connection is reachable",
+			"testUnreachable": "Connection is not reachable",
+			"testFailed": "Failed to test connection",
 			"webhookCreated": "Webhook created successfully",
 			"webhookCreateFailed": "Failed to create webhook",
 			"webhookUpdated": "Webhook updated successfully",
@@ -1077,7 +1156,7 @@
 			"last24Hours": "Last 24 hours",
 			"last7Days": "Last 7 days",
 			"last30Days": "Last 30 days",
-			"runsFound": "run found | runs found",
+			"runsFound": "{count} sync | {count} syncs",
 			"selected": "selected",
 			"copyLogs": "Copy Logs",
 			"copied": "Copied!",
@@ -1108,10 +1187,24 @@
 			"statusFailed": "Failed",
 			"pipeline": "Pipeline",
 			"trigger": "Trigger",
+			"connection": "Connection",
+			"records": "Records",
+			"loadMore": "Load more",
+			"cancel": "Cancel sync",
+			"syncCancelled": "Sync cancelled",
+			"syncCancelFailed": "Failed to cancel sync",
 			"triggerType": {
 				"manual": "Manual",
 				"source": "Source",
-				"scheduled": "Scheduled"
+				"scheduled": "Scheduled",
+				"webhook": "Webhook"
+			},
+			"syncStatus": {
+				"pending": "Pending",
+				"running": "Running",
+				"completed": "Completed",
+				"failed": "Failed",
+				"cancelled": "Cancelled"
 			}
 		}
 	},
@@ -1189,6 +1282,32 @@
 		"title": "Pipelines",
 		"count": "{count} pipeline configured | {count} pipelines configured",
 		"footer": "Pipelines automate document detection and redaction.",
+		"runs": {
+			"title": "Pipeline runs",
+			"backToWorkflows": "Back to pipelines",
+			"status": "Status",
+			"allStatus": "All statuses",
+			"statusHeader": "Status",
+			"pipeline": "Pipeline",
+			"file": "File",
+			"trigger": "Trigger",
+			"started": "Started",
+			"duration": "Duration",
+			"runsFound": "{count} run | {count} runs",
+			"noRunsFound": "No runs found",
+			"triggerType": {
+				"manual": "Manual",
+				"source": "Source",
+				"scheduled": "Scheduled"
+			},
+			"runStatus": {
+				"running": "Running",
+				"analyzed": "Analyzed",
+				"completed": "Completed",
+				"failed": "Failed",
+				"cancelled": "Cancelled"
+			}
+		},
 		"learnMore": "Learn more",
 		"status": {
 			"draft": "Draft",

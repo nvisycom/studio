@@ -10,7 +10,6 @@ import {
 	LayoutDashboard,
 	FolderOpen,
 	FileSearch,
-	Compass,
 	PenTool,
 	Workflow,
 } from "@lucide/vue";
@@ -81,12 +80,6 @@ const navAutomation = computed(() => [
 		title: t("sidebar.connections"),
 		url: "/integrations",
 		icon: Puzzle,
-		isActive: false,
-	},
-	{
-		title: t("sidebar.explore"),
-		url: "/integrations/explore",
-		icon: Compass,
 		isActive: false,
 	},
 ]);
