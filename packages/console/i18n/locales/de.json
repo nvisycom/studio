@@ -847,11 +847,6 @@
 					"shortDescription": "Amazon-Objektspeicher",
 					"description": "Einen Amazon-S3-Bucket verbinden"
 				},
-				"minio": {
-					"name": "MinIO",
-					"shortDescription": "S3-kompatibler Speicher",
-					"description": "Einen MinIO- oder anderen S3-kompatiblen Bucket verbinden"
-				},
 				"azure": {
 					"name": "Azure Blob Storage",
 					"shortDescription": "Microsoft-Objektspeicher",
@@ -1217,6 +1212,7 @@
 		"automation": "Automatisierung",
 		"connections": "Integrationen",
 		"explore": "Entdecken",
+		"policies": "Richtlinien",
 		"workflows": "Workflows",
 		"observability": "Beobachtbarkeit",
 		"analytics": "Analytik",
@@ -1276,6 +1272,125 @@
 			"profile": "Profil",
 			"tokens": "API-Tokens",
 			"logout": "Abmelden"
+		}
+	},
+	"policies": {
+		"title": "Richtlinien",
+		"count": "{count} Richtlinie | {count} Richtlinien",
+		"create": "Neue Richtlinie",
+		"footer": "Richtlinien legen fest, wie erkannte Entitäten geschwärzt, unterdrückt oder geprüft werden.",
+		"learnMore": "Mehr erfahren",
+		"empty": {
+			"title": "Noch keine Richtlinien",
+			"description": "Erstellen Sie eine, um Schwärzungsregeln zu definieren."
+		},
+		"table": {
+			"name": "Name",
+			"creator": "Ersteller",
+			"created": "Erstellt",
+			"updated": "Aktualisiert",
+			"menu": "Menü öffnen",
+			"edit": "Bearbeiten",
+			"delete": "Löschen"
+		},
+		"editor": {
+			"title": "Neue Richtlinie",
+			"editTitle": "Richtlinie bearbeiten",
+			"save": "Änderungen speichern",
+			"description": "Definieren Sie Regeln, die festlegen, wie erkannte Entitäten behandelt werden.",
+			"nameLabel": "Name",
+			"namePlaceholder": "PII-Schwärzung",
+			"slugLabel": "Slug",
+			"descriptionLabel": "Beschreibung",
+			"descriptionPlaceholder": "Was diese Richtlinie tut",
+			"rulesLabel": "Regeln",
+			"rulesHint": "Regeln werden der Reihe nach ausgewertet; die erste Übereinstimmung gewinnt.",
+			"back": "Zurück zu Richtlinien",
+			"addRule": "Regel hinzufügen",
+			"ruleNamePlaceholder": "Regelname",
+			"moveUp": "Regel nach oben",
+			"moveDown": "Regel nach unten",
+			"removeRule": "Regel entfernen",
+			"noRules": "Erste Regel hinzufügen",
+			"when": "Wenn",
+			"then": "Dann",
+			"conditions": "Bedingungen",
+			"addCondition": "Bedingung hinzufügen",
+			"valuesPlaceholder": "komma, getrennt",
+			"action": "Aktion",
+			"summary": {
+				"line": "Wenn {conditions}, {action}.",
+				"and": " und ",
+				"confidence": "Konfidenz mindestens {min} ist",
+				"label": "Label {values} ist",
+				"tag": "Tag {values} ist",
+				"redact": "schwärzen",
+				"redactModalities": "{list} schwärzen"
+			},
+			"predicate": {
+				"confidence": "Konfidenz ≥",
+				"labelOneOf": "Label ist eines von",
+				"tagOneOf": "Tag ist eines von"
+			},
+			"textKind": {
+				"replace": "Ersetzen",
+				"mask": "Maskieren",
+				"hash": "Hashen",
+				"erase": "Löschen",
+				"keep": "Behalten"
+			},
+			"imageKind": {
+				"blur": "Weichzeichnen",
+				"pixelate": "Verpixeln",
+				"erase": "Löschen",
+				"keep": "Behalten"
+			},
+			"audioKind": {
+				"silence": "Stummschalten",
+				"beep": "Piepton",
+				"erase": "Löschen",
+				"keep": "Behalten"
+			},
+			"modality": {
+				"text": "Text",
+				"image": "Bild",
+				"audio": "Audio",
+				"tabular": "Tabellarisch"
+			},
+			"addModality": "Medium hinzufügen",
+			"removeModality": "Medium entfernen",
+			"sigma": "Sigma",
+			"blockSize": "Block",
+			"hz": "Frequenz (Hz)",
+			"fallback": {
+				"label": "Fallback",
+				"hint": "Wird auf jede Übereinstimmung angewendet, die keine Regel behandelt hat.",
+				"applies": "wenn keine Regel oben zutrifft."
+			},
+			"labels": {
+				"label": "Label-Katalog",
+				"hint": "Entitäts-Labels, die diese Richtlinie erkennt.",
+				"add": "Label hinzufügen",
+				"namePlaceholder": "LABEL_NAME",
+				"descriptionPlaceholder": "Was dieses Label bedeutet (optional)",
+				"tagsPlaceholder": "Tags, durch Komma getrennt"
+			},
+			"cancel": "Abbrechen",
+			"submit": "Richtlinie erstellen"
+		},
+		"delete": {
+			"title": "{name} löschen?",
+			"description": "Dies löscht die Richtlinie und ihre Regeln dauerhaft. Dies kann nicht rückgängig gemacht werden.",
+			"cancel": "Abbrechen",
+			"confirm": "Löschen"
+		},
+		"toast": {
+			"created": "Richtlinie erstellt",
+			"createFailed": "Richtlinie konnte nicht erstellt werden",
+			"updated": "Richtlinie aktualisiert",
+			"updateFailed": "Richtlinie konnte nicht aktualisiert werden",
+			"deleted": "Richtlinie gelöscht",
+			"deleteFailed": "Richtlinie konnte nicht gelöscht werden"
 		}
 	},
 	"workflows": {

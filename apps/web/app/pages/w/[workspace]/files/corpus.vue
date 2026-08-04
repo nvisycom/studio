@@ -31,6 +31,8 @@ definePageMeta({
 	pageCategory: "Files",
 });
 
+const { wLink } = useWorkspaceLink();
+
 const searchQuery = ref("");
 const statusFilter = ref("all");
 
@@ -172,7 +174,7 @@ function confirmDelete() {
                 in the index
               </CardDescription>
             </div>
-            <NuxtLink to="/files">
+            <NuxtLink :to="wLink('/files')">
               <Button size="sm" variant="outline"> View Documents </Button>
             </NuxtLink>
           </div>

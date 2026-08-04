@@ -23,7 +23,7 @@ const { t } = useI18n();
 const route = useRoute();
 const { authToken } = useAuth();
 const { $nvisyClient } = useNuxtApp();
-const { selectWorkspace, refresh: refreshWorkspaces } = useWorkspaces();
+const { refresh: refreshWorkspaces } = useWorkspaces();
 
 const inviteCode = computed(() => route.params.code as string);
 
@@ -48,13 +48,10 @@ const acceptMutation = useMutation({
 		});
 	},
 	async onSuccess() {
-		// Refresh workspaces list and switch to the new workspace
+		// Refresh workspaces list and land in the newly joined workspace.
 		const workspaceSlug = preview.value?.workspaceSlug;
-		if (workspaceSlug) {
-			await refreshWorkspaces();
-			selectWorkspace(workspaceSlug);
-		}
-		navigateTo("/");
+		await refreshWorkspaces();
+		navigateTo(workspaceSlug ? `/w/${workspaceSlug}` : "/");
 	},
 });
 

@@ -19,6 +19,7 @@ import {
 import { Badge } from "#console/components/ui/badge";
 
 const { t } = useI18n();
+const { wLink } = useWorkspaceLink();
 const { firstName } = useAccount();
 const { currentWorkspace } = useWorkspaces();
 const { members } = useMembers();
@@ -50,19 +51,19 @@ const quickActions = [
 		title: t("overview.quickActions.uploadFiles.title"),
 		description: t("overview.quickActions.uploadFiles.description"),
 		icon: Upload,
-		href: "/files",
+		href: wLink("/files"),
 	},
 	{
 		title: t("overview.quickActions.manageTeam.title"),
 		description: t("overview.quickActions.manageTeam.description"),
 		icon: Users,
-		href: "/team",
+		href: wLink("/team"),
 	},
 	{
 		title: t("overview.quickActions.viewAnalytics.title"),
 		description: t("overview.quickActions.viewAnalytics.description"),
 		icon: BarChart3,
-		href: "/analytics",
+		href: wLink("/analytics"),
 	},
 ];
 </script>

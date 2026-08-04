@@ -44,6 +44,7 @@ import { Badge } from "#console/components/ui/badge";
 import { toast } from "vue-sonner";
 
 const { t } = useI18n();
+const { wLink } = useWorkspaceLink();
 
 useHead({ title: "Connection Syncs" });
 
@@ -107,7 +108,7 @@ async function cancelSync(sync: ConnectionSync) {
       <!-- Toolbar -->
       <div class="mb-6 flex flex-wrap items-center gap-3">
         <Button as-child variant="outline" class="font-normal">
-          <NuxtLink to="/integrations" class="flex items-center gap-2">
+          <NuxtLink :to="wLink('/integrations')" class="flex items-center gap-2">
             <ArrowLeft :size="16" />
             {{ t("connections.runs.backToConnections") }}
           </NuxtLink>

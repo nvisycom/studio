@@ -96,6 +96,7 @@ const filteredMembers = computed(() => {
 	return members.value.filter(
 		(member) =>
 			member.displayName?.toLowerCase().includes(query) ||
+			member.username.toLowerCase().includes(query) ||
 			member.emailAddress.toLowerCase().includes(query),
 	);
 });

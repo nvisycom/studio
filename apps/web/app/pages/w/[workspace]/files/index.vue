@@ -27,6 +27,7 @@ import {
 } from "#console/components/pages/files";
 
 const { t } = useI18n();
+const { wLink } = useWorkspaceLink();
 
 useHead({ title: "Files" });
 
@@ -131,7 +132,7 @@ function viewFile(fileId: string) {
 	// Find the file to pass metadata
 	const file = files.value?.find((f) => f.id === fileId);
 	openFileInStudio(fileId, file);
-	navigateTo("/studio");
+	navigateTo(wLink("/studio"));
 }
 
 function handleBulkOpen() {
@@ -142,7 +143,7 @@ function handleBulkOpen() {
 		const file = files.value?.find((f) => f.id === fileId);
 		openFileInStudio(fileId, file);
 	}
-	navigateTo("/studio");
+	navigateTo(wLink("/studio"));
 }
 
 async function handleDownloadFile(file: NvisyFile) {
