@@ -35,7 +35,7 @@ watch(
 	() => props.token,
 	(token) => {
 		if (token) {
-			newTokenName.value = token.name;
+			newTokenName.value = token.displayName;
 		}
 	},
 	{ immediate: true },
@@ -45,7 +45,7 @@ function closeModal() {
 	emit("update:open", false);
 	// Reset to original name
 	if (props.token) {
-		newTokenName.value = props.token.name;
+		newTokenName.value = props.token.displayName;
 	}
 }
 
@@ -83,7 +83,7 @@ function confirmRename() {
         </Button>
         <Button
           @click="confirmRename"
-          :disabled="!newTokenName.trim() || newTokenName === token?.name"
+          :disabled="!newTokenName.trim() || newTokenName === token?.displayName"
         >
           <Edit :size="16" class="mr-2" />
           {{ t("tokens.modals.rename.saveButton") }}

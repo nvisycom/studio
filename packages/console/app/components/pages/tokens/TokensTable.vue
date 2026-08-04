@@ -155,7 +155,7 @@ const getSessionTypeInitial = (type: string): string => {
                 </div>
                 <div>
                   <div class="flex items-center gap-2">
-                    <span>{{ token.name }}</span>
+                    <span>{{ token.displayName }}</span>
                     <Badge
                       v-if="isCurrentToken(token.id)"
                       variant="secondary"

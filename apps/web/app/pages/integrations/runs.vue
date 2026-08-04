@@ -52,7 +52,7 @@ const { t } = useI18n();
 useHead({ title: "Connection Runs" });
 
 definePageMeta({
-	pageCategory: "Connections",
+	pageCategory: "Integrations",
 });
 
 // Use SDK composable

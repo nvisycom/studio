@@ -158,7 +158,7 @@ function handleBrowseClick() {
             ref="fileInputRef"
             type="file"
             multiple
-            accept=".pdf,.doc,.docx,.txt,.md,.csv,.json,.png,.jpg,.jpeg"
+            accept=".csv,.docx,.htm,.html,.jpeg,.jpg,.json,.log,.pdf,.png,.rtf,.tif,.tiff,.txt,.wav,.xlsx,.xml"
             class="hidden"
             @change="handleFileSelect"
           />

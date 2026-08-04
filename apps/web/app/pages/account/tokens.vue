@@ -101,7 +101,7 @@ async function createToken() {
 
 	try {
 		const result = await createTokenAsync({
-			name: tokenName.value,
+			displayName: tokenName.value,
 			expiresIn: tokenExpiration.value,
 		});
 
@@ -210,7 +210,7 @@ async function renameToken(newName: string) {
 	try {
 		await updateTokenAsync({
 			tokenId: tokenToRename.value.id,
-			updates: { name: newName },
+			updates: { displayName: newName },
 		});
 		isRenameDialogOpen.value = false;
 		tokenToRename.value = null;

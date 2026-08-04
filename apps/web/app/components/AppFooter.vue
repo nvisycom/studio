@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import {
-	AppOpenStatus,
-	LanguageSwitcher,
-	ThemeToggle,
-} from "@/components/footer";
+import { AppHealth, LanguageSwitcher, ThemeToggle } from "@/components/footer";
 import { Separator } from "#console/components/ui/separator";
 import { Toaster } from "#console/components/ui/sonner";
 import { ExternalLink } from "@lucide/vue";
@@ -16,6 +12,8 @@ import "vue-sonner/style.css";
       class="h-full flex items-center justify-between px-4 text-xs font-normal text-muted-foreground"
     >
       <div class="flex items-center gap-3">
+        <AppHealth />
+        <Separator orientation="vertical" class="h-3" />
         <a
           href="https://docs.nvisy.com"
           target="_blank"
@@ -35,8 +33,6 @@ import "vue-sonner/style.css";
           API Reference
           <ExternalLink :size="10" />
         </a>
-        <Separator orientation="vertical" class="h-3" />
-        <AppOpenStatus />
       </div>
       <div class="flex items-center gap-2">
         <LanguageSwitcher />

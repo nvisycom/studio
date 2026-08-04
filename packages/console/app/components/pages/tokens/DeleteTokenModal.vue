@@ -46,7 +46,7 @@ function confirmDelete() {
           <DialogTitle>{{ t("tokens.modals.delete.title") }}</DialogTitle>
         </div>
         <DialogDescription>
-          {{ t("tokens.modals.delete.description", { name: token?.name }) }}
+          {{ t("tokens.modals.delete.description", { name: token?.displayName }) }}
         </DialogDescription>
       </DialogHeader>
 
@@ -55,7 +55,7 @@ function confirmDelete() {
           class="p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
         >
           <p class="text-sm text-neutral-900 dark:text-white font-medium mb-1">
-            {{ token?.name }}
+            {{ token?.displayName }}
           </p>
           <p class="text-xs text-neutral-500 dark:text-neutral-500">
             {{ t("tokens.modals.delete.lastUsed") }}:

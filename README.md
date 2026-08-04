@@ -15,16 +15,30 @@ wraps the same frontend in a Tauri native shell.
 > development. Public APIs, configuration shapes, and on-disk formats may change
 > without notice between releases.
 
-## Packages
+## Workspace
 
-- **[`@nvisy/console`](packages/console/)** — shared Nuxt layer: design system
-  (shadcn-vue), feature components, composables, the `@nvisy/sdk` data layer,
-  theme, and i18n
-- **[`@nvisy/webapp`](apps/web/)** (`apps/web`) — web shell (Nuxt 4 SPA)
-- **[`@nvisy/desktop`](apps/desktop/)** (`apps/desktop`) — desktop shell (Nuxt + Tauri)
+An npm workspace split into deployable **apps** and the shared **package** they
+build on.
 
-Apps consume the layer via `extends: ["@nvisy/console"]`. Shared code is
-imported through the `#console` alias.
+**Apps** (`apps/*`) — the shells that ship:
+
+- **[`@nvisy/webapp`](apps/web/)** (`apps/web`) — web shell, a Nuxt 4 SPA served
+  at [app.nvisy.com](https://app.nvisy.com)
+- **[`@nvisy/desktop`](apps/desktop/)** (`apps/desktop`) — desktop shell: the
+  same frontend wrapped in a [Tauri 2](https://tauri.app/) (Rust) native window,
+  with the Rust shell living in `apps/desktop/tauri/`
+
+**Packages** (`packages/*`) — the shared code the apps build on:
+
+- **[`@nvisy/console`](packages/console/)** — Nuxt layer holding the whole
+  dashboard surface: design system (shadcn-vue), feature views, composables, the
+  `@nvisy/sdk` data layer, theme, and i18n
+- **[`@nvisy/config`](packages/config/)** — shared configuration and constants,
+  built as a platform-neutral ESM library (tsdown)
+
+Each app opts in with `extends: ["@nvisy/console"]` and imports shared code
+through the `#console` alias; the layer provides everything, the apps add only
+their own shell.
 
 ## Requirements
 
@@ -56,11 +70,14 @@ npm run typecheck   # Type check all workspaces
 ## Structure
 
 ```
-packages/
-└── console/        # shared Nuxt layer (@nvisy/console)
 apps/
-├── web/            # web shell (@nvisy/webapp)
-└── desktop/        # desktop shell + tauri/ (@nvisy/desktop)
+├── web/            # web shell — Nuxt 4 SPA (@nvisy/webapp)
+└── desktop/        # desktop shell (@nvisy/desktop)
+    ├── app/        #   Nuxt frontend (extends @nvisy/console)
+    └── tauri/      #   Tauri 2 Rust shell (Cargo, tauri.conf.json)
+packages/
+├── console/        # shared Nuxt layer (@nvisy/console)
+└── config/         # shared config & constants — ESM lib (@nvisy/config)
 ```
 
 ## Contributing

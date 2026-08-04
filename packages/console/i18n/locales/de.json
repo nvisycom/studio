@@ -892,6 +892,11 @@
 					"name": "Python SDK",
 					"shortDescription": "nvisy-sdk",
 					"description": "Nvisy in Ihre Python-Anwendungen integrieren"
+				},
+				"rustSdk": {
+					"name": "Rust SDK",
+					"shortDescription": "nvisy-sdk",
+					"description": "Nvisy in Ihre Rust-Anwendungen integrieren"
 				}
 			},
 			"filters": {
@@ -1126,6 +1131,18 @@
 		"billing": "Abrechnung",
 		"settings": "Einstellungen",
 		"support": "Support"
+	},
+	"health": {
+		"status": {
+			"healthy": "Alle Systeme betriebsbereit",
+			"degraded": "Beeinträchtigte Leistung",
+			"unhealthy": "Dienststörung",
+			"unknown": "Status unbekannt"
+		},
+		"tooltip": {
+			"loading": "Status wird geladen…",
+			"unavailable": "Status nicht verfügbar"
+		}
 	},
 	"studio": {
 		"chat": {

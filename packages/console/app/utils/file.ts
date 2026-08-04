@@ -4,6 +4,7 @@ import {
 	FileImage,
 	FileCode,
 	FileSpreadsheet,
+	FileAudio,
 	File as FileIcon,
 } from "@lucide/vue";
 
@@ -27,18 +28,25 @@ export function getFileIcon(fileName: string): Component {
 		case "pdf":
 		case "doc":
 		case "docx":
+		case "rtf":
 		case "txt":
+		case "log":
 		case "md":
 			return FileText;
 		case "png":
 		case "jpg":
 		case "jpeg":
+		case "tif":
+		case "tiff":
 		case "gif":
 		case "svg":
 		case "webp":
 			return FileImage;
+		case "wav":
+			return FileAudio;
 		case "json":
 		case "xml":
+		case "htm":
 		case "html":
 		case "css":
 		case "js":
