@@ -56,7 +56,7 @@ function cancel() {
           </div>
           <DialogTitle>{{
             t("connections.dialogs.disconnect.title", {
-              name: connection?.name,
+              name: connection?.displayName,
             })
           }}</DialogTitle>
         </div>
@@ -70,7 +70,7 @@ function cancel() {
           class="p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
         >
           <p class="text-sm text-neutral-900 dark:text-white font-medium mb-1">
-            {{ connection?.name }}
+            {{ connection?.displayName }}
           </p>
           <p class="text-xs text-neutral-500 dark:text-neutral-500 capitalize">
             {{ t("connections.dialogs.disconnect.provider") }}:

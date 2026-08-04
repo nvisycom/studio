@@ -78,13 +78,13 @@ const navAutomation = computed(() => [
 	},
 	{
 		title: t("sidebar.connections"),
-		url: "/connections",
+		url: "/integrations",
 		icon: Puzzle,
 		isActive: false,
 	},
 	{
 		title: t("sidebar.explore"),
-		url: "/connections/explore",
+		url: "/integrations/explore",
 		icon: Compass,
 		isActive: false,
 	},

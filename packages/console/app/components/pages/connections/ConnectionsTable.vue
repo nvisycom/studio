@@ -91,7 +91,7 @@ function getProviderColor(provider: string): string {
                 </div>
                 <div>
                   <p class="font-normal text-neutral-900 dark:text-white">
-                    {{ connection.name }}
+                    {{ connection.displayName }}
                   </p>
                 </div>
               </div>

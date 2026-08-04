@@ -131,7 +131,7 @@ async function handleDelete(slug: string) {
                 <TableRow v-for="pipeline in pipelines" :key="pipeline.slug">
                   <TableCell>
                     <div>
-                      <p class="font-medium">{{ pipeline.name }}</p>
+                      <p class="font-medium">{{ pipeline.displayName }}</p>
                       <p
                         v-if="pipeline.description"
                         class="text-xs text-muted-foreground"

@@ -63,7 +63,7 @@ watch(
 
 // Functions
 function populateForm(connection: Connection) {
-	connectionName.value = connection.name;
+	connectionName.value = connection.displayName;
 }
 
 function handleOpenChange(open: boolean) {
@@ -81,7 +81,7 @@ function updateConnection() {
 	if (!isFormValid.value || !props.connection) return;
 
 	const updates: UpdateConnection = {
-		name: connectionName.value,
+		displayName: connectionName.value,
 	};
 
 	emit("update", updates);
@@ -99,7 +99,7 @@ function cancel() {
       <DialogHeader>
         <DialogTitle>{{
           t("connections.dialogs.configure.title", {
-            name: connection?.name,
+            name: connection?.displayName,
           })
         }}</DialogTitle>
         <DialogDescription>

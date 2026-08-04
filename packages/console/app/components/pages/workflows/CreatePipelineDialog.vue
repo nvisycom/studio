@@ -84,7 +84,7 @@ function submit() {
 	if (!isFormValid.value) return;
 
 	const pipeline: CreatePipeline = {
-		name: name.value.trim(),
+		displayName: name.value.trim(),
 		slug: slug.value,
 		description: description.value.trim() || undefined,
 		definition: {

@@ -27,7 +27,7 @@ const { t } = useI18n();
 useHead({ title: "Explore Providers" });
 
 definePageMeta({
-	pageCategory: "Connections",
+	pageCategory: "Integrations",
 });
 
 /**
@@ -178,11 +178,10 @@ const providers = ref<Provider[]>([
 		nameKey: "connections.explore.items.notion.name",
 		descriptionKey: "connections.explore.items.notion.description",
 		icon: "/integration/notion.svg",
-		status: "available",
+		status: "unavailable",
 		category: "productivity",
 		tags: ["notes", "collaboration", "export"],
 		popularity: 85,
-		isNew: true,
 	},
 	{
 		id: "discord",
@@ -273,10 +272,25 @@ const providers = ref<Provider[]>([
 		descriptionKey: "connections.explore.items.pythonSdk.description",
 		shortDescriptionKey: "connections.explore.items.pythonSdk.shortDescription",
 		icon: "/integration/python.svg",
-		status: "unavailable",
+		status: "available",
 		category: "sdk",
 		tags: ["sdk", "developer"],
 		popularity: 88,
+		isExternal: true,
+		externalUrl: "https://pypi.org/project/nvisy-sdk/",
+	},
+	{
+		id: "rust-sdk",
+		nameKey: "connections.explore.items.rustSdk.name",
+		descriptionKey: "connections.explore.items.rustSdk.description",
+		shortDescriptionKey: "connections.explore.items.rustSdk.shortDescription",
+		icon: "/integration/rust.svg",
+		status: "available",
+		category: "sdk",
+		tags: ["sdk", "developer"],
+		popularity: 80,
+		isExternal: true,
+		externalUrl: "https://crates.io/crates/nvisy-sdk",
 	},
 ]);
 
@@ -444,7 +458,7 @@ function notifyMe(_id: string | number) {
         class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center mb-6"
       >
         <Button as-child variant="outline" class="font-normal">
-          <NuxtLink to="/connections" class="flex items-center gap-2">
+          <NuxtLink to="/integrations" class="flex items-center gap-2">
             <ArrowLeft :size="16" />
             {{ t("connections.actions.backToConnections") }}
           </NuxtLink>

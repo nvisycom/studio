@@ -39,7 +39,7 @@ const { t } = useI18n();
 useHead({ title: "Connections" });
 
 definePageMeta({
-	pageCategory: "Connections",
+	pageCategory: "Integrations",
 });
 
 // Use SDK composables
@@ -292,7 +292,7 @@ async function testWebhook(webhookId: string) {
                   size="sm"
                   class="font-normal"
                 >
-                  <NuxtLink to="/connections/explore">
+                  <NuxtLink to="/integrations/explore">
                     {{ t("connections.actions.explore") }}
                   </NuxtLink>
                 </Button>
@@ -302,7 +302,7 @@ async function testWebhook(webhookId: string) {
                   size="sm"
                   class="font-normal"
                 >
-                  <NuxtLink to="/connections/runs">
+                  <NuxtLink to="/integrations/runs">
                     {{ t("connections.actions.viewRuns") }}
                   </NuxtLink>
                 </Button>
@@ -357,7 +357,7 @@ async function testWebhook(webhookId: string) {
                   size="sm"
                   class="font-normal"
                 >
-                  <NuxtLink to="/connections/explore">
+                  <NuxtLink to="/integrations/explore">
                     <PlugZap :size="16" />
                     {{ t("connections.actions.explore") }}
                   </NuxtLink>

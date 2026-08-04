@@ -26,7 +26,20 @@ definePageMeta({
 	pageCategory: "Settings",
 });
 
-const { account, isLoading, updateAccountAsync, isUpdating } = useAccount();
+const {
+	account,
+	displayName: accountDisplayName,
+	emailAddress,
+	isLoading,
+	updateAccountAsync,
+	isUpdating,
+} = useAccount();
+
+// Avatar placeholder must match the sidebar (NavUser): fall back to the email
+// address when no display name is set, so both show identical initials/color.
+const avatarLabel = computed(
+	() => accountDisplayName.value || emailAddress.value || "",
+);
 
 // Form state
 const avatarUrl = ref("");
@@ -198,14 +211,12 @@ function saveTimezone() {
               </div>
               <button
                 @click="uploadAvatar"
-                class="group relative hover:opacity-80 transition-opacity cursor-pointer block"
+                class="group relative flex size-12 hover:opacity-80 transition-opacity cursor-pointer"
               >
-                <template v-if="avatarUrl">
-                  <Avatar class="size-14">
-                    <AvatarImage :src="avatarUrl" />
-                  </Avatar>
-                </template>
-                <EntityAvatar v-else :name="displayName" size="lg" />
+                <Avatar v-if="avatarUrl" class="size-12">
+                  <AvatarImage :src="avatarUrl" />
+                </Avatar>
+                <EntityAvatar v-else :name="avatarLabel" size="lg" />
                 <div
                   class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
                 >

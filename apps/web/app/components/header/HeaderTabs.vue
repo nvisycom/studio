@@ -10,7 +10,7 @@ import {
 	Cpu,
 	FileSearch,
 	Plug,
-	Library,
+	Compass,
 	Database,
 	PlayCircle,
 	FolderOpen,
@@ -22,7 +22,7 @@ const { t } = useI18n();
 
 // Check if current route should show tabs
 const showConnectionTabs = computed(() =>
-	route.path.startsWith("/connections"),
+	route.path.startsWith("/integrations"),
 );
 
 const showFilesTabs = computed(() => route.path.startsWith("/files"));
@@ -57,8 +57,8 @@ const currentAnalyticsTab = computed(() => {
 });
 
 const currentConnectionTabValue = computed(() => {
-	if (route.path === "/connections/explore") return "explore";
-	if (route.path === "/connections/runs") return "runs";
+	if (route.path === "/integrations/explore") return "explore";
+	if (route.path === "/integrations/runs") return "runs";
 	return "connections";
 });
 
@@ -98,19 +98,19 @@ defineExpose({
   <Tabs v-if="showConnectionTabs" :model-value="currentConnectionTabValue">
     <TabsList>
       <TabsTrigger value="connections" as-child>
-        <NuxtLink to="/connections" class="flex items-center gap-2">
+        <NuxtLink to="/integrations" class="flex items-center gap-2">
           <Plug :size="16" />
           {{ t("header.tabs.connections.connections") }}
         </NuxtLink>
       </TabsTrigger>
       <TabsTrigger value="explore" as-child>
-        <NuxtLink to="/connections/explore" class="flex items-center gap-2">
-          <Library :size="16" />
+        <NuxtLink to="/integrations/explore" class="flex items-center gap-2">
+          <Compass :size="16" />
           {{ t("header.tabs.connections.explore") }}
         </NuxtLink>
       </TabsTrigger>
       <TabsTrigger value="runs" as-child>
-        <NuxtLink to="/connections/runs" class="flex items-center gap-2">
+        <NuxtLink to="/integrations/runs" class="flex items-center gap-2">
           <PlayCircle :size="16" />
           {{ t("header.tabs.connections.runs") }}
         </NuxtLink>
