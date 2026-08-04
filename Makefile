@@ -22,9 +22,18 @@ install-tools: # Installs Lighthouse tools.
 	$(call log,Tools installed.)
 
 .PHONY: build
-build: # Builds the web app (app.nvisy.com).
-	$(call log,Building app.nvisy.com...)
+build: # Builds the web app (self-hosted edition).
+	$(call log,Building web app (self-hosted)...)
 	@npm run generate -w @nvisy/webapp
+	$(call log,Copying build output to ./output folder...)
+	@mkdir -p ./output
+	@cp -r apps/web/.output/public/* ./output/
+	$(call log,Copied build output to ./output folder.)
+
+.PHONY: build-cloud
+build-cloud: # Builds the web app (cloud edition, app.nvisy.com).
+	$(call log,Building app.nvisy.com (cloud)...)
+	@NUXT_PUBLIC_DEPLOYMENT=cloud npm run generate -w @nvisy/webapp
 	$(call log,Copying build output to ./output folder...)
 	@mkdir -p ./output
 	@cp -r apps/web/.output/public/* ./output/

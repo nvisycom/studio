@@ -4,6 +4,7 @@ import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
 import { Checkbox } from "#console/components/ui/checkbox";
+import { FeatureGate } from "#console/components/common";
 import { NvisyApiError } from "@nvisy/sdk";
 
 useHead({ title: "Sign Up" });
@@ -77,47 +78,49 @@ async function handleMicrosoftSignup(): Promise<void> {
       </p>
     </div>
 
-    <!-- Social Signup Buttons -->
-    <div class="grid grid-cols-2 gap-3">
-      <Button
-        type="button"
-        variant="outline"
-        @click="handleGoogleSignup"
-        class="h-10"
-      >
-        <img
-          src="~/assets/brands/google.png"
-          alt="Google"
-          class="w-4 h-4 mr-2"
-        />
-        Google
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        @click="handleMicrosoftSignup"
-        class="h-10"
-      >
-        <img
-          src="~/assets/brands/microsoft.png"
-          alt="Microsoft"
-          class="w-4 h-4 mr-2"
-        />
-        Microsoft
-      </Button>
-    </div>
+    <FeatureGate feature="oauth">
+      <!-- Social Signup Buttons -->
+      <div class="grid grid-cols-2 gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          @click="handleGoogleSignup"
+          class="h-10"
+        >
+          <img
+            src="~/assets/brands/google.png"
+            alt="Google"
+            class="w-4 h-4 mr-2"
+          />
+          Google
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          @click="handleMicrosoftSignup"
+          class="h-10"
+        >
+          <img
+            src="~/assets/brands/microsoft.png"
+            alt="Microsoft"
+            class="w-4 h-4 mr-2"
+          />
+          Microsoft
+        </Button>
+      </div>
 
-    <!-- Divider -->
-    <div class="relative">
-      <div class="absolute inset-0 flex items-center">
-        <div class="w-full border-t border-border" />
+      <!-- Divider -->
+      <div class="relative">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-border" />
+        </div>
+        <div class="relative flex justify-center text-xs uppercase">
+          <span class="bg-background px-2 text-muted-foreground">
+            or continue with email
+          </span>
+        </div>
       </div>
-      <div class="relative flex justify-center text-xs uppercase">
-        <span class="bg-background px-2 text-muted-foreground">
-          or continue with email
-        </span>
-      </div>
-    </div>
+    </FeatureGate>
 
     <!-- Form -->
     <form @submit.prevent="handleSignup" class="space-y-4">

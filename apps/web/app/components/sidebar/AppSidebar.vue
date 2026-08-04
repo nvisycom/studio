@@ -38,6 +38,7 @@ const props = withDefaults(defineProps<SidebarProps>(), {
 const { t } = useI18n();
 const { state } = useSidebar();
 const { open: openHelpChat } = useHelpChat();
+const { has } = useFeatures();
 
 // Check if workspace is selected and get current role
 const { currentWorkspaceSlug, currentWorkspace } = useWorkspaces();
@@ -145,6 +146,7 @@ const navObservability = computed(() => [
       <div class="p-2">
         <SidebarMenu>
           <SidebarMenuItem
+            v-if="has('billing')"
             :class="{ 'opacity-50 pointer-events-none': !hasWorkspace }"
           >
             <SidebarMenuButton
@@ -178,7 +180,7 @@ const navObservability = computed(() => [
               </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          <SidebarMenuItem>
+          <SidebarMenuItem v-if="has('support')">
             <SidebarMenuButton
               :tooltip="t('sidebar.support')"
               @click="openHelpChat"
@@ -198,5 +200,5 @@ const navObservability = computed(() => [
   </Sidebar>
 
   <!-- Help Chat Popup -->
-  <HelpChat />
+  <HelpChat v-if="has('support')" />
 </template>

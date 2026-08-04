@@ -4,7 +4,9 @@
 	"private": true,
 	"scripts": {
 		"build": "nuxt build",
+		"build:cloud": "NUXT_PUBLIC_DEPLOYMENT=cloud nuxt build",
 		"dev": "nuxt dev",
+		"dev:cloud": "NUXT_PUBLIC_DEPLOYMENT=cloud nuxt dev",
 		"generate": "nuxt generate",
 		"preview": "nuxt preview",
 		"postinstall": "nuxt prepare",

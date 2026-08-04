@@ -25,6 +25,9 @@ npm run dev -w @nvisy/desktop          # Desktop frontend (http://localhost:1420
 npm run tauri -w @nvisy/desktop dev    # Desktop app in a Tauri window
 ```
 
+The web app defaults to the self-hosted edition; use `npm run dev:cloud` to run
+the cloud edition locally (see [Editions & feature flags](#editions--feature-flags)).
+
 ## Project Structure
 
 ```
@@ -50,7 +53,8 @@ the Rust toolchain.
 ## Build
 
 ```bash
-make build          # Web app -> output/
+make build          # Web app (self-hosted edition) -> output/
+make build-cloud    # Web app (cloud edition, app.nvisy.com) -> output/
 make build-desktop  # Desktop frontend
 ```
 
@@ -59,6 +63,29 @@ If things break after pulling changes:
 ```bash
 make repair         # Clean and reinstall dependencies
 ```
+
+## Editions & feature flags
+
+The web app ships in two editions, selected at build time by the
+`NUXT_PUBLIC_DEPLOYMENT` environment variable:
+
+- **`cloud`** — the SaaS build (app.nvisy.com). Enables cloud-only features.
+- **self-hosted** (the default when the variable is unset) — everything except
+  the cloud-only features.
+
+Cloud-only features are gated off unless `NUXT_PUBLIC_DEPLOYMENT=cloud`. The
+default-off allowlist means a missing or misconfigured flag never exposes a
+SaaS-only surface on a self-hosted install.
+
+Run or build the cloud edition locally with the `:cloud` scripts:
+
+```bash
+npm run dev:cloud       # Web dev server, cloud edition
+npm run build:cloud     # Web build, cloud edition
+```
+
+The desktop app never sets the flag, so it always gets the self-hosted feature
+set.
 
 ## Pull Requests
 

@@ -11,7 +11,9 @@
 	],
 	"scripts": {
 		"dev": "npm run dev -w @nvisy/webapp",
+		"dev:cloud": "npm run dev:cloud -w @nvisy/webapp",
 		"build": "npm run build -w @nvisy/webapp",
+		"build:cloud": "npm run build:cloud -w @nvisy/webapp",
 		"generate": "npm run generate -w @nvisy/webapp",
 		"typecheck": "npm run typecheck --workspaces --if-present",
 		"format": "biome format --write .",
