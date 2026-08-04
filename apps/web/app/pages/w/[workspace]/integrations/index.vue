@@ -37,6 +37,7 @@ import {
 } from "#console/components/pages/webhooks";
 
 const { t } = useI18n();
+const { wLink } = useWorkspaceLink();
 
 useHead({ title: "Connections" });
 
@@ -343,7 +344,7 @@ async function testWebhook(webhookId: string) {
                   class="font-normal"
                 >
                   <NuxtLink
-                    to="/integrations/explore"
+                    :to="wLink('/integrations/explore')"
                     class="flex items-center gap-2"
                   >
                     <Compass :size="16" />
@@ -357,7 +358,7 @@ async function testWebhook(webhookId: string) {
                   class="font-normal"
                 >
                   <NuxtLink
-                    to="/integrations/runs"
+                    :to="wLink('/integrations/runs')"
                     class="flex items-center gap-2"
                   >
                     <History :size="16" />
@@ -419,7 +420,7 @@ async function testWebhook(webhookId: string) {
                   class="font-normal"
                 >
                   <NuxtLink
-                    to="/integrations/explore"
+                    :to="wLink('/integrations/explore')"
                     class="flex items-center gap-2"
                   >
                     <Compass :size="16" />

@@ -1217,6 +1217,7 @@
 		"automation": "Automation",
 		"connections": "Integrations",
 		"explore": "Explore",
+		"policies": "Policies",
 		"workflows": "Workflows",
 		"observability": "Observability",
 		"analytics": "Analytics",
@@ -1276,6 +1277,82 @@
 			"profile": "Profile",
 			"tokens": "API Tokens",
 			"logout": "Log out"
+		}
+	},
+	"policies": {
+		"title": "Policies",
+		"count": "{count} policy | {count} policies",
+		"create": "New policy",
+		"footer": "Policies decide how detected entities are redacted, suppressed, or audited.",
+		"learnMore": "Learn more",
+		"empty": {
+			"title": "No policies yet",
+			"description": "Create one to define redaction rules."
+		},
+		"table": {
+			"name": "Name",
+			"rules": "Rules",
+			"version": "Version",
+			"updated": "Updated",
+			"ruleCount": "{count} rule | {count} rules",
+			"menu": "Open menu",
+			"edit": "Edit",
+			"delete": "Delete"
+		},
+		"editor": {
+			"title": "New policy",
+			"editTitle": "Edit policy",
+			"save": "Save changes",
+			"description": "Define rules that decide how detected entities are handled.",
+			"nameLabel": "Name",
+			"namePlaceholder": "PII redaction",
+			"slugLabel": "Slug",
+			"descriptionLabel": "Description",
+			"descriptionPlaceholder": "What this policy does",
+			"rulesLabel": "Rules",
+			"rulesHint": "Rules run in order; the first match wins.",
+			"back": "Back to policies",
+			"addRule": "Add rule",
+			"ruleNamePlaceholder": "Rule name",
+			"noRules": "No rules yet.",
+			"conditions": "Conditions",
+			"addCondition": "Add condition",
+			"valuesPlaceholder": "comma,separated",
+			"action": "Action",
+			"notePlaceholder": "Optional note",
+			"predicate": {
+				"confidence": "Confidence ≥",
+				"labelOneOf": "Label is one of",
+				"tagOneOf": "Tag is one of"
+			},
+			"actionKind": {
+				"redact": "Redact",
+				"suppress": "Suppress",
+				"audit": "Audit"
+			},
+			"textKind": {
+				"replace": "Replace",
+				"mask": "Mask",
+				"hash": "Hash",
+				"erase": "Erase",
+				"keep": "Keep"
+			},
+			"cancel": "Cancel",
+			"submit": "Create policy"
+		},
+		"delete": {
+			"title": "Delete {name}?",
+			"description": "This permanently deletes the policy and its rules. This cannot be undone.",
+			"cancel": "Cancel",
+			"confirm": "Delete"
+		},
+		"toast": {
+			"created": "Policy created",
+			"createFailed": "Failed to create policy",
+			"updated": "Policy updated",
+			"updateFailed": "Failed to update policy",
+			"deleted": "Policy deleted",
+			"deleteFailed": "Failed to delete policy"
 		}
 	},
 	"workflows": {

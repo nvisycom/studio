@@ -37,6 +37,7 @@ import {
 import { Badge } from "#console/components/ui/badge";
 
 const { t } = useI18n();
+const { wLink } = useWorkspaceLink();
 
 useHead({ title: "Workflow Runs" });
 
@@ -74,7 +75,7 @@ const filteredRuns = computed(() => {
       <!-- Toolbar -->
       <div class="mb-6 flex flex-wrap items-center gap-3">
         <Button as-child variant="outline" class="font-normal">
-          <NuxtLink to="/workflows" class="flex items-center gap-2">
+          <NuxtLink :to="wLink('/workflows')" class="flex items-center gap-2">
             <ArrowLeft :size="16" />
             {{ t("workflows.runs.backToWorkflows") }}
           </NuxtLink>

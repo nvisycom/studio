@@ -3,7 +3,8 @@ definePageMeta({
 	pageCategory: "Settings",
 });
 
-navigateTo("/settings/general", { replace: true });
+const { wLink } = useWorkspaceLink();
+navigateTo(wLink("/settings/general"), { replace: true });
 </script>
 
 <template>

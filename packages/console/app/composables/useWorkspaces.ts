@@ -6,12 +6,27 @@ import type { CreateWorkspace, UpdateWorkspace } from "@nvisy/sdk/datatypes";
 export function useWorkspaces() {
 	const { $nvisyClient } = useNuxtApp();
 	const { authToken } = useAuth();
+	const route = useRoute();
 
-	const currentWorkspaceSlug = useCookie<string | null>(
-		"current_workspace_slug",
-		{
-			default: () => null,
+	// The URL is the source of truth for the active workspace: feature routes
+	// live under /w/[workspace]/... The cookie only remembers the last-used slug
+	// so bare routes (e.g. "/") can redirect into a workspace.
+	const lastWorkspaceSlug = useCookie<string | null>("current_workspace_slug", {
+		default: () => null,
+	});
+
+	const currentWorkspaceSlug = computed<string | null>(() => {
+		const param = route.params.workspace;
+		return typeof param === "string" && param.length > 0 ? param : null;
+	});
+
+	// Mirror the active slug into the cookie so it is available for redirects.
+	watch(
+		currentWorkspaceSlug,
+		(slug) => {
+			if (slug) lastWorkspaceSlug.value = slug;
 		},
+		{ immediate: true },
 	);
 
 	const workspacesQuery = useQuery({
@@ -24,35 +39,6 @@ export function useWorkspaces() {
 		},
 		enabled: () => !!authToken.value?.apiToken,
 	});
-
-	// Auto-select first workspace if none selected, or clear invalid workspace slug
-	watch(
-		() => workspacesQuery.data.value,
-		(workspaces) => {
-			if (!workspaces) return;
-
-			// If user has no workspaces, clear the cookie
-			if (workspaces.length === 0) {
-				currentWorkspaceSlug.value = null;
-				return;
-			}
-
-			// If no workspace selected, select the first one
-			if (!currentWorkspaceSlug.value) {
-				currentWorkspaceSlug.value = workspaces[0]?.slug ?? null;
-				return;
-			}
-
-			// If stored slug doesn't exist in user's workspaces, select the first one
-			const workspaceExists = workspaces.some(
-				(w) => w.slug === currentWorkspaceSlug.value,
-			);
-			if (!workspaceExists) {
-				currentWorkspaceSlug.value = workspaces[0]?.slug ?? null;
-			}
-		},
-		{ immediate: true },
-	);
 
 	const currentWorkspace = computed(() => {
 		if (!workspacesQuery.data.value || !currentWorkspaceSlug.value) return null;
@@ -71,7 +57,8 @@ export function useWorkspaces() {
 		},
 		onSuccess(data) {
 			workspacesQuery.refresh();
-			currentWorkspaceSlug.value = data.slug;
+			// Navigate into the freshly created workspace.
+			navigateTo(`/w/${data.slug}`);
 		},
 	});
 
@@ -98,22 +85,26 @@ export function useWorkspaces() {
 			if (!client) throw new Error("Not authenticated");
 			await client.workspaces.deleteWorkspace(workspaceSlug);
 		},
-		onSuccess() {
+		onSuccess(_data, deletedSlug) {
 			workspacesQuery.refresh();
-			if (currentWorkspaceSlug.value) {
-				const remaining = workspacesQuery.data.value?.filter(
-					(w) => w.slug !== currentWorkspaceSlug.value,
+			// If the deleted workspace is the one in the URL, move to another.
+			if (currentWorkspaceSlug.value === deletedSlug) {
+				const next = workspacesQuery.data.value?.find(
+					(w) => w.slug !== deletedSlug,
 				);
-				currentWorkspaceSlug.value =
-					remaining && remaining.length > 0
-						? (remaining[0]?.slug ?? null)
-						: null;
+				navigateTo(next ? `/w/${next.slug}` : "/");
 			}
 		},
 	});
 
+	// Switch workspaces by navigating: swap the /w/[workspace] segment in the
+	// current path so the user stays on the same sub-page where possible.
 	function selectWorkspace(workspaceSlug: string) {
-		currentWorkspaceSlug.value = workspaceSlug;
+		const current = currentWorkspaceSlug.value;
+		const target = current
+			? route.fullPath.replace(`/w/${current}`, `/w/${workspaceSlug}`)
+			: `/w/${workspaceSlug}`;
+		navigateTo(target);
 	}
 
 	return {
@@ -123,8 +114,9 @@ export function useWorkspaces() {
 		error: workspacesQuery.error,
 		refresh: workspacesQuery.refresh,
 
-		// Current workspace
-		currentWorkspaceSlug: readonly(currentWorkspaceSlug),
+		// Current workspace (derived from the /w/[workspace] route param)
+		currentWorkspaceSlug,
+		lastWorkspaceSlug,
 		currentWorkspace,
 		selectWorkspace,
 

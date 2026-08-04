@@ -54,6 +54,7 @@ interface CommandAction {
 
 const { t } = useI18n();
 const { has } = useFeatures();
+const { wLink } = useWorkspaceLink();
 const colorMode = useColorMode();
 const { getKbdKey } = useKbd();
 const { logout: performLogout } = useAuth();
@@ -75,17 +76,27 @@ const navigationItems = computed(() => [
 	{
 		label: t("sidebar.overview"),
 		icon: LayoutDashboard,
-		href: "/",
+		href: wLink("/"),
 		shortcut: "O",
 	},
 	{
 		label: t("sidebar.files"),
 		icon: FolderOpen,
-		href: "/files",
+		href: wLink("/files"),
 		shortcut: "F",
 	},
-	{ label: t("sidebar.studio"), icon: PenTool, href: "/studio", shortcut: "S" },
-	{ label: t("sidebar.team"), icon: Users, href: "/team", shortcut: "T" },
+	{
+		label: t("sidebar.studio"),
+		icon: PenTool,
+		href: wLink("/studio"),
+		shortcut: "S",
+	},
+	{
+		label: t("sidebar.team"),
+		icon: Users,
+		href: wLink("/team"),
+		shortcut: "T",
+	},
 ]);
 
 // Automation items
@@ -93,10 +104,14 @@ const automationItems = computed(() => [
 	{
 		label: t("sidebar.connections"),
 		icon: Puzzle,
-		href: "/integrations",
+		href: wLink("/integrations"),
 		shortcut: "I",
 	},
-	{ label: t("sidebar.explore"), icon: Compass, href: "/integrations/explore" },
+	{
+		label: t("sidebar.explore"),
+		icon: Compass,
+		href: wLink("/integrations/explore"),
+	},
 ]);
 
 // Observability items
@@ -104,13 +119,13 @@ const observabilityItems = computed(() => [
 	{
 		label: t("sidebar.analytics"),
 		icon: BarChart3,
-		href: "/analytics",
+		href: wLink("/analytics"),
 		shortcut: "A",
 	},
 	{
 		label: t("sidebar.logs"),
 		icon: FileSearch,
-		href: "/analytics/logs",
+		href: wLink("/analytics/logs"),
 		shortcut: "L",
 	},
 ]);
@@ -121,11 +136,15 @@ const settingsItems = computed(() => {
 		{
 			label: t("sidebar.billing"),
 			icon: CreditCard,
-			href: "/billing",
+			href: wLink("/billing"),
 			shortcut: "B",
 			feature: "billing",
 		},
-		{ label: t("sidebar.settings"), icon: Settings, href: "/settings/general" },
+		{
+			label: t("sidebar.settings"),
+			icon: Settings,
+			href: wLink("/settings/general"),
+		},
 	];
 	return items.filter((item) => !item.feature || has(item.feature));
 });
@@ -200,7 +219,7 @@ async function executeAction(actionId: string) {
 			emit("uploadFile");
 			break;
 		case "invite-member":
-			goTo("/team");
+			goTo(wLink("/team"));
 			return;
 		case "create-invite-code":
 			try {
@@ -237,14 +256,14 @@ defineShortcuts(
 		isOpen.value
 			? {}
 			: {
-					meta_o: () => goTo("/"),
-					meta_f: () => goTo("/files"),
-					meta_s: () => goTo("/studio"),
-					meta_t: () => goTo("/team"),
-					meta_i: () => goTo("/integrations"),
-					meta_a: () => goTo("/analytics"),
-					meta_l: () => goTo("/analytics/logs"),
-					...(has("billing") ? { meta_b: () => goTo("/billing") } : {}),
+					meta_o: () => goTo(wLink("/")),
+					meta_f: () => goTo(wLink("/files")),
+					meta_s: () => goTo(wLink("/studio")),
+					meta_t: () => goTo(wLink("/team")),
+					meta_i: () => goTo(wLink("/integrations")),
+					meta_a: () => goTo(wLink("/analytics")),
+					meta_l: () => goTo(wLink("/analytics/logs")),
+					...(has("billing") ? { meta_b: () => goTo(wLink("/billing")) } : {}),
 					meta_p: () => goTo("/account"),
 					meta_n: () => executeAction("create-workspace"),
 					meta_u: () => executeAction("upload-file"),

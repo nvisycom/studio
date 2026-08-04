@@ -30,6 +30,7 @@ import CommandMenu from "@/components/CommandMenu.vue";
 import CreateWorkspaceModal from "#console/components/common/CreateWorkspaceModal.vue";
 
 const { t } = useI18n();
+const { wLink } = useWorkspaceLink();
 const { getKbdKey } = useKbd();
 const { isMobile } = useSidebar();
 const { logout } = useAuth();
@@ -68,7 +69,7 @@ function handleCreateWorkspace() {
 
 function handleUploadFile() {
 	// Navigate to files page where upload can be triggered
-	navigateTo("/files");
+	navigateTo(wLink("/files"));
 }
 
 function handleOpenSupport() {

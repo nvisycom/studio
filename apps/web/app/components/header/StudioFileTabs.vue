@@ -15,6 +15,7 @@ import {
 import { Button } from "#console/components/ui/button";
 
 const router = useRouter();
+const { wLink } = useWorkspaceLink();
 
 // Use studio files store for multiple open files
 const { openFiles, activeFileId, closeFile, setActiveFile, moveFileToFront } =
@@ -65,7 +66,7 @@ function handleCloseFile(fileId: string) {
 	closeFile(fileId);
 	// If no more files open, navigate back to files page
 	if (openFiles.value.length === 0) {
-		router.push("/files");
+		router.push(wLink("/files"));
 	}
 }
 

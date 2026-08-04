@@ -1217,6 +1217,7 @@
 		"automation": "Automatisierung",
 		"connections": "Integrationen",
 		"explore": "Entdecken",
+		"policies": "Richtlinien",
 		"workflows": "Workflows",
 		"observability": "Beobachtbarkeit",
 		"analytics": "Analytik",
@@ -1276,6 +1277,82 @@
 			"profile": "Profil",
 			"tokens": "API-Tokens",
 			"logout": "Abmelden"
+		}
+	},
+	"policies": {
+		"title": "Richtlinien",
+		"count": "{count} Richtlinie | {count} Richtlinien",
+		"create": "Neue Richtlinie",
+		"footer": "Richtlinien legen fest, wie erkannte Entitäten geschwärzt, unterdrückt oder geprüft werden.",
+		"learnMore": "Mehr erfahren",
+		"empty": {
+			"title": "Noch keine Richtlinien",
+			"description": "Erstellen Sie eine, um Schwärzungsregeln zu definieren."
+		},
+		"table": {
+			"name": "Name",
+			"rules": "Regeln",
+			"version": "Version",
+			"updated": "Aktualisiert",
+			"ruleCount": "{count} Regel | {count} Regeln",
+			"menu": "Menü öffnen",
+			"edit": "Bearbeiten",
+			"delete": "Löschen"
+		},
+		"editor": {
+			"title": "Neue Richtlinie",
+			"editTitle": "Richtlinie bearbeiten",
+			"save": "Änderungen speichern",
+			"description": "Definieren Sie Regeln, die festlegen, wie erkannte Entitäten behandelt werden.",
+			"nameLabel": "Name",
+			"namePlaceholder": "PII-Schwärzung",
+			"slugLabel": "Slug",
+			"descriptionLabel": "Beschreibung",
+			"descriptionPlaceholder": "Was diese Richtlinie tut",
+			"rulesLabel": "Regeln",
+			"rulesHint": "Regeln werden der Reihe nach ausgewertet; die erste Übereinstimmung gewinnt.",
+			"back": "Zurück zu Richtlinien",
+			"addRule": "Regel hinzufügen",
+			"ruleNamePlaceholder": "Regelname",
+			"noRules": "Noch keine Regeln.",
+			"conditions": "Bedingungen",
+			"addCondition": "Bedingung hinzufügen",
+			"valuesPlaceholder": "komma,getrennt",
+			"action": "Aktion",
+			"notePlaceholder": "Optionale Notiz",
+			"predicate": {
+				"confidence": "Konfidenz ≥",
+				"labelOneOf": "Label ist eines von",
+				"tagOneOf": "Tag ist eines von"
+			},
+			"actionKind": {
+				"redact": "Schwärzen",
+				"suppress": "Unterdrücken",
+				"audit": "Prüfen"
+			},
+			"textKind": {
+				"replace": "Ersetzen",
+				"mask": "Maskieren",
+				"hash": "Hashen",
+				"erase": "Löschen",
+				"keep": "Behalten"
+			},
+			"cancel": "Abbrechen",
+			"submit": "Richtlinie erstellen"
+		},
+		"delete": {
+			"title": "{name} löschen?",
+			"description": "Dies löscht die Richtlinie und ihre Regeln dauerhaft. Dies kann nicht rückgängig gemacht werden.",
+			"cancel": "Abbrechen",
+			"confirm": "Löschen"
+		},
+		"toast": {
+			"created": "Richtlinie erstellt",
+			"createFailed": "Richtlinie konnte nicht erstellt werden",
+			"updated": "Richtlinie aktualisiert",
+			"updateFailed": "Richtlinie konnte nicht aktualisiert werden",
+			"deleted": "Richtlinie gelöscht",
+			"deleteFailed": "Richtlinie konnte nicht gelöscht werden"
 		}
 	},
 	"workflows": {

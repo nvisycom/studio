@@ -30,6 +30,7 @@ import type { CreateConnection } from "@nvisy/sdk/datatypes";
 import { toast } from "vue-sonner";
 
 const { t } = useI18n();
+const { wLink } = useWorkspaceLink();
 const { createConnectionAsync, isCreating } = useConnections();
 
 useHead({ title: "Explore Providers" });
@@ -504,7 +505,7 @@ async function handleConnect(connection: CreateConnection) {
 		await createConnectionAsync(connection);
 		connectDialogOpen.value = false;
 		toast.success(t("connections.dialogs.connect.success"));
-		await navigateTo("/integrations");
+		await navigateTo(wLink("/integrations"));
 	} catch {
 		toast.error(t("connections.dialogs.connect.error"));
 	}
@@ -523,7 +524,7 @@ function notifyMe(_id: string | number) {
         class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center mb-6"
       >
         <Button as-child variant="outline" class="font-normal">
-          <NuxtLink to="/integrations" class="flex items-center gap-2">
+          <NuxtLink :to="wLink('/integrations')" class="flex items-center gap-2">
             <ArrowLeft :size="16" />
             {{ t("connections.actions.backToConnections") }}
           </NuxtLink>

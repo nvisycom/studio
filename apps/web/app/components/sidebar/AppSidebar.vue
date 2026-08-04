@@ -12,6 +12,7 @@ import {
 	FileSearch,
 	PenTool,
 	Workflow,
+	ShieldCheck,
 } from "@lucide/vue";
 import NavMain from "@/components/sidebar/NavMain.vue";
 import NavUser from "@/components/sidebar/NavUser.vue";
@@ -38,6 +39,7 @@ const { t } = useI18n();
 const { state } = useSidebar();
 const { open: openHelpChat } = useHelpChat();
 const { has } = useFeatures();
+const { wLink } = useWorkspaceLink();
 
 // Check if workspace is selected and get current role
 const { currentWorkspaceSlug, currentWorkspace } = useWorkspaces();
@@ -51,19 +53,19 @@ const isAdminOrOwner = computed(() => {
 const navWorkspace = computed(() => [
 	{
 		title: t("sidebar.files"),
-		url: "/files",
+		url: wLink("/files"),
 		icon: FolderOpen,
 		isActive: false,
 	},
 	{
 		title: t("sidebar.studio"),
-		url: "/studio",
+		url: wLink("/studio"),
 		icon: PenTool,
 		isActive: false,
 	},
 	{
 		title: t("sidebar.team"),
-		url: "/team",
+		url: wLink("/team"),
 		icon: Users,
 		isActive: false,
 	},
@@ -72,14 +74,20 @@ const navWorkspace = computed(() => [
 const navAutomation = computed(() => [
 	{
 		title: t("sidebar.workflows"),
-		url: "/workflows",
+		url: wLink("/workflows"),
 		icon: Workflow,
 		isActive: false,
 	},
 	{
 		title: t("sidebar.connections"),
-		url: "/integrations",
+		url: wLink("/integrations"),
 		icon: Puzzle,
+		isActive: false,
+	},
+	{
+		title: t("sidebar.policies"),
+		url: wLink("/policies"),
+		icon: ShieldCheck,
 		isActive: false,
 	},
 ]);
@@ -87,13 +95,13 @@ const navAutomation = computed(() => [
 const navObservability = computed(() => [
 	{
 		title: t("sidebar.analytics"),
-		url: "/analytics",
+		url: wLink("/analytics"),
 		icon: BarChart3,
 		isActive: false,
 	},
 	{
 		title: t("sidebar.logs"),
-		url: "/analytics/logs",
+		url: wLink("/analytics/logs"),
 		icon: FileSearch,
 		isActive: false,
 	},
@@ -111,7 +119,7 @@ const navObservability = computed(() => [
       <SidebarMenu v-if="state === 'expanded'" class="px-2">
         <SidebarMenuItem>
           <SidebarMenuButton as-child :tooltip="t('sidebar.overview')">
-            <NuxtLink to="/">
+            <NuxtLink :to="wLink('/')">
               <LayoutDashboard />
               <span>{{ t("sidebar.overview") }}</span>
             </NuxtLink>
@@ -146,7 +154,7 @@ const navObservability = computed(() => [
               as-child
               :tooltip="hasWorkspace ? t('sidebar.billing') : undefined"
             >
-              <NuxtLink v-if="hasWorkspace" to="/billing">
+              <NuxtLink v-if="hasWorkspace" :to="wLink('/billing')">
                 <CreditCard />
                 <span>{{ t("sidebar.billing") }}</span>
               </NuxtLink>
@@ -163,7 +171,7 @@ const navObservability = computed(() => [
               as-child
               :tooltip="hasWorkspace ? t('sidebar.settings') : undefined"
             >
-              <NuxtLink v-if="hasWorkspace" to="/settings/general">
+              <NuxtLink v-if="hasWorkspace" :to="wLink('/settings/general')">
                 <Settings />
                 <span>{{ t("sidebar.settings") }}</span>
               </NuxtLink>
