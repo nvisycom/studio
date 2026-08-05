@@ -61,7 +61,8 @@
 			"avatar": {
 				"label": "Avatar",
 				"description": "Click to upload. Recommended: 256x256px. PNG, JPG, or SVG.",
-				"footer": "Your workspace avatar will be visible to all team members."
+				"footer": "Your workspace avatar will be visible to all team members.",
+				"remove": "Remove"
 			},
 			"name": {
 				"label": "Workspace Name",
@@ -126,12 +127,15 @@
 				"optionsSaved": "Workspace options saved",
 				"left": "You have left the workspace",
 				"deleted": "Workspace deleted",
-				"avatarNotSupported": "Avatar upload is not yet supported"
+				"avatarUploaded": "Workspace avatar updated",
+				"avatarRemoved": "Workspace avatar removed"
 			},
 			"errors": {
 				"saveFailed": "Failed to save workspace settings",
 				"leaveFailed": "Failed to leave workspace",
-				"deleteFailed": "Failed to delete workspace"
+				"deleteFailed": "Failed to delete workspace",
+				"avatarUploadFailed": "Failed to upload workspace avatar",
+				"avatarRemoveFailed": "Failed to remove workspace avatar"
 			}
 		},
 		"notifications": {
@@ -974,7 +978,9 @@
 				"disconnect": "Disconnect",
 				"menu": "Open menu"
 			},
-			"eventsCount": "{count} event | {count} events"
+			"eventsCount": "{count} event | {count} events",
+			"neverDelivered": "Never delivered",
+			"consecutiveFailures": "{count} fail | {count} fails"
 		},
 		"forms": {
 			"search": {

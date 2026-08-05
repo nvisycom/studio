@@ -3,8 +3,8 @@ import { Upload, ChevronDown, Loader2, Eye, EyeOff } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
-import { Avatar, AvatarImage } from "#console/components/ui/avatar";
 import EntityAvatar from "#console/components/common/EntityAvatar.vue";
+import { personLabel } from "#console/utils/naming";
 import {
 	Card,
 	CardContent,
@@ -19,6 +19,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "#console/components/ui/dropdown-menu";
+import { toast } from "vue-sonner";
 
 useHead({ title: "Account" });
 
@@ -29,23 +30,41 @@ definePageMeta({
 const {
 	account,
 	displayName: accountDisplayName,
+	username: accountUsername,
 	emailAddress,
+	avatarUrl: accountAvatarUrl,
 	isLoading,
 	updateAccountAsync,
 	isUpdating,
+	uploadAvatarAsync,
+	isUploadingAvatar,
+	deleteAvatarAsync,
+	isDeletingAvatar,
 } = useAccount();
+const { resolveAvatarUrl } = useAvatarUrl();
 
 // Username: lowercase alphanumeric with single internal dashes (matches signup).
 const USERNAME_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-// Avatar placeholder must match the sidebar (NavUser): fall back to the email
-// address when no display name is set, so both show identical initials/color.
-const avatarLabel = computed(
-	() => accountDisplayName.value || emailAddress.value || "",
+// Avatar placeholder must match the sidebar (NavUser) exactly — same person
+// fallback (display name → username → email) so both show identical initials
+// and gradient color (the gradient is hashed from this string).
+const avatarLabel = computed(() =>
+	personLabel({
+		displayName: accountDisplayName.value,
+		username: accountUsername.value,
+		emailAddress: emailAddress.value,
+	}),
 );
 
+// Resolved avatar image URL for display (undefined when unset).
+const avatarSrc = computed(() => resolveAvatarUrl(accountAvatarUrl.value));
+
 // Form state
-const avatarUrl = ref("");
+// Local object-URL shown for instant feedback while an upload is in flight;
+// cleared once the refreshed account carries the server-side avatarUrl.
+const previewUrl = ref("");
+const displayImage = computed(() => previewUrl.value || avatarSrc.value);
 const displayName = ref("");
 const username = ref("");
 const email = ref("");
@@ -132,22 +151,42 @@ function getTimezoneLabel(value: string): string {
 }
 
 // Functions
-function uploadAvatar() {
+function pickAvatar() {
 	const input = document.createElement("input");
 	input.type = "file";
 	input.accept = "image/*";
 	input.onchange = (e) => {
 		const file = (e.target as HTMLInputElement)?.files?.[0];
-		if (file) {
-			const reader = new FileReader();
-			reader.onload = (event) => {
-				avatarUrl.value = event.target?.result as string;
-			};
-			reader.readAsDataURL(file);
-			// TODO: Upload avatar to server
-		}
+		if (file) uploadAvatar(file);
 	};
 	input.click();
+}
+
+async function uploadAvatar(file: File) {
+	// Show the picked file immediately while the upload round-trips.
+	previewUrl.value = URL.createObjectURL(file);
+	try {
+		await uploadAvatarAsync(file);
+		toast.success("Avatar updated");
+	} catch (error) {
+		toast.error("Failed to upload avatar", {
+			description: error instanceof Error ? error.message : undefined,
+		});
+	} finally {
+		URL.revokeObjectURL(previewUrl.value);
+		previewUrl.value = "";
+	}
+}
+
+async function removeAvatar() {
+	try {
+		await deleteAvatarAsync();
+		toast.success("Avatar removed");
+	} catch (error) {
+		toast.error("Failed to remove avatar", {
+			description: error instanceof Error ? error.message : undefined,
+		});
+	}
 }
 
 async function saveProfile() {
@@ -223,19 +262,47 @@ function saveTimezone() {
                 <p class="text-sm text-muted-foreground">
                   Click to upload. Recommended: 256x256px. PNG, JPG, or GIF.
                 </p>
+                <Button
+                  v-if="displayImage"
+                  variant="ghost"
+                  size="sm"
+                  class="-ml-2 h-7 font-normal text-muted-foreground"
+                  :disabled="isDeletingAvatar || isUploadingAvatar"
+                  @click="removeAvatar"
+                >
+                  <Loader2
+                    v-if="isDeletingAvatar"
+                    :size="14"
+                    class="mr-1.5 animate-spin"
+                  />
+                  Remove
+                </Button>
               </div>
               <button
-                @click="uploadAvatar"
-                class="group relative flex size-12 hover:opacity-80 transition-opacity cursor-pointer"
+                type="button"
+                :disabled="isUploadingAvatar || isDeletingAvatar"
+                @click="pickAvatar"
+                class="group relative flex size-12 hover:opacity-80 transition-opacity cursor-pointer disabled:cursor-default disabled:opacity-60"
               >
-                <Avatar v-if="avatarUrl" class="size-12">
-                  <AvatarImage :src="avatarUrl" />
-                </Avatar>
-                <EntityAvatar v-else :name="avatarLabel" size="lg" />
+                <EntityAvatar
+                  :name="avatarLabel"
+                  :src="displayImage"
+                  size="lg"
+                />
                 <div
-                  class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
+                  class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full transition-opacity"
+                  :class="
+                    isUploadingAvatar
+                      ? 'opacity-100'
+                      : 'opacity-0 group-hover:opacity-100'
+                  "
                 >
-                  <Upload :size="18" class="text-white" />
+                  <Loader2
+                    v-if="isUploadingAvatar"
+                    :size="18"
+                    class="animate-spin text-white"
+                  />
+                  <Upload v-else :size="18" class="text-white" />
                 </div>
               </button>
             </div>

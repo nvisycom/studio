@@ -61,7 +61,8 @@
 			"avatar": {
 				"label": "Avatar",
 				"description": "Zum Hochladen klicken. Empfohlen: 256x256px. PNG, JPG oder SVG.",
-				"footer": "Ihr Arbeitsbereich-Avatar ist für alle Teammitglieder sichtbar."
+				"footer": "Ihr Arbeitsbereich-Avatar ist für alle Teammitglieder sichtbar.",
+				"remove": "Entfernen"
 			},
 			"name": {
 				"label": "Arbeitsbereichsname",
@@ -126,12 +127,15 @@
 				"optionsSaved": "Arbeitsbereich-Optionen gespeichert",
 				"left": "Sie haben den Arbeitsbereich verlassen",
 				"deleted": "Arbeitsbereich gelöscht",
-				"avatarNotSupported": "Avatar-Upload wird noch nicht unterstützt"
+				"avatarUploaded": "Arbeitsbereich-Avatar aktualisiert",
+				"avatarRemoved": "Arbeitsbereich-Avatar entfernt"
 			},
 			"errors": {
 				"saveFailed": "Fehler beim Speichern der Arbeitsbereich-Einstellungen",
 				"leaveFailed": "Fehler beim Verlassen des Arbeitsbereichs",
-				"deleteFailed": "Fehler beim Löschen des Arbeitsbereichs"
+				"deleteFailed": "Fehler beim Löschen des Arbeitsbereichs",
+				"avatarUploadFailed": "Fehler beim Hochladen des Arbeitsbereich-Avatars",
+				"avatarRemoveFailed": "Fehler beim Entfernen des Arbeitsbereich-Avatars"
 			}
 		},
 		"notifications": {
@@ -974,7 +978,9 @@
 				"disconnect": "Trennen",
 				"menu": "Menü öffnen"
 			},
-			"eventsCount": "{count} Ereignis | {count} Ereignisse"
+			"eventsCount": "{count} Ereignis | {count} Ereignisse",
+			"neverDelivered": "Nie zugestellt",
+			"consecutiveFailures": "{count} Fehler | {count} Fehler"
 		},
 		"forms": {
 			"search": {

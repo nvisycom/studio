@@ -11,7 +11,7 @@ const { wLink } = useWorkspaceLink();
 useHead({ title: "New Policy" });
 
 definePageMeta({
-	pageCategory: "Automation",
+	pageCategory: "Policies",
 });
 
 const { createPolicyAsync, isCreating } = usePolicies();

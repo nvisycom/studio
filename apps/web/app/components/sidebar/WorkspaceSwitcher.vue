@@ -26,6 +26,7 @@ const MAX_NAME_LENGTH = 18;
 // Use the workspaces composable
 const { workspaces, currentWorkspace, currentWorkspaceSlug, selectWorkspace } =
 	useWorkspaces();
+const { resolveAvatarUrl } = useAvatarUrl();
 
 const isCreateWorkspaceModalOpen = ref(false);
 </script>
@@ -42,6 +43,7 @@ const isCreateWorkspaceModalOpen = ref(false);
             <EntityAvatar
               v-if="currentWorkspace"
               :name="currentWorkspace.displayName"
+              :src="resolveAvatarUrl(currentWorkspace.avatarUrl)"
               size="sm"
               class="rounded-md"
             />
@@ -88,6 +90,7 @@ const isCreateWorkspaceModalOpen = ref(false);
           >
             <EntityAvatar
               :name="workspace.displayName"
+              :src="resolveAvatarUrl(workspace.avatarUrl)"
               size="sm"
               class="rounded-md"
             />

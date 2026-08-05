@@ -10,6 +10,7 @@ import {
 	ExternalLink,
 } from "@lucide/vue";
 import { formatRelativeTime } from "#console/utils/date";
+import { personLabel } from "#console/utils/naming";
 import { EntityAvatar } from "#console/components/common";
 import { Button } from "#console/components/ui/button";
 import {
@@ -52,11 +53,12 @@ import { toast } from "vue-sonner";
 
 const { t } = useI18n();
 const { wLink } = useWorkspaceLink();
+const { resolveAvatarUrl } = useAvatarUrl();
 
 useHead({ title: "Policies" });
 
 definePageMeta({
-	pageCategory: "Automation",
+	pageCategory: "Policies",
 });
 
 const { policies, isLoading, deletePolicyAsync, isDeleting } = usePolicies();
@@ -174,12 +176,21 @@ async function confirmDelete() {
                     <TableCell>
                       <div class="flex items-center gap-2">
                         <EntityAvatar
-                          :name="policy.creatorUsername"
+                          :name="personLabel(policy.createdBy)"
+                          :src="resolveAvatarUrl(policy.createdBy.avatarUrl)"
                           size="sm"
                         />
-                        <span class="truncate text-sm text-muted-foreground">
-                          {{ policy.creatorUsername }}
-                        </span>
+                        <div class="min-w-0">
+                          <p class="truncate text-sm text-foreground">
+                            {{ personLabel(policy.createdBy) }}
+                          </p>
+                          <p
+                            v-if="policy.createdBy.displayName"
+                            class="truncate text-xs text-muted-foreground"
+                          >
+                            {{ policy.createdBy.username }}
+                          </p>
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell class="text-sm text-muted-foreground">

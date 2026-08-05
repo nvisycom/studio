@@ -43,9 +43,22 @@ const {
 	isUpdating,
 	deleteWorkspaceAsync,
 	isDeleting,
+	uploadAvatarAsync,
+	isUploadingAvatar,
+	deleteAvatarAsync,
+	isDeletingAvatar,
 } = useWorkspaces();
+const { resolveAvatarUrl } = useAvatarUrl();
 
 const { leaveAsync, isLeaving } = useMembers();
+
+// Local object-URL for instant feedback while an upload is in flight; cleared
+// once the refreshed workspace carries the server-side avatarUrl.
+const avatarPreview = ref("");
+const avatarSrc = computed(
+	() =>
+		avatarPreview.value || resolveAvatarUrl(currentWorkspace.value?.avatarUrl),
+);
 
 // Form state - use empty string as initial value
 const workspaceName = ref("");
@@ -156,18 +169,45 @@ async function saveWorkspaceOptions() {
 	}
 }
 
-function uploadAvatar() {
+function pickAvatar() {
 	const input = document.createElement("input");
 	input.type = "file";
 	input.accept = "image/*";
 	input.onchange = (e) => {
 		const file = (e.target as HTMLInputElement)?.files?.[0];
-		if (file) {
-			// TODO: Implement avatar upload when API supports it
-			toast.info(t("settings.workspace.messages.avatarNotSupported"));
-		}
+		if (file) uploadAvatar(file);
 	};
 	input.click();
+}
+
+async function uploadAvatar(file: File) {
+	const workspaceSlug = currentWorkspaceSlug.value;
+	if (!workspaceSlug) return;
+	avatarPreview.value = URL.createObjectURL(file);
+	try {
+		await uploadAvatarAsync({ workspaceSlug, avatar: file });
+		toast.success(t("settings.workspace.messages.avatarUploaded"));
+	} catch (error) {
+		toast.error(t("settings.workspace.errors.avatarUploadFailed"), {
+			description: error instanceof Error ? error.message : undefined,
+		});
+	} finally {
+		URL.revokeObjectURL(avatarPreview.value);
+		avatarPreview.value = "";
+	}
+}
+
+async function removeAvatar() {
+	const workspaceSlug = currentWorkspaceSlug.value;
+	if (!workspaceSlug) return;
+	try {
+		await deleteAvatarAsync(workspaceSlug);
+		toast.success(t("settings.workspace.messages.avatarRemoved"));
+	} catch (error) {
+		toast.error(t("settings.workspace.errors.avatarRemoveFailed"), {
+			description: error instanceof Error ? error.message : undefined,
+		});
+	}
 }
 
 async function handleLeaveWorkspace() {
@@ -229,16 +269,47 @@ const canDelete = computed(() => {
                 <p class="text-xs text-muted-foreground">
                   {{ t("settings.workspace.avatar.description") }}
                 </p>
+                <Button
+                  v-if="avatarSrc"
+                  variant="ghost"
+                  size="sm"
+                  class="-ml-2 h-7 font-normal text-muted-foreground"
+                  :disabled="isDeletingAvatar || isUploadingAvatar"
+                  @click="removeAvatar"
+                >
+                  <Loader2
+                    v-if="isDeletingAvatar"
+                    :size="14"
+                    class="mr-1.5 animate-spin"
+                  />
+                  {{ t("settings.workspace.avatar.remove") }}
+                </Button>
               </div>
               <button
-                @click="uploadAvatar"
-                class="group relative hover:opacity-80 transition-opacity cursor-pointer block"
+                type="button"
+                :disabled="isUploadingAvatar || isDeletingAvatar"
+                @click="pickAvatar"
+                class="group relative hover:opacity-80 transition-opacity cursor-pointer block disabled:cursor-default disabled:opacity-60"
               >
-                <EntityAvatar :name="currentWorkspace.displayName" size="lg" />
+                <EntityAvatar
+                  :name="currentWorkspace.displayName"
+                  :src="avatarSrc"
+                  size="lg"
+                />
                 <div
-                  class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
+                  class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full transition-opacity"
+                  :class="
+                    isUploadingAvatar
+                      ? 'opacity-100'
+                      : 'opacity-0 group-hover:opacity-100'
+                  "
                 >
-                  <Upload :size="20" class="text-white" />
+                  <Loader2
+                    v-if="isUploadingAvatar"
+                    :size="20"
+                    class="animate-spin text-white"
+                  />
+                  <Upload v-else :size="20" class="text-white" />
                 </div>
               </button>
             </div>
