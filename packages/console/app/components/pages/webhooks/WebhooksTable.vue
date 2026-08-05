@@ -50,6 +50,24 @@ function formatUrl(url: string): string {
 		return url;
 	}
 }
+
+// Most recent delivery: whichever of the last success / last failure is newer,
+// plus whether that delivery failed and how many failures have piled up since
+// the last success (0 while healthy).
+function lastDelivery(webhook: Webhook): {
+	at?: string;
+	failed: boolean;
+	consecutiveFailures: number;
+} {
+	const success = webhook.lastSuccessAt;
+	const failure = webhook.lastFailureAt;
+	const failed = !!failure && (!success || failure > success);
+	return {
+		at: failed ? failure : (success ?? failure),
+		failed,
+		consecutiveFailures: webhook.consecutiveFailures,
+	};
+}
 </script>
 
 <template>
@@ -120,10 +138,39 @@ function formatUrl(url: string): string {
               </span>
             </TableCell>
             <TableCell>
-              <span
-                class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
+              <div
+                v-if="lastDelivery(webhook).at"
+                class="flex items-center gap-2"
               >
-                {{ formatRelativeTime(webhook.lastTriggeredAt, t) }}
+                <span
+                  class="size-1.5 rounded-full shrink-0"
+                  :class="
+                    lastDelivery(webhook).failed
+                      ? 'bg-red-500'
+                      : 'bg-green-500'
+                  "
+                />
+                <span
+                  class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
+                >
+                  {{ formatRelativeTime(lastDelivery(webhook).at, t) }}
+                </span>
+                <span
+                  v-if="lastDelivery(webhook).consecutiveFailures > 0"
+                  class="text-xs font-normal text-red-600 dark:text-red-400"
+                >
+                  {{
+                    t("connections.table.consecutiveFailures", {
+                      count: lastDelivery(webhook).consecutiveFailures,
+                    })
+                  }}
+                </span>
+              </div>
+              <span
+                v-else
+                class="text-sm font-normal text-neutral-500 dark:text-neutral-500"
+              >
+                {{ t("connections.table.neverDelivered") }}
               </span>
             </TableCell>
             <TableCell class="text-right" @click.stop>

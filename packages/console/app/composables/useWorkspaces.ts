@@ -97,6 +97,34 @@ export function useWorkspaces() {
 		},
 	});
 
+	const uploadAvatarMutation = useMutation({
+		mutation: async ({
+			workspaceSlug,
+			avatar,
+		}: {
+			workspaceSlug: string;
+			avatar: Blob;
+		}) => {
+			const client = $nvisyClient.value;
+			if (!client) throw new Error("Not authenticated");
+			return await client.workspaces.uploadAvatar(workspaceSlug, avatar);
+		},
+		onSuccess() {
+			workspacesQuery.refresh();
+		},
+	});
+
+	const deleteAvatarMutation = useMutation({
+		mutation: async (workspaceSlug: string) => {
+			const client = $nvisyClient.value;
+			if (!client) throw new Error("Not authenticated");
+			return await client.workspaces.deleteAvatar(workspaceSlug);
+		},
+		onSuccess() {
+			workspacesQuery.refresh();
+		},
+	});
+
 	// Switch workspaces by navigating: swap the /w/[workspace] segment in the
 	// current path so the user stays on the same sub-page where possible.
 	function selectWorkspace(workspaceSlug: string) {
@@ -137,5 +165,11 @@ export function useWorkspaces() {
 		deleteWorkspaceAsync: deleteWorkspaceMutation.mutateAsync,
 		isDeleting: deleteWorkspaceMutation.isLoading,
 		deleteError: deleteWorkspaceMutation.error,
+
+		// Avatar (logo)
+		uploadAvatarAsync: uploadAvatarMutation.mutateAsync,
+		isUploadingAvatar: uploadAvatarMutation.isLoading,
+		deleteAvatarAsync: deleteAvatarMutation.mutateAsync,
+		isDeletingAvatar: deleteAvatarMutation.isLoading,
 	};
 }

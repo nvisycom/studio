@@ -38,6 +38,11 @@ defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
+const { resolveAvatarUrl } = useAvatarUrl();
+
+function memberAvatar(member: Member): string | undefined {
+	return resolveAvatarUrl(member.avatarUrl);
+}
 
 function canSelectMember(member: Member): boolean {
 	return member.memberRole !== "owner";
@@ -102,6 +107,7 @@ function handleRowClick(member: Member) {
                 <div class="flex items-center gap-3">
                   <EntityAvatar
                     :name="member.displayName || member.username"
+                    :src="memberAvatar(member)"
                     size="md"
                   />
                   <div>

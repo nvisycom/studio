@@ -34,7 +34,10 @@ const { wLink } = useWorkspaceLink();
 const { getKbdKey } = useKbd();
 const { isMobile } = useSidebar();
 const { logout } = useAuth();
-const { displayName, username, emailAddress } = useAccount();
+const { displayName, username, emailAddress, avatarUrl } = useAccount();
+const { resolveAvatarUrl } = useAvatarUrl();
+
+const avatarSrc = computed(() => resolveAvatarUrl(avatarUrl.value));
 
 // Primary label is the display name, falling back to the username, then the
 // email. The email shows as the subtitle whenever it isn't already the primary
@@ -94,7 +97,12 @@ defineShortcuts({
             size="lg"
             class="data-[state=open]:bg-sidebar-accent/50"
           >
-            <EntityAvatar :name="primaryLabel" size="sm" class="rounded-md" />
+            <EntityAvatar
+              :name="primaryLabel"
+              :src="avatarSrc"
+              size="sm"
+              class="rounded-md"
+            />
             <div class="grid flex-1 text-left leading-tight">
               <span
                 class="truncate text-sm font-medium text-sidebar-foreground"
