@@ -7,7 +7,6 @@ import { Label } from "#console/components/ui/label";
 import { Textarea } from "#console/components/ui/textarea";
 import { Switch } from "#console/components/ui/switch";
 import EntityAvatar from "#console/components/common/EntityAvatar.vue";
-import { Avatar, AvatarImage } from "#console/components/ui/avatar";
 import {
 	Card,
 	CardContent,
@@ -292,15 +291,9 @@ const canDelete = computed(() => {
                 @click="pickAvatar"
                 class="group relative hover:opacity-80 transition-opacity cursor-pointer block disabled:cursor-default disabled:opacity-60"
               >
-                <Avatar v-if="avatarSrc" class="size-12">
-                  <AvatarImage
-                    :src="avatarSrc"
-                    :alt="currentWorkspace.displayName"
-                  />
-                </Avatar>
                 <EntityAvatar
-                  v-else
                   :name="currentWorkspace.displayName"
+                  :src="avatarSrc"
                   size="lg"
                 />
                 <div

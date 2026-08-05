@@ -3,8 +3,8 @@ import { Upload, ChevronDown, Loader2, Eye, EyeOff } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
-import { Avatar, AvatarImage } from "#console/components/ui/avatar";
 import EntityAvatar from "#console/components/common/EntityAvatar.vue";
+import { personLabel } from "#console/utils/naming";
 import {
 	Card,
 	CardContent,
@@ -30,6 +30,7 @@ definePageMeta({
 const {
 	account,
 	displayName: accountDisplayName,
+	username: accountUsername,
 	emailAddress,
 	avatarUrl: accountAvatarUrl,
 	isLoading,
@@ -45,10 +46,15 @@ const { resolveAvatarUrl } = useAvatarUrl();
 // Username: lowercase alphanumeric with single internal dashes (matches signup).
 const USERNAME_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-// Avatar placeholder must match the sidebar (NavUser): fall back to the email
-// address when no display name is set, so both show identical initials/color.
-const avatarLabel = computed(
-	() => accountDisplayName.value || emailAddress.value || "",
+// Avatar placeholder must match the sidebar (NavUser) exactly — same person
+// fallback (display name → username → email) so both show identical initials
+// and gradient color (the gradient is hashed from this string).
+const avatarLabel = computed(() =>
+	personLabel({
+		displayName: accountDisplayName.value,
+		username: accountUsername.value,
+		emailAddress: emailAddress.value,
+	}),
 );
 
 // Resolved avatar image URL for display (undefined when unset).
@@ -278,10 +284,11 @@ function saveTimezone() {
                 @click="pickAvatar"
                 class="group relative flex size-12 hover:opacity-80 transition-opacity cursor-pointer disabled:cursor-default disabled:opacity-60"
               >
-                <Avatar v-if="displayImage" class="size-12">
-                  <AvatarImage :src="displayImage" :alt="avatarLabel" />
-                </Avatar>
-                <EntityAvatar v-else :name="avatarLabel" size="lg" />
+                <EntityAvatar
+                  :name="avatarLabel"
+                  :src="displayImage"
+                  size="lg"
+                />
                 <div
                   class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full transition-opacity"
                   :class="

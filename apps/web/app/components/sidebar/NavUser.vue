@@ -26,6 +26,7 @@ import {
 	useSidebar,
 } from "#console/components/ui/sidebar";
 import { Kbd } from "#console/components/ui/kbd";
+import { personLabel } from "#console/utils/naming";
 import CommandMenu from "@/components/CommandMenu.vue";
 import CreateWorkspaceModal from "#console/components/common/CreateWorkspaceModal.vue";
 
@@ -39,11 +40,15 @@ const { resolveAvatarUrl } = useAvatarUrl();
 
 const avatarSrc = computed(() => resolveAvatarUrl(avatarUrl.value));
 
-// Primary label is the display name, falling back to the username, then the
-// email. The email shows as the subtitle whenever it isn't already the primary
-// label (i.e. as long as a display name or username is present).
-const primaryLabel = computed(
-	() => displayName.value || username.value || emailAddress.value || "",
+// Primary label uses the shared person fallback (display name → username →
+// email). The email shows as the subtitle whenever it isn't already the
+// primary label (i.e. as long as a display name or username is present).
+const primaryLabel = computed(() =>
+	personLabel({
+		displayName: displayName.value,
+		username: username.value,
+		emailAddress: emailAddress.value,
+	}),
 );
 const secondaryLabel = computed(() =>
 	displayName.value || username.value ? (emailAddress.value ?? "") : "",

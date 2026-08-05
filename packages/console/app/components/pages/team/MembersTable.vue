@@ -19,6 +19,7 @@ import {
 	ContextMenuSeparator,
 } from "#console/components/ui/context-menu";
 import { formatRelativeTime } from "#console/utils/date";
+import { personLabel } from "#console/utils/naming";
 
 interface Props {
 	members: Member[];
@@ -42,6 +43,10 @@ const { resolveAvatarUrl } = useAvatarUrl();
 
 function memberAvatar(member: Member): string | undefined {
 	return resolveAvatarUrl(member.avatarUrl);
+}
+
+function memberLabel(member: Member): string {
+	return personLabel(member);
 }
 
 function canSelectMember(member: Member): boolean {
@@ -106,13 +111,13 @@ function handleRowClick(member: Member) {
               <TableCell>
                 <div class="flex items-center gap-3">
                   <EntityAvatar
-                    :name="member.displayName || member.username"
+                    :name="memberLabel(member)"
                     :src="memberAvatar(member)"
                     size="md"
                   />
                   <div>
                     <p class="font-normal text-neutral-900 dark:text-white">
-                      {{ member.displayName || member.username }}
+                      {{ memberLabel(member) }}
                     </p>
                     <p class="text-xs text-neutral-600 dark:text-neutral-400">
                       {{ member.emailAddress }}

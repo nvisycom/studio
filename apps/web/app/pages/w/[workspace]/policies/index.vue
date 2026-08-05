@@ -10,6 +10,7 @@ import {
 	ExternalLink,
 } from "@lucide/vue";
 import { formatRelativeTime } from "#console/utils/date";
+import { personLabel } from "#console/utils/naming";
 import { EntityAvatar } from "#console/components/common";
 import { Button } from "#console/components/ui/button";
 import {
@@ -175,16 +176,13 @@ async function confirmDelete() {
                     <TableCell>
                       <div class="flex items-center gap-2">
                         <EntityAvatar
-                          :name="policy.createdBy.displayName || policy.createdBy.username"
+                          :name="personLabel(policy.createdBy)"
                           :src="resolveAvatarUrl(policy.createdBy.avatarUrl)"
                           size="sm"
                         />
                         <div class="min-w-0">
                           <p class="truncate text-sm text-foreground">
-                            {{
-                              policy.createdBy.displayName ||
-                              policy.createdBy.username
-                            }}
+                            {{ personLabel(policy.createdBy) }}
                           </p>
                           <p
                             v-if="policy.createdBy.displayName"
