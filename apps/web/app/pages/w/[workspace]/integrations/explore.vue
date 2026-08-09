@@ -23,9 +23,16 @@ import {
 import {
 	ProviderCard,
 	ConnectConnectionDialog,
+	ConnectLlmDialog,
 } from "#console/components/pages/connections";
-import type { StorageProvider } from "#console/utils/connectionProviders";
-import { storageProviderForCard } from "#console/utils/connectionProviders";
+import type {
+	StorageProvider,
+	LlmProvider,
+} from "#console/utils/connectionProviders";
+import {
+	storageProviderForCard,
+	llmProviderForCard,
+} from "#console/utils/connectionProviders";
 import type { CreateConnection } from "@nvisy/sdk/datatypes";
 import { toast } from "vue-sonner";
 
@@ -266,21 +273,34 @@ const providers = ref<Provider[]>([
 		id: "chatgpt",
 		nameKey: "connections.explore.items.chatgpt.name",
 		descriptionKey: "connections.explore.items.chatgpt.description",
+		shortDescriptionKey: "connections.explore.items.chatgpt.shortDescription",
 		icon: "/integration/openai.svg",
-		status: "unavailable",
+		status: "available",
 		category: "ai-enhancements",
 		tags: ["ai", "automation"],
-		popularity: 85,
+		popularity: 90,
 	},
 	{
 		id: "claude",
 		nameKey: "connections.explore.items.claude.name",
 		descriptionKey: "connections.explore.items.claude.description",
+		shortDescriptionKey: "connections.explore.items.claude.shortDescription",
 		icon: "/integration/anthropic.svg",
-		status: "unavailable",
+		status: "available",
 		category: "ai-enhancements",
 		tags: ["ai", "automation"],
-		popularity: 85,
+		popularity: 88,
+	},
+	{
+		id: "ollama",
+		nameKey: "connections.explore.items.ollama.name",
+		descriptionKey: "connections.explore.items.ollama.description",
+		shortDescriptionKey: "connections.explore.items.ollama.shortDescription",
+		icon: "/integration/ollama.svg",
+		status: "available",
+		category: "ai-enhancements",
+		tags: ["ai", "developer"],
+		popularity: 80,
 	},
 	// SDKs
 	{
@@ -472,14 +492,28 @@ function clearAllFilters() {
 	statusFilter.value = "all";
 }
 
-// Connect dialog state
+// Connect dialog state (storage)
 const connectDialogOpen = ref(false);
 const connectProviderTag = ref<StorageProvider | null>(null);
 const connectProviderName = ref("");
 const connectProviderIcon = ref("");
 
+// Connect dialog state (LLM)
+const llmDialogOpen = ref(false);
+const llmProviderTag = ref<LlmProvider | null>(null);
+
 function connectProvider(id: string | number) {
-	const provider = storageProviderForCard(String(id));
+	const cardId = String(id);
+
+	// LLM providers use their own dialog (different config shape).
+	const llm = llmProviderForCard(cardId);
+	if (llm) {
+		llmProviderTag.value = llm;
+		llmDialogOpen.value = true;
+		return;
+	}
+
+	const provider = storageProviderForCard(cardId);
 	if (!provider) return; // not a connectable provider
 
 	const card = providers.value.find((p) => p.id === id);
@@ -653,12 +687,20 @@ function notifyMe(_id: string | number) {
         />
       </div>
 
-      <!-- Connect dialog -->
+      <!-- Connect dialog (storage) -->
       <ConnectConnectionDialog
         v-model:open="connectDialogOpen"
         :provider="connectProviderTag"
         :provider-name="connectProviderName"
         :provider-icon="connectProviderIcon"
+        :is-loading="isCreating"
+        @connect="handleConnect"
+      />
+
+      <!-- Connect dialog (LLM) -->
+      <ConnectLlmDialog
+        v-model:open="llmDialogOpen"
+        :provider="llmProviderTag"
         :is-loading="isCreating"
         @connect="handleConnect"
       />

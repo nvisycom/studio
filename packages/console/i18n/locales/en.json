@@ -894,12 +894,14 @@
 					"description": "Create custom workflows with n8n's visual editor"
 				},
 				"chatgpt": {
-					"name": "OpenAI ChatGPT",
-					"description": "Enhance processing with OpenAI ChatGPT"
+					"name": "ChatGPT",
+					"description": "Connect OpenAI's ChatGPT models.",
+					"shortDescription": "OpenAI"
 				},
 				"claude": {
-					"name": "Anthropic Claude",
-					"description": "Leverage Anthropic Claude for intelligent analysis"
+					"name": "Claude",
+					"description": "Connect Anthropic's Claude models.",
+					"shortDescription": "Anthropic"
 				},
 				"javascriptSdk": {
 					"name": "JavaScript SDK",
@@ -915,6 +917,11 @@
 					"name": "Rust SDK",
 					"shortDescription": "nvisy-sdk",
 					"description": "Integrate Nvisy into your Rust applications"
+				},
+				"ollama": {
+					"name": "Ollama",
+					"description": "Connect a self-hosted Ollama server.",
+					"shortDescription": "Self-hosted"
 				}
 			},
 			"filters": {
@@ -1093,6 +1100,15 @@
 				"warningDescription": "Deleting this webhook will immediately stop all event deliveries to this endpoint.",
 				"confirm": "Delete Webhook",
 				"cancel": "Cancel"
+			},
+			"llm": {
+				"description": "Connect a language model provider.",
+				"apiKey": "API key",
+				"apiKeyPlaceholder": "sk-...",
+				"baseUrl": "Base URL",
+				"baseUrlPlaceholder": "https://api.example.com",
+				"defaultModel": "Default model",
+				"defaultModelPlaceholder": "e.g. gpt-4o, claude-3-5-sonnet, llama3"
 			}
 		},
 		"events": {

@@ -894,12 +894,14 @@
 					"description": "Benutzerdefinierte Workflows mit n8ns visuellem Editor erstellen"
 				},
 				"chatgpt": {
-					"name": "OpenAI ChatGPT",
-					"description": "Verarbeitung mit OpenAI ChatGPT verbessern"
+					"name": "ChatGPT",
+					"description": "OpenAIs ChatGPT-Modelle verbinden.",
+					"shortDescription": "OpenAI"
 				},
 				"claude": {
-					"name": "Anthropic Claude",
-					"description": "Anthropic Claude für intelligente Analyse nutzen"
+					"name": "Claude",
+					"description": "Anthropics Claude-Modelle verbinden.",
+					"shortDescription": "Anthropic"
 				},
 				"javascriptSdk": {
 					"name": "JavaScript SDK",
@@ -915,6 +917,11 @@
 					"name": "Rust SDK",
 					"shortDescription": "nvisy-sdk",
 					"description": "Nvisy in Ihre Rust-Anwendungen integrieren"
+				},
+				"ollama": {
+					"name": "Ollama",
+					"description": "Einen selbst gehosteten Ollama-Server verbinden.",
+					"shortDescription": "Selbst gehostet"
 				}
 			},
 			"filters": {
@@ -1093,6 +1100,15 @@
 				"warningDescription": "Das Löschen dieses Webhooks stoppt sofort alle Ereigniszustellungen an diesen Endpunkt.",
 				"confirm": "Webhook Löschen",
 				"cancel": "Abbrechen"
+			},
+			"llm": {
+				"description": "Einen Sprachmodell-Anbieter verbinden.",
+				"apiKey": "API-Schlüssel",
+				"apiKeyPlaceholder": "sk-...",
+				"baseUrl": "Basis-URL",
+				"baseUrlPlaceholder": "https://api.example.com",
+				"defaultModel": "Standardmodell",
+				"defaultModelPlaceholder": "z. B. gpt-4o, claude-3-5-sonnet, llama3"
 			}
 		},
 		"events": {
