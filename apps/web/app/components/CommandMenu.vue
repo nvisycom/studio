@@ -6,6 +6,8 @@ import {
 	Users,
 	Puzzle,
 	Compass,
+	ShieldCheck,
+	LayoutTemplate,
 	BarChart3,
 	FileSearch,
 	CreditCard,
@@ -111,6 +113,16 @@ const automationItems = computed(() => [
 		label: t("sidebar.explore"),
 		icon: Compass,
 		href: wLink("/integrations/explore"),
+	},
+	{
+		label: t("sidebar.policies"),
+		icon: ShieldCheck,
+		href: wLink("/policies"),
+	},
+	{
+		label: t("policies.templates.title"),
+		icon: LayoutTemplate,
+		href: wLink("/policies/templates"),
 	},
 ]);
 

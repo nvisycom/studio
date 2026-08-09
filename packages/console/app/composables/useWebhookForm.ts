@@ -11,8 +11,18 @@ export const WEBHOOK_EVENTS: WebhookEvent[] = [
 	"connection:created",
 	"connection:updated",
 	"connection:deleted",
-	"connection:synced",
-	"connection:desynced",
+	"connection:sync.started",
+	"connection:sync.completed",
+	"connection:sync.failed",
+	"pipeline:created",
+	"pipeline:updated",
+	"pipeline:deleted",
+	"pipeline:run.started",
+	"pipeline:run.completed",
+	"pipeline:run.failed",
+	"policy:created",
+	"policy:updated",
+	"policy:deleted",
 ];
 
 export interface WebhookHeader {

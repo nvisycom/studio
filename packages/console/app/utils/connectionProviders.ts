@@ -1,7 +1,14 @@
 import type { ConnectionConfig } from "@nvisy/sdk/datatypes";
 
-/** SDK connection provider tags that studio can create connections for. */
-export type StorageProvider = ConnectionConfig["provider"];
+/**
+ * Object-storage provider tags studio can create connections for. 0.15 adds AI
+ * providers (openai/ollama/anthropic) to `ConnectionConfig["provider"]`, but
+ * the explore/connect flow only handles the storage subset, so we narrow to it.
+ */
+export type StorageProvider = Extract<
+	ConnectionConfig["provider"],
+	"s3" | "azure" | "gcs"
+>;
 
 /** A credential field rendered in the connect dialog. */
 export interface CredentialField {

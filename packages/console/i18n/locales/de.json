@@ -26,6 +26,10 @@
 				"overview": "Übersicht",
 				"ai": "KI",
 				"logs": "Protokolle"
+			},
+			"policies": {
+				"index": "Richtlinien",
+				"templates": "Vorlagen"
 			}
 		}
 	},
@@ -1317,7 +1321,6 @@
 			"moveUp": "Regel nach oben",
 			"moveDown": "Regel nach unten",
 			"removeRule": "Regel entfernen",
-			"noRules": "Erste Regel hinzufügen",
 			"when": "Wenn",
 			"then": "Dann",
 			"conditions": "Bedingungen",
@@ -1382,7 +1385,9 @@
 				"tagsPlaceholder": "Tags, durch Komma getrennt"
 			},
 			"cancel": "Abbrechen",
-			"submit": "Richtlinie erstellen"
+			"submit": "Richtlinie erstellen",
+			"identityFooter": "Name, Slug und Beschreibung dieser Richtlinie.",
+			"definitionFooter": "Regeln, Labels und Fallback, die festlegen, wie diese Richtlinie schwärzt."
 		},
 		"delete": {
 			"title": "{name} löschen?",
@@ -1397,7 +1402,71 @@
 			"updateFailed": "Richtlinie konnte nicht aktualisiert werden",
 			"deleted": "Richtlinie gelöscht",
 			"deleteFailed": "Richtlinie konnte nicht gelöscht werden"
-		}
+		},
+		"templates": {
+			"title": "Richtlinienvorlagen",
+			"back": "Zurück zu den Richtlinien",
+			"dialogTitle": "Richtlinie benennen",
+			"nameLabel": "Name",
+			"namePlaceholder": "HIPAA Safe Harbor",
+			"slugLabel": "Slug",
+			"slugPlaceholder": "hipaa-safe-harbor",
+			"slugHint": "Kleinbuchstaben, Zahlen und einzelne Bindestriche. URL-sicherer Bezeichner.",
+			"cancel": "Abbrechen",
+			"create": "Richtlinie erstellen",
+			"scratchAction": "Neue benutzerdefinierte Richtlinie",
+			"scratch": {
+				"name": "Von Grund auf beginnen",
+				"description": "Erstellen Sie eine eigene Richtlinie mit eigenen Regeln und Aktionen."
+			},
+			"use": "Vorlage verwenden",
+			"custom": "Benutzerdefiniert",
+			"searchPlaceholder": "Vorlagen suchen...",
+			"noResults": "Keine Vorlagen entsprechen Ihrer Suche.",
+			"clearSearch": "Suche zurücksetzen",
+			"hipaa_deidentification": {
+				"name": "HIPAA-Anonymisierung",
+				"description": "Geschützte Gesundheitsdaten gemäß HIPAA §164.514 anonymisieren."
+			},
+			"gdpr_article9": {
+				"name": "DSGVO Artikel 9",
+				"description": "Besondere Kategorien personenbezogener Daten nach EU-DSGVO schwärzen."
+			},
+			"pci_dss": {
+				"name": "PCI DSS",
+				"description": "Gespeicherte Karteninhaberdaten gemäß PCI DSS §3 schützen."
+			},
+			"ccpa": {
+				"name": "CCPA",
+				"description": "Personenbezogene Daten gemäß CCPA schwärzen."
+			},
+			"settings": {
+				"hipaaMethod": "Anonymisierungsmethode",
+				"hipaaMethods": {
+					"safe_harbor": "Safe Harbor",
+					"limited_data_set": "Limited Data Set",
+					"expert_determination": "Expert Determination"
+				},
+				"gdprTreatment": "Behandlung",
+				"gdprTreatments": {
+					"erase": "Löschen",
+					"pseudonymize": "Pseudonymisieren"
+				},
+				"pciPart": "DSS-Abschnitt",
+				"pciParts": {
+					"pan_render": "Gespeicherte PAN darstellen (§3.5.1)",
+					"sav_erase": "Sensible Authentifizierungsdaten löschen (§3.4)"
+				},
+				"pciRender": "Darstellungsverfahren",
+				"pciRenders": {
+					"truncate": "Kürzen",
+					"truncate_last_four": "Auf letzte vier kürzen",
+					"hmac_sha256": "HMAC-SHA256",
+					"hmac_sha512": "HMAC-SHA512"
+				}
+			}
+		},
+		"browseTemplates": "Vorlagen durchsuchen"
 	},
 	"workflows": {
 		"title": "Pipelines",
@@ -1451,7 +1520,9 @@
 		},
 		"toast": {
 			"deleted": "Pipeline gelöscht",
-			"deleteFailed": "Pipeline konnte nicht gelöscht werden"
+			"deleteFailed": "Pipeline konnte nicht gelöscht werden",
+			"created": "Pipeline erstellt",
+			"createFailed": "Pipeline konnte nicht erstellt werden"
 		},
 		"create": {
 			"title": "Pipeline erstellen",
@@ -1479,7 +1550,15 @@
 				}
 			},
 			"cancel": "Abbrechen",
-			"submit": "Erstellen"
+			"submit": "Erstellen",
+			"policiesLabel": "Richtlinien",
+			"policiesHint": "Arbeitsbereichs-Richtlinien, die bei der Redaktion angewendet werden.",
+			"policiesSelect": "Richtlinien verknüpfen",
+			"policiesEmpty": "Keine Richtlinien in diesem Arbeitsbereich",
+			"advanced": "Geltungsbereich",
+			"countriesLabel": "Rechtsräume",
+			"countriesPlaceholder": "Ländercode hinzufügen (z. B. US) und Enter drücken",
+			"scopeHint": "Beschränkt rechtsraumspezifische Erkennungsregeln auf diese Länder."
 		}
 	}
 }

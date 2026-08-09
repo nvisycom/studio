@@ -1,9 +1,15 @@
 import type {
 	CreatePolicy,
+	Label,
+	Labels,
 	PolicyDefinition,
 	PolicyRule,
-	UpdatePolicy,
+	PredicatedRule,
 } from "@nvisy/sdk/datatypes";
+
+// The editor only handles predicated (entity-level) rules; table rules are a
+// separate 0.14 rule variant we don't yet expose. `PolicyRule` is the union of
+// both, so we build/read against `PredicatedRule` and skip table rules.
 
 // --- Editor model -----------------------------------------------------------
 // A flattened representation of the policy schema the editor supports:
@@ -89,7 +95,7 @@ function splitValues(raw?: string): string[] {
 /** Build the SDK `Predicate` for a rule from its editable conditions. */
 function buildPredicate(
 	predicates: EditablePredicate[],
-): PolicyRule["predicate"] {
+): PredicatedRule["predicate"] {
 	const parts = predicates.map((p) => {
 		if (p.kind === "confidence") {
 			return { kind: "confidence" as const, min: p.min ?? 0 };
@@ -100,8 +106,8 @@ function buildPredicate(
 		return { kind: "tagOneOf" as const, tags: splitValues(p.values) };
 	});
 	// A single predicate stands alone; multiple are AND-ed via `all`.
-	if (parts.length === 1) return parts[0] as PolicyRule["predicate"];
-	return { kind: "all", all: parts } as PolicyRule["predicate"];
+	if (parts.length === 1) return parts[0] as PredicatedRule["predicate"];
+	return { kind: "all", all: parts } as PredicatedRule["predicate"];
 }
 
 /** Build a text-vocabulary operator (shared by text and tabular `cell`). */
@@ -152,16 +158,16 @@ function buildModalities(mods: EditableAction["modalities"]) {
  * editable action. Defaults to a text replace when nothing is configured so
  * the action is never empty.
  */
-function buildAction(action: EditableAction): PolicyRule["action"] {
+function buildAction(action: EditableAction): PredicatedRule["action"] {
 	const mods = action.modalities;
 	const built =
 		mods && Object.keys(mods).length > 0
 			? buildModalities(mods)
 			: { text: { kind: "replace", template: "[{label}]" } };
-	return built as PolicyRule["action"];
+	return built as PredicatedRule["action"];
 }
 
-interface PolicyInput {
+export interface PolicyInput {
 	id: string;
 	displayName: string;
 	slug: string;
@@ -174,7 +180,7 @@ interface PolicyInput {
 }
 
 /** Build the SDK policy definition body shared by create and update. */
-function buildDefinition(input: PolicyInput): PolicyDefinition {
+export function buildDefinition(input: PolicyInput): PolicyDefinition {
 	const rules: PolicyRule[] = input.rules.map((r) => ({
 		id: crypto.randomUUID(),
 		name: r.name.trim(),
@@ -183,11 +189,20 @@ function buildDefinition(input: PolicyInput): PolicyDefinition {
 		action: buildAction(r.action),
 	}));
 
-	const labels = (input.labels ?? [])
+	// The editor's simple name/description/tags map to a single default-locale
+	// custom label. `Labels` is an object ({ builtins?, custom? }), not an array.
+	const customLabels: Label[] = (input.labels ?? [])
 		.filter((l) => l.name.trim())
 		.map((l) => ({
-			name: l.name.trim(),
-			description: l.description?.trim() || undefined,
+			id: crypto.randomUUID(),
+			localizations: {
+				en: {
+					name: l.name.trim(),
+					...(l.description?.trim()
+						? { description: l.description.trim() }
+						: {}),
+				},
+			},
 			tags: splitValues(l.tags),
 		}));
 
@@ -195,27 +210,24 @@ function buildDefinition(input: PolicyInput): PolicyDefinition {
 		id: input.id,
 		name: input.displayName.trim(),
 		description: input.description?.trim() || undefined,
-		rules,
+		// `rules` is optional; omit it entirely for a fallback-only policy.
+		...(rules.length > 0 ? { rules } : {}),
 		...(input.fallback ? { fallback: buildAction(input.fallback) } : {}),
-		...(labels.length > 0 ? { labels } : {}),
+		...(customLabels.length > 0 ? { labels: { custom: customLabels } } : {}),
 	} as PolicyDefinition;
 }
 
-/** Assemble a `CreatePolicy` payload from the editor's field values. */
+/**
+ * Assemble a `CreatePolicy` payload from the editor's field values. 0.14 makes
+ * CreatePolicy a discriminated union (`source: "template" | "inline"`); the
+ * editor always builds an inline definition.
+ */
 export function buildCreatePolicy(input: PolicyInput): CreatePolicy {
 	return {
 		slug: input.slug,
 		displayName: input.displayName.trim(),
 		description: input.description?.trim() || undefined,
-		definition: buildDefinition(input),
-	};
-}
-
-/** Assemble an `UpdatePolicy` payload (slug is immutable, so it is omitted). */
-export function buildUpdatePolicy(input: PolicyInput): UpdatePolicy {
-	return {
-		displayName: input.displayName.trim(),
-		description: input.description?.trim() || undefined,
+		source: "inline",
 		definition: buildDefinition(input),
 	};
 }
@@ -225,34 +237,44 @@ export function buildUpdatePolicy(input: PolicyInput): UpdatePolicy {
 // the phase-1 editor can't represent (any/not/coRef, non-text redactions)
 // degrade to their closest editable form.
 
-type SdkPredicate = PolicyRule["predicate"];
-type SdkAction = PolicyRule["action"];
+type SdkPredicate = PredicatedRule["predicate"];
+type SdkAction = PredicatedRule["action"];
+
+/**
+ * A structural view of `ModalityRedactions` exposing just the common fields the
+ * editor reads. The real operators are per-kind discriminated unions; this view
+ * is the one deliberate widening we do when reversing them into the flat model.
+ */
+type ModalityRedactionsView = {
+	text?: { kind?: string; mask_char?: string; template?: string };
+	image?: { kind?: string; sigma?: number; block_size?: number };
+	audio?: { kind?: string; hz?: number };
+	tabular?: {
+		spec?: { kind?: string; mask_char?: string; template?: string };
+	};
+};
 
 function predicateToEditable(pred: SdkPredicate): EditablePredicate[] {
 	// Flatten a top-level `all` into individual conditions; anything else is a
-	// single condition.
-	const parts: SdkPredicate[] =
-		pred && "kind" in pred && pred.kind === "all"
-			? ((pred as { all: SdkPredicate[] }).all ?? [])
-			: [pred];
+	// single condition. The discriminated `kind` narrows each arm — no casts.
+	const parts: SdkPredicate[] = pred.kind === "all" ? pred.all : [pred];
 
 	const editable: EditablePredicate[] = [];
 	for (const p of parts) {
-		if (!p || !("kind" in p)) continue;
 		if (p.kind === "confidence") {
-			editable.push({ kind: "confidence", min: (p as { min: number }).min });
+			editable.push({ kind: "confidence", min: p.min });
 		} else if (p.kind === "labelOneOf") {
 			editable.push({
 				kind: "labelOneOf",
-				values: ((p as { labels: string[] }).labels ?? []).join(", "),
+				values: p.labels.join(", "),
 			});
 		} else if (p.kind === "tagOneOf") {
 			editable.push({
 				kind: "tagOneOf",
-				values: ((p as { tags: string[] }).tags ?? []).join(", "),
+				values: p.tags.join(", "),
 			});
 		}
-		// any/not/coRef are not representable in the phase-1 editor; skip them.
+		// labelInGroup/coRef/any/not aren't representable in the editor; skip them.
 	}
 	// Always keep at least one condition so the rule stays editable.
 	return editable.length > 0 ? editable : [{ kind: "confidence", min: 0.5 }];
@@ -276,16 +298,10 @@ function actionToEditable(action: SdkAction): EditableAction {
 			modalities: { text: { textKind: "replace", template: "[{label}]" } },
 		};
 	}
-	// A rule action / fallback is `ModalityRedactions`: read whichever modality
-	// operators are present.
-	const a = action as {
-		text?: { kind?: string; mask_char?: string; template?: string };
-		image?: { kind?: string; sigma?: number; block_size?: number };
-		audio?: { kind?: string; hz?: number };
-		tabular?: {
-			spec?: { kind?: string; mask_char?: string; template?: string };
-		};
-	};
+	// Each modality operator is a discriminated union whose fields vary by kind.
+	// The editor reads a common subset (kind + a couple of params), so we take a
+	// single structural view of the whole map rather than narrowing every arm.
+	const a = action as ModalityRedactionsView;
 	const modalities: EditableAction["modalities"] = {};
 	if (a.text) modalities.text = textOpToEditable(a.text);
 	if (a.image) {
@@ -320,32 +336,45 @@ function actionToEditable(action: SdkAction): EditableAction {
 export function fallbackFromDefinition(
 	definition: PolicyDefinition,
 ): EditableAction | null {
-	const fb = (definition as { fallback?: SdkAction }).fallback;
+	const fb = definition.fallback;
 	return fb ? actionToEditable(fb) : null;
 }
 
-/** Reconstruct the editable label catalog from a stored definition. */
+/**
+ * Reconstruct the editable label catalog from a stored definition. `labels` is
+ * an object with an optional `custom` array; each custom label carries
+ * localized names, so we read the first available locale into the editor's
+ * flat name/description.
+ */
 export function labelsFromDefinition(
 	definition: PolicyDefinition,
 ): EditableLabel[] {
-	const labels = (
-		definition as {
-			labels?: Array<{ name: string; description?: string; tags?: string[] }>;
-		}
-	).labels;
-	return (labels ?? []).map((l) => ({
-		key: crypto.randomUUID(),
-		name: l.name,
-		description: l.description,
-		tags: (l.tags ?? []).join(", "),
-	}));
+	const labels: Labels | undefined = definition.labels;
+	return (labels?.custom ?? []).map((l) => {
+		const locale = Object.values(l.localizations)[0];
+		return {
+			key: crypto.randomUUID(),
+			name: locale?.name ?? "",
+			description: locale?.description,
+			tags: l.tags.join(", "),
+		};
+	});
 }
 
-/** Reconstruct the editable rule list from a stored policy definition. */
+/** Narrow a `PolicyRule` to a predicated rule (the editor's only supported kind). */
+function isPredicatedRule(rule: PolicyRule): rule is PredicatedRule {
+	return "predicate" in rule && "action" in rule;
+}
+
+/**
+ * Reconstruct the editable rule list from a stored policy definition. Table
+ * rules (the other 0.14 `PolicyRule` variant) aren't editable here and are
+ * skipped.
+ */
 export function rulesFromDefinition(
 	definition: PolicyDefinition,
 ): EditableRule[] {
-	return (definition.rules ?? []).map((r) => ({
+	return (definition.rules ?? []).filter(isPredicatedRule).map((r) => ({
 		key: crypto.randomUUID(),
 		name: r.name,
 		description: r.description,

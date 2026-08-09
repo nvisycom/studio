@@ -26,6 +26,10 @@
 				"overview": "Overview",
 				"ai": "AI",
 				"logs": "Logs"
+			},
+			"policies": {
+				"index": "Policies",
+				"templates": "Templates"
 			}
 		}
 	},
@@ -1317,7 +1321,6 @@
 			"moveUp": "Move rule up",
 			"moveDown": "Move rule down",
 			"removeRule": "Remove rule",
-			"noRules": "Add your first rule",
 			"when": "When",
 			"then": "Then",
 			"conditions": "Conditions",
@@ -1382,7 +1385,9 @@
 				"tagsPlaceholder": "tags, comma separated"
 			},
 			"cancel": "Cancel",
-			"submit": "Create policy"
+			"submit": "Create policy",
+			"identityFooter": "Name, slug, and description for this policy.",
+			"definitionFooter": "Rules, labels, and fallback that define how this policy redacts."
 		},
 		"delete": {
 			"title": "Delete {name}?",
@@ -1397,7 +1402,71 @@
 			"updateFailed": "Failed to update policy",
 			"deleted": "Policy deleted",
 			"deleteFailed": "Failed to delete policy"
-		}
+		},
+		"templates": {
+			"title": "Policy templates",
+			"back": "Back to policies",
+			"dialogTitle": "Name your policy",
+			"nameLabel": "Name",
+			"namePlaceholder": "HIPAA Safe Harbor",
+			"slugLabel": "Slug",
+			"slugPlaceholder": "hipaa-safe-harbor",
+			"slugHint": "Lowercase letters, numbers, and single dashes. URL-safe identifier.",
+			"cancel": "Cancel",
+			"create": "Create policy",
+			"scratchAction": "New custom policy",
+			"scratch": {
+				"name": "Start from scratch",
+				"description": "Build a custom policy with your own rules and actions."
+			},
+			"use": "Use template",
+			"custom": "Custom",
+			"searchPlaceholder": "Search templates...",
+			"noResults": "No templates match your search.",
+			"clearSearch": "Clear search",
+			"hipaa_deidentification": {
+				"name": "HIPAA De-identification",
+				"description": "De-identify protected health information per HIPAA §164.514."
+			},
+			"gdpr_article9": {
+				"name": "GDPR Article 9",
+				"description": "Redact special-category personal data under EU GDPR."
+			},
+			"pci_dss": {
+				"name": "PCI DSS",
+				"description": "Protect stored cardholder data per PCI DSS §3."
+			},
+			"ccpa": {
+				"name": "CCPA",
+				"description": "Redact personal information covered by the CCPA."
+			},
+			"settings": {
+				"hipaaMethod": "De-identification method",
+				"hipaaMethods": {
+					"safe_harbor": "Safe Harbor",
+					"limited_data_set": "Limited Data Set",
+					"expert_determination": "Expert Determination"
+				},
+				"gdprTreatment": "Treatment",
+				"gdprTreatments": {
+					"erase": "Erase",
+					"pseudonymize": "Pseudonymize"
+				},
+				"pciPart": "DSS subsection",
+				"pciParts": {
+					"pan_render": "Render stored PAN (§3.5.1)",
+					"sav_erase": "Erase sensitive auth data (§3.4)"
+				},
+				"pciRender": "Render approach",
+				"pciRenders": {
+					"truncate": "Truncate",
+					"truncate_last_four": "Truncate to last four",
+					"hmac_sha256": "HMAC-SHA256",
+					"hmac_sha512": "HMAC-SHA512"
+				}
+			}
+		},
+		"browseTemplates": "Browse templates"
 	},
 	"workflows": {
 		"title": "Pipelines",
@@ -1451,7 +1520,9 @@
 		},
 		"toast": {
 			"deleted": "Pipeline deleted",
-			"deleteFailed": "Failed to delete pipeline"
+			"deleteFailed": "Failed to delete pipeline",
+			"created": "Pipeline created",
+			"createFailed": "Failed to create pipeline"
 		},
 		"create": {
 			"title": "Create Pipeline",
@@ -1479,7 +1550,15 @@
 				}
 			},
 			"cancel": "Cancel",
-			"submit": "Create"
+			"submit": "Create",
+			"policiesLabel": "Policies",
+			"policiesHint": "Workspace policies applied when this pipeline redacts.",
+			"policiesSelect": "Link policies",
+			"policiesEmpty": "No policies in this workspace",
+			"advanced": "Scope",
+			"countriesLabel": "Jurisdictions",
+			"countriesPlaceholder": "Add a country code (e.g. US) and press Enter",
+			"scopeHint": "Restrict jurisdiction-scoped detection rules to these countries."
 		}
 	}
 }

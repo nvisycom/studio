@@ -116,7 +116,11 @@ const emit = defineEmits<{
             <TableCell>
               <span class="text-sm text-muted-foreground">
                 {{
-                  t(`connections.dialogs.connect.syncModes.${connection.syncMode}`)
+                  connection.sync
+                    ? t(
+                        `connections.dialogs.connect.syncModes.${connection.sync.syncMode}`,
+                      )
+                    : "—"
                 }}
               </span>
             </TableCell>
@@ -125,7 +129,7 @@ const emit = defineEmits<{
             <TableCell>
               <span class="text-sm text-muted-foreground">
                 {{
-                  connection.scheduleCron
+                  connection.sync?.scheduleCron
                     ? t("connections.table.schedule.scheduled")
                     : t("connections.table.schedule.manual")
                 }}
@@ -136,8 +140,8 @@ const emit = defineEmits<{
             <TableCell>
               <span class="text-sm text-muted-foreground">
                 {{
-                  connection.lastSynced
-                    ? formatRelativeTime(connection.lastSynced, t)
+                  connection.sync?.lastSynced
+                    ? formatRelativeTime(connection.sync.lastSynced, t)
                     : t("common.time.never")
                 }}
               </span>

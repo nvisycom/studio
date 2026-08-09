@@ -15,6 +15,8 @@ import {
 	History,
 	FolderOpen,
 	Workflow,
+	ShieldCheck,
+	LayoutTemplate,
 } from "@lucide/vue";
 
 const route = useRoute();
@@ -48,6 +50,13 @@ const showAccountTabs = computed(() => route.path.startsWith("/account"));
 const showAnalyticsTabs = computed(() =>
 	subPath.value.startsWith("/analytics"),
 );
+
+const showPoliciesTabs = computed(() => subPath.value.startsWith("/policies"));
+
+const currentPoliciesTab = computed(() => {
+	if (subPath.value.startsWith("/policies/templates")) return "templates";
+	return "policies";
+});
 
 const currentSettingsTab = computed(() => {
 	if (subPath.value === "/settings/notifications") return "notifications";
@@ -93,7 +102,8 @@ const hasVisibleTabs = computed(() => {
 		showStudioTabs.value ||
 		showSettingsTabs.value ||
 		showAccountTabs.value ||
-		showAnalyticsTabs.value
+		showAnalyticsTabs.value ||
+		showPoliciesTabs.value
 	);
 });
 
@@ -159,6 +169,27 @@ defineExpose({
         <NuxtLink :to="wLink('/workflows/runs')" class="flex items-center gap-2">
           <History :size="16" />
           {{ t("header.tabs.workflows.runs") }}
+        </NuxtLink>
+      </TabsTrigger>
+    </TabsList>
+  </Tabs>
+
+  <!-- Policies Tabs -->
+  <Tabs v-else-if="showPoliciesTabs" :model-value="currentPoliciesTab">
+    <TabsList>
+      <TabsTrigger value="policies" as-child>
+        <NuxtLink :to="wLink('/policies')" class="flex items-center gap-2">
+          <ShieldCheck :size="16" />
+          {{ t("header.tabs.policies.index") }}
+        </NuxtLink>
+      </TabsTrigger>
+      <TabsTrigger value="templates" as-child>
+        <NuxtLink
+          :to="wLink('/policies/templates')"
+          class="flex items-center gap-2"
+        >
+          <LayoutTemplate :size="16" />
+          {{ t("header.tabs.policies.templates") }}
         </NuxtLink>
       </TabsTrigger>
     </TabsList>

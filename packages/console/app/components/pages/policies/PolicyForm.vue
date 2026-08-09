@@ -14,7 +14,7 @@ import type {
 } from "#console/utils/policies";
 import {
 	buildCreatePolicy,
-	buildUpdatePolicy,
+	buildDefinition,
 	rulesFromDefinition,
 	fallbackFromDefinition,
 	labelsFromDefinition,
@@ -46,6 +46,12 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "#console/components/ui/dropdown-menu";
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "#console/components/ui/collapsible";
+import { Card, CardContent, CardFooter } from "#console/components/ui/card";
 
 const { t } = useI18n();
 
@@ -122,6 +128,10 @@ const fallback = ref<EditableAction | null>(null);
 const labels = ref<EditableLabel[]>([]);
 const policyId = ref("");
 
+// Collapsible sections start collapsed; adding an item auto-expands them.
+const rulesOpen = ref(false);
+const labelsOpen = ref(false);
+
 // --- Fallback (a ModalityRedactions, like a rule action) ---
 function toggleFallback(enabled: boolean) {
 	fallback.value = enabled
@@ -131,6 +141,7 @@ function toggleFallback(enabled: boolean) {
 
 // --- Labels catalog ---
 function addLabel() {
+	labelsOpen.value = true; // reveal the section so the new row is visible
 	labels.value = [
 		...labels.value,
 		{ key: crypto.randomUUID(), name: "", tags: "" },
@@ -168,6 +179,7 @@ function newRule(): EditableRule {
 }
 
 function addRule() {
+	rulesOpen.value = true; // reveal the section so the new rule is visible
 	rules.value = [...rules.value, newRule()];
 }
 function removeRule(key: string) {
@@ -191,12 +203,63 @@ function removePredicate(rule: EditableRule, index: number) {
 	rule.predicates.splice(index, 1);
 }
 
-const isValid = computed(
-	() =>
-		displayName.value.trim().length >= 3 &&
-		slug.value.length > 0 &&
-		rules.value.length > 0 &&
-		rules.value.every((r) => r.name.trim().length > 0),
+// --- Validation, split per card -------------------------------------------
+const metaValid = computed(
+	() => displayName.value.trim().length >= 3 && slug.value.length > 0,
+);
+const definitionValid = computed(() => {
+	// Rules are optional (a policy may be labels + fallback only), but each rule
+	// that exists must be named, and the policy has to do *something* — at least
+	// one rule or a fallback.
+	const rulesNamed = rules.value.every((r) => r.name.trim().length > 0);
+	const doesSomething = rules.value.length > 0 || !!fallback.value;
+	return rulesNamed && doesSomething;
+});
+const isValid = computed(() => metaValid.value && definitionValid.value);
+
+// Snapshots of the loaded policy, used to detect per-card changes (edit mode).
+const metaBaseline = ref("");
+const definitionBaseline = ref("");
+
+function currentInput() {
+	return {
+		id: policyId.value,
+		displayName: displayName.value,
+		slug: slug.value,
+		description: description.value,
+		rules: rules.value,
+		fallback: fallback.value,
+		labels: labels.value,
+	};
+}
+function metaSnapshot(): string {
+	return JSON.stringify({
+		displayName: displayName.value.trim(),
+		description: description.value.trim(),
+	});
+}
+function definitionSnapshot(): string {
+	// Compare the editor state (not the built definition — that mints fresh
+	// UUIDs each call, which would always look changed). Strip local-only keys.
+	return JSON.stringify({
+		rules: rules.value.map((r) => ({
+			name: r.name.trim(),
+			description: r.description?.trim() ?? "",
+			predicates: r.predicates,
+			action: r.action,
+		})),
+		fallback: fallback.value,
+		labels: labels.value.map((l) => ({
+			name: l.name.trim(),
+			description: l.description?.trim() ?? "",
+			tags: l.tags ?? "",
+		})),
+	});
+}
+
+const hasMetaChanges = computed(() => metaSnapshot() !== metaBaseline.value);
+const hasDefinitionChanges = computed(
+	() => definitionSnapshot() !== definitionBaseline.value,
 );
 
 // Populate from the policy prop (edit) or start fresh (create).
@@ -209,40 +272,66 @@ watch(
 			slug.value = policy.slug;
 			slugEdited.value = true;
 			description.value = policy.description ?? "";
-			const editable = rulesFromDefinition(policy.definition);
-			rules.value = editable.length > 0 ? editable : [newRule()];
-			fallback.value = fallbackFromDefinition(policy.definition);
-			labels.value = labelsFromDefinition(policy.definition);
+			// Reverse-map the stored definition into the editor model. Guard each
+			// mapper so one unexpected shape can't blank the whole form.
+			try {
+				const editable = rulesFromDefinition(policy.definition);
+				rules.value = editable.length > 0 ? editable : [];
+			} catch {
+				rules.value = [];
+			}
+			try {
+				fallback.value = fallbackFromDefinition(policy.definition);
+			} catch {
+				fallback.value = null;
+			}
+			try {
+				labels.value = labelsFromDefinition(policy.definition);
+			} catch {
+				labels.value = [];
+			}
 		} else {
 			policyId.value = crypto.randomUUID();
 			displayName.value = "";
 			slug.value = "";
 			slugEdited.value = false;
 			description.value = "";
-			rules.value = [newRule()];
+			// Start with no rules — the user adds them explicitly (a policy may
+			// also be labels + fallback only).
+			rules.value = [];
 			fallback.value = null;
 			labels.value = [];
 		}
+		// Capture baselines after populating, so change tracking starts clean.
+		nextTick(() => {
+			metaBaseline.value = metaSnapshot();
+			definitionBaseline.value = definitionSnapshot();
+		});
 	},
 	{ immediate: true },
 );
 
-function submit() {
+// Create: one submit sends the whole policy.
+function submitCreate() {
 	if (!isValid.value) return;
-	const input = {
-		id: policyId.value,
-		displayName: displayName.value,
-		slug: slug.value,
-		description: description.value,
-		rules: rules.value,
-		fallback: fallback.value,
-		labels: labels.value,
-	};
-	if (props.policy) {
-		emit("update", props.policy.slug, buildUpdatePolicy(input));
-	} else {
-		emit("create", buildCreatePolicy(input));
-	}
+	emit("create", buildCreatePolicy(currentInput()));
+}
+
+// Edit: each card saves independently via a partial UpdatePolicy.
+function saveMeta() {
+	if (!props.policy || !metaValid.value) return;
+	emit("update", props.policy.slug, {
+		displayName: displayName.value.trim(),
+		description: description.value.trim() || undefined,
+	});
+	metaBaseline.value = metaSnapshot();
+}
+function saveDefinition() {
+	if (!props.policy || !definitionValid.value) return;
+	emit("update", props.policy.slug, {
+		definition: buildDefinition(currentInput()),
+	});
+	definitionBaseline.value = definitionSnapshot();
 }
 
 // Plain-English summary of a rule, shown under each card for legibility.
@@ -275,55 +364,157 @@ function ruleSummary(rule: EditableRule): string {
 </script>
 
 <template>
-  <div class="space-y-8">
-    <!-- Metadata -->
-    <section class="space-y-4">
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div class="space-y-2">
-          <Label>{{ t("policies.editor.nameLabel") }}</Label>
-          <Input
-            v-model="displayName"
-            :placeholder="t('policies.editor.namePlaceholder')"
-          />
+  <div class="space-y-4">
+    <!-- Card 1: identity (name / slug / description) -->
+    <Card class="rounded-xl border-border/50 py-0 pt-6">
+      <CardContent class="space-y-4">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="space-y-2">
+            <Label>{{ t("policies.editor.nameLabel") }}</Label>
+            <Input
+              v-model="displayName"
+              :placeholder="t('policies.editor.namePlaceholder')"
+            />
+          </div>
+          <div class="space-y-2">
+            <Label>{{ t("policies.editor.slugLabel") }}</Label>
+            <Input
+              v-model="slug"
+              autocapitalize="none"
+              class="font-mono text-sm"
+              :disabled="isEdit"
+              @input="onSlugInput"
+            />
+          </div>
         </div>
         <div class="space-y-2">
-          <Label>{{ t("policies.editor.slugLabel") }}</Label>
-          <Input
-            v-model="slug"
-            autocapitalize="none"
-            class="font-mono text-sm"
-            :disabled="isEdit"
-            @input="onSlugInput"
+          <Label>{{ t("policies.editor.descriptionLabel") }}</Label>
+          <Textarea
+            v-model="description"
+            :placeholder="t('policies.editor.descriptionPlaceholder')"
+            class="min-h-[60px]"
           />
         </div>
+      </CardContent>
+      <CardFooter
+        class="flex items-center justify-between rounded-b-xl border-t border-border/50 bg-muted/30 pb-6"
+      >
+        <p class="text-xs text-muted-foreground">
+          {{ t("policies.editor.identityFooter") }}
+        </p>
+        <!-- Edit: save this card independently. Create submits once, below. -->
+        <Button
+          v-if="isEdit"
+          size="sm"
+          :disabled="!metaValid || !hasMetaChanges || isLoading"
+          @click="saveMeta"
+        >
+          <Loader2 v-if="isLoading" :size="16" class="mr-2 animate-spin" />
+          {{ t("policies.editor.save") }}
+        </Button>
+      </CardFooter>
+    </Card>
+
+    <!-- Card 2: definition (labels / rules / fallback) -->
+    <Card class="rounded-xl border-border/50 py-0 pt-6">
+      <CardContent class="space-y-8">
+    <!-- Labels catalog -->
+    <Collapsible v-model:open="labelsOpen" as="section" class="space-y-3">
+      <div class="flex items-center justify-between gap-2">
+        <CollapsibleTrigger as-child>
+          <button
+            type="button"
+            class="flex flex-1 items-center gap-2 text-left"
+          >
+            <ChevronDown
+              :size="16"
+              class="shrink-0 text-muted-foreground transition-transform"
+              :class="labelsOpen ? '' : '-rotate-90'"
+            />
+            <div>
+              <h2 class="text-sm font-medium">
+                {{ t("policies.editor.labels.label") }}
+                <span class="text-muted-foreground">({{ labels.length }})</span>
+              </h2>
+              <p class="text-xs text-muted-foreground">
+                {{ t("policies.editor.labels.hint") }}
+              </p>
+            </div>
+          </button>
+        </CollapsibleTrigger>
+        <Button variant="outline" size="sm" @click="addLabel">
+          <Plus :size="14" class="mr-1.5" />
+          {{ t("policies.editor.labels.add") }}
+        </Button>
       </div>
-      <div class="space-y-2">
-        <Label>{{ t("policies.editor.descriptionLabel") }}</Label>
-        <Textarea
-          v-model="description"
-          :placeholder="t('policies.editor.descriptionPlaceholder')"
-          class="min-h-[60px]"
-        />
+      <CollapsibleContent class="space-y-3">
+      <div
+        v-for="label in labels"
+        :key="label.key"
+        class="flex items-start gap-2 rounded-lg border border-border/60 p-3"
+      >
+        <div class="flex flex-1 flex-col gap-2">
+          <div class="flex items-center gap-2">
+            <Input
+              v-model="label.name"
+              :placeholder="t('policies.editor.labels.namePlaceholder')"
+              class="h-9 w-[200px] shrink-0 font-mono text-sm"
+            />
+            <Input
+              v-model="label.description"
+              :placeholder="t('policies.editor.labels.descriptionPlaceholder')"
+              class="h-9 flex-1"
+            />
+          </div>
+          <Input
+            v-model="label.tags"
+            :placeholder="t('policies.editor.labels.tagsPlaceholder')"
+            class="h-9"
+          />
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          class="size-9 shrink-0 text-muted-foreground hover:text-destructive"
+          @click="removeLabel(label.key)"
+        >
+          <Trash2 :size="15" />
+        </Button>
       </div>
-    </section>
+      </CollapsibleContent>
+    </Collapsible>
 
     <!-- Rules -->
-    <section class="space-y-3">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-sm font-medium">
-            {{ t("policies.editor.rulesLabel") }}
-          </h2>
-          <p class="text-xs text-muted-foreground">
-            {{ t("policies.editor.rulesHint") }}
-          </p>
-        </div>
+    <Collapsible v-model:open="rulesOpen" as="section" class="space-y-3">
+      <div class="flex items-center justify-between gap-2">
+        <CollapsibleTrigger as-child>
+          <button
+            type="button"
+            class="flex flex-1 items-center gap-2 text-left"
+          >
+            <ChevronDown
+              :size="16"
+              class="shrink-0 text-muted-foreground transition-transform"
+              :class="rulesOpen ? '' : '-rotate-90'"
+            />
+            <div>
+              <h2 class="text-sm font-medium">
+                {{ t("policies.editor.rulesLabel") }}
+                <span class="text-muted-foreground">({{ rules.length }})</span>
+              </h2>
+              <p class="text-xs text-muted-foreground">
+                {{ t("policies.editor.rulesHint") }}
+              </p>
+            </div>
+          </button>
+        </CollapsibleTrigger>
         <Button variant="outline" size="sm" @click="addRule">
           <Plus :size="14" class="mr-1.5" />
           {{ t("policies.editor.addRule") }}
         </Button>
       </div>
 
+      <CollapsibleContent class="space-y-3">
       <div
         v-for="(rule, ruleIndex) in rules"
         :key="rule.key"
@@ -615,16 +806,8 @@ function ruleSummary(rule: EditableRule): string {
         </div>
       </div>
 
-      <button
-        v-if="rules.length === 0"
-        type="button"
-        class="flex w-full flex-col items-center gap-1 rounded-xl border border-dashed border-border/70 py-8 text-center text-sm text-muted-foreground transition-colors hover:border-border hover:bg-muted/30"
-        @click="addRule"
-      >
-        <Plus :size="18" />
-        {{ t("policies.editor.noRules") }}
-      </button>
-    </section>
+      </CollapsibleContent>
+    </Collapsible>
 
     <!-- Fallback -->
     <section class="space-y-3">
@@ -677,67 +860,33 @@ function ruleSummary(rule: EditableRule): string {
         </p>
       </div>
     </section>
-
-    <!-- Labels catalog -->
-    <section class="space-y-3">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-sm font-medium">
-            {{ t("policies.editor.labels.label") }}
-          </h2>
-          <p class="text-xs text-muted-foreground">
-            {{ t("policies.editor.labels.hint") }}
-          </p>
-        </div>
-        <Button variant="outline" size="sm" @click="addLabel">
-          <Plus :size="14" class="mr-1.5" />
-          {{ t("policies.editor.labels.add") }}
-        </Button>
-      </div>
-      <div
-        v-for="label in labels"
-        :key="label.key"
-        class="flex items-start gap-2 rounded-lg border border-border/60 p-3"
+      </CardContent>
+      <CardFooter
+        class="flex items-center justify-between rounded-b-xl border-t border-border/50 bg-muted/30 pb-6"
       >
-        <div class="flex flex-1 flex-col gap-2">
-          <div class="flex items-center gap-2">
-            <Input
-              v-model="label.name"
-              :placeholder="t('policies.editor.labels.namePlaceholder')"
-              class="h-9 w-[200px] shrink-0 font-mono text-sm"
-            />
-            <Input
-              v-model="label.description"
-              :placeholder="t('policies.editor.labels.descriptionPlaceholder')"
-              class="h-9 flex-1"
-            />
-          </div>
-          <Input
-            v-model="label.tags"
-            :placeholder="t('policies.editor.labels.tagsPlaceholder')"
-            class="h-9"
-          />
-        </div>
+        <p class="text-xs text-muted-foreground">
+          {{ t("policies.editor.definitionFooter") }}
+        </p>
+        <!-- Edit: save the definition independently. Create: single submit. -->
         <Button
-          variant="ghost"
-          size="icon"
-          class="size-9 shrink-0 text-muted-foreground hover:text-destructive"
-          @click="removeLabel(label.key)"
+          v-if="isEdit"
+          size="sm"
+          :disabled="!definitionValid || !hasDefinitionChanges || isLoading"
+          @click="saveDefinition"
         >
-          <Trash2 :size="15" />
+          <Loader2 v-if="isLoading" :size="16" class="mr-2 animate-spin" />
+          {{ t("policies.editor.save") }}
         </Button>
-      </div>
-    </section>
-
-    <!-- Actions -->
-    <div class="flex items-center justify-end gap-2 border-t border-border/60 pt-6">
-      <Button variant="outline" @click="emit('cancel')">
-        {{ t("policies.editor.cancel") }}
-      </Button>
-      <Button :disabled="!isValid || isLoading" @click="submit">
-        <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-        {{ isEdit ? t("policies.editor.save") : t("policies.editor.submit") }}
-      </Button>
-    </div>
+        <Button
+          v-else
+          size="sm"
+          :disabled="!isValid || isLoading"
+          @click="submitCreate"
+        >
+          <Loader2 v-if="isLoading" :size="16" class="mr-2 animate-spin" />
+          {{ t("policies.editor.submit") }}
+        </Button>
+      </CardFooter>
+    </Card>
   </div>
 </template>

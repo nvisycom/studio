@@ -1,11 +1,18 @@
 <script setup lang="ts">
-import { Loader2 } from "@lucide/vue";
-import type { CreatePipeline } from "@nvisy/sdk/datatypes";
+import { Loader2, ChevronDown, X } from "@lucide/vue";
+import type { CreatePipeline, PolicySummary } from "@nvisy/sdk/datatypes";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
 import { Button } from "#console/components/ui/button";
 import { Switch } from "#console/components/ui/switch";
+import { Badge } from "#console/components/ui/badge";
 import { Textarea } from "#console/components/ui/textarea";
+import { MultiSelect } from "#console/components/ui/multi-select";
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "#console/components/ui/collapsible";
 import {
 	Dialog,
 	DialogContent,
@@ -19,8 +26,9 @@ const { t } = useI18n();
 
 const open = defineModel<boolean>("open", { default: false });
 
-defineProps<{
+const props = defineProps<{
 	isLoading?: boolean;
+	policies?: PolicySummary[];
 }>();
 
 const emit = defineEmits<{
@@ -43,6 +51,16 @@ const engines = [
 	{ key: "llm", model: useLlm },
 ];
 
+// Advanced: linked policies and scope (jurisdictions).
+const advancedOpen = ref(false);
+const selectedPolicies = ref<string[]>([]);
+const countries = ref<string[]>([]);
+const countryInput = ref("");
+
+const policyOptions = computed(() =>
+	(props.policies ?? []).map((p) => ({ value: p.slug, label: p.displayName })),
+);
+
 // Slugify: lowercase alphanumeric with single internal dashes.
 function slugify(value: string): string {
 	return value
@@ -61,6 +79,19 @@ function onSlugInput() {
 	slug.value = slugify(slug.value);
 }
 
+function addCountry() {
+	const value = countryInput.value.trim().toUpperCase();
+	if (value && !countries.value.includes(value)) countries.value.push(value);
+	countryInput.value = "";
+}
+
+function removePolicy(value: string) {
+	selectedPolicies.value = selectedPolicies.value.filter((v) => v !== value);
+}
+function removeCountry(value: string) {
+	countries.value = countries.value.filter((v) => v !== value);
+}
+
 const isFormValid = computed(
 	() => name.value.trim().length >= 3 && slug.value.length > 0,
 );
@@ -73,6 +104,10 @@ function reset() {
 	usePattern.value = true;
 	useNer.value = true;
 	useLlm.value = false;
+	advancedOpen.value = false;
+	selectedPolicies.value = [];
+	countries.value = [];
+	countryInput.value = "";
 }
 
 function handleOpenChange(value: boolean) {
@@ -97,12 +132,20 @@ function submit() {
 			},
 			// Required by the schema; engine defaults fill in the rest.
 			deduplication: {},
-			labelCatalog: {},
+			...(selectedPolicies.value.length && {
+				policySlugs: [...selectedPolicies.value],
+			}),
+			...(countries.value.length && {
+				// `languages` is required on ScopeParams; the pipeline asserts none
+				// and lets detection fill them in.
+				defaultScope: { languages: [], countries: [...countries.value] },
+			}),
 		},
 	};
 
+	// Parent closes the dialog on success (and keeps it open on error so the
+	// user can retry); don't close here.
 	emit("create", pipeline);
-	open.value = false;
 }
 
 function cancel() {
@@ -121,7 +164,7 @@ function cancel() {
         </DialogDescription>
       </DialogHeader>
 
-      <div class="space-y-5 py-4">
+      <div class="max-h-[70vh] space-y-5 overflow-y-auto py-4 pr-1">
         <!-- Name -->
         <div class="space-y-2">
           <Label for="pipeline-name">{{ t("workflows.create.nameLabel") }}</Label>
@@ -185,6 +228,91 @@ function cancel() {
             </div>
           </div>
         </div>
+
+        <!-- Policies -->
+        <div class="space-y-2">
+          <Label>{{ t("workflows.create.policiesLabel") }}</Label>
+          <MultiSelect
+            v-model="selectedPolicies"
+            :options="policyOptions"
+            :label="t('workflows.create.policiesSelect')"
+            :empty-text="t('workflows.create.policiesEmpty')"
+            searchable
+            content-class="w-64"
+          />
+          <div v-if="selectedPolicies.length" class="flex flex-wrap gap-1.5">
+            <Badge
+              v-for="value in selectedPolicies"
+              :key="value"
+              variant="secondary"
+              class="gap-1 font-normal"
+            >
+              {{ policyOptions.find((o) => o.value === value)?.label ?? value }}
+              <button
+                type="button"
+                class="text-muted-foreground hover:text-foreground"
+                @click="removePolicy(value)"
+              >
+                <X :size="12" />
+              </button>
+            </Badge>
+          </div>
+          <p class="text-xs text-muted-foreground">
+            {{ t("workflows.create.policiesHint") }}
+          </p>
+        </div>
+
+        <!-- Advanced: scope & entity types -->
+        <Collapsible v-model:open="advancedOpen" class="space-y-3">
+          <CollapsibleTrigger as-child>
+            <button
+              type="button"
+              class="flex w-full items-center justify-between text-sm font-medium text-muted-foreground hover:text-foreground"
+            >
+              {{ t("workflows.create.advanced") }}
+              <ChevronDown
+                :size="16"
+                class="transition-transform"
+                :class="advancedOpen ? 'rotate-180' : ''"
+              />
+            </button>
+          </CollapsibleTrigger>
+          <CollapsibleContent class="space-y-5">
+            <!-- Jurisdictions -->
+            <div class="space-y-2">
+              <Label for="pipeline-countries">{{
+                t("workflows.create.countriesLabel")
+              }}</Label>
+              <Input
+                id="pipeline-countries"
+                v-model="countryInput"
+                autocapitalize="characters"
+                :placeholder="t('workflows.create.countriesPlaceholder')"
+                @keydown.enter.prevent="addCountry"
+              />
+              <div v-if="countries.length" class="flex flex-wrap gap-1.5">
+                <Badge
+                  v-for="value in countries"
+                  :key="value"
+                  variant="secondary"
+                  class="gap-1 font-normal"
+                >
+                  {{ value }}
+                  <button
+                    type="button"
+                    class="text-muted-foreground hover:text-foreground"
+                    @click="removeCountry(value)"
+                  >
+                    <X :size="12" />
+                  </button>
+                </Badge>
+              </div>
+              <p class="text-xs text-muted-foreground">
+                {{ t("workflows.create.scopeHint") }}
+              </p>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       </div>
 
       <DialogFooter>

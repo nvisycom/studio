@@ -8,6 +8,7 @@ import {
 	Trash2,
 	MoreHorizontal,
 	ExternalLink,
+	LayoutTemplate,
 } from "@lucide/vue";
 import { formatRelativeTime } from "#console/utils/date";
 import { personLabel } from "#console/utils/naming";
@@ -104,10 +105,18 @@ async function confirmDelete() {
                 {{ t("policies.count", { count: policies?.length ?? 0 }) }}
               </CardDescription>
             </div>
-            <Button size="sm" @click="openCreate">
-              <Plus :size="16" class="mr-1.5" />
-              {{ t("policies.create") }}
-            </Button>
+            <div class="flex items-center gap-2">
+              <Button as-child variant="outline" size="sm" class="font-normal">
+                <NuxtLink :to="wLink('/policies/templates')">
+                  <LayoutTemplate :size="16" class="mr-1.5" />
+                  {{ t("policies.browseTemplates") }}
+                </NuxtLink>
+              </Button>
+              <Button size="sm" @click="openCreate">
+                <Plus :size="16" class="mr-1.5" />
+                {{ t("policies.create") }}
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -160,7 +169,7 @@ async function confirmDelete() {
               <ContextMenu v-for="policy in policies" :key="policy.slug">
                 <ContextMenuTrigger as-child>
                   <TableRow class="group">
-                    <TableCell>
+                    <TableCell class="max-w-0">
                       <div class="min-w-0">
                         <p class="truncate font-medium text-foreground">
                           {{ policy.displayName }}

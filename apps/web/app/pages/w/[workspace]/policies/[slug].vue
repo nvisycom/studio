@@ -55,17 +55,15 @@ function cancel() {
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="mx-auto w-full max-w-3xl">
-      <Button
-        as-child
-        variant="ghost"
-        size="sm"
-        class="mb-4 -ml-2 font-normal text-muted-foreground"
-      >
-        <NuxtLink :to="wLink('/policies')" class="flex items-center gap-1.5">
-          <ArrowLeft :size="15" />
-          {{ t("policies.editor.back") }}
-        </NuxtLink>
-      </Button>
+      <!-- Back nav, matching /integrations/explore -->
+      <div class="mb-6">
+        <Button as-child variant="outline" class="font-normal">
+          <NuxtLink :to="wLink('/policies')" class="flex items-center gap-2">
+            <ArrowLeft :size="16" />
+            {{ t("policies.editor.back") }}
+          </NuxtLink>
+        </Button>
+      </div>
 
       <!-- Loading the policy -->
       <div
@@ -75,23 +73,13 @@ function cancel() {
         <Loader2 :size="24" class="animate-spin text-muted-foreground" />
       </div>
 
-      <template v-else-if="policy">
-        <div class="mb-6 space-y-1">
-          <h1 class="text-lg font-semibold">
-            {{ t("policies.editor.editTitle") }}
-          </h1>
-          <p class="text-sm text-muted-foreground">
-            {{ t("policies.editor.description") }}
-          </p>
-        </div>
-
-        <PolicyForm
-          :policy="policy"
-          :is-loading="isUpdating"
-          @update="handleUpdate"
-          @cancel="cancel"
-        />
-      </template>
+      <PolicyForm
+        v-else-if="policy"
+        :policy="policy"
+        :is-loading="isUpdating"
+        @update="handleUpdate"
+        @cancel="cancel"
+      />
     </div>
   </div>
 </template>
