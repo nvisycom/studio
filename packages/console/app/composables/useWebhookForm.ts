@@ -1,4 +1,8 @@
-import type { Webhook, WebhookEvent } from "@nvisy/sdk/datatypes";
+import type {
+	Webhook,
+	WebhookEvent,
+	WebhookStatus,
+} from "@nvisy/sdk/datatypes";
 
 /** All webhook event types the SDK supports, in display order. */
 export const WEBHOOK_EVENTS: WebhookEvent[] = [
@@ -33,7 +37,7 @@ export interface WebhookHeader {
 export interface WebhookFormPayload {
 	displayName: string;
 	url: string;
-	status: "active" | "paused";
+	status: WebhookStatus;
 	events: WebhookEvent[];
 	headers: Record<string, string>;
 }

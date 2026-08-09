@@ -13,6 +13,7 @@ import type {
 	Connection,
 	Webhook,
 	WebhookEvent,
+	WebhookStatus,
 	UpdateConnection,
 } from "@nvisy/sdk/datatypes";
 import { Button } from "#console/components/ui/button";
@@ -175,7 +176,7 @@ function findWebhookById(webhookId: string): Webhook | undefined {
 async function handleCreateWebhook(data: {
 	displayName: string;
 	url: string;
-	status: "active" | "paused";
+	status: WebhookStatus;
 	events: WebhookEvent[];
 	headers?: Record<string, string>;
 }) {
@@ -200,7 +201,7 @@ async function handleCreateWebhook(data: {
 async function handleUpdateWebhook(data: {
 	displayName: string;
 	url: string;
-	status: "active" | "paused";
+	status: WebhookStatus;
 	events: WebhookEvent[];
 	headers?: Record<string, string>;
 }) {
