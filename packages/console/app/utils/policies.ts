@@ -67,7 +67,9 @@ export interface EditableAction {
 	modalities: Partial<Record<Modality, EditableOperator>>;
 }
 
-export interface EditableRule {
+/** A predicated (When → Then) rule: a condition applies one action. */
+export interface EditablePredicatedRule {
+	kind: "predicated";
 	/** Local-only key for list rendering; a fresh uuid is minted on submit. */
 	key: string;
 	name: string;
@@ -76,6 +78,25 @@ export interface EditableRule {
 	action: EditableAction;
 }
 
+/** One `label → action` row of a table rule. */
+export interface EditableLabelEntry {
+	key: string;
+	/** The label this entry matches on. */
+	label: string;
+	action: EditableAction;
+}
+
+/** A table rule: a lookup of per-label actions (no predicate). */
+export interface EditableTableRule {
+	kind: "table";
+	key: string;
+	name: string;
+	description?: string;
+	entries: EditableLabelEntry[];
+}
+
+export type EditableRule = EditablePredicatedRule | EditableTableRule;
+
 /** An entity-label catalog entry. */
 export interface EditableLabel {
 	key: string;
@@ -83,6 +104,15 @@ export interface EditableLabel {
 	description?: string;
 	/** comma-separated tags. */
 	tags?: string;
+}
+
+/** A named cluster of label refs a rule can match via `labelInGroup`. */
+export interface EditableGroup {
+	key: string;
+	name: string;
+	description?: string;
+	/** comma-separated label refs. */
+	labels: string;
 }
 
 function splitValues(raw?: string): string[] {
@@ -175,22 +205,54 @@ export interface PolicyInput {
 	rules: EditableRule[];
 	/** Catch-all action when no rule matches; null/undefined = none. */
 	fallback?: EditableAction | null;
-	/** Entity-label catalog. */
+	/** Entity-label catalog (custom labels only). */
 	labels?: EditableLabel[];
+	/** Named label groups a rule can reference via `labelInGroup`. */
+	groups?: EditableGroup[];
+	/**
+	 * The original definition, when editing. Fields the editor doesn't model
+	 * (retention, `when`, builtin labels) are preserved from here so a save
+	 * never destroys them.
+	 */
+	original?: PolicyDefinition;
 }
 
-/** Build the SDK policy definition body shared by create and update. */
+/**
+ * Build the SDK policy definition body shared by create and update.
+ *
+ * The editor only fully models predicated rules, the fallback, and custom
+ * labels. When editing, everything else in the original definition is carried
+ * through untouched: table rules are preserved in place, `builtins`/`groups`/
+ * `retention`/`when` are copied verbatim.
+ */
 export function buildDefinition(input: PolicyInput): PolicyDefinition {
-	const rules: PolicyRule[] = input.rules.map((r) => ({
-		id: crypto.randomUUID(),
-		name: r.name.trim(),
-		description: r.description?.trim() || undefined,
-		predicate: buildPredicate(r.predicates),
-		action: buildAction(r.action),
-	}));
+	const original = input.original;
+
+	// Both rule kinds are editable; build each in its declared order.
+	const rules: PolicyRule[] = input.rules.map((r) =>
+		r.kind === "table"
+			? {
+					id: crypto.randomUUID(),
+					name: r.name.trim(),
+					description: r.description?.trim() || undefined,
+					operators: r.entries
+						.filter((e) => e.label.trim())
+						.map((e) => ({
+							label: e.label.trim(),
+							action: buildAction(e.action),
+						})),
+				}
+			: {
+					id: crypto.randomUUID(),
+					name: r.name.trim(),
+					description: r.description?.trim() || undefined,
+					predicate: buildPredicate(r.predicates),
+					action: buildAction(r.action),
+				},
+	);
 
 	// The editor's simple name/description/tags map to a single default-locale
-	// custom label. `Labels` is an object ({ builtins?, custom? }), not an array.
+	// custom label. Preserve any `builtins` from the original catalog.
 	const customLabels: Label[] = (input.labels ?? [])
 		.filter((l) => l.name.trim())
 		.map((l) => ({
@@ -205,6 +267,23 @@ export function buildDefinition(input: PolicyInput): PolicyDefinition {
 			},
 			tags: splitValues(l.tags),
 		}));
+	const builtins = original?.labels?.builtins;
+	const labels: Labels | undefined =
+		customLabels.length > 0 || builtins?.length
+			? {
+					...(builtins?.length ? { builtins } : {}),
+					...(customLabels.length > 0 ? { custom: customLabels } : {}),
+				}
+			: undefined;
+
+	// Named label groups (referenced by `labelInGroup` predicates).
+	const groups = (input.groups ?? [])
+		.filter((g) => g.name.trim())
+		.map((g) => ({
+			name: g.name.trim(),
+			description: g.description?.trim() || undefined,
+			labels: splitValues(g.labels),
+		}));
 
 	return {
 		id: input.id,
@@ -213,7 +292,11 @@ export function buildDefinition(input: PolicyInput): PolicyDefinition {
 		// `rules` is optional; omit it entirely for a fallback-only policy.
 		...(rules.length > 0 ? { rules } : {}),
 		...(input.fallback ? { fallback: buildAction(input.fallback) } : {}),
-		...(customLabels.length > 0 ? { labels: { custom: customLabels } } : {}),
+		...(labels ? { labels } : {}),
+		...(groups.length > 0 ? { groups } : {}),
+		// Preserve fields the editor doesn't model.
+		...(original?.retention ? { retention: original.retention } : {}),
+		...(original?.when ? { when: original.when } : {}),
 	} as PolicyDefinition;
 }
 
@@ -361,24 +444,54 @@ export function labelsFromDefinition(
 	});
 }
 
-/** Narrow a `PolicyRule` to a predicated rule (the editor's only supported kind). */
-function isPredicatedRule(rule: PolicyRule): rule is PredicatedRule {
-	return "predicate" in rule && "action" in rule;
+/** Reconstruct the editable label groups from a stored definition. */
+export function groupsFromDefinition(
+	definition: PolicyDefinition,
+): EditableGroup[] {
+	return (definition.groups ?? []).map((g) => ({
+		key: crypto.randomUUID(),
+		name: g.name,
+		description: g.description,
+		labels: g.labels.join(", "),
+	}));
+}
+
+/** A table rule carries `operators`; a predicated rule carries `predicate`. */
+function isTableRule(
+	rule: PolicyRule,
+): rule is Extract<PolicyRule, { operators: unknown }> {
+	return "operators" in rule;
 }
 
 /**
- * Reconstruct the editable rule list from a stored policy definition. Table
- * rules (the other 0.14 `PolicyRule` variant) aren't editable here and are
- * skipped.
+ * Reconstruct the editable rule list from a stored policy definition. Both
+ * predicated rules (When → Then) and table rules (per-label action lookups) are
+ * represented.
  */
 export function rulesFromDefinition(
 	definition: PolicyDefinition,
 ): EditableRule[] {
-	return (definition.rules ?? []).filter(isPredicatedRule).map((r) => ({
-		key: crypto.randomUUID(),
-		name: r.name,
-		description: r.description,
-		predicates: predicateToEditable(r.predicate),
-		action: actionToEditable(r.action),
-	}));
+	return (definition.rules ?? []).map((r): EditableRule => {
+		if (isTableRule(r)) {
+			return {
+				kind: "table",
+				key: crypto.randomUUID(),
+				name: r.name,
+				description: r.description,
+				entries: (r.operators ?? []).map((op) => ({
+					key: crypto.randomUUID(),
+					label: op.label,
+					action: actionToEditable(op.action),
+				})),
+			};
+		}
+		return {
+			kind: "predicated",
+			key: crypto.randomUUID(),
+			name: r.name,
+			description: r.description,
+			predicates: predicateToEditable(r.predicate),
+			action: actionToEditable(r.action),
+		};
+	});
 }

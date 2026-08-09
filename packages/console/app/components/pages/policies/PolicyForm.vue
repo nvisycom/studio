@@ -2,8 +2,12 @@
 import type { CreatePolicy, Policy, UpdatePolicy } from "@nvisy/sdk/datatypes";
 import type {
 	EditableRule,
+	EditablePredicatedRule,
+	EditableTableRule,
+	EditableLabelEntry,
 	EditableAction,
 	EditableLabel,
+	EditableGroup,
 	EditableOperator,
 	PredicateKind,
 	Modality,
@@ -18,6 +22,7 @@ import {
 	rulesFromDefinition,
 	fallbackFromDefinition,
 	labelsFromDefinition,
+	groupsFromDefinition,
 } from "#console/utils/policies";
 import {
 	Loader2,
@@ -126,11 +131,13 @@ const description = ref("");
 const rules = ref<EditableRule[]>([]);
 const fallback = ref<EditableAction | null>(null);
 const labels = ref<EditableLabel[]>([]);
+const groups = ref<EditableGroup[]>([]);
 const policyId = ref("");
 
 // Collapsible sections start collapsed; adding an item auto-expands them.
 const rulesOpen = ref(false);
 const labelsOpen = ref(false);
+const groupsOpen = ref(false);
 
 // --- Fallback (a ModalityRedactions, like a rule action) ---
 function toggleFallback(enabled: boolean) {
@@ -151,6 +158,18 @@ function removeLabel(key: string) {
 	labels.value = labels.value.filter((l) => l.key !== key);
 }
 
+// --- Label groups ---
+function addGroup() {
+	groupsOpen.value = true;
+	groups.value = [
+		...groups.value,
+		{ key: crypto.randomUUID(), name: "", labels: "" },
+	];
+}
+function removeGroup(key: string) {
+	groups.value = groups.value.filter((g) => g.key !== key);
+}
+
 function slugify(value: string): string {
 	return value
 		.toLowerCase()
@@ -167,20 +186,36 @@ function onSlugInput() {
 	slug.value = slugify(slug.value);
 }
 
-function newRule(): EditableRule {
+function defaultAction(): EditableAction {
 	return {
-		key: crypto.randomUUID(),
-		name: "",
-		predicates: [{ kind: "confidence", min: 0.5 }],
-		action: {
-			modalities: { text: { textKind: "replace", template: "[{label}]" } },
-		},
+		modalities: { text: { textKind: "replace", template: "[{label}]" } },
 	};
 }
 
-function addRule() {
+function newPredicatedRule(): EditablePredicatedRule {
+	return {
+		kind: "predicated",
+		key: crypto.randomUUID(),
+		name: "",
+		predicates: [{ kind: "confidence", min: 0.5 }],
+		action: defaultAction(),
+	};
+}
+function newTableRule(): EditableTableRule {
+	return {
+		kind: "table",
+		key: crypto.randomUUID(),
+		name: "",
+		entries: [{ key: crypto.randomUUID(), label: "", action: defaultAction() }],
+	};
+}
+
+function addRule(kind: EditableRule["kind"] = "predicated") {
 	rulesOpen.value = true; // reveal the section so the new rule is visible
-	rules.value = [...rules.value, newRule()];
+	rules.value = [
+		...rules.value,
+		kind === "table" ? newTableRule() : newPredicatedRule(),
+	];
 }
 function removeRule(key: string) {
 	rules.value = rules.value.filter((r) => r.key !== key);
@@ -196,11 +231,23 @@ function moveRule(index: number, delta: number) {
 	next.splice(target, 0, moved);
 	rules.value = next;
 }
-function addPredicate(rule: EditableRule) {
+// --- Predicated-rule conditions ---
+function addPredicate(rule: EditablePredicatedRule) {
 	rule.predicates.push({ kind: "labelOneOf", values: "" });
 }
-function removePredicate(rule: EditableRule, index: number) {
+function removePredicate(rule: EditablePredicatedRule, index: number) {
 	rule.predicates.splice(index, 1);
+}
+// --- Table-rule entries ---
+function addEntry(rule: EditableTableRule) {
+	rule.entries.push({
+		key: crypto.randomUUID(),
+		label: "",
+		action: defaultAction(),
+	});
+}
+function removeEntry(rule: EditableTableRule, key: string) {
+	rule.entries = rule.entries.filter((e) => e.key !== key);
 }
 
 // --- Validation, split per card -------------------------------------------
@@ -230,6 +277,9 @@ function currentInput() {
 		rules: rules.value,
 		fallback: fallback.value,
 		labels: labels.value,
+		groups: groups.value,
+		// Preserve definition fields the editor doesn't model (edit only).
+		original: props.policy?.definition,
 	};
 }
 function metaSnapshot(): string {
@@ -242,17 +292,35 @@ function definitionSnapshot(): string {
 	// Compare the editor state (not the built definition — that mints fresh
 	// UUIDs each call, which would always look changed). Strip local-only keys.
 	return JSON.stringify({
-		rules: rules.value.map((r) => ({
-			name: r.name.trim(),
-			description: r.description?.trim() ?? "",
-			predicates: r.predicates,
-			action: r.action,
-		})),
+		rules: rules.value.map((r) =>
+			r.kind === "table"
+				? {
+						kind: "table",
+						name: r.name.trim(),
+						description: r.description?.trim() ?? "",
+						entries: r.entries.map((e) => ({
+							label: e.label.trim(),
+							action: e.action,
+						})),
+					}
+				: {
+						kind: "predicated",
+						name: r.name.trim(),
+						description: r.description?.trim() ?? "",
+						predicates: r.predicates,
+						action: r.action,
+					},
+		),
 		fallback: fallback.value,
 		labels: labels.value.map((l) => ({
 			name: l.name.trim(),
 			description: l.description?.trim() ?? "",
 			tags: l.tags ?? "",
+		})),
+		groups: groups.value.map((g) => ({
+			name: g.name.trim(),
+			description: g.description?.trim() ?? "",
+			labels: g.labels ?? "",
 		})),
 	});
 }
@@ -290,6 +358,11 @@ watch(
 			} catch {
 				labels.value = [];
 			}
+			try {
+				groups.value = groupsFromDefinition(policy.definition);
+			} catch {
+				groups.value = [];
+			}
 		} else {
 			policyId.value = crypto.randomUUID();
 			displayName.value = "";
@@ -301,6 +374,7 @@ watch(
 			rules.value = [];
 			fallback.value = null;
 			labels.value = [];
+			groups.value = [];
 		}
 		// Capture baselines after populating, so change tracking starts clean.
 		nextTick(() => {
@@ -334,8 +408,8 @@ function saveDefinition() {
 	definitionBaseline.value = definitionSnapshot();
 }
 
-// Plain-English summary of a rule, shown under each card for legibility.
-function ruleSummary(rule: EditableRule): string {
+// Plain-English summary of a predicated rule, shown under each card.
+function ruleSummary(rule: EditablePredicatedRule): string {
 	const conds = rule.predicates
 		.map((p) => {
 			if (p.kind === "confidence")
@@ -451,36 +525,98 @@ function ruleSummary(rule: EditableRule): string {
       <div
         v-for="label in labels"
         :key="label.key"
-        class="flex items-start gap-2 rounded-lg border border-border/60 p-3"
+        class="space-y-2.5 rounded-lg border border-border/60 p-3"
       >
-        <div class="flex flex-1 flex-col gap-2">
-          <div class="flex items-center gap-2">
-            <Input
-              v-model="label.name"
-              :placeholder="t('policies.editor.labels.namePlaceholder')"
-              class="h-9 w-[200px] shrink-0 font-mono text-sm"
-            />
-            <Input
-              v-model="label.description"
-              :placeholder="t('policies.editor.labels.descriptionPlaceholder')"
-              class="h-9 flex-1"
-            />
-          </div>
+        <div class="flex items-center gap-2">
           <Input
-            v-model="label.tags"
-            :placeholder="t('policies.editor.labels.tagsPlaceholder')"
-            class="h-9"
+            v-model="label.name"
+            :placeholder="t('policies.editor.labels.namePlaceholder')"
+            class="h-9 flex-1 font-mono text-sm"
           />
+          <Button
+            variant="ghost"
+            size="icon"
+            class="size-9 shrink-0 text-muted-foreground hover:text-destructive"
+            @click="removeLabel(label.key)"
+          >
+            <Trash2 :size="15" />
+          </Button>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          class="size-9 shrink-0 text-muted-foreground hover:text-destructive"
-          @click="removeLabel(label.key)"
-        >
-          <Trash2 :size="15" />
+        <Input
+          v-model="label.description"
+          :placeholder="t('policies.editor.labels.descriptionPlaceholder')"
+          class="h-9"
+        />
+        <Input
+          v-model="label.tags"
+          :placeholder="t('policies.editor.labels.tagsPlaceholder')"
+          class="h-9 font-mono text-sm"
+        />
+      </div>
+      </CollapsibleContent>
+    </Collapsible>
+
+    <!-- Label groups -->
+    <Collapsible v-model:open="groupsOpen" as="section" class="space-y-3">
+      <div class="flex items-center justify-between gap-2">
+        <CollapsibleTrigger as-child>
+          <button
+            type="button"
+            class="flex flex-1 items-center gap-2 text-left"
+          >
+            <ChevronDown
+              :size="16"
+              class="shrink-0 text-muted-foreground transition-transform"
+              :class="groupsOpen ? '' : '-rotate-90'"
+            />
+            <div>
+              <h2 class="text-sm font-medium">
+                {{ t("policies.editor.groups.label") }}
+                <span class="text-muted-foreground">({{ groups.length }})</span>
+              </h2>
+              <p class="text-xs text-muted-foreground">
+                {{ t("policies.editor.groups.hint") }}
+              </p>
+            </div>
+          </button>
+        </CollapsibleTrigger>
+        <Button variant="outline" size="sm" @click="addGroup">
+          <Plus :size="14" class="mr-1.5" />
+          {{ t("policies.editor.groups.add") }}
         </Button>
       </div>
+      <CollapsibleContent class="space-y-3">
+        <div
+          v-for="group in groups"
+          :key="group.key"
+          class="space-y-2.5 rounded-lg border border-border/60 p-3"
+        >
+          <div class="flex items-center gap-2">
+            <Input
+              v-model="group.name"
+              :placeholder="t('policies.editor.groups.namePlaceholder')"
+              class="h-9 flex-1 font-mono text-sm"
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              class="size-9 shrink-0 text-muted-foreground hover:text-destructive"
+              @click="removeGroup(group.key)"
+            >
+              <Trash2 :size="15" />
+            </Button>
+          </div>
+          <div class="space-y-1.5">
+            <Label class="text-xs text-muted-foreground">
+              {{ t("policies.editor.groups.labelsLabel") }}
+            </Label>
+            <Textarea
+              v-model="group.labels"
+              :placeholder="t('policies.editor.groups.labelsPlaceholder')"
+              class="min-h-[60px] font-mono text-sm"
+            />
+          </div>
+        </div>
       </CollapsibleContent>
     </Collapsible>
 
@@ -508,10 +644,22 @@ function ruleSummary(rule: EditableRule): string {
             </div>
           </button>
         </CollapsibleTrigger>
-        <Button variant="outline" size="sm" @click="addRule">
-          <Plus :size="14" class="mr-1.5" />
-          {{ t("policies.editor.addRule") }}
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger as-child>
+            <Button variant="outline" size="sm">
+              <Plus :size="14" class="mr-1.5" />
+              {{ t("policies.editor.addRule") }}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem @click="addRule('predicated')">
+              {{ t("policies.editor.addPredicatedRule") }}
+            </DropdownMenuItem>
+            <DropdownMenuItem @click="addRule('table')">
+              {{ t("policies.editor.addTableRule") }}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <CollapsibleContent class="space-y-3">
@@ -565,7 +713,11 @@ function ruleSummary(rule: EditableRule): string {
           </div>
         </div>
 
-        <div class="divide-y divide-border/60">
+        <!-- Predicated rule: When → Then -->
+        <div
+          v-if="rule.kind === 'predicated'"
+          class="divide-y divide-border/60"
+        >
           <!-- WHEN -->
           <div class="space-y-2.5 px-4 py-3.5">
             <div class="flex items-center gap-2">
@@ -803,6 +955,73 @@ function ruleSummary(rule: EditableRule): string {
               {{ ruleSummary(rule) }}
             </p>
           </div>
+        </div>
+
+        <!-- Table rule: per-label action lookup -->
+        <div v-else class="space-y-2.5 px-4 py-3.5">
+          <div class="flex items-center gap-2">
+            <span
+              class="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
+            >
+              {{ t("policies.editor.table.label") }}
+            </span>
+            <span class="h-px flex-1 bg-border/50" />
+          </div>
+          <div
+            v-for="entry in rule.entries"
+            :key="entry.key"
+            class="flex items-center gap-2"
+          >
+            <Input
+              v-model="entry.label"
+              :placeholder="t('policies.editor.table.labelPlaceholder')"
+              class="h-9 w-[200px] shrink-0 font-mono text-sm"
+            />
+            <span class="shrink-0 text-xs text-muted-foreground">→</span>
+            <div class="flex flex-1 items-center gap-2">
+              <Select v-model="entry.action.modalities.text!.textKind">
+                <SelectTrigger class="h-9 w-[130px] shrink-0">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem v-for="k in TEXT_KINDS" :key="k" :value="k">
+                    {{ t(`policies.editor.textKind.${k}`) }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <Input
+                v-if="entry.action.modalities.text?.textKind === 'replace'"
+                v-model="entry.action.modalities.text.template"
+                class="h-9 flex-1 font-mono text-sm"
+                placeholder="[{label}]"
+              />
+              <Input
+                v-else-if="entry.action.modalities.text?.textKind === 'mask'"
+                v-model="entry.action.modalities.text.maskChar"
+                class="h-9 w-16 text-center font-mono"
+                maxlength="1"
+                placeholder="*"
+              />
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              class="size-9 shrink-0 text-muted-foreground hover:text-destructive"
+              :aria-label="t('policies.editor.table.removeEntry')"
+              @click="removeEntry(rule, entry.key)"
+            >
+              <Trash2 :size="15" />
+            </Button>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            class="font-normal"
+            @click="addEntry(rule)"
+          >
+            <Plus :size="14" class="mr-1.5" />
+            {{ t("policies.editor.table.addEntry") }}
+          </Button>
         </div>
       </div>
 

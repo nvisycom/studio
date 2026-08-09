@@ -1387,7 +1387,23 @@
 			"cancel": "Cancel",
 			"submit": "Create policy",
 			"identityFooter": "Name, slug, and description for this policy.",
-			"definitionFooter": "Rules, labels, and fallback that define how this policy redacts."
+			"definitionFooter": "Rules, labels, and fallback that define how this policy redacts.",
+			"addPredicatedRule": "Conditional rule",
+			"addTableRule": "Label table",
+			"table": {
+				"label": "Labels",
+				"labelPlaceholder": "email_address",
+				"addEntry": "Add label",
+				"removeEntry": "Remove label"
+			},
+			"groups": {
+				"label": "Label groups",
+				"hint": "Named clusters of labels a rule can match by group.",
+				"add": "Add group",
+				"namePlaceholder": "hipaa_18",
+				"labelsPlaceholder": "email_address, phone_number, ssn",
+				"labelsLabel": "Labels in this group"
+			}
 		},
 		"delete": {
 			"title": "Delete {name}?",

@@ -1387,7 +1387,23 @@
 			"cancel": "Abbrechen",
 			"submit": "Richtlinie erstellen",
 			"identityFooter": "Name, Slug und Beschreibung dieser Richtlinie.",
-			"definitionFooter": "Regeln, Labels und Fallback, die festlegen, wie diese Richtlinie schwärzt."
+			"definitionFooter": "Regeln, Labels und Fallback, die festlegen, wie diese Richtlinie schwärzt.",
+			"addPredicatedRule": "Bedingte Regel",
+			"addTableRule": "Label-Tabelle",
+			"table": {
+				"label": "Labels",
+				"labelPlaceholder": "email_address",
+				"addEntry": "Label hinzufügen",
+				"removeEntry": "Label entfernen"
+			},
+			"groups": {
+				"label": "Label-Gruppen",
+				"hint": "Benannte Cluster von Labels, die eine Regel per Gruppe matchen kann.",
+				"add": "Gruppe hinzufügen",
+				"namePlaceholder": "hipaa_18",
+				"labelsPlaceholder": "email_address, phone_number, ssn",
+				"labelsLabel": "Labels in dieser Gruppe"
+			}
 		},
 		"delete": {
 			"title": "{name} löschen?",
