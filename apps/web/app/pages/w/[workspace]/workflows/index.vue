@@ -48,7 +48,7 @@ const { wLink } = useWorkspaceLink();
 useHead({ title: "Workflows" });
 
 definePageMeta({
-	pageCategory: "Workflows",
+	pageCategory: "header.category.workflows",
 });
 
 const {

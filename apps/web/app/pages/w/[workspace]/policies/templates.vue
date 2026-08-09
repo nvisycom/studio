@@ -33,7 +33,7 @@ const { wLink } = useWorkspaceLink();
 useHead({ title: "Policy Templates" });
 
 definePageMeta({
-	pageCategory: "Policies",
+	pageCategory: "header.category.policies",
 });
 
 const { createPolicyAsync, isCreating } = usePolicies();

@@ -42,7 +42,7 @@ const { wLink } = useWorkspaceLink();
 useHead({ title: "Workflow Runs" });
 
 definePageMeta({
-	pageCategory: "Workflows",
+	pageCategory: "header.category.workflows",
 });
 
 const { runs, isLoading } = useRuns();

@@ -24,7 +24,7 @@ import ResponseTimeChart from "#console/components/pages/analytics/ResponseTimeC
 useHead({ title: "AI Analytics" });
 
 definePageMeta({
-	pageCategory: "Analytics",
+	pageCategory: "header.category.analytics",
 });
 
 // Date range for analytics

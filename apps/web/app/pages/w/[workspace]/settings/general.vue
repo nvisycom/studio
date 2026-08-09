@@ -29,7 +29,7 @@ import {
 useHead({ title: "Workspace Settings" });
 
 definePageMeta({
-	pageCategory: "Settings",
+	pageCategory: "header.category.settings",
 });
 
 const { t } = useI18n();

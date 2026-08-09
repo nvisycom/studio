@@ -15,7 +15,7 @@ import { Switch } from "#console/components/ui/switch";
 useHead({ title: "Billing" });
 
 definePageMeta({
-	pageCategory: "Billing",
+	pageCategory: "header.category.billing",
 	feature: "billing",
 });
 

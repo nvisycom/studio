@@ -49,7 +49,7 @@ import {
 useHead({ title: "Logs" });
 
 definePageMeta({
-	pageCategory: "Analytics",
+	pageCategory: "header.category.analytics",
 });
 
 // Filters

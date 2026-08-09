@@ -114,7 +114,7 @@ export function providerLabel(provider: string): string {
 	);
 }
 
-// --- LLM providers ---------------------------------------------------------
+// LLM providers
 
 /**
  * LLM connect-dialog metadata per provider. `needsApiKey` gates the API-key

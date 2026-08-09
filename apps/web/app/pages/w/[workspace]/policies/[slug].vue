@@ -27,7 +27,7 @@ const {
 useHead(() => ({ title: policy.value?.displayName ?? "Policy" }));
 
 definePageMeta({
-	pageCategory: "Policies",
+	pageCategory: "header.category.policies",
 });
 
 // Bounce back to the list if the policy can't be loaded.

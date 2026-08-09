@@ -31,14 +31,23 @@
 				"index": "Richtlinien",
 				"templates": "Vorlagen"
 			}
+		},
+		"category": {
+			"overview": "Übersicht",
+			"files": "Dateien",
+			"studio": "Studio",
+			"team": "Team",
+			"workflows": "Workflows",
+			"policies": "Richtlinien",
+			"integrations": "Integrationen",
+			"analytics": "Analysen",
+			"billing": "Abrechnung",
+			"settings": "Einstellungen"
 		}
 	},
 	"common": {
-		"service": "Nvisy",
 		"save": "Speichern",
 		"cancel": "Abbrechen",
-		"delete": "Löschen",
-		"confirm": "Bestätigen",
 		"errors": {
 			"tryAgain": "Bitte versuchen Sie es erneut."
 		},
@@ -244,18 +253,11 @@
 			"setupProfile": "Profil Einrichten"
 		},
 		"workspace": {
-			"title": "Arbeitsbereich",
-			"noDescription": "Keine Beschreibung festgelegt",
-			"settings": "Einstellungen",
 			"members": "Mitglieder",
 			"files": "Dateien",
-			"yourRole": "Ihre Rolle",
 			"created": "Erstellt",
 			"badges": {
-				"autoCleanup": "Auto-Bereinigung",
-				"requireApproval": "Genehmigung erforderlich",
-				"commentsEnabled": "Kommentare aktiviert",
-				"defaultSettings": "Standardeinstellungen"
+				"requireApproval": "Genehmigung erforderlich"
 			}
 		},
 		"usage": {
@@ -263,8 +265,7 @@
 			"storage": "Speicher",
 			"of": "von {total}",
 			"creditsRemaining": "{count} Credits übrig",
-			"storageRemaining": "{count} GB übrig",
-			"viewPlan": "Plan anzeigen"
+			"storageRemaining": "{count} GB übrig"
 		},
 		"quickActions": {
 			"title": "Schnellaktionen",
@@ -273,7 +274,6 @@
 				"description": "Dokumente zur Wissensdatenbank hinzufügen"
 			},
 			"askAI": {
-				"title": "KI fragen",
 				"description": "Dokumente abfragen"
 			},
 			"manageTeam": {
@@ -286,61 +286,41 @@
 			}
 		},
 		"actions": {
-			"learnMore": "Mehr erfahren",
 			"setupProfile": {
-				"time": "2 Minuten",
-				"title": "Profil Einrichten",
-				"description": "Vervollständigen Sie Ihr Profil, um Ihre Erfahrung zu personalisieren und Ihrem Team zu helfen, Sie zu identifizieren.",
-				"button": "Profil Einrichten"
+				"description": "Vervollständigen Sie Ihr Profil, um Ihre Erfahrung zu personalisieren und Ihrem Team zu helfen, Sie zu identifizieren."
 			},
 			"createWorkspace": {
-				"time": "2 Minuten",
-				"title": "Arbeitsbereich Erstellen",
-				"description": "Arbeitsbereiche helfen Ihnen, Dokumente zu organisieren, Teamzugriff zu verwalten und Projekte getrennt zu halten.",
-				"button": "Arbeitsbereich Erstellen"
+				"description": "Arbeitsbereiche helfen Ihnen, Dokumente zu organisieren, Teamzugriff zu verwalten und Projekte getrennt zu halten."
 			},
 			"apiTokens": {
-				"time": "1 Minute",
-				"title": "API-Token Generieren",
-				"description": "Erstellen Sie einen API-Token, um Nvisy in Ihre Anwendungen zu integrieren und Workflows zu automatisieren.",
-				"button": "Token Erstellen"
+				"description": "Erstellen Sie einen API-Token, um Nvisy in Ihre Anwendungen zu integrieren und Workflows zu automatisieren."
 			}
 		},
 		"features": {
-			"sectionTitle": "Was Sie Tun Können",
 			"documentManagement": {
-				"title": "Dokumentenverwaltung",
 				"description": "Laden Sie Dokumente hoch, organisieren und verwalten Sie diese in einem sicheren, zentralen Arbeitsbereich."
 			},
 			"aiPowered": {
-				"title": "KI-gestützte Einblicke",
 				"description": "Extrahieren Sie Informationen, fassen Sie Inhalte zusammen und erhalten Sie Antworten aus Ihren Dokumenten mit KI."
 			},
 			"teamCollaboration": {
-				"title": "Team-Zusammenarbeit",
 				"description": "Laden Sie Teammitglieder ein, weisen Sie Rollen zu und arbeiten Sie nahtlos zusammen."
 			},
 			"secureCompliant": {
-				"title": "Sicher & Konform",
 				"description": "Sicherheit auf Unternehmensniveau mit Verschlüsselung und Compliance-Kontrollen."
 			}
 		},
 		"resources": {
-			"sectionTitle": "Ressourcen",
 			"documentation": {
-				"title": "Dokumentation",
 				"description": "Erfahren Sie, wie Sie loslegen und alle Funktionen erkunden"
 			},
 			"apiReference": {
-				"title": "API-Referenz",
 				"description": "Integrieren Sie Nvisy in Ihre Anwendungen"
 			},
 			"quickStart": {
-				"title": "Schnellstart",
 				"description": "Starten Sie in wenigen Minuten"
 			},
 			"support": {
-				"title": "Support",
 				"description": "Erhalten Sie Hilfe von unserem Team"
 			}
 		}
@@ -355,37 +335,25 @@
 			"namePlaceholder": "Mein Arbeitsbereich",
 			"descriptionLabel": "Beschreibung",
 			"descriptionPlaceholder": "Kurze Beschreibung Ihres Arbeitsbereichs...",
-			"descriptionHint": "Optional, max. 200 Zeichen",
-			"retentionLabel": "Dateispeicherung (Tage)",
-			"storageLabel": "Speicherlimit (GB)",
-			"unlimited": "Unbegrenzt",
 			"advancedSettings": "Erweiterte Einstellungen",
 			"error": "Arbeitsbereich konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
-			"autoCleanupLabel": "Automatische Bereinigung",
-			"autoCleanupDescription": "Verarbeitete Dateien nach Ablauf automatisch löschen",
 			"requireApprovalLabel": "Genehmigung Erforderlich",
 			"requireApprovalDescription": "Verarbeitete Dateien erfordern Genehmigung, bevor sie sichtbar sind",
-			"enableCommentsLabel": "Kommentare Aktivieren",
-			"enableCommentsDescription": "Teammitgliedern erlauben, Dokumente zu kommentieren",
 			"cancelButton": "Abbrechen",
 			"submitButton": "Arbeitsbereich Erstellen"
 		}
 	},
 	"files": {
 		"page": {
-			"title": "Dateien",
 			"description": "Verwalten Sie Ihre hochgeladenen Dateien und Dokumente"
 		},
 		"selection": {
-			"count": "{count} ausgewählt",
-			"clear": "Auswahl aufheben",
 			"delete": "Löschen"
 		},
 		"table": {
 			"headers": {
 				"name": "Name",
 				"size": "Größe",
-				"status": "Status",
 				"created": "Erstellt",
 				"updated": "Aktualisiert"
 			},
@@ -408,25 +376,12 @@
 			"formatSearch": "Formate suchen…",
 			"noFormats": "Keine Formate gefunden."
 		},
-		"sorting": {
-			"dateDesc": "Datum (Neueste)",
-			"dateAsc": "Datum (Älteste)",
-			"nameAsc": "Name (A-Z)",
-			"nameDesc": "Name (Z-A)",
-			"sizeDesc": "Größe (Größte)",
-			"sizeAsc": "Größe (Kleinste)"
-		},
 		"actions": {
 			"upload": "Hochladen",
 			"download": "Herunterladen",
-			"downloadAsZip": "Als .zip herunterladen",
-			"downloadAsTar": "Als .tar herunterladen",
 			"edit": "Bearbeiten",
-			"rename": "Umbenennen",
-			"view": "Ansehen",
 			"open": "Öffnen",
 			"openInStudio": "In Studio öffnen",
-			"chat": "Im Chat öffnen",
 			"delete": "Löschen",
 			"clearFilters": "Filter löschen"
 		},
@@ -444,17 +399,6 @@
 				"description": "Aktualisieren Sie den Dateinamen und andere Eigenschaften.",
 				"nameLabel": "Dateiname",
 				"namePlaceholder": "Dateinamen eingeben",
-				"highPriorityLabel": "Hohe Priorität",
-				"highPriorityDescription": "Diese Datei vor anderen verarbeiten",
-				"indexedLabel": "Wissensindexierung",
-				"indexedDescription": "Diese Datei in die Wissensextraktion einbeziehen",
-				"visualSupportLabel": "Visuelle Unterstützung",
-				"visualSupportDescription": "Visuelle Elementextraktion aktivieren (Bilder, Diagramme)",
-				"segmentationLabel": "Inhaltssegmentierung",
-				"segmentationDescription": "Wie der Dateiinhalt zur Verarbeitung aufgeteilt wird",
-				"segmentationNone": "Keine",
-				"segmentationSemantic": "Semantisch",
-				"segmentationFixed": "Fest",
 				"save": "Änderungen Speichern",
 				"cancel": "Abbrechen"
 			},
@@ -464,8 +408,6 @@
 				"dropHint": "Dateien hier ablegen zum Hochladen",
 				"browseButton": "Dateien Durchsuchen",
 				"uploading": "Wird hochgeladen...",
-				"uploaded": "Hochgeladen",
-				"failed": "Fehlgeschlagen",
 				"cancel": "Abbrechen",
 				"done": "Fertig"
 			}
@@ -474,7 +416,6 @@
 			"fileDeleted": "Datei erfolgreich gelöscht",
 			"filesDeleted": "Dateien erfolgreich gelöscht",
 			"fileUpdated": "Datei erfolgreich aktualisiert",
-			"fileUploaded": "Datei erfolgreich hochgeladen",
 			"filesUploaded": "Dateien erfolgreich hochgeladen",
 			"downloadStarted": "Download gestartet"
 		},
@@ -484,14 +425,10 @@
 			"uploadFailed": "Datei konnte nicht hochgeladen werden",
 			"downloadFailed": "Datei konnte nicht heruntergeladen werden",
 			"loadFailed": "Dateien konnten nicht geladen werden"
-		},
-		"loading": {
-			"more": "Lade mehr..."
 		}
 	},
 	"members": {
 		"page": {
-			"title": "Mitglieder",
 			"description": "Verwalten Sie Ihre Teammitglieder und Einladungen",
 			"tabs": {
 				"teamMembers": "Teammitglieder",
@@ -504,14 +441,12 @@
 				"description": "Senden Sie Einladungen an neue Teammitglieder",
 				"emailPlaceholder": "email{'@'}beispiel.com",
 				"button": "Einladung Senden",
-				"copyLink": "Einladungslink Kopieren",
 				"createLink": "Einladungslink Erstellen",
 				"expiry": {
 					"label": "Läuft ab in",
-					"never": "Nie",
-					"24hours": "In 24 Stunden",
-					"7days": "In 7 Tagen",
-					"30days": "In 30 Tagen"
+					"24hours": "24 Stunden",
+					"7days": "7 Tagen",
+					"30days": "30 Tagen"
 				}
 			},
 			"search": {
@@ -539,7 +474,6 @@
 			"status": {
 				"enabled": "Aktiviert",
 				"disabled": "Deaktiviert",
-				"pending": "Ausstehende Einladung",
 				"emailInvite": "E-Mail-Einladung",
 				"linkInvite": "Offene Einladung"
 			},
@@ -559,7 +493,9 @@
 			"memberUpdated": "Mitgliedsrolle erfolgreich aktualisiert",
 			"membersRemoved": "Mitglieder erfolgreich entfernt",
 			"inviteCanceled": "Einladung erfolgreich storniert",
-			"invitesCanceled": "Einladungen erfolgreich storniert"
+			"invitesCanceled": "Einladungen erfolgreich storniert",
+			"invitesPartiallyCanceled": "Einige Einladungen konnten nicht storniert werden",
+			"membersPartiallyRemoved": "Einige Mitglieder konnten nicht entfernt werden"
 		},
 		"errors": {
 			"inviteFailed": "Einladung konnte nicht gesendet werden",
@@ -567,7 +503,9 @@
 			"linkFailed": "Einladungslink konnte nicht generiert werden",
 			"removeFailed": "Mitglied konnte nicht entfernt werden",
 			"updateFailed": "Mitglied konnte nicht aktualisiert werden",
-			"cancelFailed": "Einladung konnte nicht storniert werden"
+			"cancelFailed": "Einladung konnte nicht storniert werden",
+			"someCancelFailed": "{count} Einladung konnte nicht storniert werden | {count} Einladungen konnten nicht storniert werden",
+			"someRemoveFailed": "{count} Mitglied konnte nicht entfernt werden | {count} Mitglieder konnten nicht entfernt werden"
 		},
 		"roles": {
 			"owner": "Eigentümer",
@@ -578,9 +516,6 @@
 		"filters": {
 			"sortBy": "Sortieren nach",
 			"anyRole": "Jede Rolle",
-			"any2FA": "Beliebige 2FA",
-			"enabled2FA": "2FA Aktiviert",
-			"disabled2FA": "2FA Deaktiviert",
 			"sorting": {
 				"nameAsc": "Name (A-Z)",
 				"nameDesc": "Name (Z-A)",
@@ -629,7 +564,6 @@
 	},
 	"tokens": {
 		"page": {
-			"title": "API-Tokens",
 			"description": "Verwalten Sie Ihre API-Tokens und Zugangsdaten"
 		},
 		"create": {
@@ -660,7 +594,6 @@
 				"lastUsed": "Zuletzt Verwendet"
 			},
 			"info": {
-				"created": "Erstellt",
 				"expires": "Läuft ab",
 				"never": "Nie"
 			},
@@ -674,14 +607,6 @@
 				"revokeSelected": "Ausgewählte Widerrufen",
 				"cannotRevoke": "Aktuelle Sitzung kann nicht widerrufen werden",
 				"cannotRename": "Sitzungs-Token kann nicht umbenannt werden"
-			},
-			"sessionTypes": {
-				"web": "Web-Sitzung",
-				"webDescription": "Browser-basierte Sitzung aus Web-Anwendung",
-				"api": "API-Token",
-				"apiDescription": "Programmatischer Zugangs-Token für API-Integrationen",
-				"cli": "CLI-Sitzung",
-				"cliDescription": "Befehlszeilen-Sitzung"
 			}
 		},
 		"empty": {
@@ -692,8 +617,6 @@
 			"created": {
 				"title": "Token Erstellt",
 				"description": "Kopieren Sie jetzt Ihren neuen API-Token. Sie können ihn nicht erneut sehen.",
-				"copyButton": "Token Kopieren",
-				"copied": "Kopiert!",
 				"doneButton": "Fertig"
 			},
 			"rename": {
@@ -755,10 +678,7 @@
 	},
 	"connections": {
 		"page": {
-			"title": "Aktive Verbindungen",
-			"description": "Verwalten Sie Ihre aktuell verbundenen Dienste",
-			"libraryTitle": "Integrationsbibliothek",
-			"libraryDescription": "Verbinden Sie Nvisy mit Ihren bevorzugten Tools und Diensten"
+			"description": "Verwalten Sie Ihre aktuell verbundenen Dienste"
 		},
 		"sections": {
 			"connectedServices": {
@@ -776,58 +696,31 @@
 		},
 		"actions": {
 			"explore": "Anbieter erkunden",
-			"browse": "Bibliothek Durchsuchen",
 			"connect": "Verbinden",
-			"disconnect": "Trennen",
-			"configure": "Konfigurieren",
-			"visitWebsite": "Website Besuchen",
 			"visitName": "{name} Besuchen",
-			"notifyMe": "Benachrichtigen",
 			"comingSoon": "Demnächst",
 			"createWebhook": "Webhook Erstellen",
-			"editWebhook": "Webhook Bearbeiten",
-			"deleteWebhook": "Webhook Löschen",
-			"testWebhook": "Webhook Testen",
 			"back": "Zurück",
 			"backToConnections": "Zurück zu Verbindungen",
 			"viewRuns": "Ausführungen Anzeigen"
 		},
-		"status": {
-			"active": "Aktiv",
-			"inactive": "Inaktiv",
-			"available": "Verfügbar",
-			"comingSoon": "Bald Verfügbar",
-			"connected": "Verbunden",
-			"disconnected": "Getrennt"
-		},
 		"explore": {
 			"allCategories": "Alle",
-			"available": "verfügbar",
 			"noResults": "Keine Integrationen gefunden",
 			"noResultsHint": "Versuchen Sie, Ihre Suche oder Filter anzupassen",
 			"clearFilters": "Filter zurücksetzen",
 			"categories": {
 				"cloudStorage": {
-					"name": "Cloud-Speicher",
-					"consumer": "Consumer Cloud-Speicher",
-					"enterprise": "Enterprise Cloud-Speicher",
-					"developer": "Entwickler Cloud-Speicher"
+					"name": "Cloud-Speicher"
 				},
 				"productivity": {
-					"name": "Produktivität & Zusammenarbeit",
-					"messaging": "Messaging & Kommunikation",
-					"knowledge": "Notizen & Wissensdatenbanken",
-					"email": "E-Mail-Plattformen"
+					"name": "Produktivität & Zusammenarbeit"
 				},
 				"dataAnalytics": {
-					"name": "Daten & Analysen",
-					"warehouses": "Data Warehouses",
-					"bi": "Business Intelligence",
-					"automation": "No-Code Automatisierung"
+					"name": "Daten & Analysen"
 				},
 				"ai": {
-					"name": "KI & Erweiterungen",
-					"assistants": "KI-Assistenten"
+					"name": "KI & Erweiterungen"
 				},
 				"sdk": {
 					"name": "SDKs & Bibliotheken"
@@ -845,10 +738,6 @@
 				"dropbox": {
 					"name": "Dropbox",
 					"description": "Dropbox für einfachen Dateiimport und -export verbinden"
-				},
-				"sharepoint": {
-					"name": "SharePoint",
-					"description": "Enterprise-Dokumentenmanagement mit SharePoint"
 				},
 				"awsS3": {
 					"name": "AWS S3",
@@ -960,14 +849,10 @@
 		"table": {
 			"headers": {
 				"name": "Name",
-				"url": "URL",
 				"enabled": "Aktiviert",
 				"events": "Ereignisse",
-				"headers": "Header",
 				"created": "Erstellt",
 				"lastDelivery": "Letzte Zustellung",
-				"connectedAt": "Verbunden Am",
-				"provider": "Anbieter",
 				"syncMode": "Sync",
 				"schedule": "Zeitplan",
 				"lastSynced": "Zuletzt synchronisiert"
@@ -981,7 +866,6 @@
 				"paused": "Pausiert"
 			},
 			"actions": {
-				"edit": "Bearbeiten",
 				"delete": "Löschen",
 				"test": "Verbindung testen",
 				"sync": "Jetzt synchronisieren",
@@ -995,8 +879,7 @@
 		},
 		"forms": {
 			"search": {
-				"placeholder": "Integrationen suchen...",
-				"webhookSearch": "Webhooks suchen..."
+				"placeholder": "Integrationen suchen..."
 			},
 			"webhook": {
 				"nameLabel": "Webhook-Name",
@@ -1019,13 +902,8 @@
 				"description": "Aktualisieren Sie die Integrationseinstellungen und Konfiguration.",
 				"nameLabel": "Integrationsname",
 				"namePlaceholder": "Meine Integration",
-				"descriptionLabel": "Beschreibung",
-				"descriptionPlaceholder": "Was macht diese Integration?",
-				"activeLabel": "Aktiv",
-				"activeDescription": "Diese Integration aktivieren, um Daten zu synchronisieren und Workflows zu automatisieren",
 				"save": "Änderungen Speichern",
 				"cancel": "Abbrechen",
-				"providerLabel": "Anbieter",
 				"updateCredentials": "Zugangsdaten aktualisieren",
 				"credentialsHint": "Geschlossen lassen, um die vorhandenen Zugangsdaten zu behalten."
 			},
@@ -1095,9 +973,6 @@
 			"deleteWebhook": {
 				"title": "Webhook Löschen",
 				"description": "Diese Aktion kann nicht rückgängig gemacht werden. Dies wird den Webhook dauerhaft löschen und alle Ereigniszustellungen stoppen.",
-				"confirmLabel": "Bitte geben Sie den Webhook-Namen zur Bestätigung ein:",
-				"warningTitle": "Warnung:",
-				"warningDescription": "Das Löschen dieses Webhooks stoppt sofort alle Ereigniszustellungen an diesen Endpunkt.",
 				"confirm": "Webhook Löschen",
 				"cancel": "Abbrechen"
 			},
@@ -1113,24 +988,10 @@
 		},
 		"events": {
 			"documents": {
-				"name": "Dokumente",
-				"documentsUploaded": "Dokument Hochgeladen",
-				"documentsUploadedDesc": "Wenn ein neues Dokument in Ihr Projekt hochgeladen wird",
-				"documentsDownloaded": "Dokument Heruntergeladen",
-				"documentsDownloadedDesc": "Wenn ein Dokument aus Ihrem Projekt heruntergeladen wird",
-				"documentsRedacted": "Dokument Geschwärzt",
-				"documentsRedactedDesc": "Wenn ein Dokument erfolgreich geschwärzt wurde",
-				"documentsVerified": "Dokument Verifiziert",
-				"documentsVerifiedDesc": "Wenn ein Dokument die Verifikationsprüfungen besteht"
+				"name": "Dokumente"
 			},
 			"integrations": {
-				"name": "Integrationen",
-				"integrationTriggered": "Integration Ausgelöst",
-				"integrationTriggeredDesc": "Wenn ein Integrations-Workflow gestartet wird",
-				"integrationSucceeded": "Integration Erfolgreich",
-				"integrationSucceededDesc": "Wenn eine Integration erfolgreich abgeschlossen wird",
-				"integrationFailed": "Integration Fehlgeschlagen",
-				"integrationFailedDesc": "Wenn eine Integration auf Fehler oder Ausfälle stößt"
+				"name": "Integrationen"
 			}
 		},
 		"messages": {
@@ -1158,7 +1019,6 @@
 			"webhookDeleteFailed": "Webhook konnte nicht gelöscht werden",
 			"webhookActivated": "Webhook aktiviert",
 			"webhookDeactivated": "Webhook deaktiviert",
-			"webhookTestSent": "Testereignis an Webhook gesendet",
 			"webhookTestSuccess": "Webhook-Test erfolgreich",
 			"webhookTestSuccessDescription": "Antwort {statusCode} in {responseTimeMs}ms erhalten",
 			"webhookTestFailed": "Webhook-Test fehlgeschlagen",
@@ -1167,46 +1027,12 @@
 		"runs": {
 			"title": "Integrationsausführungen",
 			"backToConnections": "Zurück zu Verbindungen",
-			"searchPlaceholder": "Ausführungen suchen...",
 			"allStatus": "Alle Status",
-			"statusPending": "Ausstehend",
-			"statusRunning": "Läuft",
-			"statusCancelled": "Abgebrochen",
-			"period": "Zeitraum",
-			"lastHour": "Letzte Stunde",
-			"last24Hours": "Letzte 24 Stunden",
-			"last7Days": "Letzte 7 Tage",
-			"last30Days": "Letzte 30 Tage",
 			"runsFound": "{count} Synchronisierung | {count} Synchronisierungen",
-			"selected": "ausgewählt",
-			"copyLogs": "Logs Kopieren",
-			"copied": "Kopiert!",
-			"runId": "Ausführungs-ID",
-			"integration": "Integration",
-			"type": "Typ",
 			"statusHeader": "Status",
 			"started": "Gestartet",
 			"duration": "Dauer",
-			"viewDetails": "Details Anzeigen",
 			"noRunsFound": "Keine Ausführungen gefunden, die Ihren Filtern entsprechen",
-			"unknown": "Unbekannt",
-			"runType": {
-				"manual": "Manuell",
-				"scheduled": "Geplant",
-				"triggered": "Ausgelöst"
-			},
-			"status": {
-				"pending": "Ausstehend",
-				"running": "Läuft",
-				"cancelled": "Abgebrochen",
-				"analyzed": "Analysiert",
-				"completed": "Abgeschlossen",
-				"failed": "Fehlgeschlagen"
-			},
-			"statusAnalyzed": "Analysiert",
-			"statusCompleted": "Abgeschlossen",
-			"statusFailed": "Fehlgeschlagen",
-			"pipeline": "Pipeline",
 			"trigger": "Auslöser",
 			"connection": "Verbindung",
 			"records": "Datensätze",
@@ -1320,8 +1146,6 @@
 			"delete": "Löschen"
 		},
 		"editor": {
-			"title": "Neue Richtlinie",
-			"editTitle": "Richtlinie bearbeiten",
 			"save": "Änderungen speichern",
 			"description": "Definieren Sie Regeln, die festlegen, wie erkannte Entitäten behandelt werden.",
 			"nameLabel": "Name",
@@ -1339,10 +1163,8 @@
 			"removeRule": "Regel entfernen",
 			"when": "Wenn",
 			"then": "Dann",
-			"conditions": "Bedingungen",
 			"addCondition": "Bedingung hinzufügen",
 			"valuesPlaceholder": "komma, getrennt",
-			"action": "Aktion",
 			"summary": {
 				"line": "Wenn {conditions}, {action}.",
 				"and": " und ",
@@ -1400,7 +1222,6 @@
 				"descriptionPlaceholder": "Was dieses Label bedeutet (optional)",
 				"tagsPlaceholder": "Tags, durch Komma getrennt"
 			},
-			"cancel": "Abbrechen",
 			"submit": "Richtlinie erstellen",
 			"identityFooter": "Name, Slug und Beschreibung dieser Richtlinie.",
 			"definitionFooter": "Regeln, Labels und Fallback, die festlegen, wie diese Richtlinie schwärzt.",

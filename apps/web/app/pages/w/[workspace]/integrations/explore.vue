@@ -43,7 +43,7 @@ const { createConnectionAsync, isCreating } = useConnections();
 useHead({ title: "Explore Providers" });
 
 definePageMeta({
-	pageCategory: "Integrations",
+	pageCategory: "header.category.integrations",
 });
 
 /**

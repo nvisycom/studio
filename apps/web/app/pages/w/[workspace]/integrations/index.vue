@@ -43,7 +43,7 @@ const { wLink } = useWorkspaceLink();
 useHead({ title: "Connections" });
 
 definePageMeta({
-	pageCategory: "Integrations",
+	pageCategory: "header.category.integrations",
 });
 
 // Use SDK composables

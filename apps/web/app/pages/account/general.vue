@@ -24,7 +24,7 @@ import { toast } from "vue-sonner";
 useHead({ title: "Account" });
 
 definePageMeta({
-	pageCategory: "Settings",
+	pageCategory: "header.category.settings",
 });
 
 const {

@@ -7,7 +7,7 @@ import {
 useHead({ title: "Overview" });
 
 definePageMeta({
-	pageCategory: "Overview",
+	pageCategory: "header.category.overview",
 });
 
 // Workspace state

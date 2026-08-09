@@ -28,7 +28,7 @@ import type { CorpusDocument } from "#console/components/pages/files/CorpusTable
 useHead({ title: "Corpus" });
 
 definePageMeta({
-	pageCategory: "Files",
+	pageCategory: "header.category.files",
 });
 
 const { wLink } = useWorkspaceLink();

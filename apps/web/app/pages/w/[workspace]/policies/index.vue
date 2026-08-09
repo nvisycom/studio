@@ -59,7 +59,7 @@ const { resolveAvatarUrl } = useAvatarUrl();
 useHead({ title: "Policies" });
 
 definePageMeta({
-	pageCategory: "Policies",
+	pageCategory: "header.category.policies",
 });
 
 const { policies, isLoading, deletePolicyAsync, isDeleting } = usePolicies();

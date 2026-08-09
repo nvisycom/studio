@@ -23,7 +23,7 @@ import DocumentsEditVerifyChart from "#console/components/pages/analytics/Docume
 useHead({ title: "Analytics" });
 
 definePageMeta({
-	pageCategory: "Analytics",
+	pageCategory: "header.category.analytics",
 });
 
 // Date range for analytics

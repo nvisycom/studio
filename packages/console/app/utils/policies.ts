@@ -11,7 +11,7 @@ import type {
 // separate 0.14 rule variant we don't yet expose. `PolicyRule` is the union of
 // both, so we build/read against `PredicatedRule` and skip table rules.
 
-// --- Editor model -----------------------------------------------------------
+// Editor model
 // A flattened representation of the policy schema the editor supports:
 // AND-only conditions (confidence / label / tag), per-modality redact operators
 // (text / image / audio / tabular), suppress/audit actions, a fallback action,
@@ -315,7 +315,7 @@ export function buildCreatePolicy(input: PolicyInput): CreatePolicy {
 	};
 }
 
-// --- Reverse mapping (SDK definition -> editable model) ---------------------
+// Reverse mapping (SDK definition -> editable model)
 // Used when opening the editor on an existing policy. Predicate/action shapes
 // the phase-1 editor can't represent (any/not/coRef, non-text redactions)
 // degrade to their closest editable form.

@@ -109,7 +109,7 @@ function defaultOperator(modality: Modality): EditableOperator {
 	}
 }
 
-// --- Redact modality tabs (per rule action) ---
+// Redact modality tabs (per rule action)
 function activeModalities(action: EditableAction): Modality[] {
 	return MODALITIES.filter((m) => action.modalities?.[m]);
 }
@@ -139,14 +139,14 @@ const rulesOpen = ref(false);
 const labelsOpen = ref(false);
 const groupsOpen = ref(false);
 
-// --- Fallback (a ModalityRedactions, like a rule action) ---
+// Fallback (a ModalityRedactions, like a rule action)
 function toggleFallback(enabled: boolean) {
 	fallback.value = enabled
 		? { modalities: { text: { textKind: "replace", template: "[{label}]" } } }
 		: null;
 }
 
-// --- Labels catalog ---
+// Labels catalog
 function addLabel() {
 	labelsOpen.value = true; // reveal the section so the new row is visible
 	labels.value = [
@@ -158,7 +158,7 @@ function removeLabel(key: string) {
 	labels.value = labels.value.filter((l) => l.key !== key);
 }
 
-// --- Label groups ---
+// Label groups
 function addGroup() {
 	groupsOpen.value = true;
 	groups.value = [
@@ -231,14 +231,14 @@ function moveRule(index: number, delta: number) {
 	next.splice(target, 0, moved);
 	rules.value = next;
 }
-// --- Predicated-rule conditions ---
+// Predicated-rule conditions
 function addPredicate(rule: EditablePredicatedRule) {
 	rule.predicates.push({ kind: "labelOneOf", values: "" });
 }
 function removePredicate(rule: EditablePredicatedRule, index: number) {
 	rule.predicates.splice(index, 1);
 }
-// --- Table-rule entries ---
+// Table-rule entries
 function addEntry(rule: EditableTableRule) {
 	rule.entries.push({
 		key: crypto.randomUUID(),
@@ -250,7 +250,7 @@ function removeEntry(rule: EditableTableRule, key: string) {
 	rule.entries = rule.entries.filter((e) => e.key !== key);
 }
 
-// --- Validation, split per card -------------------------------------------
+// Validation, split per card
 const metaValid = computed(
 	() => displayName.value.trim().length >= 3 && slug.value.length > 0,
 );
