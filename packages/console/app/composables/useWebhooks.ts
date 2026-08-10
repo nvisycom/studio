@@ -8,118 +8,58 @@ import type {
  * Composable for webhook operations
  */
 export function useWebhooks() {
-	const { $nvisyClient } = useNuxtApp();
-	const { authToken } = useAuth();
-	const { currentWorkspaceSlug } = useWorkspaces();
-
-	// Local state for optimistic updates
-	const optimisticUpdates = ref<
-		Record<string, Partial<Webhook> | UpdateWebhook>
-	>({});
-
-	const webhooksQuery = useQuery({
-		key: () => ["webhooks", currentWorkspaceSlug.value],
-		query: async () => {
-			const client = $nvisyClient.value;
-			const workspaceSlug = currentWorkspaceSlug.value;
-			if (!client || !workspaceSlug) throw new Error("Not authenticated");
+	const webhooksQuery = workspaceQuery(
+		"webhooks",
+		async ({ client, workspaceSlug }) => {
 			const result = await client.webhooks.listWebhooks(workspaceSlug);
 			return result.items;
 		},
-		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceSlug.value,
-	});
+	);
 
-	// Computed that applies optimistic updates on top of query data
-	const webhooks = computed<Webhook[] | undefined>(() => {
-		const data = webhooksQuery.data.value;
-		if (!data) return data;
-		return data.map((w) => ({
-			...w,
-			...optimisticUpdates.value[w.id],
-		})) as Webhook[];
-	});
+	// Reflect updates on a row immediately, reconciling once settled.
+	const optimistic = useOptimisticList<Webhook, Partial<Webhook>>(
+		webhooksQuery.data,
+		(w) => w.id,
+	);
 
-	const createWebhookMutation = useMutation({
-		mutation: async (webhook: CreateWebhook) => {
-			const client = $nvisyClient.value;
-			const workspaceSlug = currentWorkspaceSlug.value;
-			if (!client || !workspaceSlug) throw new Error("Not authenticated");
-			return await client.webhooks.createWebhook(workspaceSlug, webhook);
-		},
-		onSuccess() {
-			webhooksQuery.refresh();
-		},
-	});
+	const createWebhookMutation = workspaceMutation(
+		({ client, workspaceSlug }, webhook: CreateWebhook) =>
+			client.webhooks.createWebhook(workspaceSlug, webhook),
+		{ invalidates: webhooksQuery },
+	);
 
-	const updateWebhookMutation = useMutation({
-		mutation: async ({
-			webhookId,
-			updates,
-		}: {
-			webhookId: string;
-			updates: UpdateWebhook;
-		}) => {
-			const client = $nvisyClient.value;
-			const workspaceSlug = currentWorkspaceSlug.value;
-			if (!client || !workspaceSlug) throw new Error("Not authenticated");
-			return await client.webhooks.updateWebhook(
-				workspaceSlug,
-				webhookId,
-				updates,
-			);
+	const updateWebhookMutation = workspaceMutation(
+		(
+			{ client, workspaceSlug },
+			{ webhookId, updates }: { webhookId: string; updates: UpdateWebhook },
+		) => client.webhooks.updateWebhook(workspaceSlug, webhookId, updates),
+		{
+			onMutate({ webhookId, updates }) {
+				optimistic.apply(webhookId, updates);
+			},
+			onError(_error, { webhookId }) {
+				optimistic.rollback(webhookId);
+			},
+			onSettled(data, _error, { webhookId }) {
+				optimistic.settle(webhookId, data as Partial<Webhook> | undefined);
+			},
 		},
-		onMutate({ webhookId, updates }) {
-			// Optimistic update
-			optimisticUpdates.value = {
-				...optimisticUpdates.value,
-				[webhookId]: updates,
-			};
-		},
-		onError(_error, variables) {
-			// Rollback on error
-			const { [variables.webhookId]: _, ...rest } = optimisticUpdates.value;
-			optimisticUpdates.value = rest;
-		},
-		onSettled(data, _error, variables) {
-			// Use the mutation response as source of truth
-			// This avoids race conditions with the list endpoint
-			if (data) {
-				optimisticUpdates.value = {
-					...optimisticUpdates.value,
-					[variables.webhookId]: data,
-				};
-			} else {
-				// On error, clear the optimistic update
-				const { [variables.webhookId]: _, ...rest } = optimisticUpdates.value;
-				optimisticUpdates.value = rest;
-			}
-		},
-	});
+	);
 
-	const deleteWebhookMutation = useMutation({
-		mutation: async (webhookId: string) => {
-			const client = $nvisyClient.value;
-			const workspaceSlug = currentWorkspaceSlug.value;
-			if (!client || !workspaceSlug) throw new Error("Not authenticated");
-			await client.webhooks.deleteWebhook(workspaceSlug, webhookId);
-		},
-		onSuccess() {
-			webhooksQuery.refresh();
-		},
-	});
+	const deleteWebhookMutation = workspaceMutation(
+		({ client, workspaceSlug }, webhookId: string) =>
+			client.webhooks.deleteWebhook(workspaceSlug, webhookId),
+		{ invalidates: webhooksQuery },
+	);
 
-	const testWebhookMutation = useMutation({
-		mutation: async (webhookId: string) => {
-			const client = $nvisyClient.value;
-			const workspaceSlug = currentWorkspaceSlug.value;
-			if (!client || !workspaceSlug) throw new Error("Not authenticated");
-			return await client.webhooks.testWebhook(workspaceSlug, webhookId);
-		},
-	});
+	const testWebhookMutation = workspaceMutation(
+		({ client, workspaceSlug }, webhookId: string) =>
+			client.webhooks.testWebhook(workspaceSlug, webhookId),
+	);
 
 	return {
 		// Query state
-		webhooks,
+		webhooks: optimistic.items,
 		isLoading: webhooksQuery.isLoading,
 		error: webhooksQuery.error,
 		refresh: webhooksQuery.refresh,

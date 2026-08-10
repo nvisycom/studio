@@ -1,5 +1,3 @@
-import type { File as NvisyFile } from "@nvisy/sdk/datatypes";
-
 export interface UseFileOptions {
 	fileId: MaybeRef<string | null>;
 }

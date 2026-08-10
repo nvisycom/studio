@@ -4,76 +4,42 @@ import type { CreatePolicy, UpdatePolicy } from "@nvisy/sdk/datatypes";
  * Composable for policy operations (workspace-scoped).
  */
 export function usePolicies() {
-	const { $nvisyClient } = useNuxtApp();
-	const { authToken } = useAuth();
-	const { currentWorkspaceSlug } = useWorkspaces();
+	const { requireContext } = useWorkspaceContext();
 
-	const policiesQuery = useQuery({
-		key: () => ["policies", currentWorkspaceSlug.value],
-		query: async () => {
-			const client = $nvisyClient.value;
-			const workspaceSlug = currentWorkspaceSlug.value;
-			if (!client || !workspaceSlug) throw new Error("Not authenticated");
+	const policiesQuery = workspaceQuery(
+		"policies",
+		async ({ client, workspaceSlug }) => {
 			const result = await client.policies.listPolicies(workspaceSlug);
 			return result.items;
 		},
-		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceSlug.value,
-	});
+	);
 
 	// Fetch a single policy with its full definition (the list only returns
 	// summaries).
 	async function getPolicy(policySlug: string) {
-		const client = $nvisyClient.value;
-		const workspaceSlug = currentWorkspaceSlug.value;
-		if (!client || !workspaceSlug) throw new Error("Not authenticated");
+		const { client, workspaceSlug } = requireContext();
 		return await client.policies.getPolicy(workspaceSlug, policySlug);
 	}
 
-	const createPolicyMutation = useMutation({
-		mutation: async (policy: CreatePolicy) => {
-			const client = $nvisyClient.value;
-			const workspaceSlug = currentWorkspaceSlug.value;
-			if (!client || !workspaceSlug) throw new Error("Not authenticated");
-			return await client.policies.createPolicy(workspaceSlug, policy);
-		},
-		onSuccess() {
-			policiesQuery.refresh();
-		},
-	});
+	const createPolicyMutation = workspaceMutation(
+		({ client, workspaceSlug }, policy: CreatePolicy) =>
+			client.policies.createPolicy(workspaceSlug, policy),
+		{ invalidates: policiesQuery },
+	);
 
-	const updatePolicyMutation = useMutation({
-		mutation: async ({
-			policySlug,
-			updates,
-		}: {
-			policySlug: string;
-			updates: UpdatePolicy;
-		}) => {
-			const client = $nvisyClient.value;
-			const workspaceSlug = currentWorkspaceSlug.value;
-			if (!client || !workspaceSlug) throw new Error("Not authenticated");
-			return await client.policies.updatePolicy(
-				workspaceSlug,
-				policySlug,
-				updates,
-			);
-		},
-		onSuccess() {
-			policiesQuery.refresh();
-		},
-	});
+	const updatePolicyMutation = workspaceMutation(
+		(
+			{ client, workspaceSlug },
+			{ policySlug, updates }: { policySlug: string; updates: UpdatePolicy },
+		) => client.policies.updatePolicy(workspaceSlug, policySlug, updates),
+		{ invalidates: policiesQuery },
+	);
 
-	const deletePolicyMutation = useMutation({
-		mutation: async (policySlug: string) => {
-			const client = $nvisyClient.value;
-			const workspaceSlug = currentWorkspaceSlug.value;
-			if (!client || !workspaceSlug) throw new Error("Not authenticated");
-			await client.policies.deletePolicy(workspaceSlug, policySlug);
-		},
-		onSuccess() {
-			policiesQuery.refresh();
-		},
-	});
+	const deletePolicyMutation = workspaceMutation(
+		({ client, workspaceSlug }, policySlug: string) =>
+			client.policies.deletePolicy(workspaceSlug, policySlug),
+		{ invalidates: policiesQuery },
+	);
 
 	return {
 		policies: policiesQuery.data,
@@ -85,13 +51,16 @@ export function usePolicies() {
 		createPolicy: createPolicyMutation.mutate,
 		createPolicyAsync: createPolicyMutation.mutateAsync,
 		isCreating: createPolicyMutation.isLoading,
+		createError: createPolicyMutation.error,
 
 		updatePolicy: updatePolicyMutation.mutate,
 		updatePolicyAsync: updatePolicyMutation.mutateAsync,
 		isUpdating: updatePolicyMutation.isLoading,
+		updateError: updatePolicyMutation.error,
 
 		deletePolicy: deletePolicyMutation.mutate,
 		deletePolicyAsync: deletePolicyMutation.mutateAsync,
 		isDeleting: deletePolicyMutation.isLoading,
+		deleteError: deletePolicyMutation.error,
 	};
 }
