@@ -100,7 +100,7 @@ defineShortcuts({
         <DropdownMenuTrigger as-child>
           <SidebarMenuButton
             size="lg"
-            class="data-[state=open]:bg-sidebar-accent/50"
+            class="data-[state=open]:bg-sidebar-accent/50 group-data-[collapsible=icon]:justify-center"
           >
             <EntityAvatar
               :name="primaryLabel"
@@ -108,7 +108,9 @@ defineShortcuts({
               size="sm"
               class="rounded-md"
             />
-            <div class="grid flex-1 text-left leading-tight">
+            <div
+              class="grid flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden"
+            >
               <span
                 class="truncate text-sm font-medium text-sidebar-foreground"
                 >{{ primaryLabel }}</span
@@ -119,7 +121,9 @@ defineShortcuts({
                 >{{ secondaryLabel }}</span
               >
             </div>
-            <ChevronsUpDown class="ml-auto size-4 text-sidebar-foreground/50" />
+            <ChevronsUpDown
+              class="ml-auto size-4 text-sidebar-foreground/50 group-data-[collapsible=icon]:hidden"
+            />
           </SidebarMenuButton>
         </DropdownMenuTrigger>
         <DropdownMenuContent
