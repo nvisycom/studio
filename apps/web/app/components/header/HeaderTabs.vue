@@ -11,6 +11,7 @@ import {
 	FileSearch,
 	Plug,
 	Compass,
+	Database,
 	History,
 	Workflow,
 	ShieldCheck,
@@ -55,6 +56,7 @@ const currentPoliciesTab = computed(() => {
 });
 
 const currentSettingsTab = computed(() => {
+	if (subPath.value === "/settings/data") return "data";
 	if (subPath.value === "/settings/notifications") return "notifications";
 	return "general";
 });
@@ -177,6 +179,12 @@ defineExpose({
         <NuxtLink :to="wLink('/settings/general')" class="flex items-center gap-2">
           <Settings :size="16" />
           {{ t("header.tabs.settings.general") }}
+        </NuxtLink>
+      </TabsTrigger>
+      <TabsTrigger value="data" as-child>
+        <NuxtLink :to="wLink('/settings/data')" class="flex items-center gap-2">
+          <Database :size="16" />
+          {{ t("header.tabs.settings.data") }}
         </NuxtLink>
       </TabsTrigger>
       <TabsTrigger value="notifications" as-child>

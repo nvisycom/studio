@@ -12,7 +12,8 @@
 			},
 			"settings": {
 				"general": "Allgemein",
-				"notifications": "Benachrichtigungen"
+				"notifications": "Benachrichtigungen",
+				"data": "Daten"
 			},
 			"account": {
 				"general": "Allgemein",
