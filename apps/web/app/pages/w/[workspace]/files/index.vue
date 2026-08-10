@@ -32,7 +32,7 @@ const { wLink } = useWorkspaceLink();
 useHead({ title: "Files" });
 
 definePageMeta({
-	pageCategory: "Files",
+	pageCategory: "header.category.files",
 });
 
 // Filter state — filtering is done server-side via the listFiles query.
@@ -317,7 +317,7 @@ function handleGridScroll(event: Event) {
           <Input
             v-model="searchQuery"
             :placeholder="t('files.filters.search')"
-            class="pl-10 h-9 text-sm"
+            class="pl-10 h-9"
           />
         </div>
 

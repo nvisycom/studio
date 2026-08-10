@@ -9,7 +9,7 @@ import {
 useHead({ title: "Studio" });
 
 definePageMeta({
-	pageCategory: "Studio",
+	pageCategory: "header.category.studio",
 });
 
 // Use studio files store for persistent open files

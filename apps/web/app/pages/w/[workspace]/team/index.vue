@@ -25,7 +25,7 @@ import {
 useHead({ title: "Team" });
 
 definePageMeta({
-	pageCategory: "Team",
+	pageCategory: "header.category.team",
 });
 
 const { t } = useI18n();

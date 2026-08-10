@@ -18,9 +18,14 @@ import {
 
 const route = useRoute();
 
-// Get page category from route meta
-const pageCategory = computed(
+// The page category (a `header.category.*` i18n key) is set per page via
+// definePageMeta and shown as the header breadcrumb.
+const { t } = useI18n();
+const pageCategoryKey = computed(
 	() => route.meta.pageCategory as string | undefined,
+);
+const pageCategory = computed(() =>
+	pageCategoryKey.value ? t(pageCategoryKey.value) : undefined,
 );
 
 // Ref to HeaderTabs component

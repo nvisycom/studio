@@ -101,7 +101,7 @@ const quickActions = [
           class="flex flex-wrap items-center gap-1.5 mt-3"
         >
           <Badge
-            v-if="currentWorkspace.requireApproval"
+            v-if="currentWorkspace.settings.requireApproval"
             variant="secondary"
             class="text-xs"
           >

@@ -49,7 +49,7 @@ const { wLink } = useWorkspaceLink();
 useHead({ title: "Connection Syncs" });
 
 definePageMeta({
-	pageCategory: "Integrations",
+	pageCategory: "header.category.integrations",
 });
 
 const SYNC_STATUSES: SyncStatus[] = [

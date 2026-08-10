@@ -1,25 +1,38 @@
 import type {
 	CreatePolicy,
+	Label,
+	Labels,
 	PolicyDefinition,
 	PolicyRule,
-	UpdatePolicy,
 } from "@nvisy/sdk/datatypes";
 
-// --- Editor model -----------------------------------------------------------
+// 0.16 merged the rule variants into one `PolicyRule` discriminated by `kind`.
+// The predicated arm (predicate + action) is what most builders reference.
+type PredicatedRule = Extract<PolicyRule, { kind: "predicated" }>;
+
+// Editor model
 // A flattened representation of the policy schema the editor supports:
 // AND-only conditions (confidence / label / tag), per-modality redact operators
 // (text / image / audio / tabular), suppress/audit actions, a fallback action,
 // and the label catalog. Recursive predicate trees (any/not) and appliesWhen /
 // retention are not yet exposed.
 
-export type PredicateKind = "confidence" | "labelOneOf" | "tagOneOf";
+export type PredicateKind =
+	| "confidence"
+	| "labelOneOf"
+	| "tagOneOf"
+	| "labelInGroup"
+	| "coRef";
 
 /** A single condition. `all` of a rule's conditions must hold (AND). */
 export interface EditablePredicate {
 	kind: PredicateKind;
 	/** For `confidence`: minimum in [0,1]. */
 	min?: number;
-	/** For `labelOneOf` / `tagOneOf`: comma-separated values entered by the user. */
+	/**
+	 * For `labelOneOf` / `tagOneOf`: comma-separated values. For `labelInGroup`
+	 * (a group name) / `coRef` (a cluster id): a single value.
+	 */
 	values?: string;
 }
 
@@ -61,7 +74,9 @@ export interface EditableAction {
 	modalities: Partial<Record<Modality, EditableOperator>>;
 }
 
-export interface EditableRule {
+/** A predicated (When → Then) rule: a condition applies one action. */
+export interface EditablePredicatedRule {
+	kind: "predicated";
 	/** Local-only key for list rendering; a fresh uuid is minted on submit. */
 	key: string;
 	name: string;
@@ -70,6 +85,25 @@ export interface EditableRule {
 	action: EditableAction;
 }
 
+/** One `label → action` row of a table rule. */
+export interface EditableLabelEntry {
+	key: string;
+	/** The label this entry matches on. */
+	label: string;
+	action: EditableAction;
+}
+
+/** A table rule: a lookup of per-label actions (no predicate). */
+export interface EditableTableRule {
+	kind: "table";
+	key: string;
+	name: string;
+	description?: string;
+	entries: EditableLabelEntry[];
+}
+
+export type EditableRule = EditablePredicatedRule | EditableTableRule;
+
 /** An entity-label catalog entry. */
 export interface EditableLabel {
 	key: string;
@@ -77,6 +111,15 @@ export interface EditableLabel {
 	description?: string;
 	/** comma-separated tags. */
 	tags?: string;
+}
+
+/** A named cluster of label refs a rule can match via `labelInGroup`. */
+export interface EditableGroup {
+	key: string;
+	name: string;
+	description?: string;
+	/** comma-separated label refs. */
+	labels: string;
 }
 
 function splitValues(raw?: string): string[] {
@@ -89,7 +132,7 @@ function splitValues(raw?: string): string[] {
 /** Build the SDK `Predicate` for a rule from its editable conditions. */
 function buildPredicate(
 	predicates: EditablePredicate[],
-): PolicyRule["predicate"] {
+): PredicatedRule["predicate"] {
 	const parts = predicates.map((p) => {
 		if (p.kind === "confidence") {
 			return { kind: "confidence" as const, min: p.min ?? 0 };
@@ -97,11 +140,17 @@ function buildPredicate(
 		if (p.kind === "labelOneOf") {
 			return { kind: "labelOneOf" as const, labels: splitValues(p.values) };
 		}
+		if (p.kind === "labelInGroup") {
+			return { kind: "labelInGroup" as const, group: (p.values ?? "").trim() };
+		}
+		if (p.kind === "coRef") {
+			return { kind: "coRef" as const, coref: (p.values ?? "").trim() };
+		}
 		return { kind: "tagOneOf" as const, tags: splitValues(p.values) };
 	});
 	// A single predicate stands alone; multiple are AND-ed via `all`.
-	if (parts.length === 1) return parts[0] as PolicyRule["predicate"];
-	return { kind: "all", all: parts } as PolicyRule["predicate"];
+	if (parts.length === 1) return parts[0] as PredicatedRule["predicate"];
+	return { kind: "all", all: parts } as PredicatedRule["predicate"];
 }
 
 /** Build a text-vocabulary operator (shared by text and tabular `cell`). */
@@ -152,16 +201,16 @@ function buildModalities(mods: EditableAction["modalities"]) {
  * editable action. Defaults to a text replace when nothing is configured so
  * the action is never empty.
  */
-function buildAction(action: EditableAction): PolicyRule["action"] {
+function buildAction(action: EditableAction): PredicatedRule["action"] {
 	const mods = action.modalities;
 	const built =
 		mods && Object.keys(mods).length > 0
 			? buildModalities(mods)
 			: { text: { kind: "replace", template: "[{label}]" } };
-	return built as PolicyRule["action"];
+	return built as PredicatedRule["action"];
 }
 
-interface PolicyInput {
+export interface PolicyInput {
 	id: string;
 	displayName: string;
 	slug: string;
@@ -169,90 +218,161 @@ interface PolicyInput {
 	rules: EditableRule[];
 	/** Catch-all action when no rule matches; null/undefined = none. */
 	fallback?: EditableAction | null;
-	/** Entity-label catalog. */
+	/** Entity-label catalog (custom labels only). */
 	labels?: EditableLabel[];
+	/** Named label groups a rule can reference via `labelInGroup`. */
+	groups?: EditableGroup[];
+	/**
+	 * The original definition, when editing. Fields the editor doesn't model
+	 * (builtin labels) are preserved from here so a save never destroys them.
+	 */
+	original?: PolicyDefinition;
 }
 
-/** Build the SDK policy definition body shared by create and update. */
-function buildDefinition(input: PolicyInput): PolicyDefinition {
-	const rules: PolicyRule[] = input.rules.map((r) => ({
-		id: crypto.randomUUID(),
-		name: r.name.trim(),
-		description: r.description?.trim() || undefined,
-		predicate: buildPredicate(r.predicates),
-		action: buildAction(r.action),
-	}));
+/**
+ * Build the SDK policy definition body shared by create and update.
+ *
+ * The editor only fully models predicated rules, the fallback, and custom
+ * labels. When editing, `builtins` from the original definition are carried
+ * through untouched.
+ */
+export function buildDefinition(input: PolicyInput): PolicyDefinition {
+	const original = input.original;
 
-	const labels = (input.labels ?? [])
+	// Both rule kinds are editable; build each in its declared order. 0.16
+	// discriminates the rule variants with a `kind` field.
+	const rules: PolicyRule[] = input.rules.map((r) =>
+		r.kind === "table"
+			? {
+					kind: "table",
+					id: crypto.randomUUID(),
+					name: r.name.trim(),
+					description: r.description?.trim() || undefined,
+					operators: r.entries
+						.filter((e) => e.label.trim())
+						.map((e) => ({
+							label: e.label.trim(),
+							action: buildAction(e.action),
+						})),
+				}
+			: {
+					kind: "predicated",
+					id: crypto.randomUUID(),
+					name: r.name.trim(),
+					description: r.description?.trim() || undefined,
+					predicate: buildPredicate(r.predicates),
+					action: buildAction(r.action),
+				},
+	);
+
+	// The editor's simple name/description/tags map to a single default-locale
+	// custom label. Preserve any `builtins` from the original catalog.
+	const customLabels: Label[] = (input.labels ?? [])
 		.filter((l) => l.name.trim())
 		.map((l) => ({
-			name: l.name.trim(),
-			description: l.description?.trim() || undefined,
+			id: crypto.randomUUID(),
+			localizations: {
+				en: {
+					name: l.name.trim(),
+					...(l.description?.trim()
+						? { description: l.description.trim() }
+						: {}),
+				},
+			},
 			tags: splitValues(l.tags),
+		}));
+	const builtins = original?.labels?.builtins;
+	const labels: Labels | undefined =
+		customLabels.length > 0 || builtins?.length
+			? {
+					...(builtins?.length ? { builtins } : {}),
+					...(customLabels.length > 0 ? { custom: customLabels } : {}),
+				}
+			: undefined;
+
+	// Named label groups (referenced by `labelInGroup` predicates).
+	const groups = (input.groups ?? [])
+		.filter((g) => g.name.trim())
+		.map((g) => ({
+			name: g.name.trim(),
+			description: g.description?.trim() || undefined,
+			labels: splitValues(g.labels),
 		}));
 
 	return {
 		id: input.id,
 		name: input.displayName.trim(),
 		description: input.description?.trim() || undefined,
-		rules,
+		// `rules` is optional; omit it entirely for a fallback-only policy.
+		...(rules.length > 0 ? { rules } : {}),
 		...(input.fallback ? { fallback: buildAction(input.fallback) } : {}),
-		...(labels.length > 0 ? { labels } : {}),
+		...(labels ? { labels } : {}),
+		...(groups.length > 0 ? { groups } : {}),
 	} as PolicyDefinition;
 }
 
-/** Assemble a `CreatePolicy` payload from the editor's field values. */
+/**
+ * Assemble a `CreatePolicy` payload from the editor's field values. 0.14 makes
+ * CreatePolicy a discriminated union (`source: "template" | "inline"`); the
+ * editor always builds an inline definition.
+ */
 export function buildCreatePolicy(input: PolicyInput): CreatePolicy {
 	return {
 		slug: input.slug,
 		displayName: input.displayName.trim(),
 		description: input.description?.trim() || undefined,
+		source: "inline",
 		definition: buildDefinition(input),
 	};
 }
 
-/** Assemble an `UpdatePolicy` payload (slug is immutable, so it is omitted). */
-export function buildUpdatePolicy(input: PolicyInput): UpdatePolicy {
-	return {
-		displayName: input.displayName.trim(),
-		description: input.description?.trim() || undefined,
-		definition: buildDefinition(input),
-	};
-}
-
-// --- Reverse mapping (SDK definition -> editable model) ---------------------
+// Reverse mapping (SDK definition -> editable model)
 // Used when opening the editor on an existing policy. Predicate/action shapes
 // the phase-1 editor can't represent (any/not/coRef, non-text redactions)
 // degrade to their closest editable form.
 
-type SdkPredicate = PolicyRule["predicate"];
-type SdkAction = PolicyRule["action"];
+type SdkPredicate = PredicatedRule["predicate"];
+type SdkAction = PredicatedRule["action"];
+
+/**
+ * A structural view of `ModalityRedactions` exposing just the common fields the
+ * editor reads. The real operators are per-kind discriminated unions; this view
+ * is the one deliberate widening we do when reversing them into the flat model.
+ */
+type ModalityRedactionsView = {
+	text?: { kind?: string; mask_char?: string; template?: string };
+	image?: { kind?: string; sigma?: number; block_size?: number };
+	audio?: { kind?: string; hz?: number };
+	tabular?: {
+		spec?: { kind?: string; mask_char?: string; template?: string };
+	};
+};
 
 function predicateToEditable(pred: SdkPredicate): EditablePredicate[] {
 	// Flatten a top-level `all` into individual conditions; anything else is a
-	// single condition.
-	const parts: SdkPredicate[] =
-		pred && "kind" in pred && pred.kind === "all"
-			? ((pred as { all: SdkPredicate[] }).all ?? [])
-			: [pred];
+	// single condition. The discriminated `kind` narrows each arm — no casts.
+	const parts: SdkPredicate[] = pred.kind === "all" ? pred.all : [pred];
 
 	const editable: EditablePredicate[] = [];
 	for (const p of parts) {
-		if (!p || !("kind" in p)) continue;
 		if (p.kind === "confidence") {
-			editable.push({ kind: "confidence", min: (p as { min: number }).min });
+			editable.push({ kind: "confidence", min: p.min });
 		} else if (p.kind === "labelOneOf") {
 			editable.push({
 				kind: "labelOneOf",
-				values: ((p as { labels: string[] }).labels ?? []).join(", "),
+				values: p.labels.join(", "),
 			});
 		} else if (p.kind === "tagOneOf") {
 			editable.push({
 				kind: "tagOneOf",
-				values: ((p as { tags: string[] }).tags ?? []).join(", "),
+				values: p.tags.join(", "),
 			});
+		} else if (p.kind === "labelInGroup") {
+			editable.push({ kind: "labelInGroup", values: p.group });
+		} else if (p.kind === "coRef") {
+			editable.push({ kind: "coRef", values: p.coref });
 		}
-		// any/not/coRef are not representable in the phase-1 editor; skip them.
+		// any/not aren't representable in the flat editor; skip them.
 	}
 	// Always keep at least one condition so the rule stays editable.
 	return editable.length > 0 ? editable : [{ kind: "confidence", min: 0.5 }];
@@ -276,16 +396,10 @@ function actionToEditable(action: SdkAction): EditableAction {
 			modalities: { text: { textKind: "replace", template: "[{label}]" } },
 		};
 	}
-	// A rule action / fallback is `ModalityRedactions`: read whichever modality
-	// operators are present.
-	const a = action as {
-		text?: { kind?: string; mask_char?: string; template?: string };
-		image?: { kind?: string; sigma?: number; block_size?: number };
-		audio?: { kind?: string; hz?: number };
-		tabular?: {
-			spec?: { kind?: string; mask_char?: string; template?: string };
-		};
-	};
+	// Each modality operator is a discriminated union whose fields vary by kind.
+	// The editor reads a common subset (kind + a couple of params), so we take a
+	// single structural view of the whole map rather than narrowing every arm.
+	const a = action as ModalityRedactionsView;
 	const modalities: EditableAction["modalities"] = {};
 	if (a.text) modalities.text = textOpToEditable(a.text);
 	if (a.image) {
@@ -320,36 +434,79 @@ function actionToEditable(action: SdkAction): EditableAction {
 export function fallbackFromDefinition(
 	definition: PolicyDefinition,
 ): EditableAction | null {
-	const fb = (definition as { fallback?: SdkAction }).fallback;
+	const fb = definition.fallback;
 	return fb ? actionToEditable(fb) : null;
 }
 
-/** Reconstruct the editable label catalog from a stored definition. */
+/**
+ * Reconstruct the editable label catalog from a stored definition. `labels` is
+ * an object with an optional `custom` array; each custom label carries
+ * localized names, so we read the first available locale into the editor's
+ * flat name/description.
+ */
 export function labelsFromDefinition(
 	definition: PolicyDefinition,
 ): EditableLabel[] {
-	const labels = (
-		definition as {
-			labels?: Array<{ name: string; description?: string; tags?: string[] }>;
-		}
-	).labels;
-	return (labels ?? []).map((l) => ({
+	const labels: Labels | undefined = definition.labels;
+	return (labels?.custom ?? []).map((l) => {
+		const locale = Object.values(l.localizations)[0];
+		return {
+			key: crypto.randomUUID(),
+			name: locale?.name ?? "",
+			description: locale?.description,
+			tags: l.tags.join(", "),
+		};
+	});
+}
+
+/** Reconstruct the editable label groups from a stored definition. */
+export function groupsFromDefinition(
+	definition: PolicyDefinition,
+): EditableGroup[] {
+	return (definition.groups ?? []).map((g) => ({
 		key: crypto.randomUUID(),
-		name: l.name,
-		description: l.description,
-		tags: (l.tags ?? []).join(", "),
+		name: g.name,
+		description: g.description,
+		labels: g.labels.join(", "),
 	}));
 }
 
-/** Reconstruct the editable rule list from a stored policy definition. */
+/** Narrow a `PolicyRule` to the table arm by its `kind` discriminant. */
+function isTableRule(
+	rule: PolicyRule,
+): rule is Extract<PolicyRule, { kind: "table" }> {
+	return rule.kind === "table";
+}
+
+/**
+ * Reconstruct the editable rule list from a stored policy definition. Both
+ * predicated rules (When → Then) and table rules (per-label action lookups) are
+ * represented.
+ */
 export function rulesFromDefinition(
 	definition: PolicyDefinition,
 ): EditableRule[] {
-	return (definition.rules ?? []).map((r) => ({
-		key: crypto.randomUUID(),
-		name: r.name,
-		description: r.description,
-		predicates: predicateToEditable(r.predicate),
-		action: actionToEditable(r.action),
-	}));
+	return (definition.rules ?? []).map((r): EditableRule => {
+		if (isTableRule(r)) {
+			return {
+				kind: "table",
+				key: crypto.randomUUID(),
+				name: r.name,
+				description: r.description,
+				entries: (r.operators ?? []).map((op) => ({
+					key: crypto.randomUUID(),
+					label: op.label,
+					action: actionToEditable(op.action),
+				})),
+			};
+		}
+		return {
+			kind: "predicated",
+			key: crypto.randomUUID(),
+			name: r.name,
+			description: r.description,
+			predicates: predicateToEditable(r.predicate),
+			action: actionToEditable(r.action),
+		};
+	});
 }

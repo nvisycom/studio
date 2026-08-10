@@ -69,7 +69,7 @@ const isValid = computed(() => displayName.value.trim().length > 0);
 
 function populate(connection: Connection) {
 	displayName.value = connection.displayName;
-	deletionPolicy.value = connection.deletionPolicy;
+	deletionPolicy.value = connection.sync?.deletionPolicy ?? "ignore";
 	isActive.value = connection.isActive;
 	showCredentials.value = false;
 	credentials.value = {};
@@ -92,9 +92,21 @@ function submit() {
 
 	const updates: UpdateConnection = {
 		displayName: displayName.value.trim(),
-		deletionPolicy: deletionPolicy.value,
 		isActive: isActive.value,
 	};
+
+	// Sync settings are nested under `sync` (0.15). Only send when the
+	// connection already syncs — preserve its mode, update the deletion policy.
+	const existingSync = props.connection.sync;
+	if (existingSync) {
+		updates.sync = {
+			syncMode: existingSync.syncMode,
+			deletionPolicy: deletionPolicy.value,
+			...(existingSync.scheduleCron
+				? { scheduleCron: existingSync.scheduleCron }
+				: {}),
+		};
+	}
 
 	// Only include credentials if the user opened the section and filled fields.
 	if (showCredentials.value && providerTag.value) {

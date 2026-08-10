@@ -17,7 +17,7 @@ import { Checkbox } from "#console/components/ui/checkbox";
 useHead({ title: "Notifications" });
 
 definePageMeta({
-	pageCategory: "Settings",
+	pageCategory: "header.category.settings",
 });
 
 const { t } = useI18n();

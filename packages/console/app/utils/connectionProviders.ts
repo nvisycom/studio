@@ -1,7 +1,17 @@
-import type { ConnectionConfig } from "@nvisy/sdk/datatypes";
+import type { ConnectionConfig, LlmConfig } from "@nvisy/sdk/datatypes";
 
-/** SDK connection provider tags that studio can create connections for. */
-export type StorageProvider = ConnectionConfig["provider"];
+/**
+ * Object-storage provider tags studio can create connections for. 0.15 adds AI
+ * providers to `ConnectionConfig["provider"]`; the storage connect flow only
+ * handles the storage subset, so we narrow to it.
+ */
+export type StorageProvider = Extract<
+	ConnectionConfig["provider"],
+	"s3" | "azure" | "gcs"
+>;
+
+/** LLM provider tags (openai / anthropic / ollama), derived from the SDK. */
+export type LlmProvider = LlmConfig["provider"];
 
 /** A credential field rendered in the connect dialog. */
 export interface CredentialField {
@@ -97,5 +107,71 @@ export function providerIcon(provider: string): string | null {
 
 /** Display label for a provider tag, falling back to the raw tag. */
 export function providerLabel(provider: string): string {
-	return PROVIDER_LABELS[provider as StorageProvider] ?? provider;
+	return (
+		LLM_LABELS[provider as LlmProvider] ??
+		PROVIDER_LABELS[provider as StorageProvider] ??
+		provider
+	);
+}
+
+// LLM providers
+
+/**
+ * LLM connect-dialog metadata per provider. `needsApiKey` gates the API-key
+ * field (Ollama is a local server, no key); `baseUrlRequired` reflects the SDK
+ * (`ollama.baseUrl` is required, the hosted providers' is an optional override).
+ */
+export interface LlmProviderMeta {
+	/** Product name shown as the card/dialog title (e.g. "ChatGPT"). */
+	product: string;
+	/** Company shown as the subtitle (e.g. "OpenAI"). */
+	company: string;
+	icon: string | null;
+	needsApiKey: boolean;
+	baseUrlRequired: boolean;
+}
+
+export const LLM_PROVIDERS: Record<LlmProvider, LlmProviderMeta> = {
+	openai: {
+		product: "ChatGPT",
+		company: "OpenAI",
+		icon: "/integration/openai.svg",
+		needsApiKey: true,
+		baseUrlRequired: false,
+	},
+	anthropic: {
+		product: "Claude",
+		company: "Anthropic",
+		icon: "/integration/anthropic.svg",
+		needsApiKey: true,
+		baseUrlRequired: false,
+	},
+	ollama: {
+		product: "Ollama",
+		company: "Ollama",
+		icon: "/integration/ollama.svg",
+		needsApiKey: false,
+		baseUrlRequired: true,
+	},
+};
+
+/** Company label for an LLM provider (used by providerLabel fallback). */
+const LLM_LABELS: Record<LlmProvider, string> = {
+	openai: "OpenAI",
+	anthropic: "Anthropic",
+	ollama: "Ollama",
+};
+
+/**
+ * Maps an explore-page card id to the LLM provider it creates a connection for.
+ */
+export const PROVIDER_CARD_TO_LLM: Record<string, LlmProvider> = {
+	chatgpt: "openai",
+	claude: "anthropic",
+	ollama: "ollama",
+};
+
+/** The SDK LLM provider for a card id, or null if it is not an LLM card. */
+export function llmProviderForCard(cardId: string): LlmProvider | null {
+	return PROVIDER_CARD_TO_LLM[cardId] ?? null;
 }

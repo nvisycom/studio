@@ -9,7 +9,7 @@ import {
 	History,
 } from "@lucide/vue";
 import { toast } from "vue-sonner";
-import type { PipelineSummary } from "@nvisy/sdk/datatypes";
+import type { CreatePipeline, PipelineSummary } from "@nvisy/sdk/datatypes";
 import { Button } from "#console/components/ui/button";
 import { Badge } from "#console/components/ui/badge";
 import {
@@ -48,7 +48,7 @@ const { wLink } = useWorkspaceLink();
 useHead({ title: "Workflows" });
 
 definePageMeta({
-	pageCategory: "Workflows",
+	pageCategory: "header.category.workflows",
 });
 
 const {
@@ -59,7 +59,22 @@ const {
 	deletePipelineAsync,
 } = usePipelines();
 
+// Policies are linkable at creation (definition.policySlugs).
+const { policies } = usePolicies();
+
 const isCreateDialogOpen = ref(false);
+
+async function handleCreate(pipeline: CreatePipeline) {
+	try {
+		await createPipelineAsync(pipeline);
+		toast.success(t("workflows.toast.created"));
+		isCreateDialogOpen.value = false;
+	} catch (err) {
+		toast.error(t("workflows.toast.createFailed"), {
+			description: getErrorMessage(err, t("common.errors.tryAgain")),
+		});
+	}
+}
 
 const statusVariant: Record<
 	PipelineSummary["status"],
@@ -238,7 +253,8 @@ async function handleDelete(slug: string) {
         <CreatePipelineDialog
           v-model:open="isCreateDialogOpen"
           :is-loading="isCreating"
-          @create="createPipelineAsync"
+          :policies="policies ?? undefined"
+          @create="handleCreate"
         />
       </template>
     </div>

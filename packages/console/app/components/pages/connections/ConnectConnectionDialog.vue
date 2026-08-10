@@ -108,11 +108,13 @@ function submit() {
 
 	const connection = {
 		displayName: displayName.value.trim(),
-		syncMode: syncMode.value,
-		deletionPolicy: deletionPolicy.value,
-		...(scheduleCron.value.trim()
-			? { scheduleCron: scheduleCron.value.trim() }
-			: {}),
+		sync: {
+			syncMode: syncMode.value,
+			deletionPolicy: deletionPolicy.value,
+			...(scheduleCron.value.trim()
+				? { scheduleCron: scheduleCron.value.trim() }
+				: {}),
+		},
 		config: {
 			provider: props.provider,
 			credentials: creds,

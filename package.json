@@ -19,7 +19,8 @@
 		"format": "biome format --write .",
 		"lint": "biome lint .",
 		"check": "biome check .",
-		"ci": "biome ci ."
+		"ci": "biome ci .",
+		"i18n:unused": "node scripts/i18n-unused.mjs"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.6",
@@ -28,6 +29,7 @@
 		"vue-tsc": "^3.3.8"
 	},
 	"overrides": {
-		"vite": "^7.3.2"
+		"vite": "^7.3.2",
+		"nanoid": "^3.3.17"
 	}
 }

@@ -1,4 +1,8 @@
-import type { Webhook, WebhookEvent } from "@nvisy/sdk/datatypes";
+import type {
+	Webhook,
+	WebhookEvent,
+	WebhookStatus,
+} from "@nvisy/sdk/datatypes";
 
 /** All webhook event types the SDK supports, in display order. */
 export const WEBHOOK_EVENTS: WebhookEvent[] = [
@@ -11,8 +15,18 @@ export const WEBHOOK_EVENTS: WebhookEvent[] = [
 	"connection:created",
 	"connection:updated",
 	"connection:deleted",
-	"connection:synced",
-	"connection:desynced",
+	"connection:sync.started",
+	"connection:sync.completed",
+	"connection:sync.failed",
+	"pipeline:created",
+	"pipeline:updated",
+	"pipeline:deleted",
+	"pipeline:run.started",
+	"pipeline:run.completed",
+	"pipeline:run.failed",
+	"policy:created",
+	"policy:updated",
+	"policy:deleted",
 ];
 
 export interface WebhookHeader {
@@ -23,7 +37,7 @@ export interface WebhookHeader {
 export interface WebhookFormPayload {
 	displayName: string;
 	url: string;
-	status: "active" | "paused";
+	status: WebhookStatus;
 	events: WebhookEvent[];
 	headers: Record<string, string>;
 }

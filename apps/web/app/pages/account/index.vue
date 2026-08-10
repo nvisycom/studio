@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-	pageCategory: "Settings",
+	pageCategory: "header.category.settings",
 });
 
 navigateTo("/account/general", { replace: true });

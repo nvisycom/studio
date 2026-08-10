@@ -26,15 +26,28 @@
 				"overview": "Overview",
 				"ai": "AI",
 				"logs": "Logs"
+			},
+			"policies": {
+				"index": "Policies",
+				"templates": "Templates"
 			}
+		},
+		"category": {
+			"overview": "Overview",
+			"files": "Files",
+			"studio": "Studio",
+			"team": "Team",
+			"workflows": "Workflows",
+			"policies": "Policies",
+			"integrations": "Integrations",
+			"analytics": "Analytics",
+			"billing": "Billing",
+			"settings": "Settings"
 		}
 	},
 	"common": {
-		"service": "Nvisy",
 		"save": "Save",
 		"cancel": "Cancel",
-		"delete": "Delete",
-		"confirm": "Confirm",
 		"errors": {
 			"tryAgain": "Please try again."
 		},
@@ -96,6 +109,30 @@
 				"enableComments": {
 					"label": "Enable Comments",
 					"description": "Allow team members to add comments on documents."
+				},
+				"ocr": {
+					"label": "OCR",
+					"description": "Extract text from scanned documents and images.",
+					"policies": {
+						"auto": "Automatic",
+						"force": "Always",
+						"never": "Never"
+					}
+				},
+				"retention": {
+					"label": "Retention",
+					"description": "How long to keep each kind of data.",
+					"targets": {
+						"auditLogs": "Audit logs",
+						"originalDocuments": "Original documents",
+						"redactedDocuments": "Redacted documents"
+					},
+					"modes": {
+						"forever": "Keep forever",
+						"days": "For a period",
+						"zeroDays": "Don't keep"
+					},
+					"footer": "Applies to all data in this workspace."
 				}
 			},
 			"leave": {
@@ -240,18 +277,11 @@
 			"setupProfile": "Setup Profile"
 		},
 		"workspace": {
-			"title": "Workspace",
-			"noDescription": "No description set",
-			"settings": "Settings",
 			"members": "Members",
 			"files": "Files",
-			"yourRole": "Your Role",
 			"created": "Created",
 			"badges": {
-				"autoCleanup": "Auto Cleanup",
-				"requireApproval": "Requires Approval",
-				"commentsEnabled": "Comments Enabled",
-				"defaultSettings": "Default Settings"
+				"requireApproval": "Requires Approval"
 			}
 		},
 		"usage": {
@@ -259,8 +289,7 @@
 			"storage": "Storage",
 			"of": "of {total}",
 			"creditsRemaining": "{count} credits remaining",
-			"storageRemaining": "{count} GB remaining",
-			"viewPlan": "View Plan"
+			"storageRemaining": "{count} GB remaining"
 		},
 		"quickActions": {
 			"title": "Quick Actions",
@@ -269,7 +298,6 @@
 				"description": "Add documents to your knowledge base"
 			},
 			"askAI": {
-				"title": "Ask AI",
 				"description": "Query your documents"
 			},
 			"manageTeam": {
@@ -282,61 +310,41 @@
 			}
 		},
 		"actions": {
-			"learnMore": "Learn more",
 			"setupProfile": {
-				"time": "2 minutes",
-				"title": "Setup Your Profile",
-				"description": "Complete your profile to personalize your experience and help your team identify you.",
-				"button": "Setup Profile"
+				"description": "Complete your profile to personalize your experience and help your team identify you."
 			},
 			"createWorkspace": {
-				"time": "2 minutes",
-				"title": "Create a Workspace",
-				"description": "Workspaces help you organize documents, manage team access, and keep projects separate.",
-				"button": "Create Workspace"
+				"description": "Workspaces help you organize documents, manage team access, and keep projects separate."
 			},
 			"apiTokens": {
-				"time": "1 minute",
-				"title": "Generate API Token",
-				"description": "Create an API token to integrate Nvisy with your applications and automate workflows.",
-				"button": "Create Token"
+				"description": "Create an API token to integrate Nvisy with your applications and automate workflows."
 			}
 		},
 		"features": {
-			"sectionTitle": "What You Can Do",
 			"documentManagement": {
-				"title": "Document Management",
 				"description": "Upload, organize, and manage your documents in a secure, centralized workspace."
 			},
 			"aiPowered": {
-				"title": "AI-Powered Insights",
 				"description": "Extract information, summarize content, and get answers from your documents using AI."
 			},
 			"teamCollaboration": {
-				"title": "Team Collaboration",
 				"description": "Invite team members, assign roles, and work together seamlessly."
 			},
 			"secureCompliant": {
-				"title": "Secure & Compliant",
 				"description": "Enterprise-grade security with encryption and compliance controls."
 			}
 		},
 		"resources": {
-			"sectionTitle": "Resources",
 			"documentation": {
-				"title": "Documentation",
 				"description": "Learn how to get started and explore all features"
 			},
 			"apiReference": {
-				"title": "API Reference",
 				"description": "Integrate Nvisy into your applications"
 			},
 			"quickStart": {
-				"title": "Quick Start",
 				"description": "Get up and running in minutes"
 			},
 			"support": {
-				"title": "Support",
 				"description": "Get help from our team"
 			}
 		}
@@ -351,37 +359,25 @@
 			"namePlaceholder": "My Workspace",
 			"descriptionLabel": "Description",
 			"descriptionPlaceholder": "Brief description of your workspace...",
-			"descriptionHint": "Optional, max 200 characters",
-			"retentionLabel": "File Retention (days)",
-			"storageLabel": "Storage Limit (GB)",
-			"unlimited": "Unlimited",
 			"advancedSettings": "Advanced settings",
 			"error": "Failed to create workspace. Please try again.",
-			"autoCleanupLabel": "Auto Cleanup",
-			"autoCleanupDescription": "Automatically delete processed files after expiration",
 			"requireApprovalLabel": "Require Approval",
 			"requireApprovalDescription": "Processed files require approval before being visible",
-			"enableCommentsLabel": "Enable Comments",
-			"enableCommentsDescription": "Allow team members to comment on documents",
 			"cancelButton": "Cancel",
 			"submitButton": "Create Workspace"
 		}
 	},
 	"files": {
 		"page": {
-			"title": "Files",
 			"description": "Manage your uploaded files and documents"
 		},
 		"selection": {
-			"count": "{count} selected",
-			"clear": "Clear",
 			"delete": "Delete"
 		},
 		"table": {
 			"headers": {
 				"name": "Name",
 				"size": "Size",
-				"status": "Status",
 				"created": "Created",
 				"updated": "Updated"
 			},
@@ -404,25 +400,12 @@
 			"formatSearch": "Search formats…",
 			"noFormats": "No formats found."
 		},
-		"sorting": {
-			"dateDesc": "Date (Newest)",
-			"dateAsc": "Date (Oldest)",
-			"nameAsc": "Name (A-Z)",
-			"nameDesc": "Name (Z-A)",
-			"sizeDesc": "Size (Largest)",
-			"sizeAsc": "Size (Smallest)"
-		},
 		"actions": {
 			"upload": "Upload",
 			"download": "Download",
-			"downloadAsZip": "Download as .zip",
-			"downloadAsTar": "Download as .tar",
 			"edit": "Edit",
-			"rename": "Rename",
-			"view": "View",
 			"open": "Open",
 			"openInStudio": "Open in Studio",
-			"chat": "Open in Chat",
 			"delete": "Delete",
 			"clearFilters": "Clear Filters"
 		},
@@ -440,17 +423,6 @@
 				"description": "Update the file name and other properties.",
 				"nameLabel": "File Name",
 				"namePlaceholder": "Enter file name",
-				"highPriorityLabel": "High Priority",
-				"highPriorityDescription": "Process this file before others",
-				"indexedLabel": "Knowledge Indexing",
-				"indexedDescription": "Include this file in knowledge extraction",
-				"visualSupportLabel": "Visual Support",
-				"visualSupportDescription": "Enable visual element extraction (images, charts)",
-				"segmentationLabel": "Content Segmentation",
-				"segmentationDescription": "How the file content is split for processing",
-				"segmentationNone": "None",
-				"segmentationSemantic": "Semantic",
-				"segmentationFixed": "Fixed",
 				"save": "Save Changes",
 				"cancel": "Cancel"
 			},
@@ -460,8 +432,6 @@
 				"dropHint": "Drop files here to upload",
 				"browseButton": "Browse Files",
 				"uploading": "Uploading...",
-				"uploaded": "Uploaded",
-				"failed": "Failed",
 				"cancel": "Cancel",
 				"done": "Done"
 			}
@@ -470,7 +440,6 @@
 			"fileDeleted": "File deleted successfully",
 			"filesDeleted": "Files deleted successfully",
 			"fileUpdated": "File updated successfully",
-			"fileUploaded": "File uploaded successfully",
 			"filesUploaded": "Files uploaded successfully",
 			"downloadStarted": "Download started"
 		},
@@ -480,14 +449,10 @@
 			"uploadFailed": "Failed to upload file",
 			"downloadFailed": "Failed to download file",
 			"loadFailed": "Failed to load files"
-		},
-		"loading": {
-			"more": "Loading more..."
 		}
 	},
 	"members": {
 		"page": {
-			"title": "Members",
 			"description": "Manage your team members and invitations",
 			"tabs": {
 				"teamMembers": "Team Members",
@@ -500,14 +465,12 @@
 				"description": "Send invitations to new team members",
 				"emailPlaceholder": "email{'@'}example.com",
 				"button": "Send Invite",
-				"copyLink": "Copy Invite Link",
 				"createLink": "Create Invite Link",
 				"expiry": {
 					"label": "Expires In",
-					"never": "Never",
-					"24hours": "In 24 Hours",
-					"7days": "In 7 Days",
-					"30days": "In 30 Days"
+					"24hours": "24 Hours",
+					"7days": "7 Days",
+					"30days": "30 Days"
 				}
 			},
 			"search": {
@@ -535,7 +498,6 @@
 			"status": {
 				"enabled": "Enabled",
 				"disabled": "Disabled",
-				"pending": "Pending invitation",
 				"emailInvite": "Email Invitation",
 				"linkInvite": "Open Invitation"
 			},
@@ -578,9 +540,6 @@
 		"filters": {
 			"sortBy": "Sort by",
 			"anyRole": "Any Role",
-			"any2FA": "Any 2FA",
-			"enabled2FA": "2FA Enabled",
-			"disabled2FA": "2FA Disabled",
 			"sorting": {
 				"nameAsc": "Name (A-Z)",
 				"nameDesc": "Name (Z-A)",
@@ -629,7 +588,6 @@
 	},
 	"tokens": {
 		"page": {
-			"title": "API Tokens",
 			"description": "Manage your API tokens and access credentials"
 		},
 		"create": {
@@ -660,7 +618,6 @@
 				"lastUsed": "Last Used"
 			},
 			"info": {
-				"created": "Created",
 				"expires": "Expires",
 				"never": "Never"
 			},
@@ -674,14 +631,6 @@
 				"revokeSelected": "Revoke Selected",
 				"cannotRevoke": "Cannot revoke current session",
 				"cannotRename": "Cannot rename session token"
-			},
-			"sessionTypes": {
-				"web": "Web Session",
-				"webDescription": "Browser-based session from web application login",
-				"api": "API Token",
-				"apiDescription": "Programmatic access token for API integrations",
-				"cli": "CLI Session",
-				"cliDescription": "Command-line interface session"
 			}
 		},
 		"empty": {
@@ -692,8 +641,6 @@
 			"created": {
 				"title": "Token Created",
 				"description": "Copy your new API token now. You won't be able to see it again.",
-				"copyButton": "Copy Token",
-				"copied": "Copied!",
 				"doneButton": "Done"
 			},
 			"rename": {
@@ -755,10 +702,7 @@
 	},
 	"connections": {
 		"page": {
-			"title": "Active Connections",
-			"description": "Manage your currently connected services",
-			"libraryTitle": "Integrations Library",
-			"libraryDescription": "Connect Nvisy with your favorite tools and services"
+			"description": "Manage your currently connected services"
 		},
 		"sections": {
 			"connectedServices": {
@@ -776,58 +720,31 @@
 		},
 		"actions": {
 			"explore": "Explore Providers",
-			"browse": "Browse Library",
 			"connect": "Connect",
-			"disconnect": "Disconnect",
-			"configure": "Configure",
-			"visitWebsite": "Visit Website",
 			"visitName": "Visit {name}",
-			"notifyMe": "Notify Me",
 			"comingSoon": "Coming Soon",
 			"createWebhook": "Create Webhook",
-			"editWebhook": "Edit Webhook",
-			"deleteWebhook": "Delete Webhook",
-			"testWebhook": "Test Webhook",
 			"back": "Back",
 			"backToConnections": "Back to Connections",
 			"viewRuns": "View Runs"
 		},
-		"status": {
-			"active": "Active",
-			"inactive": "Inactive",
-			"available": "Available",
-			"comingSoon": "Coming Soon",
-			"connected": "Connected",
-			"disconnected": "Disconnected"
-		},
 		"explore": {
 			"allCategories": "All",
-			"available": "available",
 			"noResults": "No integrations found",
 			"noResultsHint": "Try adjusting your search or filters",
 			"clearFilters": "Clear Filters",
 			"categories": {
 				"cloudStorage": {
-					"name": "Cloud Storage",
-					"consumer": "Consumer Cloud Storage",
-					"enterprise": "Enterprise Cloud Storage",
-					"developer": "Developer Cloud Storage"
+					"name": "Cloud Storage"
 				},
 				"productivity": {
-					"name": "Productivity & Collaboration",
-					"messaging": "Messaging & Communication",
-					"knowledge": "Note-taking & Knowledge Bases",
-					"email": "Email Platforms"
+					"name": "Productivity & Collaboration"
 				},
 				"dataAnalytics": {
-					"name": "Data & Analytics",
-					"warehouses": "Data Warehouses",
-					"bi": "Business Intelligence",
-					"automation": "No-Code Automation"
+					"name": "Data & Analytics"
 				},
 				"ai": {
-					"name": "AI & Enhancements",
-					"assistants": "AI Assistants"
+					"name": "AI & Enhancements"
 				},
 				"sdk": {
 					"name": "SDKs & Libraries"
@@ -890,12 +807,14 @@
 					"description": "Create custom workflows with n8n's visual editor"
 				},
 				"chatgpt": {
-					"name": "OpenAI ChatGPT",
-					"description": "Enhance processing with OpenAI ChatGPT"
+					"name": "ChatGPT",
+					"description": "Connect OpenAI's ChatGPT models.",
+					"shortDescription": "OpenAI"
 				},
 				"claude": {
-					"name": "Anthropic Claude",
-					"description": "Leverage Anthropic Claude for intelligent analysis"
+					"name": "Claude",
+					"description": "Connect Anthropic's Claude models.",
+					"shortDescription": "Anthropic"
 				},
 				"javascriptSdk": {
 					"name": "JavaScript SDK",
@@ -911,6 +830,11 @@
 					"name": "Rust SDK",
 					"shortDescription": "nvisy-sdk",
 					"description": "Integrate Nvisy into your Rust applications"
+				},
+				"ollama": {
+					"name": "Ollama",
+					"description": "Connect a self-hosted Ollama server.",
+					"shortDescription": "Self-hosted"
 				}
 			},
 			"filters": {
@@ -949,14 +873,10 @@
 		"table": {
 			"headers": {
 				"name": "Name",
-				"url": "URL",
 				"enabled": "Enabled",
 				"events": "Events",
-				"headers": "Headers",
 				"created": "Created",
 				"lastDelivery": "Last Delivery",
-				"connectedAt": "Connected",
-				"provider": "Provider",
 				"syncMode": "Sync",
 				"schedule": "Schedule",
 				"lastSynced": "Last synced"
@@ -970,7 +890,6 @@
 				"paused": "Paused"
 			},
 			"actions": {
-				"edit": "Edit",
 				"delete": "Delete",
 				"test": "Test connection",
 				"sync": "Sync now",
@@ -984,8 +903,7 @@
 		},
 		"forms": {
 			"search": {
-				"placeholder": "Search integrations...",
-				"webhookSearch": "Search webhooks..."
+				"placeholder": "Search integrations..."
 			},
 			"webhook": {
 				"nameLabel": "Webhook Name",
@@ -1008,13 +926,8 @@
 				"description": "Update the integration settings and configuration.",
 				"nameLabel": "Integration Name",
 				"namePlaceholder": "My Integration",
-				"descriptionLabel": "Description",
-				"descriptionPlaceholder": "What does this integration do?",
-				"activeLabel": "Active",
-				"activeDescription": "Enable this integration to sync data and automate workflows",
 				"save": "Save Changes",
 				"cancel": "Cancel",
-				"providerLabel": "Provider",
 				"updateCredentials": "Update credentials",
 				"credentialsHint": "Leave closed to keep the existing credentials."
 			},
@@ -1084,33 +997,25 @@
 			"deleteWebhook": {
 				"title": "Delete Webhook",
 				"description": "This action cannot be undone. This will permanently delete the webhook and stop all event deliveries.",
-				"confirmLabel": "Please type the webhook name to confirm:",
-				"warningTitle": "Warning:",
-				"warningDescription": "Deleting this webhook will immediately stop all event deliveries to this endpoint.",
 				"confirm": "Delete Webhook",
 				"cancel": "Cancel"
+			},
+			"llm": {
+				"description": "Connect a language model provider.",
+				"apiKey": "API key",
+				"apiKeyPlaceholder": "sk-...",
+				"baseUrl": "Base URL",
+				"baseUrlPlaceholder": "https://api.example.com",
+				"defaultModel": "Default model",
+				"defaultModelPlaceholder": "e.g. gpt-4o, claude-3-5-sonnet, llama3"
 			}
 		},
 		"events": {
 			"documents": {
-				"name": "Documents",
-				"documentsUploaded": "Document Uploaded",
-				"documentsUploadedDesc": "When a new document is uploaded to your project",
-				"documentsDownloaded": "Document Downloaded",
-				"documentsDownloadedDesc": "When a document is downloaded from your project",
-				"documentsRedacted": "Document Redacted",
-				"documentsRedactedDesc": "When a document is successfully redacted",
-				"documentsVerified": "Document Verified",
-				"documentsVerifiedDesc": "When a document passes verification checks"
+				"name": "Documents"
 			},
 			"integrations": {
-				"name": "Integrations",
-				"integrationTriggered": "Integration Triggered",
-				"integrationTriggeredDesc": "When an integration workflow is started",
-				"integrationSucceeded": "Integration Succeeded",
-				"integrationSucceededDesc": "When an integration completes successfully",
-				"integrationFailed": "Integration Failed",
-				"integrationFailedDesc": "When an integration encounters errors or failures"
+				"name": "Integrations"
 			}
 		},
 		"messages": {
@@ -1138,7 +1043,6 @@
 			"webhookDeleteFailed": "Failed to delete webhook",
 			"webhookActivated": "Webhook activated",
 			"webhookDeactivated": "Webhook deactivated",
-			"webhookTestSent": "Test event sent to webhook",
 			"webhookTestSuccess": "Webhook test successful",
 			"webhookTestSuccessDescription": "Received {statusCode} response in {responseTimeMs}ms",
 			"webhookTestFailed": "Webhook test failed",
@@ -1147,46 +1051,12 @@
 		"runs": {
 			"title": "Integration Runs",
 			"backToConnections": "Back to Connections",
-			"searchPlaceholder": "Search runs...",
 			"allStatus": "All Status",
-			"statusPending": "Pending",
-			"statusRunning": "Running",
-			"statusCancelled": "Cancelled",
-			"period": "Period",
-			"lastHour": "Last hour",
-			"last24Hours": "Last 24 hours",
-			"last7Days": "Last 7 days",
-			"last30Days": "Last 30 days",
 			"runsFound": "{count} sync | {count} syncs",
-			"selected": "selected",
-			"copyLogs": "Copy Logs",
-			"copied": "Copied!",
-			"runId": "Run ID",
-			"integration": "Integration",
-			"type": "Type",
 			"statusHeader": "Status",
 			"started": "Started",
 			"duration": "Duration",
-			"viewDetails": "View Details",
 			"noRunsFound": "No runs found matching your filters",
-			"unknown": "Unknown",
-			"runType": {
-				"manual": "Manual",
-				"scheduled": "Scheduled",
-				"triggered": "Triggered"
-			},
-			"status": {
-				"pending": "Pending",
-				"running": "Running",
-				"cancelled": "Cancelled",
-				"analyzed": "Analyzed",
-				"completed": "Completed",
-				"failed": "Failed"
-			},
-			"statusAnalyzed": "Analyzed",
-			"statusCompleted": "Completed",
-			"statusFailed": "Failed",
-			"pipeline": "Pipeline",
 			"trigger": "Trigger",
 			"connection": "Connection",
 			"records": "Records",
@@ -1300,8 +1170,6 @@
 			"delete": "Delete"
 		},
 		"editor": {
-			"title": "New policy",
-			"editTitle": "Edit policy",
 			"save": "Save changes",
 			"description": "Define rules that decide how detected entities are handled.",
 			"nameLabel": "Name",
@@ -1317,13 +1185,15 @@
 			"moveUp": "Move rule up",
 			"moveDown": "Move rule down",
 			"removeRule": "Remove rule",
-			"noRules": "Add your first rule",
 			"when": "When",
 			"then": "Then",
-			"conditions": "Conditions",
 			"addCondition": "Add condition",
-			"valuesPlaceholder": "comma, separated",
-			"action": "Action",
+			"valuesPlaceholder": {
+				"labelOneOf": "comma, separated labels",
+				"tagOneOf": "comma, separated tags",
+				"labelInGroup": "group name",
+				"coRef": "cluster id"
+			},
 			"summary": {
 				"line": "When {conditions}, {action}.",
 				"and": " and ",
@@ -1331,12 +1201,16 @@
 				"label": "label is {values}",
 				"tag": "tag is {values}",
 				"redact": "redact it",
-				"redactModalities": "redact {list}"
+				"redactModalities": "redact {list}",
+				"group": "in group {values}",
+				"coref": "in cluster {values}"
 			},
 			"predicate": {
 				"confidence": "Confidence ≥",
 				"labelOneOf": "Label is one of",
-				"tagOneOf": "Tag is one of"
+				"tagOneOf": "Tag is one of",
+				"labelInGroup": "Label in group",
+				"coRef": "Same cluster as"
 			},
 			"textKind": {
 				"replace": "Replace",
@@ -1381,8 +1255,25 @@
 				"descriptionPlaceholder": "What this label means (optional)",
 				"tagsPlaceholder": "tags, comma separated"
 			},
-			"cancel": "Cancel",
-			"submit": "Create policy"
+			"submit": "Create policy",
+			"identityFooter": "Name, slug, and description for this policy.",
+			"definitionFooter": "Rules, labels, and fallback that define how this policy redacts.",
+			"addPredicatedRule": "Conditional rule",
+			"addTableRule": "Label table",
+			"table": {
+				"label": "Labels",
+				"labelPlaceholder": "email_address",
+				"addEntry": "Add label",
+				"removeEntry": "Remove label"
+			},
+			"groups": {
+				"label": "Label groups",
+				"hint": "Named clusters of labels a rule can match by group.",
+				"add": "Add group",
+				"namePlaceholder": "hipaa_18",
+				"labelsPlaceholder": "email_address, phone_number, ssn",
+				"labelsLabel": "Labels in this group"
+			}
 		},
 		"delete": {
 			"title": "Delete {name}?",
@@ -1397,7 +1288,71 @@
 			"updateFailed": "Failed to update policy",
 			"deleted": "Policy deleted",
 			"deleteFailed": "Failed to delete policy"
-		}
+		},
+		"templates": {
+			"title": "Policy templates",
+			"back": "Back to policies",
+			"dialogTitle": "Name your policy",
+			"nameLabel": "Name",
+			"namePlaceholder": "HIPAA Safe Harbor",
+			"slugLabel": "Slug",
+			"slugPlaceholder": "hipaa-safe-harbor",
+			"slugHint": "Lowercase letters, numbers, and single dashes. URL-safe identifier.",
+			"cancel": "Cancel",
+			"create": "Create policy",
+			"scratchAction": "New custom policy",
+			"scratch": {
+				"name": "Start from scratch",
+				"description": "Build a custom policy with your own rules and actions."
+			},
+			"use": "Use template",
+			"custom": "Custom",
+			"searchPlaceholder": "Search templates...",
+			"noResults": "No templates match your search.",
+			"clearSearch": "Clear search",
+			"hipaa_deidentification": {
+				"name": "HIPAA De-identification",
+				"description": "De-identify protected health information per HIPAA §164.514."
+			},
+			"gdpr_article9": {
+				"name": "GDPR Article 9",
+				"description": "Redact special-category personal data under EU GDPR."
+			},
+			"pci_dss": {
+				"name": "PCI DSS",
+				"description": "Protect stored cardholder data per PCI DSS §3."
+			},
+			"ccpa": {
+				"name": "CCPA",
+				"description": "Redact personal information covered by the CCPA."
+			},
+			"settings": {
+				"hipaaMethod": "De-identification method",
+				"hipaaMethods": {
+					"safe_harbor": "Safe Harbor",
+					"limited_data_set": "Limited Data Set",
+					"expert_determination": "Expert Determination"
+				},
+				"gdprTreatment": "Treatment",
+				"gdprTreatments": {
+					"erase": "Erase",
+					"pseudonymize": "Pseudonymize"
+				},
+				"pciPart": "DSS subsection",
+				"pciParts": {
+					"pan_render": "Render stored PAN (§3.5.1)",
+					"sav_erase": "Erase sensitive auth data (§3.4)"
+				},
+				"pciRender": "Render approach",
+				"pciRenders": {
+					"truncate": "Truncate",
+					"truncate_last_four": "Truncate to last four",
+					"hmac_sha256": "HMAC-SHA256",
+					"hmac_sha512": "HMAC-SHA512"
+				}
+			}
+		},
+		"browseTemplates": "Browse templates"
 	},
 	"workflows": {
 		"title": "Pipelines",
@@ -1451,7 +1406,9 @@
 		},
 		"toast": {
 			"deleted": "Pipeline deleted",
-			"deleteFailed": "Failed to delete pipeline"
+			"deleteFailed": "Failed to delete pipeline",
+			"created": "Pipeline created",
+			"createFailed": "Failed to create pipeline"
 		},
 		"create": {
 			"title": "Create Pipeline",
@@ -1479,7 +1436,15 @@
 				}
 			},
 			"cancel": "Cancel",
-			"submit": "Create"
+			"submit": "Create",
+			"policiesLabel": "Policies",
+			"policiesHint": "Workspace policies applied when this pipeline redacts.",
+			"policiesSelect": "Link policies",
+			"policiesEmpty": "No policies in this workspace",
+			"advanced": "Scope",
+			"countriesLabel": "Jurisdictions",
+			"countriesPlaceholder": "Add a country code (e.g. US) and press Enter",
+			"scopeHint": "Restrict jurisdiction-scoped detection rules to these countries."
 		}
 	}
 }
