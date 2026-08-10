@@ -14,6 +14,9 @@ export function usePolicies() {
 		},
 	);
 
+	// Policies are keyed by slug; a delete drops the row immediately.
+	const optimistic = useOptimisticList(policiesQuery.data, (p) => p.slug);
+
 	// Fetch a single policy with its full definition (the list only returns
 	// summaries).
 	async function getPolicy(policySlug: string) {
@@ -38,11 +41,15 @@ export function usePolicies() {
 	const deletePolicyMutation = workspaceMutation(
 		({ client, workspaceSlug }, policySlug: string) =>
 			client.policies.deletePolicy(workspaceSlug, policySlug),
-		{ invalidates: policiesQuery },
+		{
+			invalidates: policiesQuery,
+			onMutate: (policySlug) => optimistic.remove(policySlug),
+			onError: (_error, policySlug) => optimistic.restore(policySlug),
+		},
 	);
 
 	return {
-		policies: policiesQuery.data,
+		policies: optimistic.items,
 		getPolicy,
 		isLoading: policiesQuery.isLoading,
 		error: policiesQuery.error,

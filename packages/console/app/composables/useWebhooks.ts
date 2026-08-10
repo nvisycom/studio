@@ -49,7 +49,11 @@ export function useWebhooks() {
 	const deleteWebhookMutation = workspaceMutation(
 		({ client, workspaceSlug }, webhookId: string) =>
 			client.webhooks.deleteWebhook(workspaceSlug, webhookId),
-		{ invalidates: webhooksQuery },
+		{
+			invalidates: webhooksQuery,
+			onMutate: (webhookId) => optimistic.remove(webhookId),
+			onError: (_error, webhookId) => optimistic.restore(webhookId),
+		},
 	);
 
 	const testWebhookMutation = workspaceMutation(

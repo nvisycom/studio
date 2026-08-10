@@ -12,6 +12,9 @@ export function usePipelines() {
 		},
 	);
 
+	// Pipelines are keyed by slug; a delete drops the row immediately.
+	const optimistic = useOptimisticList(pipelinesQuery.data, (p) => p.slug);
+
 	const createPipelineMutation = workspaceMutation(
 		({ client, workspaceSlug }, pipeline: CreatePipeline) =>
 			client.pipelines.createPipeline(workspaceSlug, pipeline),
@@ -32,12 +35,16 @@ export function usePipelines() {
 	const deletePipelineMutation = workspaceMutation(
 		({ client, workspaceSlug }, pipelineSlug: string) =>
 			client.pipelines.deletePipeline(workspaceSlug, pipelineSlug),
-		{ invalidates: pipelinesQuery },
+		{
+			invalidates: pipelinesQuery,
+			onMutate: (pipelineSlug) => optimistic.remove(pipelineSlug),
+			onError: (_error, pipelineSlug) => optimistic.restore(pipelineSlug),
+		},
 	);
 
 	return {
 		// Query state
-		pipelines: pipelinesQuery.data,
+		pipelines: optimistic.items,
 		isLoading: pipelinesQuery.isLoading,
 		error: pipelinesQuery.error,
 		refresh: pipelinesQuery.refresh,

@@ -25,6 +25,9 @@ export function useMembers(query?: MaybeRef<ListMembers>) {
 		},
 	);
 
+	// Members are keyed by username; a remove drops the row immediately.
+	const optimistic = useOptimisticList(membersQuery.data, (m) => m.username);
+
 	const updateMemberMutation = workspaceMutation(
 		(
 			{ client, workspaceSlug },
@@ -36,7 +39,11 @@ export function useMembers(query?: MaybeRef<ListMembers>) {
 	const removeMemberMutation = workspaceMutation(
 		({ client, workspaceSlug }, username: string) =>
 			client.members.removeMember(workspaceSlug, username),
-		{ invalidates: membersQuery },
+		{
+			invalidates: membersQuery,
+			onMutate: (username) => optimistic.remove(username),
+			onError: (_error, username) => optimistic.restore(username),
+		},
 	);
 
 	const leaveMutation = workspaceMutation(
@@ -46,7 +53,7 @@ export function useMembers(query?: MaybeRef<ListMembers>) {
 
 	return {
 		// Query state
-		members: membersQuery.data,
+		members: optimistic.items,
 		isLoading: membersQuery.isLoading,
 		error: membersQuery.error,
 		refresh: membersQuery.refresh,

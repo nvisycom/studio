@@ -22,6 +22,9 @@ export function useApiTokens() {
 		enabled: () => !!authToken.value?.apiToken,
 	});
 
+	// Tokens are keyed by id; a revoke drops the row immediately.
+	const optimistic = useOptimisticList(tokensQuery.data, (tk) => tk.id);
+
 	const createTokenMutation = useMutation({
 		mutation: async (token: CreateApiToken) => {
 			const client = $nvisyClient.value;
@@ -56,6 +59,8 @@ export function useApiTokens() {
 			if (!client) throw new Error("Not authenticated");
 			await client.apiTokens.revokeApiToken(tokenId);
 		},
+		onMutate: (tokenId) => optimistic.remove(tokenId),
+		onError: (_error, tokenId) => optimistic.restore(tokenId),
 		onSuccess() {
 			tokensQuery.refresh();
 		},
@@ -63,7 +68,7 @@ export function useApiTokens() {
 
 	return {
 		// Query state
-		tokens: tokensQuery.data,
+		tokens: optimistic.items,
 		isLoading: tokensQuery.isLoading,
 		error: tokensQuery.error,
 		refresh: tokensQuery.refresh,

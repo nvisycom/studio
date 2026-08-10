@@ -54,7 +54,11 @@ export function useConnections() {
 	const deleteConnectionMutation = workspaceMutation(
 		({ client, workspaceSlug }, connectionId: string) =>
 			client.connections.deleteConnection(workspaceSlug, connectionId),
-		{ invalidates: connectionsQuery },
+		{
+			invalidates: connectionsQuery,
+			onMutate: (connectionId) => optimistic.remove(connectionId),
+			onError: (_error, connectionId) => optimistic.restore(connectionId),
+		},
 	);
 
 	// Trigger a manual sync for a connection (syncs everything when no target).

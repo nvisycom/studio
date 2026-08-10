@@ -29,6 +29,9 @@ export function useInvites(query?: MaybeRef<ListInvites>) {
 		},
 	);
 
+	// Invites are keyed by inviteId; a cancel drops the row immediately.
+	const optimistic = useOptimisticList(invitesQuery.data, (i) => i.inviteId);
+
 	const sendInviteMutation = workspaceMutation(
 		({ client, workspaceSlug }, invite: CreateInvite) =>
 			client.invites.sendInvite(workspaceSlug, invite),
@@ -38,7 +41,11 @@ export function useInvites(query?: MaybeRef<ListInvites>) {
 	const cancelInviteMutation = workspaceMutation(
 		({ client, workspaceSlug }, inviteId: string) =>
 			client.invites.cancelInvite(workspaceSlug, inviteId),
-		{ invalidates: invitesQuery },
+		{
+			invalidates: invitesQuery,
+			onMutate: (inviteId) => optimistic.remove(inviteId),
+			onError: (_error, inviteId) => optimistic.restore(inviteId),
+		},
 	);
 
 	const generateCodeMutation = workspaceMutation(
@@ -48,7 +55,7 @@ export function useInvites(query?: MaybeRef<ListInvites>) {
 
 	return {
 		// Query state
-		invites: invitesQuery.data,
+		invites: optimistic.items,
 		isLoading: invitesQuery.isLoading,
 		error: invitesQuery.error,
 		refresh: invitesQuery.refresh,
