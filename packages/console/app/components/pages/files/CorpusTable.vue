@@ -52,6 +52,8 @@ interface Emits {
 defineProps<Props>();
 const emit = defineEmits<Emits>();
 
+const { t } = useI18n();
+
 function getStatusIcon(status: string) {
 	switch (status) {
 		case "indexed":
@@ -83,12 +85,22 @@ function getStatusColor(status: string) {
   <Table>
     <TableHeader>
       <TableRow>
-        <TableHead>Original Name</TableHead>
-        <TableHead class="w-[180px]">Indexed</TableHead>
-        <TableHead class="w-[120px]">File Size</TableHead>
-        <TableHead class="w-[120px]">Index Size</TableHead>
-        <TableHead class="w-[100px]">Segments</TableHead>
-        <TableHead class="w-[120px]">Avg Query</TableHead>
+        <TableHead>{{ t("files.corpus.table.originalName") }}</TableHead>
+        <TableHead class="w-[180px]">
+          {{ t("files.corpus.table.indexed") }}
+        </TableHead>
+        <TableHead class="w-[120px]">
+          {{ t("files.corpus.table.fileSize") }}
+        </TableHead>
+        <TableHead class="w-[120px]">
+          {{ t("files.corpus.table.indexSize") }}
+        </TableHead>
+        <TableHead class="w-[100px]">
+          {{ t("files.corpus.table.segments") }}
+        </TableHead>
+        <TableHead class="w-[120px]">
+          {{ t("files.corpus.table.avgQuery") }}
+        </TableHead>
         <TableHead class="w-[60px]"></TableHead>
       </TableRow>
     </TableHeader>
@@ -151,7 +163,7 @@ function getStatusColor(status: string) {
             <DropdownMenuContent align="end">
               <DropdownMenuItem @click="emit('edit', doc.id)">
                 <Pencil :size="16" class="mr-2" />
-                Edit
+                {{ t("files.corpus.table.edit") }}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -159,7 +171,7 @@ function getStatusColor(status: string) {
                 class="text-red-600 dark:text-red-400"
               >
                 <Trash2 :size="16" class="mr-2" />
-                Delete
+                {{ t("files.corpus.table.delete") }}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

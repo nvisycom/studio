@@ -449,6 +449,49 @@
 			"uploadFailed": "Datei konnte nicht hochgeladen werden",
 			"downloadFailed": "Datei konnte nicht heruntergeladen werden",
 			"loadFailed": "Dateien konnten nicht geladen werden"
+		},
+		"corpus": {
+			"title": "Wissenskorpus",
+			"documentCount": "{count} Dokument im Index | {count} Dokumente im Index",
+			"viewDocuments": "Dokumente anzeigen",
+			"searchPlaceholder": "Dokumente suchen …",
+			"footer": "Dokumente werden für die intelligente Suche und Abfrage automatisch indexiert.",
+			"status": {
+				"all": "Alle Status",
+				"indexed": "Indexiert",
+				"processing": "In Bearbeitung",
+				"failed": "Fehlgeschlagen"
+			},
+			"table": {
+				"originalName": "Originalname",
+				"indexed": "Indexiert",
+				"fileSize": "Dateigröße",
+				"indexSize": "Indexgröße",
+				"segments": "Segmente",
+				"avgQuery": "Ø Abfrage",
+				"edit": "Bearbeiten",
+				"delete": "Löschen"
+			},
+			"edit": {
+				"title": "Dokument bearbeiten",
+				"description": "Dokumenteinstellungen und Konfiguration aktualisieren.",
+				"visualSupport": "Visuelle Unterstützung",
+				"contentSegmentation": "Inhaltssegmentierung",
+				"segmentationPlaceholder": "Segmentierungsmethode wählen",
+				"segmentation": {
+					"none": "Keine",
+					"semantic": "Semantisch",
+					"fixed": "Fest"
+				},
+				"cancel": "Abbrechen",
+				"save": "Änderungen speichern"
+			},
+			"delete": {
+				"title": "Dokument löschen",
+				"description": "Möchten Sie „{name}“ wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+				"cancel": "Abbrechen",
+				"confirm": "Löschen"
+			}
 		}
 	},
 	"members": {

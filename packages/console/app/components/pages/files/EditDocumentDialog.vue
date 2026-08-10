@@ -35,6 +35,8 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
+const { t } = useI18n();
+
 const localVisualSupport = ref(props.visualSupport);
 const localContentSegmentation = ref(props.contentSegmentation);
 
@@ -61,35 +63,47 @@ function handleSave() {
   <Dialog :open="open" @update:open="emit('update:open', $event)">
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>Edit Document</DialogTitle>
+        <DialogTitle>{{ t("files.corpus.edit.title") }}</DialogTitle>
         <DialogDescription>
-          Update document settings and configuration.
+          {{ t("files.corpus.edit.description") }}
         </DialogDescription>
       </DialogHeader>
       <div class="grid gap-4 py-4">
         <div class="flex items-center justify-between">
-          <Label for="visual-support">Visual Support</Label>
+          <Label for="visual-support">
+            {{ t("files.corpus.edit.visualSupport") }}
+          </Label>
           <Switch id="visual-support" v-model="localVisualSupport" />
         </div>
         <div class="flex items-center justify-between">
-          <Label for="content-segmentation">Content Segmentation</Label>
+          <Label for="content-segmentation">
+            {{ t("files.corpus.edit.contentSegmentation") }}
+          </Label>
           <Select v-model="localContentSegmentation">
             <SelectTrigger id="content-segmentation" class="w-[180px]">
-              <SelectValue placeholder="Select segmentation method" />
+              <SelectValue
+                :placeholder="t('files.corpus.edit.segmentationPlaceholder')"
+              />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">None</SelectItem>
-              <SelectItem value="semantic">Semantic</SelectItem>
-              <SelectItem value="fixed">Fixed</SelectItem>
+              <SelectItem value="none">
+                {{ t("files.corpus.edit.segmentation.none") }}
+              </SelectItem>
+              <SelectItem value="semantic">
+                {{ t("files.corpus.edit.segmentation.semantic") }}
+              </SelectItem>
+              <SelectItem value="fixed">
+                {{ t("files.corpus.edit.segmentation.fixed") }}
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
       <DialogFooter>
         <Button variant="outline" @click="emit('update:open', false)">
-          Cancel
+          {{ t("files.corpus.edit.cancel") }}
         </Button>
-        <Button @click="handleSave">Save Changes</Button>
+        <Button @click="handleSave">{{ t("files.corpus.edit.save") }}</Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>

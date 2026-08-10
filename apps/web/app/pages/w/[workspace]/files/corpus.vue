@@ -18,11 +18,11 @@ import {
 	SelectValue,
 } from "#console/components/ui/select";
 import {
-	DeleteDocumentDialog,
 	EditDocumentDialog,
 	StatsCards,
 	CorpusTable,
 } from "#console/components/pages/files";
+import { ConfirmDialog } from "#console/components/common";
 import type { CorpusDocument } from "#console/components/pages/files/CorpusTable.vue";
 
 useHead({ title: "Corpus" });
@@ -32,6 +32,7 @@ definePageMeta({
 });
 
 const { wLink } = useWorkspaceLink();
+const { t } = useI18n();
 
 const searchQuery = ref("");
 const statusFilter = ref("all");
@@ -166,16 +167,17 @@ function confirmDelete() {
         <CardHeader>
           <div class="flex items-center justify-between mb-4">
             <div>
-              <CardTitle class="text-sm font-medium"
-                >Knowledge Corpus</CardTitle
-              >
+              <CardTitle class="text-sm font-medium">
+                {{ t("files.corpus.title") }}
+              </CardTitle>
               <CardDescription class="text-xs text-muted-foreground">
-                {{ documentCount }} document{{ documentCount !== 1 ? "s" : "" }}
-                in the index
+                {{ t("files.corpus.documentCount", documentCount) }}
               </CardDescription>
             </div>
             <NuxtLink :to="wLink('/files')">
-              <Button size="sm" variant="outline"> View Documents </Button>
+              <Button size="sm" variant="outline">
+                {{ t("files.corpus.viewDocuments") }}
+              </Button>
             </NuxtLink>
           </div>
 
@@ -187,19 +189,27 @@ function confirmDelete() {
               />
               <Input
                 v-model="searchQuery"
-                placeholder="Search documents..."
+                :placeholder="t('files.corpus.searchPlaceholder')"
                 class="pl-9 h-9"
               />
             </div>
             <Select v-model="statusFilter">
               <SelectTrigger class="w-[180px] h-9">
-                <SelectValue placeholder="All statuses" />
+                <SelectValue :placeholder="t('files.corpus.status.all')" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All statuses</SelectItem>
-                <SelectItem value="indexed">Indexed</SelectItem>
-                <SelectItem value="processing">Processing</SelectItem>
-                <SelectItem value="failed">Failed</SelectItem>
+                <SelectItem value="all">
+                  {{ t("files.corpus.status.all") }}
+                </SelectItem>
+                <SelectItem value="indexed">
+                  {{ t("files.corpus.status.indexed") }}
+                </SelectItem>
+                <SelectItem value="processing">
+                  {{ t("files.corpus.status.processing") }}
+                </SelectItem>
+                <SelectItem value="failed">
+                  {{ t("files.corpus.status.failed") }}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -215,8 +225,7 @@ function confirmDelete() {
           class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
         >
           <p class="text-xs text-muted-foreground">
-            Documents are automatically indexed for intelligent search and
-            retrieval.
+            {{ t("files.corpus.footer") }}
           </p>
         </CardFooter>
       </Card>
@@ -233,9 +242,16 @@ function confirmDelete() {
     />
 
     <!-- Delete Dialog -->
-    <DeleteDocumentDialog
+    <ConfirmDialog
       v-model:open="isDeleteDialogOpen"
-      :document-name="selectedDocument?.name ?? ''"
+      :title="t('files.corpus.delete.title')"
+      :description="
+        t('files.corpus.delete.description', {
+          name: selectedDocument?.name ?? '',
+        })
+      "
+      :confirm-label="t('files.corpus.delete.confirm')"
+      :cancel-label="t('files.corpus.delete.cancel')"
       @confirm="confirmDelete"
     />
   </div>
