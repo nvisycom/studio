@@ -277,6 +277,8 @@
 		"workspace": {
 			"members": "Members",
 			"files": "Files",
+			"policies": "Policies",
+			"pipelines": "Pipelines",
 			"created": "Created",
 			"badges": {
 				"requireApproval": "Requires Approval"
@@ -337,6 +339,25 @@
 			},
 			"support": {
 				"description": "Get help from our team"
+			}
+		},
+		"getStarted": {
+			"title": "Let's set up your workspace",
+			"subtitle": "A few steps to get the most out of {workspace}.",
+			"done": "You're all set",
+			"steps": {
+				"uploadFiles": {
+					"title": "Upload your first documents",
+					"description": "Add files to start detecting and redacting sensitive data."
+				},
+				"createPolicy": {
+					"title": "Create a redaction policy",
+					"description": "Define what to detect and how to redact it."
+				},
+				"inviteTeam": {
+					"title": "Invite your team",
+					"description": "Add members and assign roles to collaborate."
+				}
 			}
 		}
 	},

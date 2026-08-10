@@ -277,6 +277,8 @@
 		"workspace": {
 			"members": "Mitglieder",
 			"files": "Dateien",
+			"policies": "Richtlinien",
+			"pipelines": "Pipelines",
 			"created": "Erstellt",
 			"badges": {
 				"requireApproval": "Genehmigung erforderlich"
@@ -337,6 +339,25 @@
 			},
 			"support": {
 				"description": "Erhalten Sie Hilfe von unserem Team"
+			}
+		},
+		"getStarted": {
+			"title": "Richten Sie Ihren Arbeitsbereich ein",
+			"subtitle": "Ein paar Schritte, um das Beste aus {workspace} herauszuholen.",
+			"done": "Alles bereit",
+			"steps": {
+				"uploadFiles": {
+					"title": "Laden Sie Ihre ersten Dokumente hoch",
+					"description": "Fügen Sie Dateien hinzu, um sensible Daten zu erkennen und zu schwärzen."
+				},
+				"createPolicy": {
+					"title": "Erstellen Sie eine Schwärzungsrichtlinie",
+					"description": "Legen Sie fest, was erkannt und wie es geschwärzt wird."
+				},
+				"inviteTeam": {
+					"title": "Laden Sie Ihr Team ein",
+					"description": "Fügen Sie Mitglieder hinzu und weisen Sie Rollen zu."
+				}
 			}
 		}
 	},
