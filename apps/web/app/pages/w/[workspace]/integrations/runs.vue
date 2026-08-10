@@ -16,7 +16,7 @@ import {
 	Ban,
 } from "@lucide/vue";
 import { formatDuration } from "#console/utils/date";
-import { providerIcon } from "#console/utils/connectionProviders";
+import { providerIcon } from "#console/utils/connections";
 import { Button } from "#console/components/ui/button";
 import {
 	Card,

@@ -25,14 +25,11 @@ import {
 	ConnectConnectionDialog,
 	ConnectLlmDialog,
 } from "#console/components/pages/connections";
-import type {
-	StorageProvider,
-	LlmProvider,
-} from "#console/utils/connectionProviders";
+import type { StorageProvider, LlmProvider } from "#console/utils/connections";
 import {
 	storageProviderForCard,
 	llmProviderForCard,
-} from "#console/utils/connectionProviders";
+} from "#console/utils/connections";
 import type { CreateConnection } from "@nvisy/sdk/datatypes";
 import { toast } from "vue-sonner";
 

@@ -4,13 +4,13 @@ import type {
 	SyncDeletionPolicy,
 	UpdateConnection,
 } from "@nvisy/sdk/datatypes";
-import type { StorageProvider } from "#console/utils/connectionProviders";
+import type { StorageProvider } from "#console/utils/connections";
 import {
 	DELETION_POLICIES,
 	STORAGE_PROVIDERS,
 	providerIcon,
 	providerLabel,
-} from "#console/utils/connectionProviders";
+} from "#console/utils/connections";
 import { ChevronDown, Loader2 } from "@lucide/vue";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";

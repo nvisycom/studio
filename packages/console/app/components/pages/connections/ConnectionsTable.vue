@@ -12,10 +12,7 @@ import {
 } from "#console/components/ui/table";
 import DataTableHead from "#console/components/pages/DataTableHead.vue";
 import RowActions from "#console/components/pages/RowActions.vue";
-import {
-	providerIcon,
-	providerLabel,
-} from "#console/utils/connectionProviders";
+import { providerIcon, providerLabel } from "#console/utils/connections";
 
 const { t } = useI18n();
 const { relativeTime } = useRelativeTime();

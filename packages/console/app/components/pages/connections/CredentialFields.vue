@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CredentialField } from "#console/utils/connectionProviders";
+import type { CredentialField } from "#console/utils/connections";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
 import { Textarea } from "#console/components/ui/textarea";

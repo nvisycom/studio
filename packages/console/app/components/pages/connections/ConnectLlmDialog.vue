@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CreateConnection, LlmConfig } from "@nvisy/sdk/datatypes";
-import type { LlmProvider } from "#console/utils/connectionProviders";
-import { LLM_PROVIDERS } from "#console/utils/connectionProviders";
+import type { LlmProvider } from "#console/utils/connections";
+import { LLM_PROVIDERS } from "#console/utils/connections";
 import { Loader2 } from "@lucide/vue";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
