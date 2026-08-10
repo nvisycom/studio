@@ -7,6 +7,7 @@ import {
 	PlugZap,
 	Compass,
 	History,
+	HardDrive,
 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import type {
@@ -29,6 +30,7 @@ import {
 	ConfigureConnectionDialog,
 	ConnectionsTable,
 } from "#console/components/pages/connections";
+import { providerIcon, providerLabel } from "#console/utils/connections";
 import {
 	WebhooksTable,
 	WebhookDialog,
@@ -564,33 +566,25 @@ async function testWebhook(webhookId: string) {
               handleDisconnectConnection(selectedConnection.id)
           "
         >
-          <template #details>
-            <div class="space-y-4">
+          <template v-if="selectedConnection" #details>
+            <div class="flex items-center gap-3">
               <div
-                class="p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
+                class="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-muted/40"
               >
-                <p
-                  class="text-sm text-neutral-900 dark:text-white font-medium mb-1"
-                >
-                  {{ selectedConnection?.displayName }}
-                </p>
-                <p
-                  class="text-xs text-neutral-500 dark:text-neutral-500 capitalize"
-                >
-                  {{ t("connections.dialogs.disconnect.provider") }}:
-                  {{ selectedConnection?.provider }}
-                </p>
+                <img
+                  v-if="providerIcon(selectedConnection.provider)"
+                  :src="providerIcon(selectedConnection.provider)!"
+                  :alt="selectedConnection.provider"
+                  class="size-5 object-contain"
+                />
+                <HardDrive v-else :size="18" class="text-muted-foreground" />
               </div>
-              <div
-                class="p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800"
-              >
-                <p class="text-sm text-amber-900 dark:text-amber-100">
-                  <span class="font-medium"
-                    >{{
-                      t("connections.dialogs.disconnect.warningTitle")
-                    }}:</span
-                  >
-                  {{ t("connections.dialogs.disconnect.warningDescription") }}
+              <div class="min-w-0">
+                <p class="truncate text-sm font-medium text-foreground">
+                  {{ selectedConnection.displayName }}
+                </p>
+                <p class="truncate text-xs text-muted-foreground">
+                  {{ providerLabel(selectedConnection.provider) }}
                 </p>
               </div>
             </div>

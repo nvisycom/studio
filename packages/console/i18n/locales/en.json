@@ -970,11 +970,8 @@
 				"error": "Failed to create connection"
 			},
 			"disconnect": {
-				"title": "Disconnect {name}",
-				"description": "Are you sure you want to disconnect this integration? This action cannot be undone.",
-				"provider": "Provider",
-				"warningTitle": "Warning",
-				"warningDescription": "Disconnecting will permanently delete all configuration and data associated with this integration.",
+				"title": "Disconnect {name}?",
+				"description": "This permanently deletes the connection and all its configuration and synced data. This can't be undone.",
 				"confirm": "Disconnect",
 				"cancel": "Cancel"
 			},

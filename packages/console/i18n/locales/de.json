@@ -970,11 +970,8 @@
 				"error": "Verbindung konnte nicht erstellt werden"
 			},
 			"disconnect": {
-				"title": "{name} Trennen",
-				"description": "Sind Sie sicher, dass Sie diese Integration trennen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-				"provider": "Anbieter",
-				"warningTitle": "Warnung",
-				"warningDescription": "Das Trennen wird alle Konfigurationen und Daten, die mit dieser Integration verbunden sind, dauerhaft löschen.",
+				"title": "{name} trennen?",
+				"description": "Dadurch werden die Verbindung und ihre gesamte Konfiguration sowie synchronisierte Daten dauerhaft gelöscht. Dies kann nicht rückgängig gemacht werden.",
 				"confirm": "Trennen",
 				"cancel": "Abbrechen"
 			},
