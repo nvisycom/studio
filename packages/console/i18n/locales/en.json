@@ -300,6 +300,10 @@
 			"viewAnalytics": {
 				"title": "View Analytics",
 				"description": "Monitor usage"
+			},
+			"policies": {
+				"title": "Policies",
+				"description": "Manage redaction rules"
 			}
 		},
 		"actions": {
@@ -343,7 +347,6 @@
 		},
 		"getStarted": {
 			"title": "Let's set up your workspace",
-			"subtitle": "A few steps to get the most out of {workspace}.",
 			"done": "You're all set",
 			"steps": {
 				"uploadFiles": {
@@ -358,7 +361,9 @@
 					"title": "Invite your team",
 					"description": "Add members and assign roles to collaborate."
 				}
-			}
+			},
+			"skip": "Skip setup",
+			"cardSubtitle": "Finish these steps to get going."
 		},
 		"sections": {
 			"recentActivity": "Recent activity",
@@ -368,7 +373,10 @@
 			"empty": {
 				"activity": "No activity yet",
 				"files": "No files yet",
-				"runs": "No runs yet"
+				"runs": "No runs yet",
+				"activityDescription": "Actions in this workspace will show up here.",
+				"filesDescription": "Upload documents to see them here.",
+				"runsDescription": "Pipeline runs will show up here."
 			}
 		}
 	},

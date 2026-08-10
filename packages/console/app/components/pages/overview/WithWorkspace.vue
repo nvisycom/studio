@@ -1,49 +1,48 @@
 <script setup lang="ts">
 import {
 	ArrowRight,
-	BarChart3,
 	Check,
+	CheckCircle2,
+	CircleSlash,
+	Clock,
 	FileText,
 	Link2,
 	Mail,
+	Play,
 	Settings2,
 	ShieldCheck,
 	Upload,
 	Users,
 	Webhook as WebhookIcon,
-	Workflow,
+	X,
+	XCircle,
 } from "@lucide/vue";
-import type { ActivityType } from "@nvisy/sdk/datatypes";
+import type { ActivityType, PipelineRunStatus } from "@nvisy/sdk/datatypes";
+import { useLocalStorage } from "@vueuse/core";
 import type { Component } from "vue";
-import { Badge } from "#console/components/ui/badge";
-import { getFileIcon, formatFileSize } from "#console/utils/file";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "#console/components/ui/card";
+import { formatFileSize, getFileIcon } from "#console/utils/file";
 
-const { t, locale } = useI18n();
+const { t } = useI18n();
 const { wLink } = useWorkspaceLink();
 const { relativeTime } = useRelativeTime();
-const { firstName } = useAccount();
 const { currentWorkspace } = useWorkspaces();
 const { members } = useMembers();
 const { files } = useFiles();
 const { policies } = usePolicies();
-const { pipelines } = usePipelines();
-const { activities } = useActivities({ pageSize: 6 });
-
-// Localized long-form date, following the active UI locale.
-const createdOn = computed(() => {
-	const created = currentWorkspace.value?.createdAt;
-	if (!created) return "";
-	return new Date(created).toLocaleDateString(locale.value, {
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	});
-});
+const { activities } = useActivities({ pageSize: 8 });
+const { runs } = useRuns();
 
 // --- Setup progress -----------------------------------------------------
-// Each step's `done` flag is derived from real data. The overview leads with
-// the checklist until every step is complete, then hands over to the live
-// dashboard — so a brand-new workspace never shows a grid of zeros.
+// Each step's `done` flag is derived from real data. While setup is incomplete
+// (and not dismissed) a "Set up your workspace" card sits among the dashboard
+// cards; it disappears once every step is done or the user hides it.
 interface SetupStep {
 	key: string;
 	icon: Component;
@@ -77,34 +76,27 @@ const activeStepIndex = computed(() =>
 	setupSteps.value.findIndex((s) => !s.done),
 );
 
-// --- Stat strip ---------------------------------------------------------
-interface Stat {
-	label: string;
-	value: number;
-	href: string;
+// Let users hide the setup card. Persisted per-workspace in localStorage so it
+// stays hidden across reloads.
+const dismissedSlugs = useLocalStorage<string[]>(
+	"overview-setup-dismissed",
+	[],
+);
+const isDismissed = computed(() =>
+	currentWorkspace.value
+		? dismissedSlugs.value.includes(currentWorkspace.value.slug)
+		: false,
+);
+function dismissSetup(): void {
+	const slug = currentWorkspace.value?.slug;
+	if (slug && !dismissedSlugs.value.includes(slug)) {
+		dismissedSlugs.value = [...dismissedSlugs.value, slug];
+	}
 }
-const stats = computed<Stat[]>(() => [
-	{
-		label: t("overview.workspace.files"),
-		value: files.value?.length ?? 0,
-		href: wLink("/files"),
-	},
-	{
-		label: t("overview.workspace.members"),
-		value: members.value?.length ?? 0,
-		href: wLink("/team"),
-	},
-	{
-		label: t("overview.workspace.policies"),
-		value: policies.value?.length ?? 0,
-		href: wLink("/policies"),
-	},
-	{
-		label: t("overview.workspace.pipelines"),
-		value: pipelines.value?.length ?? 0,
-		href: wLink("/workflows"),
-	},
-]);
+
+// The setup card shows while setup is unfinished and hasn't been hidden. The
+// live dashboard (activity / files / runs) always renders alongside it.
+const showSetupCard = computed(() => !allSetUp.value && !isDismissed.value);
 
 // --- Recent activity ----------------------------------------------------
 // Map each activity category to an icon. The description text is provided by
@@ -124,6 +116,26 @@ function activityIcon(type: ActivityType): Component {
 
 const recentFiles = computed(() => (files.value ?? []).slice(0, 5));
 
+// --- Recent runs --------------------------------------------------------
+// Most-recent pipeline runs, newest first. Status drives a colored icon
+// (mirroring the workflows/runs page).
+const recentRuns = computed(() =>
+	[...(runs.value ?? [])]
+		.sort((a, b) => b.startedAt.localeCompare(a.startedAt))
+		.slice(0, 5),
+);
+
+const RUN_STATUS_ICON: Record<
+	PipelineRunStatus,
+	{ icon: Component; class: string }
+> = {
+	running: { icon: Play, class: "text-blue-500" },
+	analyzed: { icon: Clock, class: "text-muted-foreground" },
+	completed: { icon: CheckCircle2, class: "text-green-500" },
+	failed: { icon: XCircle, class: "text-red-500" },
+	cancelled: { icon: CircleSlash, class: "text-muted-foreground" },
+};
+
 // Quick actions (always available)
 const quickActions = [
 	{
@@ -137,163 +149,35 @@ const quickActions = [
 		href: wLink("/team"),
 	},
 	{
-		title: t("overview.quickActions.viewAnalytics.title"),
-		icon: BarChart3,
-		href: wLink("/analytics"),
+		title: t("overview.quickActions.policies.title"),
+		icon: ShieldCheck,
+		href: wLink("/policies"),
 	},
 ];
 </script>
 
 <template>
   <div class="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8">
-    <!-- Welcome -->
-    <div>
-      <div class="mb-1 flex flex-wrap items-center gap-3">
-        <h1 class="text-2xl font-semibold tracking-tight text-foreground">
-          {{ t("overview.welcome.title")
-          }}<span v-if="firstName">, {{ firstName }}</span
-          >!
-        </h1>
-        <Badge
-          v-if="currentWorkspace?.memberRole"
-          variant="outline"
-          class="text-xs capitalize"
-        >
-          {{ t(`members.roles.${currentWorkspace.memberRole}`) }}
-        </Badge>
-      </div>
-      <p class="text-sm text-muted-foreground">
-        {{
-          t("overview.welcome.subtitle", {
-            workspace: currentWorkspace?.displayName ?? "",
-          })
-        }}
-      </p>
-
-      <div
-        v-if="
-          currentWorkspace?.settings.requireApproval ||
-          currentWorkspace?.tags?.length
-        "
-        class="mt-3 flex flex-wrap items-center gap-1.5"
-      >
-        <Badge
-          v-if="currentWorkspace?.settings.requireApproval"
-          variant="secondary"
-          class="text-xs"
-        >
-          {{ t("overview.workspace.badges.requireApproval") }}
-        </Badge>
-        <Badge
-          v-for="tag in currentWorkspace?.tags"
-          :key="tag"
-          variant="outline"
-          class="text-xs"
-        >
-          {{ tag }}
-        </Badge>
-      </div>
-    </div>
-
-    <!-- Getting started: shown until every step is complete -->
-    <section v-if="!allSetUp">
-      <div class="mb-4">
-        <h2 class="text-sm font-medium text-foreground">
-          {{ t("overview.getStarted.title") }}
-        </h2>
-        <p class="mt-0.5 text-sm text-muted-foreground">
-          {{
-            t("overview.getStarted.subtitle", {
-              workspace: currentWorkspace?.displayName ?? "",
-            })
-          }}
-        </p>
-      </div>
-
-      <div class="divide-y divide-border/60 rounded-xl border border-border/60">
-        <NuxtLink
-          v-for="(step, i) in setupSteps"
-          :key="step.key"
-          :to="step.href"
-          class="group flex items-center gap-4 px-4 py-3.5 transition-colors first:rounded-t-xl last:rounded-b-xl hover:bg-muted/40"
-        >
-          <div
-            class="flex size-7 shrink-0 items-center justify-center rounded-full border text-xs font-medium transition-colors"
-            :class="
-              step.done
-                ? 'border-transparent bg-foreground text-background'
-                : i === activeStepIndex
-                  ? 'border-foreground/80 text-foreground'
-                  : 'border-border text-muted-foreground'
-            "
+    <!-- Top row: recent activity, plus the setup card while unfinished. -->
+    <div class="grid gap-6" :class="showSetupCard ? 'lg:grid-cols-2' : ''">
+      <!-- Recent activity -->
+      <Card class="rounded-xl border-border/50 py-0 pt-6">
+        <CardHeader>
+          <CardTitle
+            class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
           >
-            <Check v-if="step.done" :size="14" :stroke-width="2.5" />
-            <component :is="step.icon" v-else :size="14" :stroke-width="1.75" />
-          </div>
-
-          <div class="min-w-0 flex-1">
-            <p
-              class="text-sm font-medium transition-colors"
-              :class="
-                step.done
-                  ? 'text-muted-foreground line-through decoration-border'
-                  : 'text-foreground'
-              "
-            >
-              {{ t(`overview.getStarted.steps.${step.key}.title`) }}
-            </p>
-            <p v-if="!step.done" class="text-xs text-muted-foreground">
-              {{ t(`overview.getStarted.steps.${step.key}.description`) }}
-            </p>
-          </div>
-
-          <ArrowRight
-            v-if="!step.done"
-            class="size-4 shrink-0 -translate-x-1 text-muted-foreground/50 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100"
-          />
-        </NuxtLink>
-      </div>
-    </section>
-
-    <!-- Populated dashboard -->
-    <template v-else>
-      <!-- Stat strip -->
-      <section
-        class="flex flex-wrap items-stretch gap-x-10 gap-y-4 rounded-xl border border-border/60 px-6 py-4"
-      >
-        <NuxtLink
-          v-for="stat in stats"
-          :key="stat.label"
-          :to="stat.href"
-          class="flex flex-col gap-0.5 transition-opacity hover:opacity-70"
-        >
-          <span class="text-2xl font-semibold tracking-tight text-foreground">
-            {{ stat.value }}
-          </span>
-          <span class="text-xs text-muted-foreground">{{ stat.label }}</span>
-        </NuxtLink>
-      </section>
-
-      <!-- Recent activity + recent files -->
-      <div class="grid gap-6 lg:grid-cols-2">
-        <!-- Recent activity -->
-        <section>
-          <div class="mb-3 flex items-center justify-between">
-            <h3 class="text-sm font-medium text-foreground">
-              {{ t("overview.sections.recentActivity") }}
-            </h3>
-          </div>
-          <div
-            v-if="activities?.length"
-            class="divide-y divide-border/50 rounded-xl border border-border/60"
-          >
+            {{ t("overview.sections.recentActivity") }}
+          </CardTitle>
+        </CardHeader>
+        <CardContent class="pb-6">
+          <div v-if="activities?.length" class="-my-1 flex flex-col">
             <div
               v-for="activity in activities"
               :key="activity.id"
-              class="flex items-start gap-3 px-4 py-3"
+              class="flex items-start gap-3 py-2.5"
             >
               <div
-                class="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-muted/60 text-muted-foreground"
+                class="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md border border-border/60 bg-muted/40 text-muted-foreground"
               >
                 <component
                   :is="activityIcon(activity.activityType)"
@@ -306,73 +190,231 @@ const quickActions = [
                   {{ activity.description }}
                 </p>
                 <p class="mt-0.5 text-xs text-muted-foreground">
-                  {{ activity.performedBy.displayName ?? activity.performedBy.username }}
+                  {{
+                    activity.performedBy.displayName ??
+                    activity.performedBy.username
+                  }}
                   · {{ relativeTime(activity.createdAt) }}
                 </p>
               </div>
             </div>
           </div>
-          <div
-            v-else
-            class="flex items-center justify-center rounded-xl border border-dashed border-border/60 px-4 py-10 text-sm text-muted-foreground"
-          >
-            {{ t("overview.sections.empty.activity") }}
-          </div>
-        </section>
-
-        <!-- Recent files -->
-        <section>
-          <div class="mb-3 flex items-center justify-between">
-            <h3 class="text-sm font-medium text-foreground">
-              {{ t("overview.sections.recentFiles") }}
-            </h3>
-            <NuxtLink
-              v-if="recentFiles.length"
-              :to="wLink('/files')"
-              class="text-xs text-muted-foreground transition-colors hover:text-foreground"
+          <div v-else class="py-10 text-center">
+            <div
+              class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
             >
-              {{ t("overview.sections.viewAll") }}
-            </NuxtLink>
+              <Settings2 class="size-5 text-muted-foreground" />
+            </div>
+            <p class="mb-1 text-sm text-foreground">
+              {{ t("overview.sections.empty.activity") }}
+            </p>
+            <p class="text-xs text-muted-foreground">
+              {{ t("overview.sections.empty.activityDescription") }}
+            </p>
           </div>
-          <div
-            v-if="recentFiles.length"
-            class="divide-y divide-border/50 rounded-xl border border-border/60"
-          >
+        </CardContent>
+      </Card>
+
+      <!-- Set up your workspace (dismissible, while unfinished) -->
+      <Card v-if="showSetupCard" class="rounded-xl border-border/50 py-0 pt-6">
+        <CardHeader>
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <CardTitle
+                class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+              >
+                {{ t("overview.getStarted.title") }}
+              </CardTitle>
+              <CardDescription class="mt-1 text-sm">
+                {{ t("overview.getStarted.cardSubtitle") }}
+              </CardDescription>
+            </div>
+            <button
+              type="button"
+              class="-mr-1 -mt-1 shrink-0 rounded-md p-1 text-muted-foreground/60 transition-colors hover:bg-muted/60 hover:text-foreground"
+              :aria-label="t('overview.getStarted.skip')"
+              @click="dismissSetup"
+            >
+              <X :size="16" />
+            </button>
+          </div>
+        </CardHeader>
+        <CardContent class="pb-6">
+          <div class="-my-1 flex flex-col">
             <NuxtLink
-              v-for="file in recentFiles"
-              :key="file.id"
-              :to="wLink('/files')"
-              class="group flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/40"
+              v-for="(step, i) in setupSteps"
+              :key="step.key"
+              :to="step.href"
+              class="group flex items-center gap-3 py-2.5"
             >
               <div
-                class="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted/60 text-muted-foreground"
+                class="flex size-7 shrink-0 items-center justify-center rounded-full border text-xs font-medium transition-colors"
+                :class="
+                  step.done
+                    ? 'border-transparent bg-foreground text-background'
+                    : i === activeStepIndex
+                      ? 'border-foreground/80 text-foreground'
+                      : 'border-border text-muted-foreground'
+                "
               >
+                <Check v-if="step.done" :size="14" :stroke-width="2.5" />
                 <component
-                  :is="getFileIcon(file.displayName)"
+                  :is="step.icon"
+                  v-else
                   :size="14"
                   :stroke-width="1.75"
                 />
               </div>
+
               <div class="min-w-0 flex-1">
-                <p class="truncate text-sm font-medium text-foreground">
-                  {{ file.displayName }}
+                <p
+                  class="text-sm font-medium transition-colors"
+                  :class="
+                    step.done
+                      ? 'text-muted-foreground line-through decoration-border'
+                      : 'text-foreground'
+                  "
+                >
+                  {{ t(`overview.getStarted.steps.${step.key}.title`) }}
                 </p>
-                <p class="text-xs text-muted-foreground">
-                  {{ formatFileSize(file.fileSize) }} ·
-                  {{ relativeTime(file.createdAt) }}
+                <p v-if="!step.done" class="text-xs text-muted-foreground">
+                  {{ t(`overview.getStarted.steps.${step.key}.description`) }}
                 </p>
               </div>
+
+              <ArrowRight
+                v-if="!step.done"
+                class="size-4 shrink-0 -translate-x-1 text-muted-foreground/50 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100"
+              />
             </NuxtLink>
           </div>
-          <div
-            v-else
-            class="flex items-center justify-center rounded-xl border border-dashed border-border/60 px-4 py-10 text-sm text-muted-foreground"
-          >
-            {{ t("overview.sections.empty.files") }}
-          </div>
-        </section>
+        </CardContent>
+      </Card>
+    </div>
+
+    <!-- Recent files + recent runs -->
+    <div class="grid gap-6 lg:grid-cols-2">
+        <!-- Recent files -->
+        <Card class="rounded-xl border-border/50 py-0 pt-6">
+          <CardHeader>
+            <div class="flex items-start justify-between">
+              <CardTitle
+                class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+              >
+                {{ t("overview.sections.recentFiles") }}
+              </CardTitle>
+              <NuxtLink
+                v-if="recentFiles.length"
+                :to="wLink('/files')"
+                class="text-xs text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {{ t("overview.sections.viewAll") }}
+              </NuxtLink>
+            </div>
+          </CardHeader>
+          <CardContent class="pb-6">
+            <div v-if="recentFiles.length" class="-my-1 flex flex-col">
+              <NuxtLink
+                v-for="file in recentFiles"
+                :key="file.id"
+                :to="wLink('/files')"
+                class="group flex items-center gap-3 py-2.5"
+              >
+                <div
+                  class="flex size-7 shrink-0 items-center justify-center rounded-md border border-border/60 bg-muted/40 text-muted-foreground"
+                >
+                  <component
+                    :is="getFileIcon(file.displayName)"
+                    :size="14"
+                    :stroke-width="1.75"
+                  />
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="truncate text-sm font-medium text-foreground">
+                    {{ file.displayName }}
+                  </p>
+                  <p class="text-xs text-muted-foreground">
+                    {{ formatFileSize(file.fileSize) }} ·
+                    {{ relativeTime(file.createdAt) }}
+                  </p>
+                </div>
+              </NuxtLink>
+            </div>
+            <div v-else class="py-10 text-center">
+              <div
+                class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
+              >
+                <FileText class="size-5 text-muted-foreground" />
+              </div>
+              <p class="mb-1 text-sm text-foreground">
+                {{ t("overview.sections.empty.files") }}
+              </p>
+              <p class="text-xs text-muted-foreground">
+                {{ t("overview.sections.empty.filesDescription") }}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <!-- Recent runs -->
+        <Card class="rounded-xl border-border/50 py-0 pt-6">
+          <CardHeader>
+            <div class="flex items-start justify-between">
+              <CardTitle
+                class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+              >
+                {{ t("overview.sections.recentRuns") }}
+              </CardTitle>
+              <NuxtLink
+                v-if="recentRuns.length"
+                :to="wLink('/workflows/runs')"
+                class="text-xs text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {{ t("overview.sections.viewAll") }}
+              </NuxtLink>
+            </div>
+          </CardHeader>
+          <CardContent class="pb-6">
+            <div v-if="recentRuns.length" class="-my-1 flex flex-col">
+              <NuxtLink
+                v-for="run in recentRuns"
+                :key="run.id"
+                :to="wLink('/workflows/runs')"
+                class="flex items-center gap-3 py-2.5"
+              >
+                <component
+                  :is="RUN_STATUS_ICON[run.status].icon"
+                  :size="16"
+                  class="shrink-0"
+                  :class="RUN_STATUS_ICON[run.status].class"
+                />
+                <div class="min-w-0 flex-1">
+                  <p class="truncate font-mono text-sm text-foreground">
+                    {{ run.pipelineSlug }}
+                  </p>
+                  <p class="text-xs text-muted-foreground">
+                    {{ t(`workflows.runs.runStatus.${run.status}`) }} ·
+                    {{ relativeTime(run.startedAt) }}
+                  </p>
+                </div>
+              </NuxtLink>
+            </div>
+            <div v-else class="py-10 text-center">
+              <div
+                class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
+              >
+                <Play class="size-5 text-muted-foreground" />
+              </div>
+              <p class="mb-1 text-sm text-foreground">
+                {{ t("overview.sections.empty.runs") }}
+              </p>
+              <p class="text-xs text-muted-foreground">
+                {{ t("overview.sections.empty.runsDescription") }}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </template>
 
     <!-- Quick actions -->
     <div>
@@ -401,10 +443,6 @@ const quickActions = [
           />
         </NuxtLink>
       </div>
-
-      <p v-if="createdOn" class="mt-6 text-xs text-muted-foreground/70">
-        {{ t("overview.workspace.created") }} · {{ createdOn }}
-      </p>
     </div>
   </div>
 </template>

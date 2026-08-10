@@ -300,6 +300,10 @@
 			"viewAnalytics": {
 				"title": "Analysen anzeigen",
 				"description": "Nutzung überwachen"
+			},
+			"policies": {
+				"title": "Richtlinien",
+				"description": "Schwärzungsregeln verwalten"
 			}
 		},
 		"actions": {
@@ -343,7 +347,6 @@
 		},
 		"getStarted": {
 			"title": "Richten Sie Ihren Arbeitsbereich ein",
-			"subtitle": "Ein paar Schritte, um das Beste aus {workspace} herauszuholen.",
 			"done": "Alles bereit",
 			"steps": {
 				"uploadFiles": {
@@ -358,7 +361,9 @@
 					"title": "Laden Sie Ihr Team ein",
 					"description": "Fügen Sie Mitglieder hinzu und weisen Sie Rollen zu."
 				}
-			}
+			},
+			"skip": "Einrichtung überspringen",
+			"cardSubtitle": "Schließen Sie diese Schritte ab, um loszulegen."
 		},
 		"sections": {
 			"recentActivity": "Letzte Aktivitäten",
@@ -368,7 +373,10 @@
 			"empty": {
 				"activity": "Noch keine Aktivität",
 				"files": "Noch keine Dateien",
-				"runs": "Noch keine Ausführungen"
+				"runs": "Noch keine Ausführungen",
+				"activityDescription": "Aktionen in diesem Arbeitsbereich erscheinen hier.",
+				"filesDescription": "Laden Sie Dokumente hoch, um sie hier zu sehen.",
+				"runsDescription": "Pipeline-Ausführungen erscheinen hier."
 			}
 		}
 	},
