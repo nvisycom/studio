@@ -25,9 +25,9 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "#console/components/ui/dropdown-menu";
-import { formatRelativeTime } from "#console/utils/date";
 
 const { t } = useI18n();
+const { relativeTime } = useRelativeTime();
 
 defineProps<{
 	webhooks: Webhook[];
@@ -134,7 +134,7 @@ function lastDelivery(webhook: Webhook): {
               <span
                 class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
               >
-                {{ formatRelativeTime(webhook.createdAt, t) }}
+                {{ relativeTime(webhook.createdAt) }}
               </span>
             </TableCell>
             <TableCell>
@@ -153,7 +153,7 @@ function lastDelivery(webhook: Webhook): {
                 <span
                   class="text-sm font-normal text-neutral-600 dark:text-neutral-400"
                 >
-                  {{ formatRelativeTime(lastDelivery(webhook).at, t) }}
+                  {{ relativeTime(lastDelivery(webhook).at) }}
                 </span>
                 <span
                   v-if="lastDelivery(webhook).consecutiveFailures > 0"

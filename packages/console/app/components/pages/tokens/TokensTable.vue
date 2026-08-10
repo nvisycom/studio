@@ -18,10 +18,6 @@ import {
 } from "#console/components/ui/context-menu";
 import { Checkbox } from "#console/components/ui/checkbox";
 import { Badge } from "#console/components/ui/badge";
-import {
-	formatRelativeTime,
-	formatRelativeTimeFuture,
-} from "#console/utils/date";
 
 // Helper to truncate UUID for display
 const truncateId = (id: string): string => id.slice(0, 8);
@@ -45,6 +41,7 @@ const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
+const { relativeTime } = useRelativeTime();
 
 // Helper functions
 const isTokenSelected = (tokenId: string): boolean =>
@@ -185,12 +182,12 @@ const getSessionTypeInitial = (type: string): string => {
             <TableCell
               class="font-normal text-neutral-600 dark:text-neutral-400"
             >
-              {{ formatRelativeTime(token.issuedAt, t) }}
+              {{ relativeTime(token.issuedAt) }}
             </TableCell>
             <TableCell
               class="font-normal text-neutral-600 dark:text-neutral-400"
             >
-              {{ formatRelativeTime(token.lastUsedAt, t) }}
+              {{ relativeTime(token.lastUsedAt) }}
             </TableCell>
           </TableRow>
         </ContextMenuTrigger>

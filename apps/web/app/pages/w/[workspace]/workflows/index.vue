@@ -43,6 +43,7 @@ import {
 import { CreatePipelineDialog } from "#console/components/pages/workflows";
 
 const { t } = useI18n();
+const { relativeTime } = useRelativeTime();
 const { wLink } = useWorkspaceLink();
 
 useHead({ title: "Workflows" });
@@ -176,7 +177,7 @@ async function handleDelete(slug: string) {
                         </Badge>
                       </TableCell>
                       <TableCell class="text-muted-foreground text-sm">
-                        {{ formatRelativeTime(pipeline.updatedAt, t) }}
+                        {{ relativeTime(pipeline.updatedAt) }}
                       </TableCell>
                       <TableCell class="text-right" @click.stop>
                         <DropdownMenu>

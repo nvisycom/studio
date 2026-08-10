@@ -36,9 +36,9 @@ import {
 	providerIcon,
 	providerLabel,
 } from "#console/utils/connectionProviders";
-import { formatRelativeTime } from "#console/utils/date";
 
 const { t } = useI18n();
+const { relativeTime } = useRelativeTime();
 
 defineProps<{
 	connections: Connection[];
@@ -141,7 +141,7 @@ const emit = defineEmits<{
               <span class="text-sm text-muted-foreground">
                 {{
                   connection.sync?.lastSynced
-                    ? formatRelativeTime(connection.sync.lastSynced, t)
+                    ? relativeTime(connection.sync.lastSynced)
                     : t("common.time.never")
                 }}
               </span>

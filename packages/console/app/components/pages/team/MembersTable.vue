@@ -18,7 +18,6 @@ import {
 	ContextMenuTrigger,
 	ContextMenuSeparator,
 } from "#console/components/ui/context-menu";
-import { formatRelativeTime } from "#console/utils/date";
 import { personLabel } from "#console/utils/naming";
 
 interface Props {
@@ -39,6 +38,7 @@ defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
+const { relativeTime } = useRelativeTime();
 const { resolveAvatarUrl } = useAvatarUrl();
 
 function memberAvatar(member: Member): string | undefined {
@@ -151,7 +151,7 @@ function handleRowClick(member: Member) {
               <TableCell>
                 <span
                   class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
-                  >{{ formatRelativeTime(member.createdAt, t) }}</span
+                  >{{ relativeTime(member.createdAt) }}</span
                 >
               </TableCell>
             </TableRow>

@@ -10,7 +10,6 @@ import {
 	ExternalLink,
 	LayoutTemplate,
 } from "@lucide/vue";
-import { formatRelativeTime } from "#console/utils/date";
 import { personLabel } from "#console/utils/naming";
 import { EntityAvatar } from "#console/components/common";
 import { Button } from "#console/components/ui/button";
@@ -53,6 +52,7 @@ import {
 import { toast } from "vue-sonner";
 
 const { t } = useI18n();
+const { relativeTime } = useRelativeTime();
 const { wLink } = useWorkspaceLink();
 const { resolveAvatarUrl } = useAvatarUrl();
 
@@ -203,10 +203,10 @@ async function confirmDelete() {
                       </div>
                     </TableCell>
                     <TableCell class="text-sm text-muted-foreground">
-                      {{ formatRelativeTime(policy.createdAt, t) }}
+                      {{ relativeTime(policy.createdAt) }}
                     </TableCell>
                     <TableCell class="text-sm text-muted-foreground">
-                      {{ formatRelativeTime(policy.updatedAt, t) }}
+                      {{ relativeTime(policy.updatedAt) }}
                     </TableCell>
                     <TableCell class="text-right" @click.stop>
                       <DropdownMenu>

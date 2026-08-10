@@ -10,7 +10,7 @@ import {
 	CircleSlash,
 	FileText,
 } from "@lucide/vue";
-import { formatRelativeTime, formatDuration } from "#console/utils/date";
+import { formatDuration } from "#console/utils/date";
 import { Button } from "#console/components/ui/button";
 import {
 	Card,
@@ -37,6 +37,7 @@ import {
 import { Badge } from "#console/components/ui/badge";
 
 const { t } = useI18n();
+const { relativeTime } = useRelativeTime();
 const { wLink } = useWorkspaceLink();
 
 useHead({ title: "Workflow Runs" });
@@ -209,7 +210,7 @@ const filteredRuns = computed(() => {
 
                 <!-- Started -->
                 <TableCell class="text-sm text-muted-foreground">
-                  {{ formatRelativeTime(run.startedAt, t) }}
+                  {{ relativeTime(run.startedAt) }}
                 </TableCell>
 
                 <!-- Duration -->

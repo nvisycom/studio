@@ -73,7 +73,7 @@ const unused = keys.filter((k) => !isUsed(k));
 
 console.log(`Locale keys (${REFERENCE_LOCALE}): ${keys.length}`);
 console.log(`Unused candidates: ${unused.length}`);
-if (unused.length) console.log("\n" + unused.join("\n"));
+if (unused.length) console.log(`\n${unused.join("\n")}`);
 
 if (!fix) {
 	if (unused.length)

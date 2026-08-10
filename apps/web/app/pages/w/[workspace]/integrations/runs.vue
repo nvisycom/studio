@@ -15,7 +15,7 @@ import {
 	HardDrive,
 	Ban,
 } from "@lucide/vue";
-import { formatRelativeTime, formatDuration } from "#console/utils/date";
+import { formatDuration } from "#console/utils/date";
 import { providerIcon } from "#console/utils/connectionProviders";
 import { Button } from "#console/components/ui/button";
 import {
@@ -44,6 +44,7 @@ import { Badge } from "#console/components/ui/badge";
 import { toast } from "vue-sonner";
 
 const { t } = useI18n();
+const { relativeTime } = useRelativeTime();
 const { wLink } = useWorkspaceLink();
 
 useHead({ title: "Connection Syncs" });
@@ -270,7 +271,7 @@ async function cancelSync(sync: ConnectionSync) {
 
                   <!-- Started -->
                   <TableCell class="text-sm text-muted-foreground">
-                    {{ formatRelativeTime(sync.startedAt, t) }}
+                    {{ relativeTime(sync.startedAt) }}
                   </TableCell>
 
                   <!-- Duration -->

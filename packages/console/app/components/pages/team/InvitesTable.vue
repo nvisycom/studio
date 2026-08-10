@@ -19,10 +19,6 @@ import {
 	ContextMenuTrigger,
 	ContextMenuSeparator,
 } from "#console/components/ui/context-menu";
-import {
-	formatRelativeTime,
-	formatRelativeTimeFuture,
-} from "#console/utils/date";
 
 interface Props {
 	invites: Invite[];
@@ -41,6 +37,7 @@ defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
+const { relativeTime, relativeTimeFuture } = useRelativeTime();
 
 function getInviteCode(invite: Invite): string {
 	if (invite.inviteToken) {
@@ -144,13 +141,13 @@ async function copyInviteLink(invite: Invite) {
               <TableCell>
                 <span
                   class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
-                  >{{ formatRelativeTime(invite.createdAt, t) }}</span
+                  >{{ relativeTime(invite.createdAt) }}</span
                 >
               </TableCell>
               <TableCell>
                 <span
                   class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
-                  >{{ formatRelativeTimeFuture(invite.expiresAt, t) }}</span
+                  >{{ relativeTimeFuture(invite.expiresAt) }}</span
                 >
               </TableCell>
             </TableRow>
