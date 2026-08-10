@@ -165,7 +165,7 @@ const filteredRuns = computed(() => {
                   <div class="flex items-center gap-1.5 text-muted-foreground">
                     <FileText :size="14" />
                     <span class="font-mono text-xs">
-                      {{ run.fileId.slice(0, 8) }}
+                      {{ run.inputFileId.slice(0, 8) }}
                     </span>
                   </div>
                 </TableCell>

@@ -109,6 +109,30 @@
 				"enableComments": {
 					"label": "Kommentare aktivieren",
 					"description": "Teammitgliedern erlauben, Kommentare zu Dokumenten hinzuzufügen."
+				},
+				"ocr": {
+					"label": "OCR",
+					"description": "Text aus gescannten Dokumenten und Bildern extrahieren.",
+					"policies": {
+						"auto": "Automatisch",
+						"force": "Immer",
+						"never": "Nie"
+					}
+				},
+				"retention": {
+					"label": "Aufbewahrung",
+					"description": "Wie lange die jeweiligen Daten aufbewahrt werden.",
+					"targets": {
+						"auditLogs": "Audit-Protokolle",
+						"originalDocuments": "Originaldokumente",
+						"redactedDocuments": "Geschwärzte Dokumente"
+					},
+					"modes": {
+						"forever": "Dauerhaft aufbewahren",
+						"days": "Für einen Zeitraum",
+						"zeroDays": "Nicht aufbewahren"
+					},
+					"footer": "Gilt für alle Daten in diesem Arbeitsbereich."
 				}
 			},
 			"leave": {
@@ -1164,7 +1188,12 @@
 			"when": "Wenn",
 			"then": "Dann",
 			"addCondition": "Bedingung hinzufügen",
-			"valuesPlaceholder": "komma, getrennt",
+			"valuesPlaceholder": {
+				"labelOneOf": "kommagetrennte Labels",
+				"tagOneOf": "kommagetrennte Tags",
+				"labelInGroup": "Gruppenname",
+				"coRef": "Cluster-ID"
+			},
 			"summary": {
 				"line": "Wenn {conditions}, {action}.",
 				"and": " und ",
@@ -1172,12 +1201,16 @@
 				"label": "Label {values} ist",
 				"tag": "Tag {values} ist",
 				"redact": "schwärzen",
-				"redactModalities": "{list} schwärzen"
+				"redactModalities": "{list} schwärzen",
+				"group": "in Gruppe {values}",
+				"coref": "in Cluster {values}"
 			},
 			"predicate": {
 				"confidence": "Konfidenz ≥",
 				"labelOneOf": "Label ist eines von",
-				"tagOneOf": "Tag ist eines von"
+				"tagOneOf": "Tag ist eines von",
+				"labelInGroup": "Label in Gruppe",
+				"coRef": "Gleiches Cluster wie"
 			},
 			"textKind": {
 				"replace": "Ersetzen",

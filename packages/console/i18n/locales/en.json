@@ -109,6 +109,30 @@
 				"enableComments": {
 					"label": "Enable Comments",
 					"description": "Allow team members to add comments on documents."
+				},
+				"ocr": {
+					"label": "OCR",
+					"description": "Extract text from scanned documents and images.",
+					"policies": {
+						"auto": "Automatic",
+						"force": "Always",
+						"never": "Never"
+					}
+				},
+				"retention": {
+					"label": "Retention",
+					"description": "How long to keep each kind of data.",
+					"targets": {
+						"auditLogs": "Audit logs",
+						"originalDocuments": "Original documents",
+						"redactedDocuments": "Redacted documents"
+					},
+					"modes": {
+						"forever": "Keep forever",
+						"days": "For a period",
+						"zeroDays": "Don't keep"
+					},
+					"footer": "Applies to all data in this workspace."
 				}
 			},
 			"leave": {
@@ -1164,7 +1188,12 @@
 			"when": "When",
 			"then": "Then",
 			"addCondition": "Add condition",
-			"valuesPlaceholder": "comma, separated",
+			"valuesPlaceholder": {
+				"labelOneOf": "comma, separated labels",
+				"tagOneOf": "comma, separated tags",
+				"labelInGroup": "group name",
+				"coRef": "cluster id"
+			},
 			"summary": {
 				"line": "When {conditions}, {action}.",
 				"and": " and ",
@@ -1172,12 +1201,16 @@
 				"label": "label is {values}",
 				"tag": "tag is {values}",
 				"redact": "redact it",
-				"redactModalities": "redact {list}"
+				"redactModalities": "redact {list}",
+				"group": "in group {values}",
+				"coref": "in cluster {values}"
 			},
 			"predicate": {
 				"confidence": "Confidence ≥",
 				"labelOneOf": "Label is one of",
-				"tagOneOf": "Tag is one of"
+				"tagOneOf": "Tag is one of",
+				"labelInGroup": "Label in group",
+				"coRef": "Same cluster as"
 			},
 			"textKind": {
 				"replace": "Replace",

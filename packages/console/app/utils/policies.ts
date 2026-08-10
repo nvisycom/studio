@@ -4,12 +4,11 @@ import type {
 	Labels,
 	PolicyDefinition,
 	PolicyRule,
-	PredicatedRule,
 } from "@nvisy/sdk/datatypes";
 
-// The editor only handles predicated (entity-level) rules; table rules are a
-// separate 0.14 rule variant we don't yet expose. `PolicyRule` is the union of
-// both, so we build/read against `PredicatedRule` and skip table rules.
+// 0.16 merged the rule variants into one `PolicyRule` discriminated by `kind`.
+// The predicated arm (predicate + action) is what most builders reference.
+type PredicatedRule = Extract<PolicyRule, { kind: "predicated" }>;
 
 // Editor model
 // A flattened representation of the policy schema the editor supports:
@@ -18,14 +17,22 @@ import type {
 // and the label catalog. Recursive predicate trees (any/not) and appliesWhen /
 // retention are not yet exposed.
 
-export type PredicateKind = "confidence" | "labelOneOf" | "tagOneOf";
+export type PredicateKind =
+	| "confidence"
+	| "labelOneOf"
+	| "tagOneOf"
+	| "labelInGroup"
+	| "coRef";
 
 /** A single condition. `all` of a rule's conditions must hold (AND). */
 export interface EditablePredicate {
 	kind: PredicateKind;
 	/** For `confidence`: minimum in [0,1]. */
 	min?: number;
-	/** For `labelOneOf` / `tagOneOf`: comma-separated values entered by the user. */
+	/**
+	 * For `labelOneOf` / `tagOneOf`: comma-separated values. For `labelInGroup`
+	 * (a group name) / `coRef` (a cluster id): a single value.
+	 */
 	values?: string;
 }
 
@@ -133,6 +140,12 @@ function buildPredicate(
 		if (p.kind === "labelOneOf") {
 			return { kind: "labelOneOf" as const, labels: splitValues(p.values) };
 		}
+		if (p.kind === "labelInGroup") {
+			return { kind: "labelInGroup" as const, group: (p.values ?? "").trim() };
+		}
+		if (p.kind === "coRef") {
+			return { kind: "coRef" as const, coref: (p.values ?? "").trim() };
+		}
 		return { kind: "tagOneOf" as const, tags: splitValues(p.values) };
 	});
 	// A single predicate stands alone; multiple are AND-ed via `all`.
@@ -211,8 +224,7 @@ export interface PolicyInput {
 	groups?: EditableGroup[];
 	/**
 	 * The original definition, when editing. Fields the editor doesn't model
-	 * (retention, `when`, builtin labels) are preserved from here so a save
-	 * never destroys them.
+	 * (builtin labels) are preserved from here so a save never destroys them.
 	 */
 	original?: PolicyDefinition;
 }
@@ -221,17 +233,18 @@ export interface PolicyInput {
  * Build the SDK policy definition body shared by create and update.
  *
  * The editor only fully models predicated rules, the fallback, and custom
- * labels. When editing, everything else in the original definition is carried
- * through untouched: table rules are preserved in place, `builtins`/`groups`/
- * `retention`/`when` are copied verbatim.
+ * labels. When editing, `builtins` from the original definition are carried
+ * through untouched.
  */
 export function buildDefinition(input: PolicyInput): PolicyDefinition {
 	const original = input.original;
 
-	// Both rule kinds are editable; build each in its declared order.
+	// Both rule kinds are editable; build each in its declared order. 0.16
+	// discriminates the rule variants with a `kind` field.
 	const rules: PolicyRule[] = input.rules.map((r) =>
 		r.kind === "table"
 			? {
+					kind: "table",
 					id: crypto.randomUUID(),
 					name: r.name.trim(),
 					description: r.description?.trim() || undefined,
@@ -243,6 +256,7 @@ export function buildDefinition(input: PolicyInput): PolicyDefinition {
 						})),
 				}
 			: {
+					kind: "predicated",
 					id: crypto.randomUUID(),
 					name: r.name.trim(),
 					description: r.description?.trim() || undefined,
@@ -294,9 +308,6 @@ export function buildDefinition(input: PolicyInput): PolicyDefinition {
 		...(input.fallback ? { fallback: buildAction(input.fallback) } : {}),
 		...(labels ? { labels } : {}),
 		...(groups.length > 0 ? { groups } : {}),
-		// Preserve fields the editor doesn't model.
-		...(original?.retention ? { retention: original.retention } : {}),
-		...(original?.when ? { when: original.when } : {}),
 	} as PolicyDefinition;
 }
 
@@ -356,8 +367,12 @@ function predicateToEditable(pred: SdkPredicate): EditablePredicate[] {
 				kind: "tagOneOf",
 				values: p.tags.join(", "),
 			});
+		} else if (p.kind === "labelInGroup") {
+			editable.push({ kind: "labelInGroup", values: p.group });
+		} else if (p.kind === "coRef") {
+			editable.push({ kind: "coRef", values: p.coref });
 		}
-		// labelInGroup/coRef/any/not aren't representable in the editor; skip them.
+		// any/not aren't representable in the flat editor; skip them.
 	}
 	// Always keep at least one condition so the rule stays editable.
 	return editable.length > 0 ? editable : [{ kind: "confidence", min: 0.5 }];
@@ -456,11 +471,11 @@ export function groupsFromDefinition(
 	}));
 }
 
-/** A table rule carries `operators`; a predicated rule carries `predicate`. */
+/** Narrow a `PolicyRule` to the table arm by its `kind` discriminant. */
 function isTableRule(
 	rule: PolicyRule,
-): rule is Extract<PolicyRule, { operators: unknown }> {
-	return "operators" in rule;
+): rule is Extract<PolicyRule, { kind: "table" }> {
+	return rule.kind === "table";
 }
 
 /**

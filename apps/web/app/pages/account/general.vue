@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { Upload, ChevronDown, Loader2, Eye, EyeOff } from "@lucide/vue";
+import { ChevronDown, Loader2, Eye, EyeOff } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
-import EntityAvatar from "#console/components/common/EntityAvatar.vue";
+import { AvatarUploadCard } from "#console/components/common";
 import { personLabel } from "#console/utils/naming";
 import {
 	Card,
@@ -254,67 +254,18 @@ function saveTimezone() {
 
       <div v-else class="space-y-6">
         <!-- Avatar Card -->
-        <Card class="py-0 pt-6 border-border/50">
-          <CardContent>
-            <div class="flex items-start justify-between">
-              <div class="space-y-1">
-                <Label class="text-sm font-medium">Avatar</Label>
-                <p class="text-sm text-muted-foreground">
-                  Click to upload. Recommended: 256x256px. PNG, JPG, or GIF.
-                </p>
-                <Button
-                  v-if="displayImage"
-                  variant="ghost"
-                  size="sm"
-                  class="-ml-2 h-7 font-normal text-muted-foreground"
-                  :disabled="isDeletingAvatar || isUploadingAvatar"
-                  @click="removeAvatar"
-                >
-                  <Loader2
-                    v-if="isDeletingAvatar"
-                    :size="14"
-                    class="mr-1.5 animate-spin"
-                  />
-                  Remove
-                </Button>
-              </div>
-              <button
-                type="button"
-                :disabled="isUploadingAvatar || isDeletingAvatar"
-                @click="pickAvatar"
-                class="group relative flex size-12 hover:opacity-80 transition-opacity cursor-pointer disabled:cursor-default disabled:opacity-60"
-              >
-                <EntityAvatar
-                  :name="avatarLabel"
-                  :src="displayImage"
-                  size="lg"
-                />
-                <div
-                  class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full transition-opacity"
-                  :class="
-                    isUploadingAvatar
-                      ? 'opacity-100'
-                      : 'opacity-0 group-hover:opacity-100'
-                  "
-                >
-                  <Loader2
-                    v-if="isUploadingAvatar"
-                    :size="18"
-                    class="animate-spin text-white"
-                  />
-                  <Upload v-else :size="18" class="text-white" />
-                </div>
-              </button>
-            </div>
-          </CardContent>
-          <CardFooter
-            class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
-          >
-            <p class="text-xs text-muted-foreground">
-              Your profile picture will be visible to other team members.
-            </p>
-          </CardFooter>
-        </Card>
+        <AvatarUploadCard
+          :name="avatarLabel"
+          :src="displayImage"
+          label="Avatar"
+          description="Click to upload. Recommended: 256x256px. PNG, JPG, or GIF."
+          footer="Your profile picture will be visible to other team members."
+          remove-label="Remove avatar"
+          :is-uploading="isUploadingAvatar"
+          :is-deleting="isDeletingAvatar"
+          @pick="pickAvatar"
+          @remove="removeAvatar"
+        />
 
         <!-- Profile Info Card -->
         <Card class="py-0 pt-6 border-border/50">
