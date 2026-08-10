@@ -1203,7 +1203,6 @@
 			"descriptionPlaceholder": "What this policy does",
 			"rulesLabel": "Rules",
 			"rulesHint": "Rules run in order; the first match wins.",
-			"back": "Back to policies",
 			"addRule": "Add rule",
 			"ruleNamePlaceholder": "Rule name",
 			"moveUp": "Move rule up",
@@ -1299,7 +1298,9 @@
 				"labelsLabel": "Labels in this group"
 			},
 			"createTitle": "Create Policy",
-			"createDescription": "Define detection rules and how matches are redacted."
+			"createDescription": "Define detection rules and how matches are redacted.",
+			"editTitle": "Edit Policy",
+			"editDescription": "Update detection rules and how matches are redacted."
 		},
 		"delete": {
 			"title": "Delete {name}?",
@@ -1313,7 +1314,8 @@
 			"updated": "Policy updated",
 			"updateFailed": "Failed to update policy",
 			"deleted": "Policy deleted",
-			"deleteFailed": "Failed to delete policy"
+			"deleteFailed": "Failed to delete policy",
+			"loadFailed": "Failed to load policy"
 		},
 		"templates": {
 			"title": "Policy templates",

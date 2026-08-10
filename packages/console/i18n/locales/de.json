@@ -1203,7 +1203,6 @@
 			"descriptionPlaceholder": "Was diese Richtlinie tut",
 			"rulesLabel": "Regeln",
 			"rulesHint": "Regeln werden der Reihe nach ausgewertet; die erste Übereinstimmung gewinnt.",
-			"back": "Zurück zu Richtlinien",
 			"addRule": "Regel hinzufügen",
 			"ruleNamePlaceholder": "Regelname",
 			"moveUp": "Regel nach oben",
@@ -1299,7 +1298,9 @@
 				"labelsLabel": "Labels in dieser Gruppe"
 			},
 			"createTitle": "Richtlinie erstellen",
-			"createDescription": "Definieren Sie Erkennungsregeln und wie Treffer geschwärzt werden."
+			"createDescription": "Definieren Sie Erkennungsregeln und wie Treffer geschwärzt werden.",
+			"editTitle": "Richtlinie bearbeiten",
+			"editDescription": "Aktualisieren Sie Erkennungsregeln und wie Treffer geschwärzt werden."
 		},
 		"delete": {
 			"title": "{name} löschen?",
@@ -1313,7 +1314,8 @@
 			"updated": "Richtlinie aktualisiert",
 			"updateFailed": "Richtlinie konnte nicht aktualisiert werden",
 			"deleted": "Richtlinie gelöscht",
-			"deleteFailed": "Richtlinie konnte nicht gelöscht werden"
+			"deleteFailed": "Richtlinie konnte nicht gelöscht werden",
+			"loadFailed": "Richtlinie konnte nicht geladen werden"
 		},
 		"templates": {
 			"title": "Richtlinienvorlagen",

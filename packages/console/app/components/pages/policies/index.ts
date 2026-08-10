@@ -1,2 +1,2 @@
 export { default as PolicyForm } from "./PolicyForm.vue";
-export { default as CreatePolicySheet } from "./CreatePolicySheet.vue";
+export { default as PolicySheet } from "./PolicySheet.vue";
