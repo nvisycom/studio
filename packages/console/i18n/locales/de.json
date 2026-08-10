@@ -268,6 +268,7 @@
 	"overview": {
 		"welcome": {
 			"title": "Willkommen zurück",
+			"titleFirst": "Willkommen",
 			"subtitle": "Das passiert gerade in {workspace}",
 			"description": "Erstellen Sie Ihren ersten Arbeitsbereich, um Dokumente zu organisieren, mit Ihrem Team zusammenzuarbeiten und KI-gestützte Einblicke zu nutzen.",
 			"createWorkspace": "Arbeitsbereich Erstellen",
@@ -280,13 +281,6 @@
 			"badges": {
 				"requireApproval": "Genehmigung erforderlich"
 			}
-		},
-		"usage": {
-			"credits": "Credits",
-			"storage": "Speicher",
-			"of": "von {total}",
-			"creditsRemaining": "{count} Credits übrig",
-			"storageRemaining": "{count} GB übrig"
 		},
 		"quickActions": {
 			"title": "Schnellaktionen",

@@ -10,22 +10,22 @@ const isCreateWorkspaceModalOpen = ref(false);
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center min-h-[60vh]">
-    <!-- Hero Section -->
-    <div class="text-center max-w-md mx-auto">
-      <h1 class="text-2xl font-medium text-foreground mb-3 tracking-tight">
-        {{ t("overview.welcome.title")
+  <div class="flex min-h-[60vh] flex-col items-center justify-center">
+    <div class="mx-auto w-full max-w-md text-center">
+      <h1 class="mb-3 text-2xl font-semibold tracking-tight text-foreground">
+        {{ t("overview.welcome.titleFirst")
         }}<span v-if="firstName">, {{ firstName }}</span
         >!
       </h1>
-      <p class="text-sm text-muted-foreground mb-8 leading-relaxed">
+      <p class="mb-8 text-sm leading-relaxed text-muted-foreground">
         {{ t("overview.welcome.description") }}
       </p>
+
       <div class="flex items-center justify-center gap-3">
         <Button
           size="default"
+          class="cursor-pointer gap-2"
           @click="isCreateWorkspaceModalOpen = true"
-          class="gap-2 cursor-pointer"
         >
           <Layers :size="16" />
           {{ t("overview.welcome.createWorkspace") }}

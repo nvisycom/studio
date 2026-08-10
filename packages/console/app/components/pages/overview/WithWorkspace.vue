@@ -4,18 +4,9 @@ import {
 	Users,
 	BarChart3,
 	ArrowRight,
-	CreditCard,
-	Database,
 	FileText,
 	Calendar,
 } from "@lucide/vue";
-import { Progress } from "#console/components/ui/progress";
-import {
-	Card,
-	CardContent,
-	CardHeader,
-	CardTitle,
-} from "#console/components/ui/card";
 import { Badge } from "#console/components/ui/badge";
 
 const { t } = useI18n();
@@ -33,17 +24,6 @@ function formatDate(dateString: string): string {
 		day: "numeric",
 	});
 }
-
-// Usage data (placeholder - should come from API)
-const creditsUsed = 15000;
-const creditsTotal = 20000;
-const creditsRemaining = creditsTotal - creditsUsed;
-const creditsPercentage = (creditsUsed / creditsTotal) * 100;
-
-const storageUsed = 45.2;
-const storageTotal = 100;
-const storageRemaining = storageTotal - storageUsed;
-const storagePercentage = (storageUsed / storageTotal) * 100;
 
 // Quick actions
 const quickActions = [
@@ -73,8 +53,8 @@ const quickActions = [
     <div class="max-w-3xl mx-auto w-full">
       <!-- Welcome Section -->
       <div class="mb-8">
-        <div class="flex items-center gap-3 mb-1">
-          <h1 class="text-xl font-medium text-foreground tracking-tight">
+        <div class="flex flex-wrap items-center gap-3 mb-1">
+          <h1 class="text-2xl font-semibold text-foreground tracking-tight">
             {{ t("overview.welcome.title")
             }}<span v-if="firstName">, {{ firstName }}</span
             >!
@@ -175,81 +155,6 @@ const quickActions = [
             </p>
           </div>
         </div>
-      </div>
-
-      <!-- Usage Cards -->
-      <div class="grid gap-4 md:grid-cols-2 mb-8">
-        <!-- Credits Card -->
-        <Card class="border-border/50">
-          <CardHeader
-            class="flex flex-row items-center justify-between space-y-0 pb-2"
-          >
-            <CardTitle
-              class="text-xs font-medium text-muted-foreground uppercase tracking-wide"
-            >
-              {{ t("overview.usage.credits") }}
-            </CardTitle>
-            <CreditCard class="h-4 w-4 text-muted-foreground/50" />
-          </CardHeader>
-          <CardContent>
-            <div class="space-y-2">
-              <div class="flex items-baseline justify-between">
-                <div class="text-2xl font-medium text-foreground">
-                  {{ creditsUsed.toLocaleString() }}
-                </div>
-                <div class="text-xs text-muted-foreground">
-                  {{
-                    t("overview.usage.of", {
-                      total: creditsTotal.toLocaleString(),
-                    })
-                  }}
-                </div>
-              </div>
-              <Progress :model-value="creditsPercentage" class="h-1.5" />
-              <p class="text-xs text-muted-foreground">
-                {{
-                  t("overview.usage.creditsRemaining", {
-                    count: creditsRemaining.toLocaleString(),
-                  })
-                }}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <!-- Storage Card -->
-        <Card class="border-border/50">
-          <CardHeader
-            class="flex flex-row items-center justify-between space-y-0 pb-2"
-          >
-            <CardTitle
-              class="text-xs font-medium text-muted-foreground uppercase tracking-wide"
-            >
-              {{ t("overview.usage.storage") }}
-            </CardTitle>
-            <Database class="h-4 w-4 text-muted-foreground/50" />
-          </CardHeader>
-          <CardContent>
-            <div class="space-y-2">
-              <div class="flex items-baseline justify-between">
-                <div class="text-2xl font-medium text-foreground">
-                  {{ storageUsed }} GB
-                </div>
-                <div class="text-xs text-muted-foreground">
-                  {{ t("overview.usage.of", { total: `${storageTotal} GB` }) }}
-                </div>
-              </div>
-              <Progress :model-value="storagePercentage" class="h-1.5" />
-              <p class="text-xs text-muted-foreground">
-                {{
-                  t("overview.usage.storageRemaining", {
-                    count: storageRemaining.toFixed(1),
-                  })
-                }}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       <!-- Quick Actions -->

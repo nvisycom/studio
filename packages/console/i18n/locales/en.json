@@ -268,6 +268,7 @@
 	"overview": {
 		"welcome": {
 			"title": "Welcome back",
+			"titleFirst": "Welcome",
 			"subtitle": "Here's what's happening in {workspace}",
 			"description": "Create your first workspace to start organizing documents, collaborating with your team, and leveraging AI-powered insights.",
 			"createWorkspace": "Create Workspace",
@@ -280,13 +281,6 @@
 			"badges": {
 				"requireApproval": "Requires Approval"
 			}
-		},
-		"usage": {
-			"credits": "Credits",
-			"storage": "Storage",
-			"of": "of {total}",
-			"creditsRemaining": "{count} credits remaining",
-			"storageRemaining": "{count} GB remaining"
 		},
 		"quickActions": {
 			"title": "Quick Actions",
