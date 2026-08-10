@@ -5,7 +5,11 @@ import type {
 	SyncMode,
 } from "@nvisy/sdk/datatypes";
 import type { StorageProvider } from "#console/utils/connectionProviders";
-import { STORAGE_PROVIDERS } from "#console/utils/connectionProviders";
+import {
+	DELETION_POLICIES,
+	STORAGE_PROVIDERS,
+	SYNC_MODES,
+} from "#console/utils/connectionProviders";
 import { Loader2 } from "@lucide/vue";
 import { Input } from "#console/components/ui/input";
 import { Textarea } from "#console/components/ui/textarea";
@@ -46,9 +50,6 @@ const emit = defineEmits<{
 	(e: "update:open", value: boolean): void;
 	(e: "connect", connection: CreateConnection): void;
 }>();
-
-const SYNC_MODES: SyncMode[] = ["import", "export"];
-const DELETION_POLICIES: SyncDeletionPolicy[] = ["ignore", "delete"];
 
 // Common fields.
 const displayName = ref("");

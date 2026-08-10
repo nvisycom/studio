@@ -1,4 +1,14 @@
-import type { ConnectionConfig, LlmConfig } from "@nvisy/sdk/datatypes";
+import type {
+	ConnectionConfig,
+	LlmConfig,
+	SyncDeletionPolicy,
+	SyncMode,
+} from "@nvisy/sdk/datatypes";
+
+/** Sync directions offered in the connect dialog. */
+export const SYNC_MODES: SyncMode[] = ["import", "export"];
+/** Deletion policies offered when a source object disappears. */
+export const DELETION_POLICIES: SyncDeletionPolicy[] = ["ignore", "delete"];
 
 /**
  * Object-storage provider tags studio can create connections for. 0.15 adds AI
@@ -108,7 +118,7 @@ export function providerIcon(provider: string): string | null {
 /** Display label for a provider tag, falling back to the raw tag. */
 export function providerLabel(provider: string): string {
 	return (
-		LLM_LABELS[provider as LlmProvider] ??
+		LLM_PROVIDERS[provider as LlmProvider]?.company ??
 		PROVIDER_LABELS[provider as StorageProvider] ??
 		provider
 	);
@@ -153,13 +163,6 @@ export const LLM_PROVIDERS: Record<LlmProvider, LlmProviderMeta> = {
 		needsApiKey: false,
 		baseUrlRequired: true,
 	},
-};
-
-/** Company label for an LLM provider (used by providerLabel fallback). */
-const LLM_LABELS: Record<LlmProvider, string> = {
-	openai: "OpenAI",
-	anthropic: "Anthropic",
-	ollama: "Ollama",
 };
 
 /**

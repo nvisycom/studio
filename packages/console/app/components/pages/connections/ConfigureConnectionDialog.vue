@@ -6,6 +6,7 @@ import type {
 } from "@nvisy/sdk/datatypes";
 import type { StorageProvider } from "#console/utils/connectionProviders";
 import {
+	DELETION_POLICIES,
 	STORAGE_PROVIDERS,
 	providerIcon,
 	providerLabel,
@@ -47,8 +48,6 @@ const emit = defineEmits<{
 	(e: "update:open", value: boolean): void;
 	(e: "update", updates: UpdateConnection): void;
 }>();
-
-const DELETION_POLICIES: SyncDeletionPolicy[] = ["ignore", "delete"];
 
 const displayName = ref("");
 const deletionPolicy = ref<SyncDeletionPolicy>("ignore");

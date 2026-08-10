@@ -61,11 +61,16 @@ type RetentionTarget = (typeof RETENTION_TARGETS)[number];
 function newRetentionField(): RetentionField {
 	return { mode: "forever", days: 30 };
 }
-const retention = ref<Record<RetentionTarget, RetentionField>>({
-	auditLogs: newRetentionField(),
-	originalDocuments: newRetentionField(),
-	redactedDocuments: newRetentionField(),
-});
+function defaultRetention(): Record<RetentionTarget, RetentionField> {
+	return {
+		auditLogs: newRetentionField(),
+		originalDocuments: newRetentionField(),
+		redactedDocuments: newRetentionField(),
+	};
+}
+const retention = ref<Record<RetentionTarget, RetentionField>>(
+	defaultRetention(),
+);
 function fieldToRetention(f: RetentionField): Retention {
 	return f.mode === "days" ? { mode: "days", days: f.days } : { mode: f.mode };
 }
@@ -83,11 +88,7 @@ function resetForm() {
 	description.value = "";
 	requireApproval.value = false;
 	ocr.value = "auto";
-	retention.value = {
-		auditLogs: newRetentionField(),
-		originalDocuments: newRetentionField(),
-		redactedDocuments: newRetentionField(),
-	};
+	retention.value = defaultRetention();
 	advancedOpen.value = false;
 	retentionOpen.value = false;
 }
@@ -198,11 +199,7 @@ async function createWorkspace() {
                     {{ t("workspace.create.requireApprovalDescription") }}
                   </p>
                 </div>
-                <Switch
-                  id="require-approval"
-                  :model-value="requireApproval"
-                  @update:model-value="requireApproval = $event"
-                />
+                <Switch id="require-approval" v-model="requireApproval" />
               </div>
 
               <!-- OCR policy -->

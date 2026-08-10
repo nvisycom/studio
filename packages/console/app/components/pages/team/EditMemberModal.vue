@@ -41,24 +41,15 @@ const { t } = useI18n();
 
 const selectedRole = ref<WorkspaceRole>("member");
 
-// Reset selected role when member changes
+// Reset the selected role whenever the member changes or the modal reopens.
 watch(
-	() => props.member,
-	(member) => {
-		if (member) {
-			selectedRole.value = member.memberRole;
-		}
-	},
-	{ immediate: true },
-);
-
-watch(
-	() => props.open,
-	(isOpen) => {
-		if (isOpen && props.member) {
+	[() => props.open, () => props.member],
+	() => {
+		if (props.member) {
 			selectedRole.value = props.member.memberRole;
 		}
 	},
+	{ immediate: true },
 );
 
 const roles: WorkspaceRole[] = ["admin", "member", "guest"];
