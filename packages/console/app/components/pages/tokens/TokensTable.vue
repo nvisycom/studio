@@ -4,6 +4,7 @@ import type {
 	RowAction,
 	RowSelection,
 } from "#console/components/pages/RowActions.vue";
+import type { Selection } from "#console/composables/useSelection";
 import { Trash2, Edit, Key } from "@lucide/vue";
 import {
 	Table,
@@ -23,14 +24,11 @@ const truncateId = (id: string): string => id.slice(0, 8);
 
 interface Props {
 	tokens: ApiToken[];
-	selectedTokens: Set<string>;
-	allSelected: boolean;
+	selection: Selection;
 	currentTokenId?: string | null;
 }
 
 interface Emits {
-	(e: "toggleSelectAll"): void;
-	(e: "toggleToken", tokenId: string): void;
 	(e: "deleteToken", token: ApiToken): void;
 	(e: "deleteSelected"): void;
 	(e: "renameToken", token: ApiToken): void;
@@ -44,7 +42,7 @@ const { relativeTime } = useRelativeTime();
 
 // Helper functions
 const isTokenSelected = (tokenId: string): boolean =>
-	props.selectedTokens.has(tokenId);
+	props.selection.selected.value.has(tokenId);
 
 const isCurrentToken = (tokenId: string): boolean =>
 	props.currentTokenId === tokenId;
@@ -58,7 +56,7 @@ const isTokenExpired = (token: ApiToken): boolean => {
 
 function handleRowClick(token: ApiToken) {
 	if (canSelectToken(token)) {
-		emit("toggleToken", token.id);
+		props.selection.toggle(token.id);
 	}
 }
 
@@ -122,13 +120,14 @@ function rowActions(token: ApiToken): RowAction[] {
 
 /** Selection state for a row, driving the bulk-vs-single menu. */
 function rowSelection(token: ApiToken): RowSelection {
+	const selected = props.selection.selected.value;
 	return {
-		selected: props.selectedTokens.has(token.id),
-		count: props.selectedTokens.size,
+		selected: selected.has(token.id),
+		count: selected.size,
 		bulk: {
 			label: t("tokens.table.actions.revokeSelected"),
 			icon: Trash2,
-			count: props.selectedTokens.size,
+			count: selected.size,
 			select: () => emit("deleteSelected"),
 		},
 	};
@@ -141,8 +140,8 @@ function rowSelection(token: ApiToken): RowSelection {
       <TableRow>
         <TableHead class="w-[50px]">
           <Checkbox
-            :model-value="allSelected"
-            @update:model-value="emit('toggleSelectAll')"
+            :model-value="selection.allSelected.value"
+            @update:model-value="selection.toggleAll()"
           />
         </TableHead>
         <DataTableHead>{{ t("tokens.table.headers.name") }}</DataTableHead>
@@ -168,7 +167,7 @@ function rowSelection(token: ApiToken): RowSelection {
               <Checkbox
                 :model-value="isTokenSelected(token.id)"
                 :disabled="isCurrentToken(token.id)"
-                @update:model-value="emit('toggleToken', token.id)"
+                @update:model-value="selection.toggle(token.id)"
               />
             </TableCell>
             <TableCell class="font-normal">

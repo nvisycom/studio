@@ -4,6 +4,7 @@ import type {
 	RowAction,
 	RowSelection,
 } from "#console/components/pages/RowActions.vue";
+import type { Selection } from "#console/composables/useSelection";
 import { Mail, X, Copy, Trash2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { EntityAvatar } from "#console/components/common";
@@ -21,14 +22,11 @@ import RowActions from "#console/components/pages/RowActions.vue";
 
 interface Props {
 	invites: Invite[];
-	selectedInvites?: Set<string>;
-	allSelected?: boolean;
+	selection: Selection;
 }
 
 interface Emits {
 	(e: "cancel", inviteId: string): void;
-	(e: "toggleSelectAll"): void;
-	(e: "toggleInvite", inviteId: string): void;
 	(e: "cancelSelected"): void;
 }
 
@@ -62,13 +60,14 @@ function rowActions(invite: Invite): RowAction[] {
 
 /** Selection state for a row, driving the bulk-vs-single menu. */
 function rowSelection(invite: Invite): RowSelection {
+	const selected = props.selection.selected.value;
 	return {
-		selected: props.selectedInvites?.has(invite.inviteId) ?? false,
-		count: props.selectedInvites?.size ?? 0,
+		selected: selected.has(invite.inviteId),
+		count: selected.size,
 		bulk: {
 			label: t("members.table.actions.cancelSelected"),
 			icon: Trash2,
-			count: props.selectedInvites?.size ?? 0,
+			count: selected.size,
 			select: () => emit("cancelSelected"),
 		},
 	};
@@ -100,8 +99,8 @@ async function copyInviteLink(invite: Invite) {
         <TableRow>
           <TableHead class="w-[50px]">
             <Checkbox
-              :model-value="allSelected"
-              @update:model-value="emit('toggleSelectAll')"
+              :model-value="selection.allSelected.value"
+              @update:model-value="selection.toggleAll()"
               class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
             />
           </TableHead>
@@ -128,12 +127,12 @@ async function copyInviteLink(invite: Invite) {
         >
           <TableRow
             class="border-b border-neutral-200 dark:border-neutral-800 cursor-pointer"
-            @click="emit('toggleInvite', invite.inviteId)"
+            @click="selection.toggle(invite.inviteId)"
           >
               <TableCell @click.stop>
                 <Checkbox
-                  :model-value="selectedInvites?.has(invite.inviteId) || false"
-                  @update:model-value="emit('toggleInvite', invite.inviteId)"
+                  :model-value="selection.selected.value.has(invite.inviteId)"
+                  @update:model-value="selection.toggle(invite.inviteId)"
                   class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                 />
               </TableCell>

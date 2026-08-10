@@ -4,6 +4,7 @@ import type {
 	RowAction,
 	RowSelection,
 } from "#console/components/pages/RowActions.vue";
+import type { Selection } from "#console/composables/useSelection";
 import { Users, Trash2, UserCog } from "@lucide/vue";
 import { EntityAvatar } from "#console/components/common";
 import { Checkbox } from "#console/components/ui/checkbox";
@@ -21,15 +22,12 @@ import { personLabel } from "#console/utils/naming";
 
 interface Props {
 	members: Member[];
-	selectedMembers?: Set<string>;
-	allSelected?: boolean;
+	selection: Selection;
 }
 
 interface Emits {
 	(e: "remove", memberId: string): void;
 	(e: "edit", memberId: string): void;
-	(e: "toggleSelectAll"): void;
-	(e: "toggleMember", memberId: string): void;
 	(e: "deleteSelected"): void;
 }
 
@@ -54,7 +52,7 @@ function canSelectMember(member: Member): boolean {
 
 function handleRowClick(member: Member) {
 	if (canSelectMember(member)) {
-		emit("toggleMember", member.username);
+		props.selection.toggle(member.username);
 	}
 }
 
@@ -83,13 +81,14 @@ function rowActions(member: Member): RowAction[] {
 
 /** Selection state for a row, driving the bulk-vs-single menu. */
 function rowSelection(member: Member): RowSelection {
+	const selected = props.selection.selected.value;
 	return {
-		selected: props.selectedMembers?.has(member.username) ?? false,
-		count: props.selectedMembers?.size ?? 0,
+		selected: selected.has(member.username),
+		count: selected.size,
 		bulk: {
 			label: t("members.table.actions.deleteSelected"),
 			icon: Trash2,
-			count: props.selectedMembers?.size ?? 0,
+			count: selected.size,
 			select: () => emit("deleteSelected"),
 		},
 	};
@@ -103,8 +102,8 @@ function rowSelection(member: Member): RowSelection {
         <TableRow>
           <TableHead class="w-[50px]">
             <Checkbox
-              :model-value="allSelected"
-              @update:model-value="emit('toggleSelectAll')"
+              :model-value="selection.allSelected.value"
+              @update:model-value="selection.toggleAll()"
               class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
             />
           </TableHead>
@@ -138,8 +137,8 @@ function rowSelection(member: Member): RowSelection {
           >
               <TableCell @click.stop>
                 <Checkbox
-                  :model-value="selectedMembers?.has(member.username) || false"
-                  @update:model-value="emit('toggleMember', member.username)"
+                  :model-value="selection.selected.value.has(member.username)"
+                  @update:model-value="selection.toggle(member.username)"
                   :disabled="!canSelectMember(member)"
                   class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                 />

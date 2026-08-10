@@ -7,6 +7,18 @@ export interface UseSelectionOptions<T, K> {
 }
 
 /**
+ * The multi-select state a list/table consumes. Pass a whole `useSelection`
+ * result down as one prop instead of drilling `selected` + `allSelected` +
+ * toggle callbacks separately.
+ */
+export interface Selection<K extends string | number = string> {
+	selected: Ref<Set<K>>;
+	allSelected: ComputedRef<boolean>;
+	toggle: (key: K) => void;
+	toggleAll: () => void;
+}
+
+/**
  * Composable for managing multi-select state
  */
 export function useSelection<T, K extends string | number>(

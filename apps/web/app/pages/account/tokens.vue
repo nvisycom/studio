@@ -76,8 +76,13 @@ const isDeleteMultipleDialogOpen = ref(false);
 const tokenToRename = ref<ApiToken | null>(null);
 const isRenameDialogOpen = ref(false);
 
-// Selection state
-const selectedTokens = ref<Set<string>>(new Set());
+// Selection state — the current session's own token can't be bulk-revoked.
+const tokensSelection = useSelection({
+	items: computed(() => tokens.value ?? []),
+	getKey: (token) => token.id,
+	isSelectable: (token) => token.id !== currentTokenId.value,
+});
+const selectedTokens = tokensSelection.selected;
 
 // Constants
 const expirations = computed(() => [
@@ -158,7 +163,7 @@ async function deleteSelectedTokens() {
 	const failed = results.filter((r) => r.status === "rejected");
 	const succeeded = results.filter((r) => r.status === "fulfilled");
 
-	selectedTokens.value = new Set();
+	tokensSelection.clear();
 	isDeleteMultipleDialogOpen.value = false;
 
 	if (failed.length === 0) {
@@ -172,29 +177,6 @@ async function deleteSelectedTokens() {
 	} else {
 		toast.error(t("tokens.errors.revokeFailed"));
 	}
-}
-
-// Computed
-const selectableTokens = computed(
-	() => tokens.value?.filter((t) => t.id !== currentTokenId.value) ?? [],
-);
-
-const allSelected = computed(
-	() =>
-		selectableTokens.value.length > 0 &&
-		selectedTokens.value.size === selectableTokens.value.length,
-);
-
-function toggleSelectAll() {
-	selectedTokens.value = allSelected.value
-		? new Set()
-		: new Set(selectableTokens.value.map((t) => t.id));
-}
-
-function toggleToken(tokenId: string) {
-	const newSet = new Set(selectedTokens.value);
-	newSet.has(tokenId) ? newSet.delete(tokenId) : newSet.add(tokenId);
-	selectedTokens.value = newSet;
 }
 
 // Token rename
@@ -339,11 +321,8 @@ async function renameToken(newName: string) {
           <TokensTable
             v-else-if="tokens && tokens.length > 0"
             :tokens="tokens"
-            :selected-tokens="selectedTokens"
-            :all-selected="allSelected"
+            :selection="tokensSelection"
             :current-token-id="currentTokenId"
-            @toggle-select-all="toggleSelectAll"
-            @toggle-token="toggleToken"
             @delete-token="openDeleteDialog"
             @delete-selected="openDeleteMultipleDialog"
             @rename-token="openRenameDialog"

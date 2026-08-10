@@ -2,6 +2,7 @@
 import type { ColumnDef } from "@tanstack/vue-table";
 import { Download, Eye, Trash2, Pencil } from "@lucide/vue";
 import type { File as NvisyFile } from "@nvisy/sdk/datatypes";
+import type { Selection } from "#console/composables/useSelection";
 import { Checkbox } from "#console/components/ui/checkbox";
 import {
 	DropdownMenu,
@@ -21,14 +22,10 @@ const contextMenuFile = ref<NvisyFile | null>(null);
 
 interface Props {
 	files: NvisyFile[];
-	selectedFiles: Set<string>;
-	allSelected: boolean;
-	selectedCount: number;
+	selection: Selection;
 }
 
 interface Emits {
-	(e: "toggle-select-all"): void;
-	(e: "toggle-selection", fileId: string): void;
 	(e: "view", fileId: string): void;
 	(e: "edit", file: NvisyFile): void;
 	(e: "download", file: NvisyFile): void;
@@ -43,6 +40,10 @@ const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
+
+/** Files currently selected, and how many. */
+const selectedFiles = computed(() => props.selection.selected.value);
+const selectedCount = computed(() => selectedFiles.value.size);
 
 function formatDate(dateStr: string | null | undefined): string {
 	if (!dateStr) return "—";
@@ -71,16 +72,16 @@ const columns = computed<ColumnDef<NvisyFile>[]>(() => [
 		size: 40,
 		header: () =>
 			h(Checkbox, {
-				modelValue: props.allSelected,
-				"onUpdate:modelValue": () => emit("toggle-select-all"),
+				modelValue: props.selection.allSelected.value,
+				"onUpdate:modelValue": () => props.selection.toggleAll(),
 				ariaLabel: "Select all",
 				class:
 					"border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary",
 			}),
 		cell: ({ row }) =>
 			h(Checkbox, {
-				modelValue: props.selectedFiles.has(row.original.id),
-				"onUpdate:modelValue": () => emit("toggle-selection", row.original.id),
+				modelValue: selectedFiles.value.has(row.original.id),
+				"onUpdate:modelValue": () => props.selection.toggle(row.original.id),
 				ariaLabel: "Select row",
 				class:
 					"border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary",
@@ -188,7 +189,7 @@ function handleRowContextMenu(event: MouseEvent, file: NvisyFile) {
       :get-row-id="(row) => row.id"
       class="h-full"
       @load-more="emit('load-more')"
-      @row-click="(row) => emit('toggle-selection', row.id)"
+      @row-click="(row) => selection.toggle(row.id)"
       @row-contextmenu="handleRowContextMenu"
     />
 
