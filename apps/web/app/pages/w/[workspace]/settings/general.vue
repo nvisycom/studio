@@ -108,6 +108,16 @@ function fieldToRetention(f: RetentionField): Retention {
 	return f.mode === "days" ? { mode: "days", days: f.days } : { mode: f.mode };
 }
 
+/**
+ * Structural equality for two `Retention` values — same mode, and same day
+ * count when the mode is "days". Avoids JSON.stringify, whose key order differs
+ * between the form-built object and the SDK's, which made the form look dirty.
+ */
+function retentionEquals(a: Retention, b: Retention): boolean {
+	if (a.mode !== b.mode) return false;
+	return a.mode === "days" && b.mode === "days" ? a.days === b.days : true;
+}
+
 const copiedWorkspaceId = ref(false);
 
 // Dialog state
@@ -195,9 +205,10 @@ const hasOptionsChanges = computed(() => {
 const hasRetentionChanges = computed(() => {
 	const ws = currentWorkspace.value;
 	if (!ws || !formInitialized.value) return false;
-	return (
-		JSON.stringify(editedSettings.value.retention) !==
-		JSON.stringify(ws.settings.retention)
+	const edited = editedSettings.value.retention;
+	const saved = ws.settings.retention;
+	return RETENTION_TARGETS.some(
+		(target) => !retentionEquals(edited[target], saved[target]),
 	);
 });
 
