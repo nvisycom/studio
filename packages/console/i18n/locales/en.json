@@ -1478,5 +1478,11 @@
 				"exportCsv": "Export as CSV"
 			}
 		}
+	},
+	"auth": {
+		"panel": {
+			"headline": "Redact sensitive data from your documents with AI.",
+			"subline": "Detect and remove PII across text, images, and audio — with policies your team controls."
+		}
 	}
 }

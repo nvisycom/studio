@@ -1478,5 +1478,11 @@
 				"exportCsv": "Als CSV exportieren"
 			}
 		}
+	},
+	"auth": {
+		"panel": {
+			"headline": "Sensible Daten aus Ihren Dokumenten mit KI schwärzen.",
+			"subline": "Erkennen und entfernen Sie PII in Text, Bildern und Audio — mit Richtlinien, die Ihr Team steuert."
+		}
 	}
 }
