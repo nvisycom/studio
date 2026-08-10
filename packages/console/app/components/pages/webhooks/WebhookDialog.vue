@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { Webhook, Loader2, Plus, X } from "@lucide/vue";
+import type { Webhook } from "@nvisy/sdk/datatypes";
+import type { WebhookFormPayload } from "#console/composables/useWebhookForm";
+import { Webhook as WebhookIcon, Loader2, Plus, X } from "@lucide/vue";
 import { Input } from "#console/components/ui/input";
 import { Button } from "#console/components/ui/button";
 import { Checkbox } from "#console/components/ui/checkbox";
@@ -13,18 +15,23 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "#console/components/ui/dialog";
-import type { WebhookFormPayload } from "#console/composables/useWebhookForm";
 
 const { t } = useI18n();
 
 const open = defineModel<boolean>("open", { default: false });
 
-defineProps<{
-	isLoading?: boolean;
-}>();
+const props = withDefaults(
+	defineProps<{
+		/** "create" shows the trigger button; "edit" populates from `webhook`. */
+		mode: "create" | "edit";
+		webhook?: Webhook | null;
+		isLoading?: boolean;
+	}>(),
+	{ webhook: null, isLoading: false },
+);
 
 const emit = defineEmits<{
-	create: [data: WebhookFormPayload];
+	submit: [data: WebhookFormPayload];
 }>();
 
 const {
@@ -33,57 +40,80 @@ const {
 	active,
 	events,
 	headers,
-	headerIds,
 	urlError,
 	addHeader,
 	removeHeader,
 	validateUrl,
 	isFormValid,
 	reset,
+	populate,
 	payload,
 } = useWebhookForm();
+
+/** i18n keys live under the mode-specific dialog namespace. */
+const keys = computed(() => {
+	const ns =
+		props.mode === "create"
+			? "connections.dialogs.createWebhook"
+			: "connections.dialogs.editWebhook";
+	return {
+		title: `${ns}.title`,
+		description: `${ns}.description`,
+		cancel: `${ns}.cancel`,
+		save: `${ns}.save`,
+	};
+});
+
+/** Edit mode repopulates whenever the dialog opens with a webhook. */
+watch(
+	[() => props.webhook, open],
+	([webhook, isOpen]) => {
+		if (props.mode === "edit" && isOpen && webhook) populate(webhook);
+	},
+	{ immediate: true },
+);
 
 function handleOpenChange(value: boolean) {
 	if (!value) reset();
 	open.value = value;
 }
 
-function saveWebhook() {
+function submit() {
 	if (!isFormValid.value) return;
-	emit("create", payload());
+	if (props.mode === "edit" && !props.webhook) return;
+	emit("submit", payload());
 }
 
 function cancel() {
 	reset();
 	open.value = false;
 }
+
+/** Unique checkbox ids per mode so create/edit can coexist in one tree. */
+const eventId = (event: string) => `${props.mode}-${event}`;
 </script>
 
 <template>
   <Dialog :open="open" @update:open="handleOpenChange">
-    <DialogTrigger as-child>
+    <DialogTrigger v-if="mode === 'create'" as-child>
       <Button
         variant="outline"
         size="sm"
         class="flex items-center gap-2 font-normal"
       >
-        <Webhook :size="16" />
+        <WebhookIcon :size="16" />
         {{ t("connections.actions.createWebhook") }}
       </Button>
     </DialogTrigger>
 
     <DialogContent class="max-w-2xl max-h-[90vh] overflow-y-auto">
       <DialogHeader>
-        <DialogTitle>{{
-          t("connections.dialogs.createWebhook.title")
-        }}</DialogTitle>
-        <DialogDescription>
-          {{ t("connections.dialogs.createWebhook.description") }}
-        </DialogDescription>
+        <DialogTitle>{{ t(keys.title) }}</DialogTitle>
+        <DialogDescription>{{ t(keys.description) }}</DialogDescription>
       </DialogHeader>
 
       <div class="space-y-6 py-6">
-        <!-- Webhook Name -->
+        <!-- Name -->
         <div>
           <label
             class="block text-sm font-medium text-neutral-900 dark:text-white mb-2"
@@ -97,7 +127,7 @@ function cancel() {
           />
         </div>
 
-        <!-- Webhook URL -->
+        <!-- URL -->
         <div>
           <label
             class="block text-sm font-medium text-neutral-900 dark:text-white mb-2"
@@ -111,15 +141,12 @@ function cancel() {
             class="text-neutral-900 dark:text-white"
             @blur="validateUrl(t)"
           />
-          <p
-            v-if="urlError"
-            class="mt-1 text-sm text-red-600 dark:text-red-400"
-          >
+          <p v-if="urlError" class="mt-1 text-sm text-red-600 dark:text-red-400">
             {{ urlError }}
           </p>
         </div>
 
-        <!-- Custom Headers -->
+        <!-- Custom headers -->
         <div>
           <div class="flex items-center justify-between mb-2">
             <label
@@ -127,12 +154,7 @@ function cancel() {
             >
               {{ t("connections.forms.webhook.headersLabel") }}
             </label>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              @click="addHeader"
-            >
+            <Button type="button" variant="outline" size="sm" @click="addHeader">
               <Plus :size="14" class="mr-1" />
               {{ t("connections.forms.webhook.addHeader") }}
             </Button>
@@ -140,14 +162,12 @@ function cancel() {
           <div v-if="headers.length > 0" class="space-y-2">
             <div
               v-for="(header, index) in headers"
-              :key="headerIds[index]"
+              :key="header.id"
               class="flex items-center gap-2"
             >
               <Input
                 v-model="header.key"
-                :placeholder="
-                  t('connections.forms.webhook.headerKeyPlaceholder')
-                "
+                :placeholder="t('connections.forms.webhook.headerKeyPlaceholder')"
                 class="flex-1 font-mono text-sm"
               />
               <Input
@@ -172,29 +192,25 @@ function cancel() {
           </p>
         </div>
 
-        <!-- Webhook Events -->
-        <div>
-          <div class="grid grid-cols-2 gap-3">
-            <div
-              v-for="event in WEBHOOK_EVENTS"
-              :key="event"
-              class="flex items-center gap-2"
+        <!-- Events -->
+        <div class="grid grid-cols-2 gap-3">
+          <div
+            v-for="event in WEBHOOK_EVENTS"
+            :key="event"
+            class="flex items-center gap-2"
+          >
+            <Checkbox :id="eventId(event)" v-model="events[event]" />
+            <label
+              :for="eventId(event)"
+              class="text-sm font-mono text-neutral-900 dark:text-white cursor-pointer"
             >
-              <Checkbox :id="event" v-model="events[event]" />
-              <label
-                :for="event"
-                class="text-sm font-mono text-neutral-900 dark:text-white cursor-pointer"
-              >
-                {{ event }}
-              </label>
-            </div>
+              {{ event }}
+            </label>
           </div>
         </div>
       </div>
 
-      <DialogFooter
-        class="flex items-center justify-between sm:justify-between"
-      >
+      <DialogFooter class="flex items-center justify-between sm:justify-between">
         <div class="flex items-center gap-2">
           <Switch v-model="active" />
           <span class="text-sm text-neutral-600 dark:text-neutral-400">
@@ -206,12 +222,10 @@ function cancel() {
           </span>
         </div>
         <div class="flex items-center gap-2">
-          <Button variant="outline" @click="cancel">
-            {{ t("connections.dialogs.createWebhook.cancel") }}
-          </Button>
-          <Button @click="saveWebhook" :disabled="!isFormValid || isLoading">
+          <Button variant="outline" @click="cancel">{{ t(keys.cancel) }}</Button>
+          <Button :disabled="!isFormValid || isLoading" @click="submit">
             <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-            {{ t("connections.dialogs.createWebhook.save") }}
+            {{ t(keys.save) }}
           </Button>
         </div>
       </DialogFooter>

@@ -13,7 +13,6 @@ import {
 } from "#console/utils/connectionProviders";
 import { ChevronDown, Loader2 } from "@lucide/vue";
 import { Input } from "#console/components/ui/input";
-import { Textarea } from "#console/components/ui/textarea";
 import { Label } from "#console/components/ui/label";
 import { Switch } from "#console/components/ui/switch";
 import { Button } from "#console/components/ui/button";
@@ -24,14 +23,9 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "#console/components/ui/select";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "#console/components/ui/dialog";
+import { DialogFooter } from "#console/components/ui/dialog";
+import ProviderDialogShell from "./ProviderDialogShell.vue";
+import CredentialFields from "./CredentialFields.vue";
 
 const { t } = useI18n();
 
@@ -61,8 +55,6 @@ const providerTag = computed(
 const fields = computed(() =>
 	providerTag.value ? (STORAGE_PROVIDERS[providerTag.value] ?? []) : [],
 );
-const gridFields = computed(() => fields.value.filter((f) => !f.multiline));
-const fullFields = computed(() => fields.value.filter((f) => f.multiline));
 
 const isValid = computed(() => displayName.value.trim().length > 0);
 
@@ -131,120 +123,77 @@ function cancel() {
 </script>
 
 <template>
-  <Dialog :open="open" @update:open="handleOpenChange">
-    <DialogContent class="max-w-xl gap-0 p-0">
-      <!-- Provider header -->
-      <DialogHeader
-        class="flex-row items-center gap-3 space-y-0 border-b border-border/60 p-6"
-      >
-        <div
-          class="flex size-11 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-muted/40"
-        >
-          <img
-            v-if="connection && providerIcon(connection.provider)"
-            :src="providerIcon(connection.provider)!"
-            :alt="connection.provider"
-            class="size-6 object-contain"
-          />
-        </div>
-        <div class="min-w-0 space-y-1">
-          <DialogTitle class="truncate text-base">
-            {{
-              t("connections.dialogs.configure.title", {
-                name: connection?.displayName,
-              })
-            }}
-          </DialogTitle>
-          <DialogDescription class="text-sm">
-            {{
-              connection
-                ? providerLabel(connection.provider)
-                : t("connections.dialogs.configure.description")
-            }}
-          </DialogDescription>
-        </div>
-      </DialogHeader>
+  <ProviderDialogShell
+    :open="open"
+    :title="
+      t('connections.dialogs.configure.title', {
+        name: connection?.displayName,
+      })
+    "
+    :description="
+      connection
+        ? providerLabel(connection.provider)
+        : t('connections.dialogs.configure.description')
+    "
+    :icon="connection ? providerIcon(connection.provider) : null"
+    :icon-alt="connection?.provider"
+    @update:open="handleOpenChange"
+  >
+    <!-- Connection name -->
+    <div class="space-y-2">
+      <Label>{{ t("connections.dialogs.configure.nameLabel") }}</Label>
+      <Input
+        v-model="displayName"
+        :placeholder="t('connections.dialogs.configure.namePlaceholder')"
+      />
+    </div>
 
-      <div class="max-h-[62vh] space-y-6 overflow-y-auto p-6">
-        <!-- Connection name -->
-        <div class="space-y-2">
-          <Label>{{ t("connections.dialogs.configure.nameLabel") }}</Label>
-          <Input
-            v-model="displayName"
-            :placeholder="t('connections.dialogs.configure.namePlaceholder')"
-          />
-        </div>
-
-        <!-- Deletion policy -->
-        <div class="space-y-2">
-          <Label>{{ t("connections.dialogs.connect.fields.deletionPolicy") }}</Label>
-          <Select v-model="deletionPolicy">
-            <SelectTrigger class="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem
-                v-for="policy in DELETION_POLICIES"
-                :key="policy"
-                :value="policy"
-              >
-                {{ t(`connections.dialogs.connect.deletionPolicies.${policy}`) }}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <!-- Update credentials (collapsible) -->
-        <section v-if="fields.length" class="space-y-3">
-          <button
-            type="button"
-            class="flex w-full items-center justify-between text-xs font-medium uppercase tracking-wide text-muted-foreground hover:text-foreground"
-            @click="showCredentials = !showCredentials"
+    <!-- Deletion policy -->
+    <div class="space-y-2">
+      <Label>{{ t("connections.dialogs.connect.fields.deletionPolicy") }}</Label>
+      <Select v-model="deletionPolicy">
+        <SelectTrigger class="w-full">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem
+            v-for="policy in DELETION_POLICIES"
+            :key="policy"
+            :value="policy"
           >
-            {{ t("connections.dialogs.configure.updateCredentials") }}
-            <ChevronDown
-              :size="14"
-              class="transition-transform"
-              :class="{ 'rotate-180': showCredentials }"
-            />
-          </button>
-          <p v-if="!showCredentials" class="text-xs text-muted-foreground">
-            {{ t("connections.dialogs.configure.credentialsHint") }}
-          </p>
-          <template v-if="showCredentials">
-            <div class="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
-              <div
-                v-for="field in gridFields"
-                :key="field.key"
-                class="space-y-1.5"
-              >
-                <Label class="text-sm font-normal">
-                  {{ t(`connections.dialogs.connect.fields.${field.labelKey}`) }}
-                </Label>
-                <Input
-                  v-model="credentials[field.key]"
-                  :type="field.secret ? 'password' : 'text'"
-                />
-              </div>
-            </div>
-            <div
-              v-for="field in fullFields"
-              :key="field.key"
-              class="space-y-1.5"
-            >
-              <Label class="text-sm font-normal">
-                {{ t(`connections.dialogs.connect.fields.${field.labelKey}`) }}
-              </Label>
-              <Textarea
-                v-model="credentials[field.key]"
-                rows="4"
-                class="font-mono text-xs"
-              />
-            </div>
-          </template>
-        </section>
-      </div>
+            {{ t(`connections.dialogs.connect.deletionPolicies.${policy}`) }}
+          </SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
 
+    <!-- Update credentials (collapsible) -->
+    <section v-if="fields.length" class="space-y-3">
+      <button
+        type="button"
+        class="flex w-full items-center justify-between text-xs font-medium uppercase tracking-wide text-muted-foreground hover:text-foreground"
+        @click="showCredentials = !showCredentials"
+      >
+        {{ t("connections.dialogs.configure.updateCredentials") }}
+        <ChevronDown
+          :size="14"
+          class="transition-transform"
+          :class="{ 'rotate-180': showCredentials }"
+        />
+      </button>
+      <p v-if="!showCredentials" class="text-xs text-muted-foreground">
+        {{ t("connections.dialogs.configure.credentialsHint") }}
+      </p>
+      <CredentialFields
+        v-if="showCredentials"
+        v-model="credentials"
+        :fields="fields"
+        label-prefix="connections.dialogs.connect.fields"
+        optional-key="connections.dialogs.connect.optional"
+      />
+    </section>
+
+    <template #footer>
       <DialogFooter
         class="items-center justify-between border-t border-border/60 p-6 sm:justify-between"
       >
@@ -268,6 +217,6 @@ function cancel() {
           </Button>
         </div>
       </DialogFooter>
-    </DialogContent>
-  </Dialog>
+    </template>
+  </ProviderDialogShell>
 </template>

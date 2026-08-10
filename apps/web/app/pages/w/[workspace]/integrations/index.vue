@@ -31,8 +31,7 @@ import {
 } from "#console/components/pages/connections";
 import {
 	WebhooksTable,
-	CreateWebhookDialog,
-	EditWebhookDialog,
+	WebhookDialog,
 } from "#console/components/pages/webhooks";
 import { ConfirmDialog } from "#console/components/common";
 
@@ -488,10 +487,11 @@ async function testWebhook(webhookId: string) {
                   })
                 }}</CardDescription>
               </div>
-              <CreateWebhookDialog
+              <WebhookDialog
                 v-model:open="isCreateDialogOpen"
+                mode="create"
                 :is-loading="isCreatingWebhook"
-                @create="handleCreateWebhook"
+                @submit="handleCreateWebhook"
               />
             </div>
           </CardHeader>
@@ -597,10 +597,11 @@ async function testWebhook(webhookId: string) {
           </template>
         </ConfirmDialog>
 
-        <EditWebhookDialog
+        <WebhookDialog
           v-model:open="isEditDialogOpen"
+          mode="edit"
           :webhook="selectedWebhook"
-          @update="handleUpdateWebhook"
+          @submit="handleUpdateWebhook"
         />
 
         <ConfirmDialog
