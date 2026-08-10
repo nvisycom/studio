@@ -56,12 +56,14 @@ export function useWorkspaces() {
 			return await client.workspaces.createWorkspace(workspace);
 		},
 		async onSuccess(data) {
-			// Await the refetch so the list contains the new workspace *before*
-			// we navigate — otherwise the /w/[workspace] guard in the default
-			// layout sees a slug that isn't in the (stale) list, and the "/"
-			// resolver may redirect elsewhere, leaving the user stranded until a
-			// manual refresh.
-			await workspacesQuery.refresh();
+			// Force a refetch (not refresh) so the list contains the new
+			// workspace *before* we navigate. `refresh()` is stale-gated: if
+			// colada still considers the cached list fresh it resolves WITHOUT
+			// refetching, returning the old (often empty) list — so the
+			// /w/[workspace] guard sees a slug the list lacks and the "/"
+			// resolver bounces the user back to onboarding until a manual
+			// refresh. `refetch()` always hits the network.
+			await workspacesQuery.refetch();
 			navigateTo(`/w/${data.slug}`, { replace: true });
 		},
 	});
@@ -79,7 +81,7 @@ export function useWorkspaces() {
 			return await client.workspaces.updateWorkspace(workspaceSlug, updates);
 		},
 		onSuccess() {
-			workspacesQuery.refresh();
+			workspacesQuery.refetch();
 		},
 	});
 
@@ -90,11 +92,12 @@ export function useWorkspaces() {
 			await client.workspaces.deleteWorkspace(workspaceSlug);
 		},
 		async onSuccess(_data, deletedSlug) {
-			// Await the refetch so `data` reflects the deletion before we choose
-			// where to go — otherwise we'd pick the "next" workspace from a stale
-			// list (still containing the deleted one) and navigate before the
-			// guard's list catches up, stranding the user until a manual refresh.
-			await workspacesQuery.refresh();
+			// Force a refetch (not the stale-gated refresh) so `data` reflects
+			// the deletion before we choose where to go — otherwise we'd pick the
+			// "next" workspace from a stale list (still containing the deleted
+			// one) and navigate before the guard's list catches up, stranding the
+			// user until a manual refresh.
+			await workspacesQuery.refetch();
 			// If the deleted workspace is the one in the URL, move to another.
 			if (currentWorkspaceSlug.value === deletedSlug) {
 				const next = workspacesQuery.data.value?.find(
@@ -118,7 +121,7 @@ export function useWorkspaces() {
 			return await client.workspaces.uploadAvatar(workspaceSlug, avatar);
 		},
 		onSuccess() {
-			workspacesQuery.refresh();
+			workspacesQuery.refetch();
 		},
 	});
 
@@ -129,7 +132,7 @@ export function useWorkspaces() {
 			return await client.workspaces.deleteAvatar(workspaceSlug);
 		},
 		onSuccess() {
-			workspacesQuery.refresh();
+			workspacesQuery.refetch();
 		},
 	});
 
@@ -149,6 +152,9 @@ export function useWorkspaces() {
 		isLoading: workspacesQuery.isLoading,
 		error: workspacesQuery.error,
 		refresh: workspacesQuery.refresh,
+		// Unconditional refetch (bypasses refresh()'s stale gate) for callers
+		// that must observe fresh data before acting on it.
+		refetch: workspacesQuery.refetch,
 
 		// Current workspace (derived from the /w/[workspace] route param)
 		currentWorkspaceSlug,
