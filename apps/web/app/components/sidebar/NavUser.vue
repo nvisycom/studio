@@ -106,7 +106,7 @@ defineShortcuts({
               :name="primaryLabel"
               :src="avatarSrc"
               size="sm"
-              class="rounded-md"
+              class="-ml-1 rounded-md group-data-[collapsible=icon]:ml-0!"
             />
             <div
               class="grid flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden"

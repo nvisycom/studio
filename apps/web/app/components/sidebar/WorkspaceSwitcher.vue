@@ -45,7 +45,7 @@ const isCreateWorkspaceModalOpen = ref(false);
               :name="currentWorkspace.displayName"
               :src="resolveAvatarUrl(currentWorkspace.avatarUrl)"
               size="sm"
-              class="rounded-md"
+              class="-ml-1 rounded-md group-data-[collapsible=icon]:ml-0!"
             />
             <div
               v-else
