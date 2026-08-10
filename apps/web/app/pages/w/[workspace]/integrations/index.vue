@@ -27,15 +27,14 @@ import {
 } from "#console/components/ui/card";
 import {
 	ConfigureConnectionDialog,
-	DisconnectConnectionDialog,
 	ConnectionsTable,
 } from "#console/components/pages/connections";
 import {
 	WebhooksTable,
 	CreateWebhookDialog,
-	DeleteWebhookDialog,
 	EditWebhookDialog,
 } from "#console/components/pages/webhooks";
+import { ConfirmDialog } from "#console/components/common";
 
 const { t } = useI18n();
 const { wLink } = useWorkspaceLink();
@@ -549,12 +548,54 @@ async function testWebhook(webhookId: string) {
           @update="handleUpdateConnection"
         />
 
-        <DisconnectConnectionDialog
+        <ConfirmDialog
           v-model:open="isDisconnectConnectionDialogOpen"
-          :connection="selectedConnection"
+          :title="
+            t('connections.dialogs.disconnect.title', {
+              name: selectedConnection?.displayName,
+            })
+          "
+          :description="t('connections.dialogs.disconnect.description')"
+          :confirm-label="t('connections.dialogs.disconnect.confirm')"
+          :cancel-label="t('connections.dialogs.disconnect.cancel')"
           :is-loading="isDeleting"
-          @disconnect="handleDisconnectConnection"
-        />
+          @confirm="
+            selectedConnection &&
+              handleDisconnectConnection(selectedConnection.id)
+          "
+        >
+          <template #details>
+            <div class="space-y-4">
+              <div
+                class="p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
+              >
+                <p
+                  class="text-sm text-neutral-900 dark:text-white font-medium mb-1"
+                >
+                  {{ selectedConnection?.displayName }}
+                </p>
+                <p
+                  class="text-xs text-neutral-500 dark:text-neutral-500 capitalize"
+                >
+                  {{ t("connections.dialogs.disconnect.provider") }}:
+                  {{ selectedConnection?.provider }}
+                </p>
+              </div>
+              <div
+                class="p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800"
+              >
+                <p class="text-sm text-amber-900 dark:text-amber-100">
+                  <span class="font-medium"
+                    >{{
+                      t("connections.dialogs.disconnect.warningTitle")
+                    }}:</span
+                  >
+                  {{ t("connections.dialogs.disconnect.warningDescription") }}
+                </p>
+              </div>
+            </div>
+          </template>
+        </ConfirmDialog>
 
         <EditWebhookDialog
           v-model:open="isEditDialogOpen"
@@ -562,11 +603,31 @@ async function testWebhook(webhookId: string) {
           @update="handleUpdateWebhook"
         />
 
-        <DeleteWebhookDialog
+        <ConfirmDialog
           v-model:open="isDeleteDialogOpen"
-          :webhook="selectedWebhook"
-          @delete="handleDeleteWebhook"
-        />
+          :title="t('connections.dialogs.deleteWebhook.title')"
+          :description="t('connections.dialogs.deleteWebhook.description')"
+          :confirm-label="t('connections.dialogs.deleteWebhook.confirm')"
+          :cancel-label="t('connections.dialogs.deleteWebhook.cancel')"
+          @confirm="selectedWebhook && handleDeleteWebhook(selectedWebhook.id)"
+        >
+          <template #details>
+            <div
+              class="p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
+            >
+              <p
+                class="text-sm text-neutral-900 dark:text-white font-medium mb-1"
+              >
+                {{ selectedWebhook?.displayName }}
+              </p>
+              <p
+                class="text-xs text-neutral-500 dark:text-neutral-500 font-mono truncate"
+              >
+                {{ selectedWebhook?.url }}
+              </p>
+            </div>
+          </template>
+        </ConfirmDialog>
       </template>
     </div>
   </div>

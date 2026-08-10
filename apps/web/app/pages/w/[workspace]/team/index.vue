@@ -13,14 +13,11 @@ import type {
 import { toast } from "vue-sonner";
 
 import {
-	DeleteMemberModal,
-	DeleteMultipleMembersModal,
 	EditMemberModal,
-	CancelInviteModal,
-	CancelMultipleInvitesModal,
 	InviteMembersCard,
 	TeamListCard,
 } from "#console/components/pages/team";
+import { ConfirmDialog } from "#console/components/common";
 
 useHead({ title: "Team" });
 
@@ -350,19 +347,70 @@ function handleSortingChange(
       />
 
       <!-- Modals -->
-      <DeleteMemberModal
+      <ConfirmDialog
         :open="isDeleteMemberDialogOpen"
-        :member="memberToDelete"
+        :title="t('members.modals.delete.title')"
+        :description="
+          t('members.modals.delete.description', {
+            name: memberToDelete?.displayName,
+          })
+        "
+        :confirm-label="t('members.modals.delete.confirmButton')"
+        :cancel-label="t('members.modals.delete.cancelButton')"
         @update:open="isDeleteMemberDialogOpen = $event"
         @confirm="deleteMember"
-      />
+      >
+        <template #details>
+          <div
+            class="p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
+          >
+            <p
+              class="text-sm text-neutral-900 dark:text-white font-medium mb-1"
+            >
+              {{ memberToDelete?.displayName }}
+            </p>
+            <p class="text-sm text-neutral-600 dark:text-neutral-400">
+              {{ memberToDelete?.emailAddress }}
+            </p>
+            <p class="text-xs text-neutral-500 dark:text-neutral-500 mt-2">
+              {{ t("members.modals.delete.role") }}:
+              {{
+                memberToDelete?.memberRole
+                  ? t(`members.roles.${memberToDelete.memberRole}`)
+                  : ""
+              }}
+            </p>
+          </div>
+        </template>
+      </ConfirmDialog>
 
-      <DeleteMultipleMembersModal
+      <ConfirmDialog
         :open="isDeleteMultipleMembersDialogOpen"
-        :count="membersSelection.selected.value.size"
+        :title="t('members.modals.deleteMultiple.title')"
+        :description="
+          t(
+            'members.modals.deleteMultiple.description',
+            membersSelection.selected.value.size,
+          )
+        "
+        :confirm-label="t('members.modals.deleteMultiple.confirmButton')"
+        :cancel-label="t('members.modals.deleteMultiple.cancelButton')"
         @update:open="isDeleteMultipleMembersDialogOpen = $event"
         @confirm="deleteSelectedMembers"
-      />
+      >
+        <template #details>
+          <div
+            class="p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800"
+          >
+            <p class="text-sm text-amber-900 dark:text-amber-100">
+              <span class="font-medium"
+                >{{ t("members.modals.deleteMultiple.warningTitle") }}:</span
+              >
+              {{ t("members.modals.deleteMultiple.warningDescription") }}
+            </p>
+          </div>
+        </template>
+      </ConfirmDialog>
 
       <EditMemberModal
         :open="isEditMemberDialogOpen"
@@ -372,19 +420,73 @@ function handleSortingChange(
         @confirm="editMember"
       />
 
-      <CancelInviteModal
+      <ConfirmDialog
         :open="isCancelInviteDialogOpen"
-        :invite="inviteToCancel"
+        :title="t('members.modals.cancelInvite.title')"
+        :description="t('members.modals.cancelInvite.description')"
+        :confirm-label="t('members.modals.cancelInvite.confirmButton')"
+        :cancel-label="t('members.modals.cancelInvite.keepButton')"
         @update:open="isCancelInviteDialogOpen = $event"
         @confirm="cancelInvite"
-      />
+      >
+        <template #details>
+          <div
+            class="p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
+          >
+            <p
+              class="text-sm text-neutral-900 dark:text-white font-medium mb-1"
+            >
+              {{
+                inviteToCancel?.inviteeEmail ??
+                t("members.table.status.linkInvite")
+              }}
+            </p>
+            <p class="text-xs text-neutral-500 dark:text-neutral-500">
+              {{ t("members.modals.cancelInvite.role") }}:
+              {{
+                inviteToCancel?.invitedRole
+                  ? t(`members.roles.${inviteToCancel.invitedRole}`)
+                  : ""
+              }}
+            </p>
+          </div>
+        </template>
+      </ConfirmDialog>
 
-      <CancelMultipleInvitesModal
+      <ConfirmDialog
         :open="isCancelMultipleInvitesDialogOpen"
-        :count="invitesSelection.selected.value.size"
+        :title="t('members.modals.cancelMultiple.title')"
+        :description="
+          t(
+            'members.modals.cancelMultiple.description',
+            invitesSelection.selected.value.size,
+          )
+        "
+        :confirm-label="t('members.modals.cancelMultiple.confirmButton')"
+        :cancel-label="t('members.modals.cancelMultiple.keepButton')"
         @update:open="isCancelMultipleInvitesDialogOpen = $event"
         @confirm="cancelSelectedInvites"
-      />
+      >
+        <template #details>
+          <div
+            class="p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
+          >
+            <p
+              class="text-sm text-neutral-900 dark:text-white font-medium mb-1"
+            >
+              {{
+                t(
+                  "members.modals.cancelMultiple.countLabel",
+                  invitesSelection.selected.value.size,
+                )
+              }}
+            </p>
+            <p class="text-xs text-neutral-500 dark:text-neutral-500">
+              {{ t("members.modals.cancelMultiple.noteDescription") }}
+            </p>
+          </div>
+        </template>
+      </ConfirmDialog>
     </div>
   </div>
 </template>

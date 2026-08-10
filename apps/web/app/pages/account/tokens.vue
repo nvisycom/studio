@@ -8,12 +8,11 @@ import { ChevronDown, Key, Loader2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 
 import {
-	DeleteMultipleTokensModal,
-	DeleteTokenModal,
 	RenameTokenModal,
 	TokenCreatedModal,
 	TokensTable,
 } from "#console/components/pages/tokens";
+import { ConfirmDialog } from "#console/components/common";
 import { Button } from "#console/components/ui/button";
 import {
 	Card,
@@ -378,20 +377,61 @@ async function renameToken(newName: string) {
       />
 
       <!-- Delete Token Modal -->
-      <DeleteTokenModal
+      <ConfirmDialog
         :open="isDeleteDialogOpen"
-        :token="tokenToDelete"
+        :title="t('tokens.modals.delete.title')"
+        :description="
+          t('tokens.modals.delete.description', {
+            name: tokenToDelete?.displayName,
+          })
+        "
+        :confirm-label="t('tokens.modals.delete.confirmButton')"
+        :cancel-label="t('tokens.modals.delete.cancelButton')"
         @update:open="isDeleteDialogOpen = $event"
         @confirm="deleteToken"
-      />
+      >
+        <template #details>
+          <div
+            class="p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
+          >
+            <p
+              class="text-sm text-neutral-900 dark:text-white font-medium mb-1"
+            >
+              {{ tokenToDelete?.displayName }}
+            </p>
+            <p class="text-xs text-neutral-500 dark:text-neutral-500">
+              {{ t("tokens.modals.delete.lastUsed") }}:
+              {{ tokenToDelete?.lastUsedAt ?? t("tokens.modals.delete.never") }}
+            </p>
+          </div>
+        </template>
+      </ConfirmDialog>
 
       <!-- Delete Multiple Tokens Modal -->
-      <DeleteMultipleTokensModal
+      <ConfirmDialog
         :open="isDeleteMultipleDialogOpen"
-        :count="selectedTokens.size"
+        :title="t('tokens.modals.deleteMultiple.title')"
+        :description="
+          t('tokens.modals.deleteMultiple.description', selectedTokens.size)
+        "
+        :confirm-label="`${t('tokens.modals.deleteMultiple.confirmButton')} (${selectedTokens.size})`"
+        :cancel-label="t('tokens.modals.deleteMultiple.cancelButton')"
         @update:open="isDeleteMultipleDialogOpen = $event"
         @confirm="deleteSelectedTokens"
-      />
+      >
+        <template #details>
+          <div
+            class="p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800"
+          >
+            <p class="text-sm text-amber-900 dark:text-amber-100">
+              <span class="font-medium"
+                >{{ t("tokens.modals.deleteMultiple.warningTitle") }}:</span
+              >
+              {{ t("tokens.modals.deleteMultiple.warningDescription") }}
+            </p>
+          </div>
+        </template>
+      </ConfirmDialog>
 
       <!-- Rename Token Modal -->
       <RenameTokenModal
