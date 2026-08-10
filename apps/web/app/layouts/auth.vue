@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import ThemeToggle from "@/components/footer/ThemeToggle.vue";
+import LanguageSwitcher from "@/components/footer/LanguageSwitcher.vue";
+import AuroraGlow from "@/components/auth/AuroraGlow.vue";
 
 const { t } = useI18n();
 </script>
@@ -16,7 +18,10 @@ const { t } = useI18n();
             >nvisy</span
           >
         </NuxtLink>
-        <ThemeToggle />
+        <div class="flex items-center gap-2">
+          <LanguageSwitcher />
+          <ThemeToggle />
+        </div>
       </header>
 
       <!-- Form -->
@@ -60,36 +65,27 @@ const { t } = useI18n();
 
     <!-- Right: brand panel (large screens only) -->
     <aside
-      class="relative hidden overflow-hidden border-l border-border/60 bg-muted/30 lg:flex lg:flex-col lg:justify-center"
+      class="relative hidden overflow-hidden border-l border-border/60 bg-muted/30 lg:flex lg:flex-col"
     >
-      <!-- Ambient gradient + grid, echoing the app's onboarding hero -->
+      <!-- Drifting brand-colored aurora over a faint grid -->
       <div class="pointer-events-none absolute inset-0">
-        <div
-          class="absolute -top-[20%] -right-[10%] h-[60%] w-[60%] rounded-full bg-gradient-to-br from-violet-500/[0.12] to-transparent blur-3xl"
-        />
-        <div
-          class="absolute -bottom-[20%] -left-[10%] h-[60%] w-[60%] rounded-full bg-gradient-to-tr from-blue-500/[0.12] to-transparent blur-3xl"
-        />
+        <AuroraGlow />
         <div
           class="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--foreground)/0.02)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--foreground)/0.02)_1px,transparent_1px)] bg-[size:3rem_3rem]"
         />
       </div>
 
-      <div class="relative z-10 mx-auto max-w-md px-12">
-        <!-- Wordmark stands in for the brand mark until a real logo lands. -->
-        <span
-          class="mb-8 block text-2xl font-semibold tracking-tight text-foreground"
-          >nvisy</span
-        >
-
-        <p
-          class="text-2xl font-semibold leading-snug tracking-tight text-balance text-foreground"
-        >
-          {{ t("auth.panel.headline") }}
-        </p>
-        <p class="mt-4 text-sm leading-relaxed text-muted-foreground">
-          {{ t("auth.panel.subline") }}
-        </p>
+      <div class="relative z-10 flex flex-1 flex-col px-14 pt-20">
+        <div class="w-full max-w-md">
+          <p
+            class="text-4xl font-semibold leading-tight tracking-tight text-foreground"
+          >
+            {{ t("auth.panel.headline") }}
+          </p>
+          <p class="mt-5 text-base leading-relaxed text-muted-foreground">
+            {{ t("auth.panel.subline") }}
+          </p>
+        </div>
       </div>
     </aside>
   </div>
