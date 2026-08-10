@@ -356,20 +356,6 @@ export function buildCreatePolicy(input: PolicyInput): CreatePolicy {
 type SdkPredicate = PredicatedRule["predicate"];
 type SdkAction = PredicatedRule["action"];
 
-/**
- * A structural view of `ModalityRedactions` exposing just the common fields the
- * editor reads. The real operators are per-kind discriminated unions; this view
- * is the one deliberate widening we do when reversing them into the flat model.
- */
-type ModalityRedactionsView = {
-	text?: { kind?: string; mask_char?: string; template?: string };
-	image?: { kind?: string; sigma?: number; block_size?: number };
-	audio?: { kind?: string; hz?: number };
-	tabular?: {
-		spec?: { kind?: string; mask_char?: string; template?: string };
-	};
-};
-
 function predicateToEditable(pred: SdkPredicate): EditablePredicate[] {
 	// Flatten a top-level `all` into individual conditions; anything else is a
 	// single condition. The discriminated `kind` narrows each arm — no casts.
@@ -400,56 +386,72 @@ function predicateToEditable(pred: SdkPredicate): EditablePredicate[] {
 	return editable.length > 0 ? editable : [{ kind: "confidence", min: 0.5 }];
 }
 
-function textOpToEditable(op: {
-	kind?: string;
-	mask_char?: string;
-	template?: string;
-}): EditableOperator {
+// The editor models a curated subset of each SDK operator's kinds; ops outside
+// that subset degrade to the modality's default kind when reversed. A Set<string>
+// membership test narrows an SDK kind to the editor subset without a cast.
+const TEXT_KINDS = new Set<string>([
+	"erase",
+	"mask",
+	"replace",
+	"hash",
+	"keep",
+]);
+const IMAGE_KINDS = new Set<string>(["erase", "keep", "blur", "pixelate"]);
+
+function isTextKind(kind: string): kind is TextRedactionKind {
+	return TEXT_KINDS.has(kind);
+}
+function isImageKind(kind: string): kind is ImageRedactionKind {
+	return IMAGE_KINDS.has(kind);
+}
+
+/** Read an SDK text operator into the editor, narrowing by `kind` (no casts). */
+function textOpToEditable(op: TextRedaction): EditableOperator {
 	return {
-		textKind: (op.kind ?? "replace") as TextRedactionKind,
-		maskChar: op.mask_char,
-		template: op.template,
+		textKind: isTextKind(op.kind) ? op.kind : "replace",
+		maskChar: op.kind === "mask" ? op.mask_char : undefined,
+		template: op.kind === "replace" ? op.template : undefined,
 	};
 }
 
 function actionToEditable(action: SdkAction): EditableAction {
-	if (!action) {
-		return {
-			modalities: { text: { textKind: "replace", template: "[{label}]" } },
-		};
-	}
-	// Each modality operator is a discriminated union whose fields vary by kind.
-	// The editor reads a common subset (kind + a couple of params), so we take a
-	// single structural view of the whole map rather than narrowing every arm.
-	const a = action as ModalityRedactionsView;
+	// Each modality operator is a discriminated union; narrow by `kind` to pull
+	// the fields that arm actually carries — no structural widening.
 	const modalities: EditableAction["modalities"] = {};
-	if (a.text) modalities.text = textOpToEditable(a.text);
-	if (a.image) {
+	if (action?.text) modalities.text = textOpToEditable(action.text);
+	if (action?.image) {
+		const image = action.image;
 		modalities.image = {
-			imageKind: (a.image.kind ?? "blur") as ImageRedactionKind,
-			sigma: a.image.sigma,
-			blockSize: a.image.block_size,
+			imageKind: isImageKind(image.kind) ? image.kind : "blur",
+			sigma: image.kind === "blur" ? image.sigma : undefined,
+			blockSize: image.kind === "pixelate" ? image.block_size : undefined,
 		};
 	}
-	if (a.audio) {
+	if (action?.audio) {
+		const audio = action.audio;
 		modalities.audio = {
-			audioKind: (a.audio.kind ?? "silence") as AudioRedactionKind,
-			hz: a.audio.hz,
+			audioKind: audio.kind,
+			hz: audio.kind === "beep" ? audio.hz : undefined,
 		};
 	}
-	if (a.tabular?.spec) {
-		const t = textOpToEditable(a.tabular.spec);
-		modalities.tabular = {
-			tabularKind: (t.textKind ?? "replace") as TabularRedactionKind,
-			maskChar: t.maskChar,
-			template: t.template,
-		};
+	if (action?.tabular?.kind === "cell") {
+		modalities.tabular = textToTabular(textOpToEditable(action.tabular.spec));
 	}
 	// Ensure at least one modality is present for editing.
 	if (Object.keys(modalities).length === 0) {
 		modalities.text = { textKind: "replace", template: "[{label}]" };
 	}
 	return { modalities };
+}
+
+/** A text operator's editable fields reused as a tabular (cell) operator. */
+function textToTabular(op: EditableOperator): EditableOperator {
+	// TabularRedactionKind aliases TextRedactionKind, so textKind maps directly.
+	return {
+		tabularKind: op.textKind,
+		maskChar: op.maskChar,
+		template: op.template,
+	};
 }
 
 /** Reconstruct the fallback action (or null) from a stored definition. */

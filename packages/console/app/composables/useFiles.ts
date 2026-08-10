@@ -1,7 +1,6 @@
 import type { UpdateFile, ListFiles } from "@nvisy/sdk/datatypes";
 
 export interface UseFilesOptions {
-	workspaceSlug?: MaybeRef<string | null>;
 	query?: MaybeRef<ListFiles>;
 	pageSize?: number;
 }
@@ -12,13 +11,6 @@ export interface UseFilesOptions {
 export function useFiles(options: UseFilesOptions = {}) {
 	const { requireContext, currentWorkspaceSlug } = useWorkspaceContext();
 
-	// Callers may target a specific workspace; otherwise the active one.
-	const workspaceSlug = computed(
-		() =>
-			(options.workspaceSlug
-				? toValue(options.workspaceSlug)
-				: currentWorkspaceSlug.value) || "",
-	);
 	const pageSize = options.pageSize ?? 50;
 	const queryParams = computed<ListFiles>(() => ({
 		...toValue(options.query ?? {}),
@@ -26,18 +18,17 @@ export function useFiles(options: UseFilesOptions = {}) {
 
 	const filesQuery = workspaceQuery(
 		"files",
-		({ client }) =>
-			client.files.listFiles(workspaceSlug.value, {
+		({ client, workspaceSlug }) =>
+			client.files.listFiles(workspaceSlug, {
 				...queryParams.value,
 				limit: pageSize,
 			}),
 		{
 			key: () => [
 				"files",
-				workspaceSlug.value,
+				currentWorkspaceSlug.value,
 				JSON.stringify(queryParams.value),
 			],
-			enabled: () => !!workspaceSlug.value,
 		},
 	);
 
@@ -47,8 +38,8 @@ export function useFiles(options: UseFilesOptions = {}) {
 		loadMore,
 		isLoadingMore,
 	} = useCursorPagination(filesQuery.data, (after) => {
-		const { client } = requireContext();
-		return client.files.listFiles(workspaceSlug.value, {
+		const { client, workspaceSlug } = requireContext();
+		return client.files.listFiles(workspaceSlug, {
 			...queryParams.value,
 			after,
 			limit: pageSize,
@@ -57,27 +48,27 @@ export function useFiles(options: UseFilesOptions = {}) {
 
 	const updateFileMutation = workspaceMutation(
 		(
-			{ client },
+			{ client, workspaceSlug },
 			{ fileId, updates }: { fileId: string; updates: UpdateFile },
-		) => client.files.updateFile(workspaceSlug.value, fileId, updates),
+		) => client.files.updateFile(workspaceSlug, fileId, updates),
 		{ invalidates: filesQuery },
 	);
 
 	const deleteFileMutation = workspaceMutation(
-		({ client }, fileId: string) =>
-			client.files.deleteFile(workspaceSlug.value, fileId),
+		({ client, workspaceSlug }, fileId: string) =>
+			client.files.deleteFile(workspaceSlug, fileId),
 		{ invalidates: filesQuery },
 	);
 
 	const uploadFilesMutation = workspaceMutation(
-		({ client }, files: File[]) =>
-			client.files.uploadFiles(workspaceSlug.value, files),
+		({ client, workspaceSlug }, files: File[]) =>
+			client.files.uploadFiles(workspaceSlug, files),
 		{ invalidates: filesQuery },
 	);
 
 	async function downloadFile(fileId: string, fileName: string) {
-		const { client } = requireContext();
-		const url = await fetchFileContentUrl(client, workspaceSlug.value, fileId);
+		const { client, workspaceSlug } = requireContext();
+		const url = await fetchFileContentUrl(client, workspaceSlug, fileId);
 		triggerBrowserDownload(url, fileName);
 	}
 

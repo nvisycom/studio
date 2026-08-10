@@ -82,3 +82,24 @@ export function formatShortDate(date: string | number | Date): string {
 		day: "numeric",
 	});
 }
+
+/** Format a date as "Mon D, YYYY" (e.g. "Jan 5, 2024"). */
+export function formatLongDate(date: string | number | Date): string {
+	return new Date(date).toLocaleDateString("en-US", {
+		month: "short",
+		day: "numeric",
+		year: "numeric",
+	});
+}
+
+/** Format a date as "Mon D, YYYY, HH:MM:SS" (long date + time). */
+export function formatDateTime(date: string | number | Date): string {
+	return new Date(date).toLocaleString("en-US", {
+		month: "short",
+		day: "numeric",
+		year: "numeric",
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
+	});
+}

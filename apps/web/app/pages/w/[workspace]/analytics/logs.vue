@@ -94,13 +94,7 @@ const formattedExportDateRange = computed(() => {
 		exportDateRange.value.end.day,
 	);
 
-	const formatter = new Intl.DateTimeFormat("en-US", {
-		month: "short",
-		day: "numeric",
-		year: "numeric",
-	});
-
-	return `${formatter.format(startDate)} - ${formatter.format(endDate)}`;
+	return `${formatLongDate(startDate)} - ${formatLongDate(endDate)}`;
 });
 
 // Mock log data

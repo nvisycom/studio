@@ -40,30 +40,18 @@ const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
+const { relativeTime } = useRelativeTime();
 
 /** Files currently selected, and how many. */
 const selectedFiles = computed(() => props.selection.selected.value);
 const selectedCount = computed(() => selectedFiles.value.size);
 
+// Recent edits read as relative time; older than ~30 days show the full date.
+const MONTH_MS = 1000 * 60 * 60 * 24 * 30;
 function formatDate(dateStr: string | null | undefined): string {
 	if (!dateStr) return "—";
-	const date = new Date(dateStr);
-	const now = new Date();
-	const diff = now.getTime() - date.getTime();
-	const hours = Math.floor(diff / (1000 * 60 * 60));
-	const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-	if (hours < 1) return t("common.time.justNow");
-	if (hours < 24) return t("common.time.hoursAgo", { hours });
-	if (days < 7) return t("common.time.daysAgo", { days });
-	if (days < 30)
-		return t("common.time.weeksAgo", { weeks: Math.floor(days / 7) });
-
-	return date.toLocaleDateString("en-US", {
-		month: "short",
-		day: "numeric",
-		year: "numeric",
-	});
+	const age = Date.now() - new Date(dateStr).getTime();
+	return age < MONTH_MS ? relativeTime(dateStr) : formatLongDate(dateStr);
 }
 
 const columns = computed<ColumnDef<NvisyFile>[]>(() => [
