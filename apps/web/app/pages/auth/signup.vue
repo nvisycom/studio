@@ -7,7 +7,8 @@ import { Checkbox } from "#console/components/ui/checkbox";
 import { FeatureGate } from "#console/components/common";
 import { NvisyApiError } from "@nvisy/sdk";
 
-useHead({ title: "Sign Up" });
+const { t } = useI18n();
+useHead({ title: t("auth.signup.title") });
 
 definePageMeta({
 	layout: "auth",
@@ -32,9 +33,7 @@ const USERNAME_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const usernameError = computed(() => {
 	const value = username.value.trim();
 	if (!value) return "";
-	return USERNAME_PATTERN.test(value)
-		? ""
-		: "Use lowercase letters, numbers, and single dashes between characters.";
+	return USERNAME_PATTERN.test(value) ? "" : t("auth.signup.usernameError");
 });
 
 async function handleSignup(): Promise<void> {
@@ -72,9 +71,9 @@ async function handleMicrosoftSignup(): Promise<void> {
   <div class="space-y-6">
     <!-- Header -->
     <div class="space-y-2 text-center">
-      <h1 class="text-2xl font-semibold tracking-tight">Create an account</h1>
+      <h1 class="text-2xl font-semibold tracking-tight">{{ t("auth.signup.heading") }}</h1>
       <p class="text-sm text-muted-foreground">
-        Get started with your free account
+        {{ t("auth.signup.subtitle") }}
       </p>
     </div>
 
@@ -89,10 +88,10 @@ async function handleMicrosoftSignup(): Promise<void> {
         >
           <img
             src="~/assets/brands/google.png"
-            alt="Google"
+            :alt="t('auth.shared.google')"
             class="w-4 h-4 mr-2"
           />
-          Google
+          {{ t("auth.shared.google") }}
         </Button>
         <Button
           type="button"
@@ -102,10 +101,10 @@ async function handleMicrosoftSignup(): Promise<void> {
         >
           <img
             src="~/assets/brands/microsoft.png"
-            alt="Microsoft"
+            :alt="t('auth.shared.microsoft')"
             class="w-4 h-4 mr-2"
           />
-          Microsoft
+          {{ t("auth.shared.microsoft") }}
         </Button>
       </div>
 
@@ -116,7 +115,7 @@ async function handleMicrosoftSignup(): Promise<void> {
         </div>
         <div class="relative flex justify-center text-xs uppercase">
           <span class="bg-background px-2 text-muted-foreground">
-            or continue with email
+            {{ t("auth.shared.orContinueWithEmail") }}
           </span>
         </div>
       </div>
@@ -126,12 +125,13 @@ async function handleMicrosoftSignup(): Promise<void> {
     <form @submit.prevent="handleSignup" class="space-y-4">
       <!-- Username -->
       <div class="space-y-2">
-        <Label for="username">Username</Label>
+        <Label for="username">{{ t("auth.signup.username") }}</Label>
         <Input
           id="username"
+          name="username"
           v-model="username"
           type="text"
-          placeholder="john-doe"
+          :placeholder="t('auth.signup.usernamePlaceholder')"
           class="h-10"
           required
           autocapitalize="none"
@@ -145,12 +145,13 @@ async function handleMicrosoftSignup(): Promise<void> {
 
       <!-- Email -->
       <div class="space-y-2">
-        <Label for="email">Email</Label>
+        <Label for="email">{{ t("auth.shared.email") }}</Label>
         <Input
           id="email"
+          name="email"
           v-model="email"
           type="email"
-          placeholder="name@example.com"
+          :placeholder="t('auth.shared.emailPlaceholder')"
           class="h-10"
           required
           autocomplete="email"
@@ -159,13 +160,14 @@ async function handleMicrosoftSignup(): Promise<void> {
 
       <!-- Password -->
       <div class="space-y-2">
-        <Label for="password">Password</Label>
+        <Label for="password">{{ t("auth.shared.password") }}</Label>
         <div class="relative">
           <Input
             id="password"
+            name="password"
             v-model="password"
             :type="showPassword ? 'text' : 'password'"
-            placeholder="Create a password"
+            :placeholder="t('auth.signup.passwordPlaceholder')"
             class="h-10 pr-10"
             required
             autocomplete="new-password"
@@ -189,30 +191,30 @@ async function handleMicrosoftSignup(): Promise<void> {
             for="terms"
             class="text-sm font-normal cursor-pointer leading-snug text-muted-foreground"
           >
-            I agree to the
+            {{ t("auth.signup.agreePrefix") }}
             <a
               href="https://nvisy.com/legal/terms-of-service"
               target="_blank"
               rel="noopener noreferrer"
               class="inline-flex items-center gap-0.5 text-foreground hover:underline"
             >
-              Terms
+              {{ t("auth.signup.terms") }}
               <ExternalLink :size="10" />
             </a>
-            and
+            {{ t("auth.signup.and") }}
             <a
               href="https://nvisy.com/legal/privacy-policy"
               target="_blank"
               rel="noopener noreferrer"
               class="inline-flex items-center gap-0.5 text-foreground hover:underline"
             >
-              Privacy Policy
+              {{ t("auth.signup.privacyPolicy") }}
               <ExternalLink :size="10" />
             </a>
           </Label>
         </div>
         <p v-if="termsError" class="text-xs text-destructive pl-6">
-          You must agree to the terms to continue
+          {{ t("auth.signup.termsError") }}
         </p>
       </div>
 
@@ -221,7 +223,7 @@ async function handleMicrosoftSignup(): Promise<void> {
         v-if="signupError"
         class="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg"
       >
-        <p>{{ signupError.message || "An error occurred during signup" }}</p>
+        <p>{{ signupError.message || t("auth.signup.genericError") }}</p>
         <p v-if="apiError?.suggestion" class="mt-1 opacity-80">
           {{ apiError.suggestion }}
         </p>
@@ -237,18 +239,18 @@ async function handleMicrosoftSignup(): Promise<void> {
 
       <!-- Submit Button -->
       <Button type="submit" class="w-full h-10" :disabled="isSigningUp">
-        {{ isSigningUp ? "Creating account..." : "Create account" }}
+        {{ isSigningUp ? t("auth.signup.submitting") : t("auth.signup.submit") }}
       </Button>
     </form>
 
     <!-- Login Link -->
     <p class="text-center text-sm text-muted-foreground">
-      Already have an account?
+      {{ t("auth.signup.hasAccount") }}
       <NuxtLink
         to="/auth/login"
         class="text-foreground hover:underline font-medium"
       >
-        Sign in
+        {{ t("auth.shared.signIn") }}
       </NuxtLink>
     </p>
   </div>

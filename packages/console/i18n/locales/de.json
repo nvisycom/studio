@@ -268,6 +268,7 @@
 	"overview": {
 		"welcome": {
 			"title": "Willkommen zurück",
+			"titleFirst": "Willkommen",
 			"subtitle": "Das passiert gerade in {workspace}",
 			"description": "Erstellen Sie Ihren ersten Arbeitsbereich, um Dokumente zu organisieren, mit Ihrem Team zusammenzuarbeiten und KI-gestützte Einblicke zu nutzen.",
 			"createWorkspace": "Arbeitsbereich Erstellen",
@@ -276,17 +277,12 @@
 		"workspace": {
 			"members": "Mitglieder",
 			"files": "Dateien",
+			"policies": "Richtlinien",
+			"pipelines": "Pipelines",
 			"created": "Erstellt",
 			"badges": {
 				"requireApproval": "Genehmigung erforderlich"
 			}
-		},
-		"usage": {
-			"credits": "Credits",
-			"storage": "Speicher",
-			"of": "von {total}",
-			"creditsRemaining": "{count} Credits übrig",
-			"storageRemaining": "{count} GB übrig"
 		},
 		"quickActions": {
 			"title": "Schnellaktionen",
@@ -304,6 +300,10 @@
 			"viewAnalytics": {
 				"title": "Analysen anzeigen",
 				"description": "Nutzung überwachen"
+			},
+			"policies": {
+				"title": "Richtlinien",
+				"description": "Schwärzungsregeln verwalten"
 			}
 		},
 		"actions": {
@@ -343,6 +343,40 @@
 			},
 			"support": {
 				"description": "Erhalten Sie Hilfe von unserem Team"
+			}
+		},
+		"getStarted": {
+			"title": "Richten Sie Ihren Arbeitsbereich ein",
+			"done": "Alles bereit",
+			"steps": {
+				"uploadFiles": {
+					"title": "Laden Sie Ihre ersten Dokumente hoch",
+					"description": "Fügen Sie Dateien hinzu, um sensible Daten zu erkennen und zu schwärzen."
+				},
+				"createPolicy": {
+					"title": "Erstellen Sie eine Schwärzungsrichtlinie",
+					"description": "Legen Sie fest, was erkannt und wie es geschwärzt wird."
+				},
+				"inviteTeam": {
+					"title": "Laden Sie Ihr Team ein",
+					"description": "Fügen Sie Mitglieder hinzu und weisen Sie Rollen zu."
+				}
+			},
+			"skip": "Einrichtung überspringen",
+			"cardSubtitle": "Schließen Sie diese Schritte ab, um loszulegen."
+		},
+		"sections": {
+			"recentActivity": "Letzte Aktivitäten",
+			"recentFiles": "Letzte Dateien",
+			"recentRuns": "Letzte Ausführungen",
+			"viewAll": "Alle anzeigen",
+			"empty": {
+				"activity": "Noch keine Aktivität",
+				"files": "Noch keine Dateien",
+				"runs": "Noch keine Ausführungen",
+				"activityDescription": "Aktionen in diesem Arbeitsbereich erscheinen hier.",
+				"filesDescription": "Laden Sie Dokumente hoch, um sie hier zu sehen.",
+				"runsDescription": "Pipeline-Ausführungen erscheinen hier."
 			}
 		}
 	},
@@ -1483,6 +1517,83 @@
 				"exportJson": "Als JSON exportieren",
 				"exportCsv": "Als CSV exportieren"
 			}
+		}
+	},
+	"auth": {
+		"panel": {
+			"headline": "Sensible Daten aus Ihren Dokumenten mit KI schwärzen.",
+			"subline": "Erkennen und entfernen Sie PII in Text, Bildern und Audio, mit Richtlinien, die Ihr Team steuert."
+		},
+		"shared": {
+			"orContinueWithEmail": "oder mit E-Mail fortfahren",
+			"google": "Google",
+			"microsoft": "Microsoft",
+			"email": "E-Mail",
+			"emailPlaceholder": "name{'@'}example.com",
+			"password": "Passwort",
+			"signIn": "Anmelden",
+			"signUp": "Registrieren"
+		},
+		"login": {
+			"title": "Anmelden",
+			"heading": "Willkommen zurück",
+			"subtitle": "Melden Sie sich an, um fortzufahren",
+			"passwordPlaceholder": "Passwort eingeben",
+			"forgotPassword": "Passwort vergessen?",
+			"rememberMe": "Angemeldet bleiben",
+			"genericError": "Bei der Anmeldung ist ein Fehler aufgetreten",
+			"submit": "Anmelden",
+			"submitting": "Anmeldung läuft...",
+			"noAccount": "Noch kein Konto?"
+		},
+		"signup": {
+			"title": "Registrieren",
+			"heading": "Konto erstellen",
+			"subtitle": "Starten Sie mit Ihrem kostenlosen Konto",
+			"username": "Benutzername",
+			"usernamePlaceholder": "john-doe",
+			"usernameError": "Verwenden Sie Kleinbuchstaben, Zahlen und einzelne Bindestriche zwischen Zeichen.",
+			"passwordPlaceholder": "Passwort erstellen",
+			"agreePrefix": "Ich stimme den",
+			"terms": "Nutzungsbedingungen",
+			"and": "und der",
+			"privacyPolicy": "Datenschutzrichtlinie",
+			"termsError": "Sie müssen den Bedingungen zustimmen, um fortzufahren",
+			"genericError": "Bei der Registrierung ist ein Fehler aufgetreten",
+			"submit": "Konto erstellen",
+			"submitting": "Konto wird erstellt...",
+			"hasAccount": "Sie haben bereits ein Konto?"
+		},
+		"forgotPassword": {
+			"title": "Passwort vergessen",
+			"backToLogin": "Zurück zur Anmeldung",
+			"heading": "Passwort vergessen?",
+			"subtitle": "Geben Sie Ihre E-Mail ein und wir senden Ihnen einen Link zum Zurücksetzen",
+			"submit": "Link senden",
+			"submitting": "Wird gesendet...",
+			"rememberPassword": "Erinnern Sie sich an Ihr Passwort?",
+			"successHeading": "Überprüfen Sie Ihre E-Mail",
+			"successSubtitlePrefix": "Wir haben einen Link zum Zurücksetzen gesendet an",
+			"didntReceive": "Keine E-Mail erhalten?",
+			"tryAgain": "Erneut versuchen"
+		},
+		"resetPassword": {
+			"title": "Passwort zurücksetzen",
+			"heading": "Neues Passwort festlegen",
+			"subtitle": "Wählen Sie ein starkes Passwort für Ihr Konto",
+			"newPassword": "Neues Passwort",
+			"newPasswordPlaceholder": "Neues Passwort eingeben",
+			"passwordHint": "Muss mindestens 8 Zeichen lang sein",
+			"passwordTooShort": "Passwort muss mindestens 8 Zeichen lang sein",
+			"confirmPassword": "Passwort bestätigen",
+			"confirmPasswordPlaceholder": "Neues Passwort bestätigen",
+			"passwordsDontMatch": "Passwörter stimmen nicht überein",
+			"submit": "Passwort zurücksetzen",
+			"submitting": "Wird zurückgesetzt...",
+			"rememberPassword": "Erinnern Sie sich an Ihr Passwort?",
+			"successHeading": "Passwort zurückgesetzt",
+			"successSubtitle": "Ihr Passwort wurde erfolgreich aktualisiert",
+			"continueToLogin": "Weiter zur Anmeldung"
 		}
 	}
 }

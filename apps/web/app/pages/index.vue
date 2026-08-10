@@ -5,9 +5,11 @@ import { WithoutWorkspace } from "#console/components/pages/overview";
 useHead({ title: "Nvisy" });
 
 // Sidebar-less layout: at "/" there is no active workspace yet (we're resolving
-// one or onboarding), so the workspace chrome would be broken/locked.
+// one or onboarding), so the workspace chrome would be broken/locked. Uses the
+// plain frame (not auth) — these are logged-in states, so the auth brand panel
+// would be out of place.
 definePageMeta({
-	layout: "auth",
+	layout: "plain",
 });
 
 // The "/" landing resolves the active workspace: once the list loads, redirect

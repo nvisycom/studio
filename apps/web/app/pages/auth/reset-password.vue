@@ -4,7 +4,9 @@ import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
 
-useHead({ title: "Reset Password" });
+const { t } = useI18n();
+
+useHead({ title: t("auth.resetPassword.title") });
 
 definePageMeta({
 	layout: "auth",
@@ -29,7 +31,7 @@ const confirmPasswordError = ref("");
 function validatePassword(): boolean {
 	passwordError.value = "";
 	if (password.value.length < 8) {
-		passwordError.value = "Password must be at least 8 characters";
+		passwordError.value = t("auth.resetPassword.passwordTooShort");
 		return false;
 	}
 	return true;
@@ -38,7 +40,7 @@ function validatePassword(): boolean {
 function validateConfirmPassword(): boolean {
 	confirmPasswordError.value = "";
 	if (password.value !== confirmPassword.value) {
-		confirmPasswordError.value = "Passwords do not match";
+		confirmPasswordError.value = t("auth.resetPassword.passwordsDontMatch");
 		return false;
 	}
 	return true;
@@ -78,14 +80,14 @@ async function handleResetPassword(): Promise<void> {
             <CheckCircle :size="24" class="text-emerald-500" />
           </div>
         </div>
-        <h1 class="text-2xl font-semibold tracking-tight">Password reset</h1>
+        <h1 class="text-2xl font-semibold tracking-tight">{{ t("auth.resetPassword.successHeading") }}</h1>
         <p class="text-sm text-muted-foreground">
-          Your password has been successfully updated
+          {{ t("auth.resetPassword.successSubtitle") }}
         </p>
       </div>
 
       <Button as-child class="w-full h-10">
-        <NuxtLink to="/auth/login"> Continue to login </NuxtLink>
+        <NuxtLink to="/auth/login"> {{ t("auth.resetPassword.continueToLogin") }} </NuxtLink>
       </Button>
     </template>
 
@@ -93,9 +95,9 @@ async function handleResetPassword(): Promise<void> {
     <template v-else>
       <!-- Header -->
       <div class="space-y-2 text-center">
-        <h1 class="text-2xl font-semibold tracking-tight">Set new password</h1>
+        <h1 class="text-2xl font-semibold tracking-tight">{{ t("auth.resetPassword.heading") }}</h1>
         <p class="text-sm text-muted-foreground">
-          Choose a strong password for your account
+          {{ t("auth.resetPassword.subtitle") }}
         </p>
       </div>
 
@@ -103,13 +105,14 @@ async function handleResetPassword(): Promise<void> {
       <form @submit.prevent="handleResetPassword" class="space-y-4">
         <!-- New Password -->
         <div class="space-y-2">
-          <Label for="password">New password</Label>
+          <Label for="password">{{ t("auth.resetPassword.newPassword") }}</Label>
           <div class="relative">
             <Input
               id="password"
+              name="new-password"
               v-model="password"
               :type="showPassword ? 'text' : 'password'"
-              placeholder="Enter new password"
+              :placeholder="t('auth.resetPassword.newPasswordPlaceholder')"
               class="h-10 pr-10"
               :class="{ 'border-destructive': passwordError }"
               required
@@ -129,19 +132,20 @@ async function handleResetPassword(): Promise<void> {
             {{ passwordError }}
           </p>
           <p v-else class="text-xs text-muted-foreground">
-            Must be at least 8 characters
+            {{ t("auth.resetPassword.passwordHint") }}
           </p>
         </div>
 
         <!-- Confirm Password -->
         <div class="space-y-2">
-          <Label for="confirmPassword">Confirm password</Label>
+          <Label for="confirmPassword">{{ t("auth.resetPassword.confirmPassword") }}</Label>
           <div class="relative">
             <Input
               id="confirmPassword"
+              name="confirm-password"
               v-model="confirmPassword"
               :type="showConfirmPassword ? 'text' : 'password'"
-              placeholder="Confirm new password"
+              :placeholder="t('auth.resetPassword.confirmPasswordPlaceholder')"
               class="h-10 pr-10"
               :class="{ 'border-destructive': confirmPasswordError }"
               required
@@ -163,18 +167,18 @@ async function handleResetPassword(): Promise<void> {
         </div>
 
         <Button type="submit" class="w-full h-10" :disabled="isLoading">
-          {{ isLoading ? "Resetting..." : "Reset password" }}
+          {{ isLoading ? t("auth.resetPassword.submitting") : t("auth.resetPassword.submit") }}
         </Button>
       </form>
 
       <!-- Login Link -->
       <p class="text-center text-sm text-muted-foreground">
-        Remember your password?
+        {{ t("auth.resetPassword.rememberPassword") }}
         <NuxtLink
           to="/auth/login"
           class="text-foreground hover:underline font-medium"
         >
-          Sign in
+          {{ t("auth.shared.signIn") }}
         </NuxtLink>
       </p>
     </template>

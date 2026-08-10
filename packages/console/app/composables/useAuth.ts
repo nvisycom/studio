@@ -55,6 +55,7 @@ export function useAuth() {
 	initializeAuth();
 
 	const config = useRuntimeConfig();
+	const queryCache = useQueryCache();
 
 	const isAuthenticated = computed(() => {
 		if (!authToken.value) return false;
@@ -96,6 +97,13 @@ export function useAuth() {
 		// Clear workspace cookie
 		const workspaceCookie = useCookie("current_workspace_slug");
 		workspaceCookie.value = null;
+
+		// Drop every cached query so the next account never sees the previous
+		// user's data. Without this, colada keeps entries (e.g. the workspace
+		// list) across logout→login; a stale-but-"fresh" entry then makes
+		// refresh() a no-op, so a newly-created workspace never appears until a
+		// hard reload.
+		for (const entry of queryCache.getEntries()) queryCache.remove(entry);
 	}
 
 	async function logout() {

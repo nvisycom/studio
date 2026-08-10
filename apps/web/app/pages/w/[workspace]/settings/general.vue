@@ -202,7 +202,9 @@ async function handleDeleteWorkspace() {
 		isDeleteDialogOpen.value = false;
 		deleteConfirmName.value = "";
 		toast.success(t("settings.workspace.messages.deleted"));
-		navigateTo("/");
+		// Navigation is owned by the mutation's onSuccess (it picks the next
+		// workspace, or "/" if none) once the list has refreshed — navigating
+		// here too would race it and force "/" even when another exists.
 	} catch (err) {
 		toast.error(t("settings.workspace.errors.deleteFailed"), {
 			description: getErrorMessage(err, t("common.errors.tryAgain")),
