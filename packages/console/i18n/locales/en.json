@@ -1436,7 +1436,8 @@
 		"table": {
 			"name": "Name",
 			"status": "Status",
-			"updated": "Updated"
+			"updated": "Updated",
+			"menu": "Actions"
 		},
 		"actions": {
 			"create": "Create Pipeline",

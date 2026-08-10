@@ -4,12 +4,12 @@ import {
 	Loader2,
 	Workflow,
 	Plus,
-	MoreHorizontal,
 	Trash2,
 	History,
 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import type { CreatePipeline, PipelineSummary } from "@nvisy/sdk/datatypes";
+import type { RowAction } from "#console/components/pages/RowActions.vue";
 import { Button } from "#console/components/ui/button";
 import { Badge } from "#console/components/ui/badge";
 import {
@@ -28,18 +28,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "#console/components/ui/table";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "#console/components/ui/dropdown-menu";
-import {
-	ContextMenu,
-	ContextMenuContent,
-	ContextMenuItem,
-	ContextMenuTrigger,
-} from "#console/components/ui/context-menu";
+import RowActions from "#console/components/pages/RowActions.vue";
 import { CreatePipelineDialog } from "#console/components/pages/workflows";
 
 const { t } = useI18n();
@@ -96,6 +85,19 @@ async function handleDelete(slug: string) {
 		});
 	}
 }
+
+/** Right-click / ⋯ actions for a workflow row. */
+function rowActions(pipeline: PipelineSummary): RowAction[] {
+	return [
+		{
+			key: "delete",
+			label: t("workflows.actions.delete"),
+			icon: Trash2,
+			danger: true,
+			select: () => handleDelete(pipeline.slug),
+		},
+	];
+}
 </script>
 
 <template>
@@ -151,64 +153,36 @@ async function handleDelete(slug: string) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <ContextMenu
+                <RowActions
                   v-for="pipeline in pipelines"
                   :key="pipeline.slug"
+                  :actions="rowActions(pipeline)"
+                  :menu-label="t('workflows.table.menu')"
+                  row-class="group"
                 >
-                  <ContextMenuTrigger as-child>
-                    <TableRow>
-                      <TableCell>
-                        <div>
-                          <p class="font-medium">{{ pipeline.displayName }}</p>
-                          <p
-                            v-if="pipeline.description"
-                            class="text-xs text-muted-foreground"
-                          >
-                            {{ pipeline.description }}
-                          </p>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          :variant="statusVariant[pipeline.status]"
-                          class="capitalize"
-                        >
-                          {{ t(`workflows.status.${pipeline.status}`) }}
-                        </Badge>
-                      </TableCell>
-                      <TableCell class="text-muted-foreground text-sm">
-                        {{ relativeTime(pipeline.updatedAt) }}
-                      </TableCell>
-                      <TableCell class="text-right" @click.stop>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger as-child>
-                            <Button variant="ghost" size="icon" class="h-8 w-8">
-                              <MoreHorizontal :size="16" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" class="w-48">
-                            <DropdownMenuItem
-                              class="text-red-600 dark:text-red-400 cursor-pointer"
-                              @click="handleDelete(pipeline.slug)"
-                            >
-                              <Trash2 :size="14" class="mr-2" />
-                              {{ t("workflows.actions.delete") }}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  </ContextMenuTrigger>
-                  <ContextMenuContent>
-                    <ContextMenuItem
-                      class="cursor-pointer text-destructive focus:text-destructive"
-                      @click="handleDelete(pipeline.slug)"
+                  <TableCell>
+                    <div>
+                      <p class="font-medium">{{ pipeline.displayName }}</p>
+                      <p
+                        v-if="pipeline.description"
+                        class="text-xs text-muted-foreground"
+                      >
+                        {{ pipeline.description }}
+                      </p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      :variant="statusVariant[pipeline.status]"
+                      class="capitalize"
                     >
-                      <Trash2 :size="14" class="mr-2" />
-                      {{ t("workflows.actions.delete") }}
-                    </ContextMenuItem>
-                  </ContextMenuContent>
-                </ContextMenu>
+                      {{ t(`workflows.status.${pipeline.status}`) }}
+                    </Badge>
+                  </TableCell>
+                  <TableCell class="text-muted-foreground text-sm">
+                    {{ relativeTime(pipeline.updatedAt) }}
+                  </TableCell>
+                </RowActions>
               </TableBody>
             </Table>
 

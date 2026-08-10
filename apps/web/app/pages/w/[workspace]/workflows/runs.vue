@@ -23,10 +23,10 @@ import {
 	Table,
 	TableBody,
 	TableCell,
-	TableHead,
 	TableHeader,
 	TableRow,
 } from "#console/components/ui/table";
+import DataTableHead from "#console/components/pages/DataTableHead.vue";
 import {
 	Select,
 	SelectContent,
@@ -132,24 +132,22 @@ const filteredRuns = computed(() => {
           <Table v-else>
             <TableHeader>
               <TableRow>
-                <TableHead class="text-xs font-normal uppercase tracking-wider">
+                <DataTableHead>
                   {{ t("workflows.runs.pipeline") }}
-                </TableHead>
-                <TableHead class="text-xs font-normal uppercase tracking-wider">
-                  {{ t("workflows.runs.file") }}
-                </TableHead>
-                <TableHead class="text-xs font-normal uppercase tracking-wider">
+                </DataTableHead>
+                <DataTableHead>{{ t("workflows.runs.file") }}</DataTableHead>
+                <DataTableHead>
                   {{ t("workflows.runs.trigger") }}
-                </TableHead>
-                <TableHead class="text-xs font-normal uppercase tracking-wider">
+                </DataTableHead>
+                <DataTableHead>
                   {{ t("workflows.runs.statusHeader") }}
-                </TableHead>
-                <TableHead class="text-xs font-normal uppercase tracking-wider">
+                </DataTableHead>
+                <DataTableHead>
                   {{ t("workflows.runs.started") }}
-                </TableHead>
-                <TableHead class="text-xs font-normal uppercase tracking-wider">
+                </DataTableHead>
+                <DataTableHead>
                   {{ t("workflows.runs.duration") }}
-                </TableHead>
+                </DataTableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

@@ -29,10 +29,10 @@ import {
 	Table,
 	TableBody,
 	TableCell,
-	TableHead,
 	TableHeader,
 	TableRow,
 } from "#console/components/ui/table";
+import DataTableHead from "#console/components/pages/DataTableHead.vue";
 import {
 	Select,
 	SelectContent,
@@ -169,25 +169,25 @@ async function cancelSync(sync: ConnectionSync) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead class="text-xs font-normal uppercase tracking-wider">
+                  <DataTableHead>
                     {{ t("connections.runs.connection") }}
-                  </TableHead>
-                  <TableHead class="text-xs font-normal uppercase tracking-wider">
+                  </DataTableHead>
+                  <DataTableHead>
                     {{ t("connections.runs.trigger") }}
-                  </TableHead>
-                  <TableHead class="text-xs font-normal uppercase tracking-wider">
+                  </DataTableHead>
+                  <DataTableHead>
                     {{ t("connections.runs.statusHeader") }}
-                  </TableHead>
-                  <TableHead class="text-xs font-normal uppercase tracking-wider">
+                  </DataTableHead>
+                  <DataTableHead>
                     {{ t("connections.runs.records") }}
-                  </TableHead>
-                  <TableHead class="text-xs font-normal uppercase tracking-wider">
+                  </DataTableHead>
+                  <DataTableHead>
                     {{ t("connections.runs.started") }}
-                  </TableHead>
-                  <TableHead class="text-xs font-normal uppercase tracking-wider">
+                  </DataTableHead>
+                  <DataTableHead>
                     {{ t("connections.runs.duration") }}
-                  </TableHead>
-                  <TableHead class="w-10" />
+                  </DataTableHead>
+                  <DataTableHead class="w-10" />
                 </TableRow>
               </TableHeader>
               <TableBody>
