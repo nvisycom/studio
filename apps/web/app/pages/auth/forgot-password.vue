@@ -4,7 +4,9 @@ import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
 
-useHead({ title: "Forgot Password" });
+const { t } = useI18n();
+
+useHead({ title: t("auth.forgotPassword.title") });
 
 definePageMeta({
 	layout: "auth",
@@ -38,7 +40,7 @@ async function handleForgotPassword(): Promise<void> {
       class="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
     >
       <ArrowLeft :size="14" />
-      Back to login
+      {{ t("auth.forgotPassword.backToLogin") }}
     </NuxtLink>
 
     <!-- Success State -->
@@ -51,25 +53,25 @@ async function handleForgotPassword(): Promise<void> {
             <CheckCircle :size="24" class="text-emerald-500" />
           </div>
         </div>
-        <h1 class="text-2xl font-semibold tracking-tight">Check your email</h1>
+        <h1 class="text-2xl font-semibold tracking-tight">{{ t("auth.forgotPassword.successHeading") }}</h1>
         <p class="text-sm text-muted-foreground">
-          We sent a password reset link to<br />
+          {{ t("auth.forgotPassword.successSubtitlePrefix") }}<br />
           <span class="text-foreground font-medium">{{ email }}</span>
         </p>
       </div>
 
       <div class="space-y-3">
         <Button as-child class="w-full h-10">
-          <NuxtLink to="/auth/login"> Back to login </NuxtLink>
+          <NuxtLink to="/auth/login"> {{ t("auth.forgotPassword.backToLogin") }} </NuxtLink>
         </Button>
 
         <p class="text-center text-xs text-muted-foreground">
-          Didn't receive the email?
+          {{ t("auth.forgotPassword.didntReceive") }}
           <button
             @click="isSubmitted = false"
             class="text-foreground hover:underline font-medium"
           >
-            Try again
+            {{ t("auth.forgotPassword.tryAgain") }}
           </button>
         </p>
       </div>
@@ -79,21 +81,21 @@ async function handleForgotPassword(): Promise<void> {
     <template v-else>
       <!-- Header -->
       <div class="space-y-2 text-center">
-        <h1 class="text-2xl font-semibold tracking-tight">Forgot password?</h1>
+        <h1 class="text-2xl font-semibold tracking-tight">{{ t("auth.forgotPassword.heading") }}</h1>
         <p class="text-sm text-muted-foreground">
-          Enter your email and we'll send you a reset link
+          {{ t("auth.forgotPassword.subtitle") }}
         </p>
       </div>
 
       <!-- Form -->
       <form @submit.prevent="handleForgotPassword" class="space-y-4">
         <div class="space-y-2">
-          <Label for="email">Email</Label>
+          <Label for="email">{{ t("auth.shared.email") }}</Label>
           <Input
             id="email"
             v-model="email"
             type="email"
-            placeholder="name@example.com"
+            :placeholder="t('auth.shared.emailPlaceholder')"
             class="h-10"
             required
             autocomplete="email"
@@ -101,18 +103,18 @@ async function handleForgotPassword(): Promise<void> {
         </div>
 
         <Button type="submit" class="w-full h-10" :disabled="isLoading">
-          {{ isLoading ? "Sending..." : "Send reset link" }}
+          {{ isLoading ? t("auth.forgotPassword.submitting") : t("auth.forgotPassword.submit") }}
         </Button>
       </form>
 
       <!-- Login Link -->
       <p class="text-center text-sm text-muted-foreground">
-        Remember your password?
+        {{ t("auth.forgotPassword.rememberPassword") }}
         <NuxtLink
           to="/auth/login"
           class="text-foreground hover:underline font-medium"
         >
-          Sign in
+          {{ t("auth.shared.signIn") }}
         </NuxtLink>
       </p>
     </template>

@@ -1482,7 +1482,78 @@
 	"auth": {
 		"panel": {
 			"headline": "Redact sensitive data from your documents with AI.",
-			"subline": "Detect and remove PII across text, images, and audio — with policies your team controls."
+			"subline": "Detect and remove PII across text, images, and audio, with policies your team controls."
+		},
+		"shared": {
+			"orContinueWithEmail": "or continue with email",
+			"google": "Google",
+			"microsoft": "Microsoft",
+			"email": "Email",
+			"emailPlaceholder": "name{'@'}example.com",
+			"password": "Password",
+			"signIn": "Sign in",
+			"signUp": "Sign up"
+		},
+		"login": {
+			"title": "Sign In",
+			"heading": "Welcome back",
+			"subtitle": "Sign in to your account to continue",
+			"passwordPlaceholder": "Enter your password",
+			"forgotPassword": "Forgot password?",
+			"rememberMe": "Keep me signed in",
+			"genericError": "An error occurred during login",
+			"submit": "Sign in",
+			"submitting": "Signing in...",
+			"noAccount": "Don't have an account?"
+		},
+		"signup": {
+			"title": "Sign Up",
+			"heading": "Create an account",
+			"subtitle": "Get started with your free account",
+			"username": "Username",
+			"usernamePlaceholder": "john-doe",
+			"usernameError": "Use lowercase letters, numbers, and single dashes between characters.",
+			"passwordPlaceholder": "Create a password",
+			"agreePrefix": "I agree to the",
+			"terms": "Terms",
+			"and": "and",
+			"privacyPolicy": "Privacy Policy",
+			"termsError": "You must agree to the terms to continue",
+			"genericError": "An error occurred during signup",
+			"submit": "Create account",
+			"submitting": "Creating account...",
+			"hasAccount": "Already have an account?"
+		},
+		"forgotPassword": {
+			"title": "Forgot Password",
+			"backToLogin": "Back to login",
+			"heading": "Forgot password?",
+			"subtitle": "Enter your email and we'll send you a reset link",
+			"submit": "Send reset link",
+			"submitting": "Sending...",
+			"rememberPassword": "Remember your password?",
+			"successHeading": "Check your email",
+			"successSubtitlePrefix": "We sent a password reset link to",
+			"didntReceive": "Didn't receive the email?",
+			"tryAgain": "Try again"
+		},
+		"resetPassword": {
+			"title": "Reset Password",
+			"heading": "Set new password",
+			"subtitle": "Choose a strong password for your account",
+			"newPassword": "New password",
+			"newPasswordPlaceholder": "Enter new password",
+			"passwordHint": "Must be at least 8 characters",
+			"passwordTooShort": "Password must be at least 8 characters",
+			"confirmPassword": "Confirm password",
+			"confirmPasswordPlaceholder": "Confirm new password",
+			"passwordsDontMatch": "Passwords do not match",
+			"submit": "Reset password",
+			"submitting": "Resetting...",
+			"rememberPassword": "Remember your password?",
+			"successHeading": "Password reset",
+			"successSubtitle": "Your password has been successfully updated",
+			"continueToLogin": "Continue to login"
 		}
 	}
 }

@@ -7,7 +7,9 @@ import { Checkbox } from "#console/components/ui/checkbox";
 import { FeatureGate } from "#console/components/common";
 import { NvisyApiError } from "@nvisy/sdk";
 
-useHead({ title: "Sign In" });
+const { t } = useI18n();
+
+useHead({ title: t("auth.login.title") });
 
 definePageMeta({
 	layout: "auth",
@@ -51,9 +53,11 @@ async function handleMicrosoftLogin(): Promise<void> {
   <div class="space-y-6">
     <!-- Header -->
     <div class="space-y-2 text-center">
-      <h1 class="text-2xl font-semibold tracking-tight">Welcome back</h1>
+      <h1 class="text-2xl font-semibold tracking-tight">
+        {{ t("auth.login.heading") }}
+      </h1>
       <p class="text-sm text-muted-foreground">
-        Sign in to your account to continue
+        {{ t("auth.login.subtitle") }}
       </p>
     </div>
 
@@ -68,10 +72,10 @@ async function handleMicrosoftLogin(): Promise<void> {
         >
           <img
             src="~/assets/brands/google.png"
-            alt="Google"
+            :alt="t('auth.shared.google')"
             class="w-4 h-4 mr-2"
           />
-          Google
+          {{ t("auth.shared.google") }}
         </Button>
         <Button
           type="button"
@@ -81,10 +85,10 @@ async function handleMicrosoftLogin(): Promise<void> {
         >
           <img
             src="~/assets/brands/microsoft.png"
-            alt="Microsoft"
+            :alt="t('auth.shared.microsoft')"
             class="w-4 h-4 mr-2"
           />
-          Microsoft
+          {{ t("auth.shared.microsoft") }}
         </Button>
       </div>
 
@@ -95,7 +99,7 @@ async function handleMicrosoftLogin(): Promise<void> {
         </div>
         <div class="relative flex justify-center text-xs uppercase">
           <span class="bg-background px-2 text-muted-foreground">
-            or continue with email
+            {{ t("auth.shared.orContinueWithEmail") }}
           </span>
         </div>
       </div>
@@ -105,12 +109,12 @@ async function handleMicrosoftLogin(): Promise<void> {
     <form @submit.prevent="handleLogin" class="space-y-4">
       <!-- Email -->
       <div class="space-y-2">
-        <Label for="email">Email</Label>
+        <Label for="email">{{ t("auth.shared.email") }}</Label>
         <Input
           id="email"
           v-model="email"
           type="email"
-          placeholder="name@example.com"
+          :placeholder="t('auth.shared.emailPlaceholder')"
           class="h-10"
           required
           autocomplete="email"
@@ -120,12 +124,12 @@ async function handleMicrosoftLogin(): Promise<void> {
       <!-- Password -->
       <div class="space-y-2">
         <div class="flex items-center justify-between">
-          <Label for="password">Password</Label>
+          <Label for="password">{{ t("auth.shared.password") }}</Label>
           <NuxtLink
             to="/auth/forgot-password"
             class="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
-            Forgot password?
+            {{ t("auth.login.forgotPassword") }}
           </NuxtLink>
         </div>
         <div class="relative">
@@ -133,7 +137,7 @@ async function handleMicrosoftLogin(): Promise<void> {
             id="password"
             v-model="password"
             :type="showPassword ? 'text' : 'password'"
-            placeholder="Enter your password"
+            :placeholder="t('auth.login.passwordPlaceholder')"
             class="h-10 pr-10"
             required
             autocomplete="current-password"
@@ -156,7 +160,7 @@ async function handleMicrosoftLogin(): Promise<void> {
           for="remember"
           class="text-sm font-normal cursor-pointer text-muted-foreground"
         >
-          Keep me signed in
+          {{ t("auth.login.rememberMe") }}
         </Label>
       </div>
 
@@ -165,7 +169,7 @@ async function handleMicrosoftLogin(): Promise<void> {
         v-if="loginError"
         class="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg"
       >
-        <p>{{ loginError.message || "An error occurred during login" }}</p>
+        <p>{{ loginError.message || t("auth.login.genericError") }}</p>
         <p v-if="apiError?.suggestion" class="mt-1 opacity-80">
           {{ apiError.suggestion }}
         </p>
@@ -181,18 +185,18 @@ async function handleMicrosoftLogin(): Promise<void> {
 
       <!-- Submit Button -->
       <Button type="submit" class="w-full h-10" :disabled="isLoggingIn">
-        {{ isLoggingIn ? "Signing in..." : "Sign in" }}
+        {{ isLoggingIn ? t("auth.login.submitting") : t("auth.login.submit") }}
       </Button>
     </form>
 
     <!-- Sign Up Link -->
     <p class="text-center text-sm text-muted-foreground">
-      Don't have an account?
+      {{ t("auth.login.noAccount") }}
       <NuxtLink
         to="/auth/signup"
         class="text-foreground hover:underline font-medium"
       >
-        Sign up
+        {{ t("auth.shared.signUp") }}
       </NuxtLink>
     </p>
   </div>
