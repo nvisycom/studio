@@ -345,25 +345,20 @@ async function testWebhook(webhookId: string) {
                   class="font-normal"
                 >
                   <NuxtLink
-                    :to="wLink('/integrations/explore')"
-                    class="flex items-center gap-2"
-                  >
-                    <Compass :size="16" />
-                    {{ t("connections.actions.explore") }}
-                  </NuxtLink>
-                </Button>
-                <Button
-                  as-child
-                  variant="outline"
-                  size="sm"
-                  class="font-normal"
-                >
-                  <NuxtLink
                     :to="wLink('/integrations/runs')"
                     class="flex items-center gap-2"
                   >
                     <History :size="16" />
                     {{ t("connections.actions.viewRuns") }}
+                  </NuxtLink>
+                </Button>
+                <Button as-child size="sm">
+                  <NuxtLink
+                    :to="wLink('/integrations/explore')"
+                    class="flex items-center gap-2"
+                  >
+                    <Compass :size="16" />
+                    {{ t("connections.actions.explore") }}
                   </NuxtLink>
                 </Button>
               </div>
@@ -420,6 +415,15 @@ async function testWebhook(webhookId: string) {
                   size="sm"
                   class="font-normal"
                 >
+                  <NuxtLink
+                    :to="wLink('/integrations/runs')"
+                    class="flex items-center gap-2"
+                  >
+                    <History :size="16" />
+                    {{ t("connections.actions.viewRuns") }}
+                  </NuxtLink>
+                </Button>
+                <Button as-child size="sm">
                   <NuxtLink
                     :to="wLink('/integrations/explore')"
                     class="flex items-center gap-2"

@@ -1098,7 +1098,9 @@
 				"completed": "Abgeschlossen",
 				"failed": "Fehlgeschlagen",
 				"cancelled": "Abgebrochen"
-			}
+			},
+			"noRunsDescription": "Ausführungen erscheinen hier, sobald Ihre Verbindungen synchronisieren.",
+			"footer": "Jede Ausführung protokolliert eine Verbindungssynchronisierung und die verarbeiteten Datensätze."
 		}
 	},
 	"sidebar": {
@@ -1295,7 +1297,9 @@
 				"namePlaceholder": "hipaa_18",
 				"labelsPlaceholder": "email_address, phone_number, ssn",
 				"labelsLabel": "Labels in dieser Gruppe"
-			}
+			},
+			"createTitle": "Richtlinie erstellen",
+			"createDescription": "Definieren Sie Erkennungsregeln und wie Treffer geschwärzt werden."
 		},
 		"delete": {
 			"title": "{name} löschen?",
@@ -1322,13 +1326,7 @@
 			"slugHint": "Kleinbuchstaben, Zahlen und einzelne Bindestriche. URL-sicherer Bezeichner.",
 			"cancel": "Abbrechen",
 			"create": "Richtlinie erstellen",
-			"scratchAction": "Neue benutzerdefinierte Richtlinie",
-			"scratch": {
-				"name": "Von Grund auf beginnen",
-				"description": "Erstellen Sie eine eigene Richtlinie mit eigenen Regeln und Aktionen."
-			},
 			"use": "Vorlage verwenden",
-			"custom": "Benutzerdefiniert",
 			"searchPlaceholder": "Vorlagen suchen...",
 			"noResults": "Keine Vorlagen entsprechen Ihrer Suche.",
 			"clearSearch": "Suche zurücksetzen",
@@ -1404,7 +1402,9 @@
 				"completed": "Abgeschlossen",
 				"failed": "Fehlgeschlagen",
 				"cancelled": "Abgebrochen"
-			}
+			},
+			"noRunsDescription": "Ausführungen erscheinen hier, sobald dieser Arbeitsbereich Dateien verarbeitet.",
+			"footer": "Jede Ausführung protokolliert, wie eine Pipeline eine Datei erkannt und geschwärzt hat."
 		},
 		"learnMore": "Mehr erfahren",
 		"status": {
@@ -1443,21 +1443,6 @@
 			"slugHint": "Kleinbuchstaben, Zahlen und einzelne Bindestriche. URL-sicherer Bezeichner.",
 			"descriptionLabel": "Beschreibung",
 			"descriptionPlaceholder": "Was diese Pipeline tut (optional).",
-			"detectionLabel": "Erkennung",
-			"engines": {
-				"pattern": {
-					"label": "Muster",
-					"description": "Integrierte Regex- und Wörterbuch-Erkenner."
-				},
-				"ner": {
-					"label": "Benannte Entitäten",
-					"description": "Erkennung benannter Entitäten."
-				},
-				"llm": {
-					"label": "LLM",
-					"description": "Sprachmodellgestützte Erkennung."
-				}
-			},
 			"cancel": "Abbrechen",
 			"submit": "Erstellen",
 			"policiesLabel": "Richtlinien",
@@ -1467,43 +1452,39 @@
 			"advanced": "Geltungsbereich",
 			"countriesLabel": "Rechtsräume",
 			"countriesPlaceholder": "Ländercode hinzufügen (z. B. US) und Enter drücken",
-			"scopeHint": "Beschränkt rechtsraumspezifische Erkennungsregeln auf diese Länder."
+			"scopeHint": "Beschränkt rechtsraumspezifische Erkennungsregeln auf diese Länder.",
+			"languagesLabel": "Sprachen",
+			"languagesPlaceholder": "BCP-47-Tag hinzufügen (z. B. en) und Enter drücken",
+			"languagesHint": "Geben Sie die in Ihren Dokumenten vorhandenen Sprachen an.",
+			"retention": "Aufbewahrung",
+			"retentionHint": "Überschreiben Sie, wie lange diese Pipeline Daten aufbewahrt. Nicht gesetzte Bereiche erben die Arbeitsbereich-Vorgabe.",
+			"retentionTargets": {
+				"auditLogs": "Audit-Protokolle",
+				"redactedDocuments": "Geschwärzte Dokumente"
+			},
+			"retentionModes": {
+				"inherit": "Arbeitsbereich-Vorgabe übernehmen",
+				"forever": "Für immer behalten",
+				"days": "Für einen Zeitraum behalten",
+				"zeroDays": "Sofort löschen"
+			},
+			"retentionDays": "Tage"
 		}
 	},
 	"analytics": {
 		"logs": {
-			"view": {
-				"logs": "Protokolle",
-				"traces": "Traces"
-			},
-			"searchPlaceholder": "Protokolle suchen …",
-			"level": {
-				"placeholder": "Stufe",
-				"all": "Alle Stufen",
-				"info": "Info",
-				"warning": "Warnung",
-				"error": "Fehler"
-			},
-			"period": {
-				"placeholder": "Zeitraum",
-				"hour": "Letzte Stunde",
-				"day": "Letzte 24 Stunden",
-				"week": "Letzte 7 Tage",
-				"month": "Letzte 30 Tage"
-			},
+			"searchPlaceholder": "Aktivität suchen...",
 			"title": "Aktivitätsprotokolle",
-			"count": "{count} Protokoll gefunden | {count} Protokolle gefunden",
+			"count": "{count} Ereignis | {count} Ereignisse",
 			"import": "Importieren",
 			"export": "Exportieren",
 			"table": {
 				"time": "Zeit",
-				"level": "Stufe",
-				"message": "Nachricht",
-				"endpoint": "Endpunkt",
-				"duration": "Dauer",
-				"status": "Status"
+				"type": "Typ",
+				"message": "Beschreibung",
+				"by": "Ausgeführt von"
 			},
-			"empty": "Keine Protokolle entsprechen Ihren Filtern",
+			"empty": "Keine Aktivität gefunden",
 			"exportDialog": {
 				"title": "Protokolle exportieren",
 				"description": "Exporteinstellungen für Ihre Protokolle konfigurieren",
@@ -1516,7 +1497,19 @@
 				"cancel": "Abbrechen",
 				"exportJson": "Als JSON exportieren",
 				"exportCsv": "Als CSV exportieren"
-			}
+			},
+			"category": {
+				"placeholder": "Kategorie",
+				"all": "Alle Kategorien",
+				"workspace": "Arbeitsbereich",
+				"member": "Mitglieder",
+				"invite": "Einladungen",
+				"connection": "Verbindungen",
+				"webhook": "Webhooks",
+				"file": "Dateien"
+			},
+			"emptyDescription": "Aktionen in diesem Arbeitsbereich erscheinen hier.",
+			"loadMore": "Mehr laden"
 		}
 	},
 	"auth": {

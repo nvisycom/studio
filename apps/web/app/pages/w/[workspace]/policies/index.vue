@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { PolicySummary } from "@nvisy/sdk/datatypes";
+import type { CreatePolicy, PolicySummary } from "@nvisy/sdk/datatypes";
 import type { RowAction } from "#console/components/pages/RowActions.vue";
+import { CreatePolicySheet } from "#console/components/pages/policies";
 import {
 	Loader2,
-	Plus,
 	Pencil,
 	ShieldCheck,
 	Trash2,
@@ -51,12 +51,36 @@ definePageMeta({
 	pageCategory: "header.category.policies",
 });
 
-const { policies, isLoading, deletePolicyAsync, isDeleting } = usePolicies();
+const {
+	policies,
+	isLoading,
+	createPolicyAsync,
+	isCreating,
+	deletePolicyAsync,
+	isDeleting,
+} = usePolicies();
 
 const policyToDelete = ref<PolicySummary | null>(null);
 
+// Create policy slide-over. `?create=1` (e.g. the templates page's "start from
+// scratch" link) opens it on load.
+const route = useRoute();
+const isCreateSheetOpen = ref(route.query.create === "1");
+
 function openCreate() {
-	navigateTo(wLink("/policies/new"));
+	isCreateSheetOpen.value = true;
+}
+
+async function handleCreate(policy: CreatePolicy) {
+	try {
+		await createPolicyAsync(policy);
+		toast.success(t("policies.toast.created"));
+		isCreateSheetOpen.value = false;
+	} catch (error) {
+		toast.error(t("policies.toast.createFailed"), {
+			description: error instanceof Error ? error.message : undefined,
+		});
+	}
 }
 
 function openEdit(policy: PolicySummary) {
@@ -123,7 +147,7 @@ async function confirmDelete() {
                 </NuxtLink>
               </Button>
               <Button size="sm" @click="openCreate">
-                <Plus :size="16" class="mr-1.5" />
+                <ShieldCheck :size="16" class="mr-1.5" />
                 {{ t("policies.create") }}
               </Button>
             </div>
@@ -146,13 +170,9 @@ async function confirmDelete() {
               <p class="text-sm text-foreground mb-1">
                 {{ t("policies.empty.title") }}
               </p>
-              <p class="text-xs text-muted-foreground mb-4">
+              <p class="text-xs text-muted-foreground">
                 {{ t("policies.empty.description") }}
               </p>
-              <Button size="sm" @click="openCreate">
-                <Plus :size="16" />
-                {{ t("policies.create") }}
-              </Button>
             </div>
           </div>
 
@@ -265,6 +285,12 @@ async function confirmDelete() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <CreatePolicySheet
+        v-model:open="isCreateSheetOpen"
+        :is-loading="isCreating"
+        @create="handleCreate"
+      />
     </div>
   </div>
 </template>

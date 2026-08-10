@@ -1,12 +1,5 @@
 <script setup lang="ts">
-import {
-	ExternalLink,
-	Loader2,
-	Workflow,
-	Plus,
-	Trash2,
-	History,
-} from "@lucide/vue";
+import { ExternalLink, Loader2, Workflow, Trash2, History } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import type { CreatePipeline, PipelineSummary } from "@nvisy/sdk/datatypes";
 import type { RowAction } from "#console/components/pages/RowActions.vue";
@@ -29,7 +22,7 @@ import {
 	TableRow,
 } from "#console/components/ui/table";
 import RowActions from "#console/components/pages/RowActions.vue";
-import { CreatePipelineDialog } from "#console/components/pages/workflows";
+import { CreatePipelineSheet } from "#console/components/pages/workflows";
 
 const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
@@ -52,13 +45,13 @@ const {
 // Policies are linkable at creation (definition.policySlugs).
 const { policies } = usePolicies();
 
-const isCreateDialogOpen = ref(false);
+const isCreateSheetOpen = ref(false);
 
 async function handleCreate(pipeline: CreatePipeline) {
 	try {
 		await createPipelineAsync(pipeline);
 		toast.success(t("workflows.toast.created"));
-		isCreateDialogOpen.value = false;
+		isCreateSheetOpen.value = false;
 	} catch (err) {
 		toast.error(t("workflows.toast.createFailed"), {
 			description: getErrorMessage(err, t("common.errors.tryAgain")),
@@ -130,13 +123,8 @@ function rowActions(pipeline: PipelineSummary): RowAction[] {
                     {{ t("workflows.actions.viewRuns") }}
                   </NuxtLink>
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  class="font-normal"
-                  @click="isCreateDialogOpen = true"
-                >
-                  <Plus :size="16" />
+                <Button size="sm" @click="isCreateSheetOpen = true">
+                  <Workflow :size="16" class="mr-1.5" />
                   {{ t("workflows.actions.create") }}
                 </Button>
               </div>
@@ -197,13 +185,9 @@ function rowActions(pipeline: PipelineSummary): RowAction[] {
                 <p class="text-sm text-foreground mb-1">
                   {{ t("workflows.empty.title") }}
                 </p>
-                <p class="text-xs text-muted-foreground mb-4">
+                <p class="text-xs text-muted-foreground">
                   {{ t("workflows.empty.description") }}
                 </p>
-                <Button size="sm" @click="isCreateDialogOpen = true">
-                  <Plus :size="16" />
-                  {{ t("workflows.actions.create") }}
-                </Button>
               </div>
             </div>
           </CardContent>
@@ -225,8 +209,8 @@ function rowActions(pipeline: PipelineSummary): RowAction[] {
           </CardFooter>
         </Card>
 
-        <CreatePipelineDialog
-          v-model:open="isCreateDialogOpen"
+        <CreatePipelineSheet
+          v-model:open="isCreateSheetOpen"
           :is-loading="isCreating"
           :policies="policies ?? undefined"
           @create="handleCreate"
