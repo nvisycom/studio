@@ -128,6 +128,7 @@ async function handleMicrosoftSignup(): Promise<void> {
         <Label for="username">{{ t("auth.signup.username") }}</Label>
         <Input
           id="username"
+          name="username"
           v-model="username"
           type="text"
           :placeholder="t('auth.signup.usernamePlaceholder')"
@@ -147,6 +148,7 @@ async function handleMicrosoftSignup(): Promise<void> {
         <Label for="email">{{ t("auth.shared.email") }}</Label>
         <Input
           id="email"
+          name="email"
           v-model="email"
           type="email"
           :placeholder="t('auth.shared.emailPlaceholder')"
@@ -162,6 +164,7 @@ async function handleMicrosoftSignup(): Promise<void> {
         <div class="relative">
           <Input
             id="password"
+            name="password"
             v-model="password"
             :type="showPassword ? 'text' : 'password'"
             :placeholder="t('auth.signup.passwordPlaceholder')"

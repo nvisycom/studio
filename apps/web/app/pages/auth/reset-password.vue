@@ -109,6 +109,7 @@ async function handleResetPassword(): Promise<void> {
           <div class="relative">
             <Input
               id="password"
+              name="new-password"
               v-model="password"
               :type="showPassword ? 'text' : 'password'"
               :placeholder="t('auth.resetPassword.newPasswordPlaceholder')"
@@ -141,6 +142,7 @@ async function handleResetPassword(): Promise<void> {
           <div class="relative">
             <Input
               id="confirmPassword"
+              name="confirm-password"
               v-model="confirmPassword"
               :type="showConfirmPassword ? 'text' : 'password'"
               :placeholder="t('auth.resetPassword.confirmPasswordPlaceholder')"

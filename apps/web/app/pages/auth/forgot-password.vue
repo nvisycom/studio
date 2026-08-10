@@ -93,6 +93,7 @@ async function handleForgotPassword(): Promise<void> {
           <Label for="email">{{ t("auth.shared.email") }}</Label>
           <Input
             id="email"
+            name="email"
             v-model="email"
             type="email"
             :placeholder="t('auth.shared.emailPlaceholder')"

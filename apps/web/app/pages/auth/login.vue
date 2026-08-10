@@ -112,6 +112,7 @@ async function handleMicrosoftLogin(): Promise<void> {
         <Label for="email">{{ t("auth.shared.email") }}</Label>
         <Input
           id="email"
+          name="email"
           v-model="email"
           type="email"
           :placeholder="t('auth.shared.emailPlaceholder')"
@@ -135,6 +136,7 @@ async function handleMicrosoftLogin(): Promise<void> {
         <div class="relative">
           <Input
             id="password"
+            name="password"
             v-model="password"
             :type="showPassword ? 'text' : 'password'"
             :placeholder="t('auth.login.passwordPlaceholder')"
