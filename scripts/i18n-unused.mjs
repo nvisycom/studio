@@ -65,6 +65,9 @@ function isUsed(key) {
 		const prefix = parts.slice(0, i).join(".");
 		if (src.includes(`${prefix}.\${`)) return true; // `prefix.${x}...`
 		if (src.includes(`}.${parts[i]}`)) return true; // `${x}.segment`
+		// A parent prefix passed as a whole quoted string, then composed at
+		// runtime, e.g. label-prefix="a.b.c" + `${labelPrefix}.${field}`.
+		if (src.includes(`"${prefix}"`) || src.includes(`'${prefix}'`)) return true;
 	}
 	return false;
 }
@@ -73,7 +76,7 @@ const unused = keys.filter((k) => !isUsed(k));
 
 console.log(`Locale keys (${REFERENCE_LOCALE}): ${keys.length}`);
 console.log(`Unused candidates: ${unused.length}`);
-if (unused.length) console.log("\n" + unused.join("\n"));
+if (unused.length) console.log(`\n${unused.join("\n")}`);
 
 if (!fix) {
 	if (unused.length)

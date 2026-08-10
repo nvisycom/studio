@@ -1,4 +1,4 @@
-import type { ConnectionSync, SyncStatus } from "@nvisy/sdk/datatypes";
+import type { SyncStatus } from "@nvisy/sdk/datatypes";
 
 /**
  * Workspace-wide connection sync history, backed by
@@ -6,79 +6,38 @@ import type { ConnectionSync, SyncStatus } from "@nvisy/sdk/datatypes";
  * pagination across every connection in the workspace.
  */
 export function useSyncs(options?: { status?: Ref<SyncStatus | undefined> }) {
-	const { $nvisyClient } = useNuxtApp();
-	const { authToken } = useAuth();
-	const { currentWorkspaceSlug } = useWorkspaces();
-
+	const { requireContext, currentWorkspaceSlug } = useWorkspaceContext();
 	const status = options?.status ?? ref<SyncStatus | undefined>(undefined);
-	// Cursor of the last fetched page; drives "load more".
-	const cursor = ref<string | undefined>(undefined);
 
-	const syncsQuery = useQuery({
-		key: () => ["syncs", currentWorkspaceSlug.value, status.value ?? "all"],
-		query: async () => {
-			const client = $nvisyClient.value;
-			const workspaceSlug = currentWorkspaceSlug.value;
-			if (!client || !workspaceSlug) throw new Error("Not authenticated");
-			const result = await client.syncs.listWorkspaceSyncs(workspaceSlug, {
-				status: status.value,
-			});
-			cursor.value = result.nextCursor;
-			return result.items;
+	const syncsQuery = workspaceQuery(
+		"syncs",
+		({ client, workspaceSlug }) =>
+			client.syncs.listWorkspaceSyncs(workspaceSlug, { status: status.value }),
+		{
+			key: () => ["syncs", currentWorkspaceSlug.value, status.value ?? "all"],
 		},
-		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceSlug.value,
+	);
+
+	const {
+		items: syncs,
+		hasMore,
+		loadMore,
+		isLoadingMore,
+	} = useCursorPagination(syncsQuery.data, (after) => {
+		const { client, workspaceSlug } = requireContext();
+		return client.syncs.listWorkspaceSyncs(workspaceSlug, {
+			status: status.value,
+			after,
+		});
 	});
 
-	// Accumulated pages beyond the first (the query holds page one).
-	const extraPages = ref<ConnectionSync[]>([]);
-
-	// Reset accumulated pages whenever the base query refetches (filter change).
-	watch(syncsQuery.data, () => {
-		extraPages.value = [];
-	});
-
-	const syncs = computed(() => [
-		...(syncsQuery.data.value ?? []),
-		...extraPages.value,
-	]);
-	const hasMore = computed(() => !!cursor.value);
-	const isLoadingMore = ref(false);
-
-	async function loadMore() {
-		const client = $nvisyClient.value;
-		const workspaceSlug = currentWorkspaceSlug.value;
-		if (!client || !workspaceSlug || !cursor.value || isLoadingMore.value)
-			return;
-		isLoadingMore.value = true;
-		try {
-			const result = await client.syncs.listWorkspaceSyncs(workspaceSlug, {
-				status: status.value,
-				after: cursor.value,
-			});
-			extraPages.value = [...extraPages.value, ...result.items];
-			cursor.value = result.nextCursor;
-		} finally {
-			isLoadingMore.value = false;
-		}
-	}
-
-	const cancelSyncMutation = useMutation({
-		mutation: async ({
-			connectionId,
-			syncId,
-		}: {
-			connectionId: string;
-			syncId: string;
-		}) => {
-			const client = $nvisyClient.value;
-			const workspaceSlug = currentWorkspaceSlug.value;
-			if (!client || !workspaceSlug) throw new Error("Not authenticated");
-			return await client.syncs.cancelSync(workspaceSlug, connectionId, syncId);
-		},
-		onSuccess() {
-			syncsQuery.refresh();
-		},
-	});
+	const cancelSyncMutation = workspaceMutation(
+		(
+			{ client, workspaceSlug },
+			{ connectionId, syncId }: { connectionId: string; syncId: string },
+		) => client.syncs.cancelSync(workspaceSlug, connectionId, syncId),
+		{ invalidates: syncsQuery },
+	);
 
 	return {
 		syncs,

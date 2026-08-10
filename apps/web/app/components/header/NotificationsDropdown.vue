@@ -14,6 +14,7 @@ import { Button } from "#console/components/ui/button";
 import { Bell, Loader2, Inbox } from "@lucide/vue";
 
 const { t } = useI18n();
+const { relativeTime } = useRelativeTime();
 
 const notificationsTab = ref("inbox");
 const isOpen = ref(false);
@@ -78,7 +79,7 @@ watch(isOpen, (open) => {
                     {{ notification.message }}
                   </p>
                   <p class="text-xs text-muted-foreground/70 mt-1.5">
-                    {{ formatRelativeTime(notification.createdAt, t) }}
+                    {{ relativeTime(notification.createdAt) }}
                   </p>
                 </div>
               </div>

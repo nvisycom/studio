@@ -12,5 +12,3 @@ declare module "#app" {
 		feature?: Feature;
 	}
 }
-
-export {};

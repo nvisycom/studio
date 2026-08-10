@@ -1,8 +1,9 @@
+import type { ShallowRef } from "vue";
 import { Nvisy } from "@nvisy/sdk";
 
 declare module "#app" {
 	interface NuxtApp {
-		$nvisyClient: ComputedRef<Nvisy | null>;
+		$nvisyClient: ShallowRef<Nvisy | null>;
 	}
 }
 
@@ -27,35 +28,32 @@ export default defineNuxtPlugin(() => {
 		}
 	}
 
-	// Track client instance outside Vue reactivity to avoid proxy issues with private class fields.
-	let client: Nvisy | null = null;
-	let lastToken: string | null = null;
-
-	const nvisyClient = computed(() => {
-		const token = authToken.value?.apiToken ?? null;
-
-		if (token !== lastToken) {
-			lastToken = token;
-			if (token) {
-				client = new Nvisy({
-					apiToken: token,
-					baseUrl: config.public.nvisyApiUrl as string,
-					withLogging: config.public.nvisySdkLogging as boolean,
-				});
-				// Intercept auth failures globally on every request.
-				client.api.use({
-					onResponse({ response }) {
-						handleUnauthorized(response.status);
-						return response;
-					},
-				});
-			} else {
-				client = null;
-			}
-		}
-
+	function makeClient(token: string): Nvisy {
+		const client = new Nvisy({
+			apiToken: token,
+			baseUrl: config.public.nvisyApiUrl as string,
+			withLogging: config.public.nvisySdkLogging as boolean,
+		});
+		// Intercept auth failures globally on every request.
+		client.api.use({
+			onResponse({ response }) {
+				handleUnauthorized(response.status);
+				return response;
+			},
+		});
 		return client;
-	});
+	}
+
+	// shallowRef (not computed): building a client is a side effect, and the SDK
+	// holds private class fields that a deep reactive proxy would break.
+	const nvisyClient: ShallowRef<Nvisy | null> = shallowRef(null);
+	watch(
+		() => authToken.value?.apiToken ?? null,
+		(token) => {
+			nvisyClient.value = token ? makeClient(token) : null;
+		},
+		{ immediate: true },
+	);
 
 	return {
 		provide: {

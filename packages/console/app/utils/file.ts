@@ -1,3 +1,4 @@
+import type { Nvisy } from "@nvisy/sdk";
 import type { Component } from "vue";
 import {
 	FileText,
@@ -7,6 +8,34 @@ import {
 	FileAudio,
 	File as FileIcon,
 } from "@lucide/vue";
+
+/**
+ * Fetch a file's content and expose it as an object URL (e.g. for an <img>/
+ * <iframe> preview or as a download source). The caller owns the URL's
+ * lifecycle and must `URL.revokeObjectURL` it when done — on unmount, when the
+ * value is replaced, or right after triggering a download.
+ */
+export async function fetchFileContentUrl(
+	client: Nvisy,
+	workspaceSlug: string,
+	fileId: string,
+): Promise<string> {
+	const response = await client.files.downloadFile(workspaceSlug, fileId);
+	const blob = await response.blob();
+	return URL.createObjectURL(blob);
+}
+
+/**
+ * Prompt the browser to save an object URL to disk under `fileName`, then
+ * revoke it. For the one-shot download case where the URL isn't kept around.
+ */
+export function triggerBrowserDownload(url: string, fileName: string): void {
+	const anchor = document.createElement("a");
+	anchor.href = url;
+	anchor.download = fileName;
+	anchor.click();
+	URL.revokeObjectURL(url);
+}
 
 /**
  * Format a byte count as a human-readable size (e.g. "1.5 MB").

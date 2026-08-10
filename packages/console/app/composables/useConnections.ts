@@ -8,134 +8,75 @@ import type {
  * Composable for connection operations
  */
 export function useConnections() {
-	const { $nvisyClient } = useNuxtApp();
-	const { authToken } = useAuth();
-	const { currentWorkspaceSlug } = useWorkspaces();
-
-	// Local state for optimistic updates (keyed by connection id).
-	const optimisticUpdates = ref<
-		Record<string, Partial<Connection> | UpdateConnection>
-	>({});
-
-	const connectionsQuery = useQuery({
-		key: () => ["connections", currentWorkspaceSlug.value],
-		query: async () => {
-			const client = $nvisyClient.value;
-			const workspaceSlug = currentWorkspaceSlug.value;
-			if (!client || !workspaceSlug) throw new Error("Not authenticated");
+	const connectionsQuery = workspaceQuery(
+		"connections",
+		async ({ client, workspaceSlug }) => {
 			const result = await client.connections.listConnections(workspaceSlug);
 			return result.items;
 		},
-		enabled: () => !!authToken.value?.apiToken && !!currentWorkspaceSlug.value,
-	});
+	);
 
-	// Apply optimistic updates on top of the fetched list so toggles reflect
-	// immediately (mirrors useWebhooks).
-	const connections = computed<Connection[] | undefined>(() => {
-		const data = connectionsQuery.data.value;
-		if (!data) return data;
-		return data.map((c) => ({
-			...c,
-			...optimisticUpdates.value[c.id],
-		})) as Connection[];
-	});
+	// Reflect updates on a row immediately, reconciling once settled.
+	const optimistic = useOptimisticList<Connection, Partial<Connection>>(
+		connectionsQuery.data,
+		(c) => c.id,
+	);
 
-	const createConnectionMutation = useMutation({
-		mutation: async (connection: CreateConnection) => {
-			const client = $nvisyClient.value;
-			const workspaceSlug = currentWorkspaceSlug.value;
-			if (!client || !workspaceSlug) throw new Error("Not authenticated");
-			return await client.connections.createConnection(
-				workspaceSlug,
-				connection,
-			);
-		},
-		onSuccess() {
-			connectionsQuery.refresh();
-		},
-	});
+	const createConnectionMutation = workspaceMutation(
+		({ client, workspaceSlug }, connection: CreateConnection) =>
+			client.connections.createConnection(workspaceSlug, connection),
+		{ invalidates: connectionsQuery },
+	);
 
-	const updateConnectionMutation = useMutation({
-		mutation: async ({
-			connectionId,
-			updates,
-		}: {
-			connectionId: string;
-			updates: UpdateConnection;
-		}) => {
-			const client = $nvisyClient.value;
-			const workspaceSlug = currentWorkspaceSlug.value;
-			if (!client || !workspaceSlug) throw new Error("Not authenticated");
-			return await client.connections.updateConnection(
-				workspaceSlug,
+	const updateConnectionMutation = workspaceMutation(
+		(
+			{ client, workspaceSlug },
+			{
 				connectionId,
 				updates,
-			);
+			}: { connectionId: string; updates: UpdateConnection },
+		) =>
+			client.connections.updateConnection(workspaceSlug, connectionId, updates),
+		{
+			onMutate({ connectionId, updates }) {
+				optimistic.apply(connectionId, updates);
+			},
+			onSettled(data, _error, { connectionId }) {
+				optimistic.settle(
+					connectionId,
+					data as Partial<Connection> | undefined,
+				);
+				connectionsQuery.refresh();
+			},
 		},
-		onMutate({ connectionId, updates }) {
-			optimisticUpdates.value = {
-				...optimisticUpdates.value,
-				[connectionId]: updates,
-			};
-		},
-		onSettled(data, _error, variables) {
-			// Use the server response as the source of truth once settled; on
-			// error, drop the optimistic entry so the row reverts.
-			if (data) {
-				optimisticUpdates.value = {
-					...optimisticUpdates.value,
-					[variables.connectionId]: data,
-				};
-			} else {
-				const { [variables.connectionId]: _, ...rest } =
-					optimisticUpdates.value;
-				optimisticUpdates.value = rest;
-			}
-			connectionsQuery.refresh();
-		},
-	});
+	);
 
-	const deleteConnectionMutation = useMutation({
-		mutation: async (connectionId: string) => {
-			const client = $nvisyClient.value;
-			const workspaceSlug = currentWorkspaceSlug.value;
-			if (!client || !workspaceSlug) throw new Error("Not authenticated");
-			await client.connections.deleteConnection(workspaceSlug, connectionId);
+	const deleteConnectionMutation = workspaceMutation(
+		({ client, workspaceSlug }, connectionId: string) =>
+			client.connections.deleteConnection(workspaceSlug, connectionId),
+		{
+			invalidates: connectionsQuery,
+			onMutate: (connectionId) => optimistic.remove(connectionId),
+			onError: (_error, connectionId) => optimistic.restore(connectionId),
 		},
-		onSuccess() {
-			connectionsQuery.refresh();
-		},
-	});
+	);
 
 	// Trigger a manual sync for a connection (syncs everything when no target).
-	const startSyncMutation = useMutation({
-		mutation: async (connectionId: string) => {
-			const client = $nvisyClient.value;
-			const workspaceSlug = currentWorkspaceSlug.value;
-			if (!client || !workspaceSlug) throw new Error("Not authenticated");
-			return await client.syncs.startSync(workspaceSlug, connectionId, {});
-		},
-		onSuccess() {
-			connectionsQuery.refresh();
-		},
-	});
+	const startSyncMutation = workspaceMutation(
+		({ client, workspaceSlug }, connectionId: string) =>
+			client.syncs.startSync(workspaceSlug, connectionId, {}),
+		{ invalidates: connectionsQuery },
+	);
 
 	// Verify a connection is reachable with its stored credentials.
-	const verifyConnectionMutation = useMutation({
-		mutation: async (connectionId: string) => {
-			const client = $nvisyClient.value;
-			const workspaceSlug = currentWorkspaceSlug.value;
-			if (!client || !workspaceSlug) throw new Error("Not authenticated");
-			return await client.connections.verifyConnection(
-				workspaceSlug,
-				connectionId,
-			);
-		},
-	});
+	const verifyConnectionMutation = workspaceMutation(
+		({ client, workspaceSlug }, connectionId: string) =>
+			client.connections.verifyConnection(workspaceSlug, connectionId),
+	);
 
 	return {
 		// Query state
-		connections,
+		connections: optimistic.items,
 		isLoading: connectionsQuery.isLoading,
 		error: connectionsQuery.error,
 		refresh: connectionsQuery.refresh,

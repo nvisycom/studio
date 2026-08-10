@@ -37,7 +37,7 @@ export type KbdKeySpecific = keyof KbdKeysSpecificMap;
 
 const _useKbd = () => {
 	const macOS = computed(
-		() => import.meta.client && navigator?.userAgent?.match(/Macintosh;/),
+		() => import.meta.client && /Macintosh;/.test(navigator?.userAgent ?? ""),
 	);
 
 	const kbdKeysSpecificMap = reactive<KbdKeysSpecificMap>({

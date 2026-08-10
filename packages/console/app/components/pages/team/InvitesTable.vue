@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import type { Invite } from "@nvisy/sdk/datatypes";
+import type {
+	RowAction,
+	RowSelection,
+} from "#console/components/pages/RowActions.vue";
+import type { Selection } from "#console/composables/useSelection";
 import { Mail, X, Copy, Trash2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { EntityAvatar } from "#console/components/common";
@@ -12,35 +17,61 @@ import {
 	TableHeader,
 	TableRow,
 } from "#console/components/ui/table";
-import {
-	ContextMenu,
-	ContextMenuContent,
-	ContextMenuItem,
-	ContextMenuTrigger,
-	ContextMenuSeparator,
-} from "#console/components/ui/context-menu";
-import {
-	formatRelativeTime,
-	formatRelativeTimeFuture,
-} from "#console/utils/date";
+import DataTableHead from "#console/components/pages/DataTableHead.vue";
+import RowActions from "#console/components/pages/RowActions.vue";
 
 interface Props {
 	invites: Invite[];
-	selectedInvites?: Set<string>;
-	allSelected?: boolean;
+	selection: Selection;
 }
 
 interface Emits {
 	(e: "cancel", inviteId: string): void;
-	(e: "toggleSelectAll"): void;
-	(e: "toggleInvite", inviteId: string): void;
 	(e: "cancelSelected"): void;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
+const { relativeTime, relativeTimeFuture } = useRelativeTime();
+
+/** Per-row menu: copy link (only if the invite has a token), then cancel. */
+function rowActions(invite: Invite): RowAction[] {
+	const actions: RowAction[] = [];
+	if (invite.inviteToken) {
+		actions.push({
+			key: "copy",
+			label: t("members.table.actions.copyLink"),
+			icon: Copy,
+			select: () => copyInviteLink(invite),
+		});
+	}
+	actions.push({
+		key: "cancel",
+		label: t("members.table.actions.cancel"),
+		icon: X,
+		danger: true,
+		separatorBefore: actions.length > 0,
+		select: () => emit("cancel", invite.inviteId),
+	});
+	return actions;
+}
+
+/** Selection state for a row, driving the bulk-vs-single menu. */
+function rowSelection(invite: Invite): RowSelection {
+	const selected = props.selection.selected.value;
+	return {
+		selected: selected.has(invite.inviteId),
+		count: selected.size,
+		bulk: {
+			label: t("members.table.actions.cancelSelected"),
+			icon: Trash2,
+			count: selected.size,
+			select: () => emit("cancelSelected"),
+		},
+	};
+}
 
 function getInviteCode(invite: Invite): string {
 	if (invite.inviteToken) {
@@ -68,40 +99,40 @@ async function copyInviteLink(invite: Invite) {
         <TableRow>
           <TableHead class="w-[50px]">
             <Checkbox
-              :model-value="allSelected"
-              @update:model-value="emit('toggleSelectAll')"
+              :model-value="selection.allSelected.value"
+              @update:model-value="selection.toggleAll()"
               class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
             />
           </TableHead>
-          <TableHead
-            class="uppercase text-xs font-normal tracking-wider min-w-[280px]"
-            >{{ t("members.table.headers.invite") }}</TableHead
-          >
-          <TableHead
-            class="uppercase text-xs font-normal tracking-wider w-[140px]"
-            >{{ t("members.table.headers.role") }}</TableHead
-          >
-          <TableHead
-            class="uppercase text-xs font-normal tracking-wider w-[160px]"
-            >{{ t("members.table.headers.invited") }}</TableHead
-          >
-          <TableHead
-            class="uppercase text-xs font-normal tracking-wider w-[160px]"
-            >{{ t("members.table.headers.expires") }}</TableHead
-          >
+          <DataTableHead class="min-w-[280px]">
+            {{ t("members.table.headers.invite") }}
+          </DataTableHead>
+          <DataTableHead class="w-[140px]">
+            {{ t("members.table.headers.role") }}
+          </DataTableHead>
+          <DataTableHead class="w-[160px]">
+            {{ t("members.table.headers.invited") }}
+          </DataTableHead>
+          <DataTableHead class="w-[160px]">
+            {{ t("members.table.headers.expires") }}
+          </DataTableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        <ContextMenu v-for="invite in invites" :key="invite.inviteId">
-          <ContextMenuTrigger as-child>
-            <TableRow
-              class="border-b border-neutral-200 dark:border-neutral-800 cursor-pointer"
-              @click="emit('toggleInvite', invite.inviteId)"
-            >
+        <RowActions
+          v-for="invite in invites"
+          :key="invite.inviteId"
+          :actions="rowActions(invite)"
+          :selection="rowSelection(invite)"
+        >
+          <TableRow
+            class="border-b border-neutral-200 dark:border-neutral-800 cursor-pointer"
+            @click="selection.toggle(invite.inviteId)"
+          >
               <TableCell @click.stop>
                 <Checkbox
-                  :model-value="selectedInvites?.has(invite.inviteId) || false"
-                  @update:model-value="emit('toggleInvite', invite.inviteId)"
+                  :model-value="selection.selected.value.has(invite.inviteId)"
+                  @update:model-value="selection.toggle(invite.inviteId)"
                   class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                 />
               </TableCell>
@@ -144,56 +175,17 @@ async function copyInviteLink(invite: Invite) {
               <TableCell>
                 <span
                   class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
-                  >{{ formatRelativeTime(invite.createdAt, t) }}</span
+                  >{{ relativeTime(invite.createdAt) }}</span
                 >
               </TableCell>
               <TableCell>
                 <span
                   class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
-                  >{{ formatRelativeTimeFuture(invite.expiresAt, t) }}</span
+                  >{{ relativeTimeFuture(invite.expiresAt) }}</span
                 >
               </TableCell>
             </TableRow>
-          </ContextMenuTrigger>
-          <ContextMenuContent>
-            <!-- Bulk actions when invite is selected -->
-            <template
-              v-if="
-                selectedInvites?.has(invite.inviteId) &&
-                selectedInvites.size > 1
-              "
-            >
-              <ContextMenuItem
-                class="text-red-600 dark:text-red-400 cursor-pointer"
-                @click="emit('cancelSelected')"
-              >
-                <Trash2 :size="14" class="mr-2" />
-                {{ t("members.table.actions.cancelSelected") }} ({{
-                  selectedInvites.size
-                }})
-              </ContextMenuItem>
-            </template>
-            <!-- Single invite actions -->
-            <template v-else>
-              <ContextMenuItem
-                v-if="invite.inviteToken"
-                class="cursor-pointer"
-                @click="copyInviteLink(invite)"
-              >
-                <Copy :size="14" class="mr-2" />
-                {{ t("members.table.actions.copyLink") }}
-              </ContextMenuItem>
-              <ContextMenuSeparator v-if="invite.inviteToken" />
-              <ContextMenuItem
-                class="text-red-600 dark:text-red-400 cursor-pointer"
-                @click="emit('cancel', invite.inviteId)"
-              >
-                <X :size="14" class="mr-2" />
-                {{ t("members.table.actions.cancel") }}
-              </ContextMenuItem>
-            </template>
-          </ContextMenuContent>
-        </ContextMenu>
+          </RowActions>
       </TableBody>
     </Table>
   </div>

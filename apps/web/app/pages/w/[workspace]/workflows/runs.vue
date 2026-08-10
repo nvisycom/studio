@@ -10,7 +10,7 @@ import {
 	CircleSlash,
 	FileText,
 } from "@lucide/vue";
-import { formatRelativeTime, formatDuration } from "#console/utils/date";
+import { formatDuration } from "#console/utils/date";
 import { Button } from "#console/components/ui/button";
 import {
 	Card,
@@ -23,10 +23,10 @@ import {
 	Table,
 	TableBody,
 	TableCell,
-	TableHead,
 	TableHeader,
 	TableRow,
 } from "#console/components/ui/table";
+import DataTableHead from "#console/components/pages/DataTableHead.vue";
 import {
 	Select,
 	SelectContent,
@@ -37,6 +37,7 @@ import {
 import { Badge } from "#console/components/ui/badge";
 
 const { t } = useI18n();
+const { relativeTime } = useRelativeTime();
 const { wLink } = useWorkspaceLink();
 
 useHead({ title: "Workflow Runs" });
@@ -131,24 +132,22 @@ const filteredRuns = computed(() => {
           <Table v-else>
             <TableHeader>
               <TableRow>
-                <TableHead class="text-xs font-normal uppercase tracking-wider">
+                <DataTableHead>
                   {{ t("workflows.runs.pipeline") }}
-                </TableHead>
-                <TableHead class="text-xs font-normal uppercase tracking-wider">
-                  {{ t("workflows.runs.file") }}
-                </TableHead>
-                <TableHead class="text-xs font-normal uppercase tracking-wider">
+                </DataTableHead>
+                <DataTableHead>{{ t("workflows.runs.file") }}</DataTableHead>
+                <DataTableHead>
                   {{ t("workflows.runs.trigger") }}
-                </TableHead>
-                <TableHead class="text-xs font-normal uppercase tracking-wider">
+                </DataTableHead>
+                <DataTableHead>
                   {{ t("workflows.runs.statusHeader") }}
-                </TableHead>
-                <TableHead class="text-xs font-normal uppercase tracking-wider">
+                </DataTableHead>
+                <DataTableHead>
                   {{ t("workflows.runs.started") }}
-                </TableHead>
-                <TableHead class="text-xs font-normal uppercase tracking-wider">
+                </DataTableHead>
+                <DataTableHead>
                   {{ t("workflows.runs.duration") }}
-                </TableHead>
+                </DataTableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -209,7 +208,7 @@ const filteredRuns = computed(() => {
 
                 <!-- Started -->
                 <TableCell class="text-sm text-muted-foreground">
-                  {{ formatRelativeTime(run.startedAt, t) }}
+                  {{ relativeTime(run.startedAt) }}
                 </TableCell>
 
                 <!-- Duration -->

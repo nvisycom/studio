@@ -46,6 +46,8 @@ import {
 	PopoverTrigger,
 } from "#console/components/ui/popover";
 
+const { t } = useI18n();
+
 useHead({ title: "Logs" });
 
 definePageMeta({
@@ -78,7 +80,7 @@ const exportEventTypes = ref({
 
 const formattedExportDateRange = computed(() => {
 	if (!exportDateRange.value.start || !exportDateRange.value.end) {
-		return "Select date range";
+		return t("analytics.logs.exportDialog.selectDateRange");
 	}
 
 	const startDate = new Date(
@@ -92,13 +94,7 @@ const formattedExportDateRange = computed(() => {
 		exportDateRange.value.end.day,
 	);
 
-	const formatter = new Intl.DateTimeFormat("en-US", {
-		month: "short",
-		day: "numeric",
-		year: "numeric",
-	});
-
-	return `${formatter.format(startDate)} - ${formatter.format(endDate)}`;
+	return `${formatLongDate(startDate)} - ${formatLongDate(endDate)}`;
 });
 
 // Mock log data
@@ -217,7 +213,7 @@ function importLogs() {
                 : 'bg-background text-muted-foreground hover:bg-muted/50',
             ]"
           >
-            Logs
+            {{ t("analytics.logs.view.logs") }}
           </button>
           <button
             @click="viewType = 'traces'"
@@ -228,7 +224,7 @@ function importLogs() {
                 : 'bg-background text-muted-foreground hover:bg-muted/50',
             ]"
           >
-            Traces
+            {{ t("analytics.logs.view.traces") }}
           </button>
         </div>
 
@@ -239,7 +235,7 @@ function importLogs() {
             />
             <Input
               v-model="searchQuery"
-              placeholder="Search logs..."
+              :placeholder="t('analytics.logs.searchPlaceholder')"
               class="pl-10 h-9"
             />
           </div>
@@ -247,25 +243,41 @@ function importLogs() {
 
         <Select v-model="logLevel">
           <SelectTrigger class="w-[150px] h-9">
-            <SelectValue placeholder="Level" />
+            <SelectValue :placeholder="t('analytics.logs.level.placeholder')" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Levels</SelectItem>
-            <SelectItem value="info">Info</SelectItem>
-            <SelectItem value="warning">Warning</SelectItem>
-            <SelectItem value="error">Error</SelectItem>
+            <SelectItem value="all">
+              {{ t("analytics.logs.level.all") }}
+            </SelectItem>
+            <SelectItem value="info">
+              {{ t("analytics.logs.level.info") }}
+            </SelectItem>
+            <SelectItem value="warning">
+              {{ t("analytics.logs.level.warning") }}
+            </SelectItem>
+            <SelectItem value="error">
+              {{ t("analytics.logs.level.error") }}
+            </SelectItem>
           </SelectContent>
         </Select>
 
         <Select v-model="dateRange">
           <SelectTrigger class="w-[150px] h-9">
-            <SelectValue placeholder="Period" />
+            <SelectValue :placeholder="t('analytics.logs.period.placeholder')" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="1h">Last hour</SelectItem>
-            <SelectItem value="24h">Last 24 hours</SelectItem>
-            <SelectItem value="7d">Last 7 days</SelectItem>
-            <SelectItem value="30d">Last 30 days</SelectItem>
+            <SelectItem value="1h">
+              {{ t("analytics.logs.period.hour") }}
+            </SelectItem>
+            <SelectItem value="24h">
+              {{ t("analytics.logs.period.day") }}
+            </SelectItem>
+            <SelectItem value="7d">
+              {{ t("analytics.logs.period.week") }}
+            </SelectItem>
+            <SelectItem value="30d">
+              {{ t("analytics.logs.period.month") }}
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -275,12 +287,11 @@ function importLogs() {
         <CardHeader>
           <div class="flex items-center justify-between">
             <div>
-              <CardTitle class="text-sm font-medium">Activity Logs</CardTitle>
+              <CardTitle class="text-sm font-medium">
+                {{ t("analytics.logs.title") }}
+              </CardTitle>
               <CardDescription class="text-xs text-muted-foreground">
-                {{ filteredLogs.length }} log{{
-                  filteredLogs.length !== 1 ? "s" : ""
-                }}
-                found
+                {{ t("analytics.logs.count", filteredLogs.length) }}
               </CardDescription>
             </div>
             <div class="flex gap-2">
@@ -291,11 +302,11 @@ function importLogs() {
                 :disabled="!isOnPremise"
               >
                 <Upload :size="16" class="mr-2" />
-                Import
+                {{ t("analytics.logs.import") }}
               </Button>
               <Button @click="openExportModal" variant="outline" size="sm">
                 <Download :size="16" class="mr-2" />
-                Export
+                {{ t("analytics.logs.export") }}
               </Button>
             </div>
           </div>
@@ -304,12 +315,20 @@ function importLogs() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead class="w-[100px]">Time</TableHead>
-                <TableHead class="w-[100px]">Level</TableHead>
-                <TableHead>Message</TableHead>
-                <TableHead>Endpoint</TableHead>
-                <TableHead class="w-[100px]">Duration</TableHead>
-                <TableHead class="w-[80px]">Status</TableHead>
+                <TableHead class="w-[100px]">
+                  {{ t("analytics.logs.table.time") }}
+                </TableHead>
+                <TableHead class="w-[100px]">
+                  {{ t("analytics.logs.table.level") }}
+                </TableHead>
+                <TableHead>{{ t("analytics.logs.table.message") }}</TableHead>
+                <TableHead>{{ t("analytics.logs.table.endpoint") }}</TableHead>
+                <TableHead class="w-[100px]">
+                  {{ t("analytics.logs.table.duration") }}
+                </TableHead>
+                <TableHead class="w-[80px]">
+                  {{ t("analytics.logs.table.status") }}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -344,7 +363,7 @@ function importLogs() {
             v-if="filteredLogs.length === 0"
             class="py-12 text-center text-muted-foreground text-sm"
           >
-            No logs found matching your filters
+            {{ t("analytics.logs.empty") }}
           </div>
         </CardContent>
       </Card>
@@ -353,16 +372,20 @@ function importLogs() {
       <Dialog v-model:open="isExportModalOpen">
         <DialogContent class="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Export Logs</DialogTitle>
+            <DialogTitle>
+              {{ t("analytics.logs.exportDialog.title") }}
+            </DialogTitle>
             <DialogDescription>
-              Configure export settings for your logs
+              {{ t("analytics.logs.exportDialog.description") }}
             </DialogDescription>
           </DialogHeader>
 
           <div class="space-y-6 py-4">
             <!-- Date Range -->
             <div class="space-y-2">
-              <Label class="text-sm font-medium">Date Range</Label>
+              <Label class="text-sm font-medium">
+                {{ t("analytics.logs.exportDialog.dateRange") }}
+              </Label>
               <Popover v-model:open="isCalendarOpen">
                 <PopoverTrigger as-child>
                   <Button
@@ -381,7 +404,9 @@ function importLogs() {
 
             <!-- Event Types -->
             <div class="space-y-2">
-              <Label class="text-sm font-medium">Event Types</Label>
+              <Label class="text-sm font-medium">
+                {{ t("analytics.logs.exportDialog.eventTypes") }}
+              </Label>
               <div class="space-y-2">
                 <div class="flex items-center space-x-2">
                   <Checkbox
@@ -392,7 +417,7 @@ function importLogs() {
                     for="export-info"
                     class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                   >
-                    Info
+                    {{ t("analytics.logs.exportDialog.info") }}
                   </label>
                 </div>
                 <div class="flex items-center space-x-2">
@@ -404,7 +429,7 @@ function importLogs() {
                     for="export-warning"
                     class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                   >
-                    Warning
+                    {{ t("analytics.logs.exportDialog.warning") }}
                   </label>
                 </div>
                 <div class="flex items-center space-x-2">
@@ -416,7 +441,7 @@ function importLogs() {
                     for="export-error"
                     class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                   >
-                    Error
+                    {{ t("analytics.logs.exportDialog.error") }}
                   </label>
                 </div>
               </div>
@@ -425,15 +450,15 @@ function importLogs() {
 
           <DialogFooter>
             <Button variant="outline" @click="isExportModalOpen = false">
-              Cancel
+              {{ t("analytics.logs.exportDialog.cancel") }}
             </Button>
             <Button @click="handleExport('json')" variant="outline">
               <Download :size="16" class="mr-2" />
-              Export as JSON
+              {{ t("analytics.logs.exportDialog.exportJson") }}
             </Button>
             <Button @click="handleExport('csv')">
               <Download :size="16" class="mr-2" />
-              Export as CSV
+              {{ t("analytics.logs.exportDialog.exportCsv") }}
             </Button>
           </DialogFooter>
         </DialogContent>

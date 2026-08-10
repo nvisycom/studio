@@ -6,17 +6,14 @@
 				"explore": "Erkunden",
 				"runs": "Ausführungen"
 			},
-			"files": {
-				"index": "Index",
-				"corpus": "Korpus"
-			},
 			"workflows": {
-				"index": "Workflows",
+				"index": "Pipelines",
 				"runs": "Ausführungen"
 			},
 			"settings": {
 				"general": "Allgemein",
-				"notifications": "Benachrichtigungen"
+				"notifications": "Benachrichtigungen",
+				"data": "Daten"
 			},
 			"account": {
 				"general": "Allgemein",
@@ -28,7 +25,7 @@
 				"logs": "Protokolle"
 			},
 			"policies": {
-				"index": "Richtlinien",
+				"index": "Übersicht",
 				"templates": "Vorlagen"
 			}
 		},
@@ -359,7 +356,7 @@
 			"namePlaceholder": "Mein Arbeitsbereich",
 			"descriptionLabel": "Beschreibung",
 			"descriptionPlaceholder": "Kurze Beschreibung Ihres Arbeitsbereichs...",
-			"advancedSettings": "Erweiterte Einstellungen",
+			"advancedSettings": "Erweitert",
 			"error": "Arbeitsbereich konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
 			"requireApprovalLabel": "Genehmigung Erforderlich",
 			"requireApprovalDescription": "Verarbeitete Dateien erfordern Genehmigung, bevor sie sichtbar sind",
@@ -558,8 +555,6 @@
 			"deleteMultiple": {
 				"title": "Mitglieder Löschen",
 				"description": "Sind Sie sicher, dass Sie {count} Mitglied aus Ihrem Team löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden. | Sind Sie sicher, dass Sie {count} Mitglieder aus Ihrem Team löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-				"warningTitle": "Warnung",
-				"warningDescription": "Das Löschen dieser Mitglieder wird ihren Zugriff auf den Arbeitsbereich und alle zugehörigen Ressourcen sofort widerrufen.",
 				"cancelButton": "Abbrechen",
 				"confirmButton": "Mitglieder Löschen"
 			},
@@ -573,8 +568,6 @@
 			"cancelMultiple": {
 				"title": "Einladungen Abbrechen",
 				"description": "Sind Sie sicher, dass Sie {count} Einladung abbrechen möchten? Diese Aktion kann nicht rückgängig gemacht werden. | Sind Sie sicher, dass Sie {count} Einladungen abbrechen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-				"countLabel": "{count} Einladung ausgewählt | {count} Einladungen ausgewählt",
-				"noteDescription": "Sie können später jederzeit neue Einladungen erstellen.",
 				"keepButton": "Behalten",
 				"confirmButton": "Einladungen Abbrechen"
 			},
@@ -661,8 +654,6 @@
 			"deleteMultiple": {
 				"title": "Tokens Widerrufen",
 				"description": "Sind Sie sicher, dass Sie {count} Token widerrufen möchten? Diese Aktion kann nicht rückgängig gemacht werden. | Sind Sie sicher, dass Sie {count} Tokens widerrufen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-				"warningTitle": "Warnung",
-				"warningDescription": "Alle Anwendungen, die diese Tokens verwenden, verlieren sofort den Zugriff.",
 				"cancelButton": "Abbrechen",
 				"confirmButton": "Tokens Widerrufen"
 			}
@@ -974,11 +965,8 @@
 				"error": "Verbindung konnte nicht erstellt werden"
 			},
 			"disconnect": {
-				"title": "{name} Trennen",
-				"description": "Sind Sie sicher, dass Sie diese Integration trennen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-				"provider": "Anbieter",
-				"warningTitle": "Warnung",
-				"warningDescription": "Das Trennen wird alle Konfigurationen und Daten, die mit dieser Integration verbunden sind, dauerhaft löschen.",
+				"title": "{name} trennen?",
+				"description": "Dadurch werden die Verbindung und ihre gesamte Konfiguration sowie synchronisierte Daten dauerhaft gelöscht. Dies kann nicht rückgängig gemacht werden.",
 				"confirm": "Trennen",
 				"cancel": "Abbrechen"
 			},
@@ -995,7 +983,7 @@
 				"cancel": "Abbrechen"
 			},
 			"deleteWebhook": {
-				"title": "Webhook Löschen",
+				"title": "{name} löschen?",
 				"description": "Diese Aktion kann nicht rückgängig gemacht werden. Dies wird den Webhook dauerhaft löschen und alle Ereigniszustellungen stoppen.",
 				"confirm": "Webhook Löschen",
 				"cancel": "Abbrechen"
@@ -1393,7 +1381,8 @@
 		"table": {
 			"name": "Name",
 			"status": "Status",
-			"updated": "Aktualisiert"
+			"updated": "Aktualisiert",
+			"menu": "Aktionen"
 		},
 		"actions": {
 			"create": "Pipeline erstellen",
@@ -1445,6 +1434,55 @@
 			"countriesLabel": "Rechtsräume",
 			"countriesPlaceholder": "Ländercode hinzufügen (z. B. US) und Enter drücken",
 			"scopeHint": "Beschränkt rechtsraumspezifische Erkennungsregeln auf diese Länder."
+		}
+	},
+	"analytics": {
+		"logs": {
+			"view": {
+				"logs": "Protokolle",
+				"traces": "Traces"
+			},
+			"searchPlaceholder": "Protokolle suchen …",
+			"level": {
+				"placeholder": "Stufe",
+				"all": "Alle Stufen",
+				"info": "Info",
+				"warning": "Warnung",
+				"error": "Fehler"
+			},
+			"period": {
+				"placeholder": "Zeitraum",
+				"hour": "Letzte Stunde",
+				"day": "Letzte 24 Stunden",
+				"week": "Letzte 7 Tage",
+				"month": "Letzte 30 Tage"
+			},
+			"title": "Aktivitätsprotokolle",
+			"count": "{count} Protokoll gefunden | {count} Protokolle gefunden",
+			"import": "Importieren",
+			"export": "Exportieren",
+			"table": {
+				"time": "Zeit",
+				"level": "Stufe",
+				"message": "Nachricht",
+				"endpoint": "Endpunkt",
+				"duration": "Dauer",
+				"status": "Status"
+			},
+			"empty": "Keine Protokolle entsprechen Ihren Filtern",
+			"exportDialog": {
+				"title": "Protokolle exportieren",
+				"description": "Exporteinstellungen für Ihre Protokolle konfigurieren",
+				"dateRange": "Zeitraum",
+				"selectDateRange": "Zeitraum wählen",
+				"eventTypes": "Ereignistypen",
+				"info": "Info",
+				"warning": "Warnung",
+				"error": "Fehler",
+				"cancel": "Abbrechen",
+				"exportJson": "Als JSON exportieren",
+				"exportCsv": "Als CSV exportieren"
+			}
 		}
 	}
 }

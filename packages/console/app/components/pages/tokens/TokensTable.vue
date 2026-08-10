@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import type { ApiToken } from "@nvisy/sdk/datatypes";
+import type {
+	RowAction,
+	RowSelection,
+} from "#console/components/pages/RowActions.vue";
+import type { Selection } from "#console/composables/useSelection";
 import { Trash2, Edit, Key } from "@lucide/vue";
 import {
 	Table,
@@ -9,33 +14,21 @@ import {
 	TableHeader,
 	TableRow,
 } from "#console/components/ui/table";
-import {
-	ContextMenu,
-	ContextMenuContent,
-	ContextMenuItem,
-	ContextMenuTrigger,
-	ContextMenuSeparator,
-} from "#console/components/ui/context-menu";
+import DataTableHead from "#console/components/pages/DataTableHead.vue";
+import RowActions from "#console/components/pages/RowActions.vue";
 import { Checkbox } from "#console/components/ui/checkbox";
 import { Badge } from "#console/components/ui/badge";
-import {
-	formatRelativeTime,
-	formatRelativeTimeFuture,
-} from "#console/utils/date";
 
 // Helper to truncate UUID for display
 const truncateId = (id: string): string => id.slice(0, 8);
 
 interface Props {
 	tokens: ApiToken[];
-	selectedTokens: Set<string>;
-	allSelected: boolean;
+	selection: Selection;
 	currentTokenId?: string | null;
 }
 
 interface Emits {
-	(e: "toggleSelectAll"): void;
-	(e: "toggleToken", tokenId: string): void;
 	(e: "deleteToken", token: ApiToken): void;
 	(e: "deleteSelected"): void;
 	(e: "renameToken", token: ApiToken): void;
@@ -45,10 +38,11 @@ const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
+const { relativeTime } = useRelativeTime();
 
 // Helper functions
 const isTokenSelected = (tokenId: string): boolean =>
-	props.selectedTokens.has(tokenId);
+	props.selection.selected.value.has(tokenId);
 
 const isCurrentToken = (tokenId: string): boolean =>
 	props.currentTokenId === tokenId;
@@ -62,7 +56,7 @@ const isTokenExpired = (token: ApiToken): boolean => {
 
 function handleRowClick(token: ApiToken) {
 	if (canSelectToken(token)) {
-		emit("toggleToken", token.id);
+		props.selection.toggle(token.id);
 	}
 }
 
@@ -92,6 +86,52 @@ const getSessionTypeInitial = (type: string): string => {
 	};
 	return initials[type.toLowerCase()] || "T";
 };
+
+/**
+ * Per-row menu: rename (API tokens only, otherwise a disabled hint) then revoke
+ * (disabled for the current session's own token).
+ */
+function rowActions(token: ApiToken): RowAction[] {
+	const isApi = token.sessionType === "api";
+	const isCurrent = isCurrentToken(token.id);
+	return [
+		{
+			key: "rename",
+			label: isApi
+				? t("tokens.table.actions.rename")
+				: t("tokens.table.actions.cannotRename"),
+			icon: Edit,
+			disabled: !isApi,
+			select: () => emit("renameToken", token),
+		},
+		{
+			key: "revoke",
+			label: isCurrent
+				? t("tokens.table.actions.cannotRevoke")
+				: t("tokens.table.actions.revoke"),
+			icon: Trash2,
+			danger: !isCurrent,
+			disabled: isCurrent,
+			separatorBefore: true,
+			select: () => emit("deleteToken", token),
+		},
+	];
+}
+
+/** Selection state for a row, driving the bulk-vs-single menu. */
+function rowSelection(token: ApiToken): RowSelection {
+	const selected = props.selection.selected.value;
+	return {
+		selected: selected.has(token.id),
+		count: selected.size,
+		bulk: {
+			label: t("tokens.table.actions.revokeSelected"),
+			icon: Trash2,
+			count: selected.size,
+			select: () => emit("deleteSelected"),
+		},
+	};
+}
 </script>
 
 <template>
@@ -100,36 +140,34 @@ const getSessionTypeInitial = (type: string): string => {
       <TableRow>
         <TableHead class="w-[50px]">
           <Checkbox
-            :model-value="allSelected"
-            @update:model-value="emit('toggleSelectAll')"
+            :model-value="selection.allSelected.value"
+            @update:model-value="selection.toggleAll()"
           />
         </TableHead>
-        <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("tokens.table.headers.name")
-        }}</TableHead>
-        <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("tokens.table.headers.createdAt")
-        }}</TableHead>
-        <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("tokens.table.headers.lastUsed")
-        }}</TableHead>
+        <DataTableHead>{{ t("tokens.table.headers.name") }}</DataTableHead>
+        <DataTableHead>{{ t("tokens.table.headers.createdAt") }}</DataTableHead>
+        <DataTableHead>{{ t("tokens.table.headers.lastUsed") }}</DataTableHead>
       </TableRow>
     </TableHeader>
     <TableBody>
-      <ContextMenu v-for="token in tokens" :key="token.id">
-        <ContextMenuTrigger as-child>
-          <TableRow
-            :class="[
-              'border-b border-neutral-200 dark:border-neutral-800',
-              canSelectToken(token) ? 'cursor-pointer' : 'cursor-default',
-            ]"
-            @click="handleRowClick(token)"
-          >
+      <RowActions
+        v-for="token in tokens"
+        :key="token.id"
+        :actions="rowActions(token)"
+        :selection="rowSelection(token)"
+      >
+        <TableRow
+          :class="[
+            'border-b border-neutral-200 dark:border-neutral-800',
+            canSelectToken(token) ? 'cursor-pointer' : 'cursor-default',
+          ]"
+          @click="handleRowClick(token)"
+        >
             <TableCell @click.stop>
               <Checkbox
                 :model-value="isTokenSelected(token.id)"
                 :disabled="isCurrentToken(token.id)"
-                @update:model-value="emit('toggleToken', token.id)"
+                @update:model-value="selection.toggle(token.id)"
               />
             </TableCell>
             <TableCell class="font-normal">
@@ -185,66 +223,15 @@ const getSessionTypeInitial = (type: string): string => {
             <TableCell
               class="font-normal text-neutral-600 dark:text-neutral-400"
             >
-              {{ formatRelativeTime(token.issuedAt, t) }}
+              {{ relativeTime(token.issuedAt) }}
             </TableCell>
             <TableCell
               class="font-normal text-neutral-600 dark:text-neutral-400"
             >
-              {{ formatRelativeTime(token.lastUsedAt, t) }}
+              {{ relativeTime(token.lastUsedAt) }}
             </TableCell>
           </TableRow>
-        </ContextMenuTrigger>
-        <ContextMenuContent>
-          <!-- Bulk actions when token is selected -->
-          <template v-if="isTokenSelected(token.id) && selectedTokens.size > 1">
-            <ContextMenuItem
-              class="text-red-600 dark:text-red-400 cursor-pointer"
-              @click="emit('deleteSelected')"
-            >
-              <Trash2 :size="14" class="mr-2" />
-              {{ t("tokens.table.actions.revokeSelected") }} ({{
-                selectedTokens.size
-              }})
-            </ContextMenuItem>
-          </template>
-          <!-- Single token actions -->
-          <template v-else>
-            <ContextMenuItem
-              v-if="token.sessionType === 'api'"
-              class="cursor-pointer"
-              @click="emit('renameToken', token)"
-            >
-              <Edit :size="14" class="mr-2" />
-              {{ t("tokens.table.actions.rename") }}
-            </ContextMenuItem>
-            <ContextMenuItem
-              v-else
-              disabled
-              class="text-neutral-400 cursor-not-allowed"
-            >
-              <Edit :size="14" class="mr-2" />
-              {{ t("tokens.table.actions.cannotRename") }}
-            </ContextMenuItem>
-            <ContextMenuSeparator />
-            <ContextMenuItem
-              v-if="!isCurrentToken(token.id)"
-              class="text-red-600 dark:text-red-400 cursor-pointer"
-              @click="emit('deleteToken', token)"
-            >
-              <Trash2 :size="14" class="mr-2" />
-              {{ t("tokens.table.actions.revoke") }}
-            </ContextMenuItem>
-            <ContextMenuItem
-              v-else
-              disabled
-              class="text-neutral-400 cursor-not-allowed"
-            >
-              <Trash2 :size="14" class="mr-2" />
-              {{ t("tokens.table.actions.cannotRevoke") }}
-            </ContextMenuItem>
-          </template>
-        </ContextMenuContent>
-      </ContextMenu>
+        </RowActions>
     </TableBody>
   </Table>
 </template>

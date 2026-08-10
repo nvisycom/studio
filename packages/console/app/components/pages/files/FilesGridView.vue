@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Download, Eye, Trash2, Pencil } from "@lucide/vue";
 import type { File as NvisyFile } from "@nvisy/sdk/datatypes";
+import type { Selection } from "#console/composables/useSelection";
 import { Checkbox } from "#console/components/ui/checkbox";
 import {
 	ContextMenu,
@@ -12,12 +13,10 @@ import {
 
 interface Props {
 	files: NvisyFile[];
-	selectedFiles: Set<string>;
-	selectedCount?: number;
+	selection: Selection;
 }
 
 interface Emits {
-	(e: "toggle-selection", fileId: string): void;
 	(e: "view", fileId: string): void;
 	(e: "edit", file: NvisyFile): void;
 	(e: "download", file: NvisyFile): void;
@@ -32,6 +31,10 @@ const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
+
+/** Files currently selected, and how many. */
+const selectedFiles = computed(() => props.selection.selected.value);
+const selectedCount = computed(() => selectedFiles.value.size);
 
 function handleScroll(event: Event) {
 	emit("scroll", event);
@@ -51,7 +54,7 @@ function handleScroll(event: Event) {
           <div
             class="group relative flex flex-col items-center p-4 rounded-lg border border-transparent hover:border-border hover:bg-muted/50 transition-colors cursor-pointer"
             :class="{ 'bg-muted/50': selectedFiles.has(file.id) }"
-            @click="emit('toggle-selection', file.id)"
+            @click="selection.toggle(file.id)"
           >
             <!-- Selection Checkbox -->
             <div
@@ -61,7 +64,7 @@ function handleScroll(event: Event) {
             >
               <Checkbox
                 :model-value="selectedFiles.has(file.id)"
-                @update:model-value="emit('toggle-selection', file.id)"
+                @update:model-value="selection.toggle(file.id)"
                 class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
               />
             </div>

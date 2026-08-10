@@ -13,7 +13,6 @@ import {
 	Compass,
 	Database,
 	History,
-	FolderOpen,
 	Workflow,
 	ShieldCheck,
 	LayoutTemplate,
@@ -32,8 +31,6 @@ const subPath = computed(() => route.path.replace(/^\/w\/[^/]+/, "") || "/");
 const showConnectionTabs = computed(() =>
 	subPath.value.startsWith("/integrations"),
 );
-
-const showFilesTabs = computed(() => subPath.value.startsWith("/files"));
 
 // Workflows pages show workflow tabs
 const showWorkflowsTabs = computed(() =>
@@ -59,6 +56,7 @@ const currentPoliciesTab = computed(() => {
 });
 
 const currentSettingsTab = computed(() => {
+	if (subPath.value === "/settings/data") return "data";
 	if (subPath.value === "/settings/notifications") return "notifications";
 	return "general";
 });
@@ -81,11 +79,6 @@ const currentConnectionTabValue = computed(() => {
 	return "connections";
 });
 
-const currentFilesTab = computed(() => {
-	if (subPath.value === "/files/corpus") return "corpus";
-	return "files";
-});
-
 const currentWorkflowsTab = computed(() => {
 	if (subPath.value === "/workflows/runs") return "runs";
 	return "workflows";
@@ -97,7 +90,6 @@ const isStudioPage = computed(() => subPath.value === "/studio");
 const hasVisibleTabs = computed(() => {
 	return (
 		showConnectionTabs.value ||
-		showFilesTabs.value ||
 		showWorkflowsTabs.value ||
 		showStudioTabs.value ||
 		showSettingsTabs.value ||
@@ -133,24 +125,6 @@ defineExpose({
         <NuxtLink :to="wLink('/integrations/runs')" class="flex items-center gap-2">
           <History :size="16" />
           {{ t("header.tabs.connections.runs") }}
-        </NuxtLink>
-      </TabsTrigger>
-    </TabsList>
-  </Tabs>
-
-  <!-- Files Tabs -->
-  <Tabs v-else-if="showFilesTabs" :model-value="currentFilesTab">
-    <TabsList>
-      <TabsTrigger value="files" as-child>
-        <NuxtLink :to="wLink('/files')" class="flex items-center gap-2">
-          <FolderOpen :size="16" />
-          {{ t("header.tabs.files.index") }}
-        </NuxtLink>
-      </TabsTrigger>
-      <TabsTrigger value="corpus" as-child>
-        <NuxtLink :to="wLink('/files/corpus')" class="flex items-center gap-2">
-          <Database :size="16" />
-          {{ t("header.tabs.files.corpus") }}
         </NuxtLink>
       </TabsTrigger>
     </TabsList>
@@ -205,6 +179,12 @@ defineExpose({
         <NuxtLink :to="wLink('/settings/general')" class="flex items-center gap-2">
           <Settings :size="16" />
           {{ t("header.tabs.settings.general") }}
+        </NuxtLink>
+      </TabsTrigger>
+      <TabsTrigger value="data" as-child>
+        <NuxtLink :to="wLink('/settings/data')" class="flex items-center gap-2">
+          <Database :size="16" />
+          {{ t("header.tabs.settings.data") }}
         </NuxtLink>
       </TabsTrigger>
       <TabsTrigger value="notifications" as-child>

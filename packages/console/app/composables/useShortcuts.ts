@@ -171,7 +171,7 @@ export function defineShortcuts(
 				shortcut.chained = chained;
 
 				// Convert Meta to Ctrl for non-macOS
-				if (!macOS && shortcut.metaKey && !shortcut.ctrlKey) {
+				if (!macOS.value && shortcut.metaKey && !shortcut.ctrlKey) {
 					shortcut.metaKey = false;
 					shortcut.ctrlKey = true;
 				}

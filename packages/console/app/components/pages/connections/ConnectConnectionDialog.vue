@@ -4,11 +4,14 @@ import type {
 	SyncDeletionPolicy,
 	SyncMode,
 } from "@nvisy/sdk/datatypes";
-import type { StorageProvider } from "#console/utils/connectionProviders";
-import { STORAGE_PROVIDERS } from "#console/utils/connectionProviders";
+import type { StorageProvider } from "#console/utils/connections";
+import {
+	DELETION_POLICIES,
+	STORAGE_PROVIDERS,
+	SYNC_MODES,
+} from "#console/utils/connections";
 import { Loader2 } from "@lucide/vue";
 import { Input } from "#console/components/ui/input";
-import { Textarea } from "#console/components/ui/textarea";
 import { Label } from "#console/components/ui/label";
 import { Button } from "#console/components/ui/button";
 import {
@@ -18,14 +21,9 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "#console/components/ui/select";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "#console/components/ui/dialog";
+import { DialogFooter } from "#console/components/ui/dialog";
+import ProviderDialogShell from "./ProviderDialogShell.vue";
+import CredentialFields from "./CredentialFields.vue";
 
 const { t } = useI18n();
 
@@ -47,9 +45,6 @@ const emit = defineEmits<{
 	(e: "connect", connection: CreateConnection): void;
 }>();
 
-const SYNC_MODES: SyncMode[] = ["import", "export"];
-const DELETION_POLICIES: SyncDeletionPolicy[] = ["ignore", "delete"];
-
 // Common fields.
 const displayName = ref("");
 const syncMode = ref<SyncMode>("import");
@@ -62,10 +57,6 @@ const credentials = ref<Record<string, string>>({});
 const fields = computed(() =>
 	props.provider ? STORAGE_PROVIDERS[props.provider] : [],
 );
-// Multiline credentials (e.g. a JSON key blob) span the full width; the rest
-// flow through a two-column grid.
-const gridFields = computed(() => fields.value.filter((f) => !f.multiline));
-const fullFields = computed(() => fields.value.filter((f) => f.multiline));
 
 const isValid = computed(() => {
 	if (!props.provider) return false;
@@ -131,83 +122,39 @@ function cancel() {
 </script>
 
 <template>
-  <Dialog :open="open" @update:open="handleOpenChange">
-    <DialogContent class="max-w-xl gap-0 p-0">
-      <!-- Provider header -->
-      <DialogHeader
-        class="flex-row items-center gap-3 space-y-0 border-b border-border/60 p-6"
+  <ProviderDialogShell
+    :open="open"
+    :title="t('connections.dialogs.connect.title', { name: providerName })"
+    :description="t('connections.dialogs.connect.description')"
+    :icon="providerIcon"
+    :icon-alt="providerName"
+    @update:open="handleOpenChange"
+  >
+    <!-- Connection name -->
+    <div class="space-y-2">
+      <Label>{{ t("connections.dialogs.connect.fields.displayName") }}</Label>
+      <Input
+        v-model="displayName"
+        :placeholder="t('connections.dialogs.connect.displayNamePlaceholder')"
+      />
+    </div>
+
+    <!-- Credentials -->
+    <section class="space-y-3">
+      <h3
+        class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
       >
-        <div
-          class="flex size-11 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-muted/40"
-        >
-          <img
-            v-if="providerIcon"
-            :src="providerIcon"
-            :alt="providerName"
-            class="size-6 object-contain"
-          />
-        </div>
-        <div class="min-w-0 space-y-1">
-          <DialogTitle class="truncate text-base">
-            {{ t("connections.dialogs.connect.title", { name: providerName }) }}
-          </DialogTitle>
-          <DialogDescription class="text-sm">
-            {{ t("connections.dialogs.connect.description") }}
-          </DialogDescription>
-        </div>
-      </DialogHeader>
+        {{ t("connections.dialogs.connect.sections.credentials") }}
+      </h3>
+      <CredentialFields
+        v-model="credentials"
+        :fields="fields"
+        label-prefix="connections.dialogs.connect.fields"
+        optional-key="connections.dialogs.connect.optional"
+      />
+    </section>
 
-      <div class="max-h-[62vh] space-y-6 overflow-y-auto p-6">
-        <!-- Connection name -->
-        <div class="space-y-2">
-          <Label>{{ t("connections.dialogs.connect.fields.displayName") }}</Label>
-          <Input
-            v-model="displayName"
-            :placeholder="t('connections.dialogs.connect.displayNamePlaceholder')"
-          />
-        </div>
-
-        <!-- Credentials -->
-        <section class="space-y-3">
-          <h3
-            class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
-          >
-            {{ t("connections.dialogs.connect.sections.credentials") }}
-          </h3>
-          <div class="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
-            <div
-              v-for="field in gridFields"
-              :key="field.key"
-              class="space-y-1.5"
-            >
-              <Label class="text-sm font-normal">
-                {{ t(`connections.dialogs.connect.fields.${field.labelKey}`) }}
-                <span v-if="!field.required" class="text-muted-foreground">
-                  · {{ t("connections.dialogs.connect.optional") }}
-                </span>
-              </Label>
-              <Input
-                v-model="credentials[field.key]"
-                :type="field.secret ? 'password' : 'text'"
-              />
-            </div>
-          </div>
-          <div v-for="field in fullFields" :key="field.key" class="space-y-1.5">
-            <Label class="text-sm font-normal">
-              {{ t(`connections.dialogs.connect.fields.${field.labelKey}`) }}
-              <span v-if="!field.required" class="text-muted-foreground">
-                · {{ t("connections.dialogs.connect.optional") }}
-              </span>
-            </Label>
-            <Textarea
-              v-model="credentials[field.key]"
-              rows="4"
-              class="font-mono text-xs"
-            />
-          </div>
-        </section>
-
-        <!-- Sync settings -->
+    <!-- Sync settings -->
         <section class="space-y-3">
           <h3
             class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
@@ -284,8 +231,8 @@ function cancel() {
             </div>
           </div>
         </section>
-      </div>
 
+    <template #footer>
       <DialogFooter class="border-t border-border/60 p-6">
         <Button variant="outline" @click="cancel">
           {{ t("connections.dialogs.connect.cancel") }}
@@ -295,6 +242,6 @@ function cancel() {
           {{ t("connections.dialogs.connect.submit") }}
         </Button>
       </DialogFooter>
-    </DialogContent>
-  </Dialog>
+    </template>
+  </ProviderDialogShell>
 </template>

@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import type { PolicySummary } from "@nvisy/sdk/datatypes";
+import type { RowAction } from "#console/components/pages/RowActions.vue";
 import {
 	Loader2,
 	Plus,
 	Pencil,
 	ShieldCheck,
 	Trash2,
-	MoreHorizontal,
 	ExternalLink,
 	LayoutTemplate,
 } from "@lucide/vue";
-import { formatRelativeTime } from "#console/utils/date";
 import { personLabel } from "#console/utils/naming";
 import { EntityAvatar } from "#console/components/common";
 import { Button } from "#console/components/ui/button";
@@ -26,22 +25,11 @@ import {
 	Table,
 	TableBody,
 	TableCell,
-	TableHead,
 	TableHeader,
 	TableRow,
 } from "#console/components/ui/table";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "#console/components/ui/dropdown-menu";
-import {
-	ContextMenu,
-	ContextMenuContent,
-	ContextMenuItem,
-	ContextMenuTrigger,
-} from "#console/components/ui/context-menu";
+import DataTableHead from "#console/components/pages/DataTableHead.vue";
+import RowActions from "#console/components/pages/RowActions.vue";
 import {
 	Dialog,
 	DialogContent,
@@ -53,6 +41,7 @@ import {
 import { toast } from "vue-sonner";
 
 const { t } = useI18n();
+const { relativeTime } = useRelativeTime();
 const { wLink } = useWorkspaceLink();
 const { resolveAvatarUrl } = useAvatarUrl();
 
@@ -72,6 +61,27 @@ function openCreate() {
 
 function openEdit(policy: PolicySummary) {
 	navigateTo(wLink(`/policies/${policy.slug}`));
+}
+
+/** Right-click / ⋯ actions for a policy row. */
+function rowActions(policy: PolicySummary): RowAction[] {
+	return [
+		{
+			key: "edit",
+			label: t("policies.table.edit"),
+			icon: Pencil,
+			select: () => openEdit(policy),
+		},
+		{
+			key: "delete",
+			label: t("policies.table.delete"),
+			icon: Trash2,
+			danger: true,
+			select: () => {
+				policyToDelete.value = policy;
+			},
+		},
+	];
 }
 
 async function confirmDelete() {
@@ -150,25 +160,21 @@ async function confirmDelete() {
           <Table v-else>
             <TableHeader>
               <TableRow>
-                <TableHead class="text-xs font-normal uppercase tracking-wider">
-                  {{ t("policies.table.name") }}
-                </TableHead>
-                <TableHead class="text-xs font-normal uppercase tracking-wider">
-                  {{ t("policies.table.creator") }}
-                </TableHead>
-                <TableHead class="text-xs font-normal uppercase tracking-wider">
-                  {{ t("policies.table.created") }}
-                </TableHead>
-                <TableHead class="text-xs font-normal uppercase tracking-wider">
-                  {{ t("policies.table.updated") }}
-                </TableHead>
-                <TableHead class="w-10" />
+                <DataTableHead>{{ t("policies.table.name") }}</DataTableHead>
+                <DataTableHead>{{ t("policies.table.creator") }}</DataTableHead>
+                <DataTableHead>{{ t("policies.table.created") }}</DataTableHead>
+                <DataTableHead>{{ t("policies.table.updated") }}</DataTableHead>
+                <DataTableHead class="w-10" />
               </TableRow>
             </TableHeader>
             <TableBody>
-              <ContextMenu v-for="policy in policies" :key="policy.slug">
-                <ContextMenuTrigger as-child>
-                  <TableRow class="group">
+              <RowActions
+                v-for="policy in policies"
+                :key="policy.slug"
+                :actions="rowActions(policy)"
+                :menu-label="t('policies.table.menu')"
+                row-class="group"
+              >
                     <TableCell class="max-w-0">
                       <div class="min-w-0">
                         <p class="truncate font-medium text-foreground">
@@ -203,57 +209,12 @@ async function confirmDelete() {
                       </div>
                     </TableCell>
                     <TableCell class="text-sm text-muted-foreground">
-                      {{ formatRelativeTime(policy.createdAt, t) }}
+                      {{ relativeTime(policy.createdAt) }}
                     </TableCell>
                     <TableCell class="text-sm text-muted-foreground">
-                      {{ formatRelativeTime(policy.updatedAt, t) }}
+                      {{ relativeTime(policy.updatedAt) }}
                     </TableCell>
-                    <TableCell class="text-right" @click.stop>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger as-child>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            class="size-8 opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100"
-                            :aria-label="t('policies.table.menu')"
-                          >
-                            <MoreHorizontal :size="16" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem @click="openEdit(policy)">
-                            <Pencil :size="14" class="mr-2" />
-                            {{ t("policies.table.edit") }}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            class="text-destructive focus:text-destructive"
-                            @click="policyToDelete = policy"
-                          >
-                            <Trash2 :size="14" class="mr-2" />
-                            {{ t("policies.table.delete") }}
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                </ContextMenuTrigger>
-                <ContextMenuContent>
-                  <ContextMenuItem
-                    class="cursor-pointer"
-                    @click="openEdit(policy)"
-                  >
-                    <Pencil :size="14" class="mr-2" />
-                    {{ t("policies.table.edit") }}
-                  </ContextMenuItem>
-                  <ContextMenuItem
-                    class="cursor-pointer text-destructive focus:text-destructive"
-                    @click="policyToDelete = policy"
-                  >
-                    <Trash2 :size="14" class="mr-2" />
-                    {{ t("policies.table.delete") }}
-                  </ContextMenuItem>
-                </ContextMenuContent>
-              </ContextMenu>
+              </RowActions>
             </TableBody>
           </Table>
         </CardContent>

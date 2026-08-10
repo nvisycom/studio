@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import type { Member } from "@nvisy/sdk/datatypes";
+import type {
+	RowAction,
+	RowSelection,
+} from "#console/components/pages/RowActions.vue";
+import type { Selection } from "#console/composables/useSelection";
 import { Users, Trash2, UserCog } from "@lucide/vue";
 import { EntityAvatar } from "#console/components/common";
 import { Checkbox } from "#console/components/ui/checkbox";
@@ -11,34 +16,26 @@ import {
 	TableHeader,
 	TableRow,
 } from "#console/components/ui/table";
-import {
-	ContextMenu,
-	ContextMenuContent,
-	ContextMenuItem,
-	ContextMenuTrigger,
-	ContextMenuSeparator,
-} from "#console/components/ui/context-menu";
-import { formatRelativeTime } from "#console/utils/date";
+import DataTableHead from "#console/components/pages/DataTableHead.vue";
+import RowActions from "#console/components/pages/RowActions.vue";
 import { personLabel } from "#console/utils/naming";
 
 interface Props {
 	members: Member[];
-	selectedMembers?: Set<string>;
-	allSelected?: boolean;
+	selection: Selection;
 }
 
 interface Emits {
 	(e: "remove", memberId: string): void;
 	(e: "edit", memberId: string): void;
-	(e: "toggleSelectAll"): void;
-	(e: "toggleMember", memberId: string): void;
 	(e: "deleteSelected"): void;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
+const { relativeTime } = useRelativeTime();
 const { resolveAvatarUrl } = useAvatarUrl();
 
 function memberAvatar(member: Member): string | undefined {
@@ -55,8 +52,46 @@ function canSelectMember(member: Member): boolean {
 
 function handleRowClick(member: Member) {
 	if (canSelectMember(member)) {
-		emit("toggleMember", member.username);
+		props.selection.toggle(member.username);
 	}
+}
+
+/** Per-row menu: edit + remove, both disabled for the owner. */
+function rowActions(member: Member): RowAction[] {
+	const disabled = !canSelectMember(member);
+	return [
+		{
+			key: "edit",
+			label: t("members.table.actions.edit"),
+			icon: UserCog,
+			disabled,
+			select: () => emit("edit", member.username),
+		},
+		{
+			key: "remove",
+			label: t("members.table.actions.delete"),
+			icon: Trash2,
+			danger: true,
+			disabled,
+			separatorBefore: true,
+			select: () => emit("remove", member.username),
+		},
+	];
+}
+
+/** Selection state for a row, driving the bulk-vs-single menu. */
+function rowSelection(member: Member): RowSelection {
+	const selected = props.selection.selected.value;
+	return {
+		selected: selected.has(member.username),
+		count: selected.size,
+		bulk: {
+			label: t("members.table.actions.deleteSelected"),
+			icon: Trash2,
+			count: selected.size,
+			select: () => emit("deleteSelected"),
+		},
+	};
 }
 </script>
 
@@ -67,43 +102,43 @@ function handleRowClick(member: Member) {
         <TableRow>
           <TableHead class="w-[50px]">
             <Checkbox
-              :model-value="allSelected"
-              @update:model-value="emit('toggleSelectAll')"
+              :model-value="selection.allSelected.value"
+              @update:model-value="selection.toggleAll()"
               class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
             />
           </TableHead>
-          <TableHead
-            class="uppercase text-xs font-normal tracking-wider min-w-[280px]"
-            >{{ t("members.table.headers.member") }}</TableHead
-          >
-          <TableHead
-            class="uppercase text-xs font-normal tracking-wider w-[140px]"
-            >{{ t("members.table.headers.role") }}</TableHead
-          >
-          <TableHead
-            class="uppercase text-xs font-normal tracking-wider w-[160px]"
-            >{{ t("members.table.headers.twoFA") }}</TableHead
-          >
-          <TableHead
-            class="uppercase text-xs font-normal tracking-wider w-[160px]"
-            >{{ t("members.table.headers.joined") }}</TableHead
-          >
+          <DataTableHead class="min-w-[280px]">
+            {{ t("members.table.headers.member") }}
+          </DataTableHead>
+          <DataTableHead class="w-[140px]">
+            {{ t("members.table.headers.role") }}
+          </DataTableHead>
+          <DataTableHead class="w-[160px]">
+            {{ t("members.table.headers.twoFA") }}
+          </DataTableHead>
+          <DataTableHead class="w-[160px]">
+            {{ t("members.table.headers.joined") }}
+          </DataTableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        <ContextMenu v-for="member in members" :key="member.username">
-          <ContextMenuTrigger as-child>
-            <TableRow
-              :class="[
-                'border-b border-neutral-200 dark:border-neutral-800',
-                canSelectMember(member) ? 'cursor-pointer' : 'cursor-default',
-              ]"
-              @click="handleRowClick(member)"
-            >
+        <RowActions
+          v-for="member in members"
+          :key="member.username"
+          :actions="rowActions(member)"
+          :selection="rowSelection(member)"
+        >
+          <TableRow
+            :class="[
+              'border-b border-neutral-200 dark:border-neutral-800',
+              canSelectMember(member) ? 'cursor-pointer' : 'cursor-default',
+            ]"
+            @click="handleRowClick(member)"
+          >
               <TableCell @click.stop>
                 <Checkbox
-                  :model-value="selectedMembers?.has(member.username) || false"
-                  @update:model-value="emit('toggleMember', member.username)"
+                  :model-value="selection.selected.value.has(member.username)"
+                  @update:model-value="selection.toggle(member.username)"
                   :disabled="!canSelectMember(member)"
                   class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                 />
@@ -151,51 +186,11 @@ function handleRowClick(member: Member) {
               <TableCell>
                 <span
                   class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
-                  >{{ formatRelativeTime(member.createdAt, t) }}</span
+                  >{{ relativeTime(member.createdAt) }}</span
                 >
               </TableCell>
             </TableRow>
-          </ContextMenuTrigger>
-          <ContextMenuContent>
-            <!-- Bulk actions when member is selected -->
-            <template
-              v-if="
-                selectedMembers?.has(member.username) &&
-                selectedMembers.size > 1
-              "
-            >
-              <ContextMenuItem
-                class="text-red-600 dark:text-red-400 cursor-pointer"
-                @click="emit('deleteSelected')"
-              >
-                <Trash2 :size="14" class="mr-2" />
-                {{ t("members.table.actions.deleteSelected") }} ({{
-                  selectedMembers.size
-                }})
-              </ContextMenuItem>
-            </template>
-            <!-- Single member actions -->
-            <template v-else>
-              <ContextMenuItem
-                class="cursor-pointer"
-                :disabled="!canSelectMember(member)"
-                @click="emit('edit', member.username)"
-              >
-                <UserCog :size="14" class="mr-2" />
-                {{ t("members.table.actions.edit") }}
-              </ContextMenuItem>
-              <ContextMenuSeparator />
-              <ContextMenuItem
-                class="text-red-600 dark:text-red-400 cursor-pointer"
-                :disabled="!canSelectMember(member)"
-                @click="emit('remove', member.username)"
-              >
-                <Trash2 :size="14" class="mr-2" />
-                {{ t("members.table.actions.delete") }}
-              </ContextMenuItem>
-            </template>
-          </ContextMenuContent>
-        </ContextMenu>
+          </RowActions>
       </TableBody>
     </Table>
   </div>

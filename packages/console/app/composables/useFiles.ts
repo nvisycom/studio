@@ -1,203 +1,91 @@
-import type {
-	File as NvisyFile,
-	UpdateFile,
-	ListFiles,
-} from "@nvisy/sdk/datatypes";
+import type { UpdateFile, ListFiles } from "@nvisy/sdk/datatypes";
 
 export interface UseFilesOptions {
-	workspaceSlug?: MaybeRef<string | null>;
 	query?: MaybeRef<ListFiles>;
 	pageSize?: number;
 }
 
 /**
- * Composable for file operations with infinite scroll support
+ * Composable for file operations with infinite scroll support.
  */
 export function useFiles(options: UseFilesOptions = {}) {
-	const { $nvisyClient } = useNuxtApp();
-	const { authToken } = useAuth();
-	const { currentWorkspaceSlug } = useWorkspaces();
-
-	const effectiveWorkspaceSlug = computed(
-		() =>
-			(options.workspaceSlug
-				? toValue(options.workspaceSlug)
-				: currentWorkspaceSlug.value) || "",
-	);
+	const { requireContext, currentWorkspaceSlug } = useWorkspaceContext();
 
 	const pageSize = options.pageSize ?? 50;
-
-	// Track all loaded files and cursor for pagination
-	const allFiles = ref<NvisyFile[]>([]);
-	const nextCursor = ref<string | undefined>(undefined);
-	const hasMore = ref(true);
-	const isLoadingMore = ref(false);
-
 	const queryParams = computed<ListFiles>(() => ({
 		...toValue(options.query ?? {}),
 	}));
 
-	const filesQuery = useQuery({
-		key: () => [
-			"files",
-			effectiveWorkspaceSlug.value,
-			JSON.stringify(queryParams.value),
-		],
-		query: async () => {
-			const client = $nvisyClient.value;
-			if (!client) throw new Error("Not authenticated");
-			const result = await client.files.listFiles(
-				effectiveWorkspaceSlug.value,
-				{
-					...queryParams.value,
-					limit: pageSize,
-				},
-			);
-			// The watcher below is the single source that syncs allFiles from
-			// query data; here we only track pagination cursors.
-			nextCursor.value = result.nextCursor ?? undefined;
-			hasMore.value = !!result.nextCursor;
-			return result.items;
-		},
-		enabled: () =>
-			!!effectiveWorkspaceSlug.value && !!authToken.value?.apiToken,
-	});
-
-	// Reset pagination and refetch when the workspace or query changes, so a
-	// stale cursor from a previous filter can't leak into loadMore.
-	watch(
-		[effectiveWorkspaceSlug, () => JSON.stringify(queryParams.value)],
-		() => {
-			allFiles.value = [];
-			nextCursor.value = undefined;
-			hasMore.value = true;
-			filesQuery.refetch();
+	const filesQuery = workspaceQuery(
+		"files",
+		({ client, workspaceSlug }) =>
+			client.files.listFiles(workspaceSlug, {
+				...queryParams.value,
+				limit: pageSize,
+			}),
+		{
+			key: () => [
+				"files",
+				currentWorkspaceSlug.value,
+				JSON.stringify(queryParams.value),
+			],
 		},
 	);
 
-	// Sync allFiles with query data
-	// This handles initial load, navigation back to page, and refresh after mutations
-	watch(
-		() => filesQuery.data.value,
-		(data) => {
-			// Don't sync during loadMore operations (we handle that manually)
-			if (!isLoadingMore.value && data) {
-				allFiles.value = data;
-			}
-		},
-		{ immediate: true },
+	const {
+		items: files,
+		hasMore,
+		loadMore,
+		isLoadingMore,
+	} = useCursorPagination(filesQuery.data, (after) => {
+		const { client, workspaceSlug } = requireContext();
+		return client.files.listFiles(workspaceSlug, {
+			...queryParams.value,
+			after,
+			limit: pageSize,
+		});
+	});
+
+	const updateFileMutation = workspaceMutation(
+		(
+			{ client, workspaceSlug },
+			{ fileId, updates }: { fileId: string; updates: UpdateFile },
+		) => client.files.updateFile(workspaceSlug, fileId, updates),
+		{ invalidates: filesQuery },
 	);
 
-	// Load more files for infinite scroll
-	async function loadMore() {
-		if (!hasMore.value || isLoadingMore.value) return;
+	const deleteFileMutation = workspaceMutation(
+		({ client, workspaceSlug }, fileId: string) =>
+			client.files.deleteFile(workspaceSlug, fileId),
+		{ invalidates: filesQuery },
+	);
 
-		const client = $nvisyClient.value;
-		if (!client) return;
-
-		isLoadingMore.value = true;
-		try {
-			const result = await client.files.listFiles(
-				effectiveWorkspaceSlug.value,
-				{
-					...queryParams.value,
-					after: nextCursor.value,
-					limit: pageSize,
-				},
-			);
-
-			if (result.items.length > 0) {
-				allFiles.value = [...allFiles.value, ...result.items];
-			}
-
-			nextCursor.value = result.nextCursor ?? undefined;
-			hasMore.value = !!result.nextCursor;
-		} finally {
-			isLoadingMore.value = false;
-		}
-	}
-
-	// Reset and reload files
-	function reset() {
-		allFiles.value = [];
-		nextCursor.value = undefined;
-		hasMore.value = true;
-		filesQuery.refetch();
-	}
-
-	const updateFileMutation = useMutation({
-		mutation: async ({
-			fileId,
-			updates,
-		}: {
-			fileId: string;
-			updates: UpdateFile;
-		}) => {
-			const client = $nvisyClient.value;
-			const workspaceSlug = effectiveWorkspaceSlug.value;
-			if (!client || !workspaceSlug) throw new Error("Not authenticated");
-			return await client.files.updateFile(workspaceSlug, fileId, updates);
-		},
-		onSuccess() {
-			reset();
-		},
-	});
-
-	const deleteFileMutation = useMutation({
-		mutation: async (fileId: string) => {
-			const client = $nvisyClient.value;
-			const workspaceSlug = effectiveWorkspaceSlug.value;
-			if (!client || !workspaceSlug) throw new Error("Not authenticated");
-			await client.files.deleteFile(workspaceSlug, fileId);
-		},
-		onSuccess() {
-			reset();
-		},
-	});
-
-	const uploadFilesMutation = useMutation({
-		mutation: async (files: File[]) => {
-			const client = $nvisyClient.value;
-			if (!client) throw new Error("Not authenticated");
-			const wId = effectiveWorkspaceSlug.value;
-			if (!wId) throw new Error("No workspace selected");
-			return await client.files.uploadFiles(wId, files);
-		},
-		onSuccess() {
-			reset();
-		},
-	});
+	const uploadFilesMutation = workspaceMutation(
+		({ client, workspaceSlug }, files: File[]) =>
+			client.files.uploadFiles(workspaceSlug, files),
+		{ invalidates: filesQuery },
+	);
 
 	async function downloadFile(fileId: string, fileName: string) {
-		const client = $nvisyClient.value;
-		const workspaceSlug = effectiveWorkspaceSlug.value;
-		if (!client || !workspaceSlug) throw new Error("Not authenticated");
-		const response = await client.files.downloadFile(workspaceSlug, fileId);
-		const blob = await response.blob();
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement("a");
-		a.href = url;
-		a.download = fileName;
-		a.click();
-		URL.revokeObjectURL(url);
+		const { client, workspaceSlug } = requireContext();
+		const url = await fetchFileContentUrl(client, workspaceSlug, fileId);
+		triggerBrowserDownload(url, fileName);
 	}
 
 	// Bulk download fetches each file individually.
 	async function downloadMultiple(fileIds: string[]) {
-		const client = $nvisyClient.value;
-		if (!client) throw new Error("Not authenticated");
 		for (const fileId of fileIds) {
-			const file = allFiles.value.find((f) => f.id === fileId);
+			const file = files.value.find((f) => f.id === fileId);
 			await downloadFile(fileId, file?.displayName ?? fileId);
 		}
 	}
 
 	return {
 		// Query state
-		files: allFiles,
+		files,
 		isLoading: filesQuery.isLoading,
 		error: filesQuery.error,
-		refresh: reset,
+		refresh: filesQuery.refresh,
 
 		// Infinite scroll
 		loadMore,

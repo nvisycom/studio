@@ -7,6 +7,7 @@ import type {
 	SortOrder,
 	WorkspaceRole,
 } from "@nvisy/sdk/datatypes";
+import type { Selection } from "#console/composables/useSelection";
 import { Search, ChevronDown, Loader2 } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
@@ -25,15 +26,13 @@ import {
 	DropdownMenuTrigger,
 } from "#console/components/ui/dropdown-menu";
 
-const props = defineProps<{
+defineProps<{
 	members: Member[];
 	invites: Invite[];
 	isLoadingMembers: boolean;
 	isLoadingInvites: boolean;
-	selectedMembers: Set<string>;
-	selectedInvites: Set<string>;
-	allMembersSelected: boolean;
-	allInvitesSelected: boolean;
+	membersSelection: Selection;
+	invitesSelection: Selection;
 }>();
 
 const emit = defineEmits<{
@@ -46,11 +45,7 @@ const emit = defineEmits<{
 	removeMember: [memberId: string];
 	editMember: [memberId: string];
 	cancelInvite: [inviteId: string];
-	toggleSelectAllMembers: [];
-	toggleMember: [memberId: string];
 	deleteSelectedMembers: [];
-	toggleSelectAllInvites: [];
-	toggleInvite: [inviteId: string];
 	cancelSelectedInvites: [];
 }>();
 
@@ -218,12 +213,9 @@ function selectSorting(
         <MembersTable
           v-else
           :members="members"
-          :selected-members="selectedMembers"
-          :all-selected="allMembersSelected"
+          :selection="membersSelection"
           @remove="emit('removeMember', $event)"
           @edit="emit('editMember', $event)"
-          @toggle-select-all="emit('toggleSelectAllMembers')"
-          @toggle-member="emit('toggleMember', $event)"
           @delete-selected="emit('deleteSelectedMembers')"
         />
       </div>
@@ -240,11 +232,8 @@ function selectSorting(
         <InvitesTable
           v-else
           :invites="invites"
-          :selected-invites="selectedInvites"
-          :all-selected="allInvitesSelected"
+          :selection="invitesSelection"
           @cancel="emit('cancelInvite', $event)"
-          @toggle-select-all="emit('toggleSelectAllInvites')"
-          @toggle-invite="emit('toggleInvite', $event)"
           @cancel-selected="emit('cancelSelectedInvites')"
         />
       </div>

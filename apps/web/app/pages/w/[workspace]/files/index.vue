@@ -110,17 +110,12 @@ const hasFilters = computed(
 		selectedFormats.value.length > 0,
 );
 
-// Selection
-const {
-	selected: selectedFiles,
-	allSelected,
-	toggle: toggleFileSelection,
-	toggleAll: toggleSelectAll,
-	clear: clearSelection,
-} = useSelection({
+// Selection — passed whole to the file views; the page reads it for bulk ops.
+const filesSelection = useSelection({
 	items: files,
 	getKey: (f) => f.id,
 });
+const { selected: selectedFiles, clear: clearSelection } = filesSelection;
 
 const selectedFilesCount = computed(() => selectedFiles.value.size);
 const hasSelection = computed(() => selectedFilesCount.value > 0);
@@ -435,11 +430,7 @@ function handleGridScroll(event: Event) {
             v-if="viewMode === 'list'"
             class="h-full"
             :files="files"
-            :selected-files="selectedFiles"
-            :all-selected="allSelected"
-            :selected-count="selectedFilesCount"
-            @toggle-select-all="toggleSelectAll"
-            @toggle-selection="toggleFileSelection"
+            :selection="filesSelection"
             @view="viewFile"
             @edit="openEditDialog"
             @download="handleDownloadFile"
@@ -455,9 +446,7 @@ function handleGridScroll(event: Event) {
             v-else
             class="h-full"
             :files="files"
-            :selected-files="selectedFiles"
-            :selected-count="selectedFilesCount"
-            @toggle-selection="toggleFileSelection"
+            :selection="filesSelection"
             @bulk-open="handleBulkOpen"
             @bulk-download="handleBulkDownload"
             @bulk-delete="openBulkDeleteDialog"

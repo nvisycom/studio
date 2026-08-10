@@ -7,6 +7,7 @@ import {
 	PlugZap,
 	Compass,
 	History,
+	HardDrive,
 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import type {
@@ -27,15 +28,14 @@ import {
 } from "#console/components/ui/card";
 import {
 	ConfigureConnectionDialog,
-	DisconnectConnectionDialog,
 	ConnectionsTable,
 } from "#console/components/pages/connections";
+import { providerIcon, providerLabel } from "#console/utils/connections";
 import {
 	WebhooksTable,
-	CreateWebhookDialog,
-	DeleteWebhookDialog,
-	EditWebhookDialog,
+	WebhookDialog,
 } from "#console/components/pages/webhooks";
+import { ConfirmDialog } from "#console/components/common";
 
 const { t } = useI18n();
 const { wLink } = useWorkspaceLink();
@@ -489,10 +489,11 @@ async function testWebhook(webhookId: string) {
                   })
                 }}</CardDescription>
               </div>
-              <CreateWebhookDialog
+              <WebhookDialog
                 v-model:open="isCreateDialogOpen"
+                mode="create"
                 :is-loading="isCreatingWebhook"
-                @create="handleCreateWebhook"
+                @submit="handleCreateWebhook"
               />
             </div>
           </CardHeader>
@@ -549,24 +550,77 @@ async function testWebhook(webhookId: string) {
           @update="handleUpdateConnection"
         />
 
-        <DisconnectConnectionDialog
+        <ConfirmDialog
           v-model:open="isDisconnectConnectionDialogOpen"
-          :connection="selectedConnection"
+          :title="
+            t('connections.dialogs.disconnect.title', {
+              name: selectedConnection?.displayName,
+            })
+          "
+          :description="t('connections.dialogs.disconnect.description')"
+          :confirm-label="t('connections.dialogs.disconnect.confirm')"
+          :cancel-label="t('connections.dialogs.disconnect.cancel')"
           :is-loading="isDeleting"
-          @disconnect="handleDisconnectConnection"
-        />
+          @confirm="
+            selectedConnection &&
+              handleDisconnectConnection(selectedConnection.id)
+          "
+        >
+          <template v-if="selectedConnection" #details>
+            <div class="flex items-center gap-3">
+              <div
+                class="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-muted/40"
+              >
+                <img
+                  v-if="providerIcon(selectedConnection.provider)"
+                  :src="providerIcon(selectedConnection.provider)!"
+                  :alt="selectedConnection.provider"
+                  class="size-5 object-contain"
+                />
+                <HardDrive v-else :size="18" class="text-muted-foreground" />
+              </div>
+              <div class="min-w-0">
+                <p class="truncate text-sm font-medium text-foreground">
+                  {{ selectedConnection.displayName }}
+                </p>
+                <p class="truncate text-xs text-muted-foreground">
+                  {{ providerLabel(selectedConnection.provider) }}
+                </p>
+              </div>
+            </div>
+          </template>
+        </ConfirmDialog>
 
-        <EditWebhookDialog
+        <WebhookDialog
           v-model:open="isEditDialogOpen"
+          mode="edit"
           :webhook="selectedWebhook"
-          @update="handleUpdateWebhook"
+          @submit="handleUpdateWebhook"
         />
 
-        <DeleteWebhookDialog
+        <ConfirmDialog
           v-model:open="isDeleteDialogOpen"
-          :webhook="selectedWebhook"
-          @delete="handleDeleteWebhook"
-        />
+          :title="
+            t('connections.dialogs.deleteWebhook.title', {
+              name: selectedWebhook?.displayName,
+            })
+          "
+          :description="t('connections.dialogs.deleteWebhook.description')"
+          :confirm-label="t('connections.dialogs.deleteWebhook.confirm')"
+          :cancel-label="t('connections.dialogs.deleteWebhook.cancel')"
+          @confirm="selectedWebhook && handleDeleteWebhook(selectedWebhook.id)"
+        >
+          <template v-if="selectedWebhook" #details>
+            <div class="min-w-0">
+              <p class="truncate text-sm font-medium text-foreground">
+                {{ selectedWebhook.displayName }}
+              </p>
+              <p class="truncate font-mono text-xs text-muted-foreground">
+                {{ selectedWebhook.url }}
+              </p>
+            </div>
+          </template>
+        </ConfirmDialog>
       </template>
     </div>
   </div>

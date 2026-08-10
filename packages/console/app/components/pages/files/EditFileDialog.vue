@@ -46,24 +46,15 @@ const hasChanges = computed(() => {
 	return displayName.value.trim() !== props.file.displayName;
 });
 
-// Watch for file prop changes to populate form
+// Repopulate the form whenever the file changes or the dialog reopens.
 watch(
-	() => props.file,
-	(newFile) => {
-		if (newFile && props.open) {
-			populateForm(newFile);
-		}
-	},
-	{ immediate: true },
-);
-
-watch(
-	() => props.open,
-	(isOpen) => {
-		if (isOpen && props.file) {
+	[() => props.open, () => props.file],
+	() => {
+		if (props.open && props.file) {
 			populateForm(props.file);
 		}
 	},
+	{ immediate: true },
 );
 
 // Functions

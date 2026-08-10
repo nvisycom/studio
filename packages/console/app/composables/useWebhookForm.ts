@@ -30,6 +30,8 @@ export const WEBHOOK_EVENTS: WebhookEvent[] = [
 ];
 
 export interface WebhookHeader {
+	/** Stable id so a row's input keeps focus/identity across splices. */
+	id: number;
 	key: string;
 	value: string;
 }
@@ -69,18 +71,16 @@ export function useWebhookForm() {
 	const headers = ref<WebhookHeader[]>([]);
 	const urlError = ref("");
 
-	// Stable ids so header row inputs keep their identity across splices.
+	// Stable ids so header row inputs keep their identity across splices; the id
+	// travels on the row itself, not a parallel array that could desync.
 	let nextHeaderId = 0;
-	const headerIds = ref<number[]>([]);
 
 	function addHeader() {
-		headers.value.push({ key: "", value: "" });
-		headerIds.value.push(nextHeaderId++);
+		headers.value.push({ id: nextHeaderId++, key: "", value: "" });
 	}
 
 	function removeHeader(index: number) {
 		headers.value.splice(index, 1);
-		headerIds.value.splice(index, 1);
 	}
 
 	function validateUrl(t: (key: string) => string) {
@@ -116,7 +116,6 @@ export function useWebhookForm() {
 		active.value = true;
 		events.value = emptyEvents();
 		headers.value = [];
-		headerIds.value = [];
 		urlError.value = "";
 	}
 
@@ -134,8 +133,11 @@ export function useWebhookForm() {
 			webhook.headers && typeof webhook.headers === "object"
 				? Object.entries(webhook.headers as Record<string, string>)
 				: [];
-		headers.value = entries.map(([key, value]) => ({ key, value }));
-		headerIds.value = entries.map(() => nextHeaderId++);
+		headers.value = entries.map(([key, value]) => ({
+			id: nextHeaderId++,
+			key,
+			value,
+		}));
 	}
 
 	function payload(): WebhookFormPayload {
@@ -154,7 +156,6 @@ export function useWebhookForm() {
 		active,
 		events,
 		headers,
-		headerIds,
 		urlError,
 		addHeader,
 		removeHeader,

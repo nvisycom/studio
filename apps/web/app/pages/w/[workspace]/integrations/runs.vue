@@ -15,8 +15,8 @@ import {
 	HardDrive,
 	Ban,
 } from "@lucide/vue";
-import { formatRelativeTime, formatDuration } from "#console/utils/date";
-import { providerIcon } from "#console/utils/connectionProviders";
+import { formatDuration } from "#console/utils/date";
+import { providerIcon } from "#console/utils/connections";
 import { Button } from "#console/components/ui/button";
 import {
 	Card,
@@ -29,10 +29,10 @@ import {
 	Table,
 	TableBody,
 	TableCell,
-	TableHead,
 	TableHeader,
 	TableRow,
 } from "#console/components/ui/table";
+import DataTableHead from "#console/components/pages/DataTableHead.vue";
 import {
 	Select,
 	SelectContent,
@@ -44,6 +44,7 @@ import { Badge } from "#console/components/ui/badge";
 import { toast } from "vue-sonner";
 
 const { t } = useI18n();
+const { relativeTime } = useRelativeTime();
 const { wLink } = useWorkspaceLink();
 
 useHead({ title: "Connection Syncs" });
@@ -168,25 +169,25 @@ async function cancelSync(sync: ConnectionSync) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead class="text-xs font-normal uppercase tracking-wider">
+                  <DataTableHead>
                     {{ t("connections.runs.connection") }}
-                  </TableHead>
-                  <TableHead class="text-xs font-normal uppercase tracking-wider">
+                  </DataTableHead>
+                  <DataTableHead>
                     {{ t("connections.runs.trigger") }}
-                  </TableHead>
-                  <TableHead class="text-xs font-normal uppercase tracking-wider">
+                  </DataTableHead>
+                  <DataTableHead>
                     {{ t("connections.runs.statusHeader") }}
-                  </TableHead>
-                  <TableHead class="text-xs font-normal uppercase tracking-wider">
+                  </DataTableHead>
+                  <DataTableHead>
                     {{ t("connections.runs.records") }}
-                  </TableHead>
-                  <TableHead class="text-xs font-normal uppercase tracking-wider">
+                  </DataTableHead>
+                  <DataTableHead>
                     {{ t("connections.runs.started") }}
-                  </TableHead>
-                  <TableHead class="text-xs font-normal uppercase tracking-wider">
+                  </DataTableHead>
+                  <DataTableHead>
                     {{ t("connections.runs.duration") }}
-                  </TableHead>
-                  <TableHead class="w-10" />
+                  </DataTableHead>
+                  <DataTableHead class="w-10" />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -270,7 +271,7 @@ async function cancelSync(sync: ConnectionSync) {
 
                   <!-- Started -->
                   <TableCell class="text-sm text-muted-foreground">
-                    {{ formatRelativeTime(sync.startedAt, t) }}
+                    {{ relativeTime(sync.startedAt) }}
                   </TableCell>
 
                   <!-- Duration -->
