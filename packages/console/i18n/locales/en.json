@@ -1490,5 +1490,54 @@
 			"countriesPlaceholder": "Add a country code (e.g. US) and press Enter",
 			"scopeHint": "Restrict jurisdiction-scoped detection rules to these countries."
 		}
+	},
+	"analytics": {
+		"logs": {
+			"view": {
+				"logs": "Logs",
+				"traces": "Traces"
+			},
+			"searchPlaceholder": "Search logs...",
+			"level": {
+				"placeholder": "Level",
+				"all": "All Levels",
+				"info": "Info",
+				"warning": "Warning",
+				"error": "Error"
+			},
+			"period": {
+				"placeholder": "Period",
+				"hour": "Last hour",
+				"day": "Last 24 hours",
+				"week": "Last 7 days",
+				"month": "Last 30 days"
+			},
+			"title": "Activity Logs",
+			"count": "{count} log found | {count} logs found",
+			"import": "Import",
+			"export": "Export",
+			"table": {
+				"time": "Time",
+				"level": "Level",
+				"message": "Message",
+				"endpoint": "Endpoint",
+				"duration": "Duration",
+				"status": "Status"
+			},
+			"empty": "No logs found matching your filters",
+			"exportDialog": {
+				"title": "Export Logs",
+				"description": "Configure export settings for your logs",
+				"dateRange": "Date Range",
+				"selectDateRange": "Select date range",
+				"eventTypes": "Event Types",
+				"info": "Info",
+				"warning": "Warning",
+				"error": "Error",
+				"cancel": "Cancel",
+				"exportJson": "Export as JSON",
+				"exportCsv": "Export as CSV"
+			}
+		}
 	}
 }
