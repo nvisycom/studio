@@ -77,17 +77,8 @@ export function useFiles(options: UseFilesOptions = {}) {
 
 	async function downloadFile(fileId: string, fileName: string) {
 		const { client } = requireContext();
-		const response = await client.files.downloadFile(
-			workspaceSlug.value,
-			fileId,
-		);
-		const blob = await response.blob();
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement("a");
-		a.href = url;
-		a.download = fileName;
-		a.click();
-		URL.revokeObjectURL(url);
+		const url = await fetchFileContentUrl(client, workspaceSlug.value, fileId);
+		triggerBrowserDownload(url, fileName);
 	}
 
 	// Bulk download fetches each file individually.

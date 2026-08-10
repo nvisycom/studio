@@ -60,9 +60,11 @@ export function useStudioFiles() {
 			}
 
 			// Download file content
-			const response = await client.files.downloadFile(workspaceSlug, fileId);
-			const blob = await response.blob();
-			const contentUrl = URL.createObjectURL(blob);
+			const contentUrl = await fetchFileContentUrl(
+				client,
+				workspaceSlug,
+				fileId,
+			);
 
 			// Update the open file entry
 			openFiles.value.set(fileId, {
