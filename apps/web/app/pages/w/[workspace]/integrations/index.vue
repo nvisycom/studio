@@ -600,25 +600,23 @@ async function testWebhook(webhookId: string) {
 
         <ConfirmDialog
           v-model:open="isDeleteDialogOpen"
-          :title="t('connections.dialogs.deleteWebhook.title')"
+          :title="
+            t('connections.dialogs.deleteWebhook.title', {
+              name: selectedWebhook?.displayName,
+            })
+          "
           :description="t('connections.dialogs.deleteWebhook.description')"
           :confirm-label="t('connections.dialogs.deleteWebhook.confirm')"
           :cancel-label="t('connections.dialogs.deleteWebhook.cancel')"
           @confirm="selectedWebhook && handleDeleteWebhook(selectedWebhook.id)"
         >
-          <template #details>
-            <div
-              class="p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
-            >
-              <p
-                class="text-sm text-neutral-900 dark:text-white font-medium mb-1"
-              >
-                {{ selectedWebhook?.displayName }}
+          <template v-if="selectedWebhook" #details>
+            <div class="min-w-0">
+              <p class="truncate text-sm font-medium text-foreground">
+                {{ selectedWebhook.displayName }}
               </p>
-              <p
-                class="text-xs text-neutral-500 dark:text-neutral-500 font-mono truncate"
-              >
-                {{ selectedWebhook?.url }}
+              <p class="truncate font-mono text-xs text-muted-foreground">
+                {{ selectedWebhook.url }}
               </p>
             </div>
           </template>

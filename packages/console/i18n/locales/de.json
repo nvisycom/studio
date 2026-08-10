@@ -554,8 +554,6 @@
 			"deleteMultiple": {
 				"title": "Mitglieder Löschen",
 				"description": "Sind Sie sicher, dass Sie {count} Mitglied aus Ihrem Team löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden. | Sind Sie sicher, dass Sie {count} Mitglieder aus Ihrem Team löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-				"warningTitle": "Warnung",
-				"warningDescription": "Das Löschen dieser Mitglieder wird ihren Zugriff auf den Arbeitsbereich und alle zugehörigen Ressourcen sofort widerrufen.",
 				"cancelButton": "Abbrechen",
 				"confirmButton": "Mitglieder Löschen"
 			},
@@ -569,8 +567,6 @@
 			"cancelMultiple": {
 				"title": "Einladungen Abbrechen",
 				"description": "Sind Sie sicher, dass Sie {count} Einladung abbrechen möchten? Diese Aktion kann nicht rückgängig gemacht werden. | Sind Sie sicher, dass Sie {count} Einladungen abbrechen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-				"countLabel": "{count} Einladung ausgewählt | {count} Einladungen ausgewählt",
-				"noteDescription": "Sie können später jederzeit neue Einladungen erstellen.",
 				"keepButton": "Behalten",
 				"confirmButton": "Einladungen Abbrechen"
 			},
@@ -657,8 +653,6 @@
 			"deleteMultiple": {
 				"title": "Tokens Widerrufen",
 				"description": "Sind Sie sicher, dass Sie {count} Token widerrufen möchten? Diese Aktion kann nicht rückgängig gemacht werden. | Sind Sie sicher, dass Sie {count} Tokens widerrufen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-				"warningTitle": "Warnung",
-				"warningDescription": "Alle Anwendungen, die diese Tokens verwenden, verlieren sofort den Zugriff.",
 				"cancelButton": "Abbrechen",
 				"confirmButton": "Tokens Widerrufen"
 			}
@@ -988,7 +982,7 @@
 				"cancel": "Abbrechen"
 			},
 			"deleteWebhook": {
-				"title": "Webhook Löschen",
+				"title": "{name} löschen?",
 				"description": "Diese Aktion kann nicht rückgängig gemacht werden. Dies wird den Webhook dauerhaft löschen und alle Ereigniszustellungen stoppen.",
 				"confirm": "Webhook Löschen",
 				"cancel": "Abbrechen"

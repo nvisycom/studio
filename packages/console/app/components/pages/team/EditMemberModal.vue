@@ -89,13 +89,11 @@ function cancel(): void {
           >
             {{ t("members.modals.edit.memberLabel") }}
           </label>
-          <div
-            class="p-3 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
-          >
-            <p class="text-sm text-neutral-900 dark:text-white font-medium">
+          <div class="min-w-0">
+            <p class="truncate text-sm font-medium text-foreground">
               {{ member?.displayName }}
             </p>
-            <p class="text-sm text-neutral-500 dark:text-neutral-400">
+            <p class="truncate text-xs text-muted-foreground">
               {{ member?.emailAddress }}
             </p>
           </div>

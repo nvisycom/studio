@@ -554,8 +554,6 @@
 			"deleteMultiple": {
 				"title": "Delete Members",
 				"description": "Are you sure you want to delete {count} member from your team? This action cannot be undone. | Are you sure you want to delete {count} members from your team? This action cannot be undone.",
-				"warningTitle": "Warning",
-				"warningDescription": "Deleting these members will immediately revoke their access to the workspace and all associated resources.",
 				"cancelButton": "Cancel",
 				"confirmButton": "Delete Members"
 			},
@@ -569,8 +567,6 @@
 			"cancelMultiple": {
 				"title": "Cancel Invitations",
 				"description": "Are you sure you want to cancel {count} invitation? This action cannot be undone. | Are you sure you want to cancel {count} invitations? This action cannot be undone.",
-				"countLabel": "{count} invitation selected | {count} invitations selected",
-				"noteDescription": "You can always create new invitations later.",
 				"keepButton": "Keep",
 				"confirmButton": "Cancel Invitations"
 			},
@@ -657,8 +653,6 @@
 			"deleteMultiple": {
 				"title": "Revoke Tokens",
 				"description": "Are you sure you want to revoke {count} token? This action cannot be undone. | Are you sure you want to revoke {count} tokens? This action cannot be undone.",
-				"warningTitle": "Warning",
-				"warningDescription": "Any applications using these tokens will lose access immediately.",
 				"cancelButton": "Cancel",
 				"confirmButton": "Revoke Tokens"
 			}
@@ -988,7 +982,7 @@
 				"cancel": "Cancel"
 			},
 			"deleteWebhook": {
-				"title": "Delete Webhook",
+				"title": "Delete {name}?",
 				"description": "This action cannot be undone. This will permanently delete the webhook and stop all event deliveries.",
 				"confirm": "Delete Webhook",
 				"cancel": "Cancel"

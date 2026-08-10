@@ -354,25 +354,16 @@ function handleSortingChange(
         @update:open="isDeleteMemberDialogOpen = $event"
         @confirm="deleteMember"
       >
-        <template #details>
-          <div
-            class="p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
-          >
-            <p
-              class="text-sm text-neutral-900 dark:text-white font-medium mb-1"
-            >
-              {{ memberToDelete?.displayName }}
+        <template v-if="memberToDelete" #details>
+          <div class="min-w-0">
+            <p class="truncate text-sm font-medium text-foreground">
+              {{ memberToDelete.displayName }}
             </p>
-            <p class="text-sm text-neutral-600 dark:text-neutral-400">
-              {{ memberToDelete?.emailAddress }}
-            </p>
-            <p class="text-xs text-neutral-500 dark:text-neutral-500 mt-2">
-              {{ t("members.modals.delete.role") }}:
-              {{
-                memberToDelete?.memberRole
-                  ? t(`members.roles.${memberToDelete.memberRole}`)
-                  : ""
-              }}
+            <p class="truncate text-xs text-muted-foreground">
+              {{ memberToDelete.emailAddress }}
+              <span v-if="memberToDelete.memberRole">
+                · {{ t(`members.roles.${memberToDelete.memberRole}`) }}
+              </span>
             </p>
           </div>
         </template>
@@ -391,20 +382,7 @@ function handleSortingChange(
         :cancel-label="t('members.modals.deleteMultiple.cancelButton')"
         @update:open="isDeleteMultipleMembersDialogOpen = $event"
         @confirm="deleteSelectedMembers"
-      >
-        <template #details>
-          <div
-            class="p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800"
-          >
-            <p class="text-sm text-amber-900 dark:text-amber-100">
-              <span class="font-medium"
-                >{{ t("members.modals.deleteMultiple.warningTitle") }}:</span
-              >
-              {{ t("members.modals.deleteMultiple.warningDescription") }}
-            </p>
-          </div>
-        </template>
-      </ConfirmDialog>
+      />
 
       <EditMemberModal
         :open="isEditMemberDialogOpen"
@@ -423,25 +401,16 @@ function handleSortingChange(
         @update:open="isCancelInviteDialogOpen = $event"
         @confirm="cancelInvite"
       >
-        <template #details>
-          <div
-            class="p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
-          >
-            <p
-              class="text-sm text-neutral-900 dark:text-white font-medium mb-1"
-            >
+        <template v-if="inviteToCancel" #details>
+          <div class="min-w-0">
+            <p class="truncate text-sm font-medium text-foreground">
               {{
-                inviteToCancel?.inviteeEmail ??
+                inviteToCancel.inviteeEmail ??
                 t("members.table.status.linkInvite")
               }}
             </p>
-            <p class="text-xs text-neutral-500 dark:text-neutral-500">
-              {{ t("members.modals.cancelInvite.role") }}:
-              {{
-                inviteToCancel?.invitedRole
-                  ? t(`members.roles.${inviteToCancel.invitedRole}`)
-                  : ""
-              }}
+            <p v-if="inviteToCancel.invitedRole" class="text-xs text-muted-foreground">
+              {{ t(`members.roles.${inviteToCancel.invitedRole}`) }}
             </p>
           </div>
         </template>
@@ -460,27 +429,7 @@ function handleSortingChange(
         :cancel-label="t('members.modals.cancelMultiple.keepButton')"
         @update:open="isCancelMultipleInvitesDialogOpen = $event"
         @confirm="cancelSelectedInvites"
-      >
-        <template #details>
-          <div
-            class="p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
-          >
-            <p
-              class="text-sm text-neutral-900 dark:text-white font-medium mb-1"
-            >
-              {{
-                t(
-                  "members.modals.cancelMultiple.countLabel",
-                  invitesSelection.selected.value.size,
-                )
-              }}
-            </p>
-            <p class="text-xs text-neutral-500 dark:text-neutral-500">
-              {{ t("members.modals.cancelMultiple.noteDescription") }}
-            </p>
-          </div>
-        </template>
-      </ConfirmDialog>
+      />
     </div>
   </div>
 </template>

@@ -369,18 +369,14 @@ async function renameToken(newName: string) {
         @update:open="isDeleteDialogOpen = $event"
         @confirm="deleteToken"
       >
-        <template #details>
-          <div
-            class="p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
-          >
-            <p
-              class="text-sm text-neutral-900 dark:text-white font-medium mb-1"
-            >
-              {{ tokenToDelete?.displayName }}
+        <template v-if="tokenToDelete" #details>
+          <div class="min-w-0">
+            <p class="truncate text-sm font-medium text-foreground">
+              {{ tokenToDelete.displayName }}
             </p>
-            <p class="text-xs text-neutral-500 dark:text-neutral-500">
+            <p class="text-xs text-muted-foreground">
               {{ t("tokens.modals.delete.lastUsed") }}:
-              {{ tokenToDelete?.lastUsedAt ?? t("tokens.modals.delete.never") }}
+              {{ tokenToDelete.lastUsedAt ?? t("tokens.modals.delete.never") }}
             </p>
           </div>
         </template>
@@ -397,20 +393,7 @@ async function renameToken(newName: string) {
         :cancel-label="t('tokens.modals.deleteMultiple.cancelButton')"
         @update:open="isDeleteMultipleDialogOpen = $event"
         @confirm="deleteSelectedTokens"
-      >
-        <template #details>
-          <div
-            class="p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800"
-          >
-            <p class="text-sm text-amber-900 dark:text-amber-100">
-              <span class="font-medium"
-                >{{ t("tokens.modals.deleteMultiple.warningTitle") }}:</span
-              >
-              {{ t("tokens.modals.deleteMultiple.warningDescription") }}
-            </p>
-          </div>
-        </template>
-      </ConfirmDialog>
+      />
 
       <!-- Rename Token Modal -->
       <RenameTokenModal
