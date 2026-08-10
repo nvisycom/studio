@@ -15,10 +15,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "#console/components/ui/select";
-import CreditsUsedChart from "#console/components/pages/analytics/CreditsUsedChart.vue";
-import StorageUsedChart from "#console/components/pages/analytics/StorageUsedChart.vue";
-import DocumentsUploadDownloadChart from "#console/components/pages/analytics/DocumentsUploadDownloadChart.vue";
-import DocumentsEditVerifyChart from "#console/components/pages/analytics/DocumentsEditVerifyChart.vue";
+import AnalyticsAreaChart from "#console/components/pages/analytics/AnalyticsAreaChart.vue";
+import { AREA_CHARTS } from "#console/components/pages/analytics/charts";
 
 useHead({ title: "Analytics" });
 
@@ -87,7 +85,7 @@ function importAnalytics() {
             >
           </CardHeader>
           <CardContent class="pt-2">
-            <CreditsUsedChart :date-range="dateRange" />
+            <AnalyticsAreaChart :spec="AREA_CHARTS.credits" />
           </CardContent>
         </Card>
 
@@ -100,7 +98,7 @@ function importAnalytics() {
             >
           </CardHeader>
           <CardContent class="pt-2">
-            <StorageUsedChart :date-range="dateRange" />
+            <AnalyticsAreaChart :spec="AREA_CHARTS.storage" />
           </CardContent>
         </Card>
 
@@ -115,7 +113,7 @@ function importAnalytics() {
             >
           </CardHeader>
           <CardContent class="pt-2">
-            <DocumentsUploadDownloadChart :date-range="dateRange" />
+            <AnalyticsAreaChart :spec="AREA_CHARTS.uploadDownload" />
           </CardContent>
         </Card>
 
@@ -130,7 +128,7 @@ function importAnalytics() {
             >
           </CardHeader>
           <CardContent class="pt-2">
-            <DocumentsEditVerifyChart :date-range="dateRange" />
+            <AnalyticsAreaChart :spec="AREA_CHARTS.editVerify" />
           </CardContent>
         </Card>
       </div>

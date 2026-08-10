@@ -16,10 +16,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "#console/components/ui/select";
-import AiUsageChart from "#console/components/pages/analytics/AiUsageChart.vue";
-import VlmCacheHitsChart from "#console/components/pages/analytics/VlmCacheHitsChart.vue";
-import ErrorRateChart from "#console/components/pages/analytics/ErrorRateChart.vue";
-import ResponseTimeChart from "#console/components/pages/analytics/ResponseTimeChart.vue";
+import AnalyticsAreaChart from "#console/components/pages/analytics/AnalyticsAreaChart.vue";
+import { AREA_CHARTS } from "#console/components/pages/analytics/charts";
 
 useHead({ title: "AI Analytics" });
 
@@ -86,7 +84,7 @@ function importAnalytics() {
             >
           </CardHeader>
           <CardContent class="pt-2">
-            <AiUsageChart :date-range="dateRange" />
+            <AnalyticsAreaChart :spec="AREA_CHARTS.aiUsage" />
           </CardContent>
         </Card>
 
@@ -99,7 +97,7 @@ function importAnalytics() {
             >
           </CardHeader>
           <CardContent class="pt-2">
-            <VlmCacheHitsChart :date-range="dateRange" />
+            <AnalyticsAreaChart :spec="AREA_CHARTS.vlmCache" />
           </CardContent>
         </Card>
 
@@ -112,7 +110,7 @@ function importAnalytics() {
             >
           </CardHeader>
           <CardContent class="pt-2">
-            <ErrorRateChart :date-range="dateRange" />
+            <AnalyticsAreaChart :spec="AREA_CHARTS.errorRate" />
           </CardContent>
         </Card>
 
@@ -125,7 +123,7 @@ function importAnalytics() {
             >
           </CardHeader>
           <CardContent class="pt-2">
-            <ResponseTimeChart :date-range="dateRange" />
+            <AnalyticsAreaChart :spec="AREA_CHARTS.responseTime" />
           </CardContent>
         </Card>
       </div>
