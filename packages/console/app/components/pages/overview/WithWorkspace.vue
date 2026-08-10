@@ -4,22 +4,30 @@ import {
 	BarChart3,
 	Check,
 	FileText,
+	Link2,
+	Mail,
+	Settings2,
 	ShieldCheck,
 	Upload,
 	Users,
+	Webhook as WebhookIcon,
 	Workflow,
 } from "@lucide/vue";
+import type { ActivityType } from "@nvisy/sdk/datatypes";
 import type { Component } from "vue";
 import { Badge } from "#console/components/ui/badge";
+import { getFileIcon, formatFileSize } from "#console/utils/file";
 
 const { t, locale } = useI18n();
 const { wLink } = useWorkspaceLink();
+const { relativeTime } = useRelativeTime();
 const { firstName } = useAccount();
 const { currentWorkspace } = useWorkspaces();
 const { members } = useMembers();
 const { files } = useFiles();
 const { policies } = usePolicies();
 const { pipelines } = usePipelines();
+const { activities } = useActivities({ pageSize: 6 });
 
 // Localized long-form date, following the active UI locale.
 const createdOn = computed(() => {
@@ -34,8 +42,8 @@ const createdOn = computed(() => {
 
 // --- Setup progress -----------------------------------------------------
 // Each step's `done` flag is derived from real data. The overview leads with
-// the checklist until every step is complete, then hands over to the compact
-// stats + quick actions — so a brand-new workspace never shows a grid of zeros.
+// the checklist until every step is complete, then hands over to the live
+// dashboard — so a brand-new workspace never shows a grid of zeros.
 interface SetupStep {
 	key: string;
 	icon: Component;
@@ -65,12 +73,11 @@ const setupSteps = computed<SetupStep[]>(() => [
 ]);
 
 const allSetUp = computed(() => setupSteps.value.every((s) => s.done));
-// Index of the first not-yet-done step: it gets the emphasized (accent) row.
 const activeStepIndex = computed(() =>
 	setupSteps.value.findIndex((s) => !s.done),
 );
 
-// --- Populated view: compact inline stats -------------------------------
+// --- Stat strip ---------------------------------------------------------
 interface Stat {
 	label: string;
 	value: number;
@@ -99,23 +106,38 @@ const stats = computed<Stat[]>(() => [
 	},
 ]);
 
+// --- Recent activity ----------------------------------------------------
+// Map each activity category to an icon. The description text is provided by
+// the API (already human-readable), so we only supply iconography here.
+const ACTIVITY_ICON: Record<string, Component> = {
+	workspace: Settings2,
+	member: Users,
+	invite: Mail,
+	connection: Link2,
+	webhook: WebhookIcon,
+	file: FileText,
+};
+function activityIcon(type: ActivityType): Component {
+	const category = type.split(":")[0] ?? "";
+	return ACTIVITY_ICON[category] ?? Settings2;
+}
+
+const recentFiles = computed(() => (files.value ?? []).slice(0, 5));
+
 // Quick actions (always available)
 const quickActions = [
 	{
 		title: t("overview.quickActions.uploadFiles.title"),
-		description: t("overview.quickActions.uploadFiles.description"),
 		icon: Upload,
 		href: wLink("/files"),
 	},
 	{
 		title: t("overview.quickActions.manageTeam.title"),
-		description: t("overview.quickActions.manageTeam.description"),
 		icon: Users,
 		href: wLink("/team"),
 	},
 	{
 		title: t("overview.quickActions.viewAnalytics.title"),
-		description: t("overview.quickActions.viewAnalytics.description"),
 		icon: BarChart3,
 		href: wLink("/analytics"),
 	},
@@ -123,7 +145,7 @@ const quickActions = [
 </script>
 
 <template>
-  <div class="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8">
+  <div class="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8">
     <!-- Welcome -->
     <div>
       <div class="mb-1 flex flex-wrap items-center gap-3">
@@ -195,7 +217,6 @@ const quickActions = [
           :to="step.href"
           class="group flex items-center gap-4 px-4 py-3.5 transition-colors first:rounded-t-xl last:rounded-b-xl hover:bg-muted/40"
         >
-          <!-- Status: check when done, else a numbered/accented marker -->
           <div
             class="flex size-7 shrink-0 items-center justify-center rounded-full border text-xs font-medium transition-colors"
             :class="
@@ -234,24 +255,124 @@ const quickActions = [
       </div>
     </section>
 
-    <!-- Populated: compact inline stat strip -->
-    <section v-else>
-      <div
-        class="flex flex-wrap items-stretch gap-x-8 gap-y-4 rounded-xl border border-border/60 px-5 py-4"
+    <!-- Populated dashboard -->
+    <template v-else>
+      <!-- Stat strip -->
+      <section
+        class="flex flex-wrap items-stretch gap-x-10 gap-y-4 rounded-xl border border-border/60 px-6 py-4"
       >
         <NuxtLink
           v-for="stat in stats"
           :key="stat.label"
           :to="stat.href"
-          class="group flex flex-col gap-0.5 transition-opacity hover:opacity-70"
+          class="flex flex-col gap-0.5 transition-opacity hover:opacity-70"
         >
           <span class="text-2xl font-semibold tracking-tight text-foreground">
             {{ stat.value }}
           </span>
           <span class="text-xs text-muted-foreground">{{ stat.label }}</span>
         </NuxtLink>
+      </section>
+
+      <!-- Recent activity + recent files -->
+      <div class="grid gap-6 lg:grid-cols-2">
+        <!-- Recent activity -->
+        <section>
+          <div class="mb-3 flex items-center justify-between">
+            <h3 class="text-sm font-medium text-foreground">
+              {{ t("overview.sections.recentActivity") }}
+            </h3>
+          </div>
+          <div
+            v-if="activities?.length"
+            class="divide-y divide-border/50 rounded-xl border border-border/60"
+          >
+            <div
+              v-for="activity in activities"
+              :key="activity.id"
+              class="flex items-start gap-3 px-4 py-3"
+            >
+              <div
+                class="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-muted/60 text-muted-foreground"
+              >
+                <component
+                  :is="activityIcon(activity.activityType)"
+                  :size="14"
+                  :stroke-width="1.75"
+                />
+              </div>
+              <div class="min-w-0 flex-1">
+                <p class="text-sm text-foreground">
+                  {{ activity.description }}
+                </p>
+                <p class="mt-0.5 text-xs text-muted-foreground">
+                  {{ activity.performedBy.displayName ?? activity.performedBy.username }}
+                  · {{ relativeTime(activity.createdAt) }}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div
+            v-else
+            class="flex items-center justify-center rounded-xl border border-dashed border-border/60 px-4 py-10 text-sm text-muted-foreground"
+          >
+            {{ t("overview.sections.empty.activity") }}
+          </div>
+        </section>
+
+        <!-- Recent files -->
+        <section>
+          <div class="mb-3 flex items-center justify-between">
+            <h3 class="text-sm font-medium text-foreground">
+              {{ t("overview.sections.recentFiles") }}
+            </h3>
+            <NuxtLink
+              v-if="recentFiles.length"
+              :to="wLink('/files')"
+              class="text-xs text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {{ t("overview.sections.viewAll") }}
+            </NuxtLink>
+          </div>
+          <div
+            v-if="recentFiles.length"
+            class="divide-y divide-border/50 rounded-xl border border-border/60"
+          >
+            <NuxtLink
+              v-for="file in recentFiles"
+              :key="file.id"
+              :to="wLink('/files')"
+              class="group flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/40"
+            >
+              <div
+                class="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted/60 text-muted-foreground"
+              >
+                <component
+                  :is="getFileIcon(file.displayName)"
+                  :size="14"
+                  :stroke-width="1.75"
+                />
+              </div>
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-sm font-medium text-foreground">
+                  {{ file.displayName }}
+                </p>
+                <p class="text-xs text-muted-foreground">
+                  {{ formatFileSize(file.fileSize) }} ·
+                  {{ relativeTime(file.createdAt) }}
+                </p>
+              </div>
+            </NuxtLink>
+          </div>
+          <div
+            v-else
+            class="flex items-center justify-center rounded-xl border border-dashed border-border/60 px-4 py-10 text-sm text-muted-foreground"
+          >
+            {{ t("overview.sections.empty.files") }}
+          </div>
+        </section>
       </div>
-    </section>
+    </template>
 
     <!-- Quick actions -->
     <div>
@@ -272,14 +393,9 @@ const quickActions = [
           >
             <component :is="action.icon" class="size-4 text-muted-foreground" />
           </div>
-          <div class="min-w-0 flex-1">
-            <p class="text-sm font-medium text-foreground">
-              {{ action.title }}
-            </p>
-            <p class="truncate text-xs text-muted-foreground">
-              {{ action.description }}
-            </p>
-          </div>
+          <p class="flex-1 text-sm font-medium text-foreground">
+            {{ action.title }}
+          </p>
           <ArrowRight
             class="size-4 -translate-x-2 text-muted-foreground/50 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100"
           />

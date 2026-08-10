@@ -359,6 +359,17 @@
 					"description": "Fügen Sie Mitglieder hinzu und weisen Sie Rollen zu."
 				}
 			}
+		},
+		"sections": {
+			"recentActivity": "Letzte Aktivitäten",
+			"recentFiles": "Letzte Dateien",
+			"recentRuns": "Letzte Ausführungen",
+			"viewAll": "Alle anzeigen",
+			"empty": {
+				"activity": "Noch keine Aktivität",
+				"files": "Noch keine Dateien",
+				"runs": "Noch keine Ausführungen"
+			}
 		}
 	},
 	"workspace": {

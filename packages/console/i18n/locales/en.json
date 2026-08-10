@@ -359,6 +359,17 @@
 					"description": "Add members and assign roles to collaborate."
 				}
 			}
+		},
+		"sections": {
+			"recentActivity": "Recent activity",
+			"recentFiles": "Recent files",
+			"recentRuns": "Recent runs",
+			"viewAll": "View all",
+			"empty": {
+				"activity": "No activity yet",
+				"files": "No files yet",
+				"runs": "No runs yet"
+			}
 		}
 	},
 	"workspace": {
