@@ -12,7 +12,7 @@
 		"ci": "biome ci ."
 	},
 	"dependencies": {
-		"@lucide/vue": "^1.28.0",
+		"@lucide/vue": "^1.30.0",
 		"@nuxtjs/color-mode": "^4.0.0",
 		"@nuxtjs/i18n": "^10.6.0",
 		"@nvisy/sdk": "^0.17.0",
@@ -22,7 +22,7 @@
 		"@tailwindcss/vite": "^4.3.3",
 		"@tanstack/vue-table": "^8.21.3",
 		"@tanstack/vue-virtual": "^3.13.35",
-		"@unhead/vue": "^3.2.3",
+		"@unhead/vue": "^3.3.1",
 		"@unovis/ts": "^1.6.7",
 		"@unovis/vue": "^1.6.7",
 		"@vueuse/core": "^14.4.0",
@@ -37,7 +37,7 @@
 		"vue-sonner": "^2.0.9"
 	},
 	"peerDependencies": {
-		"nuxt": "^4.5.1",
-		"vue": "^3.5.35"
+		"nuxt": "^4.5.2",
+		"vue": "^3.5.41"
 	}
 }
