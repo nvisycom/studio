@@ -1,54 +1,102 @@
 <script setup lang="ts">
 import type { Component } from "vue";
+import type { RowAction } from "./RowActionItems.vue";
 import { MoreHorizontal } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import { TableCell, TableRow } from "#console/components/ui/table";
 import {
 	ContextMenu,
 	ContextMenuContent,
-	ContextMenuItem,
-	ContextMenuSeparator,
 	ContextMenuTrigger,
 } from "#console/components/ui/context-menu";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "#console/components/ui/dropdown-menu";
+import RowActionItems from "./RowActionItems.vue";
 
-/** One row action, rendered identically in the context and dropdown menus. */
-export interface RowAction {
-	/** Stable key for the v-for. */
-	key: string;
+export type { RowAction } from "./RowActionItems.vue";
+
+/** A single destructive bulk action shown when multiple rows are selected. */
+export interface BulkAction {
 	label: string;
 	icon: Component;
-	/** Styles the item as destructive. */
-	danger?: boolean;
-	disabled?: boolean;
-	/** Render a separator above this item. */
-	separatorBefore?: boolean;
+	/** Selected-row count, appended as "(n)". */
+	count: number;
 	select: () => void;
 }
 
-defineProps<{
-	/** Actions shown on right-click (whole row) and via the ⋯ dropdown. */
-	actions: RowAction[];
+/** Selection state that switches the menu to bulk-vs-single behavior. */
+export interface RowSelection {
+	/** Whether this row is part of the current selection. */
+	selected: boolean;
+	/** Total selected rows. */
+	count: number;
+	bulk: BulkAction;
+}
+
+const props = defineProps<{
+	/** Per-row actions (the single-row menu, and the ⋯ dropdown). */
+	actions?: RowAction[];
 	/** Accessible label for the dropdown trigger button. */
-	menuLabel: string;
-	/** Passed through to the row (e.g. hover/cursor classes). */
+	menuLabel?: string;
+	/** Passed through to the row (hover/cursor classes). */
 	rowClass?: string;
+	/**
+	 * When set, the component is a selection row: context-menu only (no ⋯
+	 * cell), showing the bulk action while >1 rows are selected, else the
+	 * per-row actions (or the `#single` slot).
+	 */
+	selection?: RowSelection;
 }>();
+
+/** Bulk mode: this row is selected and it's part of a multi-selection. */
+const showBulk = computed(
+	() => !!props.selection?.selected && (props.selection?.count ?? 0) > 1,
+);
+
+/** The bulk action rendered as a one-item action list. */
+const bulkActions = computed<RowAction[]>(() =>
+	props.selection
+		? [
+				{
+					key: "bulk",
+					label: `${props.selection.bulk.label} (${props.selection.bulk.count})`,
+					icon: props.selection.bulk.icon,
+					danger: true,
+					select: props.selection.bulk.select,
+				},
+			]
+		: [],
+);
 </script>
 
 <template>
   <!--
-    A table row whose actions live in exactly one place. Right-clicking the row
-    opens the context menu; the trailing ⋯ button opens the same items as a
-    hover dropdown. The data cells are supplied by the default slot.
+    Selection mode: context menu only, branching bulk-vs-single. The row markup
+    (checkbox + cells + click handling) is owned by the table via the default
+    slot; `#single` overrides the single-row menu for tables whose per-row
+    actions don't fit a flat list.
   -->
-  <ContextMenu>
+  <ContextMenu v-if="selection">
+    <ContextMenuTrigger as-child>
+      <slot />
+    </ContextMenuTrigger>
+    <ContextMenuContent>
+      <RowActionItems v-if="showBulk" :actions="bulkActions" variant="context" />
+      <slot v-else name="single">
+        <RowActionItems :actions="actions ?? []" variant="context" />
+      </slot>
+    </ContextMenuContent>
+  </ContextMenu>
+
+  <!--
+    Action mode: a full row whose actions live in one place — right-click opens
+    the context menu; the trailing ⋯ button opens the same items as a dropdown.
+    The data cells come from the default slot.
+  -->
+  <ContextMenu v-else>
     <ContextMenuTrigger as-child>
       <TableRow :class="rowClass">
         <slot />
@@ -65,39 +113,14 @@ defineProps<{
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <template v-for="action in actions" :key="action.key">
-                <DropdownMenuSeparator v-if="action.separatorBefore" />
-                <DropdownMenuItem
-                  :disabled="action.disabled"
-                  :class="
-                    action.danger && 'text-destructive focus:text-destructive'
-                  "
-                  @click="action.select()"
-                >
-                  <component :is="action.icon" :size="14" class="mr-2" />
-                  {{ action.label }}
-                </DropdownMenuItem>
-              </template>
+              <RowActionItems :actions="actions ?? []" variant="dropdown" />
             </DropdownMenuContent>
           </DropdownMenu>
         </TableCell>
       </TableRow>
     </ContextMenuTrigger>
     <ContextMenuContent>
-      <template v-for="action in actions" :key="action.key">
-        <ContextMenuSeparator v-if="action.separatorBefore" />
-        <ContextMenuItem
-          :disabled="action.disabled"
-          :class="[
-            'cursor-pointer',
-            action.danger && 'text-destructive focus:text-destructive',
-          ]"
-          @click="action.select()"
-        >
-          <component :is="action.icon" :size="14" class="mr-2" />
-          {{ action.label }}
-        </ContextMenuItem>
-      </template>
+      <RowActionItems :actions="actions ?? []" variant="context" />
     </ContextMenuContent>
   </ContextMenu>
 </template>

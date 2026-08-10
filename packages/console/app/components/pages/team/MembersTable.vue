@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import type { Member } from "@nvisy/sdk/datatypes";
+import type {
+	RowAction,
+	RowSelection,
+} from "#console/components/pages/RowActions.vue";
 import { Users, Trash2, UserCog } from "@lucide/vue";
 import { EntityAvatar } from "#console/components/common";
 import { Checkbox } from "#console/components/ui/checkbox";
@@ -12,13 +16,7 @@ import {
 	TableRow,
 } from "#console/components/ui/table";
 import DataTableHead from "#console/components/pages/DataTableHead.vue";
-import {
-	ContextMenu,
-	ContextMenuContent,
-	ContextMenuItem,
-	ContextMenuTrigger,
-	ContextMenuSeparator,
-} from "#console/components/ui/context-menu";
+import RowActions from "#console/components/pages/RowActions.vue";
 import { personLabel } from "#console/utils/naming";
 
 interface Props {
@@ -35,7 +33,7 @@ interface Emits {
 	(e: "deleteSelected"): void;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
@@ -58,6 +56,43 @@ function handleRowClick(member: Member) {
 	if (canSelectMember(member)) {
 		emit("toggleMember", member.username);
 	}
+}
+
+/** Per-row menu: edit + remove, both disabled for the owner. */
+function rowActions(member: Member): RowAction[] {
+	const disabled = !canSelectMember(member);
+	return [
+		{
+			key: "edit",
+			label: t("members.table.actions.edit"),
+			icon: UserCog,
+			disabled,
+			select: () => emit("edit", member.username),
+		},
+		{
+			key: "remove",
+			label: t("members.table.actions.delete"),
+			icon: Trash2,
+			danger: true,
+			disabled,
+			separatorBefore: true,
+			select: () => emit("remove", member.username),
+		},
+	];
+}
+
+/** Selection state for a row, driving the bulk-vs-single menu. */
+function rowSelection(member: Member): RowSelection {
+	return {
+		selected: props.selectedMembers?.has(member.username) ?? false,
+		count: props.selectedMembers?.size ?? 0,
+		bulk: {
+			label: t("members.table.actions.deleteSelected"),
+			icon: Trash2,
+			count: props.selectedMembers?.size ?? 0,
+			select: () => emit("deleteSelected"),
+		},
+	};
 }
 </script>
 
@@ -88,15 +123,19 @@ function handleRowClick(member: Member) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        <ContextMenu v-for="member in members" :key="member.username">
-          <ContextMenuTrigger as-child>
-            <TableRow
-              :class="[
-                'border-b border-neutral-200 dark:border-neutral-800',
-                canSelectMember(member) ? 'cursor-pointer' : 'cursor-default',
-              ]"
-              @click="handleRowClick(member)"
-            >
+        <RowActions
+          v-for="member in members"
+          :key="member.username"
+          :actions="rowActions(member)"
+          :selection="rowSelection(member)"
+        >
+          <TableRow
+            :class="[
+              'border-b border-neutral-200 dark:border-neutral-800',
+              canSelectMember(member) ? 'cursor-pointer' : 'cursor-default',
+            ]"
+            @click="handleRowClick(member)"
+          >
               <TableCell @click.stop>
                 <Checkbox
                   :model-value="selectedMembers?.has(member.username) || false"
@@ -152,47 +191,7 @@ function handleRowClick(member: Member) {
                 >
               </TableCell>
             </TableRow>
-          </ContextMenuTrigger>
-          <ContextMenuContent>
-            <!-- Bulk actions when member is selected -->
-            <template
-              v-if="
-                selectedMembers?.has(member.username) &&
-                selectedMembers.size > 1
-              "
-            >
-              <ContextMenuItem
-                class="text-red-600 dark:text-red-400 cursor-pointer"
-                @click="emit('deleteSelected')"
-              >
-                <Trash2 :size="14" class="mr-2" />
-                {{ t("members.table.actions.deleteSelected") }} ({{
-                  selectedMembers.size
-                }})
-              </ContextMenuItem>
-            </template>
-            <!-- Single member actions -->
-            <template v-else>
-              <ContextMenuItem
-                class="cursor-pointer"
-                :disabled="!canSelectMember(member)"
-                @click="emit('edit', member.username)"
-              >
-                <UserCog :size="14" class="mr-2" />
-                {{ t("members.table.actions.edit") }}
-              </ContextMenuItem>
-              <ContextMenuSeparator />
-              <ContextMenuItem
-                class="text-red-600 dark:text-red-400 cursor-pointer"
-                :disabled="!canSelectMember(member)"
-                @click="emit('remove', member.username)"
-              >
-                <Trash2 :size="14" class="mr-2" />
-                {{ t("members.table.actions.delete") }}
-              </ContextMenuItem>
-            </template>
-          </ContextMenuContent>
-        </ContextMenu>
+          </RowActions>
       </TableBody>
     </Table>
   </div>

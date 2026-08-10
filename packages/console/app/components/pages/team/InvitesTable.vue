@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import type { Invite } from "@nvisy/sdk/datatypes";
+import type {
+	RowAction,
+	RowSelection,
+} from "#console/components/pages/RowActions.vue";
 import { Mail, X, Copy, Trash2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { EntityAvatar } from "#console/components/common";
@@ -13,13 +17,7 @@ import {
 	TableRow,
 } from "#console/components/ui/table";
 import DataTableHead from "#console/components/pages/DataTableHead.vue";
-import {
-	ContextMenu,
-	ContextMenuContent,
-	ContextMenuItem,
-	ContextMenuTrigger,
-	ContextMenuSeparator,
-} from "#console/components/ui/context-menu";
+import RowActions from "#console/components/pages/RowActions.vue";
 
 interface Props {
 	invites: Invite[];
@@ -34,11 +32,47 @@ interface Emits {
 	(e: "cancelSelected"): void;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
 const { relativeTime, relativeTimeFuture } = useRelativeTime();
+
+/** Per-row menu: copy link (only if the invite has a token), then cancel. */
+function rowActions(invite: Invite): RowAction[] {
+	const actions: RowAction[] = [];
+	if (invite.inviteToken) {
+		actions.push({
+			key: "copy",
+			label: t("members.table.actions.copyLink"),
+			icon: Copy,
+			select: () => copyInviteLink(invite),
+		});
+	}
+	actions.push({
+		key: "cancel",
+		label: t("members.table.actions.cancel"),
+		icon: X,
+		danger: true,
+		separatorBefore: actions.length > 0,
+		select: () => emit("cancel", invite.inviteId),
+	});
+	return actions;
+}
+
+/** Selection state for a row, driving the bulk-vs-single menu. */
+function rowSelection(invite: Invite): RowSelection {
+	return {
+		selected: props.selectedInvites?.has(invite.inviteId) ?? false,
+		count: props.selectedInvites?.size ?? 0,
+		bulk: {
+			label: t("members.table.actions.cancelSelected"),
+			icon: Trash2,
+			count: props.selectedInvites?.size ?? 0,
+			select: () => emit("cancelSelected"),
+		},
+	};
+}
 
 function getInviteCode(invite: Invite): string {
 	if (invite.inviteToken) {
@@ -86,12 +120,16 @@ async function copyInviteLink(invite: Invite) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        <ContextMenu v-for="invite in invites" :key="invite.inviteId">
-          <ContextMenuTrigger as-child>
-            <TableRow
-              class="border-b border-neutral-200 dark:border-neutral-800 cursor-pointer"
-              @click="emit('toggleInvite', invite.inviteId)"
-            >
+        <RowActions
+          v-for="invite in invites"
+          :key="invite.inviteId"
+          :actions="rowActions(invite)"
+          :selection="rowSelection(invite)"
+        >
+          <TableRow
+            class="border-b border-neutral-200 dark:border-neutral-800 cursor-pointer"
+            @click="emit('toggleInvite', invite.inviteId)"
+          >
               <TableCell @click.stop>
                 <Checkbox
                   :model-value="selectedInvites?.has(invite.inviteId) || false"
@@ -148,46 +186,7 @@ async function copyInviteLink(invite: Invite) {
                 >
               </TableCell>
             </TableRow>
-          </ContextMenuTrigger>
-          <ContextMenuContent>
-            <!-- Bulk actions when invite is selected -->
-            <template
-              v-if="
-                selectedInvites?.has(invite.inviteId) &&
-                selectedInvites.size > 1
-              "
-            >
-              <ContextMenuItem
-                class="text-red-600 dark:text-red-400 cursor-pointer"
-                @click="emit('cancelSelected')"
-              >
-                <Trash2 :size="14" class="mr-2" />
-                {{ t("members.table.actions.cancelSelected") }} ({{
-                  selectedInvites.size
-                }})
-              </ContextMenuItem>
-            </template>
-            <!-- Single invite actions -->
-            <template v-else>
-              <ContextMenuItem
-                v-if="invite.inviteToken"
-                class="cursor-pointer"
-                @click="copyInviteLink(invite)"
-              >
-                <Copy :size="14" class="mr-2" />
-                {{ t("members.table.actions.copyLink") }}
-              </ContextMenuItem>
-              <ContextMenuSeparator v-if="invite.inviteToken" />
-              <ContextMenuItem
-                class="text-red-600 dark:text-red-400 cursor-pointer"
-                @click="emit('cancel', invite.inviteId)"
-              >
-                <X :size="14" class="mr-2" />
-                {{ t("members.table.actions.cancel") }}
-              </ContextMenuItem>
-            </template>
-          </ContextMenuContent>
-        </ContextMenu>
+          </RowActions>
       </TableBody>
     </Table>
   </div>
