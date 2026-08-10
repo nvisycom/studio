@@ -1,37 +1,17 @@
 <script setup lang="ts">
 import type { Connection } from "@nvisy/sdk/datatypes";
-import {
-	Edit,
-	Trash2,
-	HardDrive,
-	MoreHorizontal,
-	RefreshCw,
-	PlugZap,
-} from "@lucide/vue";
+import type { RowAction } from "#console/components/pages/RowActions.vue";
+import { Edit, Trash2, HardDrive, RefreshCw, PlugZap } from "@lucide/vue";
 import { Switch } from "#console/components/ui/switch";
 import {
 	Table,
 	TableBody,
 	TableCell,
-	TableHead,
 	TableHeader,
 	TableRow,
 } from "#console/components/ui/table";
-import { Button } from "#console/components/ui/button";
-import {
-	ContextMenu,
-	ContextMenuContent,
-	ContextMenuItem,
-	ContextMenuTrigger,
-	ContextMenuSeparator,
-} from "#console/components/ui/context-menu";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "#console/components/ui/dropdown-menu";
+import DataTableHead from "#console/components/pages/DataTableHead.vue";
+import RowActions from "#console/components/pages/RowActions.vue";
 import {
 	providerIcon,
 	providerLabel,
@@ -51,34 +31,68 @@ const emit = defineEmits<{
 	(e: "test", connectionId: string): void;
 	(e: "toggleActive", connection: Connection): void;
 }>();
+
+/** Right-click / ⋯ actions for a connection row. */
+function rowActions(connection: Connection): RowAction[] {
+	return [
+		{
+			key: "sync",
+			label: t("connections.table.actions.sync"),
+			icon: RefreshCw,
+			select: () => emit("sync", connection.id),
+		},
+		{
+			key: "configure",
+			label: t("connections.table.actions.configure"),
+			icon: Edit,
+			select: () => emit("configure", connection.id),
+		},
+		{
+			key: "test",
+			label: t("connections.table.actions.test"),
+			icon: PlugZap,
+			select: () => emit("test", connection.id),
+		},
+		{
+			key: "disconnect",
+			label: t("connections.table.actions.disconnect"),
+			icon: Trash2,
+			danger: true,
+			separatorBefore: true,
+			select: () => emit("disconnect", connection.id),
+		},
+	];
+}
 </script>
 
 <template>
   <Table>
     <TableHeader>
       <TableRow>
-        <TableHead class="text-xs font-normal uppercase tracking-wider">
-          {{ t("connections.table.headers.name") }}
-        </TableHead>
-        <TableHead class="text-xs font-normal uppercase tracking-wider">
+        <DataTableHead>{{ t("connections.table.headers.name") }}</DataTableHead>
+        <DataTableHead>
           {{ t("connections.table.headers.enabled") }}
-        </TableHead>
-        <TableHead class="text-xs font-normal uppercase tracking-wider">
+        </DataTableHead>
+        <DataTableHead>
           {{ t("connections.table.headers.syncMode") }}
-        </TableHead>
-        <TableHead class="text-xs font-normal uppercase tracking-wider">
+        </DataTableHead>
+        <DataTableHead>
           {{ t("connections.table.headers.schedule") }}
-        </TableHead>
-        <TableHead class="text-xs font-normal uppercase tracking-wider">
+        </DataTableHead>
+        <DataTableHead>
           {{ t("connections.table.headers.lastSynced") }}
-        </TableHead>
-        <TableHead class="w-10" />
+        </DataTableHead>
+        <DataTableHead class="w-10" />
       </TableRow>
     </TableHeader>
     <TableBody>
-      <ContextMenu v-for="connection in connections" :key="connection.id">
-        <ContextMenuTrigger as-child>
-          <TableRow class="group cursor-pointer">
+      <RowActions
+        v-for="connection in connections"
+        :key="connection.id"
+        :actions="rowActions(connection)"
+        :menu-label="t('connections.table.actions.menu')"
+        row-class="group cursor-pointer"
+      >
             <!-- Name + provider logo -->
             <TableCell>
               <div class="flex items-center gap-3">
@@ -146,78 +160,7 @@ const emit = defineEmits<{
                 }}
               </span>
             </TableCell>
-
-            <!-- Actions -->
-            <TableCell class="text-right" @click.stop>
-              <DropdownMenu>
-                <DropdownMenuTrigger as-child>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    class="size-8 opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100"
-                    :aria-label="t('connections.table.actions.menu')"
-                  >
-                    <MoreHorizontal :size="16" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem @click="emit('sync', connection.id)">
-                    <RefreshCw :size="14" class="mr-2" />
-                    {{ t("connections.table.actions.sync") }}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem @click="emit('configure', connection.id)">
-                    <Edit :size="14" class="mr-2" />
-                    {{ t("connections.table.actions.configure") }}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem @click="emit('test', connection.id)">
-                    <PlugZap :size="14" class="mr-2" />
-                    {{ t("connections.table.actions.test") }}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    class="text-destructive focus:text-destructive"
-                    @click="emit('disconnect', connection.id)"
-                  >
-                    <Trash2 :size="14" class="mr-2" />
-                    {{ t("connections.table.actions.disconnect") }}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </TableCell>
-          </TableRow>
-        </ContextMenuTrigger>
-        <ContextMenuContent>
-          <ContextMenuItem
-            class="cursor-pointer"
-            @click="emit('sync', connection.id)"
-          >
-            <RefreshCw :size="14" class="mr-2" />
-            {{ t("connections.table.actions.sync") }}
-          </ContextMenuItem>
-          <ContextMenuItem
-            class="cursor-pointer"
-            @click="emit('configure', connection.id)"
-          >
-            <Edit :size="14" class="mr-2" />
-            {{ t("connections.table.actions.configure") }}
-          </ContextMenuItem>
-          <ContextMenuItem
-            class="cursor-pointer"
-            @click="emit('test', connection.id)"
-          >
-            <PlugZap :size="14" class="mr-2" />
-            {{ t("connections.table.actions.test") }}
-          </ContextMenuItem>
-          <ContextMenuSeparator />
-          <ContextMenuItem
-            class="cursor-pointer text-destructive focus:text-destructive"
-            @click="emit('disconnect', connection.id)"
-          >
-            <Trash2 :size="14" class="mr-2" />
-            {{ t("connections.table.actions.disconnect") }}
-          </ContextMenuItem>
-        </ContextMenuContent>
-      </ContextMenu>
+      </RowActions>
     </TableBody>
   </Table>
 </template>

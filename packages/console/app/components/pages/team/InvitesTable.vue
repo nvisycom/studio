@@ -12,6 +12,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "#console/components/ui/table";
+import DataTableHead from "#console/components/pages/DataTableHead.vue";
 import {
 	ContextMenu,
 	ContextMenuContent,
@@ -70,22 +71,18 @@ async function copyInviteLink(invite: Invite) {
               class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
             />
           </TableHead>
-          <TableHead
-            class="uppercase text-xs font-normal tracking-wider min-w-[280px]"
-            >{{ t("members.table.headers.invite") }}</TableHead
-          >
-          <TableHead
-            class="uppercase text-xs font-normal tracking-wider w-[140px]"
-            >{{ t("members.table.headers.role") }}</TableHead
-          >
-          <TableHead
-            class="uppercase text-xs font-normal tracking-wider w-[160px]"
-            >{{ t("members.table.headers.invited") }}</TableHead
-          >
-          <TableHead
-            class="uppercase text-xs font-normal tracking-wider w-[160px]"
-            >{{ t("members.table.headers.expires") }}</TableHead
-          >
+          <DataTableHead class="min-w-[280px]">
+            {{ t("members.table.headers.invite") }}
+          </DataTableHead>
+          <DataTableHead class="w-[140px]">
+            {{ t("members.table.headers.role") }}
+          </DataTableHead>
+          <DataTableHead class="w-[160px]">
+            {{ t("members.table.headers.invited") }}
+          </DataTableHead>
+          <DataTableHead class="w-[160px]">
+            {{ t("members.table.headers.expires") }}
+          </DataTableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

@@ -9,6 +9,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "#console/components/ui/table";
+import DataTableHead from "#console/components/pages/DataTableHead.vue";
 import {
 	ContextMenu,
 	ContextMenuContent,
@@ -101,15 +102,9 @@ const getSessionTypeInitial = (type: string): string => {
             @update:model-value="emit('toggleSelectAll')"
           />
         </TableHead>
-        <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("tokens.table.headers.name")
-        }}</TableHead>
-        <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("tokens.table.headers.createdAt")
-        }}</TableHead>
-        <TableHead class="uppercase text-xs font-normal tracking-wider">{{
-          t("tokens.table.headers.lastUsed")
-        }}</TableHead>
+        <DataTableHead>{{ t("tokens.table.headers.name") }}</DataTableHead>
+        <DataTableHead>{{ t("tokens.table.headers.createdAt") }}</DataTableHead>
+        <DataTableHead>{{ t("tokens.table.headers.lastUsed") }}</DataTableHead>
       </TableRow>
     </TableHeader>
     <TableBody>

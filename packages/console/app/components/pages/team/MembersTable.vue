@@ -11,6 +11,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "#console/components/ui/table";
+import DataTableHead from "#console/components/pages/DataTableHead.vue";
 import {
 	ContextMenu,
 	ContextMenuContent,
@@ -72,22 +73,18 @@ function handleRowClick(member: Member) {
               class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
             />
           </TableHead>
-          <TableHead
-            class="uppercase text-xs font-normal tracking-wider min-w-[280px]"
-            >{{ t("members.table.headers.member") }}</TableHead
-          >
-          <TableHead
-            class="uppercase text-xs font-normal tracking-wider w-[140px]"
-            >{{ t("members.table.headers.role") }}</TableHead
-          >
-          <TableHead
-            class="uppercase text-xs font-normal tracking-wider w-[160px]"
-            >{{ t("members.table.headers.twoFA") }}</TableHead
-          >
-          <TableHead
-            class="uppercase text-xs font-normal tracking-wider w-[160px]"
-            >{{ t("members.table.headers.joined") }}</TableHead
-          >
+          <DataTableHead class="min-w-[280px]">
+            {{ t("members.table.headers.member") }}
+          </DataTableHead>
+          <DataTableHead class="w-[140px]">
+            {{ t("members.table.headers.role") }}
+          </DataTableHead>
+          <DataTableHead class="w-[160px]">
+            {{ t("members.table.headers.twoFA") }}
+          </DataTableHead>
+          <DataTableHead class="w-[160px]">
+            {{ t("members.table.headers.joined") }}
+          </DataTableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
