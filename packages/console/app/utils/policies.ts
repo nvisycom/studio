@@ -1,9 +1,14 @@
 import type {
+	AudioRedaction,
 	CreatePolicy,
+	ImageRedaction,
 	Label,
 	Labels,
+	ModalityRedactions,
 	PolicyDefinition,
 	PolicyRule,
+	Predicate,
+	TextRedaction,
 } from "@nvisy/sdk/datatypes";
 
 // 0.16 merged the rule variants into one `PolicyRule` discriminated by `kind`.
@@ -17,12 +22,11 @@ type PredicatedRule = Extract<PolicyRule, { kind: "predicated" }>;
 // and the label catalog. Recursive predicate trees (any/not) and appliesWhen /
 // retention are not yet exposed.
 
-export type PredicateKind =
-	| "confidence"
-	| "labelOneOf"
-	| "tagOneOf"
-	| "labelInGroup"
-	| "coRef";
+// Leaf predicates the editor exposes: every SDK predicate kind except the
+// recursive combinators (`all` / `any` / `not`), which the flat editor can't
+// build yet. Deriving from the SDK means a renamed/removed kind is a type error
+// here instead of silently drifting.
+export type PredicateKind = Exclude<Predicate["kind"], "all" | "any" | "not">;
 
 /** A single condition. `all` of a rule's conditions must hold (AND). */
 export interface EditablePredicate {
@@ -38,15 +42,24 @@ export interface EditablePredicate {
 
 export type Modality = "text" | "image" | "audio" | "tabular";
 
-export type TextRedactionKind = "erase" | "mask" | "replace" | "hash" | "keep";
-export type ImageRedactionKind = "erase" | "keep" | "blur" | "pixelate";
-export type AudioRedactionKind = "erase" | "keep" | "silence" | "beep";
-export type TabularRedactionKind =
-	| "erase"
-	| "mask"
-	| "replace"
-	| "hash"
-	| "keep";
+/** Compile-time assertion that `T` only names kinds the SDK union `U` defines. */
+type SubsetOf<T extends U, U> = T;
+
+// Curated subsets of the SDK operator vocabularies. The `SubsetOf` guard makes
+// the build fail if the SDK renames or drops one of these kinds, without
+// widening the editor to operators it can't construct.
+export type TextRedactionKind = SubsetOf<
+	"erase" | "mask" | "replace" | "hash" | "keep",
+	TextRedaction["kind"]
+>;
+export type ImageRedactionKind = SubsetOf<
+	"erase" | "keep" | "blur" | "pixelate",
+	ImageRedaction["kind"]
+>;
+/** The editor supports every audio operator the SDK offers. */
+export type AudioRedactionKind = AudioRedaction["kind"];
+/** Tabular cells reuse the text vocabulary (wrapped in a `cell` operator). */
+export type TabularRedactionKind = TextRedactionKind;
 
 /** A per-modality redaction operator with the params its kind needs. */
 export interface EditableOperator {
@@ -154,7 +167,10 @@ function buildPredicate(
 }
 
 /** Build a text-vocabulary operator (shared by text and tabular `cell`). */
-function buildTextOp(op: EditableOperator, kind: TextRedactionKind) {
+function buildTextOp(
+	op: EditableOperator,
+	kind: TextRedactionKind,
+): TextRedaction {
 	switch (kind) {
 		case "mask":
 			return { kind: "mask", mask_char: op.maskChar || "*" };
@@ -168,8 +184,10 @@ function buildTextOp(op: EditableOperator, kind: TextRedactionKind) {
 }
 
 /** Build the SDK `ModalityRedactions` map from the editable operators. */
-function buildModalities(mods: EditableAction["modalities"]) {
-	const out: Record<string, unknown> = {};
+function buildModalities(
+	mods: EditableAction["modalities"],
+): ModalityRedactions {
+	const out: ModalityRedactions = {};
 	if (!mods) return out;
 
 	if (mods.text) {
@@ -185,7 +203,13 @@ function buildModalities(mods: EditableAction["modalities"]) {
 	}
 	if (mods.audio) {
 		const k = mods.audio.audioKind ?? "silence";
-		if (k === "beep") out.audio = { kind: "beep", hz: mods.audio.hz ?? 1000 };
+		if (k === "beep")
+			out.audio = {
+				kind: "beep",
+				hz: mods.audio.hz ?? 1000,
+				amplitude: 0.5,
+				waveform: "sine",
+			};
 		else out.audio = { kind: k }; // erase | keep | silence
 	}
 	if (mods.tabular) {
@@ -201,13 +225,11 @@ function buildModalities(mods: EditableAction["modalities"]) {
  * editable action. Defaults to a text replace when nothing is configured so
  * the action is never empty.
  */
-function buildAction(action: EditableAction): PredicatedRule["action"] {
+function buildAction(action: EditableAction): ModalityRedactions {
 	const mods = action.modalities;
-	const built =
-		mods && Object.keys(mods).length > 0
-			? buildModalities(mods)
-			: { text: { kind: "replace", template: "[{label}]" } };
-	return built as PredicatedRule["action"];
+	return mods && Object.keys(mods).length > 0
+		? buildModalities(mods)
+		: { text: { kind: "replace", template: "[{label}]" } };
 }
 
 export interface PolicyInput {
