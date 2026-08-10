@@ -6,12 +6,8 @@
 				"explore": "Explore",
 				"runs": "Runs"
 			},
-			"files": {
-				"index": "Index",
-				"corpus": "Corpus"
-			},
 			"workflows": {
-				"index": "Workflows",
+				"index": "Pipelines",
 				"runs": "Runs"
 			},
 			"settings": {
@@ -28,7 +24,7 @@
 				"logs": "Logs"
 			},
 			"policies": {
-				"index": "Policies",
+				"index": "Overview",
 				"templates": "Templates"
 			}
 		},
@@ -359,7 +355,7 @@
 			"namePlaceholder": "My Workspace",
 			"descriptionLabel": "Description",
 			"descriptionPlaceholder": "Brief description of your workspace...",
-			"advancedSettings": "Advanced settings",
+			"advancedSettings": "Advanced",
 			"error": "Failed to create workspace. Please try again.",
 			"requireApprovalLabel": "Require Approval",
 			"requireApprovalDescription": "Processed files require approval before being visible",
@@ -449,49 +445,6 @@
 			"uploadFailed": "Failed to upload file",
 			"downloadFailed": "Failed to download file",
 			"loadFailed": "Failed to load files"
-		},
-		"corpus": {
-			"title": "Knowledge Corpus",
-			"documentCount": "{count} document in the index | {count} documents in the index",
-			"viewDocuments": "View Documents",
-			"searchPlaceholder": "Search documents...",
-			"footer": "Documents are automatically indexed for intelligent search and retrieval.",
-			"status": {
-				"all": "All statuses",
-				"indexed": "Indexed",
-				"processing": "Processing",
-				"failed": "Failed"
-			},
-			"table": {
-				"originalName": "Original Name",
-				"indexed": "Indexed",
-				"fileSize": "File Size",
-				"indexSize": "Index Size",
-				"segments": "Segments",
-				"avgQuery": "Avg Query",
-				"edit": "Edit",
-				"delete": "Delete"
-			},
-			"edit": {
-				"title": "Edit Document",
-				"description": "Update document settings and configuration.",
-				"visualSupport": "Visual Support",
-				"contentSegmentation": "Content Segmentation",
-				"segmentationPlaceholder": "Select segmentation method",
-				"segmentation": {
-					"none": "None",
-					"semantic": "Semantic",
-					"fixed": "Fixed"
-				},
-				"cancel": "Cancel",
-				"save": "Save Changes"
-			},
-			"delete": {
-				"title": "Delete Document",
-				"description": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
-				"cancel": "Cancel",
-				"confirm": "Delete"
-			}
 		}
 	},
 	"members": {
