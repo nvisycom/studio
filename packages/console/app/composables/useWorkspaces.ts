@@ -55,10 +55,14 @@ export function useWorkspaces() {
 			if (!client) throw new Error("Not authenticated");
 			return await client.workspaces.createWorkspace(workspace);
 		},
-		onSuccess(data) {
-			workspacesQuery.refresh();
-			// Navigate into the freshly created workspace.
-			navigateTo(`/w/${data.slug}`);
+		async onSuccess(data) {
+			// Await the refetch so the list contains the new workspace *before*
+			// we navigate — otherwise the /w/[workspace] guard in the default
+			// layout sees a slug that isn't in the (stale) list, and the "/"
+			// resolver may redirect elsewhere, leaving the user stranded until a
+			// manual refresh.
+			await workspacesQuery.refresh();
+			navigateTo(`/w/${data.slug}`, { replace: true });
 		},
 	});
 
@@ -85,14 +89,18 @@ export function useWorkspaces() {
 			if (!client) throw new Error("Not authenticated");
 			await client.workspaces.deleteWorkspace(workspaceSlug);
 		},
-		onSuccess(_data, deletedSlug) {
-			workspacesQuery.refresh();
+		async onSuccess(_data, deletedSlug) {
+			// Await the refetch so `data` reflects the deletion before we choose
+			// where to go — otherwise we'd pick the "next" workspace from a stale
+			// list (still containing the deleted one) and navigate before the
+			// guard's list catches up, stranding the user until a manual refresh.
+			await workspacesQuery.refresh();
 			// If the deleted workspace is the one in the URL, move to another.
 			if (currentWorkspaceSlug.value === deletedSlug) {
 				const next = workspacesQuery.data.value?.find(
 					(w) => w.slug !== deletedSlug,
 				);
-				navigateTo(next ? `/w/${next.slug}` : "/");
+				navigateTo(next ? `/w/${next.slug}` : "/", { replace: true });
 			}
 		},
 	});
