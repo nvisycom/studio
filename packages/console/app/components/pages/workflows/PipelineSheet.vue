@@ -2,8 +2,10 @@
 import { ChevronDown, Loader2, X } from "@lucide/vue";
 import type {
 	CreatePipeline,
+	Pipeline,
 	PolicySummary,
 	Retention,
+	UpdatePipeline,
 } from "@nvisy/sdk/datatypes";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
@@ -37,14 +39,31 @@ const { t } = useI18n();
 
 const open = defineModel<boolean>("open", { default: false });
 
+// `pipeline` present → edit mode; absent → create mode. `loadingPipeline` is
+// true while the full pipeline is fetched for edit (the list holds summaries).
 const props = defineProps<{
 	isLoading?: boolean;
+	loadingPipeline?: boolean;
 	policies?: PolicySummary[];
+	pipeline?: Pipeline | null;
 }>();
 
 const emit = defineEmits<{
 	create: [pipeline: CreatePipeline];
+	update: [slug: string, updates: UpdatePipeline];
 }>();
+
+const isEdit = computed(() => !!props.pipeline || !!props.loadingPipeline);
+
+/** i18n keys switch on mode. */
+const keys = computed(() => {
+	const ns = isEdit.value ? "workflows.edit" : "workflows.create";
+	return {
+		title: `${ns}.title`,
+		description: `${ns}.description`,
+		submit: `${ns}.submit`,
+	};
+});
 
 const name = ref("");
 const slug = ref("");
@@ -99,10 +118,47 @@ const hasRetentionOverride = computed(() =>
 	RETENTION_TARGETS.some((tgt) => retention.value[tgt].mode !== "inherit"),
 );
 
-// The slug is immutable and always derived from the pipeline name.
+// On create the slug is derived from the name; on edit it is fixed to the
+// existing pipeline's slug and never changes.
 watch(name, (value) => {
-	slug.value = slugify(value);
+	if (!isEdit.value) slug.value = slugify(value);
 });
+
+// Convert a stored Retention (or null) back into an editor field.
+function retentionToField(r: Retention | null | undefined): RetentionField {
+	if (!r) return newRetentionField();
+	return r.mode === "days"
+		? { mode: "days", days: r.days }
+		: { mode: r.mode, days: 30 };
+}
+
+// Populate the form from an existing pipeline (edit mode).
+function populate(pipeline: Pipeline) {
+	name.value = pipeline.displayName;
+	slug.value = pipeline.slug;
+	description.value = pipeline.description ?? "";
+	selectedPolicies.value = [...(pipeline.definition.policySlugs ?? [])];
+	const scope = pipeline.definition.defaultScope;
+	countries.value = [...(scope?.countries ?? [])];
+	languages.value = (scope?.languages ?? []).map((l) => l.language);
+	scopeOpen.value = countries.value.length > 0 || languages.value.length > 0;
+	retention.value = {
+		auditLogs: retentionToField(pipeline.retention?.auditLogs),
+		redactedDocuments: retentionToField(pipeline.retention?.redactedDocuments),
+	};
+	retentionOpen.value = RETENTION_TARGETS.some(
+		(tgt) => retention.value[tgt].mode !== "inherit",
+	);
+}
+
+// Edit mode repopulates whenever the sheet opens with a pipeline.
+watch(
+	[() => props.pipeline, open],
+	([pipeline, isOpen]) => {
+		if (pipeline && isOpen) populate(pipeline);
+	},
+	{ immediate: true },
+);
 
 function addCountry() {
 	const value = countryInput.value.trim().toUpperCase();
@@ -150,41 +206,60 @@ function handleOpenChange(value: boolean) {
 	open.value = value;
 }
 
+// The generated type marks both retention scopes as required Retention, but the
+// API's contract is "override when set / null == inherit" (each field
+// `@default null`). Sending null for an inheriting scope is the correct wire
+// shape; cast past the codegen quirk.
+type RetentionOverride = CreatePipeline["retention"];
+function buildRetention(): RetentionOverride {
+	return {
+		auditLogs: fieldToRetention(retention.value.auditLogs),
+		redactedDocuments: fieldToRetention(retention.value.redactedDocuments),
+	} as RetentionOverride;
+}
+
+// Assemble the pipeline definition shared by create + edit. Only asserted
+// languages/countries are sent, so a simple pipeline inherits defaults.
+function buildDefinition(): CreatePipeline["definition"] {
+	const hasScope = countries.value.length > 0 || languages.value.length > 0;
+	return {
+		...(selectedPolicies.value.length && {
+			policySlugs: [...selectedPolicies.value],
+		}),
+		...(hasScope && {
+			defaultScope: {
+				languages: languages.value.map((language) => ({
+					language,
+					provenance: "asserted" as const,
+				})),
+				...(countries.value.length && { countries: [...countries.value] }),
+			},
+		}),
+	};
+}
+
 function submit() {
 	if (!isFormValid.value) return;
 
-	// Only asserted languages/countries and an actual retention override are
-	// sent, so a simple pipeline inherits engine/workspace defaults.
-	const hasScope = countries.value.length > 0 || languages.value.length > 0;
+	if (isEdit.value && props.pipeline) {
+		// Edit replaces the whole definition; retention is always sent (each scope
+		// inheriting sends null, matching the override-when-set contract).
+		const updates: UpdatePipeline = {
+			displayName: name.value.trim(),
+			description: description.value.trim() || undefined,
+			definition: buildDefinition(),
+			retention: buildRetention() as UpdatePipeline["retention"],
+		};
+		emit("update", props.pipeline.slug, updates);
+		return;
+	}
 
 	const pipeline: CreatePipeline = {
 		displayName: name.value.trim(),
 		slug: slug.value,
 		description: description.value.trim() || undefined,
-		definition: {
-			...(selectedPolicies.value.length && {
-				policySlugs: [...selectedPolicies.value],
-			}),
-			...(hasScope && {
-				defaultScope: {
-					languages: languages.value.map((language) => ({
-						language,
-						provenance: "asserted" as const,
-					})),
-					...(countries.value.length && { countries: [...countries.value] }),
-				},
-			}),
-		},
-		...(hasRetentionOverride.value && {
-			// The generated type marks both scopes as required Retention, but the
-			// API's contract is "override when set / null == inherit" (each field
-			// `@default null`). Sending null for an inheriting scope is the correct
-			// wire shape; cast past the codegen quirk.
-			retention: {
-				auditLogs: fieldToRetention(retention.value.auditLogs),
-				redactedDocuments: fieldToRetention(retention.value.redactedDocuments),
-			} as CreatePipeline["retention"],
-		}),
+		definition: buildDefinition(),
+		...(hasRetentionOverride.value && { retention: buildRetention() }),
 	};
 
 	// Parent closes the sheet on success (and keeps it open on error so the
@@ -205,13 +280,21 @@ function cancel() {
       class="flex w-full flex-col gap-0 p-0 sm:max-w-2xl"
     >
       <SheetHeader class="border-b border-border/50">
-        <SheetTitle>{{ t("workflows.create.title") }}</SheetTitle>
+        <SheetTitle>{{ t(keys.title) }}</SheetTitle>
         <SheetDescription>
-          {{ t("workflows.create.description") }}
+          {{ t(keys.description) }}
         </SheetDescription>
       </SheetHeader>
 
-      <div class="flex-1 space-y-6 overflow-y-auto p-6">
+      <!-- Fetching the full pipeline for edit -->
+      <div
+        v-if="loadingPipeline"
+        class="flex flex-1 items-center justify-center"
+      >
+        <Loader2 :size="24" class="animate-spin text-muted-foreground" />
+      </div>
+
+      <div v-else class="flex-1 space-y-6 overflow-y-auto p-6">
         <!-- Basics -->
         <div class="grid gap-5 sm:grid-cols-2">
           <div class="space-y-2">
@@ -237,11 +320,11 @@ function cancel() {
               class="font-mono text-sm text-muted-foreground"
               :placeholder="t('workflows.create.slugPlaceholder')"
             />
+            <p class="text-xs text-muted-foreground">
+              {{ t("workflows.create.slugHint") }}
+            </p>
           </div>
         </div>
-        <p class="-mt-3 text-xs text-muted-foreground">
-          {{ t("workflows.create.slugHint") }}
-        </p>
 
         <!-- Description -->
         <div class="space-y-2">
@@ -258,15 +341,22 @@ function cancel() {
 
         <!-- Policies -->
         <div class="space-y-2">
-          <Label>{{ t("workflows.create.policiesLabel") }}</Label>
-          <MultiSelect
-            v-model="selectedPolicies"
-            :options="policyOptions"
-            :label="t('workflows.create.policiesSelect')"
-            :empty-text="t('workflows.create.policiesEmpty')"
-            searchable
-            content-class="w-64"
-          />
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <Label>{{ t("workflows.create.policiesLabel") }}</Label>
+              <p class="text-xs text-muted-foreground">
+                {{ t("workflows.create.policiesHint") }}
+              </p>
+            </div>
+            <MultiSelect
+              v-model="selectedPolicies"
+              :options="policyOptions"
+              :label="t('workflows.create.policiesSelect')"
+              :empty-text="t('workflows.create.policiesEmpty')"
+              searchable
+              content-class="w-64"
+            />
+          </div>
           <div v-if="selectedPolicies.length" class="flex flex-wrap gap-1.5">
             <Badge
               v-for="value in selectedPolicies"
@@ -284,9 +374,6 @@ function cancel() {
               </button>
             </Badge>
           </div>
-          <p class="text-xs text-muted-foreground">
-            {{ t("workflows.create.policiesHint") }}
-          </p>
         </div>
 
         <!-- Scope: jurisdictions & languages -->
@@ -431,13 +518,16 @@ function cancel() {
         </Collapsible>
       </div>
 
-      <SheetFooter class="flex-row justify-end border-t border-border/50">
+      <SheetFooter
+        v-if="!loadingPipeline"
+        class="flex-row justify-end border-t border-border/50"
+      >
         <Button variant="outline" @click="cancel">
           {{ t("workflows.create.cancel") }}
         </Button>
         <Button @click="submit" :disabled="!isFormValid || isLoading">
           <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-          {{ t("workflows.create.submit") }}
+          {{ t(keys.submit) }}
         </Button>
       </SheetFooter>
     </SheetContent>

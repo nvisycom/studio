@@ -424,11 +424,11 @@ function ruleSummary(rule: EditablePredicatedRule): string {
             class="font-mono text-sm text-muted-foreground"
             :placeholder="t('policies.editor.slugPlaceholder')"
           />
+          <p class="text-xs text-muted-foreground">
+            {{ t("policies.editor.slugHint") }}
+          </p>
         </div>
       </div>
-      <p class="-mt-3 text-xs text-muted-foreground">
-        {{ t("policies.editor.slugHint") }}
-      </p>
       <div class="space-y-2">
         <Label for="policy-description">{{
           t("policies.editor.descriptionLabel")

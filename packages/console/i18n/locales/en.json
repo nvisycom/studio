@@ -1426,13 +1426,17 @@
 		"table": {
 			"name": "Name",
 			"status": "Status",
+			"creator": "Creator",
+			"created": "Created",
 			"updated": "Updated",
-			"menu": "Actions"
+			"menu": "Actions",
+			"edit": "Edit"
 		},
 		"actions": {
 			"create": "Create Pipeline",
 			"delete": "Delete",
-			"viewRuns": "View Runs"
+			"viewRuns": "View Runs",
+			"edit": "Edit"
 		},
 		"empty": {
 			"title": "No pipelines yet",
@@ -1442,7 +1446,10 @@
 			"deleted": "Pipeline deleted",
 			"deleteFailed": "Failed to delete pipeline",
 			"created": "Pipeline created",
-			"createFailed": "Failed to create pipeline"
+			"createFailed": "Failed to create pipeline",
+			"updated": "Pipeline updated",
+			"updateFailed": "Failed to update pipeline",
+			"loadFailed": "Failed to load pipeline"
 		},
 		"create": {
 			"title": "Create Pipeline",
@@ -1480,6 +1487,17 @@
 				"zeroDays": "Delete immediately"
 			},
 			"retentionDays": "Days"
+		},
+		"edit": {
+			"title": "Edit Pipeline",
+			"description": "Update this detection and redaction pipeline.",
+			"submit": "Save changes"
+		},
+		"delete": {
+			"title": "Delete {name}?",
+			"description": "This permanently deletes the pipeline. This action cannot be undone.",
+			"confirm": "Delete pipeline",
+			"cancel": "Cancel"
 		}
 	},
 	"analytics": {

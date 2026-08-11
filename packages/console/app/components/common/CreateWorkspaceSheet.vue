@@ -151,11 +151,11 @@ async function createWorkspace() {
                 class="font-mono text-sm text-muted-foreground"
                 :placeholder="t('workspace.create.slugPlaceholder')"
               />
+              <p class="text-xs text-muted-foreground">
+                {{ t("workspace.create.slugHint") }}
+              </p>
             </div>
           </div>
-          <p class="-mt-3 text-xs text-muted-foreground">
-            {{ t("workspace.create.slugHint") }}
-          </p>
 
           <!-- Description -->
           <div class="space-y-2">

@@ -4,6 +4,8 @@ import type { CreatePipeline, UpdatePipeline } from "@nvisy/sdk/datatypes";
  * Composable for pipeline operations
  */
 export function usePipelines() {
+	const { requireContext } = useWorkspaceContext();
+
 	const pipelinesQuery = workspaceQuery(
 		"pipelines",
 		async ({ client, workspaceSlug }) => {
@@ -14,6 +16,13 @@ export function usePipelines() {
 
 	// Pipelines are keyed by slug; a delete drops the row immediately.
 	const optimistic = useOptimisticList(pipelinesQuery.data, (p) => p.slug);
+
+	// Fetch a single pipeline with its full definition + retention (the list only
+	// returns summaries).
+	async function getPipeline(pipelineSlug: string) {
+		const { client, workspaceSlug } = requireContext();
+		return await client.pipelines.getPipeline(workspaceSlug, pipelineSlug);
+	}
 
 	const createPipelineMutation = workspaceMutation(
 		({ client, workspaceSlug }, pipeline: CreatePipeline) =>
@@ -48,6 +57,7 @@ export function usePipelines() {
 		isLoading: pipelinesQuery.isLoading,
 		error: pipelinesQuery.error,
 		refresh: pipelinesQuery.refresh,
+		getPipeline,
 
 		// Create
 		createPipeline: createPipelineMutation.mutate,

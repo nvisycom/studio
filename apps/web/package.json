@@ -15,7 +15,7 @@
 	"dependencies": {
 		"@nuxtjs/device": "^4.0.0",
 		"@nvisy/console": "*",
-		"@nvisy/sdk": "^0.18.0",
+		"@nvisy/sdk": "^0.19.0",
 		"nuxt": "^4.5.2",
 		"vue": "^3.5.41",
 		"vue-router": "^5.1.0"

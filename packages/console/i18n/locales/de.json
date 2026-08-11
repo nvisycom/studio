@@ -1426,13 +1426,17 @@
 		"table": {
 			"name": "Name",
 			"status": "Status",
+			"creator": "Ersteller",
+			"created": "Erstellt",
 			"updated": "Aktualisiert",
-			"menu": "Aktionen"
+			"menu": "Aktionen",
+			"edit": "Bearbeiten"
 		},
 		"actions": {
 			"create": "Pipeline erstellen",
 			"delete": "Löschen",
-			"viewRuns": "Ausführungen"
+			"viewRuns": "Ausführungen",
+			"edit": "Bearbeiten"
 		},
 		"empty": {
 			"title": "Noch keine Pipelines",
@@ -1442,7 +1446,10 @@
 			"deleted": "Pipeline gelöscht",
 			"deleteFailed": "Pipeline konnte nicht gelöscht werden",
 			"created": "Pipeline erstellt",
-			"createFailed": "Pipeline konnte nicht erstellt werden"
+			"createFailed": "Pipeline konnte nicht erstellt werden",
+			"updated": "Pipeline aktualisiert",
+			"updateFailed": "Pipeline konnte nicht aktualisiert werden",
+			"loadFailed": "Pipeline konnte nicht geladen werden"
 		},
 		"create": {
 			"title": "Pipeline erstellen",
@@ -1480,6 +1487,17 @@
 				"zeroDays": "Sofort löschen"
 			},
 			"retentionDays": "Tage"
+		},
+		"edit": {
+			"title": "Pipeline bearbeiten",
+			"description": "Diese Erkennungs- und Schwärzungs-Pipeline aktualisieren.",
+			"submit": "Änderungen speichern"
+		},
+		"delete": {
+			"title": "{name} löschen?",
+			"description": "Dies löscht die Pipeline dauerhaft. Diese Aktion kann nicht rückgängig gemacht werden.",
+			"confirm": "Pipeline löschen",
+			"cancel": "Abbrechen"
 		}
 	},
 	"analytics": {
