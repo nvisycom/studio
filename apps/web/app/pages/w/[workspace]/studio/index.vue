@@ -13,7 +13,12 @@ definePageMeta({
 });
 
 // Use studio files store for persistent open files
-const { activeFile } = useStudioFiles();
+const { activeFile, restoreSession } = useStudioFiles();
+
+// After a refresh, re-open the tabs persisted for this workspace (client-only).
+onMounted(() => {
+	restoreSession();
+});
 
 // File type detection
 const fileExtension = computed(() => {
