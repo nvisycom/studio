@@ -27,11 +27,15 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#console/components/ui/card";
-import { formatFileSize, getFileIcon } from "#console/utils/file";
+import { Badge } from "#console/components/ui/badge";
+import { EntityAvatar } from "#console/components/common";
+import { personLabel } from "#console/utils/naming";
+import { getFileIcon } from "#console/utils/file";
 
 const { t } = useI18n();
 const { wLink } = useWorkspaceLink();
 const { relativeTime } = useRelativeTime();
+const { resolveAvatarUrl } = useAvatarUrl();
 const { currentWorkspace } = useWorkspaces();
 const { members } = useMembers();
 const { files } = useFiles();
@@ -321,23 +325,31 @@ const quickActions = [
                 class="group flex items-center gap-3 py-2.5"
               >
                 <div
-                  class="flex size-7 shrink-0 items-center justify-center rounded-md border border-border/60 bg-muted/40 text-muted-foreground"
+                  class="flex size-8 shrink-0 items-center justify-center rounded-md border border-border/60 bg-muted/40 text-muted-foreground"
                 >
                   <component
                     :is="getFileIcon(file.displayName)"
-                    :size="14"
+                    :size="16"
                     :stroke-width="1.75"
                   />
                 </div>
-                <div class="min-w-0 flex-1">
-                  <p class="truncate text-sm font-medium text-foreground">
-                    {{ file.displayName }}
-                  </p>
-                  <p class="text-xs text-muted-foreground">
-                    {{ formatFileSize(file.fileSize) }} ·
-                    {{ relativeTime(file.createdAt) }}
-                  </p>
+                <p class="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
+                  {{ file.displayName }}
+                </p>
+                <div class="flex min-w-0 shrink items-center gap-2">
+                  <EntityAvatar
+                    size="sm"
+                    class="shrink-0"
+                    :name="personLabel(file.uploadedBy)"
+                    :src="resolveAvatarUrl(file.uploadedBy.avatarUrl)"
+                  />
+                  <span class="truncate text-sm text-muted-foreground">
+                    {{ personLabel(file.uploadedBy) }}
+                  </span>
                 </div>
+                <span class="shrink-0 text-xs text-muted-foreground">
+                  {{ relativeTime(file.createdAt) }}
+                </span>
               </NuxtLink>
             </div>
             <div v-else class="py-10 text-center">

@@ -105,7 +105,7 @@ async function handleResetPassword(): Promise<void> {
       <form @submit.prevent="handleResetPassword" class="space-y-4">
         <!-- New Password -->
         <div class="space-y-2">
-          <Label for="password">{{ t("auth.resetPassword.newPassword") }}</Label>
+          <Label for="password" required>{{ t("auth.resetPassword.newPassword") }}</Label>
           <div class="relative">
             <Input
               id="password"
@@ -138,7 +138,7 @@ async function handleResetPassword(): Promise<void> {
 
         <!-- Confirm Password -->
         <div class="space-y-2">
-          <Label for="confirmPassword">{{ t("auth.resetPassword.confirmPassword") }}</Label>
+          <Label for="confirmPassword" required>{{ t("auth.resetPassword.confirmPassword") }}</Label>
           <div class="relative">
             <Input
               id="confirmPassword"

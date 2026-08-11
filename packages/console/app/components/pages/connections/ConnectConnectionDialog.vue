@@ -132,7 +132,7 @@ function cancel() {
   >
     <!-- Connection name -->
     <div class="space-y-2">
-      <Label>{{ t("connections.dialogs.connect.fields.displayName") }}</Label>
+      <Label required>{{ t("connections.dialogs.connect.fields.displayName") }}</Label>
       <Input
         v-model="displayName"
         :placeholder="t('connections.dialogs.connect.displayNamePlaceholder')"
@@ -150,7 +150,6 @@ function cancel() {
         v-model="credentials"
         :fields="fields"
         label-prefix="connections.dialogs.connect.fields"
-        optional-key="connections.dialogs.connect.optional"
       />
     </section>
 
@@ -205,9 +204,6 @@ function cancel() {
             <div class="space-y-1.5">
               <Label class="text-sm font-normal">
                 {{ t("connections.dialogs.connect.fields.rootPath") }}
-                <span class="text-muted-foreground">
-                  · {{ t("connections.dialogs.connect.optional") }}
-                </span>
               </Label>
               <Input
                 v-model="rootPath"
@@ -217,9 +213,6 @@ function cancel() {
             <div class="space-y-1.5">
               <Label class="text-sm font-normal">
                 {{ t("connections.dialogs.connect.fields.scheduleCron") }}
-                <span class="text-muted-foreground">
-                  · {{ t("connections.dialogs.connect.optional") }}
-                </span>
               </Label>
               <Input
                 v-model="scheduleCron"

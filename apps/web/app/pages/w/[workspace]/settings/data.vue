@@ -3,7 +3,6 @@ import type { OcrPolicy, Retention } from "@nvisy/sdk/datatypes";
 import { Loader2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { Button } from "#console/components/ui/button";
-import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
 import { Switch } from "#console/components/ui/switch";
 import {
@@ -21,6 +20,15 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#console/components/ui/card";
+import { RetentionFields } from "#console/components/common";
+import { OCR_POLICIES } from "#console/utils/ocr";
+import {
+	RETENTION_TARGETS,
+	defaultRetentionForm,
+	formToRetention,
+	retentionEquals,
+	retentionToForm,
+} from "#console/utils/retention";
 
 useHead({ title: "Workspace Data" });
 
@@ -41,49 +49,8 @@ const {
 const requireApproval = ref<boolean | undefined>(undefined);
 const ocr = ref<OcrPolicy>("auto");
 
-// Retention is modelled per target as a mode + day count; only "days" uses the
-// count. Targets: audit logs, original documents, redacted documents.
-type RetentionMode = Retention["mode"];
-interface RetentionField {
-	mode: RetentionMode;
-	days: number;
-}
-const OCR_POLICIES: OcrPolicy[] = ["auto", "force", "never"];
-const RETENTION_MODES: RetentionMode[] = ["forever", "days", "zeroDays"];
-const RETENTION_TARGETS = [
-	"auditLogs",
-	"originalDocuments",
-	"redactedDocuments",
-] as const;
-type RetentionTarget = (typeof RETENTION_TARGETS)[number];
-
-function newRetentionField(): RetentionField {
-	return { mode: "forever", days: 30 };
-}
-const retention = ref<Record<RetentionTarget, RetentionField>>({
-	auditLogs: newRetentionField(),
-	originalDocuments: newRetentionField(),
-	redactedDocuments: newRetentionField(),
-});
-
-function retentionToField(r: Retention): RetentionField {
-	return r.mode === "days"
-		? { mode: "days", days: r.days }
-		: { mode: r.mode, days: 30 };
-}
-function fieldToRetention(f: RetentionField): Retention {
-	return f.mode === "days" ? { mode: "days", days: f.days } : { mode: f.mode };
-}
-
-/**
- * Structural equality for two `Retention` values — same mode, and same day
- * count when the mode is "days". Avoids JSON.stringify, whose key order differs
- * between the form-built object and the SDK's, which made the form look dirty.
- */
-function retentionEquals(a: Retention, b: Retention): boolean {
-	if (a.mode !== b.mode) return false;
-	return a.mode === "days" && b.mode === "days" ? a.days === b.days : true;
-}
+// Retention state (shared model in utils/retention).
+const retention = ref(defaultRetentionForm());
 
 // Initialize the form from workspace data (once it loads / the workspace
 // changes).
@@ -94,12 +61,7 @@ watch(
 		if (workspace && !formInitialized.value) {
 			requireApproval.value = workspace.settings.requireApproval;
 			ocr.value = workspace.settings.ocr;
-			const r = workspace.settings.retention;
-			retention.value = {
-				auditLogs: retentionToField(r.auditLogs),
-				originalDocuments: retentionToField(r.originalDocuments),
-				redactedDocuments: retentionToField(r.redactedDocuments),
-			};
+			retention.value = retentionToForm(workspace.settings.retention);
 			formInitialized.value = true;
 		}
 	},
@@ -113,11 +75,7 @@ watch(
 		formInitialized.value = false;
 		requireApproval.value = undefined;
 		ocr.value = "auto";
-		retention.value = {
-			auditLogs: newRetentionField(),
-			originalDocuments: newRetentionField(),
-			redactedDocuments: newRetentionField(),
-		};
+		retention.value = defaultRetentionForm();
 	},
 );
 
@@ -126,11 +84,7 @@ watch(
 const editedSettings = computed(() => ({
 	ocr: ocr.value,
 	requireApproval: requireApproval.value ?? false,
-	retention: {
-		auditLogs: fieldToRetention(retention.value.auditLogs),
-		originalDocuments: fieldToRetention(retention.value.originalDocuments),
-		redactedDocuments: fieldToRetention(retention.value.redactedDocuments),
-	},
+	retention: formToRetention(retention.value),
 }));
 
 // The Options card (approval + OCR) and the Retention card each enable their own
@@ -264,35 +218,8 @@ async function saveWorkspaceSettings() {
               t("settings.workspace.options.retention.description")
             }}</CardDescription>
           </CardHeader>
-          <CardContent class="space-y-2.5">
-            <div
-              v-for="target in RETENTION_TARGETS"
-              :key="target"
-              class="flex items-center justify-between gap-3"
-            >
-              <span class="text-sm text-muted-foreground">
-                {{ t(`settings.workspace.options.retention.targets.${target}`) }}
-              </span>
-              <div class="flex items-center gap-2">
-                <Input
-                  v-if="retention[target].mode === 'days'"
-                  v-model.number="retention[target].days"
-                  type="number"
-                  min="1"
-                  class="h-9 w-20"
-                />
-                <Select v-model="retention[target].mode">
-                  <SelectTrigger class="h-9 w-[150px] shrink-0">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem v-for="m in RETENTION_MODES" :key="m" :value="m">
-                      {{ t(`settings.workspace.options.retention.modes.${m}`) }}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+          <CardContent>
+            <RetentionFields v-model:retention="retention" />
           </CardContent>
           <CardFooter
             class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl flex items-center justify-between"

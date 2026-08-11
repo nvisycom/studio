@@ -1,7 +1,19 @@
 <script setup lang="ts">
-import { ExternalLink, Loader2, Workflow, Trash2, History } from "@lucide/vue";
+import {
+	ExternalLink,
+	Loader2,
+	Workflow,
+	Pencil,
+	Trash2,
+	History,
+} from "@lucide/vue";
 import { toast } from "vue-sonner";
-import type { CreatePipeline, PipelineSummary } from "@nvisy/sdk/datatypes";
+import type {
+	CreatePipeline,
+	Pipeline,
+	PipelineSummary,
+	UpdatePipeline,
+} from "@nvisy/sdk/datatypes";
 import type { RowAction } from "#console/components/pages/RowActions.vue";
 import { Button } from "#console/components/ui/button";
 import { Badge } from "#console/components/ui/badge";
@@ -21,12 +33,16 @@ import {
 	TableHeader,
 	TableRow,
 } from "#console/components/ui/table";
+import DataTableHead from "#console/components/pages/DataTableHead.vue";
 import RowActions from "#console/components/pages/RowActions.vue";
-import { CreatePipelineSheet } from "#console/components/pages/workflows";
+import { personLabel } from "#console/utils/naming";
+import { ConfirmDialog, EntityAvatar } from "#console/components/common";
+import { PipelineSheet } from "#console/components/pages/workflows";
 
 const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
 const { wLink } = useWorkspaceLink();
+const { resolveAvatarUrl } = useAvatarUrl();
 
 useHead({ title: "Workflows" });
 
@@ -37,15 +53,26 @@ definePageMeta({
 const {
 	pipelines,
 	isLoading,
+	getPipeline,
 	createPipelineAsync,
 	isCreating,
+	updatePipelineAsync,
+	isUpdating,
 	deletePipelineAsync,
+	isDeleting,
 } = usePipelines();
 
 // Policies are linkable at creation (definition.policySlugs).
 const { policies } = usePolicies();
 
 const isCreateSheetOpen = ref(false);
+
+// One slide-over for both create and edit. `editingPipeline` null → create;
+// a loaded Pipeline → edit. `loadingPipeline` gates the sheet while the full
+// pipeline (with definition + retention) is fetched.
+const isEditSheetOpen = ref(false);
+const editingPipeline = ref<Pipeline | null>(null);
+const loadingPipeline = ref(false);
 
 async function handleCreate(pipeline: CreatePipeline) {
 	try {
@@ -54,6 +81,35 @@ async function handleCreate(pipeline: CreatePipeline) {
 		isCreateSheetOpen.value = false;
 	} catch (err) {
 		toast.error(t("workflows.toast.createFailed"), {
+			description: getErrorMessage(err, t("common.errors.tryAgain")),
+		});
+	}
+}
+
+async function openEdit(pipeline: PipelineSummary) {
+	// The list holds summaries; fetch the full pipeline before opening the editor.
+	editingPipeline.value = null;
+	loadingPipeline.value = true;
+	isEditSheetOpen.value = true;
+	try {
+		editingPipeline.value = await getPipeline(pipeline.slug);
+	} catch (err) {
+		isEditSheetOpen.value = false;
+		toast.error(t("workflows.toast.loadFailed"), {
+			description: getErrorMessage(err, t("common.errors.tryAgain")),
+		});
+	} finally {
+		loadingPipeline.value = false;
+	}
+}
+
+async function handleUpdate(slug: string, updates: UpdatePipeline) {
+	try {
+		await updatePipelineAsync({ pipelineSlug: slug, updates });
+		toast.success(t("workflows.toast.updated"));
+		isEditSheetOpen.value = false;
+	} catch (err) {
+		toast.error(t("workflows.toast.updateFailed"), {
 			description: getErrorMessage(err, t("common.errors.tryAgain")),
 		});
 	}
@@ -68,10 +124,15 @@ const statusVariant: Record<
 	disabled: "outline",
 };
 
-async function handleDelete(slug: string) {
+const pipelineToDelete = ref<PipelineSummary | null>(null);
+
+async function confirmDelete() {
+	const pipeline = pipelineToDelete.value;
+	if (!pipeline) return;
 	try {
-		await deletePipelineAsync(slug);
+		await deletePipelineAsync(pipeline.slug);
 		toast.success(t("workflows.toast.deleted"));
+		pipelineToDelete.value = null;
 	} catch (err) {
 		toast.error(t("workflows.toast.deleteFailed"), {
 			description: getErrorMessage(err, t("common.errors.tryAgain")),
@@ -83,11 +144,20 @@ async function handleDelete(slug: string) {
 function rowActions(pipeline: PipelineSummary): RowAction[] {
 	return [
 		{
+			key: "edit",
+			label: t("workflows.actions.edit"),
+			icon: Pencil,
+			select: () => openEdit(pipeline),
+		},
+		{
 			key: "delete",
 			label: t("workflows.actions.delete"),
 			icon: Trash2,
 			danger: true,
-			select: () => handleDelete(pipeline.slug),
+			separatorBefore: true,
+			select: () => {
+				pipelineToDelete.value = pipeline;
+			},
 		},
 	];
 }
@@ -131,13 +201,23 @@ function rowActions(pipeline: PipelineSummary): RowAction[] {
             </div>
           </CardHeader>
           <CardContent>
-            <Table v-if="pipelines && pipelines.length > 0">
+            <Table v-if="pipelines && pipelines.length > 0" class="table-fixed">
               <TableHeader>
                 <TableRow>
-                  <TableHead>{{ t("workflows.table.name") }}</TableHead>
-                  <TableHead>{{ t("workflows.table.status") }}</TableHead>
-                  <TableHead>{{ t("workflows.table.updated") }}</TableHead>
-                  <TableHead class="w-[50px]" />
+                  <DataTableHead>{{ t("workflows.table.name") }}</DataTableHead>
+                  <DataTableHead class="w-[130px]">
+                    {{ t("workflows.table.status") }}
+                  </DataTableHead>
+                  <DataTableHead class="w-[200px]">
+                    {{ t("workflows.table.creator") }}
+                  </DataTableHead>
+                  <DataTableHead class="w-[120px]">
+                    {{ t("workflows.table.created") }}
+                  </DataTableHead>
+                  <DataTableHead class="w-[120px]">
+                    {{ t("workflows.table.updated") }}
+                  </DataTableHead>
+                  <DataTableHead class="w-10" />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -149,11 +229,13 @@ function rowActions(pipeline: PipelineSummary): RowAction[] {
                   row-class="group"
                 >
                   <TableCell>
-                    <div>
-                      <p class="font-medium">{{ pipeline.displayName }}</p>
+                    <div class="min-w-0 max-w-md">
+                      <p class="truncate font-medium text-foreground">
+                        {{ pipeline.displayName }}
+                      </p>
                       <p
                         v-if="pipeline.description"
-                        class="text-xs text-muted-foreground"
+                        class="truncate text-xs text-muted-foreground"
                       >
                         {{ pipeline.description }}
                       </p>
@@ -162,12 +244,27 @@ function rowActions(pipeline: PipelineSummary): RowAction[] {
                   <TableCell>
                     <Badge
                       :variant="statusVariant[pipeline.status]"
-                      class="capitalize"
+                      class="font-normal capitalize"
                     >
                       {{ t(`workflows.status.${pipeline.status}`) }}
                     </Badge>
                   </TableCell>
-                  <TableCell class="text-muted-foreground text-sm">
+                  <TableCell>
+                    <div class="flex items-center gap-2">
+                      <EntityAvatar
+                        :name="personLabel(pipeline.createdBy)"
+                        :src="resolveAvatarUrl(pipeline.createdBy.avatarUrl)"
+                        size="sm"
+                      />
+                      <span class="truncate text-sm text-foreground">
+                        {{ personLabel(pipeline.createdBy) }}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell class="text-sm text-muted-foreground">
+                    {{ relativeTime(pipeline.createdAt) }}
+                  </TableCell>
+                  <TableCell class="text-sm text-muted-foreground">
                     {{ relativeTime(pipeline.updatedAt) }}
                   </TableCell>
                 </RowActions>
@@ -209,12 +306,45 @@ function rowActions(pipeline: PipelineSummary): RowAction[] {
           </CardFooter>
         </Card>
 
-        <CreatePipelineSheet
+        <PipelineSheet
           v-model:open="isCreateSheetOpen"
           :is-loading="isCreating"
           :policies="policies ?? undefined"
           @create="handleCreate"
         />
+
+        <PipelineSheet
+          v-model:open="isEditSheetOpen"
+          :pipeline="editingPipeline"
+          :loading-pipeline="loadingPipeline"
+          :is-loading="isUpdating"
+          :policies="policies ?? undefined"
+          @update="handleUpdate"
+        />
+
+        <ConfirmDialog
+          :open="!!pipelineToDelete"
+          :title="
+            t('workflows.delete.title', { name: pipelineToDelete?.displayName })
+          "
+          :description="t('workflows.delete.description')"
+          :confirm-label="t('workflows.delete.confirm')"
+          :cancel-label="t('workflows.delete.cancel')"
+          :is-loading="isDeleting"
+          @update:open="(v) => !v && (pipelineToDelete = null)"
+          @confirm="confirmDelete"
+        >
+          <template v-if="pipelineToDelete" #details>
+            <div class="min-w-0">
+              <p class="truncate text-sm font-medium text-foreground">
+                {{ pipelineToDelete.displayName }}
+              </p>
+              <p class="truncate text-xs text-muted-foreground">
+                {{ t(`workflows.status.${pipelineToDelete.status}`) }}
+              </p>
+            </div>
+          </template>
+        </ConfirmDialog>
       </template>
     </div>
   </div>

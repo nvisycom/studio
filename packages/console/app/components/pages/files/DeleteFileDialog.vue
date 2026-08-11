@@ -67,7 +67,8 @@ const isMultiple = computed(() => props.fileCount > 1);
         </p>
         <p
           v-if="fileName && !isMultiple"
-          class="mt-2 font-medium text-neutral-900 dark:text-white"
+          class="mt-2 truncate font-medium text-neutral-900 dark:text-white"
+          :title="fileName"
         >
           {{ fileName }}
         </p>

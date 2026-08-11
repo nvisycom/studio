@@ -33,7 +33,7 @@ import {
 import { providerIcon, providerLabel } from "#console/utils/connections";
 import {
 	WebhooksTable,
-	WebhookDialog,
+	WebhookSheet,
 } from "#console/components/pages/webhooks";
 import { ConfirmDialog } from "#console/components/common";
 
@@ -493,7 +493,7 @@ async function testWebhook(webhookId: string) {
                   })
                 }}</CardDescription>
               </div>
-              <WebhookDialog
+              <WebhookSheet
                 v-model:open="isCreateDialogOpen"
                 mode="create"
                 :is-loading="isCreatingWebhook"
@@ -595,7 +595,7 @@ async function testWebhook(webhookId: string) {
           </template>
         </ConfirmDialog>
 
-        <WebhookDialog
+        <WebhookSheet
           v-model:open="isEditDialogOpen"
           mode="edit"
           :webhook="selectedWebhook"

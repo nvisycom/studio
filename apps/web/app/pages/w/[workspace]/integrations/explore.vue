@@ -132,7 +132,7 @@ const providers = ref<Provider[]>([
 		status: "unavailable",
 		category: "cloud-storage",
 		tags: ["fileSync", "import", "export"],
-		popularity: 95,
+		popularity: 0,
 	},
 	{
 		id: "onedrive",
@@ -142,7 +142,7 @@ const providers = ref<Provider[]>([
 		status: "unavailable",
 		category: "cloud-storage",
 		tags: ["fileSync", "import", "export", "enterprise"],
-		popularity: 85,
+		popularity: 0,
 	},
 	{
 		id: "dropbox",
@@ -152,7 +152,7 @@ const providers = ref<Provider[]>([
 		status: "unavailable",
 		category: "cloud-storage",
 		tags: ["fileSync", "import", "export"],
-		popularity: 70,
+		popularity: 0,
 	},
 	{
 		id: "aws-s3",
@@ -163,7 +163,7 @@ const providers = ref<Provider[]>([
 		status: "available",
 		category: "cloud-storage",
 		tags: ["fileSync", "developer", "enterprise"],
-		popularity: 80,
+		popularity: 0,
 	},
 	{
 		id: "azure",
@@ -174,7 +174,7 @@ const providers = ref<Provider[]>([
 		status: "available",
 		category: "cloud-storage",
 		tags: ["fileSync", "enterprise"],
-		popularity: 78,
+		popularity: 0,
 	},
 	{
 		id: "gcs",
@@ -185,7 +185,7 @@ const providers = ref<Provider[]>([
 		status: "available",
 		category: "cloud-storage",
 		tags: ["fileSync", "enterprise"],
-		popularity: 76,
+		popularity: 0,
 	},
 	// Productivity
 	{
@@ -196,7 +196,7 @@ const providers = ref<Provider[]>([
 		status: "unavailable",
 		category: "productivity",
 		tags: ["notifications", "messaging", "collaboration"],
-		popularity: 85,
+		popularity: 0,
 	},
 	{
 		id: "teams",
@@ -206,7 +206,7 @@ const providers = ref<Provider[]>([
 		status: "unavailable",
 		category: "productivity",
 		tags: ["notifications", "messaging", "collaboration", "enterprise"],
-		popularity: 75,
+		popularity: 0,
 	},
 	{
 		id: "notion",
@@ -216,7 +216,7 @@ const providers = ref<Provider[]>([
 		status: "unavailable",
 		category: "productivity",
 		tags: ["notes", "collaboration", "export"],
-		popularity: 85,
+		popularity: 0,
 	},
 	{
 		id: "discord",
@@ -226,7 +226,7 @@ const providers = ref<Provider[]>([
 		status: "unavailable",
 		category: "productivity",
 		tags: ["notifications", "messaging", "collaboration"],
-		popularity: 80,
+		popularity: 0,
 	},
 	// Data & Analytics
 	{
@@ -237,7 +237,7 @@ const providers = ref<Provider[]>([
 		status: "available",
 		category: "data-analytics",
 		tags: ["automation", "noCode", "developer"],
-		popularity: 92,
+		popularity: 0,
 		isExternal: true,
 		externalUrl: "https://zapier.com",
 	},
@@ -249,7 +249,7 @@ const providers = ref<Provider[]>([
 		status: "unavailable",
 		category: "data-analytics",
 		tags: ["automation", "noCode"],
-		popularity: 68,
+		popularity: 0,
 		isExternal: true,
 		externalUrl: "https://www.make.com",
 	},
@@ -261,7 +261,7 @@ const providers = ref<Provider[]>([
 		status: "unavailable",
 		category: "data-analytics",
 		tags: ["automation", "noCode", "developer"],
-		popularity: 58,
+		popularity: 0,
 		isExternal: true,
 		externalUrl: "https://n8n.io",
 	},
@@ -275,7 +275,7 @@ const providers = ref<Provider[]>([
 		status: "available",
 		category: "ai-enhancements",
 		tags: ["ai", "automation"],
-		popularity: 90,
+		popularity: 0,
 	},
 	{
 		id: "claude",
@@ -286,7 +286,7 @@ const providers = ref<Provider[]>([
 		status: "available",
 		category: "ai-enhancements",
 		tags: ["ai", "automation"],
-		popularity: 88,
+		popularity: 0,
 	},
 	{
 		id: "ollama",
@@ -297,7 +297,7 @@ const providers = ref<Provider[]>([
 		status: "available",
 		category: "ai-enhancements",
 		tags: ["ai", "developer"],
-		popularity: 80,
+		popularity: 0,
 	},
 	// SDKs
 	{
@@ -310,7 +310,7 @@ const providers = ref<Provider[]>([
 		status: "available",
 		category: "sdk",
 		tags: ["sdk", "developer"],
-		popularity: 85,
+		popularity: 0,
 		isExternal: true,
 		externalUrl: "https://www.npmjs.com/package/@nvisy/sdk",
 	},
@@ -323,7 +323,7 @@ const providers = ref<Provider[]>([
 		status: "available",
 		category: "sdk",
 		tags: ["sdk", "developer"],
-		popularity: 88,
+		popularity: 0,
 		isExternal: true,
 		externalUrl: "https://pypi.org/project/nvisy-sdk/",
 	},
@@ -336,7 +336,7 @@ const providers = ref<Provider[]>([
 		status: "available",
 		category: "sdk",
 		tags: ["sdk", "developer"],
-		popularity: 80,
+		popularity: 0,
 		isExternal: true,
 		externalUrl: "https://crates.io/crates/nvisy-sdk",
 	},

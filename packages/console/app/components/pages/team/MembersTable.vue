@@ -7,6 +7,7 @@ import type {
 import type { Selection } from "#console/composables/useSelection";
 import { Users, Trash2, UserCog } from "@lucide/vue";
 import { EntityAvatar } from "#console/components/common";
+import { Badge } from "#console/components/ui/badge";
 import { Checkbox } from "#console/components/ui/checkbox";
 import {
 	Table,
@@ -104,7 +105,6 @@ function rowSelection(member: Member): RowSelection {
             <Checkbox
               :model-value="selection.allSelected.value"
               @update:model-value="selection.toggleAll()"
-              class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
             />
           </TableHead>
           <DataTableHead class="min-w-[280px]">
@@ -130,7 +130,7 @@ function rowSelection(member: Member): RowSelection {
         >
           <TableRow
             :class="[
-              'border-b border-neutral-200 dark:border-neutral-800',
+              'group border-b border-border/50',
               canSelectMember(member) ? 'cursor-pointer' : 'cursor-default',
             ]"
             @click="handleRowClick(member)"
@@ -140,7 +140,6 @@ function rowSelection(member: Member): RowSelection {
                   :model-value="selection.selected.value.has(member.username)"
                   @update:model-value="selection.toggle(member.username)"
                   :disabled="!canSelectMember(member)"
-                  class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                 />
               </TableCell>
               <TableCell>
@@ -150,30 +149,28 @@ function rowSelection(member: Member): RowSelection {
                     :src="memberAvatar(member)"
                     size="md"
                   />
-                  <div>
-                    <p class="font-normal text-neutral-900 dark:text-white">
+                  <div class="min-w-0">
+                    <p class="truncate font-medium text-foreground">
                       {{ memberLabel(member) }}
                     </p>
-                    <p class="text-xs text-neutral-600 dark:text-neutral-400">
+                    <p class="truncate text-xs text-muted-foreground">
                       {{ member.emailAddress }}
                     </p>
                   </div>
                 </div>
               </TableCell>
               <TableCell>
-                <span
-                  class="text-xs text-neutral-700 dark:text-neutral-300 px-2 py-1 bg-neutral-200 dark:bg-neutral-800 rounded"
-                >
+                <Badge variant="secondary" class="font-normal capitalize">
                   {{ t(`members.roles.${member.memberRole}`) }}
-                </span>
+                </Badge>
               </TableCell>
               <TableCell>
                 <span
                   :class="[
-                    'text-xs px-2 py-1 rounded',
+                    'text-xs',
                     member.has2fa
-                      ? 'text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-900/30'
-                      : 'text-neutral-500 dark:text-neutral-500 bg-neutral-100 dark:bg-neutral-800',
+                      ? 'text-green-600 dark:text-green-400'
+                      : 'text-muted-foreground',
                   ]"
                 >
                   {{
@@ -183,11 +180,8 @@ function rowSelection(member: Member): RowSelection {
                   }}
                 </span>
               </TableCell>
-              <TableCell>
-                <span
-                  class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
-                  >{{ relativeTime(member.createdAt) }}</span
-                >
+              <TableCell class="text-sm text-muted-foreground">
+                {{ relativeTime(member.createdAt) }}
               </TableCell>
             </TableRow>
           </RowActions>
@@ -197,14 +191,14 @@ function rowSelection(member: Member): RowSelection {
   <div v-else class="py-12">
     <div class="text-center">
       <div
-        class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
+        class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
       >
-        <Users class="h-6 w-6 text-neutral-400 dark:text-neutral-500" />
+        <Users class="size-5 text-muted-foreground" />
       </div>
-      <p class="font-normal text-neutral-700 dark:text-neutral-300 mb-1">
+      <p class="mb-1 text-sm text-foreground">
         {{ t("members.table.empty.noMembers") }}
       </p>
-      <p class="font-normal text-sm text-neutral-500 dark:text-neutral-400">
+      <p class="text-xs text-muted-foreground">
         {{ t("members.table.empty.noMembersDescription") }}
       </p>
     </div>

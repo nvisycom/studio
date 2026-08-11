@@ -109,7 +109,7 @@ async function handleMicrosoftLogin(): Promise<void> {
     <form @submit.prevent="handleLogin" class="space-y-4">
       <!-- Email -->
       <div class="space-y-2">
-        <Label for="email">{{ t("auth.shared.email") }}</Label>
+        <Label for="email" required>{{ t("auth.shared.email") }}</Label>
         <Input
           id="email"
           name="email"
@@ -125,7 +125,7 @@ async function handleMicrosoftLogin(): Promise<void> {
       <!-- Password -->
       <div class="space-y-2">
         <div class="flex items-center justify-between">
-          <Label for="password">{{ t("auth.shared.password") }}</Label>
+          <Label for="password" required>{{ t("auth.shared.password") }}</Label>
           <NuxtLink
             to="/auth/forgot-password"
             class="text-xs text-muted-foreground hover:text-foreground transition-colors"

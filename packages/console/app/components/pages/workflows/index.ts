@@ -1,1 +1,1 @@
-export { default as CreatePipelineSheet } from "./CreatePipelineSheet.vue";
+export { default as PipelineSheet } from "./PipelineSheet.vue";

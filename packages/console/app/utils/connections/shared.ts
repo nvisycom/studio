@@ -2,7 +2,7 @@ import type { SyncDeletionPolicy, SyncMode } from "@nvisy/sdk/datatypes";
 import type { LlmProvider } from "./llm";
 import type { StorageProvider } from "./storage";
 import { LLM_PROVIDERS } from "./llm";
-import { PROVIDER_ICONS, PROVIDER_LABELS } from "./storage";
+import { STORAGE_PROVIDER_ICONS, STORAGE_PROVIDER_LABELS } from "./storage";
 
 /** Sync directions offered in the connect dialog. */
 export const SYNC_MODES: SyncMode[] = ["import", "export"];
@@ -22,16 +22,20 @@ export interface CredentialField {
 	secret?: boolean;
 }
 
-/** Icon path for a provider tag (storage only), or null if unknown. */
+/** Icon path for a provider tag (LLM or storage), or null if unknown. */
 export function providerIcon(provider: string): string | null {
-	return PROVIDER_ICONS[provider as StorageProvider] ?? null;
+	return (
+		LLM_PROVIDERS[provider as LlmProvider]?.icon ??
+		STORAGE_PROVIDER_ICONS[provider as StorageProvider] ??
+		null
+	);
 }
 
 /** Display label for a provider tag (LLM or storage), falling back to the raw tag. */
 export function providerLabel(provider: string): string {
 	return (
 		LLM_PROVIDERS[provider as LlmProvider]?.company ??
-		PROVIDER_LABELS[provider as StorageProvider] ??
+		STORAGE_PROVIDER_LABELS[provider as StorageProvider] ??
 		provider
 	);
 }

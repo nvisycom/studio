@@ -8,6 +8,7 @@ import type { Selection } from "#console/composables/useSelection";
 import { Mail, X, Copy, Trash2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { EntityAvatar } from "#console/components/common";
+import { Badge } from "#console/components/ui/badge";
 import { Checkbox } from "#console/components/ui/checkbox";
 import {
 	Table,
@@ -101,7 +102,6 @@ async function copyInviteLink(invite: Invite) {
             <Checkbox
               :model-value="selection.allSelected.value"
               @update:model-value="selection.toggleAll()"
-              class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
             />
           </TableHead>
           <DataTableHead class="min-w-[280px]">
@@ -126,14 +126,13 @@ async function copyInviteLink(invite: Invite) {
           :selection="rowSelection(invite)"
         >
           <TableRow
-            class="border-b border-neutral-200 dark:border-neutral-800 cursor-pointer"
+            class="group cursor-pointer border-b border-border/50"
             @click="selection.toggle(invite.inviteId)"
           >
               <TableCell @click.stop>
                 <Checkbox
                   :model-value="selection.selected.value.has(invite.inviteId)"
                   @update:model-value="selection.toggle(invite.inviteId)"
-                  class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                 />
               </TableCell>
               <TableCell>
@@ -142,20 +141,20 @@ async function copyInviteLink(invite: Invite) {
                     :name="invite.inviteeEmail || getInviteCode(invite)"
                     size="md"
                   />
-                  <div>
+                  <div class="min-w-0">
                     <p
                       v-if="invite.inviteeEmail"
-                      class="font-normal text-neutral-900 dark:text-white"
+                      class="truncate font-medium text-foreground"
                     >
                       {{ invite.inviteeEmail }}
                     </p>
                     <p
                       v-else
-                      class="font-normal text-neutral-900 dark:text-white font-mono"
+                      class="truncate font-mono font-medium text-foreground"
                     >
                       {{ getInviteCode(invite) }}
                     </p>
-                    <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                    <p class="truncate text-xs text-muted-foreground">
                       {{
                         invite.inviteeEmail
                           ? t("members.table.status.emailInvite")
@@ -166,23 +165,15 @@ async function copyInviteLink(invite: Invite) {
                 </div>
               </TableCell>
               <TableCell>
-                <span
-                  class="text-xs text-neutral-700 dark:text-neutral-300 px-2 py-1 bg-neutral-200 dark:bg-neutral-800 rounded"
-                >
+                <Badge variant="secondary" class="font-normal capitalize">
                   {{ t(`members.roles.${invite.invitedRole}`) }}
-                </span>
+                </Badge>
               </TableCell>
-              <TableCell>
-                <span
-                  class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
-                  >{{ relativeTime(invite.createdAt) }}</span
-                >
+              <TableCell class="text-sm text-muted-foreground">
+                {{ relativeTime(invite.createdAt) }}
               </TableCell>
-              <TableCell>
-                <span
-                  class="text-xs font-normal text-neutral-600 dark:text-neutral-400"
-                  >{{ relativeTimeFuture(invite.expiresAt) }}</span
-                >
+              <TableCell class="text-sm text-muted-foreground">
+                {{ relativeTimeFuture(invite.expiresAt) }}
               </TableCell>
             </TableRow>
           </RowActions>
@@ -192,14 +183,14 @@ async function copyInviteLink(invite: Invite) {
   <div v-else class="py-12">
     <div class="text-center">
       <div
-        class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
+        class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
       >
-        <Mail class="h-6 w-6 text-neutral-400 dark:text-neutral-500" />
+        <Mail class="size-5 text-muted-foreground" />
       </div>
-      <p class="font-normal text-neutral-700 dark:text-neutral-300 mb-1">
+      <p class="mb-1 text-sm text-foreground">
         {{ t("members.table.empty.noPendingInvites") }}
       </p>
-      <p class="font-normal text-sm text-neutral-500 dark:text-neutral-400">
+      <p class="text-xs text-muted-foreground">
         {{ t("members.table.empty.noPendingInvitesDescription") }}
       </p>
     </div>

@@ -2,6 +2,7 @@
 import type { Member, WorkspaceRole } from "@nvisy/sdk/datatypes";
 import { Loader2 } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
+import { Label } from "#console/components/ui/label";
 import {
 	Dialog,
 	DialogContent,
@@ -84,11 +85,11 @@ function cancel(): void {
       <div class="space-y-6 py-6">
         <!-- Member Info -->
         <div>
-          <label
-            class="block text-sm font-medium text-neutral-900 dark:text-white mb-2"
+          <Label
+            class="mb-2 text-sm font-medium text-foreground"
           >
             {{ t("members.modals.edit.memberLabel") }}
-          </label>
+          </Label>
           <div class="min-w-0">
             <p class="truncate text-sm font-medium text-foreground">
               {{ member?.displayName }}
@@ -101,11 +102,11 @@ function cancel(): void {
 
         <!-- Role Selector -->
         <div>
-          <label
-            class="block text-sm font-medium text-neutral-900 dark:text-white mb-2"
+          <Label
+            class="mb-2 text-sm font-medium text-foreground"
           >
             {{ t("members.modals.edit.roleLabel") }}
-          </label>
+          </Label>
           <Select v-model="selectedRole">
             <SelectTrigger class="w-full">
               <SelectValue />

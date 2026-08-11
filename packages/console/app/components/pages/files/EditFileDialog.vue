@@ -2,6 +2,7 @@
 import type { File as NvisyFile, UpdateFile } from "@nvisy/sdk/datatypes";
 import { Loader2 } from "@lucide/vue";
 import { Input } from "#console/components/ui/input";
+import { Label } from "#console/components/ui/label";
 import { Button } from "#console/components/ui/button";
 import {
 	Dialog,
@@ -100,11 +101,12 @@ function cancel() {
       <div class="space-y-6 py-6">
         <!-- File Name -->
         <div>
-          <label
-            class="block text-sm font-medium text-neutral-900 dark:text-white mb-2"
+          <Label
+            required
+            class="mb-2 text-sm font-medium text-neutral-900 dark:text-white"
           >
             {{ t("files.dialogs.edit.nameLabel") }}
-          </label>
+          </Label>
           <Input
             v-model="displayName"
             :placeholder="t('files.dialogs.edit.namePlaceholder')"

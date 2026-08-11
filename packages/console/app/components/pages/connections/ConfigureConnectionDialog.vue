@@ -141,7 +141,7 @@ function cancel() {
   >
     <!-- Connection name -->
     <div class="space-y-2">
-      <Label>{{ t("connections.dialogs.configure.nameLabel") }}</Label>
+      <Label required>{{ t("connections.dialogs.configure.nameLabel") }}</Label>
       <Input
         v-model="displayName"
         :placeholder="t('connections.dialogs.configure.namePlaceholder')"
@@ -189,7 +189,6 @@ function cancel() {
         v-model="credentials"
         :fields="fields"
         label-prefix="connections.dialogs.connect.fields"
-        optional-key="connections.dialogs.connect.optional"
       />
     </section>
 

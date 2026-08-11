@@ -14,7 +14,10 @@ import {
 } from "#console/components/ui/dropdown-menu";
 
 import { DataTable } from "#console/components/ui/data-table";
-import { truncate } from "#console/utils/naming";
+import { EntityAvatar } from "#console/components/common";
+import { truncate, personLabel } from "#console/utils/naming";
+
+const { resolveAvatarUrl } = useAvatarUrl();
 
 // Context menu state
 const contextMenuOpen = ref(false);
@@ -55,6 +58,14 @@ function formatDate(dateStr: string | null | undefined): string {
 	return age < MONTH_MS ? relativeTime(dateStr) : formatLongDate(dateStr);
 }
 
+// File kind is surfaced subtly as a ring on the file-icon tile (not a column):
+// originals stay neutral; redacted/audit get a tinted ring + tooltip.
+const KIND_RING: Record<NvisyFile["fileKind"], string> = {
+	original: "",
+	redacted: "ring-1 ring-amber-400/60 dark:ring-amber-500/50",
+	audit: "ring-1 ring-blue-400/60 dark:ring-blue-500/50",
+};
+
 const columns = computed<ColumnDef<DataTableFeatures, NvisyFile>[]>(() => [
 	{
 		id: "select",
@@ -93,8 +104,12 @@ const columns = computed<ColumnDef<DataTableFeatures, NvisyFile>[]>(() => [
 				h(
 					"div",
 					{
-						class:
-							"w-8 h-8 shrink-0 rounded flex items-center justify-center bg-neutral-100 dark:bg-neutral-800",
+						class: `w-8 h-8 shrink-0 rounded flex items-center justify-center bg-neutral-100 dark:bg-neutral-800 ${KIND_RING[file.fileKind]}`,
+						// The tinted ring's meaning is spelled out on hover.
+						title:
+							file.fileKind === "original"
+								? undefined
+								: t(`files.kind.${file.fileKind}`),
 					},
 					h(IconComponent, {
 						size: 16,
@@ -108,6 +123,34 @@ const columns = computed<ColumnDef<DataTableFeatures, NvisyFile>[]>(() => [
 						title: file.displayName,
 					},
 					truncate(file.displayName, 40),
+				),
+			]);
+		},
+	},
+	{
+		id: "uploadedBy",
+		size: 180,
+		header: () =>
+			h(
+				"span",
+				{ class: "uppercase text-xs font-normal tracking-wider" },
+				t("files.table.headers.uploadedBy"),
+			),
+		cell: ({ row }) => {
+			const person = row.original.uploadedBy;
+			return h("div", { class: "flex items-center gap-2" }, [
+				h(EntityAvatar, {
+					size: "sm",
+					name: personLabel(person),
+					src: resolveAvatarUrl(person.avatarUrl),
+				}),
+				h(
+					"span",
+					{
+						class:
+							"truncate text-sm font-normal text-neutral-600 dark:text-neutral-400",
+					},
+					personLabel(person),
 				),
 			]);
 		},

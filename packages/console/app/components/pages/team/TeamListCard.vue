@@ -8,8 +8,7 @@ import type {
 	WorkspaceRole,
 } from "@nvisy/sdk/datatypes";
 import type { Selection } from "#console/composables/useSelection";
-import { Search, ChevronDown, Loader2 } from "@lucide/vue";
-import { Button } from "#console/components/ui/button";
+import { Search, Loader2 } from "@lucide/vue";
 import { Input } from "#console/components/ui/input";
 import { MembersTable, InvitesTable } from "#console/components/pages/team";
 import {
@@ -20,11 +19,12 @@ import {
 } from "#console/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "#console/components/ui/tabs";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "#console/components/ui/dropdown-menu";
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "#console/components/ui/select";
 
 defineProps<{
 	members: Member[];
@@ -57,8 +57,12 @@ const selectedRoleFilter = ref<WorkspaceRole | null>(null);
 const selectedSortField = ref<MemberSortField | InviteSortField>("date");
 const selectedSortOrder = ref<SortOrder>("desc");
 
+// `Select` binds a single string, so the role filter uses an "any" sentinel and
+// sorting encodes field + order as "field|order".
+const ANY_ROLE = "any";
+
 const roleFilters = computed(() => [
-	{ value: null, label: t("members.filters.anyRole") },
+	{ value: ANY_ROLE, label: t("members.filters.anyRole") },
 	{ value: "owner" as WorkspaceRole, label: t("members.roles.owner") },
 	{ value: "admin" as WorkspaceRole, label: t("members.roles.admin") },
 	{ value: "member" as WorkspaceRole, label: t("members.roles.member") },
@@ -66,138 +70,98 @@ const roleFilters = computed(() => [
 ]);
 
 const sortingOptions = computed(() => [
-	{
-		label: t("members.filters.sorting.nameAsc"),
-		sortBy: "name" as const,
-		order: "asc" as const,
-	},
-	{
-		label: t("members.filters.sorting.nameDesc"),
-		sortBy: "name" as const,
-		order: "desc" as const,
-	},
-	{
-		label: t("members.filters.sorting.dateNewest"),
-		sortBy: "date" as const,
-		order: "desc" as const,
-	},
-	{
-		label: t("members.filters.sorting.dateOldest"),
-		sortBy: "date" as const,
-		order: "asc" as const,
-	},
+	{ value: "name|asc", label: t("members.filters.sorting.nameAsc") },
+	{ value: "name|desc", label: t("members.filters.sorting.nameDesc") },
+	{ value: "date|desc", label: t("members.filters.sorting.dateNewest") },
+	{ value: "date|asc", label: t("members.filters.sorting.dateOldest") },
 ]);
 
-const currentSortLabel = computed(() => {
-	const option = sortingOptions.value.find(
-		(o) =>
-			o.sortBy === selectedSortField.value &&
-			o.order === selectedSortOrder.value,
-	);
-	return option?.label ?? t("members.filters.sortBy");
+const roleFilterValue = computed({
+	get: () => selectedRoleFilter.value ?? ANY_ROLE,
+	set: (value: string) => {
+		selectedRoleFilter.value =
+			value === ANY_ROLE ? null : (value as WorkspaceRole);
+	},
 });
 
-const currentRoleFilterLabel = computed(() => {
-	const filter = roleFilters.value.find(
-		(f) => f.value === selectedRoleFilter.value,
-	);
-	return filter?.label ?? t("members.filters.anyRole");
+const sortingValue = computed({
+	get: () => `${selectedSortField.value}|${selectedSortOrder.value}`,
+	set: (value: string) => {
+		const [sortBy, order] = value.split("|") as [
+			MemberSortField | InviteSortField,
+			SortOrder,
+		];
+		selectedSortField.value = sortBy;
+		selectedSortOrder.value = order;
+		emit("update:sorting", sortBy, order);
+	},
 });
 
 watch(searchQuery, (query) => emit("update:searchQuery", query));
 watch(selectedRoleFilter, (role) => emit("update:roleFilter", role));
-
-function selectSorting(
-	sortBy: MemberSortField | InviteSortField,
-	order: SortOrder,
-) {
-	selectedSortField.value = sortBy;
-	selectedSortOrder.value = order;
-	emit("update:sorting", sortBy, order);
-}
 </script>
 
 <template>
-  <Card
-    class="overflow-hidden py-0 pt-6 rounded-xl border-neutral-200 dark:border-neutral-800"
-  >
+  <Card class="overflow-hidden rounded-xl border-border/50 py-0 pt-6">
     <CardHeader>
-      <Tabs v-model="activeTab" class="w-full">
-        <div class="flex items-center justify-between mb-4">
-          <TabsList
-            class="dark:bg-neutral-800 dark:border dark:border-neutral-700"
-          >
-            <TabsTrigger
-              value="members"
-              class="dark:data-[state=active]:bg-neutral-900 dark:data-[state=active]:text-white"
-              >{{ t("members.page.tabs.teamMembers") }}</TabsTrigger
-            >
-            <TabsTrigger
-              value="invites"
-              class="dark:data-[state=active]:bg-neutral-900 dark:data-[state=active]:text-white"
-              >{{ t("members.page.tabs.pendingInvites") }}</TabsTrigger
-            >
-          </TabsList>
-        </div>
+      <Tabs v-model="activeTab" class="mb-4 w-full">
+        <TabsList>
+          <TabsTrigger value="members">
+            {{ t("members.page.tabs.teamMembers") }}
+          </TabsTrigger>
+          <TabsTrigger value="invites">
+            {{ t("members.page.tabs.pendingInvites") }}
+          </TabsTrigger>
+        </TabsList>
       </Tabs>
 
       <!-- Search and Filters -->
-      <div class="flex gap-3 items-center">
+      <div class="flex items-center gap-3">
         <div class="relative flex-1">
           <Search
             :size="16"
-            class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+            class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
           />
           <Input
             v-model="searchQuery"
             :placeholder="t('members.forms.search.placeholder')"
-            class="pl-10 border-neutral-300 dark:border-neutral-700 font-normal"
+            class="pl-10"
           />
         </div>
 
         <!-- Role Filter -->
-        <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button
-              variant="outline"
-              class="justify-between min-w-32 border-neutral-300 dark:border-neutral-700 font-normal"
-            >
-              {{ currentRoleFilterLabel }}
-              <ChevronDown :size="16" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
+        <Select v-model="roleFilterValue">
+          <SelectTrigger class="h-9 w-[160px] text-sm">
+            <SelectValue :placeholder="t('members.filters.anyRole')" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem
               v-for="filter in roleFilters"
-              :key="filter.value ?? 'any'"
-              @click="selectedRoleFilter = filter.value"
+              :key="filter.value"
+              :value="filter.value"
+              class="text-sm font-normal"
             >
               {{ filter.label }}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </SelectItem>
+          </SelectContent>
+        </Select>
 
         <!-- Sorting -->
-        <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button
-              variant="outline"
-              class="justify-between min-w-32 border-neutral-300 dark:border-neutral-700 font-normal"
-            >
-              {{ currentSortLabel }}
-              <ChevronDown :size="16" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
+        <Select v-model="sortingValue">
+          <SelectTrigger class="h-9 w-[160px] text-sm">
+            <SelectValue :placeholder="t('members.filters.sortBy')" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem
               v-for="option in sortingOptions"
-              :key="`${option.sortBy}-${option.order}`"
-              @click="selectSorting(option.sortBy, option.order)"
+              :key="option.value"
+              :value="option.value"
+              class="text-sm font-normal"
             >
               {{ option.label }}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </CardHeader>
     <CardContent>
@@ -207,7 +171,7 @@ function selectSorting(
           v-if="isLoadingMembers"
           class="flex items-center justify-center py-12"
         >
-          <Loader2 :size="32" class="animate-spin text-neutral-400" />
+          <Loader2 :size="24" class="animate-spin text-muted-foreground" />
         </div>
 
         <MembersTable
@@ -226,7 +190,7 @@ function selectSorting(
           v-if="isLoadingInvites"
           class="flex items-center justify-center py-12"
         >
-          <Loader2 :size="32" class="animate-spin text-neutral-400" />
+          <Loader2 :size="24" class="animate-spin text-muted-foreground" />
         </div>
 
         <InvitesTable
@@ -239,9 +203,9 @@ function selectSorting(
       </div>
     </CardContent>
     <CardFooter
-      class="border-t pb-6 bg-neutral-50 dark:bg-neutral-900 rounded-b-xl"
+      class="rounded-b-xl border-t border-border/50 bg-muted/30 pb-6"
     >
-      <p class="text-sm font-normal text-neutral-600 dark:text-neutral-400">
+      <p class="text-xs text-muted-foreground">
         {{ t("members.messages.reviewFooter") }}
       </p>
     </CardFooter>

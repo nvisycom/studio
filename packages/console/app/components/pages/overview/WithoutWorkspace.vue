@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { Layers, User } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
-import CreateWorkspaceModal from "#console/components/common/CreateWorkspaceModal.vue";
+import CreateWorkspaceSheet from "#console/components/common/CreateWorkspaceSheet.vue";
 
 const { t } = useI18n();
 const { firstName } = useAccount();
 
-const isCreateWorkspaceModalOpen = ref(false);
+const isCreateWorkspaceSheetOpen = ref(false);
 </script>
 
 <template>
@@ -25,7 +25,7 @@ const isCreateWorkspaceModalOpen = ref(false);
         <Button
           size="default"
           class="cursor-pointer gap-2"
-          @click="isCreateWorkspaceModalOpen = true"
+          @click="isCreateWorkspaceSheetOpen = true"
         >
           <Layers :size="16" />
           {{ t("overview.welcome.createWorkspace") }}
@@ -39,6 +39,6 @@ const isCreateWorkspaceModalOpen = ref(false);
       </div>
     </div>
 
-    <CreateWorkspaceModal v-model:open="isCreateWorkspaceModalOpen" />
+    <CreateWorkspaceSheet v-model:open="isCreateWorkspaceSheetOpen" />
   </div>
 </template>

@@ -215,13 +215,19 @@ async function confirmDelete() {
           </div>
 
           <!-- Table -->
-          <Table v-else>
+          <Table v-else class="table-fixed">
             <TableHeader>
               <TableRow>
                 <DataTableHead>{{ t("policies.table.name") }}</DataTableHead>
-                <DataTableHead>{{ t("policies.table.creator") }}</DataTableHead>
-                <DataTableHead>{{ t("policies.table.created") }}</DataTableHead>
-                <DataTableHead>{{ t("policies.table.updated") }}</DataTableHead>
+                <DataTableHead class="w-[200px]">
+                  {{ t("policies.table.creator") }}
+                </DataTableHead>
+                <DataTableHead class="w-[120px]">
+                  {{ t("policies.table.created") }}
+                </DataTableHead>
+                <DataTableHead class="w-[120px]">
+                  {{ t("policies.table.updated") }}
+                </DataTableHead>
                 <DataTableHead class="w-10" />
               </TableRow>
             </TableHeader>
@@ -233,8 +239,8 @@ async function confirmDelete() {
                 :menu-label="t('policies.table.menu')"
                 row-class="group"
               >
-                    <TableCell class="max-w-0">
-                      <div class="min-w-0">
+                    <TableCell>
+                      <div class="min-w-0 max-w-md">
                         <p class="truncate font-medium text-foreground">
                           {{ policy.displayName }}
                         </p>
@@ -253,17 +259,9 @@ async function confirmDelete() {
                           :src="resolveAvatarUrl(policy.createdBy.avatarUrl)"
                           size="sm"
                         />
-                        <div class="min-w-0">
-                          <p class="truncate text-sm text-foreground">
-                            {{ personLabel(policy.createdBy) }}
-                          </p>
-                          <p
-                            v-if="policy.createdBy.displayName"
-                            class="truncate text-xs text-muted-foreground"
-                          >
-                            {{ policy.createdBy.username }}
-                          </p>
-                        </div>
+                        <span class="truncate text-sm text-foreground">
+                          {{ personLabel(policy.createdBy) }}
+                        </span>
                       </div>
                     </TableCell>
                     <TableCell class="text-sm text-muted-foreground">
