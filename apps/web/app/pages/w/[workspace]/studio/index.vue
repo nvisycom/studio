@@ -27,6 +27,20 @@ const isImageFile = computed(() => {
 	return imageExtensions.includes(fileExtension.value);
 });
 
+const isTextFile = computed(() => {
+	const textExtensions = [
+		"txt",
+		"md",
+		"log",
+		"csv",
+		"json",
+		"xml",
+		"yaml",
+		"yml",
+	];
+	return textExtensions.includes(fileExtension.value);
+});
+
 const zoomLevel = ref(100);
 
 // Chat panel state
@@ -110,6 +124,7 @@ function startResize(e: MouseEvent) {
         :display-name="activeFile?.displayName || ''"
         :is-loading="activeFile?.isLoading || false"
         :is-image="isImageFile"
+        :is-text="isTextFile"
         :zoom-level="zoomLevel"
         :chat-visible="chatVisible"
         @zoom-in="zoomIn"
