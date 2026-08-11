@@ -1098,7 +1098,9 @@
 				"completed": "Completed",
 				"failed": "Failed",
 				"cancelled": "Cancelled"
-			}
+			},
+			"noRunsDescription": "Runs will appear here once your connections sync.",
+			"footer": "Each run records a connection sync and the records it processed."
 		}
 	},
 	"sidebar": {
@@ -1201,7 +1203,6 @@
 			"descriptionPlaceholder": "What this policy does",
 			"rulesLabel": "Rules",
 			"rulesHint": "Rules run in order; the first match wins.",
-			"back": "Back to policies",
 			"addRule": "Add rule",
 			"ruleNamePlaceholder": "Rule name",
 			"moveUp": "Move rule up",
@@ -1295,7 +1296,11 @@
 				"namePlaceholder": "hipaa_18",
 				"labelsPlaceholder": "email_address, phone_number, ssn",
 				"labelsLabel": "Labels in this group"
-			}
+			},
+			"createTitle": "Create Policy",
+			"createDescription": "Define detection rules and how matches are redacted.",
+			"editTitle": "Edit Policy",
+			"editDescription": "Update detection rules and how matches are redacted."
 		},
 		"delete": {
 			"title": "Delete {name}?",
@@ -1309,7 +1314,8 @@
 			"updated": "Policy updated",
 			"updateFailed": "Failed to update policy",
 			"deleted": "Policy deleted",
-			"deleteFailed": "Failed to delete policy"
+			"deleteFailed": "Failed to delete policy",
+			"loadFailed": "Failed to load policy"
 		},
 		"templates": {
 			"title": "Policy templates",
@@ -1322,13 +1328,7 @@
 			"slugHint": "Lowercase letters, numbers, and single dashes. URL-safe identifier.",
 			"cancel": "Cancel",
 			"create": "Create policy",
-			"scratchAction": "New custom policy",
-			"scratch": {
-				"name": "Start from scratch",
-				"description": "Build a custom policy with your own rules and actions."
-			},
 			"use": "Use template",
-			"custom": "Custom",
 			"searchPlaceholder": "Search templates...",
 			"noResults": "No templates match your search.",
 			"clearSearch": "Clear search",
@@ -1404,7 +1404,9 @@
 				"completed": "Completed",
 				"failed": "Failed",
 				"cancelled": "Cancelled"
-			}
+			},
+			"noRunsDescription": "Runs will appear here once this workspace processes files.",
+			"footer": "Each run records how a pipeline detected and redacted a file."
 		},
 		"learnMore": "Learn more",
 		"status": {
@@ -1443,21 +1445,6 @@
 			"slugHint": "Lowercase letters, numbers, and single dashes. URL-safe identifier.",
 			"descriptionLabel": "Description",
 			"descriptionPlaceholder": "What this pipeline does (optional).",
-			"detectionLabel": "Detection",
-			"engines": {
-				"pattern": {
-					"label": "Pattern",
-					"description": "Built-in regex and dictionary recognizers."
-				},
-				"ner": {
-					"label": "Named entities",
-					"description": "Named-entity recognition."
-				},
-				"llm": {
-					"label": "LLM",
-					"description": "Language-model assisted detection."
-				}
-			},
 			"cancel": "Cancel",
 			"submit": "Create",
 			"policiesLabel": "Policies",
@@ -1467,43 +1454,39 @@
 			"advanced": "Scope",
 			"countriesLabel": "Jurisdictions",
 			"countriesPlaceholder": "Add a country code (e.g. US) and press Enter",
-			"scopeHint": "Restrict jurisdiction-scoped detection rules to these countries."
+			"scopeHint": "Restrict jurisdiction-scoped detection rules to these countries.",
+			"languagesLabel": "Languages",
+			"languagesPlaceholder": "Add a BCP-47 tag (e.g. en) and press Enter",
+			"languagesHint": "Assert the languages present in your documents.",
+			"retention": "Retention",
+			"retentionHint": "Override how long this pipeline keeps data. Unset scopes inherit the workspace default.",
+			"retentionTargets": {
+				"auditLogs": "Audit logs",
+				"redactedDocuments": "Redacted documents"
+			},
+			"retentionModes": {
+				"inherit": "Inherit workspace default",
+				"forever": "Keep forever",
+				"days": "Keep for a period",
+				"zeroDays": "Delete immediately"
+			},
+			"retentionDays": "Days"
 		}
 	},
 	"analytics": {
 		"logs": {
-			"view": {
-				"logs": "Logs",
-				"traces": "Traces"
-			},
-			"searchPlaceholder": "Search logs...",
-			"level": {
-				"placeholder": "Level",
-				"all": "All Levels",
-				"info": "Info",
-				"warning": "Warning",
-				"error": "Error"
-			},
-			"period": {
-				"placeholder": "Period",
-				"hour": "Last hour",
-				"day": "Last 24 hours",
-				"week": "Last 7 days",
-				"month": "Last 30 days"
-			},
+			"searchPlaceholder": "Search activity...",
 			"title": "Activity Logs",
-			"count": "{count} log found | {count} logs found",
+			"count": "{count} event | {count} events",
 			"import": "Import",
 			"export": "Export",
 			"table": {
 				"time": "Time",
-				"level": "Level",
-				"message": "Message",
-				"endpoint": "Endpoint",
-				"duration": "Duration",
-				"status": "Status"
+				"type": "Type",
+				"message": "Description",
+				"by": "Performed by"
 			},
-			"empty": "No logs found matching your filters",
+			"empty": "No activity found",
 			"exportDialog": {
 				"title": "Export Logs",
 				"description": "Configure export settings for your logs",
@@ -1516,7 +1499,19 @@
 				"cancel": "Cancel",
 				"exportJson": "Export as JSON",
 				"exportCsv": "Export as CSV"
-			}
+			},
+			"category": {
+				"placeholder": "Category",
+				"all": "All categories",
+				"workspace": "Workspace",
+				"member": "Members",
+				"invite": "Invites",
+				"connection": "Connections",
+				"webhook": "Webhooks",
+				"file": "Files"
+			},
+			"emptyDescription": "Actions in this workspace will show up here.",
+			"loadMore": "Load more"
 		}
 	},
 	"auth": {

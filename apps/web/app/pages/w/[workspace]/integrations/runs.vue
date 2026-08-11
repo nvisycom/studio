@@ -14,6 +14,8 @@ import {
 	Clock,
 	HardDrive,
 	Ban,
+	History,
+	ExternalLink,
 } from "@lucide/vue";
 import { formatDuration } from "#console/utils/date";
 import { providerIcon } from "#console/utils/connections";
@@ -22,6 +24,7 @@ import {
 	Card,
 	CardContent,
 	CardDescription,
+	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "#console/components/ui/card";
@@ -137,7 +140,7 @@ async function cancelSync(sync: ConnectionSync) {
         </Select>
       </div>
 
-      <Card class="rounded-xl border-border/50 py-0 pb-6 pt-6">
+      <Card class="rounded-xl border-border/50 py-0 pt-6">
         <CardHeader>
           <CardTitle
             class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
@@ -158,11 +161,20 @@ async function cancelSync(sync: ConnectionSync) {
           </div>
 
           <!-- Empty -->
-          <div
-            v-else-if="syncs.length === 0"
-            class="py-12 text-center text-sm text-muted-foreground"
-          >
-            {{ t("connections.runs.noRunsFound") }}
+          <div v-else-if="syncs.length === 0" class="py-12">
+            <div class="text-center">
+              <div
+                class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
+              >
+                <History class="size-5 text-muted-foreground" />
+              </div>
+              <p class="text-sm text-foreground mb-1">
+                {{ t("connections.runs.noRunsFound") }}
+              </p>
+              <p class="text-xs text-muted-foreground">
+                {{ t("connections.runs.noRunsDescription") }}
+              </p>
+            </div>
           </div>
 
           <template v-else>
@@ -313,6 +325,22 @@ async function cancelSync(sync: ConnectionSync) {
             </div>
           </template>
         </CardContent>
+        <CardFooter
+          class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
+        >
+          <p class="text-xs text-muted-foreground">
+            {{ t("connections.runs.footer") }}
+            <a
+              href="https://docs.nvisy.com/connections"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 text-foreground hover:underline font-medium"
+            >
+              {{ t("connections.messages.documentation") }}
+              <ExternalLink :size="12" />
+            </a>
+          </p>
+        </CardFooter>
       </Card>
     </div>
   </div>

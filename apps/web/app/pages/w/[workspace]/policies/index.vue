@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import type { PolicySummary } from "@nvisy/sdk/datatypes";
+import type {
+	CreatePolicy,
+	Policy,
+	PolicySummary,
+	UpdatePolicy,
+} from "@nvisy/sdk/datatypes";
 import type { RowAction } from "#console/components/pages/RowActions.vue";
+import { PolicySheet } from "#console/components/pages/policies";
 import {
 	Loader2,
-	Plus,
 	Pencil,
 	ShieldCheck,
 	Trash2,
@@ -51,16 +56,73 @@ definePageMeta({
 	pageCategory: "header.category.policies",
 });
 
-const { policies, isLoading, deletePolicyAsync, isDeleting } = usePolicies();
+const {
+	policies,
+	isLoading,
+	getPolicy,
+	createPolicyAsync,
+	isCreating,
+	updatePolicyAsync,
+	isUpdating,
+	deletePolicyAsync,
+	isDeleting,
+} = usePolicies();
 
 const policyToDelete = ref<PolicySummary | null>(null);
 
+// One slide-over for both create and edit. `editingPolicy` null → create mode;
+// a loaded Policy → edit mode. `?create=1` (templates "start from scratch",
+// overview setup step) opens it in create mode on load.
+const route = useRoute();
+const isSheetOpen = ref(route.query.create === "1");
+const editingPolicy = ref<Policy | null>(null);
+const isLoadingPolicy = ref(false);
+
 function openCreate() {
-	navigateTo(wLink("/policies/new"));
+	editingPolicy.value = null;
+	isSheetOpen.value = true;
 }
 
-function openEdit(policy: PolicySummary) {
-	navigateTo(wLink(`/policies/${policy.slug}`));
+async function openEdit(policy: PolicySummary) {
+	// The list only holds summaries; fetch the full policy (with its definition)
+	// before opening the editor.
+	editingPolicy.value = null;
+	isLoadingPolicy.value = true;
+	isSheetOpen.value = true;
+	try {
+		editingPolicy.value = await getPolicy(policy.slug);
+	} catch (error) {
+		isSheetOpen.value = false;
+		toast.error(t("policies.toast.loadFailed"), {
+			description: error instanceof Error ? error.message : undefined,
+		});
+	} finally {
+		isLoadingPolicy.value = false;
+	}
+}
+
+async function handleCreate(policy: CreatePolicy) {
+	try {
+		await createPolicyAsync(policy);
+		toast.success(t("policies.toast.created"));
+		isSheetOpen.value = false;
+	} catch (error) {
+		toast.error(t("policies.toast.createFailed"), {
+			description: error instanceof Error ? error.message : undefined,
+		});
+	}
+}
+
+async function handleUpdate(policySlug: string, updates: UpdatePolicy) {
+	try {
+		await updatePolicyAsync({ policySlug, updates });
+		toast.success(t("policies.toast.updated"));
+		isSheetOpen.value = false;
+	} catch (error) {
+		toast.error(t("policies.toast.updateFailed"), {
+			description: error instanceof Error ? error.message : undefined,
+		});
+	}
 }
 
 /** Right-click / ⋯ actions for a policy row. */
@@ -123,7 +185,7 @@ async function confirmDelete() {
                 </NuxtLink>
               </Button>
               <Button size="sm" @click="openCreate">
-                <Plus :size="16" class="mr-1.5" />
+                <ShieldCheck :size="16" class="mr-1.5" />
                 {{ t("policies.create") }}
               </Button>
             </div>
@@ -146,13 +208,9 @@ async function confirmDelete() {
               <p class="text-sm text-foreground mb-1">
                 {{ t("policies.empty.title") }}
               </p>
-              <p class="text-xs text-muted-foreground mb-4">
+              <p class="text-xs text-muted-foreground">
                 {{ t("policies.empty.description") }}
               </p>
-              <Button size="sm" @click="openCreate">
-                <Plus :size="16" />
-                {{ t("policies.create") }}
-              </Button>
             </div>
           </div>
 
@@ -265,6 +323,15 @@ async function confirmDelete() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <PolicySheet
+        v-model:open="isSheetOpen"
+        :policy="editingPolicy"
+        :is-loading="isCreating || isUpdating"
+        :loading-policy="isLoadingPolicy"
+        @create="handleCreate"
+        @update="handleUpdate"
+      />
     </div>
   </div>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CreatePolicy, PolicyTemplate } from "@nvisy/sdk/datatypes";
-import { ArrowLeft, Loader2, ShieldCheck, Plus, Search } from "@lucide/vue";
+import { ArrowLeft, Loader2, ShieldCheck, Search } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
@@ -224,45 +224,6 @@ async function create() {
 
       <!-- Template cards grid -->
       <div v-else class="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-        <!-- Custom policy card (first, emphasized) -->
-        <Card
-          v-if="!searchQuery.trim()"
-          class="flex flex-col border-neutral-200 transition-all duration-200 hover:scale-[1.02] hover:border-neutral-300 hover:shadow-md dark:border-neutral-800 dark:hover:border-neutral-700"
-        >
-          <CardHeader class="pb-2">
-            <div class="flex items-center gap-3">
-              <div
-                class="flex size-10 flex-shrink-0 items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-800"
-              >
-                <Plus :size="20" class="text-muted-foreground" />
-              </div>
-              <div class="min-w-0 flex-1">
-                <CardTitle class="truncate text-base font-normal">
-                  {{ t("policies.templates.scratch.name") }}
-                </CardTitle>
-                <p
-                  class="mt-0.5 truncate text-xs font-normal text-neutral-500 dark:text-neutral-400"
-                >
-                  {{ t("policies.templates.custom") }}
-                </p>
-              </div>
-            </div>
-            <p
-              class="mt-3 text-xs leading-relaxed text-neutral-500 dark:text-neutral-400"
-            >
-              {{ t("policies.templates.scratch.description") }}
-            </p>
-          </CardHeader>
-
-          <CardFooter class="mt-auto pt-2">
-            <Button as-child class="w-full font-normal">
-              <NuxtLink :to="wLink('/policies/new')">
-                {{ t("policies.templates.scratchAction") }}
-              </NuxtLink>
-            </Button>
-          </CardFooter>
-        </Card>
-
         <Card
           v-for="template in filteredTemplates"
           :key="template.kind"

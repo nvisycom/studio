@@ -59,7 +59,7 @@ const setupSteps = computed<SetupStep[]>(() => [
 	{
 		key: "createPolicy",
 		icon: ShieldCheck,
-		href: wLink("/policies/new"),
+		href: wLink("/policies?create=1"),
 		done: (policies.value?.length ?? 0) > 0,
 	},
 	{

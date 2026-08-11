@@ -471,7 +471,10 @@ function handleGridScroll(event: Event) {
           <p class="text-sm font-medium text-foreground mb-1">
             {{ t("files.table.empty.title") }}
           </p>
-          <p class="text-sm text-muted-foreground mb-4 max-w-sm">
+          <p
+            class="text-sm text-muted-foreground max-w-sm"
+            :class="hasFilters ? 'mb-4' : ''"
+          >
             {{
               hasFilters
                 ? t("files.table.empty.filterDescription")
@@ -485,10 +488,6 @@ function handleGridScroll(event: Event) {
             @click="clearFilters"
           >
             {{ t("files.actions.clearFilters") }}
-          </Button>
-          <Button v-else @click="openUploadDialog" size="sm">
-            <Upload :size="16" class="mr-2" />
-            {{ t("files.actions.upload") }}
           </Button>
         </div>
       </template>
