@@ -86,7 +86,7 @@ function cancel(): void {
         <!-- Member Info -->
         <div>
           <Label
-            class="mb-2 text-sm font-medium text-neutral-900 dark:text-white"
+            class="mb-2 text-sm font-medium text-foreground"
           >
             {{ t("members.modals.edit.memberLabel") }}
           </Label>
@@ -103,7 +103,7 @@ function cancel(): void {
         <!-- Role Selector -->
         <div>
           <Label
-            class="mb-2 text-sm font-medium text-neutral-900 dark:text-white"
+            class="mb-2 text-sm font-medium text-foreground"
           >
             {{ t("members.modals.edit.roleLabel") }}
           </Label>
