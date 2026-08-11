@@ -173,10 +173,6 @@ function submit() {
 		slug: slug.value,
 		description: description.value.trim() || undefined,
 		definition: {
-			// Recognizer/deduplication tuning is server-defaulted (and slated to
-			// leave the SDK), so the create form no longer configures it.
-			recognizers: {},
-			deduplication: {},
 			...(selectedPolicies.value.length && {
 				policySlugs: [...selectedPolicies.value],
 			}),

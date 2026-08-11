@@ -1,4 +1,5 @@
 import type { File as NvisyFile } from "@nvisy/sdk/datatypes";
+import { useLocalStorage } from "@vueuse/core";
 
 export interface OpenFile {
 	fileId: string;
@@ -14,10 +15,40 @@ export interface OpenFile {
 const openFiles = ref<Map<string, OpenFile>>(new Map());
 const activeFileId = ref<string | null>(null);
 
+/** localStorage key for the persisted per-workspace Studio open-files session. */
+export const STUDIO_OPEN_FILES_KEY = "studio-open-files";
+
+// Persisted, per-workspace session so open tabs survive a refresh. Only the
+// file identities + order + active tab are stored — the blob content URLs are
+// session-bound and re-downloaded on restore. Tracks which workspaces have
+// already been restored so we only re-open once per session.
+interface PersistedSession {
+	ids: string[];
+	active: string | null;
+}
+const persistedSessions = useLocalStorage<Record<string, PersistedSession>>(
+	STUDIO_OPEN_FILES_KEY,
+	{},
+);
+const restoredSlugs = new Set<string>();
+
 export function useStudioFiles() {
 	const { $nvisyClient } = useNuxtApp();
 	const { authToken } = useAuth();
 	const { currentWorkspaceSlug } = useWorkspaces();
+
+	// Snapshot the current in-memory tabs into localStorage for this workspace.
+	function persist() {
+		const slug = currentWorkspaceSlug.value;
+		if (!slug) return;
+		persistedSessions.value = {
+			...persistedSessions.value,
+			[slug]: {
+				ids: Array.from(openFiles.value.keys()),
+				active: activeFileId.value,
+			},
+		};
+	}
 
 	// Get active file
 	const activeFile = computed(() => {
@@ -33,6 +64,7 @@ export function useStudioFiles() {
 		// If already open, just set as active
 		if (openFiles.value.has(fileId)) {
 			activeFileId.value = fileId;
+			persist();
 			return;
 		}
 
@@ -44,6 +76,7 @@ export function useStudioFiles() {
 			isLoading: true,
 		});
 		activeFileId.value = fileId;
+		persist();
 
 		// Fetch file content
 		try {
@@ -73,6 +106,7 @@ export function useStudioFiles() {
 				contentUrl,
 				isLoading: false,
 			});
+			persist();
 		} catch (error) {
 			console.error("Failed to load file:", error);
 			// Update with error state
@@ -99,12 +133,14 @@ export function useStudioFiles() {
 			const remaining = Array.from(openFiles.value.keys());
 			activeFileId.value = remaining.length > 0 ? (remaining[0] ?? null) : null;
 		}
+		persist();
 	}
 
 	// Set active file
 	function setActiveFile(fileId: string) {
 		if (openFiles.value.has(fileId)) {
 			activeFileId.value = fileId;
+			persist();
 		}
 	}
 
@@ -124,6 +160,7 @@ export function useStudioFiles() {
 
 		openFiles.value = newMap;
 		activeFileId.value = fileId;
+		persist();
 	}
 
 	// Check if a file is open
@@ -140,6 +177,31 @@ export function useStudioFiles() {
 		}
 		openFiles.value.clear();
 		activeFileId.value = null;
+		persist();
+	}
+
+	// Re-open the persisted tabs for the current workspace after a refresh.
+	// Runs at most once per workspace per session; skips if tabs are already
+	// open in memory. Content is re-downloaded (fresh blob URLs) by openFile.
+	async function restoreSession() {
+		const slug = currentWorkspaceSlug.value;
+		if (!slug || restoredSlugs.has(slug)) return;
+		restoredSlugs.add(slug);
+
+		// Already have tabs in memory (e.g. navigated here in-app) — nothing to do.
+		if (openFiles.value.size > 0) return;
+
+		const session = persistedSessions.value[slug];
+		if (!session || session.ids.length === 0) return;
+
+		// Re-open in stored order, then restore the active tab.
+		for (const fileId of session.ids) {
+			await openFile(fileId);
+		}
+		if (session.active && openFiles.value.has(session.active)) {
+			activeFileId.value = session.active;
+			persist();
+		}
 	}
 
 	return {
@@ -155,5 +217,6 @@ export function useStudioFiles() {
 		moveFileToFront,
 		isFileOpen,
 		closeAllFiles,
+		restoreSession,
 	};
 }

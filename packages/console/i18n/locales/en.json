@@ -1590,5 +1590,29 @@
 			"successSubtitle": "Your password has been successfully updated",
 			"continueToLogin": "Continue to login"
 		}
+	},
+	"feedback": {
+		"title": "Feedback",
+		"heading": "Send Feedback",
+		"description": "We'd love to hear your thoughts, suggestions, or issues you're experiencing.",
+		"categoryLabel": "Category",
+		"categoryPlaceholder": "Select a category",
+		"categories": {
+			"bug": "Bug Report",
+			"feature": "Feature Request",
+			"improvement": "Improvement",
+			"question": "Question",
+			"other": "Other"
+		},
+		"nameLabel": "Name",
+		"namePlaceholder": "Your name",
+		"emailLabel": "Email",
+		"emailPlaceholder": "your.email{'@'}example.com",
+		"messageLabel": "Message",
+		"messagePlaceholder": "Tell us what you think...",
+		"cancel": "Cancel",
+		"submit": "Submit Feedback",
+		"toastTitle": "Feedback submitted",
+		"toastDescription": "Thank you for your feedback! We'll review it shortly."
 	}
 }

@@ -13,7 +13,12 @@ definePageMeta({
 });
 
 // Use studio files store for persistent open files
-const { activeFile } = useStudioFiles();
+const { activeFile, restoreSession } = useStudioFiles();
+
+// After a refresh, re-open the tabs persisted for this workspace (client-only).
+onMounted(() => {
+	restoreSession();
+});
 
 // File type detection
 const fileExtension = computed(() => {
@@ -25,6 +30,20 @@ const fileExtension = computed(() => {
 const isImageFile = computed(() => {
 	const imageExtensions = ["png", "jpg", "jpeg", "gif", "webp", "bmp", "svg"];
 	return imageExtensions.includes(fileExtension.value);
+});
+
+const isTextFile = computed(() => {
+	const textExtensions = [
+		"txt",
+		"md",
+		"log",
+		"csv",
+		"json",
+		"xml",
+		"yaml",
+		"yml",
+	];
+	return textExtensions.includes(fileExtension.value);
 });
 
 const zoomLevel = ref(100);
@@ -110,6 +129,7 @@ function startResize(e: MouseEvent) {
         :display-name="activeFile?.displayName || ''"
         :is-loading="activeFile?.isLoading || false"
         :is-image="isImageFile"
+        :is-text="isTextFile"
         :zoom-level="zoomLevel"
         :chat-visible="chatVisible"
         @zoom-in="zoomIn"

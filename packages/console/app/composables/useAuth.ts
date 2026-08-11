@@ -91,6 +91,9 @@ export function useAuth() {
 		authToken.value = null;
 		if (import.meta.client) {
 			localStorage.removeItem(AUTH_STORAGE_KEY);
+			// Drop the persisted Studio open-files so the next account doesn't
+			// inherit (and fail to load) the previous user's tabs.
+			localStorage.removeItem(STUDIO_OPEN_FILES_KEY);
 		}
 		authCookie.value = null;
 

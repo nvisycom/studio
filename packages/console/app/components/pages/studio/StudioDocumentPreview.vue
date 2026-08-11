@@ -7,6 +7,7 @@ const props = defineProps<{
 	displayName: string;
 	isLoading: boolean;
 	isImage: boolean;
+	isText: boolean;
 	zoomLevel: number;
 	chatVisible: boolean;
 }>();
@@ -16,6 +17,31 @@ const emit = defineEmits<{
 	"zoom-out": [];
 	"toggle-chat": [];
 }>();
+
+// Text preview: the content URL is a blob object URL, so read its text and
+// render it in a <pre>. Re-fetch whenever the file (URL) changes.
+const textContent = ref<string | null>(null);
+const isLoadingText = ref(false);
+const textError = ref(false);
+
+watch(
+	() => [props.contentUrl, props.isText] as const,
+	async ([url, isText]) => {
+		textContent.value = null;
+		textError.value = false;
+		if (!url || !isText) return;
+		isLoadingText.value = true;
+		try {
+			const response = await fetch(url);
+			textContent.value = await response.text();
+		} catch {
+			textError.value = true;
+		} finally {
+			isLoadingText.value = false;
+		}
+	},
+	{ immediate: true },
+);
 </script>
 
 <template>
@@ -58,6 +84,27 @@ const emit = defineEmits<{
             class="max-w-[800px] bg-white"
           />
         </div>
+      </div>
+
+      <!-- Text file preview -->
+      <div v-else-if="isText" class="min-h-full p-6">
+        <div
+          v-if="isLoadingText"
+          class="h-full flex items-center justify-center text-muted-foreground"
+        >
+          <Loader2 :size="24" class="animate-spin" />
+        </div>
+        <div
+          v-else-if="textError"
+          class="h-full flex items-center justify-center text-center text-muted-foreground"
+        >
+          <p class="text-sm">Unable to load this file.</p>
+        </div>
+        <pre
+          v-else
+          class="mx-auto max-w-4xl whitespace-pre-wrap break-words rounded-lg border border-border/50 bg-background p-4 font-mono text-xs leading-relaxed text-foreground"
+          >{{ textContent }}</pre
+        >
       </div>
 
       <!-- Unsupported file type -->

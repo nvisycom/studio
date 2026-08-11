@@ -9,7 +9,6 @@ import {
 	CardTitle,
 	CardDescription,
 } from "#console/components/ui/card";
-import { Badge } from "#console/components/ui/badge";
 import { EntityAvatar } from "#console/components/common";
 import type { InvitePreview, WorkspaceRole } from "@nvisy/sdk/datatypes";
 
@@ -190,18 +189,6 @@ function handleDecline() {
                 {{ preview.description }}
               </p>
             </div>
-          </div>
-
-          <!-- Tags -->
-          <div v-if="preview.tags?.length" class="flex flex-wrap gap-1.5">
-            <Badge
-              v-for="tag in preview.tags"
-              :key="tag"
-              variant="secondary"
-              class="text-xs"
-            >
-              {{ tag }}
-            </Badge>
           </div>
 
           <!-- Role & Expiry Info -->
