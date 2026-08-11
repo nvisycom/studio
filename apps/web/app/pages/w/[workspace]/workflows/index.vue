@@ -16,7 +16,6 @@ import type {
 } from "@nvisy/sdk/datatypes";
 import type { RowAction } from "#console/components/pages/RowActions.vue";
 import { Button } from "#console/components/ui/button";
-import { Badge } from "#console/components/ui/badge";
 import {
 	Card,
 	CardContent,
@@ -115,15 +114,6 @@ async function handleUpdate(slug: string, updates: UpdatePipeline) {
 	}
 }
 
-const statusVariant: Record<
-	PipelineSummary["status"],
-	"default" | "secondary" | "outline"
-> = {
-	enabled: "default",
-	draft: "secondary",
-	disabled: "outline",
-};
-
 const pipelineToDelete = ref<PipelineSummary | null>(null);
 
 async function confirmDelete() {
@@ -205,9 +195,6 @@ function rowActions(pipeline: PipelineSummary): RowAction[] {
               <TableHeader>
                 <TableRow>
                   <DataTableHead>{{ t("workflows.table.name") }}</DataTableHead>
-                  <DataTableHead class="w-[130px]">
-                    {{ t("workflows.table.status") }}
-                  </DataTableHead>
                   <DataTableHead class="w-[200px]">
                     {{ t("workflows.table.creator") }}
                   </DataTableHead>
@@ -240,14 +227,6 @@ function rowActions(pipeline: PipelineSummary): RowAction[] {
                         {{ pipeline.description }}
                       </p>
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      :variant="statusVariant[pipeline.status]"
-                      class="font-normal capitalize"
-                    >
-                      {{ t(`workflows.status.${pipeline.status}`) }}
-                    </Badge>
                   </TableCell>
                   <TableCell>
                     <div class="flex items-center gap-2">

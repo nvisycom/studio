@@ -123,8 +123,8 @@ function lastDelivery(webhook: Webhook): {
             </TableCell>
             <TableCell @click.stop>
               <Switch
-                :model-value="webhook.status === 'active'"
-                :disabled="webhook.status === 'disabled'"
+                :model-value="webhook.status === 'enabled'"
+                :disabled="webhook.status === 'suspended'"
                 @update:model-value="
                   emit('toggleStatus', webhook.id, $event)
                 "

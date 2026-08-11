@@ -63,7 +63,9 @@
 			"inDays": "in {days}d",
 			"inWeeks": "in {weeks}w",
 			"inMonths": "in {months}mo"
-		}
+		},
+		"enabled": "Enabled",
+		"disabled": "Disabled"
 	},
 	"settings": {
 		"workspace": {
@@ -945,8 +947,6 @@
 				"urlLabel": "Endpoint URL",
 				"urlPlaceholder": "https://example.com/webhook",
 				"urlError": "Please enter a valid URL (http:// or https://)",
-				"enabledLabel": "Enabled",
-				"disabledLabel": "Disabled",
 				"headersLabel": "Custom headers",
 				"addHeader": "Add header",
 				"headerKeyPlaceholder": "Header name",
@@ -1156,6 +1156,35 @@
 				"rejectAll": "Reject All",
 				"empty": "No pending changes"
 			}
+		},
+		"audit": {
+			"tabChat": "Chat",
+			"tabAudit": "Audit",
+			"pipelinePlaceholder": "Select a pipeline",
+			"run": "Run detection",
+			"running": "Analyzing…",
+			"runAgain": "Run again",
+			"restoring": "Restoring the last run…",
+			"fromLastRun": "from the last run",
+			"runFailed": "Detection failed. Please try again.",
+			"found": "{count} entities detected | {count} entity detected | {count} entities detected",
+			"bytes": "bytes {start}–{end}",
+			"status": {
+				"queued": "Queued…",
+				"analyzing": "Analyzing the document…",
+				"analyzed": "Analyzed",
+				"completed": "Completed",
+				"failed": "Run failed",
+				"cancelled": "Run cancelled"
+			},
+			"idleTitle": "No detections yet",
+			"idleHint": "Pick a pipeline and run detection to find sensitive entities.",
+			"noFile": "No document open",
+			"noFileHint": "Open a text file to run detection.",
+			"emptyTitle": "No entities found",
+			"emptyHint": "This pipeline detected nothing in the document.",
+			"applyNote": "Detection doesn’t change the file. Applying redaction writes a new redacted document.",
+			"apply": "Apply redaction"
 		}
 	},
 	"commandMenu": {
@@ -1408,7 +1437,8 @@
 				"scheduled": "Scheduled"
 			},
 			"runStatus": {
-				"running": "Running",
+				"queued": "Queued",
+				"analyzing": "Analyzing",
 				"analyzed": "Analyzed",
 				"completed": "Completed",
 				"failed": "Failed",
@@ -1425,7 +1455,6 @@
 		},
 		"table": {
 			"name": "Name",
-			"status": "Status",
 			"creator": "Creator",
 			"created": "Created",
 			"updated": "Updated",

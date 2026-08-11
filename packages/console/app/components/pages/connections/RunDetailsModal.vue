@@ -28,7 +28,9 @@ function handleOpenChange(open: boolean) {
 
 function getStatusColor(status: PipelineRunStatus): string {
 	switch (status) {
-		case "running":
+		case "queued":
+			return "text-neutral-600 dark:text-neutral-400";
+		case "analyzing":
 			return "text-blue-600 dark:text-blue-400";
 		case "analyzed":
 			return "text-yellow-600 dark:text-yellow-400";

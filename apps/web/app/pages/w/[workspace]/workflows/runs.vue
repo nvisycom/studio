@@ -52,7 +52,8 @@ definePageMeta({
 const { runs, isLoading } = useRuns();
 
 const RUN_STATUSES: PipelineRunStatus[] = [
-	"running",
+	"queued",
+	"analyzing",
 	"analyzed",
 	"completed",
 	"failed",
@@ -192,12 +193,12 @@ const filteredRuns = computed(() => {
                 <TableCell>
                   <div class="flex items-center gap-2">
                     <Play
-                      v-if="run.status === 'running'"
+                      v-if="run.status === 'analyzing'"
                       :size="14"
                       class="text-blue-500"
                     />
                     <Clock
-                      v-else-if="run.status === 'analyzed'"
+                      v-else-if="run.status === 'queued' || run.status === 'analyzed'"
                       :size="14"
                       class="text-muted-foreground"
                     />

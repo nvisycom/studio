@@ -12,6 +12,7 @@ import { Label } from "#console/components/ui/label";
 import { Button } from "#console/components/ui/button";
 import { Badge } from "#console/components/ui/badge";
 import { Textarea } from "#console/components/ui/textarea";
+import { EnabledSwitch } from "#console/components/common";
 import { MultiSelect } from "#console/components/ui/multi-select";
 import {
 	Select,
@@ -68,6 +69,9 @@ const keys = computed(() => {
 const name = ref("");
 const slug = ref("");
 const description = ref("");
+// A new pipeline defaults to enabled so it can run immediately (the API
+// otherwise creates a draft, which rejects runs).
+const enabled = ref(true);
 
 // Linked policies.
 const selectedPolicies = ref<string[]>([]);
@@ -137,6 +141,7 @@ function populate(pipeline: Pipeline) {
 	name.value = pipeline.displayName;
 	slug.value = pipeline.slug;
 	description.value = pipeline.description ?? "";
+	enabled.value = pipeline.status === "enabled";
 	selectedPolicies.value = [...(pipeline.definition.policySlugs ?? [])];
 	const scope = pipeline.definition.defaultScope;
 	countries.value = [...(scope?.countries ?? [])];
@@ -188,6 +193,7 @@ function reset() {
 	name.value = "";
 	slug.value = "";
 	description.value = "";
+	enabled.value = true;
 	selectedPolicies.value = [];
 	scopeOpen.value = false;
 	countries.value = [];
@@ -241,12 +247,15 @@ function buildDefinition(): CreatePipeline["definition"] {
 function submit() {
 	if (!isFormValid.value) return;
 
+	const status = enabled.value ? "enabled" : "disabled";
+
 	if (isEdit.value && props.pipeline) {
 		// Edit replaces the whole definition; retention is always sent (each scope
 		// inheriting sends null, matching the override-when-set contract).
 		const updates: UpdatePipeline = {
 			displayName: name.value.trim(),
 			description: description.value.trim() || undefined,
+			status,
 			definition: buildDefinition(),
 			retention: buildRetention() as UpdatePipeline["retention"],
 		};
@@ -258,6 +267,7 @@ function submit() {
 		displayName: name.value.trim(),
 		slug: slug.value,
 		description: description.value.trim() || undefined,
+		status,
 		definition: buildDefinition(),
 		...(hasRetentionOverride.value && { retention: buildRetention() }),
 	};
@@ -520,15 +530,18 @@ function cancel() {
 
       <SheetFooter
         v-if="!loadingPipeline"
-        class="flex-row justify-end border-t border-border/50"
+        class="flex-row items-center justify-between border-t border-border/50"
       >
-        <Button variant="outline" @click="cancel">
-          {{ t("workflows.create.cancel") }}
-        </Button>
-        <Button @click="submit" :disabled="!isFormValid || isLoading">
-          <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-          {{ t(keys.submit) }}
-        </Button>
+        <EnabledSwitch v-model="enabled" />
+        <div class="flex items-center gap-2">
+          <Button variant="outline" @click="cancel">
+            {{ t("workflows.create.cancel") }}
+          </Button>
+          <Button @click="submit" :disabled="!isFormValid || isLoading">
+            <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
+            {{ t(keys.submit) }}
+          </Button>
+        </div>
       </SheetFooter>
     </SheetContent>
   </Sheet>

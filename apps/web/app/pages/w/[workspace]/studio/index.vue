@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import { useEventListener } from "@vueuse/core";
-import { GripVertical } from "@lucide/vue";
+import { GripVertical, MessageSquare, ScanSearch } from "@lucide/vue";
 import {
 	StudioDocumentPreview,
 	StudioChatPanel,
+	StudioAuditPanel,
 } from "#console/components/pages/studio";
+import { Tabs, TabsList, TabsTrigger } from "#console/components/ui/tabs";
+import type { TextEntityView } from "#console/composables/useTextEntities";
+
+const { t } = useI18n();
 
 useHead({ title: "Studio" });
 
@@ -47,6 +52,18 @@ const isTextFile = computed(() => {
 });
 
 const zoomLevel = ref(100);
+
+// Right-panel tabs: Chat (existing) and Audit (detection results).
+const panelTab = ref<"chat" | "audit">("chat");
+
+// Detected entities + cross-focus, shared between the audit panel (list) and
+// the document preview (inline highlights).
+const entities = ref<TextEntityView[]>([]);
+const activeEntityId = ref<string | null>(null);
+
+function focusEntity(id: string) {
+	activeEntityId.value = activeEntityId.value === id ? null : id;
+}
 
 // Chat panel state
 const chatVisible = ref(true);
@@ -132,9 +149,12 @@ function startResize(e: MouseEvent) {
         :is-text="isTextFile"
         :zoom-level="zoomLevel"
         :chat-visible="chatVisible"
+        :entities="entities"
+        :active-entity-id="activeEntityId"
         @zoom-in="zoomIn"
         @zoom-out="zoomOut"
         @toggle-chat="toggleChat"
+        @focus-entity="focusEntity"
       />
     </div>
 
@@ -157,12 +177,41 @@ function startResize(e: MouseEvent) {
         </div>
       </div>
 
-      <!-- Chat Content -->
+      <!-- Tabbed panel: Chat | Audit -->
       <div
         v-if="chatVisible || isAnimating"
-        class="flex-1 h-full min-w-0 overflow-hidden"
+        class="flex h-full min-w-0 flex-1 flex-col overflow-hidden bg-background"
       >
-        <StudioChatPanel />
+        <Tabs v-model="panelTab" class="border-b border-border/50 p-2">
+          <TabsList class="w-full">
+            <TabsTrigger value="chat" class="flex-1 gap-1.5">
+              <MessageSquare :size="14" />
+              {{ t("studio.audit.tabChat") }}
+            </TabsTrigger>
+            <TabsTrigger value="audit" class="flex-1 gap-1.5">
+              <ScanSearch :size="14" />
+              {{ t("studio.audit.tabAudit") }}
+              <span
+                v-if="entities.length"
+                class="rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground tabular-nums"
+              >
+                {{ entities.length }}
+              </span>
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        <div v-show="panelTab === 'chat'" class="min-h-0 flex-1 overflow-hidden">
+          <StudioChatPanel />
+        </div>
+        <div v-show="panelTab === 'audit'" class="min-h-0 flex-1 overflow-hidden">
+          <StudioAuditPanel
+            :file-id="activeFile?.fileId || null"
+            :active-entity-id="activeEntityId"
+            @update:entities="entities = $event"
+            @focus-entity="focusEntity"
+          />
+        </div>
       </div>
     </div>
   </div>

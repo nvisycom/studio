@@ -1,21 +1,30 @@
 <script setup lang="ts">
 import { FileText, Loader2 } from "@lucide/vue";
 import { ZoomControls } from "#console/components/pages/documents";
+import type { TextEntityView } from "#console/composables/useTextEntities";
 
-const props = defineProps<{
-	contentUrl: string | null;
-	displayName: string;
-	isLoading: boolean;
-	isImage: boolean;
-	isText: boolean;
-	zoomLevel: number;
-	chatVisible: boolean;
-}>();
+const props = withDefaults(
+	defineProps<{
+		contentUrl: string | null;
+		displayName: string;
+		isLoading: boolean;
+		isImage: boolean;
+		isText: boolean;
+		zoomLevel: number;
+		chatVisible: boolean;
+		/** Detected entities to highlight in the text (byte-offset spans). */
+		entities?: TextEntityView[];
+		/** Currently focused entity id, for the ring + scroll-into-view. */
+		activeEntityId?: string | null;
+	}>(),
+	{ entities: () => [], activeEntityId: null },
+);
 
 const emit = defineEmits<{
 	"zoom-in": [];
 	"zoom-out": [];
 	"toggle-chat": [];
+	"focus-entity": [id: string];
 }>();
 
 // Text preview: the content URL is a blob object URL, so read its text and
@@ -41,6 +50,77 @@ watch(
 		}
 	},
 	{ immediate: true },
+);
+
+// Entity offsets are UTF-8 *byte* positions; JS strings are UTF-16. Build a
+// byte→char-index map so spans slice the string at the right code units.
+const byteToChar = computed<number[] | null>(() => {
+	const text = textContent.value;
+	if (!text || props.entities.length === 0) return null;
+	const encoder = new TextEncoder();
+	// Map[b] = char index at byte offset b. One entry per byte boundary + end.
+	const map: number[] = [];
+	let byte = 0;
+	for (let i = 0; i < text.length; i++) {
+		const codePoint = text.codePointAt(i)!;
+		const width = encoder.encode(String.fromCodePoint(codePoint)).length;
+		const isSurrogatePair = codePoint > 0xffff;
+		for (let b = 0; b < width; b++) map[byte + b] = i;
+		byte += width;
+		if (isSurrogatePair) i++; // skip the low surrogate
+	}
+	map[byte] = text.length; // end sentinel
+	return map;
+});
+
+/** A rendered run of text: either plain, or an entity span to highlight. */
+interface Segment {
+	text: string;
+	entity: TextEntityView | null;
+}
+
+// Split the document into plain + entity segments, in order, skipping any
+// overlapping/out-of-range spans defensively.
+const segments = computed<Segment[]>(() => {
+	const text = textContent.value;
+	const map = byteToChar.value;
+	if (!text) return [];
+	if (!map) return [{ text, entity: null }];
+
+	const spans = [...props.entities]
+		.map((e) => ({ e, start: map[e.start], end: map[e.end] }))
+		.filter(
+			(s): s is { e: TextEntityView; start: number; end: number } =>
+				s.start != null && s.end != null && s.end > s.start,
+		)
+		.sort((a, b) => a.start - b.start);
+
+	const out: Segment[] = [];
+	let cursor = 0;
+	for (const { e, start, end } of spans) {
+		if (start < cursor) continue; // overlap — keep the earlier span
+		if (start > cursor)
+			out.push({ text: text.slice(cursor, start), entity: null });
+		out.push({ text: text.slice(start, end), entity: e });
+		cursor = end;
+	}
+	if (cursor < text.length)
+		out.push({ text: text.slice(cursor), entity: null });
+	return out;
+});
+
+// Scroll the focused entity into view when it changes.
+const textEl = ref<HTMLElement | null>(null);
+watch(
+	() => props.activeEntityId,
+	(id) => {
+		if (!id) return;
+		nextTick(() => {
+			textEl.value
+				?.querySelector<HTMLElement>(`[data-entity="${id}"]`)
+				?.scrollIntoView({ block: "center", behavior: "smooth" });
+		});
+	},
 );
 </script>
 
@@ -102,9 +182,16 @@ watch(
         </div>
         <pre
           v-else
+          ref="textEl"
           class="mx-auto max-w-4xl whitespace-pre-wrap break-words rounded-lg border border-border/50 bg-background p-4 font-mono text-xs leading-relaxed text-foreground"
-          >{{ textContent }}</pre
-        >
+        ><template v-for="(seg, i) in segments" :key="i"><mark
+            v-if="seg.entity"
+            :data-entity="seg.entity.id"
+            :title="seg.entity.label"
+            class="cursor-pointer rounded-[3px] bg-muted px-0.5 text-foreground ring-border transition-shadow hover:ring-1"
+            :class="{ 'ring-2 ring-foreground': activeEntityId === seg.entity.id }"
+            @click="emit('focus-entity', seg.entity.id)"
+          >{{ seg.text }}</mark><template v-else>{{ seg.text }}</template></template></pre>
       </div>
 
       <!-- Unsupported file type -->
