@@ -70,11 +70,12 @@ function openFeedbackModal() {
       <Button
         variant="ghost"
         size="sm"
-        class="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+        class="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+        :aria-label="t('feedback.title')"
+        :title="t('feedback.title')"
         @click="openFeedbackModal"
       >
         <MessageSquare :size="16" />
-        <span class="hidden sm:inline text-sm">Feedback</span>
       </Button>
     </div>
 

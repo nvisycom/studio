@@ -21,15 +21,17 @@ import { Input } from "#console/components/ui/input";
 import { Textarea } from "#console/components/ui/textarea";
 import { Button } from "#console/components/ui/button";
 
+const { t } = useI18n();
+
 const isOpen = defineModel<boolean>("open", { required: true });
 
 const feedbackCategories = [
-	{ value: "bug", label: "Bug Report" },
-	{ value: "feature", label: "Feature Request" },
-	{ value: "improvement", label: "Improvement" },
-	{ value: "question", label: "Question" },
-	{ value: "other", label: "Other" },
-];
+	"bug",
+	"feature",
+	"improvement",
+	"question",
+	"other",
+] as const;
 
 const feedbackForm = ref({
 	category: "",
@@ -55,11 +57,8 @@ function closeModal(): void {
 function submitFeedback(): void {
 	// TODO: Implement feedback submission
 
-	toast("Feedback submitted", {
-		description: "Thank you for your feedback! \nWe'll review it shortly.",
-		action: {
-			label: "Undo",
-		},
+	toast(t("feedback.toastTitle"), {
+		description: t("feedback.toastDescription"),
 	});
 
 	closeModal();
@@ -70,26 +69,26 @@ function submitFeedback(): void {
   <Dialog v-model:open="isOpen">
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>Send Feedback</DialogTitle>
+        <DialogTitle>{{ t("feedback.heading") }}</DialogTitle>
         <DialogDescription>
-          We'd love to hear your thoughts, suggestions, or issues you're experiencing.
+          {{ t("feedback.description") }}
         </DialogDescription>
       </DialogHeader>
       <div class="space-y-4 py-4">
         <div class="space-y-2">
-          <Label for="feedback-category">Category</Label>
+          <Label for="feedback-category">{{ t("feedback.categoryLabel") }}</Label>
           <Select v-model="feedbackForm.category">
             <SelectTrigger id="feedback-category" class="w-full">
-              <SelectValue placeholder="Select a category" />
+              <SelectValue :placeholder="t('feedback.categoryPlaceholder')" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
                 <SelectItem
                   v-for="category in feedbackCategories"
-                  :key="category.value"
-                  :value="category.value"
+                  :key="category"
+                  :value="category"
                 >
-                  {{ category.label }}
+                  {{ t(`feedback.categories.${category}`) }}
                 </SelectItem>
               </SelectGroup>
             </SelectContent>
@@ -98,37 +97,39 @@ function submitFeedback(): void {
 
         <div class="grid grid-cols-2 gap-4">
           <div class="space-y-2">
-            <Label for="feedback-name">Name</Label>
+            <Label for="feedback-name">{{ t("feedback.nameLabel") }}</Label>
             <Input
               id="feedback-name"
               v-model="feedbackForm.name"
-              placeholder="Your name"
+              :placeholder="t('feedback.namePlaceholder')"
             />
           </div>
           <div class="space-y-2">
-            <Label for="feedback-email">Email</Label>
+            <Label for="feedback-email">{{ t("feedback.emailLabel") }}</Label>
             <Input
               id="feedback-email"
               v-model="feedbackForm.email"
               type="email"
-              placeholder="your.email@example.com"
+              :placeholder="t('feedback.emailPlaceholder')"
             />
           </div>
         </div>
         <div class="space-y-2">
-          <Label for="feedback-message">Message</Label>
+          <Label for="feedback-message">{{ t("feedback.messageLabel") }}</Label>
           <Textarea
             id="feedback-message"
             v-model="feedbackForm.message"
-            placeholder="Tell us what you think..."
+            :placeholder="t('feedback.messagePlaceholder')"
             rows="5"
           />
         </div>
       </div>
 
       <DialogFooter>
-        <Button variant="outline" @click="closeModal">Cancel</Button>
-        <Button @click="submitFeedback">Submit Feedback</Button>
+        <Button variant="outline" @click="closeModal">
+          {{ t("feedback.cancel") }}
+        </Button>
+        <Button @click="submitFeedback">{{ t("feedback.submit") }}</Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>
