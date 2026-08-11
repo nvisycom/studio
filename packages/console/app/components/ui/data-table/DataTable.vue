@@ -1,25 +1,24 @@
-<script setup lang="ts" generic="TData, TValue">
+<script setup lang="ts" generic="TData extends RowData">
 import { ref, computed } from "vue";
 import type { HTMLAttributes } from "vue";
 import type {
 	ColumnDef,
 	SortingState,
-	VisibilityState,
+	ColumnVisibilityState,
 	RowSelectionState,
 	ExpandedState,
 	Row,
+	RowData,
+	Updater,
 } from "@tanstack/vue-table";
-import {
-	FlexRender,
-	getCoreRowModel,
-	getSortedRowModel,
-	getFilteredRowModel,
-	getExpandedRowModel,
-	useVueTable,
-} from "@tanstack/vue-table";
+import { FlexRender, useTable } from "@tanstack/vue-table";
 import { useVirtualizer } from "@tanstack/vue-virtual";
 import { cn } from "#console/utils/shadcn";
 import { valueUpdater } from "#console/components/ui/table/utils";
+import {
+	dataTableFeatures,
+	type DataTableFeatures,
+} from "#console/components/ui/data-table/features";
 import {
 	TableBody,
 	TableCell,
@@ -29,8 +28,8 @@ import {
 	TableEmpty,
 } from "#console/components/ui/table";
 
-export interface DataTableProps<TData, TValue> {
-	columns: ColumnDef<TData, TValue>[];
+export interface DataTableProps<TData extends RowData> {
+	columns: ColumnDef<DataTableFeatures, TData>[];
 	data: TData[];
 	class?: HTMLAttributes["class"];
 	rowHeight?: number;
@@ -41,11 +40,11 @@ export interface DataTableProps<TData, TValue> {
 	enableExpanding?: boolean;
 	manualSorting?: boolean;
 	getRowId?: (row: TData) => string;
-	getRowCanExpand?: (row: Row<TData>) => boolean;
+	getRowCanExpand?: (row: Row<DataTableFeatures, TData>) => boolean;
 	getSubRows?: (row: TData) => TData[] | undefined;
 }
 
-const props = withDefaults(defineProps<DataTableProps<TData, TValue>>(), {
+const props = withDefaults(defineProps<DataTableProps<TData>>(), {
 	rowHeight: 48,
 	overscan: 5,
 	enableSorting: true,
@@ -65,47 +64,44 @@ const emit = defineEmits<{
 }>();
 
 const sorting = ref<SortingState>([]);
-const columnVisibility = ref<VisibilityState>({});
+const columnVisibility = ref<ColumnVisibilityState>({});
 const rowSelection = ref<RowSelectionState>({});
 const expanded = ref<ExpandedState>({});
 const globalFilter = ref("");
 
 const tableContainerRef = ref<HTMLDivElement | null>(null);
 
-const table = useVueTable({
+const table = useTable({
+	// Row models + sorting/visibility/filtering/selection/expanding are declared
+	// once in `dataTableFeatures` (v9's opt-in feature model).
+	features: dataTableFeatures,
 	get data() {
 		return props.data;
 	},
 	get columns() {
 		return props.columns;
 	},
-	getCoreRowModel: getCoreRowModel(),
-	getSortedRowModel: props.enableSorting ? getSortedRowModel() : undefined,
-	getFilteredRowModel: getFilteredRowModel(),
-	getExpandedRowModel: props.enableExpanding
-		? getExpandedRowModel()
-		: undefined,
 	getRowId: props.getRowId,
 	getRowCanExpand: props.getRowCanExpand,
 	getSubRows: props.getSubRows,
 	manualSorting: props.manualSorting,
 	enableRowSelection: props.enableRowSelection,
 	enableMultiRowSelection: props.enableMultiRowSelection,
-	onSortingChange: (updaterOrValue) => {
+	onSortingChange: (updaterOrValue: Updater<SortingState>) => {
 		valueUpdater(updaterOrValue, sorting);
 		emit("sorting-change", sorting.value);
 	},
-	onColumnVisibilityChange: (updaterOrValue) =>
+	onColumnVisibilityChange: (updaterOrValue: Updater<ColumnVisibilityState>) =>
 		valueUpdater(updaterOrValue, columnVisibility),
-	onRowSelectionChange: (updaterOrValue) => {
+	onRowSelectionChange: (updaterOrValue: Updater<RowSelectionState>) => {
 		valueUpdater(updaterOrValue, rowSelection);
 		emit("row-selection-change", rowSelection.value);
 	},
-	onExpandedChange: (updaterOrValue) => {
+	onExpandedChange: (updaterOrValue: Updater<ExpandedState>) => {
 		valueUpdater(updaterOrValue, expanded);
 		emit("expanded-change", expanded.value);
 	},
-	onGlobalFilterChange: (updaterOrValue) =>
+	onGlobalFilterChange: (updaterOrValue: Updater<string>) =>
 		valueUpdater(updaterOrValue, globalFilter),
 	state: {
 		get sorting() {

@@ -3,6 +3,7 @@ import type { ColumnDef } from "@tanstack/vue-table";
 import { Download, Eye, Trash2, Pencil } from "@lucide/vue";
 import type { File as NvisyFile } from "@nvisy/sdk/datatypes";
 import type { Selection } from "#console/composables/useSelection";
+import type { DataTableFeatures } from "#console/components/ui/data-table/features";
 import { Checkbox } from "#console/components/ui/checkbox";
 import {
 	DropdownMenu,
@@ -54,7 +55,7 @@ function formatDate(dateStr: string | null | undefined): string {
 	return age < MONTH_MS ? relativeTime(dateStr) : formatLongDate(dateStr);
 }
 
-const columns = computed<ColumnDef<NvisyFile>[]>(() => [
+const columns = computed<ColumnDef<DataTableFeatures, NvisyFile>[]>(() => [
 	{
 		id: "select",
 		size: 40,
