@@ -272,7 +272,7 @@ function saveTimezone() {
           <CardContent class="space-y-5">
             <!-- Display Name -->
             <div class="space-y-2">
-              <Label for="displayName" class="text-sm font-medium"
+              <Label for="displayName" class="text-sm font-medium" required
                 >Display Name</Label
               >
               <Input
@@ -288,7 +288,7 @@ function saveTimezone() {
 
             <!-- Username -->
             <div class="space-y-2">
-              <Label for="username" class="text-sm font-medium"
+              <Label for="username" class="text-sm font-medium" required
                 >Username</Label
               >
               <Input
@@ -328,7 +328,7 @@ function saveTimezone() {
           <CardContent class="space-y-5">
             <!-- Email Address -->
             <div class="space-y-2">
-              <Label for="email" class="text-sm font-medium"
+              <Label for="email" class="text-sm font-medium" required
                 >Email Address</Label
               >
               <Input
@@ -371,7 +371,7 @@ function saveTimezone() {
 
               <!-- New Password -->
               <div class="space-y-2">
-                <Label for="newPassword" class="text-sm font-medium"
+                <Label for="newPassword" class="text-sm font-medium" required
                   >New Password</Label
                 >
                 <div class="relative max-w-md">
@@ -398,7 +398,7 @@ function saveTimezone() {
 
               <!-- Confirm Password -->
               <div class="space-y-2">
-                <Label for="confirmPassword" class="text-sm font-medium"
+                <Label for="confirmPassword" class="text-sm font-medium" required
                   >Confirm New Password</Label
                 >
                 <div class="relative max-w-md">

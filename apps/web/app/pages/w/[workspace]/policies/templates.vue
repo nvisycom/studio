@@ -26,6 +26,7 @@ import {
 	SelectValue,
 } from "#console/components/ui/select";
 import { toast } from "vue-sonner";
+import { slugify } from "#console/utils/naming";
 
 const { t } = useI18n();
 const { wLink } = useWorkspaceLink();
@@ -97,7 +98,6 @@ const filteredTemplates = computed(() => {
 // the template's own settings.
 const selected = ref<TemplateKind | null>(null);
 const slug = ref("");
-const slugEdited = ref(false);
 const displayName = ref("");
 
 // Per-kind settings (defaults chosen as the most common / safest option).
@@ -106,28 +106,16 @@ const gdprTreatment = ref<GdprTreatment>("erase");
 const pciPart = ref<PciPart>("pan_render");
 const pciRender = ref<PciRender>("truncate_last_four");
 
-function slugify(value: string): string {
-	return value
-		.toLowerCase()
-		.replace(/[^a-z0-9]+/g, "-")
-		.replace(/^-+|-+$/g, "");
-}
-
 function openDialog(kind: TemplateKind) {
 	selected.value = kind;
 	displayName.value = t(`policies.templates.${kind}.name`);
 	slug.value = slugify(displayName.value);
-	slugEdited.value = false;
 }
 
+// The slug is immutable and always derived from the display name.
 watch(displayName, (value) => {
-	if (!slugEdited.value) slug.value = slugify(value);
+	slug.value = slugify(value);
 });
-
-function onSlugInput() {
-	slugEdited.value = true;
-	slug.value = slugify(slug.value);
-}
 
 function closeDialog(open: boolean) {
 	if (!open) selected.value = null;
@@ -279,7 +267,7 @@ async function create() {
 
         <div class="space-y-4 py-2">
           <div class="space-y-2">
-            <Label for="template-name">
+            <Label for="template-name" required>
               {{ t("policies.templates.nameLabel") }}
             </Label>
             <Input
@@ -294,11 +282,12 @@ async function create() {
             </Label>
             <Input
               id="template-slug"
-              v-model="slug"
-              autocapitalize="none"
-              class="font-mono text-sm"
+              :model-value="slug"
+              readonly
+              tabindex="-1"
+              aria-readonly="true"
+              class="font-mono text-sm text-muted-foreground"
               :placeholder="t('policies.templates.slugPlaceholder')"
-              @input="onSlugInput"
             />
             <p class="text-xs text-muted-foreground">
               {{ t("policies.templates.slugHint") }}

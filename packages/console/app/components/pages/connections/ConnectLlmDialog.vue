@@ -103,7 +103,7 @@ function submit() {
   >
     <!-- Connection name -->
     <div class="space-y-2">
-      <Label>{{ t("connections.dialogs.connect.fields.displayName") }}</Label>
+      <Label required>{{ t("connections.dialogs.connect.fields.displayName") }}</Label>
       <Input
         v-model="displayName"
         :placeholder="t('connections.dialogs.connect.displayNamePlaceholder')"
@@ -112,7 +112,7 @@ function submit() {
 
     <!-- API key (hosted providers only) -->
     <div v-if="meta?.needsApiKey" class="space-y-1.5">
-      <Label class="text-sm font-normal">
+      <Label class="text-sm font-normal" required>
         {{ t("connections.dialogs.llm.apiKey") }}
       </Label>
       <Input
@@ -124,11 +124,8 @@ function submit() {
 
     <!-- Base URL -->
     <div class="space-y-1.5">
-      <Label class="text-sm font-normal">
+      <Label class="text-sm font-normal" :required="meta?.baseUrlRequired">
         {{ t("connections.dialogs.llm.baseUrl") }}
-        <span v-if="!meta?.baseUrlRequired" class="text-muted-foreground">
-          · {{ t("connections.dialogs.connect.optional") }}
-        </span>
       </Label>
       <Input
         v-model="baseUrl"
@@ -144,9 +141,6 @@ function submit() {
     <div class="space-y-1.5">
       <Label class="text-sm font-normal">
         {{ t("connections.dialogs.llm.defaultModel") }}
-        <span class="text-muted-foreground">
-          · {{ t("connections.dialogs.connect.optional") }}
-        </span>
       </Label>
       <Input
         v-model="defaultModel"

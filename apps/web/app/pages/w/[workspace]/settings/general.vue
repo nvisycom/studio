@@ -250,7 +250,7 @@ const canDelete = computed(() => {
           <CardContent class="space-y-6">
             <!-- Workspace Name -->
             <div class="space-y-2">
-              <Label for="workspaceName" class="text-sm font-medium">{{
+              <Label for="workspaceName" class="text-sm font-medium" required>{{
                 t("settings.workspace.name.label")
               }}</Label>
               <Input
@@ -454,7 +454,7 @@ const canDelete = computed(() => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div class="py-4">
-          <Label for="deleteConfirm" class="text-sm font-medium">
+          <Label for="deleteConfirm" class="text-sm font-medium" required>
             {{
               t("settings.workspace.delete.dialog.confirmLabel", {
                 name: currentWorkspace?.displayName,

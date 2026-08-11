@@ -44,6 +44,18 @@ export function truncate(str: string, maxLength: number): string {
 	return `${str.slice(0, maxLength).trimEnd()}…`;
 }
 
+/**
+ * Turn a display name into a URL slug: lowercase alphanumerics with single
+ * internal dashes (leading/trailing dashes trimmed). Used to derive the
+ * immutable slug shown when creating a policy or pipeline.
+ */
+export function slugify(value: string): string {
+	return value
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, "-")
+		.replace(/^-+|-+$/g, "");
+}
+
 /** Vibrant from→to gradient pairs an avatar is deterministically assigned. */
 const GRADIENT_PAIRS = [
 	{ from: "#3B82F6", to: "#EC4899" }, // Blue → Pink

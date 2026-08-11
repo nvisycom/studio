@@ -126,7 +126,7 @@
 					},
 					"modes": {
 						"forever": "Keep forever",
-						"days": "For a period",
+						"days": "Keep for days",
 						"zeroDays": "Don't keep"
 					},
 					"footer": "Applies to all data in this workspace."
@@ -410,7 +410,8 @@
 				"name": "Name",
 				"size": "Size",
 				"created": "Created",
-				"updated": "Updated"
+				"updated": "Updated",
+				"uploadedBy": "Uploaded by"
 			},
 			"empty": {
 				"title": "No files found",
@@ -480,6 +481,11 @@
 			"uploadFailed": "Failed to upload file",
 			"downloadFailed": "Failed to download file",
 			"loadFailed": "Failed to load files"
+		},
+		"kind": {
+			"original": "Original",
+			"redacted": "Redacted",
+			"audit": "Audit"
 		}
 	},
 	"members": {
@@ -931,15 +937,15 @@
 				"placeholder": "Search integrations..."
 			},
 			"webhook": {
-				"nameLabel": "Webhook Name",
-				"namePlaceholder": "Enter webhook name",
+				"nameLabel": "Name",
+				"namePlaceholder": "Enter a name",
 				"urlLabel": "Endpoint URL",
 				"urlPlaceholder": "https://example.com/webhook",
 				"urlError": "Please enter a valid URL (http:// or https://)",
 				"enabledLabel": "Enabled",
 				"disabledLabel": "Disabled",
-				"headersLabel": "Custom Headers",
-				"addHeader": "Add Header",
+				"headersLabel": "Custom headers",
+				"addHeader": "Add header",
 				"headerKeyPlaceholder": "Header name",
 				"headerValuePlaceholder": "Header value",
 				"noHeaders": "No custom headers configured"
@@ -962,7 +968,6 @@
 				"displayNamePlaceholder": "My connection",
 				"rootPathPlaceholder": "optional/prefix",
 				"scheduleCronPlaceholder": "0 * * * *",
-				"optional": "optional",
 				"sections": {
 					"credentials": "Credentials",
 					"sync": "Sync settings"
@@ -1007,13 +1012,13 @@
 			"createWebhook": {
 				"title": "Create Webhook",
 				"description": "Configure a new webhook endpoint to receive real-time notifications about events in your workspace.",
-				"save": "Create Webhook",
+				"save": "Create",
 				"cancel": "Cancel"
 			},
 			"editWebhook": {
 				"title": "Edit Webhook",
 				"description": "Update the webhook endpoint configuration.",
-				"save": "Save Changes",
+				"save": "Save changes",
 				"cancel": "Cancel"
 			},
 			"deleteWebhook": {
@@ -1199,6 +1204,7 @@
 			"nameLabel": "Name",
 			"namePlaceholder": "PII redaction",
 			"slugLabel": "Slug",
+			"slugHint": "Generated from the name. URL-safe and permanent.",
 			"descriptionLabel": "Description",
 			"descriptionPlaceholder": "What this policy does",
 			"rulesLabel": "Rules",
@@ -1278,9 +1284,8 @@
 				"descriptionPlaceholder": "What this label means (optional)",
 				"tagsPlaceholder": "tags, comma separated"
 			},
-			"submit": "Create policy",
-			"identityFooter": "Name, slug, and description for this policy.",
-			"definitionFooter": "Rules, labels, and fallback that define how this policy redacts.",
+			"cancel": "Cancel",
+			"submit": "Create",
 			"addPredicatedRule": "Conditional rule",
 			"addTableRule": "Label table",
 			"table": {
@@ -1300,7 +1305,8 @@
 			"createTitle": "Create Policy",
 			"createDescription": "Define detection rules and how matches are redacted.",
 			"editTitle": "Edit Policy",
-			"editDescription": "Update detection rules and how matches are redacted."
+			"editDescription": "Update detection rules and how matches are redacted.",
+			"slugPlaceholder": "auto-generated"
 		},
 		"delete": {
 			"title": "Delete {name}?",
@@ -1325,7 +1331,7 @@
 			"namePlaceholder": "HIPAA Safe Harbor",
 			"slugLabel": "Slug",
 			"slugPlaceholder": "hipaa-safe-harbor",
-			"slugHint": "Lowercase letters, numbers, and single dashes. URL-safe identifier.",
+			"slugHint": "Generated from the name. URL-safe and permanent.",
 			"cancel": "Cancel",
 			"create": "Create policy",
 			"use": "Use template",
@@ -1441,10 +1447,10 @@
 			"nameLabel": "Name",
 			"namePlaceholder": "Document Redaction",
 			"slugLabel": "Slug",
-			"slugPlaceholder": "document-redaction",
-			"slugHint": "Lowercase letters, numbers, and single dashes. URL-safe identifier.",
+			"slugPlaceholder": "auto-generated",
+			"slugHint": "Generated from the name. URL-safe and permanent.",
 			"descriptionLabel": "Description",
-			"descriptionPlaceholder": "What this pipeline does (optional).",
+			"descriptionPlaceholder": "What this pipeline does",
 			"cancel": "Cancel",
 			"submit": "Create",
 			"policiesLabel": "Policies",
@@ -1465,9 +1471,9 @@
 				"redactedDocuments": "Redacted documents"
 			},
 			"retentionModes": {
-				"inherit": "Inherit workspace default",
+				"inherit": "Inherit default",
 				"forever": "Keep forever",
-				"days": "Keep for a period",
+				"days": "Keep for days",
 				"zeroDays": "Delete immediately"
 			},
 			"retentionDays": "Days"

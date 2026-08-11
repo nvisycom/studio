@@ -125,9 +125,9 @@
 						"redactedDocuments": "Geschwärzte Dokumente"
 					},
 					"modes": {
-						"forever": "Dauerhaft aufbewahren",
-						"days": "Für einen Zeitraum",
-						"zeroDays": "Nicht aufbewahren"
+						"forever": "Für immer behalten",
+						"days": "Für Tage behalten",
+						"zeroDays": "Nicht behalten"
 					},
 					"footer": "Gilt für alle Daten in diesem Arbeitsbereich."
 				}
@@ -410,7 +410,8 @@
 				"name": "Name",
 				"size": "Größe",
 				"created": "Erstellt",
-				"updated": "Aktualisiert"
+				"updated": "Aktualisiert",
+				"uploadedBy": "Hochgeladen von"
 			},
 			"empty": {
 				"title": "Keine Dateien gefunden",
@@ -480,6 +481,11 @@
 			"uploadFailed": "Datei konnte nicht hochgeladen werden",
 			"downloadFailed": "Datei konnte nicht heruntergeladen werden",
 			"loadFailed": "Dateien konnten nicht geladen werden"
+		},
+		"kind": {
+			"original": "Original",
+			"redacted": "Geschwärzt",
+			"audit": "Audit"
 		}
 	},
 	"members": {
@@ -748,7 +754,7 @@
 			"connect": "Verbinden",
 			"visitName": "{name} Besuchen",
 			"comingSoon": "Demnächst",
-			"createWebhook": "Webhook Erstellen",
+			"createWebhook": "Webhook erstellen",
 			"back": "Zurück",
 			"backToConnections": "Zurück zu Verbindungen",
 			"viewRuns": "Ausführungen Anzeigen"
@@ -931,15 +937,15 @@
 				"placeholder": "Integrationen suchen..."
 			},
 			"webhook": {
-				"nameLabel": "Webhook-Name",
-				"namePlaceholder": "Webhook-Namen eingeben",
+				"nameLabel": "Name",
+				"namePlaceholder": "Namen eingeben",
 				"urlLabel": "Endpunkt-URL",
 				"urlPlaceholder": "https://beispiel.com/webhook",
 				"urlError": "Bitte geben Sie eine gültige URL ein (http:// oder https://)",
 				"enabledLabel": "Aktiviert",
 				"disabledLabel": "Deaktiviert",
 				"headersLabel": "Benutzerdefinierte Header",
-				"addHeader": "Header Hinzufügen",
+				"addHeader": "Header hinzufügen",
 				"headerKeyPlaceholder": "Header-Name",
 				"headerValuePlaceholder": "Header-Wert",
 				"noHeaders": "Keine benutzerdefinierten Header konfiguriert"
@@ -962,7 +968,6 @@
 				"displayNamePlaceholder": "Meine Verbindung",
 				"rootPathPlaceholder": "optionales/präfix",
 				"scheduleCronPlaceholder": "0 * * * *",
-				"optional": "optional",
 				"sections": {
 					"credentials": "Zugangsdaten",
 					"sync": "Synchronisationseinstellungen"
@@ -1005,15 +1010,15 @@
 				"cancel": "Abbrechen"
 			},
 			"createWebhook": {
-				"title": "Webhook Erstellen",
+				"title": "Webhook erstellen",
 				"description": "Konfigurieren Sie einen neuen Webhook-Endpunkt, um Echtzeit-Benachrichtigungen über Ereignisse in Ihrem Arbeitsbereich zu erhalten.",
-				"save": "Webhook Erstellen",
+				"save": "Erstellen",
 				"cancel": "Abbrechen"
 			},
 			"editWebhook": {
-				"title": "Webhook Bearbeiten",
+				"title": "Webhook bearbeiten",
 				"description": "Aktualisieren Sie die Webhook-Endpunkt-Konfiguration.",
-				"save": "Änderungen Speichern",
+				"save": "Änderungen speichern",
 				"cancel": "Abbrechen"
 			},
 			"deleteWebhook": {
@@ -1199,6 +1204,7 @@
 			"nameLabel": "Name",
 			"namePlaceholder": "PII-Schwärzung",
 			"slugLabel": "Slug",
+			"slugHint": "Aus dem Namen generiert. URL-sicher und dauerhaft.",
 			"descriptionLabel": "Beschreibung",
 			"descriptionPlaceholder": "Was diese Richtlinie tut",
 			"rulesLabel": "Regeln",
@@ -1278,9 +1284,8 @@
 				"descriptionPlaceholder": "Was dieses Label bedeutet (optional)",
 				"tagsPlaceholder": "Tags, durch Komma getrennt"
 			},
-			"submit": "Richtlinie erstellen",
-			"identityFooter": "Name, Slug und Beschreibung dieser Richtlinie.",
-			"definitionFooter": "Regeln, Labels und Fallback, die festlegen, wie diese Richtlinie schwärzt.",
+			"cancel": "Abbrechen",
+			"submit": "Erstellen",
 			"addPredicatedRule": "Bedingte Regel",
 			"addTableRule": "Label-Tabelle",
 			"table": {
@@ -1300,7 +1305,8 @@
 			"createTitle": "Richtlinie erstellen",
 			"createDescription": "Definieren Sie Erkennungsregeln und wie Treffer geschwärzt werden.",
 			"editTitle": "Richtlinie bearbeiten",
-			"editDescription": "Aktualisieren Sie Erkennungsregeln und wie Treffer geschwärzt werden."
+			"editDescription": "Aktualisieren Sie Erkennungsregeln und wie Treffer geschwärzt werden.",
+			"slugPlaceholder": "automatisch generiert"
 		},
 		"delete": {
 			"title": "{name} löschen?",
@@ -1325,7 +1331,7 @@
 			"namePlaceholder": "HIPAA Safe Harbor",
 			"slugLabel": "Slug",
 			"slugPlaceholder": "hipaa-safe-harbor",
-			"slugHint": "Kleinbuchstaben, Zahlen und einzelne Bindestriche. URL-sicherer Bezeichner.",
+			"slugHint": "Aus dem Namen generiert. URL-sicher und dauerhaft.",
 			"cancel": "Abbrechen",
 			"create": "Richtlinie erstellen",
 			"use": "Vorlage verwenden",
@@ -1441,10 +1447,10 @@
 			"nameLabel": "Name",
 			"namePlaceholder": "Dokumentenschwärzung",
 			"slugLabel": "Slug",
-			"slugPlaceholder": "dokumentenschwaerzung",
-			"slugHint": "Kleinbuchstaben, Zahlen und einzelne Bindestriche. URL-sicherer Bezeichner.",
+			"slugPlaceholder": "automatisch generiert",
+			"slugHint": "Aus dem Namen generiert. URL-sicher und dauerhaft.",
 			"descriptionLabel": "Beschreibung",
-			"descriptionPlaceholder": "Was diese Pipeline tut (optional).",
+			"descriptionPlaceholder": "Was diese Pipeline macht",
 			"cancel": "Abbrechen",
 			"submit": "Erstellen",
 			"policiesLabel": "Richtlinien",
@@ -1465,9 +1471,9 @@
 				"redactedDocuments": "Geschwärzte Dokumente"
 			},
 			"retentionModes": {
-				"inherit": "Arbeitsbereich-Vorgabe übernehmen",
+				"inherit": "Standard übernehmen",
 				"forever": "Für immer behalten",
-				"days": "Für einen Zeitraum behalten",
+				"days": "Für Tage behalten",
 				"zeroDays": "Sofort löschen"
 			},
 			"retentionDays": "Tage"

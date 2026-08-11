@@ -31,6 +31,7 @@ import {
 	SheetHeader,
 	SheetTitle,
 } from "#console/components/ui/sheet";
+import { slugify } from "#console/utils/naming";
 
 const { t } = useI18n();
 
@@ -47,7 +48,6 @@ const emit = defineEmits<{
 
 const name = ref("");
 const slug = ref("");
-const slugEdited = ref(false);
 const description = ref("");
 
 // Linked policies.
@@ -99,20 +99,10 @@ const hasRetentionOverride = computed(() =>
 	RETENTION_TARGETS.some((tgt) => retention.value[tgt].mode !== "inherit"),
 );
 
-// Slugify: lowercase alphanumeric with single internal dashes.
-function slugify(value: string): string {
-	return value
-		.toLowerCase()
-		.replace(/[^a-z0-9]+/g, "-")
-		.replace(/^-+|-+$/g, "");
-}
+// The slug is immutable and always derived from the pipeline name.
 watch(name, (value) => {
-	if (!slugEdited.value) slug.value = slugify(value);
+	slug.value = slugify(value);
 });
-function onSlugInput() {
-	slugEdited.value = true;
-	slug.value = slugify(slug.value);
-}
 
 function addCountry() {
 	const value = countryInput.value.trim().toUpperCase();
@@ -141,7 +131,6 @@ const isFormValid = computed(
 function reset() {
 	name.value = "";
 	slug.value = "";
-	slugEdited.value = false;
 	description.value = "";
 	selectedPolicies.value = [];
 	scopeOpen.value = false;
@@ -213,7 +202,7 @@ function cancel() {
   <Sheet :open="open" @update:open="handleOpenChange">
     <SheetContent
       side="right"
-      class="flex w-full flex-col gap-0 p-0 sm:max-w-xl"
+      class="flex w-full flex-col gap-0 p-0 sm:max-w-2xl"
     >
       <SheetHeader class="border-b border-border/50">
         <SheetTitle>{{ t("workflows.create.title") }}</SheetTitle>
@@ -226,7 +215,7 @@ function cancel() {
         <!-- Basics -->
         <div class="grid gap-5 sm:grid-cols-2">
           <div class="space-y-2">
-            <Label for="pipeline-name">{{
+            <Label for="pipeline-name" required>{{
               t("workflows.create.nameLabel")
             }}</Label>
             <Input
@@ -241,11 +230,12 @@ function cancel() {
             }}</Label>
             <Input
               id="pipeline-slug"
-              v-model="slug"
-              autocapitalize="none"
-              class="font-mono text-sm"
+              :model-value="slug"
+              readonly
+              tabindex="-1"
+              aria-readonly="true"
+              class="font-mono text-sm text-muted-foreground"
               :placeholder="t('workflows.create.slugPlaceholder')"
-              @input="onSlugInput"
             />
           </div>
         </div>
@@ -400,21 +390,29 @@ function cancel() {
               />
             </button>
           </CollapsibleTrigger>
-          <CollapsibleContent class="space-y-4">
-            <p class="text-xs text-muted-foreground">
+          <CollapsibleContent class="space-y-2.5">
+            <p class="pb-1.5 text-xs text-muted-foreground">
               {{ t("workflows.create.retentionHint") }}
             </p>
             <div
               v-for="target in RETENTION_TARGETS"
               :key="target"
-              class="space-y-2"
+              class="flex items-center justify-between gap-3"
             >
-              <Label>{{
-                t(`workflows.create.retentionTargets.${target}`)
-              }}</Label>
+              <Label>
+                {{ t(`workflows.create.retentionTargets.${target}`) }}
+              </Label>
               <div class="flex items-center gap-2">
+                <Input
+                  v-if="retention[target].mode === 'days'"
+                  v-model.number="retention[target].days"
+                  type="number"
+                  min="1"
+                  class="h-9 w-20"
+                  :aria-label="t('workflows.create.retentionDays')"
+                />
                 <Select v-model="retention[target].mode">
-                  <SelectTrigger class="flex-1">
+                  <SelectTrigger class="h-9 w-[200px] shrink-0">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -427,14 +425,6 @@ function cancel() {
                     </SelectItem>
                   </SelectContent>
                 </Select>
-                <Input
-                  v-if="retention[target].mode === 'days'"
-                  v-model.number="retention[target].days"
-                  type="number"
-                  min="1"
-                  class="w-24"
-                  :aria-label="t('workflows.create.retentionDays')"
-                />
               </div>
             </div>
           </CollapsibleContent>

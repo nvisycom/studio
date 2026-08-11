@@ -28,7 +28,7 @@ import {
 import { Kbd } from "#console/components/ui/kbd";
 import { personLabel } from "#console/utils/naming";
 import CommandMenu from "@/components/CommandMenu.vue";
-import CreateWorkspaceModal from "#console/components/common/CreateWorkspaceModal.vue";
+import CreateWorkspaceSheet from "#console/components/common/CreateWorkspaceSheet.vue";
 
 const { t } = useI18n();
 const { wLink } = useWorkspaceLink();
@@ -201,5 +201,5 @@ defineShortcuts({
   />
 
   <!-- Create Workspace Modal -->
-  <CreateWorkspaceModal v-model:open="isCreateWorkspaceOpen" />
+  <CreateWorkspaceSheet v-model:open="isCreateWorkspaceOpen" />
 </template>

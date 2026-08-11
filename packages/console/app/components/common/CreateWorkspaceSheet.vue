@@ -1,18 +1,14 @@
 <script setup lang="ts">
 import { Layers, Loader2, ChevronDown } from "@lucide/vue";
-import type {
-	CreateWorkspace,
-	OcrPolicy,
-	Retention,
-} from "@nvisy/sdk/datatypes";
+import type { CreateWorkspace, OcrPolicy } from "@nvisy/sdk/datatypes";
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "#console/components/ui/dialog";
+	Sheet,
+	SheetContent,
+	SheetDescription,
+	SheetFooter,
+	SheetHeader,
+	SheetTitle,
+} from "#console/components/ui/sheet";
 import {
 	Collapsible,
 	CollapsibleContent,
@@ -31,6 +27,12 @@ import {
 	SelectValue,
 } from "#console/components/ui/select";
 import { Alert, AlertDescription } from "#console/components/ui/alert";
+import { RetentionFields } from "#console/components/common";
+import { OCR_POLICIES } from "#console/utils/ocr";
+import {
+	defaultRetentionForm,
+	formToRetention,
+} from "#console/utils/retention";
 
 const { t } = useI18n();
 const open = defineModel<boolean>("open", { required: true });
@@ -42,38 +44,7 @@ const displayName = ref("");
 const description = ref("");
 const requireApproval = ref(false);
 const ocr = ref<OcrPolicy>("auto");
-
-// Retention is modelled per target as a mode + day count (only "days" uses it).
-type RetentionMode = Retention["mode"];
-interface RetentionField {
-	mode: RetentionMode;
-	days: number;
-}
-const OCR_POLICIES: OcrPolicy[] = ["auto", "force", "never"];
-const RETENTION_MODES: RetentionMode[] = ["forever", "days", "zeroDays"];
-const RETENTION_TARGETS = [
-	"auditLogs",
-	"originalDocuments",
-	"redactedDocuments",
-] as const;
-type RetentionTarget = (typeof RETENTION_TARGETS)[number];
-
-function newRetentionField(): RetentionField {
-	return { mode: "forever", days: 30 };
-}
-function defaultRetention(): Record<RetentionTarget, RetentionField> {
-	return {
-		auditLogs: newRetentionField(),
-		originalDocuments: newRetentionField(),
-		redactedDocuments: newRetentionField(),
-	};
-}
-const retention = ref<Record<RetentionTarget, RetentionField>>(
-	defaultRetention(),
-);
-function fieldToRetention(f: RetentionField): Retention {
-	return f.mode === "days" ? { mode: "days", days: f.days } : { mode: f.mode };
-}
+const retention = ref(defaultRetentionForm());
 
 // Collapsible sections
 const advancedOpen = ref(false);
@@ -88,7 +59,7 @@ function resetForm() {
 	description.value = "";
 	requireApproval.value = false;
 	ocr.value = "auto";
-	retention.value = defaultRetention();
+	retention.value = defaultRetentionForm();
 	advancedOpen.value = false;
 	retentionOpen.value = false;
 }
@@ -104,15 +75,10 @@ async function createWorkspace() {
 	const workspaceData: CreateWorkspace = {
 		displayName: displayName.value.trim(),
 		description: description.value.trim() || undefined,
-		// 0.17 nests these under a required settings object.
 		settings: {
 			ocr: ocr.value,
 			requireApproval: requireApproval.value,
-			retention: {
-				auditLogs: fieldToRetention(retention.value.auditLogs),
-				originalDocuments: fieldToRetention(retention.value.originalDocuments),
-				redactedDocuments: fieldToRetention(retention.value.redactedDocuments),
-			},
+			retention: formToRetention(retention.value),
 		},
 	};
 
@@ -126,17 +92,23 @@ async function createWorkspace() {
 </script>
 
 <template>
-  <Dialog v-model:open="open">
-    <DialogContent class="sm:max-w-[500px]">
-      <DialogHeader>
-        <DialogTitle>{{ t("workspace.create.title") }}</DialogTitle>
-        <DialogDescription>
+  <Sheet v-model:open="open">
+    <SheetContent
+      side="right"
+      class="flex w-full flex-col gap-0 p-0 sm:max-w-lg"
+    >
+      <SheetHeader class="border-b border-border/50">
+        <SheetTitle>{{ t("workspace.create.title") }}</SheetTitle>
+        <SheetDescription>
           {{ t("workspace.create.description") }}
-        </DialogDescription>
-      </DialogHeader>
+        </SheetDescription>
+      </SheetHeader>
 
-      <form @submit.prevent="isFormValid && !isCreating && createWorkspace()">
-        <div class="grid gap-5 py-4">
+      <form
+        class="flex min-h-0 flex-1 flex-col"
+        @submit.prevent="isFormValid && !isCreating && createWorkspace()"
+      >
+        <div class="flex flex-1 flex-col gap-5 overflow-y-auto p-6">
           <!-- Error Alert -->
           <Alert v-if="createError" variant="destructive">
             <AlertDescription>
@@ -146,7 +118,7 @@ async function createWorkspace() {
 
           <!-- Workspace Name -->
           <div class="grid gap-2">
-            <Label for="display-name">
+            <Label for="display-name" required>
               {{ t("workspace.create.nameLabel") }}
             </Label>
             <Input
@@ -239,48 +211,13 @@ async function createWorkspace() {
                 {{ t("settings.workspace.options.retention.label") }}
               </Button>
             </CollapsibleTrigger>
-            <CollapsibleContent class="pt-4 space-y-2.5">
-              <div
-                v-for="target in RETENTION_TARGETS"
-                :key="target"
-                class="flex items-center justify-between gap-3"
-              >
-                <span class="text-sm text-muted-foreground">
-                  {{
-                    t(`settings.workspace.options.retention.targets.${target}`)
-                  }}
-                </span>
-                <div class="flex items-center gap-2">
-                  <Input
-                    v-if="retention[target].mode === 'days'"
-                    v-model.number="retention[target].days"
-                    type="number"
-                    min="1"
-                    class="h-9 w-20"
-                  />
-                  <Select v-model="retention[target].mode">
-                    <SelectTrigger class="h-9 w-[150px] shrink-0">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem
-                        v-for="m in RETENTION_MODES"
-                        :key="m"
-                        :value="m"
-                      >
-                        {{
-                          t(`settings.workspace.options.retention.modes.${m}`)
-                        }}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+            <CollapsibleContent class="pt-4">
+              <RetentionFields v-model:retention="retention" />
             </CollapsibleContent>
           </Collapsible>
         </div>
 
-        <DialogFooter>
+        <SheetFooter class="flex-row justify-end border-t border-border/50">
           <Button
             type="button"
             variant="outline"
@@ -298,8 +235,8 @@ async function createWorkspace() {
             <Layers v-else :size="16" class="mr-2" />
             {{ t("workspace.create.submitButton") }}
           </Button>
-        </DialogFooter>
+        </SheetFooter>
       </form>
-    </DialogContent>
-  </Dialog>
+    </SheetContent>
+  </Sheet>
 </template>

@@ -16,7 +16,7 @@ import {
 } from "#console/components/ui/sidebar";
 import { EntityAvatar } from "#console/components/common";
 import { truncate } from "#console/utils/naming";
-import CreateWorkspaceModal from "#console/components/common/CreateWorkspaceModal.vue";
+import CreateWorkspaceSheet from "#console/components/common/CreateWorkspaceSheet.vue";
 
 const { t } = useI18n();
 const { isMobile } = useSidebar();
@@ -28,7 +28,7 @@ const { workspaces, currentWorkspace, currentWorkspaceSlug, selectWorkspace } =
 	useWorkspaces();
 const { resolveAvatarUrl } = useAvatarUrl();
 
-const isCreateWorkspaceModalOpen = ref(false);
+const isCreateWorkspaceSheetOpen = ref(false);
 </script>
 
 <template>
@@ -116,7 +116,7 @@ const isCreateWorkspaceModalOpen = ref(false);
           <DropdownMenuSeparator v-if="workspaces && workspaces.length > 0" />
           <DropdownMenuItem
             class="gap-2 px-2 py-1.5"
-            @click="isCreateWorkspaceModalOpen = true"
+            @click="isCreateWorkspaceSheetOpen = true"
           >
             <div
               class="flex size-5 items-center justify-center rounded border bg-background"
@@ -131,6 +131,6 @@ const isCreateWorkspaceModalOpen = ref(false);
       </DropdownMenu>
     </SidebarMenuItem>
 
-    <CreateWorkspaceModal v-model:open="isCreateWorkspaceModalOpen" />
+    <CreateWorkspaceSheet v-model:open="isCreateWorkspaceSheetOpen" />
   </SidebarMenu>
 </template>

@@ -222,7 +222,7 @@ async function renameToken(newName: string) {
         <CardContent>
           <div class="flex gap-4">
             <div class="space-y-2 flex-1">
-              <Label for="tokenName" class="text-sm font-medium">
+              <Label for="tokenName" class="text-sm font-medium" required>
                 {{ t("tokens.create.nameLabel") }}
               </Label>
               <Input

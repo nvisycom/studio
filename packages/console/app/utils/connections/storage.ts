@@ -72,14 +72,14 @@ export function storageProviderForCard(cardId: string): StorageProvider | null {
 }
 
 /** Icon path (under `public/integration/`) for each SDK storage provider. */
-export const PROVIDER_ICONS: Record<StorageProvider, string> = {
+export const STORAGE_PROVIDER_ICONS: Record<StorageProvider, string> = {
 	s3: "/integration/aws-s3.svg",
 	azure: "/integration/azure.svg",
 	gcs: "/integration/gcs.svg",
 };
 
 /** Human-readable name for each SDK storage provider. */
-export const PROVIDER_LABELS: Record<StorageProvider, string> = {
+export const STORAGE_PROVIDER_LABELS: Record<StorageProvider, string> = {
 	s3: "Amazon S3",
 	azure: "Azure Blob Storage",
 	gcs: "Google Cloud Storage",

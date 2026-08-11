@@ -10,8 +10,6 @@ const props = defineProps<{
 	fields: CredentialField[];
 	/** i18n prefix for field labels; `<prefix>.<labelKey>` is resolved. */
 	labelPrefix: string;
-	/** i18n key for the "optional" suffix on non-required fields. */
-	optionalKey: string;
 }>();
 
 /** Credential values keyed by field key, bound via v-model. */
@@ -29,11 +27,8 @@ const label = (field: CredentialField) =>
 <template>
   <div class="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
     <div v-for="field in gridFields" :key="field.key" class="space-y-1.5">
-      <Label class="text-sm font-normal">
+      <Label class="text-sm font-normal" :required="field.required">
         {{ label(field) }}
-        <span v-if="!field.required" class="text-muted-foreground">
-          · {{ t(optionalKey) }}
-        </span>
       </Label>
       <Input
         v-model="credentials[field.key]"
@@ -42,11 +37,8 @@ const label = (field: CredentialField) =>
     </div>
   </div>
   <div v-for="field in fullFields" :key="field.key" class="space-y-1.5">
-    <Label class="text-sm font-normal">
+    <Label class="text-sm font-normal" :required="field.required">
       {{ label(field) }}
-      <span v-if="!field.required" class="text-muted-foreground">
-        · {{ t(optionalKey) }}
-      </span>
     </Label>
     <Textarea
       v-model="credentials[field.key]"

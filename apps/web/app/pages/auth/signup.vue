@@ -125,7 +125,7 @@ async function handleMicrosoftSignup(): Promise<void> {
     <form @submit.prevent="handleSignup" class="space-y-4">
       <!-- Username -->
       <div class="space-y-2">
-        <Label for="username">{{ t("auth.signup.username") }}</Label>
+        <Label for="username" required>{{ t("auth.signup.username") }}</Label>
         <Input
           id="username"
           name="username"
@@ -145,7 +145,7 @@ async function handleMicrosoftSignup(): Promise<void> {
 
       <!-- Email -->
       <div class="space-y-2">
-        <Label for="email">{{ t("auth.shared.email") }}</Label>
+        <Label for="email" required>{{ t("auth.shared.email") }}</Label>
         <Input
           id="email"
           name="email"
@@ -160,7 +160,7 @@ async function handleMicrosoftSignup(): Promise<void> {
 
       <!-- Password -->
       <div class="space-y-2">
-        <Label for="password">{{ t("auth.shared.password") }}</Label>
+        <Label for="password" required>{{ t("auth.shared.password") }}</Label>
         <div class="relative">
           <Input
             id="password"

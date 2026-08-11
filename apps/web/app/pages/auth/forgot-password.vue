@@ -90,7 +90,7 @@ async function handleForgotPassword(): Promise<void> {
       <!-- Form -->
       <form @submit.prevent="handleForgotPassword" class="space-y-4">
         <div class="space-y-2">
-          <Label for="email">{{ t("auth.shared.email") }}</Label>
+          <Label for="email" required>{{ t("auth.shared.email") }}</Label>
           <Input
             id="email"
             name="email"
