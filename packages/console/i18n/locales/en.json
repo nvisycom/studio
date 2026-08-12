@@ -1185,7 +1185,8 @@
 			"noFileHint": "Open a text file to run detection.",
 			"emptyTitle": "No entities found",
 			"emptyHint": "This pipeline detected nothing in the document.",
-			"apply": "Apply redaction"
+			"apply": "Apply redaction",
+			"noPipelines": "No pipelines yet. Create one first."
 		}
 	},
 	"commandMenu": {

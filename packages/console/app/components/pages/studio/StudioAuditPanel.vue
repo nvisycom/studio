@@ -153,6 +153,13 @@ const confidencePct = (c: number) => `${Math.round(c * 100)}%`;
             >
               {{ p.displayName }}
             </SelectItem>
+            <!-- Avoid a blank menu box when there are no pipelines to pick. -->
+            <p
+              v-if="!pipelines?.length"
+              class="px-2 py-1.5 text-sm text-muted-foreground"
+            >
+              {{ t("studio.audit.noPipelines") }}
+            </p>
           </SelectContent>
         </Select>
 

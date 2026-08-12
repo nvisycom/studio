@@ -1185,7 +1185,8 @@
 			"noFileHint": "Öffne eine Textdatei, um die Erkennung auszuführen.",
 			"emptyTitle": "Keine Entitäten gefunden",
 			"emptyHint": "Diese Pipeline hat im Dokument nichts erkannt.",
-			"apply": "Schwärzung anwenden"
+			"apply": "Schwärzung anwenden",
+			"noPipelines": "Noch keine Pipelines. Erstellen Sie zuerst eine."
 		}
 	},
 	"commandMenu": {
