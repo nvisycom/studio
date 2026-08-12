@@ -78,8 +78,7 @@
 			},
 			"name": {
 				"label": "Arbeitsbereichsname",
-				"placeholder": "Mein Arbeitsbereich",
-				"description": "Der Name Ihres Arbeitsbereichs, wie er auf der Plattform angezeigt wird."
+				"placeholder": "Mein Arbeitsbereich"
 			},
 			"description": {
 				"label": "Beschreibung",
@@ -88,7 +87,8 @@
 			},
 			"id": {
 				"label": "Arbeitsbereich-ID",
-				"description": "Eindeutige Kennung für API-Aufrufe."
+				"description": "Eindeutige Kennung für API-Aufrufe.",
+				"copy": "Workspace-ID kopieren"
 			},
 			"info": {
 				"footer": "Änderungen gelten für alle Teammitglieder."
@@ -1162,7 +1162,6 @@
 			"tabAudit": "Audit",
 			"pipelinePlaceholder": "Pipeline auswählen",
 			"run": "Erkennung ausführen",
-			"running": "Wird analysiert…",
 			"runAgain": "Erneut ausführen",
 			"restoring": "Letzter Lauf wird wiederhergestellt…",
 			"fromLastRun": "aus dem letzten Lauf",
@@ -1183,7 +1182,6 @@
 			"noFileHint": "Öffne eine Textdatei, um die Erkennung auszuführen.",
 			"emptyTitle": "Keine Entitäten gefunden",
 			"emptyHint": "Diese Pipeline hat im Dokument nichts erkannt.",
-			"applyNote": "Die Erkennung ändert die Datei nicht. Das Anwenden der Schwärzung erstellt ein neues geschwärztes Dokument.",
 			"apply": "Schwärzung anwenden"
 		}
 	},
@@ -1423,18 +1421,18 @@
 			"backToWorkflows": "Zurück zu Pipelines",
 			"status": "Status",
 			"allStatus": "Alle Status",
+			"allPipelines": "Alle Pipelines",
+			"allTriggers": "Alle Auslöser",
 			"statusHeader": "Status",
 			"pipeline": "Pipeline",
 			"file": "Datei",
 			"trigger": "Auslöser",
 			"started": "Gestartet",
-			"duration": "Dauer",
 			"runsFound": "{count} Ausführung | {count} Ausführungen",
 			"noRunsFound": "Keine Ausführungen gefunden",
 			"triggerType": {
-				"manual": "Manuell",
-				"source": "Quelle",
-				"scheduled": "Geplant"
+				"user": "Manuell",
+				"system": "Automatisch"
 			},
 			"runStatus": {
 				"queued": "In Warteschlange",

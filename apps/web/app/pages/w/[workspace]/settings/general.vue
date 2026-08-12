@@ -248,21 +248,52 @@ const canDelete = computed(() => {
         <!-- Workspace Info Card -->
         <Card class="py-0 pt-6 rounded-xl border-border/50">
           <CardContent class="space-y-6">
-            <!-- Workspace Name -->
-            <div class="space-y-2">
-              <Label for="workspaceName" class="text-sm font-medium" required>{{
-                t("settings.workspace.name.label")
-              }}</Label>
-              <Input
-                id="workspaceName"
-                v-model="workspaceName"
-                :placeholder="t('settings.workspace.name.placeholder')"
-                class="max-w-md h-9"
-              />
-              <p class="text-xs text-muted-foreground">
-                {{ t("settings.workspace.name.description") }}
-              </p>
+            <!-- Name + Slug -->
+            <div class="grid gap-5 sm:grid-cols-2">
+              <div class="space-y-2">
+                <Label for="workspaceName" class="text-sm font-medium" required>{{
+                  t("settings.workspace.name.label")
+                }}</Label>
+                <Input
+                  id="workspaceName"
+                  v-model="workspaceName"
+                  :placeholder="t('settings.workspace.name.placeholder')"
+                  class="h-9"
+                />
+              </div>
+              <div class="space-y-2">
+                <Label for="workspaceId" class="text-sm font-medium">{{
+                  t("settings.workspace.id.label")
+                }}</Label>
+                <div class="flex gap-2">
+                  <Input
+                    id="workspaceId"
+                    :model-value="currentWorkspaceSlug ?? ''"
+                    readonly
+                    tabindex="-1"
+                    aria-readonly="true"
+                    class="h-9 flex-1 font-mono text-sm text-muted-foreground"
+                  />
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    @click="copyWorkspaceId"
+                    :title="t('settings.workspace.id.copy')"
+                    class="size-9 shrink-0"
+                  >
+                    <Check
+                      v-if="copiedWorkspaceId"
+                      :size="16"
+                      class="text-green-500"
+                    />
+                    <Copy v-else :size="16" />
+                  </Button>
+                </div>
+              </div>
             </div>
+            <p class="-mt-3 text-xs text-muted-foreground">
+              {{ t("settings.workspace.id.description") }}
+            </p>
 
             <!-- Workspace Description -->
             <div class="space-y-2">
@@ -273,42 +304,10 @@ const canDelete = computed(() => {
                 id="workspaceDescription"
                 v-model="workspaceDescription"
                 :placeholder="t('settings.workspace.description.placeholder')"
-                class="max-w-md resize-none"
-                :rows="3"
+                class="min-h-[72px] resize-none"
               />
               <p class="text-xs text-muted-foreground">
                 {{ t("settings.workspace.description.description") }}
-              </p>
-            </div>
-
-            <!-- Workspace ID -->
-            <div class="space-y-2">
-              <Label for="workspaceId" class="text-sm font-medium">{{
-                t("settings.workspace.id.label")
-              }}</Label>
-              <div class="flex gap-2 max-w-md">
-                <Input
-                  id="workspaceId"
-                  :model-value="currentWorkspaceSlug ?? ''"
-                  readonly
-                  class="flex-1 font-mono text-sm h-9 bg-muted/50 border-border/50 text-muted-foreground"
-                />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  @click="copyWorkspaceId"
-                  class="flex items-center justify-center size-9 p-0"
-                >
-                  <Check
-                    v-if="copiedWorkspaceId"
-                    :size="16"
-                    class="text-green-500"
-                  />
-                  <Copy v-else :size="16" />
-                </Button>
-              </div>
-              <p class="text-xs text-muted-foreground">
-                {{ t("settings.workspace.id.description") }}
               </p>
             </div>
           </CardContent>

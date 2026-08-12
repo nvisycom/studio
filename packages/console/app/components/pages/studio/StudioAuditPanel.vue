@@ -136,39 +136,40 @@ const confidencePct = (c: number) => `${Math.round(c * 100)}%`;
   <div class="flex h-full flex-col">
     <!-- Run controls -->
     <div class="space-y-2.5 border-b border-border/50 bg-muted/30 p-3">
-      <Select v-model="selectedPipeline" :disabled="phase === 'running'">
-        <SelectTrigger class="h-9 w-full text-sm">
-          <SelectValue :placeholder="t('studio.audit.pipelinePlaceholder')" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem
-            v-for="p in pipelines ?? []"
-            :key="p.slug"
-            :value="p.slug"
-            class="text-sm font-normal"
-          >
-            {{ p.displayName }}
-          </SelectItem>
-        </SelectContent>
-      </Select>
+      <div class="flex items-center gap-2">
+        <Select
+          v-model="selectedPipeline"
+          :disabled="phase === 'running'"
+        >
+          <SelectTrigger class="h-9 min-w-0 flex-1 text-sm">
+            <SelectValue :placeholder="t('studio.audit.pipelinePlaceholder')" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem
+              v-for="p in pipelines ?? []"
+              :key="p.slug"
+              :value="p.slug"
+              class="text-sm font-normal"
+            >
+              {{ p.displayName }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
 
-      <Button
-        class="w-full"
-        size="sm"
-        :disabled="!canRun"
-        @click="run"
-      >
-        <Loader2 v-if="phase === 'running'" :size="16" class="mr-2 animate-spin" />
-        <RotateCcw v-else-if="phase === 'analyzed'" :size="16" class="mr-2" />
-        <Play v-else :size="16" class="mr-2" />
-        {{
-          phase === "running"
-            ? t("studio.audit.running")
-            : phase === "analyzed"
-              ? t("studio.audit.runAgain")
-              : t("studio.audit.run")
-        }}
-      </Button>
+        <Button
+          size="icon"
+          class="size-9 shrink-0"
+          :disabled="!canRun"
+          :title="
+            phase === 'analyzed' ? t('studio.audit.runAgain') : t('studio.audit.run')
+          "
+          @click="run"
+        >
+          <Loader2 v-if="phase === 'running'" :size="16" class="animate-spin" />
+          <RotateCcw v-else-if="phase === 'analyzed'" :size="16" />
+          <Play v-else :size="16" />
+        </Button>
+      </div>
 
       <!-- Status line -->
       <p
@@ -287,11 +288,8 @@ const confidencePct = (c: number) => `${Math.round(c * 100)}%`;
     <!-- Apply redaction (deferred: detection only for now) -->
     <div
       v-if="phase === 'analyzed' && count > 0"
-      class="space-y-2 border-t border-border/50 bg-muted/30 p-3"
+      class="border-t border-border/50 bg-muted/30 p-3"
     >
-      <p class="text-[11px] text-muted-foreground">
-        {{ t("studio.audit.applyNote") }}
-      </p>
       <Button variant="outline" size="sm" class="w-full" disabled>
         {{ t("studio.audit.apply") }}
       </Button>

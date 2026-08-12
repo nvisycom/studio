@@ -1,18 +1,22 @@
 <script setup lang="ts">
-import type { PipelineRun, PipelineRunStatus } from "@nvisy/sdk/datatypes";
+import type { Component } from "vue";
+import type {
+	PipelineRunStatus,
+	PipelineTriggerType,
+} from "@nvisy/sdk/datatypes";
+import type { RunsFilter } from "#console/composables/useRuns";
 import {
 	ArrowLeft,
 	Loader2,
-	Play,
+	Loader,
 	Clock,
 	XCircle,
-	CheckCircle2,
+	CircleCheck,
 	CircleSlash,
-	FileText,
+	ClipboardCheck,
 	History,
 	ExternalLink,
 } from "@lucide/vue";
-import { formatDuration } from "#console/utils/date";
 import { Button } from "#console/components/ui/button";
 import {
 	Card,
@@ -49,7 +53,21 @@ definePageMeta({
 	pageCategory: "header.category.workflows",
 });
 
-const { runs, isLoading } = useRuns();
+const { pipelines } = usePipelines();
+
+// Filters are applied server-side via listRuns/listPipelineRuns.
+const ALL = "all";
+const statusFilter = ref<PipelineRunStatus | typeof ALL>(ALL);
+const pipelineFilter = ref<string>(ALL);
+const triggerFilter = ref<PipelineTriggerType | typeof ALL>(ALL);
+
+const runsFilter = computed<RunsFilter>(() => ({
+	...(statusFilter.value !== ALL && { status: statusFilter.value }),
+	...(triggerFilter.value !== ALL && { triggerType: triggerFilter.value }),
+	...(pipelineFilter.value !== ALL && { pipelineSlug: pipelineFilter.value }),
+}));
+
+const { runs, isLoading } = useRuns(runsFilter);
 
 const RUN_STATUSES: PipelineRunStatus[] = [
 	"queued",
@@ -60,18 +78,32 @@ const RUN_STATUSES: PipelineRunStatus[] = [
 	"cancelled",
 ];
 
-const statusFilter = ref<PipelineRunStatus | "all">("all");
+const TRIGGER_TYPES: PipelineTriggerType[] = ["user", "system"];
 
-const filteredRuns = computed(() => {
-	const items = [...(runs.value ?? [])];
-	const filtered =
-		statusFilter.value === "all"
-			? items
-			: items.filter((run) => run.status === statusFilter.value);
-	return filtered.sort(
-		(a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
-	);
-});
+// Per-status presentation: icon + tint, following the run lifecycle.
+//   queued     — enqueued, no worker yet          (waiting)
+//   analyzing  — a worker is analyzing            (in progress)
+//   analyzed   — detection done, awaiting review  (needs action → amber)
+//   completed  — redaction applied, finished      (success → emerald)
+//   failed / cancelled                            (error / muted)
+const STATUS_META: Record<
+	PipelineRunStatus,
+	{ icon: Component; class: string; spin?: boolean }
+> = {
+	queued: { icon: Clock, class: "text-muted-foreground" },
+	analyzing: { icon: Loader, class: "text-blue-500", spin: true },
+	analyzed: { icon: ClipboardCheck, class: "text-amber-500" },
+	completed: { icon: CircleCheck, class: "text-emerald-500" },
+	failed: { icon: XCircle, class: "text-destructive" },
+	cancelled: { icon: CircleSlash, class: "text-muted-foreground" },
+};
+
+// The API filters; we only ensure newest-first ordering.
+const sortedRuns = computed(() =>
+	[...(runs.value ?? [])].sort((a, b) =>
+		b.startedAt.localeCompare(a.startedAt),
+	),
+);
 </script>
 
 <template>
@@ -88,6 +120,47 @@ const filteredRuns = computed(() => {
 
         <div class="flex-1" />
 
+        <!-- Pipeline filter -->
+        <Select v-model="pipelineFilter">
+          <SelectTrigger class="h-9 w-[170px] text-sm">
+            <SelectValue :placeholder="t('workflows.runs.pipeline')" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all" class="text-sm font-normal">
+              {{ t("workflows.runs.allPipelines") }}
+            </SelectItem>
+            <SelectItem
+              v-for="p in pipelines ?? []"
+              :key="p.slug"
+              :value="p.slug"
+              class="text-sm font-normal"
+            >
+              {{ p.displayName }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+
+        <!-- Trigger filter -->
+        <Select v-model="triggerFilter">
+          <SelectTrigger class="h-9 w-[150px] text-sm">
+            <SelectValue :placeholder="t('workflows.runs.trigger')" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all" class="text-sm font-normal">
+              {{ t("workflows.runs.allTriggers") }}
+            </SelectItem>
+            <SelectItem
+              v-for="tt in TRIGGER_TYPES"
+              :key="tt"
+              :value="tt"
+              class="text-sm font-normal"
+            >
+              {{ t(`workflows.runs.triggerType.${tt}`) }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+
+        <!-- Status filter -->
         <Select v-model="statusFilter">
           <SelectTrigger class="h-9 w-[160px] text-sm">
             <SelectValue :placeholder="t('workflows.runs.status')" />
@@ -116,7 +189,7 @@ const filteredRuns = computed(() => {
             {{ t("workflows.runs.title") }}
           </CardTitle>
           <CardDescription class="text-sm">
-            {{ t("workflows.runs.runsFound", { count: filteredRuns.length }) }}
+            {{ t("workflows.runs.runsFound", { count: sortedRuns.length }) }}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -126,7 +199,7 @@ const filteredRuns = computed(() => {
           </div>
 
           <!-- Empty -->
-          <div v-else-if="filteredRuns.length === 0" class="py-12">
+          <div v-else-if="sortedRuns.length === 0" class="py-12">
             <div class="text-center">
               <div
                 class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
@@ -158,13 +231,10 @@ const filteredRuns = computed(() => {
                 <DataTableHead>
                   {{ t("workflows.runs.started") }}
                 </DataTableHead>
-                <DataTableHead>
-                  {{ t("workflows.runs.duration") }}
-                </DataTableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow v-for="run in filteredRuns" :key="run.id">
+              <TableRow v-for="run in sortedRuns" :key="run.id">
                 <!-- Pipeline -->
                 <TableCell>
                   <span class="font-mono text-xs text-foreground">
@@ -174,17 +244,17 @@ const filteredRuns = computed(() => {
 
                 <!-- File -->
                 <TableCell>
-                  <div class="flex items-center gap-1.5 text-muted-foreground">
-                    <FileText :size="14" />
-                    <span class="font-mono text-xs">
-                      {{ run.inputFileId.slice(0, 8) }}
-                    </span>
-                  </div>
+                  <span
+                    class="font-mono text-xs text-muted-foreground"
+                    :title="run.inputFileId"
+                  >
+                    {{ run.inputFileId.slice(0, 8) }}
+                  </span>
                 </TableCell>
 
                 <!-- Trigger -->
                 <TableCell>
-                  <Badge variant="outline" class="font-normal">
+                  <Badge variant="secondary" class="font-normal">
                     {{ t(`workflows.runs.triggerType.${run.triggerType}`) }}
                   </Badge>
                 </TableCell>
@@ -192,28 +262,15 @@ const filteredRuns = computed(() => {
                 <!-- Status -->
                 <TableCell>
                   <div class="flex items-center gap-2">
-                    <Play
-                      v-if="run.status === 'analyzing'"
+                    <component
+                      :is="STATUS_META[run.status].icon"
                       :size="14"
-                      class="text-blue-500"
+                      :class="[
+                        STATUS_META[run.status].class,
+                        STATUS_META[run.status].spin && 'animate-spin',
+                      ]"
                     />
-                    <Clock
-                      v-else-if="run.status === 'queued' || run.status === 'analyzed'"
-                      :size="14"
-                      class="text-muted-foreground"
-                    />
-                    <CheckCircle2
-                      v-else-if="run.status === 'completed'"
-                      :size="14"
-                      class="text-green-500"
-                    />
-                    <XCircle
-                      v-else-if="run.status === 'failed'"
-                      :size="14"
-                      class="text-red-500"
-                    />
-                    <CircleSlash v-else :size="14" class="text-muted-foreground" />
-                    <span class="text-sm capitalize">
+                    <span class="text-sm">
                       {{ t(`workflows.runs.runStatus.${run.status}`) }}
                     </span>
                   </div>

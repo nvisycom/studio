@@ -54,7 +54,7 @@ const isTextFile = computed(() => {
 const zoomLevel = ref(100);
 
 // Right-panel tabs: Chat (existing) and Audit (detection results).
-const panelTab = ref<"chat" | "audit">("chat");
+const panelTab = ref<"chat" | "audit">("audit");
 
 // Detected entities + cross-focus, shared between the audit panel (list) and
 // the document preview (inline highlights).
@@ -184,10 +184,6 @@ function startResize(e: MouseEvent) {
       >
         <Tabs v-model="panelTab" class="border-b border-border/50 p-2">
           <TabsList class="w-full">
-            <TabsTrigger value="chat" class="flex-1 gap-1.5">
-              <MessageSquare :size="14" />
-              {{ t("studio.audit.tabChat") }}
-            </TabsTrigger>
             <TabsTrigger value="audit" class="flex-1 gap-1.5">
               <ScanSearch :size="14" />
               {{ t("studio.audit.tabAudit") }}
@@ -197,6 +193,10 @@ function startResize(e: MouseEvent) {
               >
                 {{ entities.length }}
               </span>
+            </TabsTrigger>
+            <TabsTrigger value="chat" class="flex-1 gap-1.5">
+              <MessageSquare :size="14" />
+              {{ t("studio.audit.tabChat") }}
             </TabsTrigger>
           </TabsList>
         </Tabs>

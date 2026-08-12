@@ -39,7 +39,7 @@ function getStatusColor(status: PipelineRunStatus): string {
 		case "failed":
 			return "text-red-600 dark:text-red-400";
 		case "cancelled":
-			return "text-red-600 dark:text-red-400";
+			return "text-neutral-600 dark:text-neutral-400";
 		default:
 			return "text-neutral-600 dark:text-neutral-400";
 	}

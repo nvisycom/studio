@@ -2,7 +2,9 @@ import type {
 	Audit,
 	CreatePipelineRun,
 	PipelineRun,
+	PipelineRunsQuery,
 } from "@nvisy/sdk/datatypes";
+import type { MaybeRefOrGetter } from "vue";
 
 /** States that settle a run — detection is ready at "analyzed", the rest end it. */
 const TERMINAL: PipelineRun["status"][] = [
@@ -12,17 +14,38 @@ const TERMINAL: PipelineRun["status"][] = [
 	"cancelled",
 ];
 
+/** Runs list filter: the API's PipelineRunsQuery plus a pipeline slug, which
+ * routes to the pipeline-scoped list endpoint. */
+export interface RunsFilter extends PipelineRunsQuery {
+	pipelineSlug?: string;
+}
+
 /**
- * Composable for pipeline run operations (workspace-scoped).
+ * Composable for pipeline run operations (workspace-scoped). Pass a reactive
+ * `filter` to scope the runs list server-side (status, trigger, pipeline).
  */
-export function useRuns() {
-	const { requireContext } = useWorkspaceContext();
+export function useRuns(filter?: MaybeRefOrGetter<RunsFilter>) {
+	const { requireContext, currentWorkspaceSlug } = useWorkspaceContext();
+
+	const activeFilter = computed<RunsFilter>(() => toValue(filter ?? {}));
 
 	const runsQuery = workspaceQuery(
 		"runs",
 		async ({ client, workspaceSlug }) => {
-			const result = await client.runs.listRuns(workspaceSlug);
+			const { pipelineSlug, ...query } = activeFilter.value;
+			// A pipeline filter uses the pipeline-scoped endpoint (the workspace
+			// list only filters by pipelineId, which isn't exposed on summaries).
+			const result = pipelineSlug
+				? await client.runs.listPipelineRuns(workspaceSlug, pipelineSlug, query)
+				: await client.runs.listRuns(workspaceSlug, query);
 			return result.items;
+		},
+		{
+			key: () => [
+				"runs",
+				currentWorkspaceSlug.value,
+				JSON.stringify(activeFilter.value),
+			],
 		},
 	);
 
