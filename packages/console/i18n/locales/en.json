@@ -459,12 +459,21 @@
 			},
 			"upload": {
 				"title": "Upload Files",
-				"description": "Drag and drop files here or click to browse",
-				"dropHint": "Drop files here to upload",
-				"browseButton": "Browse Files",
-				"uploading": "Uploading...",
+				"subtitle": "Add documents to your workspace. Up to {max} per file.",
+				"description": "Drag and drop files here",
+				"browseHint": "or click to browse",
+				"dropHint": "Drop files to upload",
+				"selected": "{count} file selected | {count} files selected",
+				"uploading": "Uploading…",
+				"uploadCount": "Upload {count} file | Upload {count} files",
+				"remove": "Remove file",
 				"cancel": "Cancel",
-				"done": "Done"
+				"done": "Done",
+				"errors": {
+					"unsupported": "Unsupported file type",
+					"tooLarge": "Exceeds the {max} limit",
+					"failed": "Upload failed"
+				}
 			}
 		},
 		"messages": {

@@ -25,31 +25,13 @@ onMounted(() => {
 	restoreSession();
 });
 
-// File type detection
-const fileExtension = computed(() => {
-	const fileName = activeFile.value?.displayName || "";
-	const ext = fileName.split(".").pop()?.toLowerCase() || "";
-	return ext;
-});
-
-const isImageFile = computed(() => {
-	const imageExtensions = ["png", "jpg", "jpeg", "gif", "webp", "bmp", "svg"];
-	return imageExtensions.includes(fileExtension.value);
-});
-
-const isTextFile = computed(() => {
-	const textExtensions = [
-		"txt",
-		"md",
-		"log",
-		"csv",
-		"json",
-		"xml",
-		"yaml",
-		"yml",
-	];
-	return textExtensions.includes(fileExtension.value);
-});
+// File type detection (drives which preview renderer to show).
+const isImageFile = computed(() =>
+	isImageFileName(activeFile.value?.displayName ?? ""),
+);
+const isTextFile = computed(() =>
+	isTextFileName(activeFile.value?.displayName ?? ""),
+);
 
 const zoomLevel = ref(100);
 

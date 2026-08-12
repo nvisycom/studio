@@ -1,19 +1,29 @@
 <script setup lang="ts">
-import { Upload, X, FileText, Check, AlertCircle, Loader2 } from "@lucide/vue";
+import { Upload, X, Check, Loader2, CloudUpload } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import {
 	Dialog,
 	DialogContent,
+	DialogDescription,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
 } from "#console/components/ui/dialog";
+import {
+	ACCEPTED_ACCEPT_ATTR,
+	formatFileSize,
+	getFileIcon,
+	isAcceptedFileName,
+} from "#console/utils/file";
+
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100 MB
+
+type UploadStatus = "pending" | "uploading" | "success" | "error";
 
 interface UploadingFile {
 	id: string;
 	file: File;
-	status: "pending" | "uploading" | "success" | "error";
-	progress: number;
+	status: UploadStatus;
 	error?: string;
 }
 
@@ -48,6 +58,27 @@ const allComplete = computed(
 		),
 );
 
+// Files eligible to upload (valid + not yet sent). Drives the submit button.
+const pendingFiles = computed(() =>
+	uploadingFiles.value.filter((f) => f.status === "pending"),
+);
+const totalPendingSize = computed(() =>
+	pendingFiles.value.reduce((sum, f) => sum + f.file.size, 0),
+);
+
+/** Validate a file up front; returns an error message, or null if valid. */
+function validate(file: File): string | null {
+	if (!isAcceptedFileName(file.name)) {
+		return t("files.dialogs.upload.errors.unsupported");
+	}
+	if (file.size > MAX_FILE_SIZE) {
+		return t("files.dialogs.upload.errors.tooLarge", {
+			max: formatFileSize(MAX_FILE_SIZE),
+		});
+	}
+	return null;
+}
+
 function handleDragOver(e: DragEvent) {
 	e.preventDefault();
 	isDragging.value = true;
@@ -60,28 +91,26 @@ function handleDragLeave() {
 function handleDrop(e: DragEvent) {
 	e.preventDefault();
 	isDragging.value = false;
-	const files = e.dataTransfer?.files;
-	if (files) {
-		addFiles(Array.from(files));
-	}
+	if (e.dataTransfer?.files) addFiles(Array.from(e.dataTransfer.files));
 }
 
 function handleFileSelect(e: Event) {
 	const input = e.target as HTMLInputElement;
-	if (input.files) {
-		addFiles(Array.from(input.files));
-	}
+	if (input.files) addFiles(Array.from(input.files));
 	input.value = "";
 }
 
 function addFiles(files: File[]) {
-	const newFiles: UploadingFile[] = files.map((file) => ({
-		id: crypto.randomUUID(),
-		file,
-		status: "pending",
-		progress: 0,
-	}));
-	uploadingFiles.value.push(...newFiles);
+	const added: UploadingFile[] = files.map((file) => {
+		const error = validate(file);
+		return {
+			id: crypto.randomUUID(),
+			file,
+			status: error ? "error" : "pending",
+			error: error ?? undefined,
+		};
+	});
+	uploadingFiles.value.push(...added);
 }
 
 function removeFile(id: string) {
@@ -89,42 +118,30 @@ function removeFile(id: string) {
 }
 
 async function startUpload() {
-	const pendingFiles = uploadingFiles.value.filter(
-		(f) => f.status === "pending",
-	);
-	if (pendingFiles.length === 0) return;
+	const pending = pendingFiles.value;
+	if (pending.length === 0) return;
 
-	// Mark all as uploading
-	for (const file of pendingFiles) {
-		file.status = "uploading";
-		file.progress = 50; // Indeterminate progress
-	}
+	for (const file of pending) file.status = "uploading";
 
 	try {
-		// Upload all files at once
-		await props.uploadFn(pendingFiles.map((f) => f.file));
-
-		// Mark all as success
-		for (const file of pendingFiles) {
-			file.status = "success";
-			file.progress = 100;
-		}
-
+		await props.uploadFn(pending.map((f) => f.file));
+		for (const file of pending) file.status = "success";
 		emit("uploaded");
 	} catch (error) {
-		// Mark all as error
-		for (const file of pendingFiles) {
+		for (const file of pending) {
 			file.status = "error";
-			file.error = error instanceof Error ? error.message : "Upload failed";
+			file.error =
+				error instanceof Error
+					? error.message
+					: t("files.dialogs.upload.errors.failed");
 		}
 	}
 }
 
 function handleClose() {
-	if (!isUploading.value) {
-		uploadingFiles.value = [];
-		emit("update:open", false);
-	}
+	if (isUploading.value) return;
+	uploadingFiles.value = [];
+	emit("update:open", false);
 }
 
 function handleBrowseClick() {
@@ -137,101 +154,121 @@ function handleBrowseClick() {
     <DialogContent class="sm:max-w-lg">
       <DialogHeader>
         <DialogTitle>{{ t("files.dialogs.upload.title") }}</DialogTitle>
+        <DialogDescription>
+          {{ t("files.dialogs.upload.subtitle", { max: formatFileSize(MAX_FILE_SIZE) }) }}
+        </DialogDescription>
       </DialogHeader>
 
-      <div class="py-4 space-y-4">
-        <!-- Drop Zone -->
-        <div
+      <div class="space-y-4">
+        <!-- Drop zone -->
+        <button
+          type="button"
           @dragover="handleDragOver"
           @dragleave="handleDragLeave"
           @drop="handleDrop"
           @click="handleBrowseClick"
           :class="[
-            'border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors',
+            'flex w-full flex-col items-center rounded-xl border px-6 py-8 text-center transition-colors',
             isDragging
-              ? 'border-primary bg-primary/5'
-              : 'border-border hover:border-muted-foreground/50',
+              ? 'border-foreground/30 bg-muted'
+              : 'border-border/60 bg-muted/40 hover:bg-muted/70',
           ]"
         >
           <input
             ref="fileInputRef"
             type="file"
             multiple
-            accept=".csv,.docx,.htm,.html,.jpeg,.jpg,.json,.log,.pdf,.png,.rtf,.tif,.tiff,.txt,.wav,.xlsx,.xml"
+            :accept="ACCEPTED_ACCEPT_ATTR"
             class="hidden"
             @change="handleFileSelect"
           />
-          <Upload
-            :size="32"
-            class="mx-auto mb-3 text-muted-foreground"
-          />
-          <p class="mb-1 text-foreground">
+          <div
+            class="mb-3 flex size-11 items-center justify-center rounded-full bg-muted"
+          >
+            <CloudUpload :size="22" class="text-muted-foreground" />
+          </div>
+          <p class="text-sm font-medium text-foreground">
             {{
               isDragging
                 ? t("files.dialogs.upload.dropHint")
                 : t("files.dialogs.upload.description")
             }}
           </p>
-          <Button
-            variant="outline"
-            size="sm"
-            class="mt-2 font-normal"
-            @click.stop="handleBrowseClick"
-          >
-            {{ t("files.dialogs.upload.browseButton") }}
-          </Button>
-        </div>
+          <p class="mt-1 text-xs text-muted-foreground">
+            {{ t("files.dialogs.upload.browseHint") }}
+          </p>
+        </button>
 
-        <!-- File List -->
-        <div v-if="hasFiles" class="space-y-2 max-h-48 overflow-y-auto">
-          <div
-            v-for="file in uploadingFiles"
-            :key="file.id"
-            class="flex items-center gap-3 rounded-lg bg-muted/50 p-2"
-          >
-            <div
-              class="flex size-8 items-center justify-center rounded bg-muted"
+        <!-- File list -->
+        <div v-if="hasFiles" class="space-y-3">
+          <div class="flex items-center justify-between px-0.5">
+            <p class="text-xs font-medium text-muted-foreground">
+              {{
+                t(
+                  "files.dialogs.upload.selected",
+                  { count: uploadingFiles.length },
+                  uploadingFiles.length,
+                )
+              }}
+            </p>
+            <p
+              v-if="pendingFiles.length"
+              class="text-xs tabular-nums text-muted-foreground"
             >
-              <FileText
-                :size="16"
-                class="text-muted-foreground"
-              />
-            </div>
-            <div class="flex-1 min-w-0">
-              <p
-                class="truncate text-sm text-foreground"
+              {{ formatFileSize(totalPendingSize) }}
+            </p>
+          </div>
+
+          <div class="max-h-56 space-y-2 overflow-y-auto">
+            <div
+              v-for="item in uploadingFiles"
+              :key="item.id"
+              class="flex items-center gap-3 rounded-lg border border-border/50 bg-muted/30 p-2.5"
+            >
+              <div
+                class="flex size-9 shrink-0 items-center justify-center rounded-md bg-background text-muted-foreground"
               >
-                {{ file.file.name }}
-              </p>
-              <p class="text-xs text-muted-foreground">
-                {{ formatFileSize(file.file.size) }}
-              </p>
-            </div>
-            <div class="flex items-center gap-2">
-              <Loader2
-                v-if="file.status === 'uploading'"
-                :size="16"
-                class="animate-spin text-primary"
-              />
-              <Check
-                v-else-if="file.status === 'success'"
-                :size="16"
-                class="text-green-500"
-              />
-              <AlertCircle
-                v-else-if="file.status === 'error'"
-                :size="16"
-                class="text-destructive"
-              />
-              <Button
-                v-if="file.status === 'pending'"
-                variant="ghost"
-                size="icon"
-                class="h-6 w-6"
-                @click="removeFile(file.id)"
-              >
-                <X :size="14" />
-              </Button>
+                <component :is="getFileIcon(item.file.name)" :size="16" />
+              </div>
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-sm text-foreground">
+                  {{ item.file.name }}
+                </p>
+                <p
+                  :class="[
+                    'truncate text-xs',
+                    item.status === 'error'
+                      ? 'text-destructive'
+                      : 'text-muted-foreground',
+                  ]"
+                >
+                  {{ item.status === "error" ? item.error : formatFileSize(item.file.size) }}
+                </p>
+              </div>
+              <div class="flex shrink-0 items-center">
+                <!-- In-flight / settled states show a status glyph; pending and
+                     rejected rows stay removable. -->
+                <Loader2
+                  v-if="item.status === 'uploading'"
+                  :size="16"
+                  class="animate-spin text-muted-foreground"
+                />
+                <Check
+                  v-else-if="item.status === 'success'"
+                  :size="16"
+                  class="text-foreground"
+                />
+                <Button
+                  v-else
+                  variant="ghost"
+                  size="icon"
+                  class="size-6 text-muted-foreground hover:text-foreground"
+                  :aria-label="t('files.dialogs.upload.remove')"
+                  @click="removeFile(item.id)"
+                >
+                  <X :size="14" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -253,7 +290,7 @@ function handleBrowseClick() {
         <Button
           v-if="!allComplete"
           @click="startUpload"
-          :disabled="!hasFiles || isUploading"
+          :disabled="!pendingFiles.length || isUploading"
           class="font-normal"
         >
           <Upload v-if="!isUploading" :size="16" class="mr-2" />
@@ -261,7 +298,11 @@ function handleBrowseClick() {
           {{
             isUploading
               ? t("files.dialogs.upload.uploading")
-              : t("files.actions.upload")
+              : t(
+                  "files.dialogs.upload.uploadCount",
+                  { count: pendingFiles.length },
+                  pendingFiles.length,
+                )
           }}
         </Button>
       </DialogFooter>

@@ -458,13 +458,22 @@
 				"cancel": "Abbrechen"
 			},
 			"upload": {
-				"title": "Dateien Hochladen",
-				"description": "Ziehen Sie Dateien hierher oder klicken Sie zum Durchsuchen",
-				"dropHint": "Dateien hier ablegen zum Hochladen",
-				"browseButton": "Dateien Durchsuchen",
-				"uploading": "Wird hochgeladen...",
+				"title": "Dateien hochladen",
+				"subtitle": "Fügen Sie Dokumente zu Ihrem Workspace hinzu. Bis zu {max} pro Datei.",
+				"description": "Dateien hierher ziehen",
+				"browseHint": "oder zum Durchsuchen klicken",
+				"dropHint": "Dateien zum Hochladen ablegen",
+				"selected": "{count} Datei ausgewählt | {count} Dateien ausgewählt",
+				"uploading": "Wird hochgeladen…",
+				"uploadCount": "{count} Datei hochladen | {count} Dateien hochladen",
+				"remove": "Datei entfernen",
 				"cancel": "Abbrechen",
-				"done": "Fertig"
+				"done": "Fertig",
+				"errors": {
+					"unsupported": "Nicht unterstützter Dateityp",
+					"tooLarge": "Überschreitet das Limit von {max}",
+					"failed": "Hochladen fehlgeschlagen"
+				}
 			}
 		},
 		"messages": {
