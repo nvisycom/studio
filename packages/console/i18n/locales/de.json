@@ -63,7 +63,12 @@
 			"inDays": "in {days}d",
 			"inWeeks": "in {weeks}w",
 			"inMonths": "in {months}Mo"
-		}
+		},
+		"enabled": "Aktiviert",
+		"disabled": "Deaktiviert",
+		"selectAll": "Alle auswählen",
+		"selectRow": "Zeile auswählen",
+		"openMenu": "Menü öffnen"
 	},
 	"settings": {
 		"workspace": {
@@ -76,8 +81,7 @@
 			},
 			"name": {
 				"label": "Arbeitsbereichsname",
-				"placeholder": "Mein Arbeitsbereich",
-				"description": "Der Name Ihres Arbeitsbereichs, wie er auf der Plattform angezeigt wird."
+				"placeholder": "Mein Arbeitsbereich"
 			},
 			"description": {
 				"label": "Beschreibung",
@@ -86,7 +90,8 @@
 			},
 			"id": {
 				"label": "Arbeitsbereich-ID",
-				"description": "Eindeutige Kennung für API-Aufrufe."
+				"description": "Eindeutige Kennung für API-Aufrufe.",
+				"copy": "Workspace-ID kopieren"
 			},
 			"info": {
 				"footer": "Änderungen gelten für alle Teammitglieder."
@@ -945,8 +950,6 @@
 				"urlLabel": "Endpunkt-URL",
 				"urlPlaceholder": "https://beispiel.com/webhook",
 				"urlError": "Bitte geben Sie eine gültige URL ein (http:// oder https://)",
-				"enabledLabel": "Aktiviert",
-				"disabledLabel": "Deaktiviert",
 				"headersLabel": "Benutzerdefinierte Header",
 				"addHeader": "Header hinzufügen",
 				"headerKeyPlaceholder": "Header-Name",
@@ -1156,6 +1159,33 @@
 				"rejectAll": "Alle ablehnen",
 				"empty": "Keine ausstehenden Änderungen"
 			}
+		},
+		"audit": {
+			"tabChat": "Chat",
+			"tabAudit": "Audit",
+			"pipelinePlaceholder": "Pipeline auswählen",
+			"run": "Erkennung ausführen",
+			"runAgain": "Erneut ausführen",
+			"restoring": "Letzter Lauf wird wiederhergestellt…",
+			"fromLastRun": "aus dem letzten Lauf",
+			"runFailed": "Erkennung fehlgeschlagen. Bitte erneut versuchen.",
+			"found": "{count} Entität erkannt | {count} Entität erkannt | {count} Entitäten erkannt",
+			"bytes": "Bytes {start}–{end}",
+			"status": {
+				"queued": "In Warteschlange…",
+				"analyzing": "Dokument wird analysiert…",
+				"analyzed": "Analysiert",
+				"completed": "Abgeschlossen",
+				"failed": "Ausführung fehlgeschlagen",
+				"cancelled": "Ausführung abgebrochen"
+			},
+			"idleTitle": "Noch keine Erkennungen",
+			"idleHint": "Wähle eine Pipeline und führe die Erkennung aus, um sensible Entitäten zu finden.",
+			"noFile": "Kein Dokument geöffnet",
+			"noFileHint": "Öffne eine Textdatei, um die Erkennung auszuführen.",
+			"emptyTitle": "Keine Entitäten gefunden",
+			"emptyHint": "Diese Pipeline hat im Dokument nichts erkannt.",
+			"apply": "Schwärzung anwenden"
 		}
 	},
 	"commandMenu": {
@@ -1394,21 +1424,22 @@
 			"backToWorkflows": "Zurück zu Pipelines",
 			"status": "Status",
 			"allStatus": "Alle Status",
+			"allPipelines": "Alle Pipelines",
+			"allTriggers": "Alle Auslöser",
 			"statusHeader": "Status",
 			"pipeline": "Pipeline",
 			"file": "Datei",
 			"trigger": "Auslöser",
 			"started": "Gestartet",
-			"duration": "Dauer",
 			"runsFound": "{count} Ausführung | {count} Ausführungen",
 			"noRunsFound": "Keine Ausführungen gefunden",
 			"triggerType": {
-				"manual": "Manuell",
-				"source": "Quelle",
-				"scheduled": "Geplant"
+				"user": "Manuell",
+				"system": "Automatisch"
 			},
 			"runStatus": {
-				"running": "Läuft",
+				"queued": "In Warteschlange",
+				"analyzing": "Wird analysiert",
 				"analyzed": "Analysiert",
 				"completed": "Abgeschlossen",
 				"failed": "Fehlgeschlagen",
@@ -1425,7 +1456,6 @@
 		},
 		"table": {
 			"name": "Name",
-			"status": "Status",
 			"creator": "Ersteller",
 			"created": "Erstellt",
 			"updated": "Aktualisiert",

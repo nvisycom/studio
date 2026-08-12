@@ -6,6 +6,7 @@ import type {
 	UpdatePolicy,
 } from "@nvisy/sdk/datatypes";
 import type { RowAction } from "#console/components/pages/RowActions.vue";
+import type { VirtualColumn } from "#console/components/ui/virtual-table";
 import { PolicySheet } from "#console/components/pages/policies";
 import {
 	Loader2,
@@ -16,7 +17,7 @@ import {
 	LayoutTemplate,
 } from "@lucide/vue";
 import { personLabel } from "#console/utils/naming";
-import { EntityAvatar } from "#console/components/common";
+import { VirtualTable } from "#console/components/ui/virtual-table";
 import { Button } from "#console/components/ui/button";
 import {
 	Card,
@@ -26,15 +27,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#console/components/ui/card";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHeader,
-	TableRow,
-} from "#console/components/ui/table";
-import DataTableHead from "#console/components/pages/DataTableHead.vue";
-import RowActions from "#console/components/pages/RowActions.vue";
 import {
 	Dialog,
 	DialogContent,
@@ -125,8 +117,57 @@ async function handleUpdate(policySlug: string, updates: UpdatePolicy) {
 	}
 }
 
+// VirtualTable keys rows by id; policies are keyed by slug, so expose it as id.
+type PolicyRow = PolicySummary & { id: string };
+const policyRows = computed<PolicyRow[]>(() =>
+	(policies.value ?? []).map((p) => ({ ...p, id: p.slug })),
+);
+
+const columns = computed<VirtualColumn<PolicyRow>[]>(() => [
+	{
+		key: "name",
+		header: t("policies.table.name"),
+		cell: (p) => ({
+			type: "primary",
+			title: p.displayName,
+			subtitle: p.description,
+			maxWidth: "max-w-md",
+		}),
+	},
+	{
+		key: "creator",
+		header: t("policies.table.creator"),
+		width: "200px",
+		cell: (p) => ({
+			type: "avatar",
+			name: personLabel(p.createdBy),
+			src: resolveAvatarUrl(p.createdBy.avatarUrl),
+		}),
+	},
+	{
+		key: "created",
+		header: t("policies.table.created"),
+		width: "120px",
+		cell: (p) => ({
+			type: "text",
+			value: relativeTime(p.createdAt),
+			muted: true,
+		}),
+	},
+	{
+		key: "updated",
+		header: t("policies.table.updated"),
+		width: "120px",
+		cell: (p) => ({
+			type: "text",
+			value: relativeTime(p.updatedAt),
+			muted: true,
+		}),
+	},
+]);
+
 /** Right-click / ⋯ actions for a policy row. */
-function rowActions(policy: PolicySummary): RowAction[] {
+function rowActions(policy: PolicyRow): RowAction[] {
 	return [
 		{
 			key: "edit",
@@ -197,82 +238,19 @@ async function confirmDelete() {
             <Loader2 :size="24" class="animate-spin text-muted-foreground" />
           </div>
 
-          <!-- Empty -->
-          <div v-else-if="!policies || policies.length === 0" class="py-12">
-            <div class="text-center">
-              <div
-                class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
-              >
-                <ShieldCheck class="size-5 text-muted-foreground" />
-              </div>
-              <p class="text-sm text-foreground mb-1">
-                {{ t("policies.empty.title") }}
-              </p>
-              <p class="text-xs text-muted-foreground">
-                {{ t("policies.empty.description") }}
-              </p>
-            </div>
-          </div>
-
-          <!-- Table -->
-          <Table v-else class="table-fixed">
-            <TableHeader>
-              <TableRow>
-                <DataTableHead>{{ t("policies.table.name") }}</DataTableHead>
-                <DataTableHead class="w-[200px]">
-                  {{ t("policies.table.creator") }}
-                </DataTableHead>
-                <DataTableHead class="w-[120px]">
-                  {{ t("policies.table.created") }}
-                </DataTableHead>
-                <DataTableHead class="w-[120px]">
-                  {{ t("policies.table.updated") }}
-                </DataTableHead>
-                <DataTableHead class="w-10" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <RowActions
-                v-for="policy in policies"
-                :key="policy.slug"
-                :actions="rowActions(policy)"
-                :menu-label="t('policies.table.menu')"
-                row-class="group"
-              >
-                    <TableCell>
-                      <div class="min-w-0 max-w-md">
-                        <p class="truncate font-medium text-foreground">
-                          {{ policy.displayName }}
-                        </p>
-                        <p
-                          v-if="policy.description"
-                          class="truncate text-xs text-muted-foreground"
-                        >
-                          {{ policy.description }}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div class="flex items-center gap-2">
-                        <EntityAvatar
-                          :name="personLabel(policy.createdBy)"
-                          :src="resolveAvatarUrl(policy.createdBy.avatarUrl)"
-                          size="sm"
-                        />
-                        <span class="truncate text-sm text-foreground">
-                          {{ personLabel(policy.createdBy) }}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell class="text-sm text-muted-foreground">
-                      {{ relativeTime(policy.createdAt) }}
-                    </TableCell>
-                    <TableCell class="text-sm text-muted-foreground">
-                      {{ relativeTime(policy.updatedAt) }}
-                    </TableCell>
-              </RowActions>
-            </TableBody>
-          </Table>
+          <VirtualTable
+            v-else
+            :rows="policyRows"
+            :columns="columns"
+            :row-actions="rowActions"
+            :menu-label="t('policies.table.menu')"
+            max-height="60vh"
+            :empty="{
+              icon: ShieldCheck,
+              title: t('policies.empty.title'),
+              description: t('policies.empty.description'),
+            }"
+          />
         </CardContent>
         <CardFooter
           class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"

@@ -15,8 +15,8 @@ import type {
 	UpdatePipeline,
 } from "@nvisy/sdk/datatypes";
 import type { RowAction } from "#console/components/pages/RowActions.vue";
+import type { VirtualColumn } from "#console/components/ui/virtual-table";
 import { Button } from "#console/components/ui/button";
-import { Badge } from "#console/components/ui/badge";
 import {
 	Card,
 	CardContent,
@@ -25,18 +25,9 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#console/components/ui/card";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "#console/components/ui/table";
-import DataTableHead from "#console/components/pages/DataTableHead.vue";
-import RowActions from "#console/components/pages/RowActions.vue";
+import { VirtualTable } from "#console/components/ui/virtual-table";
 import { personLabel } from "#console/utils/naming";
-import { ConfirmDialog, EntityAvatar } from "#console/components/common";
+import { ConfirmDialog } from "#console/components/common";
 import { PipelineSheet } from "#console/components/pages/workflows";
 
 const { t } = useI18n();
@@ -115,15 +106,6 @@ async function handleUpdate(slug: string, updates: UpdatePipeline) {
 	}
 }
 
-const statusVariant: Record<
-	PipelineSummary["status"],
-	"default" | "secondary" | "outline"
-> = {
-	enabled: "default",
-	draft: "secondary",
-	disabled: "outline",
-};
-
 const pipelineToDelete = ref<PipelineSummary | null>(null);
 
 async function confirmDelete() {
@@ -140,8 +122,57 @@ async function confirmDelete() {
 	}
 }
 
+// VirtualTable keys rows by id; pipelines are keyed by slug, so expose it as id.
+type PipelineRow = PipelineSummary & { id: string };
+const pipelineRows = computed<PipelineRow[]>(() =>
+	(pipelines.value ?? []).map((p) => ({ ...p, id: p.slug })),
+);
+
+const columns = computed<VirtualColumn<PipelineRow>[]>(() => [
+	{
+		key: "name",
+		header: t("workflows.table.name"),
+		cell: (p) => ({
+			type: "primary",
+			title: p.displayName,
+			subtitle: p.description,
+			maxWidth: "max-w-md",
+		}),
+	},
+	{
+		key: "creator",
+		header: t("workflows.table.creator"),
+		width: "200px",
+		cell: (p) => ({
+			type: "avatar",
+			name: personLabel(p.createdBy),
+			src: resolveAvatarUrl(p.createdBy.avatarUrl),
+		}),
+	},
+	{
+		key: "created",
+		header: t("workflows.table.created"),
+		width: "120px",
+		cell: (p) => ({
+			type: "text",
+			value: relativeTime(p.createdAt),
+			muted: true,
+		}),
+	},
+	{
+		key: "updated",
+		header: t("workflows.table.updated"),
+		width: "120px",
+		cell: (p) => ({
+			type: "text",
+			value: relativeTime(p.updatedAt),
+			muted: true,
+		}),
+	},
+]);
+
 /** Right-click / ⋯ actions for a workflow row. */
-function rowActions(pipeline: PipelineSummary): RowAction[] {
+function rowActions(pipeline: PipelineRow): RowAction[] {
 	return [
 		{
 			key: "edit",
@@ -201,92 +232,18 @@ function rowActions(pipeline: PipelineSummary): RowAction[] {
             </div>
           </CardHeader>
           <CardContent>
-            <Table v-if="pipelines && pipelines.length > 0" class="table-fixed">
-              <TableHeader>
-                <TableRow>
-                  <DataTableHead>{{ t("workflows.table.name") }}</DataTableHead>
-                  <DataTableHead class="w-[130px]">
-                    {{ t("workflows.table.status") }}
-                  </DataTableHead>
-                  <DataTableHead class="w-[200px]">
-                    {{ t("workflows.table.creator") }}
-                  </DataTableHead>
-                  <DataTableHead class="w-[120px]">
-                    {{ t("workflows.table.created") }}
-                  </DataTableHead>
-                  <DataTableHead class="w-[120px]">
-                    {{ t("workflows.table.updated") }}
-                  </DataTableHead>
-                  <DataTableHead class="w-10" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <RowActions
-                  v-for="pipeline in pipelines"
-                  :key="pipeline.slug"
-                  :actions="rowActions(pipeline)"
-                  :menu-label="t('workflows.table.menu')"
-                  row-class="group"
-                >
-                  <TableCell>
-                    <div class="min-w-0 max-w-md">
-                      <p class="truncate font-medium text-foreground">
-                        {{ pipeline.displayName }}
-                      </p>
-                      <p
-                        v-if="pipeline.description"
-                        class="truncate text-xs text-muted-foreground"
-                      >
-                        {{ pipeline.description }}
-                      </p>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      :variant="statusVariant[pipeline.status]"
-                      class="font-normal capitalize"
-                    >
-                      {{ t(`workflows.status.${pipeline.status}`) }}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div class="flex items-center gap-2">
-                      <EntityAvatar
-                        :name="personLabel(pipeline.createdBy)"
-                        :src="resolveAvatarUrl(pipeline.createdBy.avatarUrl)"
-                        size="sm"
-                      />
-                      <span class="truncate text-sm text-foreground">
-                        {{ personLabel(pipeline.createdBy) }}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell class="text-sm text-muted-foreground">
-                    {{ relativeTime(pipeline.createdAt) }}
-                  </TableCell>
-                  <TableCell class="text-sm text-muted-foreground">
-                    {{ relativeTime(pipeline.updatedAt) }}
-                  </TableCell>
-                </RowActions>
-              </TableBody>
-            </Table>
-
-            <!-- Empty State -->
-            <div v-else class="py-12">
-              <div class="text-center">
-                <div
-                  class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
-                >
-                  <Workflow class="size-5 text-muted-foreground" />
-                </div>
-                <p class="text-sm text-foreground mb-1">
-                  {{ t("workflows.empty.title") }}
-                </p>
-                <p class="text-xs text-muted-foreground">
-                  {{ t("workflows.empty.description") }}
-                </p>
-              </div>
-            </div>
+            <VirtualTable
+              :rows="pipelineRows"
+              :columns="columns"
+              :row-actions="rowActions"
+              :menu-label="t('workflows.table.menu')"
+              max-height="60vh"
+              :empty="{
+                icon: Workflow,
+                title: t('workflows.empty.title'),
+                description: t('workflows.empty.description'),
+              }"
+            />
           </CardContent>
           <CardFooter
             class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"

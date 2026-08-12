@@ -260,7 +260,7 @@ async function toggleWebhookStatus(webhookId: string, active: boolean) {
 		await updateWebhookAsync({
 			webhookId,
 			updates: {
-				status: active ? "active" : "paused",
+				status: active ? "enabled" : "disabled",
 			},
 		});
 		toast.success(

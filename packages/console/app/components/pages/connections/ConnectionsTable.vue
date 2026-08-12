@@ -1,17 +1,10 @@
 <script setup lang="ts">
 import type { Connection } from "@nvisy/sdk/datatypes";
 import type { RowAction } from "#console/components/pages/RowActions.vue";
+import type { VirtualColumn } from "#console/components/ui/virtual-table";
 import { Edit, Trash2, HardDrive, RefreshCw, PlugZap } from "@lucide/vue";
 import { Switch } from "#console/components/ui/switch";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHeader,
-	TableRow,
-} from "#console/components/ui/table";
-import DataTableHead from "#console/components/pages/DataTableHead.vue";
-import RowActions from "#console/components/pages/RowActions.vue";
+import { VirtualTable } from "#console/components/ui/virtual-table";
 import { providerIcon, providerLabel } from "#console/utils/connections";
 
 const { t } = useI18n();
@@ -29,7 +22,56 @@ const emit = defineEmits<{
 	(e: "toggleActive", connection: Connection): void;
 }>();
 
-/** Right-click / ⋯ actions for a connection row. */
+const columns = computed<VirtualColumn<Connection>[]>(() => [
+	{
+		key: "name",
+		header: t("connections.table.headers.name"),
+		cell: () => ({ type: "custom" }),
+	},
+	{
+		key: "enabled",
+		header: t("connections.table.headers.enabled"),
+		width: "100px",
+		cell: () => ({ type: "custom" }),
+	},
+	{
+		key: "syncMode",
+		header: t("connections.table.headers.syncMode"),
+		width: "120px",
+		cell: (c) => ({
+			type: "text",
+			value: c.sync
+				? t(`connections.dialogs.connect.syncModes.${c.sync.syncMode}`)
+				: "—",
+			muted: true,
+		}),
+	},
+	{
+		key: "schedule",
+		header: t("connections.table.headers.schedule"),
+		width: "120px",
+		cell: (c) => ({
+			type: "text",
+			value: c.sync?.scheduleCron
+				? t("connections.table.schedule.scheduled")
+				: t("connections.table.schedule.manual"),
+			muted: true,
+		}),
+	},
+	{
+		key: "lastSynced",
+		header: t("connections.table.headers.lastSynced"),
+		width: "160px",
+		cell: (c) => ({
+			type: "text",
+			value: c.sync?.lastSynced
+				? relativeTime(c.sync.lastSynced)
+				: t("common.time.never"),
+			muted: true,
+		}),
+	},
+]);
+
 function rowActions(connection: Connection): RowAction[] {
 	return [
 		{
@@ -63,101 +105,46 @@ function rowActions(connection: Connection): RowAction[] {
 </script>
 
 <template>
-  <Table>
-    <TableHeader>
-      <TableRow>
-        <DataTableHead>{{ t("connections.table.headers.name") }}</DataTableHead>
-        <DataTableHead>
-          {{ t("connections.table.headers.enabled") }}
-        </DataTableHead>
-        <DataTableHead>
-          {{ t("connections.table.headers.syncMode") }}
-        </DataTableHead>
-        <DataTableHead>
-          {{ t("connections.table.headers.schedule") }}
-        </DataTableHead>
-        <DataTableHead>
-          {{ t("connections.table.headers.lastSynced") }}
-        </DataTableHead>
-        <DataTableHead class="w-10" />
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      <RowActions
-        v-for="connection in connections"
-        :key="connection.id"
-        :actions="rowActions(connection)"
-        :menu-label="t('connections.table.actions.menu')"
-        row-class="group cursor-pointer"
-      >
-            <!-- Name + provider logo -->
-            <TableCell>
-              <div class="flex items-center gap-3">
-                <div
-                  class="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-muted/40"
-                >
-                  <img
-                    v-if="providerIcon(connection.provider)"
-                    :src="providerIcon(connection.provider)!"
-                    :alt="connection.provider"
-                    class="size-5 object-contain"
-                  />
-                  <HardDrive v-else :size="18" class="text-muted-foreground" />
-                </div>
-                <div class="min-w-0">
-                  <p class="truncate font-medium text-foreground">
-                    {{ connection.displayName }}
-                  </p>
-                  <p class="truncate text-xs text-muted-foreground">
-                    {{ providerLabel(connection.provider) }}
-                  </p>
-                </div>
-              </div>
-            </TableCell>
+  <VirtualTable
+    :rows="connections"
+    :columns="columns"
+    :row-actions="rowActions"
+    :menu-label="t('connections.table.actions.menu')"
+    max-height="60vh"
+  >
+    <!-- Name + provider logo -->
+    <template #cell-name="{ row }">
+      <div class="flex items-center gap-3">
+        <div
+          class="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-muted/40"
+        >
+          <img
+            v-if="providerIcon(row.provider)"
+            :src="providerIcon(row.provider)!"
+            :alt="row.provider"
+            class="size-5 object-contain"
+          />
+          <HardDrive v-else :size="18" class="text-muted-foreground" />
+        </div>
+        <div class="min-w-0">
+          <p class="truncate font-medium text-foreground">
+            {{ row.displayName }}
+          </p>
+          <p class="truncate text-xs text-muted-foreground">
+            {{ providerLabel(row.provider) }}
+          </p>
+        </div>
+      </div>
+    </template>
 
-            <!-- Enabled -->
-            <TableCell @click.stop>
-              <Switch
-                :model-value="connection.isActive"
-                @update:model-value="emit('toggleActive', connection)"
-              />
-            </TableCell>
-
-            <!-- Sync mode -->
-            <TableCell>
-              <span class="text-sm text-muted-foreground">
-                {{
-                  connection.sync
-                    ? t(
-                        `connections.dialogs.connect.syncModes.${connection.sync.syncMode}`,
-                      )
-                    : "—"
-                }}
-              </span>
-            </TableCell>
-
-            <!-- Schedule -->
-            <TableCell>
-              <span class="text-sm text-muted-foreground">
-                {{
-                  connection.sync?.scheduleCron
-                    ? t("connections.table.schedule.scheduled")
-                    : t("connections.table.schedule.manual")
-                }}
-              </span>
-            </TableCell>
-
-            <!-- Last synced -->
-            <TableCell>
-              <span class="text-sm text-muted-foreground">
-                {{
-                  connection.sync?.lastSynced
-                    ? relativeTime(connection.sync.lastSynced)
-                    : t("common.time.never")
-                }}
-              </span>
-            </TableCell>
-      </RowActions>
-    </TableBody>
-  </Table>
+    <!-- Enabled toggle -->
+    <template #cell-enabled="{ row }">
+      <div @click.stop>
+        <Switch
+          :model-value="row.isActive"
+          @update:model-value="emit('toggleActive', row)"
+        />
+      </div>
+    </template>
+  </VirtualTable>
 </template>

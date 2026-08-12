@@ -122,7 +122,9 @@ export function useWebhookForm() {
 	function populate(webhook: Webhook) {
 		name.value = webhook.displayName;
 		url.value = webhook.url;
-		active.value = webhook.status === "active";
+		// "suspended" is a server-set failure state; treat anything not "enabled"
+		// as off for the toggle.
+		active.value = webhook.status === "enabled";
 
 		events.value = emptyEvents();
 		for (const event of webhook.events) {
@@ -144,7 +146,7 @@ export function useWebhookForm() {
 		return {
 			displayName: name.value,
 			url: url.value,
-			status: active.value ? "active" : "paused",
+			status: active.value ? "enabled" : "disabled",
 			events: selectedEvents.value,
 			headers: headersObject.value,
 		};

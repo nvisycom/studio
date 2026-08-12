@@ -6,7 +6,7 @@ import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
 import { Button } from "#console/components/ui/button";
 import { Checkbox } from "#console/components/ui/checkbox";
-import { Switch } from "#console/components/ui/switch";
+import { EnabledSwitch } from "#console/components/common";
 import {
 	Sheet,
 	SheetContent,
@@ -205,16 +205,7 @@ const eventId = (event: string) => `${props.mode}-${event}`;
       <SheetFooter
         class="flex-row items-center justify-between border-t border-border/50"
       >
-        <div class="flex items-center gap-2">
-          <Switch v-model="active" />
-          <span class="text-sm text-muted-foreground">
-            {{
-              active
-                ? t("connections.forms.webhook.enabledLabel")
-                : t("connections.forms.webhook.disabledLabel")
-            }}
-          </span>
-        </div>
+        <EnabledSwitch v-model="active" />
         <div class="flex items-center gap-2">
           <Button variant="outline" @click="cancel">{{ t(keys.cancel) }}</Button>
           <Button :disabled="!isFormValid || isLoading" @click="submit">

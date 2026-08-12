@@ -1,14 +1,16 @@
 <script setup lang="ts">
+import type { Component } from "vue";
 import type {
 	Connection,
 	ConnectionSync,
 	SyncStatus,
 } from "@nvisy/sdk/datatypes";
+import type { VirtualColumn } from "#console/components/ui/virtual-table";
 import {
 	ArrowLeft,
 	Loader2,
-	Play,
-	CheckCircle2,
+	Loader,
+	CircleCheck,
 	XCircle,
 	CircleSlash,
 	Clock,
@@ -28,14 +30,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#console/components/ui/card";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHeader,
-	TableRow,
-} from "#console/components/ui/table";
-import DataTableHead from "#console/components/pages/DataTableHead.vue";
+import { VirtualTable } from "#console/components/ui/virtual-table";
 import {
 	Select,
 	SelectContent,
@@ -43,7 +38,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "#console/components/ui/select";
-import { Badge } from "#console/components/ui/badge";
 import { toast } from "vue-sonner";
 
 const { t } = useI18n();
@@ -104,6 +98,86 @@ async function cancelSync(sync: ConnectionSync) {
 		});
 	}
 }
+
+const isCancellable = (sync: ConnectionSync) =>
+	sync.status === "running" || sync.status === "pending";
+
+function handleLoadMore() {
+	if (hasMore.value && !isLoadingMore.value) loadMore();
+}
+
+// Per-status presentation: icon + tint.
+const STATUS_META: Record<
+	SyncStatus,
+	{ icon: Component; class: string; spin?: boolean }
+> = {
+	pending: { icon: Clock, class: "text-muted-foreground" },
+	running: { icon: Loader, class: "text-blue-500", spin: true },
+	completed: { icon: CircleCheck, class: "text-emerald-500" },
+	failed: { icon: XCircle, class: "text-destructive" },
+	cancelled: { icon: CircleSlash, class: "text-muted-foreground" },
+};
+
+const columns = computed<VirtualColumn<ConnectionSync>[]>(() => [
+	{
+		key: "connection",
+		header: t("connections.runs.connection"),
+		cell: () => ({ type: "custom" }),
+	},
+	{
+		key: "trigger",
+		header: t("connections.runs.trigger"),
+		width: "130px",
+		cell: (s) => ({
+			type: "badge",
+			label: t(`connections.runs.triggerType.${s.triggerType}`),
+			variant: "outline",
+		}),
+	},
+	{
+		key: "status",
+		header: t("connections.runs.statusHeader"),
+		width: "180px",
+		cell: () => ({ type: "custom" }),
+	},
+	{
+		key: "records",
+		header: t("connections.runs.records"),
+		width: "100px",
+		cell: (s) => ({
+			type: "text",
+			value: String(s.recordsSynced),
+			muted: true,
+		}),
+	},
+	{
+		key: "started",
+		header: t("connections.runs.started"),
+		width: "140px",
+		cell: (s) => ({
+			type: "text",
+			value: relativeTime(s.startedAt),
+			muted: true,
+		}),
+	},
+	{
+		key: "duration",
+		header: t("connections.runs.duration"),
+		width: "120px",
+		cell: (s) => ({
+			type: "text",
+			value: formatDuration(s.startedAt, s.completedAt),
+			muted: true,
+		}),
+	},
+	{
+		key: "cancel",
+		header: "",
+		width: "w-10",
+		align: "right",
+		cell: () => ({ type: "custom" }),
+	},
+]);
 </script>
 
 <template>
@@ -160,170 +234,80 @@ async function cancelSync(sync: ConnectionSync) {
             <Loader2 :size="24" class="animate-spin text-muted-foreground" />
           </div>
 
-          <!-- Empty -->
-          <div v-else-if="syncs.length === 0" class="py-12">
-            <div class="text-center">
-              <div
-                class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
-              >
-                <History class="size-5 text-muted-foreground" />
+          <VirtualTable
+            v-else
+            :rows="syncs"
+            :columns="columns"
+            max-height="60vh"
+            :empty="{
+              icon: History,
+              title: t('connections.runs.noRunsFound'),
+              description: t('connections.runs.noRunsDescription'),
+            }"
+            @load-more="handleLoadMore"
+          >
+            <!-- Connection + provider logo -->
+            <template #cell-connection="{ row }">
+              <div class="flex items-center gap-2.5">
+                <div
+                  class="flex size-7 shrink-0 items-center justify-center rounded-md border border-border/60 bg-muted/40"
+                >
+                  <img
+                    v-if="
+                      connectionProvider(row) &&
+                      providerIcon(connectionProvider(row)!)
+                    "
+                    :src="providerIcon(connectionProvider(row)!)!"
+                    :alt="connectionProvider(row)"
+                    class="size-4 object-contain"
+                  />
+                  <HardDrive v-else :size="14" class="text-muted-foreground" />
+                </div>
+                <span class="truncate text-sm font-medium">
+                  {{ connectionName(row) }}
+                </span>
               </div>
-              <p class="text-sm text-foreground mb-1">
-                {{ t("connections.runs.noRunsFound") }}
-              </p>
-              <p class="text-xs text-muted-foreground">
-                {{ t("connections.runs.noRunsDescription") }}
-              </p>
-            </div>
-          </div>
+            </template>
 
-          <template v-else>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <DataTableHead>
-                    {{ t("connections.runs.connection") }}
-                  </DataTableHead>
-                  <DataTableHead>
-                    {{ t("connections.runs.trigger") }}
-                  </DataTableHead>
-                  <DataTableHead>
-                    {{ t("connections.runs.statusHeader") }}
-                  </DataTableHead>
-                  <DataTableHead>
-                    {{ t("connections.runs.records") }}
-                  </DataTableHead>
-                  <DataTableHead>
-                    {{ t("connections.runs.started") }}
-                  </DataTableHead>
-                  <DataTableHead>
-                    {{ t("connections.runs.duration") }}
-                  </DataTableHead>
-                  <DataTableHead class="w-10" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow v-for="sync in syncs" :key="sync.id">
-                  <!-- Connection -->
-                  <TableCell>
-                    <div class="flex items-center gap-2.5">
-                      <div
-                        class="flex size-7 shrink-0 items-center justify-center rounded-md border border-border/60 bg-muted/40"
-                      >
-                        <img
-                          v-if="connectionProvider(sync) && providerIcon(connectionProvider(sync)!)"
-                          :src="providerIcon(connectionProvider(sync)!)!"
-                          :alt="connectionProvider(sync)"
-                          class="size-4 object-contain"
-                        />
-                        <HardDrive
-                          v-else
-                          :size="14"
-                          class="text-muted-foreground"
-                        />
-                      </div>
-                      <span class="truncate text-sm font-medium">
-                        {{ connectionName(sync) }}
-                      </span>
-                    </div>
-                  </TableCell>
-
-                  <!-- Trigger -->
-                  <TableCell>
-                    <Badge variant="outline" class="font-normal">
-                      {{ t(`connections.runs.triggerType.${sync.triggerType}`) }}
-                    </Badge>
-                  </TableCell>
-
-                  <!-- Status -->
-                  <TableCell>
-                    <div class="flex items-center gap-2">
-                      <Play
-                        v-if="sync.status === 'running'"
-                        :size="14"
-                        class="text-blue-500"
-                      />
-                      <Clock
-                        v-else-if="sync.status === 'pending'"
-                        :size="14"
-                        class="text-muted-foreground"
-                      />
-                      <CheckCircle2
-                        v-else-if="sync.status === 'completed'"
-                        :size="14"
-                        class="text-green-500"
-                      />
-                      <XCircle
-                        v-else-if="sync.status === 'failed'"
-                        :size="14"
-                        class="text-red-500"
-                      />
-                      <CircleSlash
-                        v-else
-                        :size="14"
-                        class="text-muted-foreground"
-                      />
-                      <span class="text-sm capitalize">
-                        {{ t(`connections.runs.syncStatus.${sync.status}`) }}
-                      </span>
-                    </div>
-                    <p
-                      v-if="sync.errorMessage"
-                      class="mt-0.5 truncate text-xs text-red-500"
-                      :title="sync.errorMessage"
-                    >
-                      {{ sync.errorMessage }}
-                    </p>
-                  </TableCell>
-
-                  <!-- Records -->
-                  <TableCell class="text-sm text-muted-foreground">
-                    {{ sync.recordsSynced }}
-                  </TableCell>
-
-                  <!-- Started -->
-                  <TableCell class="text-sm text-muted-foreground">
-                    {{ relativeTime(sync.startedAt) }}
-                  </TableCell>
-
-                  <!-- Duration -->
-                  <TableCell class="text-sm text-muted-foreground">
-                    {{ formatDuration(sync.startedAt, sync.completedAt) }}
-                  </TableCell>
-
-                  <!-- Cancel (running/pending only) -->
-                  <TableCell class="text-right">
-                    <Button
-                      v-if="sync.status === 'running' || sync.status === 'pending'"
-                      variant="ghost"
-                      size="icon"
-                      class="size-8"
-                      :aria-label="t('connections.runs.cancel')"
-                      @click="cancelSync(sync)"
-                    >
-                      <Ban :size="15" class="text-muted-foreground" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-
-            <div v-if="hasMore" class="flex justify-center pt-4">
-              <Button
-                variant="outline"
-                size="sm"
-                :disabled="isLoadingMore"
-                @click="loadMore"
-              >
-                <Loader2
-                  v-if="isLoadingMore"
+            <!-- Status + optional error subtitle -->
+            <template #cell-status="{ row }">
+              <div class="flex items-center gap-2">
+                <component
+                  :is="STATUS_META[row.status].icon"
                   :size="14"
-                  class="mr-2 animate-spin"
+                  :class="[
+                    'shrink-0',
+                    STATUS_META[row.status].class,
+                    STATUS_META[row.status].spin && 'animate-spin',
+                  ]"
                 />
-                {{ t("connections.runs.loadMore") }}
+                <span class="text-sm">
+                  {{ t(`connections.runs.syncStatus.${row.status}`) }}
+                </span>
+              </div>
+              <p
+                v-if="row.errorMessage"
+                class="mt-0.5 truncate text-xs text-destructive"
+                :title="row.errorMessage"
+              >
+                {{ row.errorMessage }}
+              </p>
+            </template>
+
+            <!-- Cancel (running/pending only) -->
+            <template #cell-cancel="{ row }">
+              <Button
+                v-if="isCancellable(row)"
+                variant="ghost"
+                size="icon"
+                class="size-8"
+                :aria-label="t('connections.runs.cancel')"
+                @click.stop="cancelSync(row)"
+              >
+                <Ban :size="15" class="text-muted-foreground" />
               </Button>
-            </div>
-          </template>
+            </template>
+          </VirtualTable>
         </CardContent>
         <CardFooter
           class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"

@@ -274,15 +274,6 @@ function handleLoadMore() {
 		loadMore();
 	}
 }
-
-function handleGridScroll(event: Event) {
-	const target = event.target as HTMLElement;
-	const { scrollTop, scrollHeight, clientHeight } = target;
-	const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-	if (distanceFromBottom < 100) {
-		handleLoadMore();
-	}
-}
 </script>
 
 <template>
@@ -454,7 +445,7 @@ function handleGridScroll(event: Event) {
             @edit="openEditDialog"
             @download="handleDownloadFile"
             @delete="openDeleteDialog"
-            @scroll="handleGridScroll"
+            @load-more="handleLoadMore"
           />
         </div>
 

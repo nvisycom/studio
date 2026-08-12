@@ -4,6 +4,7 @@ import {
 	Check,
 	CheckCircle2,
 	CircleSlash,
+	ClipboardCheck,
 	Clock,
 	FileText,
 	Link2,
@@ -133,10 +134,11 @@ const RUN_STATUS_ICON: Record<
 	PipelineRunStatus,
 	{ icon: Component; class: string }
 > = {
-	running: { icon: Play, class: "text-blue-500" },
-	analyzed: { icon: Clock, class: "text-muted-foreground" },
-	completed: { icon: CheckCircle2, class: "text-green-500" },
-	failed: { icon: XCircle, class: "text-red-500" },
+	queued: { icon: Clock, class: "text-muted-foreground" },
+	analyzing: { icon: Play, class: "text-blue-500" },
+	analyzed: { icon: ClipboardCheck, class: "text-amber-500" },
+	completed: { icon: CheckCircle2, class: "text-emerald-500" },
+	failed: { icon: XCircle, class: "text-destructive" },
 	cancelled: { icon: CircleSlash, class: "text-muted-foreground" },
 };
 
