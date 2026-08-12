@@ -204,52 +204,41 @@
 				}
 			},
 			"categories": {
-				"comments": {
-					"name": "Comments",
-					"mention": {
-						"name": "Mentioned in Comment",
-						"description": "When someone mentions you in a comment"
-					},
-					"reply": {
-						"name": "Comment Reply",
-						"description": "When someone replies to your comment"
-					}
-				},
-				"documents": {
-					"name": "Documents",
-					"uploaded": {
-						"name": "Document Uploaded",
-						"description": "When a new document is uploaded"
-					},
-					"downloaded": {
-						"name": "Document Downloaded",
-						"description": "When a document is downloaded"
-					},
-					"verified": {
-						"name": "Document Verified",
-						"description": "When a document is verified"
-					}
-				},
 				"members": {
 					"name": "Team Members",
 					"invited": {
 						"name": "Member Invited",
-						"description": "When a new member is invited"
+						"description": "When a new member is invited to the workspace"
 					},
 					"joined": {
 						"name": "Member Joined",
-						"description": "When a member accepts the invitation"
+						"description": "When an invited member joins the workspace"
 					}
 				},
-				"integrations": {
-					"name": "Integrations",
-					"synced": {
-						"name": "Integration Synced",
-						"description": "When an integration completes a sync"
+				"connections": {
+					"name": "Connections",
+					"syncCompleted": {
+						"name": "Sync Completed",
+						"description": "When a connection finishes syncing"
 					},
-					"desynced": {
-						"name": "Integration Desynced",
-						"description": "When an integration loses sync"
+					"syncFailed": {
+						"name": "Sync Failed",
+						"description": "When a connection sync fails"
+					}
+				},
+				"pipelines": {
+					"name": "Pipelines",
+					"runAnalyzed": {
+						"name": "Run Analyzed",
+						"description": "When a pipeline run finishes analysis"
+					},
+					"runCompleted": {
+						"name": "Run Completed",
+						"description": "When a pipeline run completes"
+					},
+					"runFailed": {
+						"name": "Run Failed",
+						"description": "When a pipeline run fails"
 					}
 				},
 				"system": {
@@ -260,7 +249,7 @@
 					},
 					"report": {
 						"name": "Reports",
-						"description": "When scheduled reports are ready"
+						"description": "When a scheduled report is ready"
 					}
 				}
 			},
@@ -1715,6 +1704,49 @@
 			"saveFailed": "Failed to update password. Please try again.",
 			"button": "Update password",
 			"footer": "You'll need to sign in again after changing your password."
+		}
+	},
+	"notifications": {
+		"title": "Notifications",
+		"subtitle": "Stay updated with your latest activity",
+		"empty": "No notifications",
+		"events": {
+			"memberInvited": {
+				"title": "Member invited",
+				"message": "{invitedBy} invited a new member to {workspaceSlug}"
+			},
+			"memberJoined": {
+				"title": "Member joined",
+				"message": "{memberUsername} joined {workspaceSlug}"
+			},
+			"connectionSyncCompleted": {
+				"title": "Sync completed",
+				"message": "A connection finished syncing ({recordsSynced} records)"
+			},
+			"connectionSyncFailed": {
+				"title": "Sync failed",
+				"message": "A connection failed to sync: {error}"
+			},
+			"pipelineRunAnalyzed": {
+				"title": "Run analyzed",
+				"message": "{inputFileName} was analyzed in {pipelineSlug}"
+			},
+			"pipelineRunCompleted": {
+				"title": "Run completed",
+				"message": "{inputFileName} finished in {pipelineSlug}"
+			},
+			"pipelineRunFailed": {
+				"title": "Run failed",
+				"message": "{inputFileName} failed in {pipelineSlug}: {error}"
+			},
+			"systemAnnouncement": {
+				"title": "Announcement",
+				"message": "{message}"
+			},
+			"systemReport": {
+				"title": "Report ready",
+				"message": "A scheduled report is ready"
+			}
 		}
 	}
 }

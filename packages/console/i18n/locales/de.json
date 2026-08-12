@@ -204,52 +204,41 @@
 				}
 			},
 			"categories": {
-				"comments": {
-					"name": "Kommentare",
-					"mention": {
-						"name": "In Kommentar erwähnt",
-						"description": "Wenn jemand Sie in einem Kommentar erwähnt"
-					},
-					"reply": {
-						"name": "Kommentar-Antwort",
-						"description": "Wenn jemand auf Ihren Kommentar antwortet"
-					}
-				},
-				"documents": {
-					"name": "Dokumente",
-					"uploaded": {
-						"name": "Dokument hochgeladen",
-						"description": "Wenn ein neues Dokument hochgeladen wird"
-					},
-					"downloaded": {
-						"name": "Dokument heruntergeladen",
-						"description": "Wenn ein Dokument heruntergeladen wird"
-					},
-					"verified": {
-						"name": "Dokument verifiziert",
-						"description": "Wenn ein Dokument verifiziert wird"
-					}
-				},
 				"members": {
 					"name": "Teammitglieder",
 					"invited": {
 						"name": "Mitglied eingeladen",
-						"description": "Wenn ein neues Mitglied eingeladen wird"
+						"description": "Wenn ein neues Mitglied in den Workspace eingeladen wird"
 					},
 					"joined": {
 						"name": "Mitglied beigetreten",
-						"description": "Wenn ein Mitglied die Einladung annimmt"
+						"description": "Wenn ein eingeladenes Mitglied dem Workspace beitritt"
 					}
 				},
-				"integrations": {
-					"name": "Integrationen",
-					"synced": {
-						"name": "Integration synchronisiert",
-						"description": "Wenn eine Integration eine Synchronisierung abschließt"
+				"connections": {
+					"name": "Verbindungen",
+					"syncCompleted": {
+						"name": "Synchronisierung abgeschlossen",
+						"description": "Wenn eine Verbindung die Synchronisierung abschließt"
 					},
-					"desynced": {
-						"name": "Integration desynchronisiert",
-						"description": "Wenn eine Integration die Synchronisierung verliert"
+					"syncFailed": {
+						"name": "Synchronisierung fehlgeschlagen",
+						"description": "Wenn die Synchronisierung einer Verbindung fehlschlägt"
+					}
+				},
+				"pipelines": {
+					"name": "Pipelines",
+					"runAnalyzed": {
+						"name": "Lauf analysiert",
+						"description": "Wenn ein Pipeline-Lauf die Analyse abschließt"
+					},
+					"runCompleted": {
+						"name": "Lauf abgeschlossen",
+						"description": "Wenn ein Pipeline-Lauf abgeschlossen wird"
+					},
+					"runFailed": {
+						"name": "Lauf fehlgeschlagen",
+						"description": "Wenn ein Pipeline-Lauf fehlschlägt"
 					}
 				},
 				"system": {
@@ -260,7 +249,7 @@
 					},
 					"report": {
 						"name": "Berichte",
-						"description": "Wenn geplante Berichte bereit sind"
+						"description": "Wenn ein geplanter Bericht bereit ist"
 					}
 				}
 			},
@@ -1715,6 +1704,49 @@
 			"saveFailed": "Passwort konnte nicht aktualisiert werden. Bitte erneut versuchen.",
 			"button": "Passwort aktualisieren",
 			"footer": "Nach der Änderung deines Passworts musst du dich erneut anmelden."
+		}
+	},
+	"notifications": {
+		"title": "Benachrichtigungen",
+		"subtitle": "Bleiben Sie über Ihre neueste Aktivität informiert",
+		"empty": "Keine Benachrichtigungen",
+		"events": {
+			"memberInvited": {
+				"title": "Mitglied eingeladen",
+				"message": "{invitedBy} hat ein neues Mitglied zu {workspaceSlug} eingeladen"
+			},
+			"memberJoined": {
+				"title": "Mitglied beigetreten",
+				"message": "{memberUsername} ist {workspaceSlug} beigetreten"
+			},
+			"connectionSyncCompleted": {
+				"title": "Synchronisierung abgeschlossen",
+				"message": "Eine Verbindung wurde synchronisiert ({recordsSynced} Datensätze)"
+			},
+			"connectionSyncFailed": {
+				"title": "Synchronisierung fehlgeschlagen",
+				"message": "Eine Verbindung konnte nicht synchronisiert werden: {error}"
+			},
+			"pipelineRunAnalyzed": {
+				"title": "Lauf analysiert",
+				"message": "{inputFileName} wurde in {pipelineSlug} analysiert"
+			},
+			"pipelineRunCompleted": {
+				"title": "Lauf abgeschlossen",
+				"message": "{inputFileName} wurde in {pipelineSlug} abgeschlossen"
+			},
+			"pipelineRunFailed": {
+				"title": "Lauf fehlgeschlagen",
+				"message": "{inputFileName} ist in {pipelineSlug} fehlgeschlagen: {error}"
+			},
+			"systemAnnouncement": {
+				"title": "Ankündigung",
+				"message": "{message}"
+			},
+			"systemReport": {
+				"title": "Bericht bereit",
+				"message": "Ein geplanter Bericht ist bereit"
+			}
 		}
 	}
 }
