@@ -16,7 +16,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "#console/components/ui/select";
-import AnalyticsAreaChart from "#console/components/pages/analytics/AnalyticsAreaChart.vue";
+import AnalyticsAreaChart from "#console/components/pages/analytics/AnalyticsAreaChartLazy.vue";
 import { AREA_CHARTS } from "#console/components/pages/analytics/charts";
 
 useHead({ title: "AI Analytics" });
