@@ -4,7 +4,7 @@ import type {
 	ApiTokenWithJWT,
 	TokenExpiration,
 } from "@nvisy/sdk/datatypes";
-import { ChevronDown, Key, Loader2 } from "@lucide/vue";
+import { Key, Loader2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 
 import {
@@ -23,11 +23,12 @@ import {
 	CardTitle,
 } from "#console/components/ui/card";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "#console/components/ui/dropdown-menu";
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "#console/components/ui/select";
 import {
 	Empty,
 	EmptyDescription,
@@ -208,7 +209,7 @@ async function renameToken(newName: string) {
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="max-w-3xl mx-auto w-full">
       <!-- Create Token Section -->
-      <Card class="mb-6 py-0 pt-6 border-border/50">
+      <Card class="mb-6 rounded-xl border-border/50 py-0 pt-6">
         <CardHeader class="pb-4">
           <CardTitle
             class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
@@ -222,7 +223,7 @@ async function renameToken(newName: string) {
         <CardContent>
           <div class="flex gap-4">
             <div class="space-y-2 flex-1">
-              <Label for="tokenName" class="text-sm font-medium" required>
+              <Label for="tokenName" required>
                 {{ t("tokens.create.nameLabel") }}
               </Label>
               <Input
@@ -233,37 +234,25 @@ async function renameToken(newName: string) {
               />
             </div>
 
-            <div class="space-y-2 flex-1">
-              <Label for="tokenExpiration" class="text-sm font-medium">
+            <div class="flex-1 space-y-2">
+              <Label for="tokenExpiration">
                 {{ t("tokens.create.expirationLabel") }}
               </Label>
-              <DropdownMenu>
-                <DropdownMenuTrigger as-child>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    class="w-full justify-between h-9"
-                  >
-                    <span class="text-sm">
-                      {{
-                        expirations.find((e) => e.value === tokenExpiration)
-                          ?.label
-                      }}
-                    </span>
-                    <ChevronDown :size="14" class="text-muted-foreground" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" class="w-full">
-                  <DropdownMenuItem
+              <Select v-model="tokenExpiration">
+                <SelectTrigger id="tokenExpiration" class="h-9 w-full text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem
                     v-for="expiration in expirations"
                     :key="expiration.value"
-                    @click="tokenExpiration = expiration.value"
-                    class="text-sm"
+                    :value="expiration.value"
+                    class="text-sm font-normal"
                   >
                     {{ expiration.label }}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </CardContent>
@@ -287,7 +276,7 @@ async function renameToken(newName: string) {
       </Card>
 
       <!-- Active Tokens -->
-      <Card class="overflow-hidden py-0 pt-6 border-border/50">
+      <Card class="overflow-hidden rounded-xl border-border/50 py-0 pt-6">
         <CardHeader class="pb-4">
           <CardTitle
             class="text-xs font-medium tracking-wide uppercase text-muted-foreground"

@@ -5,15 +5,8 @@ import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
 import { Textarea } from "#console/components/ui/textarea";
-import { AvatarUploadCard } from "#console/components/common";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "#console/components/ui/card";
+import { AvatarUploadCard, DangerZoneCard } from "#console/components/common";
+import { Card, CardContent, CardFooter } from "#console/components/ui/card";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -251,7 +244,7 @@ const canDelete = computed(() => {
             <!-- Name + Slug -->
             <div class="grid gap-5 sm:grid-cols-2">
               <div class="space-y-2">
-                <Label for="workspaceName" class="text-sm font-medium" required>{{
+                <Label for="workspaceName" required>{{
                   t("settings.workspace.name.label")
                 }}</Label>
                 <Input
@@ -262,7 +255,7 @@ const canDelete = computed(() => {
                 />
               </div>
               <div class="space-y-2">
-                <Label for="workspaceId" class="text-sm font-medium">{{
+                <Label for="workspaceId" >{{
                   t("settings.workspace.id.label")
                 }}</Label>
                 <div class="flex gap-2">
@@ -284,7 +277,7 @@ const canDelete = computed(() => {
                     <Check
                       v-if="copiedWorkspaceId"
                       :size="16"
-                      class="text-green-500"
+                      class="text-emerald-500"
                     />
                     <Copy v-else :size="16" />
                   </Button>
@@ -297,7 +290,7 @@ const canDelete = computed(() => {
 
             <!-- Workspace Description -->
             <div class="space-y-2">
-              <Label for="workspaceDescription" class="text-sm font-medium">{{
+              <Label for="workspaceDescription" >{{
                 t("settings.workspace.description.label")
               }}</Label>
               <Textarea
@@ -329,77 +322,27 @@ const canDelete = computed(() => {
         </Card>
 
         <!-- Leave Workspace -->
-        <Card
-          class="py-0 pt-6 border border-red-200 dark:border-red-900/50 rounded-xl"
-        >
-          <CardHeader class="pb-4">
-            <CardTitle
-              class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
-              >{{ t("settings.workspace.leave.title") }}</CardTitle
-            >
-            <CardDescription class="text-sm">{{
-              t("settings.workspace.leave.description")
-            }}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p class="text-xs text-muted-foreground">
-              {{ t("settings.workspace.leave.content") }}
-            </p>
-          </CardContent>
-          <CardFooter
-            class="border-t pb-6 border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30 rounded-b-xl flex items-center justify-between"
-          >
-            <p class="text-xs text-red-600 dark:text-red-400">
-              {{ t("settings.workspace.leave.warning") }}
-            </p>
-            <Button
-              size="sm"
-              variant="destructive"
-              @click="isLeaveDialogOpen = true"
-              :disabled="isLeaving"
-            >
-              <Loader2 v-if="isLeaving" :size="16" class="mr-2 animate-spin" />
-              {{ t("settings.workspace.leave.button") }}
-            </Button>
-          </CardFooter>
-        </Card>
+        <DangerZoneCard
+          :title="t('settings.workspace.leave.title')"
+          :description="t('settings.workspace.leave.description')"
+          :content="t('settings.workspace.leave.content')"
+          :warning="t('settings.workspace.leave.warning')"
+          :button-label="t('settings.workspace.leave.button')"
+          :is-loading="isLeaving"
+          @action="isLeaveDialogOpen = true"
+        />
 
         <!-- Delete Workspace (only shown for owners) -->
-        <Card
+        <DangerZoneCard
           v-if="isOwner"
-          class="py-0 pt-6 border border-red-200 dark:border-red-900/50 rounded-xl"
-        >
-          <CardHeader class="pb-4">
-            <CardTitle
-              class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
-              >{{ t("settings.workspace.delete.title") }}</CardTitle
-            >
-            <CardDescription class="text-sm">{{
-              t("settings.workspace.delete.description")
-            }}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p class="text-xs text-muted-foreground">
-              {{ t("settings.workspace.delete.content") }}
-            </p>
-          </CardContent>
-          <CardFooter
-            class="border-t pb-6 border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30 rounded-b-xl flex items-center justify-between"
-          >
-            <p class="text-xs text-red-600 dark:text-red-400">
-              {{ t("settings.workspace.delete.warning") }}
-            </p>
-            <Button
-              size="sm"
-              variant="destructive"
-              @click="isDeleteDialogOpen = true"
-              :disabled="isDeleting"
-            >
-              <Loader2 v-if="isDeleting" :size="16" class="mr-2 animate-spin" />
-              {{ t("settings.workspace.delete.button") }}
-            </Button>
-          </CardFooter>
-        </Card>
+          :title="t('settings.workspace.delete.title')"
+          :description="t('settings.workspace.delete.description')"
+          :content="t('settings.workspace.delete.content')"
+          :warning="t('settings.workspace.delete.warning')"
+          :button-label="t('settings.workspace.delete.button')"
+          :is-loading="isDeleting"
+          @action="isDeleteDialogOpen = true"
+        />
       </div>
 
       <!-- No workspace state -->
@@ -428,7 +371,7 @@ const canDelete = computed(() => {
           <AlertDialogAction
             @click="handleLeaveWorkspace"
             :disabled="isLeaving"
-            class="bg-red-600 hover:bg-red-700"
+            class="bg-destructive text-white hover:bg-destructive/90"
           >
             <Loader2 v-if="isLeaving" :size="16" class="mr-2 animate-spin" />
             {{ t("settings.workspace.leave.button") }}
@@ -453,7 +396,7 @@ const canDelete = computed(() => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div class="py-4">
-          <Label for="deleteConfirm" class="text-sm font-medium" required>
+          <Label for="deleteConfirm" required>
             {{
               t("settings.workspace.delete.dialog.confirmLabel", {
                 name: currentWorkspace?.displayName,
@@ -476,7 +419,7 @@ const canDelete = computed(() => {
           <AlertDialogAction
             @click="handleDeleteWorkspace"
             :disabled="isDeleting || !canDelete"
-            class="bg-red-600 hover:bg-red-700"
+            class="bg-destructive text-white hover:bg-destructive/90"
           >
             <Loader2 v-if="isDeleting" :size="16" class="mr-2 animate-spin" />
             {{ t("settings.workspace.delete.button") }}

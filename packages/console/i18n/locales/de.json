@@ -68,7 +68,9 @@
 		"disabled": "Deaktiviert",
 		"selectAll": "Alle auswählen",
 		"selectRow": "Zeile auswählen",
-		"openMenu": "Menü öffnen"
+		"openMenu": "Menü öffnen",
+		"showPassword": "Passwort anzeigen",
+		"hidePassword": "Passwort verbergen"
 	},
 	"settings": {
 		"workspace": {
@@ -202,52 +204,41 @@
 				}
 			},
 			"categories": {
-				"comments": {
-					"name": "Kommentare",
-					"mention": {
-						"name": "In Kommentar erwähnt",
-						"description": "Wenn jemand Sie in einem Kommentar erwähnt"
-					},
-					"reply": {
-						"name": "Kommentar-Antwort",
-						"description": "Wenn jemand auf Ihren Kommentar antwortet"
-					}
-				},
-				"documents": {
-					"name": "Dokumente",
-					"uploaded": {
-						"name": "Dokument hochgeladen",
-						"description": "Wenn ein neues Dokument hochgeladen wird"
-					},
-					"downloaded": {
-						"name": "Dokument heruntergeladen",
-						"description": "Wenn ein Dokument heruntergeladen wird"
-					},
-					"verified": {
-						"name": "Dokument verifiziert",
-						"description": "Wenn ein Dokument verifiziert wird"
-					}
-				},
 				"members": {
 					"name": "Teammitglieder",
 					"invited": {
 						"name": "Mitglied eingeladen",
-						"description": "Wenn ein neues Mitglied eingeladen wird"
+						"description": "Wenn ein neues Mitglied in den Workspace eingeladen wird"
 					},
 					"joined": {
 						"name": "Mitglied beigetreten",
-						"description": "Wenn ein Mitglied die Einladung annimmt"
+						"description": "Wenn ein eingeladenes Mitglied dem Workspace beitritt"
 					}
 				},
-				"integrations": {
-					"name": "Integrationen",
-					"synced": {
-						"name": "Integration synchronisiert",
-						"description": "Wenn eine Integration eine Synchronisierung abschließt"
+				"connections": {
+					"name": "Verbindungen",
+					"syncCompleted": {
+						"name": "Synchronisierung abgeschlossen",
+						"description": "Wenn eine Verbindung die Synchronisierung abschließt"
 					},
-					"desynced": {
-						"name": "Integration desynchronisiert",
-						"description": "Wenn eine Integration die Synchronisierung verliert"
+					"syncFailed": {
+						"name": "Synchronisierung fehlgeschlagen",
+						"description": "Wenn die Synchronisierung einer Verbindung fehlschlägt"
+					}
+				},
+				"pipelines": {
+					"name": "Pipelines",
+					"runAnalyzed": {
+						"name": "Lauf analysiert",
+						"description": "Wenn ein Pipeline-Lauf die Analyse abschließt"
+					},
+					"runCompleted": {
+						"name": "Lauf abgeschlossen",
+						"description": "Wenn ein Pipeline-Lauf abgeschlossen wird"
+					},
+					"runFailed": {
+						"name": "Lauf fehlgeschlagen",
+						"description": "Wenn ein Pipeline-Lauf fehlschlägt"
 					}
 				},
 				"system": {
@@ -258,7 +249,7 @@
 					},
 					"report": {
 						"name": "Berichte",
-						"description": "Wenn geplante Berichte bereit sind"
+						"description": "Wenn ein geplanter Bericht bereit ist"
 					}
 				}
 			},
@@ -1671,5 +1662,91 @@
 		"submit": "Feedback senden",
 		"toastTitle": "Feedback gesendet",
 		"toastDescription": "Vielen Dank für Ihr Feedback! Wir werden es in Kürze prüfen."
+	},
+	"account": {
+		"avatar": {
+			"label": "Avatar",
+			"description": "Zum Hochladen klicken. Empfohlen: 256×256px. PNG, JPG oder GIF.",
+			"footer": "Dein Profilbild ist für andere Teammitglieder sichtbar.",
+			"remove": "Avatar entfernen",
+			"uploaded": "Avatar aktualisiert",
+			"removed": "Avatar entfernt",
+			"uploadFailed": "Avatar konnte nicht hochgeladen werden",
+			"removeFailed": "Avatar konnte nicht entfernt werden"
+		},
+		"profile": {
+			"nameLabel": "Anzeigename",
+			"namePlaceholder": "John Doe",
+			"nameHint": "Dein Name, wie er plattformweit erscheint. Max. 64 Zeichen.",
+			"usernameLabel": "Benutzername",
+			"usernamePlaceholder": "john-doe",
+			"usernameHint": "Dein öffentlicher Handle. Kleinbuchstaben, Zahlen und einzelne Bindestriche.",
+			"usernameRequired": "Benutzername ist erforderlich.",
+			"usernameInvalid": "Verwende Kleinbuchstaben, Zahlen und einzelne Bindestriche zwischen Zeichen.",
+			"footer": "Diese Informationen werden in allen deinen Arbeitsbereichen verwendet.",
+			"saved": "Profil aktualisiert",
+			"saveFailed": "Profil konnte nicht aktualisiert werden"
+		},
+		"email": {
+			"label": "E-Mail-Adresse",
+			"hint": "Um deine E-Mail-Adresse zu ändern, kontaktiere bitte den Support."
+		},
+		"password": {
+			"newLabel": "Neues Passwort",
+			"newPlaceholder": "Neues Passwort eingeben",
+			"newHint": "Mindestens 8 Zeichen.",
+			"confirmLabel": "Neues Passwort bestätigen",
+			"confirmPlaceholder": "Neues Passwort bestätigen",
+			"required": "Neues Passwort ist erforderlich.",
+			"tooShort": "Das Passwort muss mindestens 8 Zeichen lang sein.",
+			"mismatch": "Passwörter stimmen nicht überein.",
+			"saved": "Passwort aktualisiert",
+			"saveFailed": "Passwort konnte nicht aktualisiert werden. Bitte erneut versuchen.",
+			"button": "Passwort aktualisieren",
+			"footer": "Nach der Änderung deines Passworts musst du dich erneut anmelden."
+		}
+	},
+	"notifications": {
+		"title": "Benachrichtigungen",
+		"subtitle": "Bleiben Sie über Ihre neueste Aktivität informiert",
+		"empty": "Keine Benachrichtigungen",
+		"events": {
+			"memberInvited": {
+				"title": "Mitglied eingeladen",
+				"message": "{invitedBy} hat ein neues Mitglied zu {workspaceSlug} eingeladen"
+			},
+			"memberJoined": {
+				"title": "Mitglied beigetreten",
+				"message": "{memberUsername} ist {workspaceSlug} beigetreten"
+			},
+			"connectionSyncCompleted": {
+				"title": "Synchronisierung abgeschlossen",
+				"message": "Eine Verbindung wurde synchronisiert ({recordsSynced} Datensätze)"
+			},
+			"connectionSyncFailed": {
+				"title": "Synchronisierung fehlgeschlagen",
+				"message": "Eine Verbindung konnte nicht synchronisiert werden: {error}"
+			},
+			"pipelineRunAnalyzed": {
+				"title": "Lauf analysiert",
+				"message": "{inputFileName} wurde in {pipelineSlug} analysiert"
+			},
+			"pipelineRunCompleted": {
+				"title": "Lauf abgeschlossen",
+				"message": "{inputFileName} wurde in {pipelineSlug} abgeschlossen"
+			},
+			"pipelineRunFailed": {
+				"title": "Lauf fehlgeschlagen",
+				"message": "{inputFileName} ist in {pipelineSlug} fehlgeschlagen: {error}"
+			},
+			"systemAnnouncement": {
+				"title": "Ankündigung",
+				"message": "{message}"
+			},
+			"systemReport": {
+				"title": "Bericht bereit",
+				"message": "Ein geplanter Bericht ist bereit"
+			}
+		}
 	}
 }

@@ -61,68 +61,30 @@ async function toggleEmailNotifications(value: boolean) {
 	}
 }
 
-// Event categories based on NotificationEvent types
-const categories = computed(() => [
+// Notification categories, grouping the backend's NotificationEvent values.
+// The event keys carry dots (e.g. "connection:sync.completed"), so the i18n
+// leaf keys use dot-free camelCase (syncCompleted, runAnalyzed, ...) to avoid
+// vue-i18n treating the dot as a path separator.
+const categories = computed<
 	{
-		id: "comments",
-		name: t("settings.notifications.categories.comments.name"),
-		events: [
-			{
-				event: "comment:mention" as NotificationEvent,
-				name: t("settings.notifications.categories.comments.mention.name"),
-				description: t(
-					"settings.notifications.categories.comments.mention.description",
-				),
-			},
-			{
-				event: "comment:reply" as NotificationEvent,
-				name: t("settings.notifications.categories.comments.reply.name"),
-				description: t(
-					"settings.notifications.categories.comments.reply.description",
-				),
-			},
-		],
-	},
-	{
-		id: "documents",
-		name: t("settings.notifications.categories.documents.name"),
-		events: [
-			{
-				event: "document:uploaded" as NotificationEvent,
-				name: t("settings.notifications.categories.documents.uploaded.name"),
-				description: t(
-					"settings.notifications.categories.documents.uploaded.description",
-				),
-			},
-			{
-				event: "document:downloaded" as NotificationEvent,
-				name: t("settings.notifications.categories.documents.downloaded.name"),
-				description: t(
-					"settings.notifications.categories.documents.downloaded.description",
-				),
-			},
-			{
-				event: "document:verified" as NotificationEvent,
-				name: t("settings.notifications.categories.documents.verified.name"),
-				description: t(
-					"settings.notifications.categories.documents.verified.description",
-				),
-			},
-		],
-	},
+		id: string;
+		name: string;
+		events: { event: NotificationEvent; name: string; description: string }[];
+	}[]
+>(() => [
 	{
 		id: "members",
 		name: t("settings.notifications.categories.members.name"),
 		events: [
 			{
-				event: "member:invited" as NotificationEvent,
+				event: "member:invited",
 				name: t("settings.notifications.categories.members.invited.name"),
 				description: t(
 					"settings.notifications.categories.members.invited.description",
 				),
 			},
 			{
-				event: "member:joined" as NotificationEvent,
+				event: "member:joined",
 				name: t("settings.notifications.categories.members.joined.name"),
 				description: t(
 					"settings.notifications.categories.members.joined.description",
@@ -131,21 +93,54 @@ const categories = computed(() => [
 		],
 	},
 	{
-		id: "integrations",
-		name: t("settings.notifications.categories.integrations.name"),
+		id: "connections",
+		name: t("settings.notifications.categories.connections.name"),
 		events: [
 			{
-				event: "integration:synced" as NotificationEvent,
-				name: t("settings.notifications.categories.integrations.synced.name"),
+				event: "connection:sync.completed",
+				name: t(
+					"settings.notifications.categories.connections.syncCompleted.name",
+				),
 				description: t(
-					"settings.notifications.categories.integrations.synced.description",
+					"settings.notifications.categories.connections.syncCompleted.description",
 				),
 			},
 			{
-				event: "integration:desynced" as NotificationEvent,
-				name: t("settings.notifications.categories.integrations.desynced.name"),
+				event: "connection:sync.failed",
+				name: t(
+					"settings.notifications.categories.connections.syncFailed.name",
+				),
 				description: t(
-					"settings.notifications.categories.integrations.desynced.description",
+					"settings.notifications.categories.connections.syncFailed.description",
+				),
+			},
+		],
+	},
+	{
+		id: "pipelines",
+		name: t("settings.notifications.categories.pipelines.name"),
+		events: [
+			{
+				event: "pipeline:run.analyzed",
+				name: t("settings.notifications.categories.pipelines.runAnalyzed.name"),
+				description: t(
+					"settings.notifications.categories.pipelines.runAnalyzed.description",
+				),
+			},
+			{
+				event: "pipeline:run.completed",
+				name: t(
+					"settings.notifications.categories.pipelines.runCompleted.name",
+				),
+				description: t(
+					"settings.notifications.categories.pipelines.runCompleted.description",
+				),
+			},
+			{
+				event: "pipeline:run.failed",
+				name: t("settings.notifications.categories.pipelines.runFailed.name"),
+				description: t(
+					"settings.notifications.categories.pipelines.runFailed.description",
 				),
 			},
 		],
@@ -155,14 +150,14 @@ const categories = computed(() => [
 		name: t("settings.notifications.categories.system.name"),
 		events: [
 			{
-				event: "system:announcement" as NotificationEvent,
+				event: "system:announcement",
 				name: t("settings.notifications.categories.system.announcement.name"),
 				description: t(
 					"settings.notifications.categories.system.announcement.description",
 				),
 			},
 			{
-				event: "system:report" as NotificationEvent,
+				event: "system:report",
 				name: t("settings.notifications.categories.system.report.name"),
 				description: t(
 					"settings.notifications.categories.system.report.description",
@@ -172,50 +167,34 @@ const categories = computed(() => [
 	},
 ]);
 
-// Check if event settings have changed (email toggle is auto-saved separately)
-const hasEventChanges = computed(() => {
-	if (!settings.value) return false;
-
-	const originalAppEvents = settings.value.notificationEventsApp;
-	const originalEmailEvents = settings.value.notificationEventsEmail;
-
-	// Convert current sets to sorted arrays for comparison
-	const currentAppEvents = Array.from(appEvents.value).sort();
-	const currentEmailEvents = Array.from(emailEvents.value).sort();
-	const sortedOriginalApp = [...originalAppEvents].sort();
-	const sortedOriginalEmail = [...originalEmailEvents].sort();
-
-	if (currentAppEvents.length !== sortedOriginalApp.length) return true;
-	if (currentEmailEvents.length !== sortedOriginalEmail.length) return true;
-
-	for (let i = 0; i < currentAppEvents.length; i++) {
-		if (currentAppEvents[i] !== sortedOriginalApp[i]) return true;
-	}
-	for (let i = 0; i < currentEmailEvents.length; i++) {
-		if (currentEmailEvents[i] !== sortedOriginalEmail[i]) return true;
-	}
-
-	return false;
-});
-
-// Toggle event in an array
-function toggleAppEvent(event: NotificationEvent, value: boolean) {
-	if (value) {
-		if (!appEvents.value.includes(event)) {
-			appEvents.value = [...appEvents.value, event];
-		}
-	} else {
-		appEvents.value = appEvents.value.filter((e) => e !== event);
-	}
+// Order-independent equality for two event lists.
+function sameEvents(a: NotificationEvent[], b: NotificationEvent[]) {
+	if (a.length !== b.length) return false;
+	const set = new Set(a);
+	return b.every((event) => set.has(event));
 }
 
-function toggleEmailEvent(event: NotificationEvent, value: boolean) {
+// Dirty when either channel's selection diverges from the saved settings
+// (the email channel's own on/off toggle is auto-saved separately).
+const hasEventChanges = computed(() => {
+	if (!settings.value) return false;
+	return (
+		!sameEvents(appEvents.value, settings.value.notificationEventsApp) ||
+		!sameEvents(emailEvents.value, settings.value.notificationEventsEmail)
+	);
+});
+
+// Add or remove an event from one channel's selection.
+function toggleEvent(
+	channel: "app" | "email",
+	event: NotificationEvent,
+	value: boolean,
+) {
+	const target = channel === "app" ? appEvents : emailEvents;
 	if (value) {
-		if (!emailEvents.value.includes(event)) {
-			emailEvents.value = [...emailEvents.value, event];
-		}
+		if (!target.value.includes(event)) target.value = [...target.value, event];
 	} else {
-		emailEvents.value = emailEvents.value.filter((e) => e !== event);
+		target.value = target.value.filter((e) => e !== event);
 	}
 }
 
@@ -352,7 +331,7 @@ async function saveEventSettings() {
                           :model-value="appEvents.includes(item.event)"
                           @update:model-value="
                             (value: boolean | 'indeterminate') =>
-                              toggleAppEvent(item.event, value === true)
+                              toggleEvent('app', item.event, value === true)
                           "
                         />
                       </div>
@@ -364,7 +343,7 @@ async function saveEventSettings() {
                           :disabled="!notifyViaEmail"
                           @update:model-value="
                             (value: boolean | 'indeterminate') =>
-                              toggleEmailEvent(item.event, value === true)
+                              toggleEvent('email', item.event, value === true)
                           "
                         />
                       </div>
