@@ -8,10 +8,10 @@ import { Badge } from "#console/components/ui/badge";
 import { Checkbox } from "#console/components/ui/checkbox";
 import { EntityAvatar } from "#console/components/common";
 import {
-	ContextMenu,
-	ContextMenuContent,
-	ContextMenuTrigger,
-} from "#console/components/ui/context-menu";
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuTrigger,
+} from "#console/components/ui/dropdown-menu";
 import RowActionItems from "#console/components/pages/RowActionItems.vue";
 import type { RowAction } from "#console/components/pages/RowActionItems.vue";
 import type { BulkAction } from "#console/components/pages/RowActions.vue";
@@ -96,7 +96,12 @@ function onRowContextMenu(event: MouseEvent, row: TRow) {
 	if (!props.rowActions && !props.bulkAction) return;
 	menuRow.value = row;
 	menuPosition.value = { x: event.clientX, y: event.clientY };
-	menuOpen.value = true;
+	// Close first so a right-click on another row re-anchors the dropdown at the
+	// new cursor position instead of staying where it first opened.
+	menuOpen.value = false;
+	nextTick(() => {
+		menuOpen.value = true;
+	});
 }
 
 const alignClass = (align?: "left" | "right" | "center") =>
@@ -271,7 +276,7 @@ function onRowClick(row: TRow) {
     :get-row-id="(row) => row.id"
     :row-height="rowHeight"
     :enable-row-selection="!!selection"
-    :class="maxHeight ? '' : 'h-full'"
+    :class="['rounded-none border-0', maxHeight ? '' : 'h-full']"
     :style="maxHeight ? { maxHeight } : undefined"
     @load-more="emit('load-more')"
     @row-click="onRowClick"
@@ -292,16 +297,17 @@ function onRowClick(row: TRow) {
     </template>
   </DataTable>
 
-  <!-- Right-click menu, positioned at the cursor via an invisible anchor. -->
-  <ContextMenu v-if="rowActions || bulkAction" v-model:open="menuOpen">
-    <ContextMenuTrigger as-child>
+  <!-- Right-click menu: a dropdown anchored to an invisible element placed at
+       the cursor, opened programmatically from the row's contextmenu event. -->
+  <DropdownMenu v-if="rowActions || bulkAction" v-model:open="menuOpen">
+    <DropdownMenuTrigger as-child>
       <div
         class="pointer-events-none fixed size-0"
         :style="{ left: `${menuPosition.x}px`, top: `${menuPosition.y}px` }"
       />
-    </ContextMenuTrigger>
-    <ContextMenuContent v-if="menuActions.length" align="start">
-      <RowActionItems :actions="menuActions" variant="context" />
-    </ContextMenuContent>
-  </ContextMenu>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent v-if="menuActions.length" align="start">
+      <RowActionItems :actions="menuActions" variant="dropdown" />
+    </DropdownMenuContent>
+  </DropdownMenu>
 </template>

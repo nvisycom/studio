@@ -17,6 +17,7 @@ import {
 	History,
 	ExternalLink,
 } from "@lucide/vue";
+import type { VirtualColumn } from "#console/components/ui/virtual-table";
 import { Button } from "#console/components/ui/button";
 import {
 	Card,
@@ -26,14 +27,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#console/components/ui/card";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHeader,
-	TableRow,
-} from "#console/components/ui/table";
-import DataTableHead from "#console/components/pages/DataTableHead.vue";
+import { VirtualTable } from "#console/components/ui/virtual-table";
 import {
 	Select,
 	SelectContent,
@@ -41,7 +35,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "#console/components/ui/select";
-import { Badge } from "#console/components/ui/badge";
 
 const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
@@ -103,6 +96,59 @@ const sortedRuns = computed(() =>
 	[...(runs.value ?? [])].sort((a, b) =>
 		b.startedAt.localeCompare(a.startedAt),
 	),
+);
+
+const columns = computed<VirtualColumn<(typeof sortedRuns.value)[number]>[]>(
+	() => [
+		{
+			key: "pipeline",
+			header: t("workflows.runs.pipeline"),
+			cell: (r) => ({ type: "text", value: r.pipelineSlug, mono: true }),
+		},
+		{
+			key: "file",
+			header: t("workflows.runs.file"),
+			width: "140px",
+			cell: (r) => ({
+				type: "text",
+				value: r.inputFileId.slice(0, 8),
+				mono: true,
+				muted: true,
+				title: r.inputFileId,
+			}),
+		},
+		{
+			key: "trigger",
+			header: t("workflows.runs.trigger"),
+			width: "130px",
+			cell: (r) => ({
+				type: "badge",
+				label: t(`workflows.runs.triggerType.${r.triggerType}`),
+			}),
+		},
+		{
+			key: "status",
+			header: t("workflows.runs.statusHeader"),
+			width: "160px",
+			cell: (r) => ({
+				type: "status",
+				icon: STATUS_META[r.status].icon,
+				iconClass: STATUS_META[r.status].class,
+				spin: STATUS_META[r.status].spin,
+				label: t(`workflows.runs.runStatus.${r.status}`),
+			}),
+		},
+		{
+			key: "started",
+			header: t("workflows.runs.started"),
+			width: "140px",
+			cell: (r) => ({
+				type: "text",
+				value: relativeTime(r.startedAt),
+				muted: true,
+			}),
+		},
+	],
 );
 </script>
 
@@ -198,96 +244,17 @@ const sortedRuns = computed(() =>
             <Loader2 :size="24" class="animate-spin text-muted-foreground" />
           </div>
 
-          <!-- Empty -->
-          <div v-else-if="sortedRuns.length === 0" class="py-12">
-            <div class="text-center">
-              <div
-                class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
-              >
-                <History class="size-5 text-muted-foreground" />
-              </div>
-              <p class="text-sm text-foreground mb-1">
-                {{ t("workflows.runs.noRunsFound") }}
-              </p>
-              <p class="text-xs text-muted-foreground">
-                {{ t("workflows.runs.noRunsDescription") }}
-              </p>
-            </div>
-          </div>
-
-          <Table v-else>
-            <TableHeader>
-              <TableRow>
-                <DataTableHead>
-                  {{ t("workflows.runs.pipeline") }}
-                </DataTableHead>
-                <DataTableHead>{{ t("workflows.runs.file") }}</DataTableHead>
-                <DataTableHead>
-                  {{ t("workflows.runs.trigger") }}
-                </DataTableHead>
-                <DataTableHead>
-                  {{ t("workflows.runs.statusHeader") }}
-                </DataTableHead>
-                <DataTableHead>
-                  {{ t("workflows.runs.started") }}
-                </DataTableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow v-for="run in sortedRuns" :key="run.id">
-                <!-- Pipeline -->
-                <TableCell>
-                  <span class="font-mono text-xs text-foreground">
-                    {{ run.pipelineSlug }}
-                  </span>
-                </TableCell>
-
-                <!-- File -->
-                <TableCell>
-                  <span
-                    class="font-mono text-xs text-muted-foreground"
-                    :title="run.inputFileId"
-                  >
-                    {{ run.inputFileId.slice(0, 8) }}
-                  </span>
-                </TableCell>
-
-                <!-- Trigger -->
-                <TableCell>
-                  <Badge variant="secondary" class="font-normal">
-                    {{ t(`workflows.runs.triggerType.${run.triggerType}`) }}
-                  </Badge>
-                </TableCell>
-
-                <!-- Status -->
-                <TableCell>
-                  <div class="flex items-center gap-2">
-                    <component
-                      :is="STATUS_META[run.status].icon"
-                      :size="14"
-                      :class="[
-                        STATUS_META[run.status].class,
-                        STATUS_META[run.status].spin && 'animate-spin',
-                      ]"
-                    />
-                    <span class="text-sm">
-                      {{ t(`workflows.runs.runStatus.${run.status}`) }}
-                    </span>
-                  </div>
-                </TableCell>
-
-                <!-- Started -->
-                <TableCell class="text-sm text-muted-foreground">
-                  {{ relativeTime(run.startedAt) }}
-                </TableCell>
-
-                <!-- Duration -->
-                <TableCell class="text-sm text-muted-foreground">
-                  {{ formatDuration(run.startedAt, run.completedAt) }}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+          <VirtualTable
+            v-else
+            :rows="sortedRuns"
+            :columns="columns"
+            max-height="60vh"
+            :empty="{
+              icon: History,
+              title: t('workflows.runs.noRunsFound'),
+              description: t('workflows.runs.noRunsDescription'),
+            }"
+          />
         </CardContent>
         <CardFooter
           class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"

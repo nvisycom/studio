@@ -229,7 +229,7 @@ defineExpose({
                 : undefined
             "
             :style="{ height: `${virtualRow.size}px` }"
-            class="cursor-pointer"
+            class="group cursor-pointer"
             @click="
               handleRowClick(
                 table.getRowModel().rows[virtualRow.index]?.original as TData,
