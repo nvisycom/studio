@@ -101,16 +101,12 @@ function cancel() {
       <div class="space-y-6 py-6">
         <!-- File Name -->
         <div>
-          <Label
-            required
-            class="mb-2 text-sm font-medium text-neutral-900 dark:text-white"
-          >
+          <Label required class="mb-2 text-sm font-medium">
             {{ t("files.dialogs.edit.nameLabel") }}
           </Label>
           <Input
             v-model="displayName"
             :placeholder="t('files.dialogs.edit.namePlaceholder')"
-            class="text-neutral-900 dark:text-white"
           />
         </div>
       </div>

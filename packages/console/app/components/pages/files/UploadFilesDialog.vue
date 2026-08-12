@@ -4,7 +4,6 @@ import { Button } from "#console/components/ui/button";
 import {
 	Dialog,
 	DialogContent,
-	DialogDescription,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
@@ -151,7 +150,7 @@ function handleBrowseClick() {
             'border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors',
             isDragging
               ? 'border-primary bg-primary/5'
-              : 'border-neutral-300 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-600',
+              : 'border-border hover:border-muted-foreground/50',
           ]"
         >
           <input
@@ -164,9 +163,9 @@ function handleBrowseClick() {
           />
           <Upload
             :size="32"
-            class="mx-auto mb-3 text-neutral-400 dark:text-neutral-500"
+            class="mx-auto mb-3 text-muted-foreground"
           />
-          <p class="font-normal text-neutral-700 dark:text-neutral-300 mb-1">
+          <p class="mb-1 text-foreground">
             {{
               isDragging
                 ? t("files.dialogs.upload.dropHint")
@@ -188,23 +187,23 @@ function handleBrowseClick() {
           <div
             v-for="file in uploadingFiles"
             :key="file.id"
-            class="flex items-center gap-3 p-2 rounded-lg bg-neutral-50 dark:bg-neutral-900"
+            class="flex items-center gap-3 rounded-lg bg-muted/50 p-2"
           >
             <div
-              class="w-8 h-8 rounded flex items-center justify-center bg-neutral-200 dark:bg-neutral-800"
+              class="flex size-8 items-center justify-center rounded bg-muted"
             >
               <FileText
                 :size="16"
-                class="text-neutral-600 dark:text-neutral-400"
+                class="text-muted-foreground"
               />
             </div>
             <div class="flex-1 min-w-0">
               <p
-                class="text-sm font-normal truncate text-neutral-900 dark:text-white"
+                class="truncate text-sm text-foreground"
               >
                 {{ file.file.name }}
               </p>
-              <p class="text-xs text-neutral-500 dark:text-neutral-400">
+              <p class="text-xs text-muted-foreground">
                 {{ formatFileSize(file.file.size) }}
               </p>
             </div>
@@ -222,7 +221,7 @@ function handleBrowseClick() {
               <AlertCircle
                 v-else-if="file.status === 'error'"
                 :size="16"
-                class="text-red-500"
+                class="text-destructive"
               />
               <Button
                 v-if="file.status === 'pending'"

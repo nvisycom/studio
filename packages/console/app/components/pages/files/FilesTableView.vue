@@ -75,16 +75,12 @@ const columns = computed<ColumnDef<DataTableFeatures, NvisyFile>[]>(() => [
 				modelValue: props.selection.allSelected.value,
 				"onUpdate:modelValue": () => props.selection.toggleAll(),
 				ariaLabel: "Select all",
-				class:
-					"border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary",
 			}),
 		cell: ({ row }) =>
 			h(Checkbox, {
 				modelValue: selectedFiles.value.has(row.original.id),
 				"onUpdate:modelValue": () => props.selection.toggle(row.original.id),
 				ariaLabel: "Select row",
-				class:
-					"border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary",
 			}),
 		enableSorting: false,
 		enableHiding: false,
@@ -104,7 +100,7 @@ const columns = computed<ColumnDef<DataTableFeatures, NvisyFile>[]>(() => [
 				h(
 					"div",
 					{
-						class: `w-8 h-8 shrink-0 rounded flex items-center justify-center bg-neutral-100 dark:bg-neutral-800 ${KIND_RING[file.fileKind]}`,
+						class: `flex size-8 shrink-0 items-center justify-center rounded bg-muted ${KIND_RING[file.fileKind]}`,
 						// The tinted ring's meaning is spelled out on hover.
 						title:
 							file.fileKind === "original"
@@ -113,13 +109,13 @@ const columns = computed<ColumnDef<DataTableFeatures, NvisyFile>[]>(() => [
 					},
 					h(IconComponent, {
 						size: 16,
-						class: "text-neutral-600 dark:text-neutral-400",
+						class: "text-muted-foreground",
 					}),
 				),
 				h(
 					"span",
 					{
-						class: "font-normal text-neutral-900 dark:text-white",
+						class: "font-medium text-foreground",
 						title: file.displayName,
 					},
 					truncate(file.displayName, 40),
@@ -147,8 +143,7 @@ const columns = computed<ColumnDef<DataTableFeatures, NvisyFile>[]>(() => [
 				h(
 					"span",
 					{
-						class:
-							"truncate text-sm font-normal text-neutral-600 dark:text-neutral-400",
+						class: "truncate text-sm text-muted-foreground",
 					},
 					personLabel(person),
 				),
@@ -167,7 +162,7 @@ const columns = computed<ColumnDef<DataTableFeatures, NvisyFile>[]>(() => [
 		cell: ({ row }) =>
 			h(
 				"span",
-				{ class: "text-sm font-normal text-neutral-600 dark:text-neutral-400" },
+				{ class: "text-sm text-muted-foreground" },
 				formatFileSize(row.original.fileSize),
 			),
 	},
@@ -183,7 +178,7 @@ const columns = computed<ColumnDef<DataTableFeatures, NvisyFile>[]>(() => [
 		cell: ({ row }) =>
 			h(
 				"span",
-				{ class: "text-sm font-normal text-neutral-600 dark:text-neutral-400" },
+				{ class: "text-sm text-muted-foreground" },
 				formatDate(row.original.createdAt),
 			),
 	},
@@ -199,7 +194,7 @@ const columns = computed<ColumnDef<DataTableFeatures, NvisyFile>[]>(() => [
 		cell: ({ row }) =>
 			h(
 				"span",
-				{ class: "text-sm font-normal text-neutral-600 dark:text-neutral-400" },
+				{ class: "text-sm text-muted-foreground" },
 				formatDate(row.original.updatedAt),
 			),
 	},
@@ -252,7 +247,7 @@ function handleRowContextMenu(event: MouseEvent, file: NvisyFile) {
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            class="text-red-600 dark:text-red-400 cursor-pointer"
+            class="cursor-pointer text-destructive focus:text-destructive"
             @click="emit('bulk-delete')"
           >
             <Trash2 :size="14" class="mr-2" />
@@ -285,7 +280,7 @@ function handleRowContextMenu(event: MouseEvent, file: NvisyFile) {
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            class="text-red-600 dark:text-red-400 cursor-pointer"
+            class="cursor-pointer text-destructive focus:text-destructive"
             @click="emit('delete', contextMenuFile)"
           >
             <Trash2 :size="14" class="mr-2" />

@@ -65,24 +65,23 @@ function handleScroll(event: Event) {
               <Checkbox
                 :model-value="selectedFiles.has(file.id)"
                 @update:model-value="selection.toggle(file.id)"
-                class="border-neutral-400 dark:border-neutral-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
               />
             </div>
 
             <!-- File Icon -->
             <div
-              class="w-16 h-16 mb-3 flex items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-800"
+              class="mb-3 flex size-16 items-center justify-center rounded-lg bg-muted"
             >
               <component
                 :is="getFileIcon(file.displayName)"
                 :size="32"
-                class="text-neutral-500 dark:text-neutral-400"
+                class="text-muted-foreground"
               />
             </div>
 
             <!-- File Name -->
             <p
-              class="text-sm font-normal text-neutral-900 dark:text-white text-center line-clamp-2 w-full"
+              class="text-center text-sm text-foreground line-clamp-2 w-full"
               :title="file.displayName"
             >
               {{ file.displayName }}
@@ -91,7 +90,7 @@ function handleScroll(event: Event) {
             <!-- File Size -->
             <div class="flex items-center gap-1.5 mt-1">
               <p
-                class="text-xs font-normal text-neutral-500 dark:text-neutral-400"
+                class="text-xs font-normal text-muted-foreground"
               >
                 {{ formatFileSize(file.fileSize) }}
               </p>
@@ -114,11 +113,11 @@ function handleScroll(event: Event) {
             </ContextMenuItem>
             <ContextMenuSeparator />
             <ContextMenuItem
-              class="text-red-600 dark:text-red-400 cursor-pointer"
+              class="cursor-pointer text-destructive focus:text-destructive"
               @click="emit('bulk-delete')"
             >
               <Trash2 :size="14" class="mr-2" />
-              {{ t("files.selection.delete") }} ({{ selectedCount }})
+              {{ t("files.actions.delete") }} ({{ selectedCount }})
             </ContextMenuItem>
           </template>
 
@@ -144,7 +143,7 @@ function handleScroll(event: Event) {
             </ContextMenuItem>
             <ContextMenuSeparator />
             <ContextMenuItem
-              class="text-red-600 dark:text-red-400 cursor-pointer"
+              class="cursor-pointer text-destructive focus:text-destructive"
               @click="emit('delete', file)"
             >
               <Trash2 :size="14" class="mr-2" />
