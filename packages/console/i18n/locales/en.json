@@ -68,7 +68,9 @@
 		"disabled": "Disabled",
 		"selectAll": "Select all",
 		"selectRow": "Select row",
-		"openMenu": "Open menu"
+		"openMenu": "Open menu",
+		"showPassword": "Show password",
+		"hidePassword": "Hide password"
 	},
 	"settings": {
 		"workspace": {
@@ -1671,5 +1673,48 @@
 		"submit": "Submit Feedback",
 		"toastTitle": "Feedback submitted",
 		"toastDescription": "Thank you for your feedback! We'll review it shortly."
+	},
+	"account": {
+		"avatar": {
+			"label": "Avatar",
+			"description": "Click to upload. Recommended: 256×256px. PNG, JPG, or GIF.",
+			"footer": "Your profile picture will be visible to other team members.",
+			"remove": "Remove avatar",
+			"uploaded": "Avatar updated",
+			"removed": "Avatar removed",
+			"uploadFailed": "Failed to upload avatar",
+			"removeFailed": "Failed to remove avatar"
+		},
+		"profile": {
+			"nameLabel": "Display name",
+			"namePlaceholder": "John Doe",
+			"nameHint": "Your name as it appears across the platform. Max 64 characters.",
+			"usernameLabel": "Username",
+			"usernamePlaceholder": "john-doe",
+			"usernameHint": "Your public handle. Lowercase letters, numbers, and single dashes.",
+			"usernameRequired": "Username is required.",
+			"usernameInvalid": "Use lowercase letters, numbers, and single dashes between characters.",
+			"footer": "This information will be used across all your workspaces.",
+			"saved": "Profile updated",
+			"saveFailed": "Failed to update profile"
+		},
+		"email": {
+			"label": "Email address",
+			"hint": "To change your email address, please contact support."
+		},
+		"password": {
+			"newLabel": "New password",
+			"newPlaceholder": "Enter new password",
+			"newHint": "Minimum 8 characters.",
+			"confirmLabel": "Confirm new password",
+			"confirmPlaceholder": "Confirm new password",
+			"required": "New password is required.",
+			"tooShort": "Password must be at least 8 characters.",
+			"mismatch": "Passwords do not match.",
+			"saved": "Password updated",
+			"saveFailed": "Failed to update password. Please try again.",
+			"button": "Update password",
+			"footer": "You'll need to sign in again after changing your password."
+		}
 	}
 }

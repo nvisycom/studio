@@ -134,7 +134,7 @@ async function saveWorkspaceSettings() {
         v-if="isLoadingWorkspaces"
         class="flex items-center justify-center py-12"
       >
-        <Loader2 :size="32" class="animate-spin text-muted-foreground" />
+        <Loader2 :size="24" class="animate-spin text-muted-foreground" />
       </div>
 
       <div v-else-if="currentWorkspace" class="space-y-6">
@@ -153,7 +153,7 @@ async function saveWorkspaceSettings() {
             <!-- Require Approval -->
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
-                <Label class="text-sm font-medium">{{
+                <Label >{{
                   t("settings.workspace.options.requireApproval.label")
                 }}</Label>
                 <p class="text-xs text-muted-foreground">
@@ -171,7 +171,7 @@ async function saveWorkspaceSettings() {
             <!-- OCR policy -->
             <div class="flex items-center justify-between gap-4">
               <div class="space-y-0.5">
-                <Label class="text-sm font-medium">{{
+                <Label >{{
                   t("settings.workspace.options.ocr.label")
                 }}</Label>
                 <p class="text-xs text-muted-foreground">

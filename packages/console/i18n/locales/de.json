@@ -68,7 +68,9 @@
 		"disabled": "Deaktiviert",
 		"selectAll": "Alle auswählen",
 		"selectRow": "Zeile auswählen",
-		"openMenu": "Menü öffnen"
+		"openMenu": "Menü öffnen",
+		"showPassword": "Passwort anzeigen",
+		"hidePassword": "Passwort verbergen"
 	},
 	"settings": {
 		"workspace": {
@@ -1671,5 +1673,48 @@
 		"submit": "Feedback senden",
 		"toastTitle": "Feedback gesendet",
 		"toastDescription": "Vielen Dank für Ihr Feedback! Wir werden es in Kürze prüfen."
+	},
+	"account": {
+		"avatar": {
+			"label": "Avatar",
+			"description": "Zum Hochladen klicken. Empfohlen: 256×256px. PNG, JPG oder GIF.",
+			"footer": "Dein Profilbild ist für andere Teammitglieder sichtbar.",
+			"remove": "Avatar entfernen",
+			"uploaded": "Avatar aktualisiert",
+			"removed": "Avatar entfernt",
+			"uploadFailed": "Avatar konnte nicht hochgeladen werden",
+			"removeFailed": "Avatar konnte nicht entfernt werden"
+		},
+		"profile": {
+			"nameLabel": "Anzeigename",
+			"namePlaceholder": "John Doe",
+			"nameHint": "Dein Name, wie er plattformweit erscheint. Max. 64 Zeichen.",
+			"usernameLabel": "Benutzername",
+			"usernamePlaceholder": "john-doe",
+			"usernameHint": "Dein öffentlicher Handle. Kleinbuchstaben, Zahlen und einzelne Bindestriche.",
+			"usernameRequired": "Benutzername ist erforderlich.",
+			"usernameInvalid": "Verwende Kleinbuchstaben, Zahlen und einzelne Bindestriche zwischen Zeichen.",
+			"footer": "Diese Informationen werden in allen deinen Arbeitsbereichen verwendet.",
+			"saved": "Profil aktualisiert",
+			"saveFailed": "Profil konnte nicht aktualisiert werden"
+		},
+		"email": {
+			"label": "E-Mail-Adresse",
+			"hint": "Um deine E-Mail-Adresse zu ändern, kontaktiere bitte den Support."
+		},
+		"password": {
+			"newLabel": "Neues Passwort",
+			"newPlaceholder": "Neues Passwort eingeben",
+			"newHint": "Mindestens 8 Zeichen.",
+			"confirmLabel": "Neues Passwort bestätigen",
+			"confirmPlaceholder": "Neues Passwort bestätigen",
+			"required": "Neues Passwort ist erforderlich.",
+			"tooShort": "Das Passwort muss mindestens 8 Zeichen lang sein.",
+			"mismatch": "Passwörter stimmen nicht überein.",
+			"saved": "Passwort aktualisiert",
+			"saveFailed": "Passwort konnte nicht aktualisiert werden. Bitte erneut versuchen.",
+			"button": "Passwort aktualisieren",
+			"footer": "Nach der Änderung deines Passworts musst du dich erneut anmelden."
+		}
 	}
 }

@@ -1,24 +1,11 @@
 <script setup lang="ts">
-import { ChevronDown, Loader2, Eye, EyeOff } from "@lucide/vue";
+import { Loader2 } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
-import { AvatarUploadCard } from "#console/components/common";
+import { AvatarUploadCard, PasswordInput } from "#console/components/common";
 import { personLabel } from "#console/utils/naming";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "#console/components/ui/card";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "#console/components/ui/dropdown-menu";
+import { Card, CardContent, CardFooter } from "#console/components/ui/card";
 import { toast } from "vue-sonner";
 
 useHead({ title: "Account" });
@@ -26,6 +13,8 @@ useHead({ title: "Account" });
 definePageMeta({
 	pageCategory: "header.category.settings",
 });
+
+const { t } = useI18n();
 
 const {
 	account,
@@ -60,36 +49,30 @@ const avatarLabel = computed(() =>
 // Resolved avatar image URL for display (undefined when unset).
 const avatarSrc = computed(() => resolveAvatarUrl(accountAvatarUrl.value));
 
-// Form state
 // Local object-URL shown for instant feedback while an upload is in flight;
 // cleared once the refreshed account carries the server-side avatarUrl.
 const previewUrl = ref("");
 const displayImage = computed(() => previewUrl.value || avatarSrc.value);
+
+// Profile form
 const displayName = ref("");
 const username = ref("");
 const email = ref("");
 
 const usernameError = computed(() => {
 	const value = username.value.trim();
-	if (!value) return "Username is required.";
+	if (!value) return t("account.profile.usernameRequired");
 	return USERNAME_PATTERN.test(value)
 		? ""
-		: "Use lowercase letters, numbers, and single dashes between characters.";
+		: t("account.profile.usernameInvalid");
 });
-const timezone = ref("America/New_York");
 
-// Password fields
-const currentPassword = ref("");
+// Password form
 const newPassword = ref("");
 const confirmPassword = ref("");
-const showCurrentPassword = ref(false);
-const showNewPassword = ref(false);
-const showConfirmPassword = ref(false);
-const passwordError = ref("");
-const passwordSuccess = ref(false);
 const isUpdatingPassword = ref(false);
 
-// Initialize form from account data
+// Initialize the profile form from account data.
 watch(
 	account,
 	(acc) => {
@@ -102,55 +85,6 @@ watch(
 	{ immediate: true },
 );
 
-// Common timezones
-const timezones = [
-	{ label: "(UTC-12:00) International Date Line West", value: "Etc/GMT+12" },
-	{ label: "(UTC-11:00) Midway Island, Samoa", value: "Pacific/Midway" },
-	{ label: "(UTC-10:00) Hawaii", value: "Pacific/Honolulu" },
-	{ label: "(UTC-09:00) Alaska", value: "America/Anchorage" },
-	{
-		label: "(UTC-08:00) Pacific Time (US & Canada)",
-		value: "America/Los_Angeles",
-	},
-	{ label: "(UTC-07:00) Mountain Time (US & Canada)", value: "America/Denver" },
-	{ label: "(UTC-06:00) Central Time (US & Canada)", value: "America/Chicago" },
-	{
-		label: "(UTC-05:00) Eastern Time (US & Canada)",
-		value: "America/New_York",
-	},
-	{ label: "(UTC-04:00) Atlantic Time (Canada)", value: "America/Halifax" },
-	{
-		label: "(UTC-03:00) Buenos Aires, Georgetown",
-		value: "America/Argentina/Buenos_Aires",
-	},
-	{ label: "(UTC-02:00) Mid-Atlantic", value: "Atlantic/South_Georgia" },
-	{ label: "(UTC-01:00) Azores", value: "Atlantic/Azores" },
-	{ label: "(UTC+00:00) London, Dublin, Lisbon", value: "Europe/London" },
-	{ label: "(UTC+01:00) Berlin, Paris, Rome, Madrid", value: "Europe/Paris" },
-	{ label: "(UTC+02:00) Cairo, Helsinki, Kyiv", value: "Europe/Helsinki" },
-	{ label: "(UTC+03:00) Moscow, Istanbul, Riyadh", value: "Europe/Moscow" },
-	{ label: "(UTC+04:00) Dubai, Baku", value: "Asia/Dubai" },
-	{ label: "(UTC+05:00) Karachi, Tashkent", value: "Asia/Karachi" },
-	{ label: "(UTC+05:30) Mumbai, Kolkata, New Delhi", value: "Asia/Kolkata" },
-	{ label: "(UTC+06:00) Dhaka, Almaty", value: "Asia/Dhaka" },
-	{ label: "(UTC+07:00) Bangkok, Hanoi, Jakarta", value: "Asia/Bangkok" },
-	{
-		label: "(UTC+08:00) Beijing, Hong Kong, Singapore",
-		value: "Asia/Shanghai",
-	},
-	{ label: "(UTC+09:00) Tokyo, Seoul", value: "Asia/Tokyo" },
-	{ label: "(UTC+10:00) Sydney, Melbourne", value: "Australia/Sydney" },
-	{ label: "(UTC+11:00) Solomon Islands", value: "Pacific/Guadalcanal" },
-	{ label: "(UTC+12:00) Auckland, Fiji", value: "Pacific/Auckland" },
-] as const;
-
-// Get timezone label
-function getTimezoneLabel(value: string): string {
-	const tz = timezones.find((t) => t.value === value);
-	return tz?.label || value;
-}
-
-// Functions
 function pickAvatar() {
 	const input = document.createElement("input");
 	input.type = "file";
@@ -167,9 +101,9 @@ async function uploadAvatar(file: File) {
 	previewUrl.value = URL.createObjectURL(file);
 	try {
 		await uploadAvatarAsync(file);
-		toast.success("Avatar updated");
+		toast.success(t("account.avatar.uploaded"));
 	} catch (error) {
-		toast.error("Failed to upload avatar", {
+		toast.error(t("account.avatar.uploadFailed"), {
 			description: error instanceof Error ? error.message : undefined,
 		});
 	} finally {
@@ -181,9 +115,9 @@ async function uploadAvatar(file: File) {
 async function removeAvatar() {
 	try {
 		await deleteAvatarAsync();
-		toast.success("Avatar removed");
+		toast.success(t("account.avatar.removed"));
 	} catch (error) {
-		toast.error("Failed to remove avatar", {
+		toast.error(t("account.avatar.removeFailed"), {
 			description: error instanceof Error ? error.message : undefined,
 		});
 	}
@@ -196,57 +130,47 @@ async function saveProfile() {
 			displayName: displayName.value,
 			username: username.value.trim(),
 		});
-	} catch {
-		// Error is handled by the mutation
+		toast.success(t("account.profile.saved"));
+	} catch (err) {
+		toast.error(t("account.profile.saveFailed"), {
+			description: getErrorMessage(err, t("common.errors.tryAgain")),
+		});
 	}
 }
 
 async function savePassword() {
-	passwordError.value = "";
-	passwordSuccess.value = false;
-
 	if (!newPassword.value) {
-		passwordError.value = "New password is required";
+		toast.error(t("account.password.required"));
 		return;
 	}
-
 	if (newPassword.value.length < 8) {
-		passwordError.value = "Password must be at least 8 characters";
+		toast.error(t("account.password.tooShort"));
 		return;
 	}
-
 	if (newPassword.value !== confirmPassword.value) {
-		passwordError.value = "Passwords do not match";
+		toast.error(t("account.password.mismatch"));
 		return;
 	}
 
 	isUpdatingPassword.value = true;
 	try {
-		await updateAccountAsync({
-			password: newPassword.value,
-		});
-		passwordSuccess.value = true;
-		currentPassword.value = "";
+		await updateAccountAsync({ password: newPassword.value });
+		toast.success(t("account.password.saved"));
 		newPassword.value = "";
 		confirmPassword.value = "";
-		setTimeout(() => {
-			passwordSuccess.value = false;
-		}, 3000);
-	} catch {
-		passwordError.value = "Failed to update password. Please try again.";
+	} catch (err) {
+		toast.error(t("account.password.saveFailed"), {
+			description: getErrorMessage(err, t("common.errors.tryAgain")),
+		});
 	} finally {
 		isUpdatingPassword.value = false;
 	}
-}
-
-function saveTimezone() {
-	// TODO: Save timezone to server
 }
 </script>
 
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
-    <div class="max-w-3xl mx-auto w-full">
+    <div class="mx-auto w-full max-w-3xl">
       <!-- Loading State -->
       <div v-if="isLoading" class="flex items-center justify-center py-12">
         <Loader2 :size="24" class="animate-spin text-muted-foreground" />
@@ -257,10 +181,10 @@ function saveTimezone() {
         <AvatarUploadCard
           :name="avatarLabel"
           :src="displayImage"
-          label="Avatar"
-          description="Click to upload. Recommended: 256x256px. PNG, JPG, or GIF."
-          footer="Your profile picture will be visible to other team members."
-          remove-label="Remove avatar"
+          :label="t('account.avatar.label')"
+          :description="t('account.avatar.description')"
+          :footer="t('account.avatar.footer')"
+          :remove-label="t('account.avatar.remove')"
           :is-uploading="isUploadingAvatar"
           :is-deleting="isDeletingAvatar"
           @pick="pickAvatar"
@@ -268,34 +192,34 @@ function saveTimezone() {
         />
 
         <!-- Profile Info Card -->
-        <Card class="py-0 pt-6 border-border/50">
+        <Card class="rounded-xl border-border/50 py-0 pt-6">
           <CardContent class="space-y-5">
             <!-- Display Name -->
             <div class="space-y-2">
-              <Label for="displayName" class="text-sm font-medium" required
-                >Display Name</Label
-              >
+              <Label for="displayName" required>
+                {{ t("account.profile.nameLabel") }}
+              </Label>
               <Input
                 id="displayName"
                 v-model="displayName"
-                placeholder="John Doe"
-                class="max-w-md h-9"
+                :placeholder="t('account.profile.namePlaceholder')"
+                class="h-9 max-w-md"
               />
               <p class="text-xs text-muted-foreground">
-                Your name as it appears across the platform. Max 64 characters.
+                {{ t("account.profile.nameHint") }}
               </p>
             </div>
 
             <!-- Username -->
             <div class="space-y-2">
-              <Label for="username" class="text-sm font-medium" required
-                >Username</Label
-              >
+              <Label for="username" required>
+                {{ t("account.profile.usernameLabel") }}
+              </Label>
               <Input
                 id="username"
                 v-model="username"
-                placeholder="john-doe"
-                class="max-w-md h-9"
+                :placeholder="t('account.profile.usernamePlaceholder')"
+                class="h-9 max-w-md"
                 autocapitalize="none"
                 autocomplete="username"
                 :aria-invalid="!!usernameError"
@@ -304,139 +228,74 @@ function saveTimezone() {
                 {{ usernameError }}
               </p>
               <p v-else class="text-xs text-muted-foreground">
-                Your public handle. Lowercase letters, numbers, and single
-                dashes.
+                {{ t("account.profile.usernameHint") }}
               </p>
             </div>
-
           </CardContent>
           <CardFooter
-            class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl flex items-center justify-between"
+            class="flex items-center justify-between rounded-b-xl border-t border-border/50 bg-muted/30 pb-6"
           >
             <p class="text-xs text-muted-foreground">
-              This information will be used across all your workspaces.
+              {{ t("account.profile.footer") }}
             </p>
             <Button size="sm" @click="saveProfile" :disabled="isUpdating">
               <Loader2 v-if="isUpdating" :size="16" class="mr-2 animate-spin" />
-              Save
+              {{ t("common.save") }}
             </Button>
           </CardFooter>
         </Card>
 
         <!-- Email & Password Card -->
-        <Card class="py-0 pt-6 border-border/50">
+        <Card class="rounded-xl border-border/50 py-0 pt-6">
           <CardContent class="space-y-5">
-            <!-- Email Address -->
+            <!-- Email Address (read-only) -->
             <div class="space-y-2">
-              <Label for="email" class="text-sm font-medium" required
-                >Email Address</Label
-              >
+              <Label for="email" required>
+                {{ t("account.email.label") }}
+              </Label>
               <Input
                 id="email"
                 v-model="email"
                 type="email"
                 readonly
-                class="max-w-md h-9 bg-muted/50 text-muted-foreground"
+                class="h-9 max-w-md bg-muted/50 text-muted-foreground"
               />
               <p class="text-xs text-muted-foreground">
-                To change your email address, please contact support.
+                {{ t("account.email.hint") }}
               </p>
             </div>
 
-            <!-- Password Update Section -->
-            <div class="border-t border-border/50 pt-5 space-y-4">
-              <!-- Current Password -->
+            <!-- Password -->
+            <div class="space-y-4 border-t border-border/50 pt-5">
               <div class="space-y-2">
-                <Label for="currentPassword" class="text-sm font-medium"
-                  >Current Password</Label
-                >
-                <div class="relative max-w-md">
-                  <Input
-                    id="currentPassword"
-                    v-model="currentPassword"
-                    :type="showCurrentPassword ? 'text' : 'password'"
-                    placeholder="Enter current password"
-                    class="pr-10 h-9"
-                  />
-                  <button
-                    type="button"
-                    @click="showCurrentPassword = !showCurrentPassword"
-                    class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <EyeOff v-if="showCurrentPassword" :size="16" />
-                    <Eye v-else :size="16" />
-                  </button>
-                </div>
-              </div>
-
-              <!-- New Password -->
-              <div class="space-y-2">
-                <Label for="newPassword" class="text-sm font-medium" required
-                  >New Password</Label
-                >
-                <div class="relative max-w-md">
-                  <Input
-                    id="newPassword"
-                    v-model="newPassword"
-                    :type="showNewPassword ? 'text' : 'password'"
-                    placeholder="Enter new password"
-                    class="pr-10 h-9"
-                  />
-                  <button
-                    type="button"
-                    @click="showNewPassword = !showNewPassword"
-                    class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <EyeOff v-if="showNewPassword" :size="16" />
-                    <Eye v-else :size="16" />
-                  </button>
-                </div>
+                <Label for="newPassword" required>
+                  {{ t("account.password.newLabel") }}
+                </Label>
+                <PasswordInput
+                  v-model="newPassword"
+                  :placeholder="t('account.password.newPlaceholder')"
+                />
                 <p class="text-xs text-muted-foreground">
-                  Minimum 8 characters.
+                  {{ t("account.password.newHint") }}
                 </p>
               </div>
 
-              <!-- Confirm Password -->
               <div class="space-y-2">
-                <Label for="confirmPassword" class="text-sm font-medium" required
-                  >Confirm New Password</Label
-                >
-                <div class="relative max-w-md">
-                  <Input
-                    id="confirmPassword"
-                    v-model="confirmPassword"
-                    :type="showConfirmPassword ? 'text' : 'password'"
-                    placeholder="Confirm new password"
-                    class="pr-10 h-9"
-                  />
-                  <button
-                    type="button"
-                    @click="showConfirmPassword = !showConfirmPassword"
-                    class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <EyeOff v-if="showConfirmPassword" :size="16" />
-                    <Eye v-else :size="16" />
-                  </button>
-                </div>
+                <Label for="confirmPassword" required>
+                  {{ t("account.password.confirmLabel") }}
+                </Label>
+                <PasswordInput
+                  v-model="confirmPassword"
+                  :placeholder="t('account.password.confirmPlaceholder')"
+                />
               </div>
-
-              <!-- Error/Success Messages -->
-              <p v-if="passwordError" class="text-sm text-destructive">
-                {{ passwordError }}
-              </p>
-              <p
-                v-if="passwordSuccess"
-                class="text-sm text-green-600 dark:text-green-400"
-              >
-                Password updated successfully.
-              </p>
             </div>
           </CardContent>
           <CardFooter
-            class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl flex items-center justify-between"
+            class="flex items-center justify-between rounded-b-xl border-t border-border/50 bg-muted/30 pb-6"
           >
             <p class="text-xs text-muted-foreground">
-              You'll need to sign in again after changing your password.
+              {{ t("account.password.footer") }}
             </p>
             <Button
               size="sm"
@@ -448,58 +307,8 @@ function saveTimezone() {
                 :size="16"
                 class="mr-2 animate-spin"
               />
-              Update Password
+              {{ t("account.password.button") }}
             </Button>
-          </CardFooter>
-        </Card>
-
-        <!-- Timezone Card -->
-        <Card class="py-0 pt-6 border-border/50">
-          <CardContent>
-            <div class="space-y-2">
-              <Label for="timezone" class="text-sm font-medium">Timezone</Label>
-              <DropdownMenu>
-                <DropdownMenuTrigger as-child>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    class="w-full max-w-md justify-between text-left font-normal h-9"
-                  >
-                    <span class="truncate text-sm">{{
-                      getTimezoneLabel(timezone)
-                    }}</span>
-                    <ChevronDown
-                      :size="14"
-                      class="shrink-0 ml-2 text-muted-foreground"
-                    />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="start"
-                  class="w-[400px] max-h-[300px] overflow-y-auto"
-                >
-                  <DropdownMenuItem
-                    v-for="tz in timezones"
-                    :key="tz.value"
-                    @click="timezone = tz.value"
-                    class="cursor-pointer text-sm"
-                  >
-                    {{ tz.label }}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <p class="text-xs text-muted-foreground">
-                All timestamps will be displayed in this timezone.
-              </p>
-            </div>
-          </CardContent>
-          <CardFooter
-            class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl flex items-center justify-between"
-          >
-            <p class="text-xs text-muted-foreground">
-              Changes will take effect immediately.
-            </p>
-            <Button size="sm" @click="saveTimezone"> Save </Button>
           </CardFooter>
         </Card>
       </div>

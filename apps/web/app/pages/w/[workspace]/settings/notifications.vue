@@ -172,50 +172,34 @@ const categories = computed(() => [
 	},
 ]);
 
-// Check if event settings have changed (email toggle is auto-saved separately)
-const hasEventChanges = computed(() => {
-	if (!settings.value) return false;
-
-	const originalAppEvents = settings.value.notificationEventsApp;
-	const originalEmailEvents = settings.value.notificationEventsEmail;
-
-	// Convert current sets to sorted arrays for comparison
-	const currentAppEvents = Array.from(appEvents.value).sort();
-	const currentEmailEvents = Array.from(emailEvents.value).sort();
-	const sortedOriginalApp = [...originalAppEvents].sort();
-	const sortedOriginalEmail = [...originalEmailEvents].sort();
-
-	if (currentAppEvents.length !== sortedOriginalApp.length) return true;
-	if (currentEmailEvents.length !== sortedOriginalEmail.length) return true;
-
-	for (let i = 0; i < currentAppEvents.length; i++) {
-		if (currentAppEvents[i] !== sortedOriginalApp[i]) return true;
-	}
-	for (let i = 0; i < currentEmailEvents.length; i++) {
-		if (currentEmailEvents[i] !== sortedOriginalEmail[i]) return true;
-	}
-
-	return false;
-});
-
-// Toggle event in an array
-function toggleAppEvent(event: NotificationEvent, value: boolean) {
-	if (value) {
-		if (!appEvents.value.includes(event)) {
-			appEvents.value = [...appEvents.value, event];
-		}
-	} else {
-		appEvents.value = appEvents.value.filter((e) => e !== event);
-	}
+// Order-independent equality for two event lists.
+function sameEvents(a: NotificationEvent[], b: NotificationEvent[]) {
+	if (a.length !== b.length) return false;
+	const set = new Set(a);
+	return b.every((event) => set.has(event));
 }
 
-function toggleEmailEvent(event: NotificationEvent, value: boolean) {
+// Dirty when either channel's selection diverges from the saved settings
+// (the email channel's own on/off toggle is auto-saved separately).
+const hasEventChanges = computed(() => {
+	if (!settings.value) return false;
+	return (
+		!sameEvents(appEvents.value, settings.value.notificationEventsApp) ||
+		!sameEvents(emailEvents.value, settings.value.notificationEventsEmail)
+	);
+});
+
+// Add or remove an event from one channel's selection.
+function toggleEvent(
+	channel: "app" | "email",
+	event: NotificationEvent,
+	value: boolean,
+) {
+	const target = channel === "app" ? appEvents : emailEvents;
 	if (value) {
-		if (!emailEvents.value.includes(event)) {
-			emailEvents.value = [...emailEvents.value, event];
-		}
+		if (!target.value.includes(event)) target.value = [...target.value, event];
 	} else {
-		emailEvents.value = emailEvents.value.filter((e) => e !== event);
+		target.value = target.value.filter((e) => e !== event);
 	}
 }
 
@@ -352,7 +336,7 @@ async function saveEventSettings() {
                           :model-value="appEvents.includes(item.event)"
                           @update:model-value="
                             (value: boolean | 'indeterminate') =>
-                              toggleAppEvent(item.event, value === true)
+                              toggleEvent('app', item.event, value === true)
                           "
                         />
                       </div>
@@ -364,7 +348,7 @@ async function saveEventSettings() {
                           :disabled="!notifyViaEmail"
                           @update:model-value="
                             (value: boolean | 'indeterminate') =>
-                              toggleEmailEvent(item.event, value === true)
+                              toggleEvent('email', item.event, value === true)
                           "
                         />
                       </div>
