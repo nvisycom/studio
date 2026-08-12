@@ -2,12 +2,12 @@
 import {
 	ArrowRight,
 	Check,
-	CheckCircle2,
 	CircleSlash,
 	ClipboardCheck,
 	Clock,
 	FileText,
 	Link2,
+	Loader2,
 	Mail,
 	Play,
 	Settings2,
@@ -16,7 +16,6 @@ import {
 	Users,
 	Webhook as WebhookIcon,
 	X,
-	XCircle,
 } from "@lucide/vue";
 import type { ActivityType, PipelineRunStatus } from "@nvisy/sdk/datatypes";
 import { useLocalStorage } from "@vueuse/core";
@@ -28,7 +27,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#console/components/ui/card";
-import { Badge } from "#console/components/ui/badge";
 import { EntityAvatar } from "#console/components/common";
 import { personLabel } from "#console/utils/naming";
 import { getFileIcon } from "#console/utils/file";
@@ -122,23 +120,37 @@ function activityIcon(type: ActivityType): Component {
 const recentFiles = computed(() => (files.value ?? []).slice(0, 5));
 
 // --- Recent runs --------------------------------------------------------
-// Most-recent pipeline runs, newest first. Status drives a colored icon
-// (mirroring the workflows/runs page).
+// Most-recent pipeline runs, newest first. A run is shown by the document it
+// analyzes (mirroring the Recent files card): a file-icon tile carrying a
+// small status badge in its corner, the pipeline as secondary detail, and the
+// account that triggered it.
 const recentRuns = computed(() =>
 	[...(runs.value ?? [])]
 		.sort((a, b) => b.startedAt.localeCompare(a.startedAt))
-		.slice(0, 5),
+		.slice(0, 5)
+		.map((run) => ({
+			id: run.id,
+			status: run.status,
+			pipelineSlug: run.pipelineSlug,
+			startedAt: run.startedAt,
+			triggeredBy: run.triggeredBy,
+			// The source document; fall back to the id when the name is absent.
+			fileName: run.inputFileName || run.inputFileId,
+		})),
 );
 
+// Corner status glyph on the file tile. Restrained color: failure is
+// destructive, a completed run reads as foreground, everything in-between
+// stays muted (no rainbow) in keeping with the monochrome system.
 const RUN_STATUS_ICON: Record<
 	PipelineRunStatus,
-	{ icon: Component; class: string }
+	{ icon: Component; class: string; spin?: boolean }
 > = {
 	queued: { icon: Clock, class: "text-muted-foreground" },
-	analyzing: { icon: Play, class: "text-blue-500" },
-	analyzed: { icon: ClipboardCheck, class: "text-amber-500" },
-	completed: { icon: CheckCircle2, class: "text-emerald-500" },
-	failed: { icon: XCircle, class: "text-destructive" },
+	analyzing: { icon: Loader2, class: "text-muted-foreground", spin: true },
+	analyzed: { icon: ClipboardCheck, class: "text-muted-foreground" },
+	completed: { icon: Check, class: "text-foreground" },
+	failed: { icon: X, class: "text-destructive" },
 	cancelled: { icon: CircleSlash, class: "text-muted-foreground" },
 };
 
@@ -396,21 +408,53 @@ const quickActions = [
                 :to="wLink('/workflows/runs')"
                 class="flex items-center gap-3 py-2.5"
               >
-                <component
-                  :is="RUN_STATUS_ICON[run.status].icon"
-                  :size="16"
-                  class="shrink-0"
-                  :class="RUN_STATUS_ICON[run.status].class"
-                />
+                <div class="relative shrink-0">
+                  <div
+                    class="flex size-8 items-center justify-center rounded-md border border-border/60 bg-muted/40 text-muted-foreground"
+                  >
+                    <component
+                      :is="getFileIcon(run.fileName)"
+                      :size="16"
+                      :stroke-width="1.75"
+                    />
+                  </div>
+                  <span
+                    :title="t(`workflows.runs.runStatus.${run.status}`)"
+                    class="absolute -bottom-1 -right-1 flex size-[18px] items-center justify-center rounded-full border border-border bg-background ring-2 ring-background"
+                  >
+                    <component
+                      :is="RUN_STATUS_ICON[run.status].icon"
+                      :size="11"
+                      :stroke-width="2.5"
+                      :class="[
+                        RUN_STATUS_ICON[run.status].class,
+                        RUN_STATUS_ICON[run.status].spin && 'animate-spin',
+                      ]"
+                    />
+                  </span>
+                </div>
                 <div class="min-w-0 flex-1">
-                  <p class="truncate font-mono text-sm text-foreground">
+                  <p class="truncate text-sm font-medium text-foreground">
+                    {{ run.fileName }}
+                  </p>
+                  <p class="truncate font-mono text-xs text-muted-foreground">
                     {{ run.pipelineSlug }}
                   </p>
-                  <p class="text-xs text-muted-foreground">
-                    {{ t(`workflows.runs.runStatus.${run.status}`) }} ·
-                    {{ relativeTime(run.startedAt) }}
-                  </p>
                 </div>
+                <div class="flex min-w-0 shrink items-center gap-2">
+                  <EntityAvatar
+                    size="sm"
+                    class="shrink-0"
+                    :name="personLabel(run.triggeredBy)"
+                    :src="resolveAvatarUrl(run.triggeredBy.avatarUrl)"
+                  />
+                  <span class="truncate text-sm text-muted-foreground">
+                    {{ personLabel(run.triggeredBy) }}
+                  </span>
+                </div>
+                <span class="shrink-0 text-xs text-muted-foreground">
+                  {{ relativeTime(run.startedAt) }}
+                </span>
               </NuxtLink>
             </div>
             <div v-else class="py-10 text-center">
