@@ -1,12 +1,18 @@
 <script setup lang="ts" generic="TRow extends { id: string }">
-import { h } from "vue";
+import { ref, computed, nextTick } from "vue";
 import type { VNodeChild } from "vue";
-import type { ColumnDef } from "@tanstack/vue-table";
-import type { DataTableFeatures } from "#console/components/ui/data-table/features";
-import { DataTable } from "#console/components/ui/data-table";
-import { Badge } from "#console/components/ui/badge";
-import { Checkbox } from "#console/components/ui/checkbox";
-import { EntityAvatar } from "#console/components/common";
+import { FlexRender, useTable } from "@tanstack/vue-table";
+import { useVirtualizer } from "@tanstack/vue-virtual";
+import { tableFeatureSet } from "./features";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+	TableEmpty,
+} from "#console/components/ui/table";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -16,8 +22,14 @@ import RowActionItems from "#console/components/pages/RowActionItems.vue";
 import type { RowAction } from "#console/components/pages/RowActionItems.vue";
 import type { BulkAction } from "#console/components/pages/RowActions.vue";
 import type { Selection } from "#console/composables/useSelection";
-import VirtualRowActions from "./VirtualRowActions.vue";
-import type { VirtualColumn, VirtualCell, VirtualTableEmpty } from "./columns";
+import { useColumns } from "./useColumns";
+import type { VirtualColumn, VirtualTableEmpty } from "./columns";
+
+// A virtualized table (TanStack Table v9 core + vue-virtual) driven by the
+// declarative VirtualColumn descriptor. Only the features we use are enabled —
+// The enabled TanStack feature set lives in features.ts (shared with
+// useColumns). Everything not enabled there — sorting, filtering, expanding —
+// is out; selection, actions, and paging are handled here, not by TanStack.
 
 const props = defineProps<{
 	rows: TRow[];
@@ -29,14 +41,16 @@ const props = defineProps<{
 	/** Per-row actions (adds the trailing ⋯ column + right-click context menu). */
 	rowActions?: (row: TRow) => RowAction[];
 	/**
-	 * Bulk action shown in the right-click menu when the clicked row is part of
-	 * a multi-row selection. Requires `selection`.
+	 * Bulk action shown in the right-click menu when the clicked row is part of a
+	 * multi-row selection. Requires `selection`.
 	 */
 	bulkAction?: (selected: Set<string>) => BulkAction;
 	/** Accessible label for the ⋯ trigger. */
 	menuLabel?: string;
 	/** Row pixel height for the virtualizer. */
 	rowHeight?: number;
+	/** Overscan rows rendered beyond the viewport. */
+	overscan?: number;
 	/**
 	 * Caps the scroll viewport so the table virtualizes inside a growing layout
 	 * (e.g. a Card). Any CSS length, e.g. "60vh". Omit when the table already
@@ -60,25 +74,82 @@ const { t } = useI18n();
 
 const canSelect = (row: TRow) => props.isSelectable?.(row) ?? true;
 
-// Right-click menu: a single cursor-positioned menu reused across rows. It
+// Columns (select + data + actions) are assembled in a helper; cells render via
+// the shared renderCell dispatcher. See useColumns.ts / cells.ts.
+const columnDefs = useColumns<TRow>({
+	columns: () => props.columns,
+	selection: () => props.selection,
+	canSelect,
+	rowActions: () => props.rowActions,
+	menuLabel: () => props.menuLabel ?? t("common.openMenu"),
+	renderCustom: (row, key) =>
+		(slots[`cell-${key}`]?.({ row }) ?? null) as VNodeChild,
+});
+
+// ── TanStack table (core only) + virtualizer ──────────────────────────────
+
+const table = useTable({
+	features: tableFeatureSet,
+	get data() {
+		return props.rows;
+	},
+	get columns() {
+		return columnDefs.value;
+	},
+	getRowId: (row: TRow) => row.id,
+});
+
+const containerRef = ref<HTMLDivElement | null>(null);
+
+const rowVirtualizer = useVirtualizer(
+	computed(() => ({
+		count: table.getRowModel().rows.length,
+		getScrollElement: () => containerRef.value,
+		estimateSize: () => props.rowHeight ?? 48,
+		overscan: props.overscan ?? 5,
+	})),
+);
+
+const virtualRows = computed(() => rowVirtualizer.value.getVirtualItems());
+const paddingTop = computed(() => virtualRows.value[0]?.start ?? 0);
+const paddingBottom = computed(() => {
+	const total = rowVirtualizer.value.getTotalSize();
+	const last = virtualRows.value.at(-1)?.end ?? 0;
+	return virtualRows.value.length ? total - last : 0;
+});
+
+// ── Interaction ────────────────────────────────────────────────────────────
+
+function onScroll(event: Event) {
+	const el = event.target as HTMLElement;
+	if (el.scrollHeight <= el.clientHeight) return;
+	if (el.scrollHeight - el.scrollTop - el.clientHeight < 100) emit("load-more");
+}
+
+function onRowClick(row: TRow) {
+	if (props.selection && canSelect(row)) props.selection.toggle(row.id);
+	emit("row-click", row);
+}
+
+// Right-click menu: a single cursor-anchored dropdown reused across rows. It
 // shows the row's actions, or the bulk action when the clicked row is part of a
 // multi-row selection (mirrors RowActions' bulk-vs-single behavior).
+const hasMenu = computed(() => !!props.rowActions || !!props.bulkAction);
 const menuOpen = ref(false);
 const menuPosition = ref({ x: 0, y: 0 });
 const menuRow = ref<TRow | null>(null);
 
-const menuIsBulk = computed(() => {
-	const row = menuRow.value;
-	if (!row || !props.selection || !props.bulkAction) return false;
-	const selected = props.selection.selected.value;
-	return selected.has(row.id) && selected.size > 1;
-});
-
 const menuActions = computed<RowAction[]>(() => {
 	const row = menuRow.value;
 	if (!row) return [];
-	if (menuIsBulk.value && props.selection && props.bulkAction) {
-		const bulk = props.bulkAction(props.selection.selected.value);
+	const selected = props.selection?.selected.value;
+	const isBulk =
+		!!props.bulkAction &&
+		!!selected &&
+		selected.has(row.id) &&
+		selected.size > 1;
+	if (isBulk && props.bulkAction && selected) {
+		const bulk = props.bulkAction(selected);
 		return [
 			{
 				key: "bulk",
@@ -93,7 +164,8 @@ const menuActions = computed<RowAction[]>(() => {
 });
 
 function onRowContextMenu(event: MouseEvent, row: TRow) {
-	if (!props.rowActions && !props.bulkAction) return;
+	if (!hasMenu.value) return;
+	event.preventDefault();
 	menuRow.value = row;
 	menuPosition.value = { x: event.clientX, y: event.clientY };
 	// Close first so a right-click on another row re-anchors the dropdown at the
@@ -103,203 +175,94 @@ function onRowContextMenu(event: MouseEvent, row: TRow) {
 		menuOpen.value = true;
 	});
 }
-
-const alignClass = (align?: "left" | "right" | "center") =>
-	align === "right" ? "text-right" : align === "center" ? "text-center" : "";
-
-/** Resolve a typed cell spec to renderable children. */
-function renderCell(spec: VirtualCell, row: TRow, key: string): VNodeChild {
-	switch (spec.type) {
-		case "text":
-			return h(
-				"span",
-				{
-					class: [
-						spec.mono ? "font-mono text-xs" : "text-sm",
-						spec.muted ? "text-muted-foreground" : "text-foreground",
-						spec.title ? "block truncate" : "",
-					],
-					title: spec.title,
-				},
-				spec.value,
-			);
-		case "primary":
-			return h("div", { class: ["min-w-0", spec.maxWidth] }, [
-				h(
-					"p",
-					{ class: "truncate font-medium text-foreground", title: spec.title },
-					spec.title,
-				),
-				spec.subtitle
-					? h(
-							"p",
-							{ class: "truncate text-xs text-muted-foreground" },
-							spec.subtitle,
-						)
-					: null,
-			]);
-		case "badge":
-			return h(
-				Badge,
-				{
-					variant: spec.variant ?? "secondary",
-					class: ["font-normal", spec.capitalize && "capitalize"],
-				},
-				() => spec.label,
-			);
-		case "avatar":
-			return h("div", { class: "flex items-center gap-2" }, [
-				h(EntityAvatar, {
-					name: spec.name,
-					src: spec.src,
-					size: spec.size ?? "sm",
-				}),
-				h("div", { class: "min-w-0" }, [
-					h(
-						"p",
-						{
-							class: [
-								"truncate text-sm text-foreground",
-								spec.mono && "font-mono",
-							],
-						},
-						spec.name,
-					),
-					spec.subtitle
-						? h(
-								"p",
-								{ class: "truncate text-xs text-muted-foreground" },
-								spec.subtitle,
-							)
-						: null,
-				]),
-			]);
-		case "status":
-			return h("div", { class: "flex items-center gap-2" }, [
-				h(spec.icon, {
-					size: 14,
-					class: ["shrink-0", spec.iconClass, spec.spin && "animate-spin"],
-				}),
-				h("div", { class: "min-w-0" }, [
-					h("span", { class: "text-sm text-foreground" }, spec.label),
-					spec.subtitle
-						? h(
-								"p",
-								{ class: "truncate text-xs text-muted-foreground" },
-								spec.subtitle,
-							)
-						: null,
-				]),
-			]);
-		case "custom":
-			return (slots[`cell-${key}`]?.({ row }) ?? null) as VNodeChild;
-	}
-}
-
-/** Build the tanstack column defs: [select?] + data columns + [actions?]. */
-const tableColumns = computed<ColumnDef<DataTableFeatures, TRow>[]>(() => {
-	const cols: ColumnDef<DataTableFeatures, TRow>[] = [];
-
-	if (props.selection) {
-		const sel = props.selection;
-		cols.push({
-			id: "__select",
-			size: 40,
-			enableSorting: false,
-			header: () =>
-				h(Checkbox, {
-					modelValue: sel.allSelected.value,
-					"onUpdate:modelValue": () => sel.toggleAll(),
-					ariaLabel: t("common.selectAll"),
-				}),
-			cell: ({ row }) =>
-				h(Checkbox, {
-					modelValue: sel.selected.value.has(row.original.id),
-					"onUpdate:modelValue": () => sel.toggle(row.original.id),
-					disabled: !canSelect(row.original),
-					ariaLabel: t("common.selectRow"),
-					onClick: (e: Event) => e.stopPropagation(),
-				}),
-		});
-	}
-
-	for (const col of props.columns) {
-		cols.push({
-			id: col.key,
-			size: col.width?.endsWith("px") ? Number.parseInt(col.width) : undefined,
-			header: () =>
-				h(
-					"span",
-					{
-						class: [
-							"text-xs font-normal uppercase tracking-wider",
-							alignClass(col.align),
-						],
-					},
-					col.header ?? "",
-				),
-			cell: ({ row }) =>
-				h("div", { class: alignClass(col.align) }, [
-					renderCell(col.cell(row.original), row.original, col.key),
-				]),
-		});
-	}
-
-	if (props.rowActions) {
-		const buildActions = props.rowActions;
-		cols.push({
-			id: "__actions",
-			size: 40,
-			enableSorting: false,
-			header: () => null,
-			cell: ({ row }) =>
-				h(VirtualRowActions, {
-					actions: buildActions(row.original),
-					menuLabel: props.menuLabel ?? t("common.openMenu"),
-				}),
-		});
-	}
-
-	return cols;
-});
-
-function onRowClick(row: TRow) {
-	if (props.selection && canSelect(row)) props.selection.toggle(row.id);
-	emit("row-click", row);
-}
 </script>
 
 <template>
-  <DataTable
-    :columns="tableColumns"
-    :data="rows"
-    :get-row-id="(row) => row.id"
-    :row-height="rowHeight"
-    :enable-row-selection="!!selection"
-    :class="['rounded-none border-0', maxHeight ? '' : 'h-full']"
+  <div
+    ref="containerRef"
+    class="relative w-full overflow-auto"
+    :class="maxHeight ? '' : 'h-full'"
     :style="maxHeight ? { maxHeight } : undefined"
-    @load-more="emit('load-more')"
-    @row-click="onRowClick"
-    @row-contextmenu="onRowContextMenu"
+    @scroll="onScroll"
   >
-    <template #empty>
-      <div v-if="empty" class="py-8 text-center">
-        <div
-          class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
+    <Table class="table-fixed">
+      <TableHeader
+        class="sticky top-0 z-10 bg-background shadow-[inset_0_-1px_0_0_hsl(var(--border))]"
+      >
+        <TableRow
+          v-for="headerGroup in table.getHeaderGroups()"
+          :key="headerGroup.id"
         >
-          <component :is="empty.icon" class="size-5 text-muted-foreground" />
-        </div>
-        <p class="mb-1 text-sm text-foreground">{{ empty.title }}</p>
-        <p v-if="empty.description" class="text-xs text-muted-foreground">
-          {{ empty.description }}
-        </p>
-      </div>
-    </template>
-  </DataTable>
+          <TableHead
+            v-for="header in headerGroup.headers"
+            :key="header.id"
+            :style="{
+              width:
+                header.getSize() !== 150 ? `${header.getSize()}px` : undefined,
+            }"
+          >
+            <FlexRender
+              v-if="!header.isPlaceholder"
+              :render="header.column.columnDef.header"
+              :props="header.getContext()"
+            />
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+
+      <TableBody>
+        <template v-if="table.getRowModel().rows.length > 0">
+          <tr v-if="paddingTop > 0" :style="{ height: `${paddingTop}px` }" aria-hidden="true" />
+
+          <TableRow
+            v-for="virtualRow in virtualRows"
+            :key="String(virtualRow.key)"
+            :style="{ height: `${virtualRow.size}px` }"
+            class="group cursor-pointer"
+            @click="
+              onRowClick(table.getRowModel().rows[virtualRow.index]!.original)
+            "
+            @contextmenu="
+              onRowContextMenu(
+                $event,
+                table.getRowModel().rows[virtualRow.index]!.original,
+              )
+            "
+          >
+            <TableCell
+              v-for="cell in table.getRowModel().rows[virtualRow.index]!.getVisibleCells()"
+              :key="cell.id"
+            >
+              <FlexRender
+                :render="cell.column.columnDef.cell"
+                :props="cell.getContext()"
+              />
+            </TableCell>
+          </TableRow>
+
+          <tr v-if="paddingBottom > 0" :style="{ height: `${paddingBottom}px` }" />
+        </template>
+
+        <TableEmpty v-else :colspan="columnDefs.length">
+          <div v-if="empty" class="py-8 text-center">
+            <div
+              class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
+            >
+              <component :is="empty.icon" class="size-5 text-muted-foreground" />
+            </div>
+            <p class="mb-1 text-sm text-foreground">{{ empty.title }}</p>
+            <p v-if="empty.description" class="text-xs text-muted-foreground">
+              {{ empty.description }}
+            </p>
+          </div>
+        </TableEmpty>
+      </TableBody>
+    </Table>
+  </div>
 
   <!-- Right-click menu: a dropdown anchored to an invisible element placed at
        the cursor, opened programmatically from the row's contextmenu event. -->
-  <DropdownMenu v-if="rowActions || bulkAction" v-model:open="menuOpen">
+  <DropdownMenu v-if="hasMenu" v-model:open="menuOpen">
     <DropdownMenuTrigger as-child>
       <div
         class="pointer-events-none fixed size-0"

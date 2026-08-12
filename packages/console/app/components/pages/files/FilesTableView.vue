@@ -1,28 +1,11 @@
 <script setup lang="ts">
-import type { ColumnDef } from "@tanstack/vue-table";
-import { Download, Eye, Trash2, Pencil } from "@lucide/vue";
 import type { File as NvisyFile } from "@nvisy/sdk/datatypes";
 import type { Selection } from "#console/composables/useSelection";
-import type { DataTableFeatures } from "#console/components/ui/data-table/features";
-import { Checkbox } from "#console/components/ui/checkbox";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-	DropdownMenuSeparator,
-} from "#console/components/ui/dropdown-menu";
-
-import { DataTable } from "#console/components/ui/data-table";
-import { EntityAvatar } from "#console/components/common";
+import type { VirtualColumn } from "#console/components/ui/virtual-table";
+import { VirtualTable } from "#console/components/ui/virtual-table";
 import { truncate, personLabel } from "#console/utils/naming";
 
 const { resolveAvatarUrl } = useAvatarUrl();
-
-// Context menu state
-const contextMenuOpen = ref(false);
-const contextMenuPosition = ref({ x: 0, y: 0 });
-const contextMenuFile = ref<NvisyFile | null>(null);
 
 interface Props {
 	files: NvisyFile[];
@@ -46,9 +29,15 @@ const emit = defineEmits<Emits>();
 const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
 
-/** Files currently selected, and how many. */
-const selectedFiles = computed(() => props.selection.selected.value);
-const selectedCount = computed(() => selectedFiles.value.size);
+const { fileActions } = useFileActions(props.selection, {
+	view: (id) => emit("view", id),
+	edit: (f) => emit("edit", f),
+	download: (f) => emit("download", f),
+	delete: (f) => emit("delete", f),
+	bulkOpen: () => emit("bulk-open"),
+	bulkDownload: () => emit("bulk-download"),
+	bulkDelete: () => emit("bulk-delete"),
+});
 
 // Recent edits read as relative time; older than ~30 days show the full date.
 const MONTH_MS = 1000 * 60 * 60 * 24 * 30;
@@ -66,228 +55,86 @@ const KIND_RING: Record<NvisyFile["fileKind"], string> = {
 	audit: "ring-1 ring-blue-400/60 dark:ring-blue-500/50",
 };
 
-const columns = computed<ColumnDef<DataTableFeatures, NvisyFile>[]>(() => [
+const columns = computed<VirtualColumn<NvisyFile>[]>(() => [
 	{
-		id: "select",
-		size: 40,
-		header: () =>
-			h(Checkbox, {
-				modelValue: props.selection.allSelected.value,
-				"onUpdate:modelValue": () => props.selection.toggleAll(),
-				ariaLabel: "Select all",
-			}),
-		cell: ({ row }) =>
-			h(Checkbox, {
-				modelValue: selectedFiles.value.has(row.original.id),
-				"onUpdate:modelValue": () => props.selection.toggle(row.original.id),
-				ariaLabel: "Select row",
-			}),
-		enableSorting: false,
-		enableHiding: false,
+		key: "name",
+		header: t("files.table.headers.name"),
+		cell: () => ({ type: "custom" }),
 	},
 	{
-		accessorKey: "displayName",
-		header: () =>
-			h(
-				"span",
-				{ class: "uppercase text-xs font-normal tracking-wider" },
-				t("files.table.headers.name"),
-			),
-		cell: ({ row }) => {
-			const file = row.original;
-			const IconComponent = getFileIcon(file.displayName);
-			return h("div", { class: "flex items-center gap-3" }, [
-				h(
-					"div",
-					{
-						class: `flex size-8 shrink-0 items-center justify-center rounded bg-muted ${KIND_RING[file.fileKind]}`,
-						// The tinted ring's meaning is spelled out on hover.
-						title:
-							file.fileKind === "original"
-								? undefined
-								: t(`files.kind.${file.fileKind}`),
-					},
-					h(IconComponent, {
-						size: 16,
-						class: "text-muted-foreground",
-					}),
-				),
-				h(
-					"span",
-					{
-						class: "font-medium text-foreground",
-						title: file.displayName,
-					},
-					truncate(file.displayName, 40),
-				),
-			]);
-		},
+		key: "uploadedBy",
+		header: t("files.table.headers.uploadedBy"),
+		width: "180px",
+		cell: (f) => ({
+			type: "avatar",
+			name: personLabel(f.uploadedBy),
+			src: resolveAvatarUrl(f.uploadedBy.avatarUrl),
+		}),
 	},
 	{
-		id: "uploadedBy",
-		size: 180,
-		header: () =>
-			h(
-				"span",
-				{ class: "uppercase text-xs font-normal tracking-wider" },
-				t("files.table.headers.uploadedBy"),
-			),
-		cell: ({ row }) => {
-			const person = row.original.uploadedBy;
-			return h("div", { class: "flex items-center gap-2" }, [
-				h(EntityAvatar, {
-					size: "sm",
-					name: personLabel(person),
-					src: resolveAvatarUrl(person.avatarUrl),
-				}),
-				h(
-					"span",
-					{
-						class: "truncate text-sm text-muted-foreground",
-					},
-					personLabel(person),
-				),
-			]);
-		},
+		key: "size",
+		header: t("files.table.headers.size"),
+		width: "100px",
+		cell: (f) => ({
+			type: "text",
+			value: formatFileSize(f.fileSize),
+			muted: true,
+		}),
 	},
 	{
-		accessorKey: "fileSize",
-		size: 100,
-		header: () =>
-			h(
-				"span",
-				{ class: "uppercase text-xs font-normal tracking-wider" },
-				t("files.table.headers.size"),
-			),
-		cell: ({ row }) =>
-			h(
-				"span",
-				{ class: "text-sm text-muted-foreground" },
-				formatFileSize(row.original.fileSize),
-			),
+		key: "created",
+		header: t("files.table.headers.created"),
+		width: "140px",
+		cell: (f) => ({
+			type: "text",
+			value: formatDate(f.createdAt),
+			muted: true,
+		}),
 	},
 	{
-		accessorKey: "createdAt",
-		size: 140,
-		header: () =>
-			h(
-				"span",
-				{ class: "uppercase text-xs font-normal tracking-wider" },
-				t("files.table.headers.created"),
-			),
-		cell: ({ row }) =>
-			h(
-				"span",
-				{ class: "text-sm text-muted-foreground" },
-				formatDate(row.original.createdAt),
-			),
-	},
-	{
-		accessorKey: "updatedAt",
-		size: 140,
-		header: () =>
-			h(
-				"span",
-				{ class: "uppercase text-xs font-normal tracking-wider" },
-				t("files.table.headers.updated"),
-			),
-		cell: ({ row }) =>
-			h(
-				"span",
-				{ class: "text-sm text-muted-foreground" },
-				formatDate(row.original.updatedAt),
-			),
+		key: "updated",
+		header: t("files.table.headers.updated"),
+		width: "140px",
+		cell: (f) => ({
+			type: "text",
+			value: formatDate(f.updatedAt),
+			muted: true,
+		}),
 	},
 ]);
 
-function handleRowContextMenu(event: MouseEvent, file: NvisyFile) {
-	event.preventDefault();
-	contextMenuFile.value = file;
-	contextMenuPosition.value = { x: event.clientX, y: event.clientY };
-	contextMenuOpen.value = true;
-}
+const kindTitle = (file: NvisyFile) =>
+	file.fileKind === "original" ? undefined : t(`files.kind.${file.fileKind}`);
 </script>
 
 <template>
-  <div class="flex-1 min-h-0">
-    <DataTable
-      :columns="columns"
-      :data="files"
-      :get-row-id="(row) => row.id"
-      class="h-full"
-      @load-more="emit('load-more')"
-      @row-click="(row) => selection.toggle(row.id)"
-      @row-contextmenu="handleRowContextMenu"
-    />
-
-    <!-- Context Menu (using DropdownMenu positioned at cursor) -->
-    <DropdownMenu v-model:open="contextMenuOpen">
-      <DropdownMenuTrigger as-child>
+  <VirtualTable
+    :rows="files"
+    :columns="columns"
+    :selection="selection"
+    :row-actions="fileActions"
+    @load-more="emit('load-more')"
+  >
+    <template #cell-name="{ row }">
+      <div class="flex items-center gap-3">
         <div
-          class="fixed w-0 h-0 pointer-events-none"
-          :style="{
-            left: `${contextMenuPosition.x}px`,
-            top: `${contextMenuPosition.y}px`,
-          }"
-        />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent v-if="contextMenuFile" align="start">
-        <!-- Bulk actions (when right-clicked file is in selection) -->
-        <template v-if="selectedFiles.has(contextMenuFile.id)">
-          <DropdownMenuItem class="cursor-pointer" @click="emit('bulk-open')">
-            <Eye :size="14" class="mr-2" />
-            {{ t("files.actions.open") }} ({{ selectedCount }})
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            class="cursor-pointer"
-            @click="emit('bulk-download')"
-          >
-            <Download :size="14" class="mr-2" />
-            {{ t("files.actions.download") }} ({{ selectedCount }})
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            class="cursor-pointer text-destructive focus:text-destructive"
-            @click="emit('bulk-delete')"
-          >
-            <Trash2 :size="14" class="mr-2" />
-            {{ t("files.actions.delete") }} ({{ selectedCount }})
-          </DropdownMenuItem>
-        </template>
-
-        <!-- Single file actions (when right-clicked file is NOT in selection) -->
-        <template v-else>
-          <DropdownMenuItem
-            class="cursor-pointer"
-            @click="emit('view', contextMenuFile.id)"
-          >
-            <Eye :size="14" class="mr-2" />
-            {{ t("files.actions.openInStudio") }}
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            class="cursor-pointer"
-            @click="emit('edit', contextMenuFile)"
-          >
-            <Pencil :size="14" class="mr-2" />
-            {{ t("files.actions.edit") }}
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            class="cursor-pointer"
-            @click="emit('download', contextMenuFile)"
-          >
-            <Download :size="14" class="mr-2" />
-            {{ t("files.actions.download") }}
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            class="cursor-pointer text-destructive focus:text-destructive"
-            @click="emit('delete', contextMenuFile)"
-          >
-            <Trash2 :size="14" class="mr-2" />
-            {{ t("files.actions.delete") }}
-          </DropdownMenuItem>
-        </template>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  </div>
+          class="flex size-8 shrink-0 items-center justify-center rounded bg-muted"
+          :class="KIND_RING[row.fileKind]"
+          :title="kindTitle(row)"
+        >
+          <component
+            :is="getFileIcon(row.displayName)"
+            :size="16"
+            class="text-muted-foreground"
+          />
+        </div>
+        <span
+          class="truncate font-medium text-foreground"
+          :title="row.displayName"
+        >
+          {{ truncate(row.displayName, 40) }}
+        </span>
+      </div>
+    </template>
+  </VirtualTable>
 </template>
