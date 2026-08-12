@@ -25,7 +25,7 @@ export function useConnections() {
 	const createConnectionMutation = workspaceMutation(
 		({ client, workspaceSlug }, connection: CreateConnection) =>
 			client.connections.createConnection(workspaceSlug, connection),
-		{ invalidates: connectionsQuery },
+		{ invalidates: "connections" },
 	);
 
 	const updateConnectionMutation = workspaceMutation(
@@ -55,7 +55,7 @@ export function useConnections() {
 		({ client, workspaceSlug }, connectionId: string) =>
 			client.connections.deleteConnection(workspaceSlug, connectionId),
 		{
-			invalidates: connectionsQuery,
+			invalidates: "connections",
 			onMutate: (connectionId) => optimistic.remove(connectionId),
 			onError: (_error, connectionId) => optimistic.restore(connectionId),
 		},
@@ -65,7 +65,7 @@ export function useConnections() {
 	const startSyncMutation = workspaceMutation(
 		({ client, workspaceSlug }, connectionId: string) =>
 			client.syncs.startSync(workspaceSlug, connectionId, {}),
-		{ invalidates: connectionsQuery },
+		{ invalidates: "connections" },
 	);
 
 	// Verify a connection is reachable with its stored credentials.

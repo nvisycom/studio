@@ -27,7 +27,7 @@ export function usePolicies() {
 	const createPolicyMutation = workspaceMutation(
 		({ client, workspaceSlug }, policy: CreatePolicy) =>
 			client.policies.createPolicy(workspaceSlug, policy),
-		{ invalidates: policiesQuery },
+		{ invalidates: "policies" },
 	);
 
 	const updatePolicyMutation = workspaceMutation(
@@ -35,14 +35,14 @@ export function usePolicies() {
 			{ client, workspaceSlug },
 			{ policySlug, updates }: { policySlug: string; updates: UpdatePolicy },
 		) => client.policies.updatePolicy(workspaceSlug, policySlug, updates),
-		{ invalidates: policiesQuery },
+		{ invalidates: "policies" },
 	);
 
 	const deletePolicyMutation = workspaceMutation(
 		({ client, workspaceSlug }, policySlug: string) =>
 			client.policies.deletePolicy(workspaceSlug, policySlug),
 		{
-			invalidates: policiesQuery,
+			invalidates: "policies",
 			onMutate: (policySlug) => optimistic.remove(policySlug),
 			onError: (_error, policySlug) => optimistic.restore(policySlug),
 		},

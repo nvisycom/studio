@@ -36,7 +36,7 @@ export function useSyncs(options?: { status?: Ref<SyncStatus | undefined> }) {
 			{ client, workspaceSlug },
 			{ connectionId, syncId }: { connectionId: string; syncId: string },
 		) => client.syncs.cancelSync(workspaceSlug, connectionId, syncId),
-		{ invalidates: syncsQuery },
+		{ invalidates: "syncs" },
 	);
 
 	return {

@@ -51,19 +51,19 @@ export function useFiles(options: UseFilesOptions = {}) {
 			{ client, workspaceSlug },
 			{ fileId, updates }: { fileId: string; updates: UpdateFile },
 		) => client.files.updateFile(workspaceSlug, fileId, updates),
-		{ invalidates: filesQuery },
+		{ invalidates: "files" },
 	);
 
 	const deleteFileMutation = workspaceMutation(
 		({ client, workspaceSlug }, fileId: string) =>
 			client.files.deleteFile(workspaceSlug, fileId),
-		{ invalidates: filesQuery },
+		{ invalidates: "files" },
 	);
 
 	const uploadFilesMutation = workspaceMutation(
 		({ client, workspaceSlug }, files: File[]) =>
 			client.files.uploadFiles(workspaceSlug, files),
-		{ invalidates: filesQuery },
+		{ invalidates: "files" },
 	);
 
 	async function downloadFile(fileId: string, fileName: string) {

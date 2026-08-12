@@ -13,7 +13,7 @@ export function useNotificationSettings() {
 	const updateSettingsMutation = workspaceMutation(
 		({ client, workspaceSlug }, settings: UpdateNotificationSettings) =>
 			client.workspaces.updateNotificationSettings(workspaceSlug, settings),
-		{ invalidates: settingsQuery },
+		{ invalidates: "notificationSettings" },
 	);
 
 	return {

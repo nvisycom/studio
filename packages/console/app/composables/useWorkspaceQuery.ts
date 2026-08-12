@@ -73,8 +73,18 @@ export function workspaceQuery<T>(
 
 /** Options for {@link workspaceMutation}. Mirrors colada's hooks, ctx-aware. */
 interface WorkspaceMutationOptions<T, V> {
-	/** Query to refresh after a successful mutation. */
-	invalidates?: { refresh: () => void };
+	/**
+	 * Resource name(s) whose workspace-scoped query to invalidate on success.
+	 *
+	 * Invalidation goes through the query cache by key (`[resource, slug]`), not
+	 * by refreshing a specific query instance. This matters: the mutation may run
+	 * from a page that never subscribed to the list query (e.g. creating a policy
+	 * from the templates page), and a bare `instance.refresh()` there leaves the
+	 * cached entry the *destination* page reads still marked fresh — so the first
+	 * insert into an empty list never shows until a manual reload. Marking the
+	 * entry stale by key makes the next mount refetch regardless of who mutated.
+	 */
+	invalidates?: string | string[];
 	onMutate?: UseMutationOptions<T, V>["onMutate"];
 	onSuccess?: UseMutationOptions<T, V>["onSuccess"];
 	onSettled?: UseMutationOptions<T, V>["onSettled"];
@@ -83,8 +93,9 @@ interface WorkspaceMutationOptions<T, V> {
 
 /**
  * A `useMutation` scoped to the active workspace. The mutator receives the
- * resolved context and the mutation variables. Pass `invalidates` to refresh a
- * query on success; the optimistic lifecycle hooks pass straight through.
+ * resolved context and the mutation variables. Pass `invalidates` (resource
+ * name[s]) to mark the matching workspace-scoped queries stale on success; the
+ * optimistic lifecycle hooks pass straight through.
  *
  * @param mutate - Mutator, given the workspace context and the variables.
  */
@@ -92,13 +103,22 @@ export function workspaceMutation<T, V = void>(
 	mutate: (ctx: WorkspaceContext, variables: V) => Promise<T>,
 	options: WorkspaceMutationOptions<T, V> = {},
 ) {
-	const { requireContext } = useWorkspaceContext();
+	const { requireContext, key } = useWorkspaceContext();
+	const queryCache = useQueryCache();
 	const { invalidates, onSuccess, onSettled, ...rest } = options;
+	const resources =
+		invalidates == null
+			? []
+			: Array.isArray(invalidates)
+				? invalidates
+				: [invalidates];
 
 	return useMutation<T, V>({
 		mutation: (variables: V) => mutate(requireContext(), variables),
 		onSuccess(...args) {
-			invalidates?.refresh();
+			for (const resource of resources) {
+				queryCache.invalidateQueries({ key: key(resource)() });
+			}
 			onSuccess?.(...args);
 		},
 		onSettled,
