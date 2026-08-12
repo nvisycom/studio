@@ -2,24 +2,13 @@
 import type { Invite } from "@nvisy/sdk/datatypes";
 import type {
 	RowAction,
-	RowSelection,
+	BulkAction,
 } from "#console/components/pages/RowActions.vue";
 import type { Selection } from "#console/composables/useSelection";
+import type { VirtualColumn } from "#console/components/ui/virtual-table";
 import { Mail, X, Copy, Trash2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
-import { EntityAvatar } from "#console/components/common";
-import { Badge } from "#console/components/ui/badge";
-import { Checkbox } from "#console/components/ui/checkbox";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "#console/components/ui/table";
-import DataTableHead from "#console/components/pages/DataTableHead.vue";
-import RowActions from "#console/components/pages/RowActions.vue";
+import { VirtualTable } from "#console/components/ui/virtual-table";
 
 interface Props {
 	invites: Invite[];
@@ -31,14 +20,70 @@ interface Emits {
 	(e: "cancelSelected"): void;
 }
 
+// The table keys rows by id; invites are keyed by inviteId, so expose it as id.
+type InviteRow = Invite & { id: string };
+
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
 const { relativeTime, relativeTimeFuture } = useRelativeTime();
 
-/** Per-row menu: copy link (only if the invite has a token), then cancel. */
-function rowActions(invite: Invite): RowAction[] {
+const rows = computed<InviteRow[]>(() =>
+	props.invites.map((i) => ({ ...i, id: i.inviteId })),
+);
+
+function inviteCode(invite: Invite): string {
+	return invite.inviteToken ? `${invite.inviteToken.slice(0, 8)}...` : "";
+}
+
+const columns = computed<VirtualColumn<InviteRow>[]>(() => [
+	{
+		key: "invite",
+		header: t("members.table.headers.invite"),
+		cell: (i) => ({
+			type: "avatar",
+			name: i.inviteeEmail || inviteCode(i),
+			mono: !i.inviteeEmail,
+			subtitle: i.inviteeEmail
+				? t("members.table.status.emailInvite")
+				: t("members.table.status.linkInvite"),
+		}),
+	},
+	{
+		key: "role",
+		header: t("members.table.headers.role"),
+		width: "140px",
+		cell: (i) => ({
+			type: "badge",
+			label: t(`members.roles.${i.invitedRole}`),
+			capitalize: true,
+		}),
+	},
+	{
+		key: "invited",
+		header: t("members.table.headers.invited"),
+		width: "160px",
+		cell: (i) => ({
+			type: "text",
+			value: relativeTime(i.createdAt),
+			muted: true,
+		}),
+	},
+	{
+		key: "expires",
+		header: t("members.table.headers.expires"),
+		width: "160px",
+		cell: (i) => ({
+			type: "text",
+			value: relativeTimeFuture(i.expiresAt),
+			muted: true,
+		}),
+	},
+]);
+
+/** Copy link (only when the invite has a token), then cancel. */
+function rowActions(invite: InviteRow): RowAction[] {
 	const actions: RowAction[] = [];
 	if (invite.inviteToken) {
 		actions.push({
@@ -59,33 +104,21 @@ function rowActions(invite: Invite): RowAction[] {
 	return actions;
 }
 
-/** Selection state for a row, driving the bulk-vs-single menu. */
-function rowSelection(invite: Invite): RowSelection {
-	const selected = props.selection.selected.value;
+function bulkAction(selected: Set<string>): BulkAction {
 	return {
-		selected: selected.has(invite.inviteId),
+		label: t("members.table.actions.cancelSelected"),
+		icon: Trash2,
 		count: selected.size,
-		bulk: {
-			label: t("members.table.actions.cancelSelected"),
-			icon: Trash2,
-			count: selected.size,
-			select: () => emit("cancelSelected"),
-		},
+		select: () => emit("cancelSelected"),
 	};
-}
-
-function getInviteCode(invite: Invite): string {
-	if (invite.inviteToken) {
-		return `${invite.inviteToken.slice(0, 8)}...`;
-	}
-	return "";
 }
 
 async function copyInviteLink(invite: Invite) {
 	if (!invite.inviteToken) return;
 	try {
-		const inviteLink = `${window.location.origin}/join/${invite.inviteToken}`;
-		await navigator.clipboard.writeText(inviteLink);
+		await navigator.clipboard.writeText(
+			`${window.location.origin}/join/${invite.inviteToken}`,
+		);
 		toast.success(t("members.messages.linkCopied"));
 	} catch {
 		toast.error(t("members.errors.linkCopyFailed"));
@@ -94,105 +127,16 @@ async function copyInviteLink(invite: Invite) {
 </script>
 
 <template>
-  <div v-if="invites.length > 0">
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead class="w-[50px]">
-            <Checkbox
-              :model-value="selection.allSelected.value"
-              @update:model-value="selection.toggleAll()"
-            />
-          </TableHead>
-          <DataTableHead class="min-w-[280px]">
-            {{ t("members.table.headers.invite") }}
-          </DataTableHead>
-          <DataTableHead class="w-[140px]">
-            {{ t("members.table.headers.role") }}
-          </DataTableHead>
-          <DataTableHead class="w-[160px]">
-            {{ t("members.table.headers.invited") }}
-          </DataTableHead>
-          <DataTableHead class="w-[160px]">
-            {{ t("members.table.headers.expires") }}
-          </DataTableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        <RowActions
-          v-for="invite in invites"
-          :key="invite.inviteId"
-          :actions="rowActions(invite)"
-          :selection="rowSelection(invite)"
-        >
-          <TableRow
-            class="group cursor-pointer border-b border-border/50"
-            @click="selection.toggle(invite.inviteId)"
-          >
-              <TableCell @click.stop>
-                <Checkbox
-                  :model-value="selection.selected.value.has(invite.inviteId)"
-                  @update:model-value="selection.toggle(invite.inviteId)"
-                />
-              </TableCell>
-              <TableCell>
-                <div class="flex items-center gap-3">
-                  <EntityAvatar
-                    :name="invite.inviteeEmail || getInviteCode(invite)"
-                    size="md"
-                  />
-                  <div class="min-w-0">
-                    <p
-                      v-if="invite.inviteeEmail"
-                      class="truncate font-medium text-foreground"
-                    >
-                      {{ invite.inviteeEmail }}
-                    </p>
-                    <p
-                      v-else
-                      class="truncate font-mono font-medium text-foreground"
-                    >
-                      {{ getInviteCode(invite) }}
-                    </p>
-                    <p class="truncate text-xs text-muted-foreground">
-                      {{
-                        invite.inviteeEmail
-                          ? t("members.table.status.emailInvite")
-                          : t("members.table.status.linkInvite")
-                      }}
-                    </p>
-                  </div>
-                </div>
-              </TableCell>
-              <TableCell>
-                <Badge variant="secondary" class="font-normal capitalize">
-                  {{ t(`members.roles.${invite.invitedRole}`) }}
-                </Badge>
-              </TableCell>
-              <TableCell class="text-sm text-muted-foreground">
-                {{ relativeTime(invite.createdAt) }}
-              </TableCell>
-              <TableCell class="text-sm text-muted-foreground">
-                {{ relativeTimeFuture(invite.expiresAt) }}
-              </TableCell>
-            </TableRow>
-          </RowActions>
-      </TableBody>
-    </Table>
-  </div>
-  <div v-else class="py-12">
-    <div class="text-center">
-      <div
-        class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
-      >
-        <Mail class="size-5 text-muted-foreground" />
-      </div>
-      <p class="mb-1 text-sm text-foreground">
-        {{ t("members.table.empty.noPendingInvites") }}
-      </p>
-      <p class="text-xs text-muted-foreground">
-        {{ t("members.table.empty.noPendingInvitesDescription") }}
-      </p>
-    </div>
-  </div>
+  <VirtualTable
+    :rows="rows"
+    :columns="columns"
+    :selection="selection"
+    :row-actions="rowActions"
+    :bulk-action="bulkAction"
+    :empty="{
+      icon: Mail,
+      title: t('members.table.empty.noPendingInvites'),
+      description: t('members.table.empty.noPendingInvitesDescription'),
+    }"
+  />
 </template>

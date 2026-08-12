@@ -2,25 +2,13 @@
 import type { ApiToken } from "@nvisy/sdk/datatypes";
 import type {
 	RowAction,
-	RowSelection,
+	BulkAction,
 } from "#console/components/pages/RowActions.vue";
 import type { Selection } from "#console/composables/useSelection";
+import type { VirtualColumn } from "#console/components/ui/virtual-table";
 import { Trash2, Edit, Key } from "@lucide/vue";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "#console/components/ui/table";
-import DataTableHead from "#console/components/pages/DataTableHead.vue";
-import RowActions from "#console/components/pages/RowActions.vue";
-import { Checkbox } from "#console/components/ui/checkbox";
+import { VirtualTable } from "#console/components/ui/virtual-table";
 import { Badge } from "#console/components/ui/badge";
-
-// Helper to truncate UUID for display
-const truncateId = (id: string): string => id.slice(0, 8);
 
 interface Props {
 	tokens: ApiToken[];
@@ -40,27 +28,25 @@ const emit = defineEmits<Emits>();
 const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
 
-// Helper functions
-const isTokenSelected = (tokenId: string): boolean =>
-	props.selection.selected.value.has(tokenId);
+const truncateId = (id: string) => id.slice(0, 8);
+const isCurrentToken = (id: string) => props.currentTokenId === id;
+const isSelectable = (token: ApiToken) => !isCurrentToken(token.id);
 
-const isCurrentToken = (tokenId: string): boolean =>
-	props.currentTokenId === tokenId;
+const isTokenExpired = (token: ApiToken): boolean =>
+	!!token.expiredAt && new Date(token.expiredAt) < new Date();
 
-const canSelectToken = (token: ApiToken): boolean => !isCurrentToken(token.id);
-
-const isTokenExpired = (token: ApiToken): boolean => {
-	if (!token.expiredAt) return false;
-	return new Date(token.expiredAt) < new Date();
+// Session-type accent shown on the token icon overlay.
+const SESSION_TYPE_COLOR: Record<string, string> = {
+	web: "bg-blue-500",
+	api: "bg-purple-500",
+	cli: "bg-orange-500",
 };
+const sessionColor = (type: string) =>
+	SESSION_TYPE_COLOR[type.toLowerCase()] ?? "bg-muted-foreground";
+const sessionInitial = (type: string) =>
+	({ web: "W", api: "A", cli: "C" })[type.toLowerCase()] ?? "T";
 
-function handleRowClick(token: ApiToken) {
-	if (canSelectToken(token)) {
-		props.selection.toggle(token.id);
-	}
-}
-
-const formatDate = (date: string | null | undefined): string => {
+const formatExpiry = (date: string | null | undefined): string => {
 	if (!date) return t("tokens.table.info.never");
 	return new Intl.DateTimeFormat("en-GB", {
 		day: "2-digit",
@@ -69,28 +55,35 @@ const formatDate = (date: string | null | undefined): string => {
 	}).format(new Date(date));
 };
 
-const getSessionTypeColor = (type: string): string => {
-	const colors: Record<string, string> = {
-		web: "bg-blue-500",
-		api: "bg-purple-500",
-		cli: "bg-orange-500",
-	};
-	return colors[type.toLowerCase()] || "bg-neutral-500";
-};
+const columns = computed<VirtualColumn<ApiToken>[]>(() => [
+	{
+		key: "name",
+		header: t("tokens.table.headers.name"),
+		cell: () => ({ type: "custom" }),
+	},
+	{
+		key: "createdAt",
+		header: t("tokens.table.headers.createdAt"),
+		width: "160px",
+		cell: (tk) => ({
+			type: "text",
+			value: relativeTime(tk.issuedAt),
+			muted: true,
+		}),
+	},
+	{
+		key: "lastUsed",
+		header: t("tokens.table.headers.lastUsed"),
+		width: "160px",
+		cell: (tk) => ({
+			type: "text",
+			value: relativeTime(tk.lastUsedAt),
+			muted: true,
+		}),
+	},
+]);
 
-const getSessionTypeInitial = (type: string): string => {
-	const initials: Record<string, string> = {
-		web: "W",
-		api: "A",
-		cli: "C",
-	};
-	return initials[type.toLowerCase()] || "T";
-};
-
-/**
- * Per-row menu: rename (API tokens only, otherwise a disabled hint) then revoke
- * (disabled for the current session's own token).
- */
+/** Rename (API tokens only) then revoke (disabled for the current token). */
 function rowActions(token: ApiToken): RowAction[] {
 	const isApi = token.sessionType === "api";
 	const isCurrent = isCurrentToken(token.id);
@@ -118,120 +111,67 @@ function rowActions(token: ApiToken): RowAction[] {
 	];
 }
 
-/** Selection state for a row, driving the bulk-vs-single menu. */
-function rowSelection(token: ApiToken): RowSelection {
-	const selected = props.selection.selected.value;
+function bulkAction(selected: Set<string>): BulkAction {
 	return {
-		selected: selected.has(token.id),
+		label: t("tokens.table.actions.revokeSelected"),
+		icon: Trash2,
 		count: selected.size,
-		bulk: {
-			label: t("tokens.table.actions.revokeSelected"),
-			icon: Trash2,
-			count: selected.size,
-			select: () => emit("deleteSelected"),
-		},
+		select: () => emit("deleteSelected"),
 	};
 }
 </script>
 
 <template>
-  <Table>
-    <TableHeader>
-      <TableRow>
-        <TableHead class="w-[50px]">
-          <Checkbox
-            :model-value="selection.allSelected.value"
-            @update:model-value="selection.toggleAll()"
-          />
-        </TableHead>
-        <DataTableHead>{{ t("tokens.table.headers.name") }}</DataTableHead>
-        <DataTableHead>{{ t("tokens.table.headers.createdAt") }}</DataTableHead>
-        <DataTableHead>{{ t("tokens.table.headers.lastUsed") }}</DataTableHead>
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      <RowActions
-        v-for="token in tokens"
-        :key="token.id"
-        :actions="rowActions(token)"
-        :selection="rowSelection(token)"
-      >
-        <TableRow
-          :class="[
-            'border-b border-neutral-200 dark:border-neutral-800',
-            canSelectToken(token) ? 'cursor-pointer' : 'cursor-default',
-          ]"
-          @click="handleRowClick(token)"
-        >
-            <TableCell @click.stop>
-              <Checkbox
-                :model-value="isTokenSelected(token.id)"
-                :disabled="isCurrentToken(token.id)"
-                @update:model-value="selection.toggle(token.id)"
-              />
-            </TableCell>
-            <TableCell class="font-normal">
-              <div class="flex items-center gap-3">
-                <!-- Token Icon with Session Type Badge -->
-                <div class="relative">
-                  <div
-                    class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0"
-                  >
-                    <Key :size="20" class="text-white" />
-                  </div>
-                  <!-- Session Type Badge -->
-                  <div
-                    :class="[
-                      'absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center border-2 border-white dark:border-neutral-900',
-                      getSessionTypeColor(token.sessionType),
-                    ]"
-                  >
-                    <span class="text-white text-[8px] font-bold">
-                      {{ getSessionTypeInitial(token.sessionType) }}
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <div class="flex items-center gap-2">
-                    <span>{{ token.displayName }}</span>
-                    <Badge
-                      v-if="isCurrentToken(token.id)"
-                      variant="secondary"
-                      class="text-xs"
-                    >
-                      {{ t("tokens.table.badges.current") }}
-                    </Badge>
-                    <Badge
-                      v-else-if="isTokenExpired(token)"
-                      variant="destructive"
-                      class="text-xs"
-                    >
-                      {{ t("tokens.table.badges.expired") }}
-                    </Badge>
-                  </div>
-                  <div
-                    class="text-xs text-neutral-500 dark:text-neutral-400 mt-1"
-                  >
-                    <span class="font-mono">{{ truncateId(token.id) }}</span>
-                    <span class="mx-1">·</span>
-                    {{ t("tokens.table.info.expires") }}
-                    {{ formatDate(token.expiredAt) }}
-                  </div>
-                </div>
-              </div>
-            </TableCell>
-            <TableCell
-              class="font-normal text-neutral-600 dark:text-neutral-400"
+  <VirtualTable
+    :rows="tokens"
+    :columns="columns"
+    :selection="selection"
+    :is-selectable="isSelectable"
+    :row-actions="rowActions"
+    :bulk-action="bulkAction"
+    :row-height="64"
+  >
+    <template #cell-name="{ row }">
+      <div class="flex items-center gap-3">
+        <!-- Token icon with a session-type accent overlay -->
+        <div class="relative shrink-0">
+          <div
+            class="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600"
+          >
+            <Key :size="20" class="text-white" />
+          </div>
+          <div
+            :class="[
+              'absolute -bottom-1 -right-1 flex size-5 items-center justify-center rounded-full border-2 border-background',
+              sessionColor(row.sessionType),
+            ]"
+          >
+            <span class="text-[8px] font-bold text-white">
+              {{ sessionInitial(row.sessionType) }}
+            </span>
+          </div>
+        </div>
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="truncate text-foreground">{{ row.displayName }}</span>
+            <Badge v-if="isCurrentToken(row.id)" variant="secondary" class="text-xs">
+              {{ t("tokens.table.badges.current") }}
+            </Badge>
+            <Badge
+              v-else-if="isTokenExpired(row)"
+              variant="destructive"
+              class="text-xs"
             >
-              {{ relativeTime(token.issuedAt) }}
-            </TableCell>
-            <TableCell
-              class="font-normal text-neutral-600 dark:text-neutral-400"
-            >
-              {{ relativeTime(token.lastUsedAt) }}
-            </TableCell>
-          </TableRow>
-        </RowActions>
-    </TableBody>
-  </Table>
+              {{ t("tokens.table.badges.expired") }}
+            </Badge>
+          </div>
+          <div class="mt-1 text-xs text-muted-foreground">
+            <span class="font-mono">{{ truncateId(row.id) }}</span>
+            <span class="mx-1">·</span>
+            {{ t("tokens.table.info.expires") }} {{ formatExpiry(row.expiredAt) }}
+          </div>
+        </div>
+      </div>
+    </template>
+  </VirtualTable>
 </template>

@@ -65,7 +65,10 @@
 			"inMonths": "in {months}Mo"
 		},
 		"enabled": "Aktiviert",
-		"disabled": "Deaktiviert"
+		"disabled": "Deaktiviert",
+		"selectAll": "Alle auswählen",
+		"selectRow": "Zeile auswählen",
+		"openMenu": "Menü öffnen"
 	},
 	"settings": {
 		"workspace": {
