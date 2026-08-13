@@ -46,3 +46,27 @@ export async function createWorkspace(
 	await expect(page).toHaveURL(new RegExp(`/w/${slug}(/|$)`));
 	return slug;
 }
+
+/**
+ * Step 3 — create a policy from a template. Uses the CCPA template, whose
+ * dialog has no extra settings (HIPAA/GDPR/PCI add selects), so the happy path
+ * is just: name it and create. Returns the policy's display name for later
+ * steps to attach it to a pipeline.
+ */
+export async function createPolicyFromTemplate(
+	page: Page,
+	slug: string,
+	name = `E2E Policy ${Date.now().toString(36)}`,
+): Promise<string> {
+	await page.goto(`/w/${slug}/policies/templates`);
+
+	await page.getByTestId("policy-template-ccpa").click();
+	await page.getByTestId("policy-name").fill(name);
+	await page.getByTestId("policy-create").click();
+
+	// create() redirects to the policies list (not the templates sub-route).
+	await expect(page).toHaveURL(new RegExp(`/w/${slug}/policies(\\?|$)`));
+	await expect(page.getByText(name, { exact: false })).toBeVisible();
+
+	return name;
+}

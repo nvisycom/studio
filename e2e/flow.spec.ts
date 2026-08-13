@@ -1,5 +1,9 @@
 import { test } from "@playwright/test";
-import { createWorkspace, signUp } from "./support/steps";
+import {
+	createPolicyFromTemplate,
+	createWorkspace,
+	signUp,
+} from "./support/steps";
 
 /**
  * The end-to-end happy path, built up one step at a time:
@@ -15,5 +19,8 @@ test("happy path: signup through pipeline run", async ({ page }) => {
 	await signUp(page);
 
 	// Step 2 — create the first workspace.
-	await createWorkspace(page);
+	const slug = await createWorkspace(page);
+
+	// Step 3 — create a policy from a template.
+	await createPolicyFromTemplate(page, slug);
 });
