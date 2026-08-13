@@ -26,41 +26,41 @@ export function notificationContent(
 	payload: NotificationPayload,
 ): NotificationContent {
 	switch (payload.notifyType) {
-		case "member:invited":
+		case "member.invited":
 			return content("memberInvited", {
 				invitedBy: payload.invitedBy,
 				workspaceSlug: payload.workspaceSlug,
 			});
-		case "member:joined":
+		case "member.joined":
 			return content("memberJoined", {
 				memberUsername: payload.memberUsername,
 				workspaceSlug: payload.workspaceSlug,
 			});
-		case "connection:sync.completed":
+		case "connection.sync.completed":
 			return content("connectionSyncCompleted", {
 				recordsSynced: payload.recordsSynced,
 			});
-		case "connection:sync.failed":
+		case "connection.sync.failed":
 			return content("connectionSyncFailed", { error: payload.error });
-		case "pipeline:run.analyzed":
+		case "pipeline.run.analyzed":
 			return content("pipelineRunAnalyzed", {
 				pipelineSlug: payload.pipelineSlug,
 				inputFileName: payload.inputFileName,
 			});
-		case "pipeline:run.completed":
+		case "pipeline.run.completed":
 			return content("pipelineRunCompleted", {
 				pipelineSlug: payload.pipelineSlug,
 				inputFileName: payload.inputFileName,
 			});
-		case "pipeline:run.failed":
+		case "pipeline.run.failed":
 			return content("pipelineRunFailed", {
 				pipelineSlug: payload.pipelineSlug,
 				inputFileName: payload.inputFileName,
 				error: payload.error,
 			});
-		case "system:announcement":
+		case "system.announcement":
 			return content("systemAnnouncement", { message: payload.message });
-		case "system:report":
+		case "system.report":
 			return content("systemReport", { reportId: payload.reportId });
 	}
 }

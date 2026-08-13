@@ -17,7 +17,7 @@ import {
 	Webhook as WebhookIcon,
 	X,
 } from "@lucide/vue";
-import type { ActivityType, PipelineRunStatus } from "@nvisy/sdk/datatypes";
+import type { PipelineRunStatus } from "@nvisy/sdk/datatypes";
 import { useLocalStorage } from "@vueuse/core";
 import type { Component } from "vue";
 import {
@@ -30,6 +30,7 @@ import {
 import { EntityAvatar } from "#console/components/common";
 import { personLabel } from "#console/utils/naming";
 import { getFileIcon } from "#console/utils/file";
+import { activityContent } from "#console/utils/activities";
 
 const { t } = useI18n();
 const { wLink } = useWorkspaceLink();
@@ -102,8 +103,8 @@ function dismissSetup(): void {
 const showSetupCard = computed(() => !allSetUp.value && !isDismissed.value);
 
 // --- Recent activity ----------------------------------------------------
-// Map each activity category to an icon. The description text is provided by
-// the API (already human-readable), so we only supply iconography here.
+// Each activity carries a typed, optional payload; the client localizes it via
+// `activityContent`. Map the resulting category to an icon here.
 const ACTIVITY_ICON: Record<string, Component> = {
 	workspace: Settings2,
 	member: Users,
@@ -111,11 +112,30 @@ const ACTIVITY_ICON: Record<string, Component> = {
 	connection: Link2,
 	webhook: WebhookIcon,
 	file: FileText,
+	pipeline: Play,
+	policy: ShieldCheck,
 };
-function activityIcon(type: ActivityType): Component {
-	const category = type.split(":")[0] ?? "";
+function activityIcon(category: string): Component {
 	return ACTIVITY_ICON[category] ?? Settings2;
 }
+
+// View-models for the recent-activity list. Activities whose payload didn't
+// decode (undefined) carry no localizable copy, so we drop them.
+const recentActivities = computed(() =>
+	(activities.value ?? []).flatMap((activity) => {
+		if (!activity.payload) return [];
+		const c = activityContent(activity.payload);
+		return [
+			{
+				id: activity.id,
+				icon: activityIcon(c.category),
+				text: t(c.messageKey, c.params),
+				performedBy: activity.performedBy,
+				createdAt: activity.createdAt,
+			},
+		];
+	}),
+);
 
 const recentFiles = computed(() => (files.value ?? []).slice(0, 5));
 
@@ -188,9 +208,9 @@ const quickActions = [
           </CardTitle>
         </CardHeader>
         <CardContent class="pb-6">
-          <div v-if="activities?.length" class="-my-1 flex flex-col">
+          <div v-if="recentActivities.length" class="-my-1 flex flex-col">
             <div
-              v-for="activity in activities"
+              v-for="activity in recentActivities"
               :key="activity.id"
               class="flex items-start gap-3 py-2.5"
             >
@@ -198,14 +218,14 @@ const quickActions = [
                 class="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md border border-border/60 bg-muted/40 text-muted-foreground"
               >
                 <component
-                  :is="activityIcon(activity.activityType)"
+                  :is="activity.icon"
                   :size="14"
                   :stroke-width="1.75"
                 />
               </div>
               <div class="min-w-0 flex-1">
                 <p class="text-sm text-foreground">
-                  {{ activity.description }}
+                  {{ activity.text }}
                 </p>
                 <p class="mt-0.5 text-xs text-muted-foreground">
                   {{

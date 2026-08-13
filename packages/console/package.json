@@ -15,7 +15,7 @@
 		"@lucide/vue": "^1.30.0",
 		"@nuxtjs/color-mode": "^4.0.0",
 		"@nuxtjs/i18n": "^10.6.0",
-		"@nvisy/sdk": "^0.24.0",
+		"@nvisy/sdk": "^0.25.0",
 		"@pinia/colada": "^1.4.2",
 		"@pinia/colada-nuxt": "^1.0.2",
 		"@pinia/nuxt": "^1.0.1",

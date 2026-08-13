@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { DateRange } from "reka-ui";
 import type { Ref } from "vue";
-import type { ActivityType } from "@nvisy/sdk/datatypes";
 import type { Component } from "vue";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import {
@@ -14,7 +13,9 @@ import {
 	Link2,
 	Loader2,
 	Mail,
+	Play,
 	Settings2,
+	ShieldCheck,
 	Users,
 	Webhook as WebhookIcon,
 } from "@lucide/vue";
@@ -22,6 +23,7 @@ import { Button } from "#console/components/ui/button";
 import { Badge } from "#console/components/ui/badge";
 import { EntityAvatar } from "#console/components/common";
 import { personLabel } from "#console/utils/naming";
+import { activityContent } from "#console/utils/activities";
 import {
 	Card,
 	CardContent,
@@ -78,7 +80,8 @@ definePageMeta({
 const searchQuery = ref("");
 const category = ref("all");
 
-// Activity category -> icon. `activityType` is `<category>:<action>`.
+// Activity category -> icon. Categories come from `activityContent`, which
+// derives them from the typed payload's `activityType` (e.g. `file.created`).
 const CATEGORY_ICON: Record<string, Component> = {
 	workspace: Settings2,
 	member: Users,
@@ -86,6 +89,8 @@ const CATEGORY_ICON: Record<string, Component> = {
 	connection: Link2,
 	webhook: WebhookIcon,
 	file: FileText,
+	pipeline: Play,
+	policy: ShieldCheck,
 };
 const CATEGORIES = [
 	"workspace",
@@ -94,27 +99,44 @@ const CATEGORIES = [
 	"connection",
 	"webhook",
 	"file",
+	"pipeline",
+	"policy",
 ] as const;
-function activityCategory(type: ActivityType): string {
-	return type.split(":")[0] ?? "";
-}
-function activityIcon(type: ActivityType): Component {
-	return CATEGORY_ICON[activityCategory(type)] ?? Settings2;
+function activityIcon(category: string): Component {
+	return CATEGORY_ICON[category] ?? Settings2;
 }
 
+// View-models: localize each activity's copy and category up front. Activities
+// whose payload didn't decode (undefined) carry no localizable copy, so we drop
+// them from the table.
+const activityRows = computed(() =>
+	(activities.value ?? []).flatMap((activity) => {
+		if (!activity.payload) return [];
+		const c = activityContent(activity.payload);
+		return [
+			{
+				id: activity.id,
+				category: c.category,
+				icon: activityIcon(c.category),
+				text: t(c.messageKey, c.params),
+				performedBy: activity.performedBy,
+				createdAt: activity.createdAt,
+			},
+		];
+	}),
+);
+
 const filteredActivities = computed(() => {
-	let list = activities.value ?? [];
+	let list = activityRows.value;
 	if (category.value !== "all") {
-		list = list.filter(
-			(a) => activityCategory(a.activityType) === category.value,
-		);
+		list = list.filter((a) => a.category === category.value);
 	}
 	if (searchQuery.value.trim()) {
 		const q = searchQuery.value.toLowerCase();
 		list = list.filter(
 			(a) =>
-				a.description.toLowerCase().includes(q) ||
-				a.activityType.toLowerCase().includes(q),
+				a.text.toLowerCase().includes(q) ||
+				a.category.toLowerCase().includes(q),
 		);
 	}
 	return list;
@@ -185,7 +207,7 @@ function importLogs() {
               {{ t("analytics.logs.category.all") }}
             </SelectItem>
             <SelectItem v-for="c in CATEGORIES" :key="c" :value="c">
-              {{ t(`analytics.logs.category.${c}`) }}
+              {{ t(`activities.category.${c}`) }}
             </SelectItem>
           </SelectContent>
         </Select>
@@ -276,15 +298,15 @@ function importLogs() {
                       class="gap-1.5 font-normal capitalize"
                     >
                       <component
-                        :is="activityIcon(activity.activityType)"
+                        :is="activity.icon"
                         :size="12"
                         :stroke-width="1.75"
                       />
-                      {{ t(`analytics.logs.category.${activityCategory(activity.activityType)}`) }}
+                      {{ t(`activities.category.${activity.category}`) }}
                     </Badge>
                   </TableCell>
                   <TableCell class="max-w-md truncate text-sm text-foreground">
-                    {{ activity.description }}
+                    {{ activity.text }}
                   </TableCell>
                   <TableCell>
                     <div class="flex items-center gap-2">

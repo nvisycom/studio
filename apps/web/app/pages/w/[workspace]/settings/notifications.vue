@@ -62,7 +62,7 @@ async function toggleEmailNotifications(value: boolean) {
 }
 
 // Notification categories, grouping the backend's NotificationEvent values.
-// The event keys carry dots (e.g. "connection:sync.completed"), so the i18n
+// The event ids carry dots (e.g. "connection.sync.completed"), so the i18n
 // leaf keys use dot-free camelCase (syncCompleted, runAnalyzed, ...) to avoid
 // vue-i18n treating the dot as a path separator.
 const categories = computed<
@@ -77,14 +77,14 @@ const categories = computed<
 		name: t("settings.notifications.categories.members.name"),
 		events: [
 			{
-				event: "member:invited",
+				event: "member.invited",
 				name: t("settings.notifications.categories.members.invited.name"),
 				description: t(
 					"settings.notifications.categories.members.invited.description",
 				),
 			},
 			{
-				event: "member:joined",
+				event: "member.joined",
 				name: t("settings.notifications.categories.members.joined.name"),
 				description: t(
 					"settings.notifications.categories.members.joined.description",
@@ -97,7 +97,7 @@ const categories = computed<
 		name: t("settings.notifications.categories.connections.name"),
 		events: [
 			{
-				event: "connection:sync.completed",
+				event: "connection.sync.completed",
 				name: t(
 					"settings.notifications.categories.connections.syncCompleted.name",
 				),
@@ -106,7 +106,7 @@ const categories = computed<
 				),
 			},
 			{
-				event: "connection:sync.failed",
+				event: "connection.sync.failed",
 				name: t(
 					"settings.notifications.categories.connections.syncFailed.name",
 				),
@@ -121,14 +121,14 @@ const categories = computed<
 		name: t("settings.notifications.categories.pipelines.name"),
 		events: [
 			{
-				event: "pipeline:run.analyzed",
+				event: "pipeline.run.analyzed",
 				name: t("settings.notifications.categories.pipelines.runAnalyzed.name"),
 				description: t(
 					"settings.notifications.categories.pipelines.runAnalyzed.description",
 				),
 			},
 			{
-				event: "pipeline:run.completed",
+				event: "pipeline.run.completed",
 				name: t(
 					"settings.notifications.categories.pipelines.runCompleted.name",
 				),
@@ -137,7 +137,7 @@ const categories = computed<
 				),
 			},
 			{
-				event: "pipeline:run.failed",
+				event: "pipeline.run.failed",
 				name: t("settings.notifications.categories.pipelines.runFailed.name"),
 				description: t(
 					"settings.notifications.categories.pipelines.runFailed.description",
@@ -150,14 +150,14 @@ const categories = computed<
 		name: t("settings.notifications.categories.system.name"),
 		events: [
 			{
-				event: "system:announcement",
+				event: "system.announcement",
 				name: t("settings.notifications.categories.system.announcement.name"),
 				description: t(
 					"settings.notifications.categories.system.announcement.description",
 				),
 			},
 			{
-				event: "system:report",
+				event: "system.report",
 				name: t("settings.notifications.categories.system.report.name"),
 				description: t(
 					"settings.notifications.categories.system.report.description",

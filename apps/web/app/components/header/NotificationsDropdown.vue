@@ -18,16 +18,21 @@ const { notifications, unreadCount, isLoading, open } = useNotifications();
 // typed payload keyed by notifyType — so resolve the copy once here and keep
 // the template declarative.
 const items = computed(() =>
-	(notifications.value ?? []).map((notification) => {
+	(notifications.value ?? []).flatMap((notification) => {
+		// A notification whose stored params didn't decode has no payload and
+		// can't be rendered as copy — skip it.
+		if (!notification.payload) return [];
 		const { titleKey, messageKey, params } = notificationContent(
 			notification.payload,
 		);
-		return {
-			id: notification.id,
-			title: t(titleKey),
-			message: t(messageKey, params),
-			createdAt: notification.createdAt,
-		};
+		return [
+			{
+				id: notification.id,
+				title: t(titleKey),
+				message: t(messageKey, params),
+				createdAt: notification.createdAt,
+			},
+		];
 	}),
 );
 

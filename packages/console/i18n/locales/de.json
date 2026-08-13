@@ -1758,5 +1758,151 @@
 				"message": "Ein geplanter Bericht ist bereit"
 			}
 		}
+	},
+	"activities": {
+		"events": {
+			"workspaceCreated": {
+				"title": "Workspace erstellt",
+				"message": "Workspace {workspaceSlug} wurde erstellt"
+			},
+			"workspaceUpdated": {
+				"title": "Workspace aktualisiert",
+				"message": "Workspace {workspaceSlug} wurde aktualisiert"
+			},
+			"workspaceDeleted": {
+				"title": "Workspace gelöscht",
+				"message": "Workspace {workspaceSlug} wurde gelöscht"
+			},
+			"memberAdded": {
+				"title": "Mitglied hinzugefügt",
+				"message": "{memberUsername} wurde zum Workspace hinzugefügt"
+			},
+			"memberUpdated": {
+				"title": "Mitglied aktualisiert",
+				"message": "Die Mitgliedschaft von {memberUsername} wurde aktualisiert"
+			},
+			"memberDeleted": {
+				"title": "Mitglied entfernt",
+				"message": "{memberUsername} wurde aus dem Workspace entfernt"
+			},
+			"inviteCreated": {
+				"title": "Einladung gesendet",
+				"message": "Eine Einladung wurde an {email} gesendet"
+			},
+			"inviteAccepted": {
+				"title": "Einladung angenommen",
+				"message": "{email} hat die Einladung angenommen"
+			},
+			"inviteDeclined": {
+				"title": "Einladung abgelehnt",
+				"message": "{email} hat die Einladung abgelehnt"
+			},
+			"inviteCanceled": {
+				"title": "Einladung zurückgezogen",
+				"message": "Die Einladung für {email} wurde zurückgezogen"
+			},
+			"connectionCreated": {
+				"title": "Verbindung erstellt",
+				"message": "Eine Verbindung wurde erstellt"
+			},
+			"connectionUpdated": {
+				"title": "Verbindung aktualisiert",
+				"message": "Eine Verbindung wurde aktualisiert"
+			},
+			"connectionDeleted": {
+				"title": "Verbindung gelöscht",
+				"message": "Eine Verbindung wurde gelöscht"
+			},
+			"connectionSyncCompleted": {
+				"title": "Synchronisierung abgeschlossen",
+				"message": "Eine Verbindung hat die Synchronisierung abgeschlossen"
+			},
+			"connectionSyncFailed": {
+				"title": "Synchronisierung fehlgeschlagen",
+				"message": "Eine Verbindung konnte nicht synchronisiert werden"
+			},
+			"webhookCreated": {
+				"title": "Webhook erstellt",
+				"message": "Ein Webhook wurde erstellt"
+			},
+			"webhookUpdated": {
+				"title": "Webhook aktualisiert",
+				"message": "Ein Webhook wurde aktualisiert"
+			},
+			"webhookDeleted": {
+				"title": "Webhook gelöscht",
+				"message": "Ein Webhook wurde gelöscht"
+			},
+			"webhookTriggered": {
+				"title": "Webhook ausgelöst",
+				"message": "Ein Webhook wurde ausgelöst"
+			},
+			"fileCreated": {
+				"title": "Datei hochgeladen",
+				"message": "{fileName} wurde hochgeladen"
+			},
+			"fileUpdated": {
+				"title": "Datei aktualisiert",
+				"message": "{fileName} wurde aktualisiert"
+			},
+			"fileDeleted": {
+				"title": "Datei gelöscht",
+				"message": "{fileName} wurde gelöscht"
+			},
+			"fileVerified": {
+				"title": "Datei verifiziert",
+				"message": "{fileName} wurde verifiziert"
+			},
+			"pipelineCreated": {
+				"title": "Pipeline erstellt",
+				"message": "Pipeline {pipelineSlug} wurde erstellt"
+			},
+			"pipelineUpdated": {
+				"title": "Pipeline aktualisiert",
+				"message": "Pipeline {pipelineSlug} wurde aktualisiert"
+			},
+			"pipelineDeleted": {
+				"title": "Pipeline gelöscht",
+				"message": "Pipeline {pipelineSlug} wurde gelöscht"
+			},
+			"pipelineRunStarted": {
+				"title": "Lauf gestartet",
+				"message": "Ein Lauf wurde in {pipelineSlug} gestartet"
+			},
+			"pipelineRunAnalyzed": {
+				"title": "Lauf analysiert",
+				"message": "Ein Lauf wurde in {pipelineSlug} analysiert"
+			},
+			"pipelineRunCompleted": {
+				"title": "Lauf abgeschlossen",
+				"message": "Ein Lauf wurde in {pipelineSlug} abgeschlossen"
+			},
+			"pipelineRunFailed": {
+				"title": "Lauf fehlgeschlagen",
+				"message": "Ein Lauf ist in {pipelineSlug} fehlgeschlagen"
+			},
+			"policyCreated": {
+				"title": "Richtlinie erstellt",
+				"message": "Eine Richtlinie wurde erstellt"
+			},
+			"policyUpdated": {
+				"title": "Richtlinie aktualisiert",
+				"message": "Eine Richtlinie wurde aktualisiert"
+			},
+			"policyDeleted": {
+				"title": "Richtlinie gelöscht",
+				"message": "Eine Richtlinie wurde gelöscht"
+			}
+		},
+		"category": {
+			"workspace": "Workspace",
+			"member": "Mitglieder",
+			"invite": "Einladungen",
+			"connection": "Verbindungen",
+			"webhook": "Webhooks",
+			"file": "Dateien",
+			"pipeline": "Pipelines",
+			"policy": "Richtlinien"
+		}
 	}
 }
