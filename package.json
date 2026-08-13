@@ -22,7 +22,8 @@
 		"ci": "biome ci .",
 		"i18n:unused": "node scripts/i18n-unused.mjs",
 		"e2e": "playwright test",
-		"e2e:ui": "playwright test --ui"
+		"e2e:ui": "playwright test --ui",
+		"e2e:headed": "SLOWMO=800 playwright test --headed"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.7",

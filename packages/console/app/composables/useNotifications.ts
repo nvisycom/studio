@@ -1,23 +1,22 @@
-import { useDocumentVisibility, useIntervalFn } from "@vueuse/core";
+import { tryOnScopeDispose } from "@vueuse/core";
 
-// Notifications are occasional, one-way events (not a chat stream), so the
-// badge follows the polling pattern GitHub uses rather than a socket: colada
-// refetches the count on tab focus, and the interval below tops that up while
-// the tab stays visible.
-const UNREAD_POLL_MS = 30_000;
+// How long to wait before reconnecting after the unread-count stream drops.
+const STREAM_RETRY_MS = 5_000;
 
 /**
  * Account-global notifications (the header bell), backed by the SDK's
  * account-scoped `/notifications/` endpoints — not workspace-scoped.
  *
- * Two queries back the bell: a cheap unread-count poll that drives the badge,
- * and the notification list itself, fetched lazily when the dropdown opens.
- * Opening the dropdown also marks everything read, which clears the badge.
+ * The unread count is driven by a Server-Sent Events stream
+ * (`notifications.streamEvents`), which yields the current count immediately
+ * then pushes every change as notifications arrive or are marked read — so the
+ * badge updates in real time with no polling. The notification list itself is
+ * still fetched lazily when the dropdown opens; opening also marks everything
+ * read, which the stream reflects by pushing a fresh (lower) count.
  */
 export function useNotifications() {
 	const { $nvisyClient } = useNuxtApp();
 	const { authToken } = useAuth();
-	const queryCache = useQueryCache();
 
 	const isAuthenticated = () => !!authToken.value?.apiToken;
 
@@ -27,26 +26,56 @@ export function useNotifications() {
 		return client;
 	}
 
-	// Unread count — drives the badge. Cheap enough to keep enabled.
-	const unreadStatusQuery = useQuery({
-		key: () => ["notifications", "unread-status"],
-		query: () => requireClient().notifications.getUnreadNotificationsStatus(),
-		enabled: isAuthenticated,
+	// --- Unread count (live over SSE) ---
+	const unreadCount = ref(0);
+
+	// Subscribe to the count stream while authenticated, reconnecting if it
+	// drops. `stopped` breaks the loop on scope dispose so the stream closes.
+	let stopped = false;
+	let retryTimer: ReturnType<typeof setTimeout> | undefined;
+
+	async function subscribe() {
+		while (!stopped) {
+			if (!isAuthenticated()) break;
+			try {
+				for await (const event of requireClient().notifications.streamEvents()) {
+					if (stopped) break;
+					unreadCount.value = event.unreadCount;
+				}
+			} catch {
+				// Swallow — a dropped/failed stream is retried below.
+			}
+			if (stopped) break;
+			// Stream closed or errored; wait, then reconnect.
+			await new Promise<void>((resolve) => {
+				retryTimer = setTimeout(resolve, STREAM_RETRY_MS);
+			});
+		}
+	}
+
+	// Start once authenticated. `immediate` covers the common case (the bell only
+	// mounts inside the signed-in shell); the watch also starts it if a token
+	// arrives later.
+	let started = false;
+	watch(
+		() => authToken.value?.apiToken,
+		(token) => {
+			if (token && !started) {
+				started = true;
+				subscribe();
+			}
+		},
+		{ immediate: true },
+	);
+
+	tryOnScopeDispose(() => {
+		stopped = true;
+		if (retryTimer) clearTimeout(retryTimer);
 	});
 
-	// Poll the count so a long-open tab stays fresh (colada already refetches on
-	// focus; this covers the tab staying focused). Skip while hidden or logged
-	// out — a background tab shouldn't generate traffic. The interval is cleared
-	// automatically when the calling component's scope is disposed.
-	const visibility = useDocumentVisibility();
-	useIntervalFn(() => {
-		if (visibility.value === "visible" && isAuthenticated()) {
-			unreadStatusQuery.refetch();
-		}
-	}, UNREAD_POLL_MS);
-
-	// The list itself. Fetched lazily (the dropdown calls `open()`), so it isn't
-	// loaded on every page just to sit unopened behind the bell.
+	// --- Notification list (lazy) ---
+	// Fetched when the dropdown opens, so it isn't loaded on every page just to
+	// sit unopened behind the bell.
 	const listQuery = useQuery({
 		key: () => ["notifications", "list"],
 		query: async () =>
@@ -54,17 +83,11 @@ export function useNotifications() {
 		enabled: false,
 	});
 
-	const unreadCount = computed(
-		() => unreadStatusQuery.data.value?.unreadCount ?? 0,
-	);
-
-	// Mark everything read, then refresh the badge so it clears. Kept resilient:
-	// a failed mark-read still leaves the list shown.
+	// Mark everything read; the count stream reports the resulting change, so the
+	// badge clears on its own. Kept resilient: a failed mark-read still leaves
+	// the list shown.
 	const markAllRead = useMutation({
 		mutation: () => requireClient().notifications.markAllRead(),
-		onSuccess() {
-			queryCache.invalidateQueries({ key: ["notifications", "unread-status"] });
-		},
 	});
 
 	/**
