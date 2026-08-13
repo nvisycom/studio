@@ -39,17 +39,22 @@ definePageMeta({
 
 const { createPolicyAsync, isCreating } = usePolicies();
 
-// 0.15 templates are a discriminated union keyed by `kind`, each carrying its
-// own settings. We key the gallery + i18n by kind.
+// Templates are a discriminated union keyed by `kind`, each carrying its own
+// settings. We key the gallery + i18n by kind.
 type TemplateKind = PolicyTemplate["kind"];
 type HipaaMethod = Extract<
 	PolicyTemplate,
 	{ kind: "hipaa_deidentification" }
 >["method"];
+type HipaaAccounts = Extract<
+	PolicyTemplate,
+	{ kind: "hipaa_deidentification" }
+>["accounts"];
 type GdprTreatment = Extract<
 	PolicyTemplate,
 	{ kind: "gdpr_article9" }
 >["treatment"];
+type GdprScope = Extract<PolicyTemplate, { kind: "gdpr_article9" }>["scope"];
 type PciPart = Extract<PolicyTemplate, { kind: "pci_dss" }>["part"]["part"];
 type PciRender = Extract<
 	Extract<PolicyTemplate, { kind: "pci_dss" }>["part"],
@@ -61,6 +66,7 @@ const TEMPLATES: { kind: TemplateKind; category: string }[] = [
 	{ kind: "gdpr_article9", category: "GDPR" },
 	{ kind: "pci_dss", category: "PCI DSS" },
 	{ kind: "ccpa", category: "CCPA" },
+	{ kind: "soc2_secrets", category: "SOC 2" },
 ];
 
 // Selectable options for each template's settings.
@@ -69,7 +75,13 @@ const HIPAA_METHODS: HipaaMethod[] = [
 	"limited_data_set",
 	"expert_determination",
 ];
+const HIPAA_ACCOUNTS: HipaaAccounts[] = ["standard", "extended"];
 const GDPR_TREATMENTS: GdprTreatment[] = ["erase", "pseudonymize"];
+const GDPR_SCOPES: GdprScope[] = [
+	"article9",
+	"article9_with_reid_hardening",
+	"article9_and10",
+];
 const PCI_PARTS: PciPart[] = ["pan_render", "sav_erase"];
 const PCI_RENDERS: PciRender[] = [
 	"truncate",
@@ -102,7 +114,9 @@ const displayName = ref("");
 
 // Per-kind settings (defaults chosen as the most common / safest option).
 const hipaaMethod = ref<HipaaMethod>("safe_harbor");
+const hipaaAccounts = ref<HipaaAccounts>("standard");
 const gdprTreatment = ref<GdprTreatment>("erase");
+const gdprScope = ref<GdprScope>("article9");
 const pciPart = ref<PciPart>("pan_render");
 const pciRender = ref<PciRender>("truncate_last_four");
 
@@ -129,9 +143,9 @@ const isValid = computed(
 function buildTemplate(kind: TemplateKind): PolicyTemplate {
 	switch (kind) {
 		case "hipaa_deidentification":
-			return { kind, method: hipaaMethod.value };
+			return { kind, method: hipaaMethod.value, accounts: hipaaAccounts.value };
 		case "gdpr_article9":
-			return { kind, treatment: gdprTreatment.value };
+			return { kind, treatment: gdprTreatment.value, scope: gdprScope.value };
 		case "pci_dss":
 			return {
 				kind,
@@ -140,6 +154,8 @@ function buildTemplate(kind: TemplateKind): PolicyTemplate {
 						? { part: "pan_render", render: pciRender.value }
 						: { part: "sav_erase" },
 			};
+		case "soc2_secrets":
+			return { kind: "soc2_secrets" };
 		default:
 			return { kind: "ccpa" };
 	}
@@ -296,51 +312,83 @@ async function create() {
             </p>
           </div>
 
-          <!-- HIPAA: de-identification method -->
-          <div
-            v-if="selected === 'hipaa_deidentification'"
-            class="flex items-center justify-between gap-3"
-          >
-            <Label class="shrink-0">
-              {{ t("policies.templates.settings.hipaaMethod") }}
-            </Label>
-            <Select v-model="hipaaMethod">
-              <SelectTrigger class="w-[220px]"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem
-                  v-for="method in HIPAA_METHODS"
-                  :key="method"
-                  :value="method"
-                >
-                  {{ t(`policies.templates.settings.hipaaMethods.${method}`) }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <!-- HIPAA: de-identification method + account identifiers -->
+          <template v-if="selected === 'hipaa_deidentification'">
+            <div class="flex items-center justify-between gap-3">
+              <Label class="shrink-0">
+                {{ t("policies.templates.settings.hipaaMethod") }}
+              </Label>
+              <Select v-model="hipaaMethod">
+                <SelectTrigger class="w-[220px]"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem
+                    v-for="method in HIPAA_METHODS"
+                    :key="method"
+                    :value="method"
+                  >
+                    {{ t(`policies.templates.settings.hipaaMethods.${method}`) }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <Label class="shrink-0">
+                {{ t("policies.templates.settings.hipaaAccount") }}
+              </Label>
+              <Select v-model="hipaaAccounts">
+                <SelectTrigger class="w-[220px]"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem
+                    v-for="account in HIPAA_ACCOUNTS"
+                    :key="account"
+                    :value="account"
+                  >
+                    {{ t(`policies.templates.settings.hipaaAccounts.${account}`) }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </template>
 
-          <!-- GDPR: Article 9 treatment -->
-          <div
-            v-else-if="selected === 'gdpr_article9'"
-            class="flex items-center justify-between gap-3"
-          >
-            <Label class="shrink-0">
-              {{ t("policies.templates.settings.gdprTreatment") }}
-            </Label>
-            <Select v-model="gdprTreatment">
-              <SelectTrigger class="w-[220px]"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem
-                  v-for="treatment in GDPR_TREATMENTS"
-                  :key="treatment"
-                  :value="treatment"
-                >
-                  {{
-                    t(`policies.templates.settings.gdprTreatments.${treatment}`)
-                  }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <!-- GDPR: Article 9 treatment + scope -->
+          <template v-else-if="selected === 'gdpr_article9'">
+            <div class="flex items-center justify-between gap-3">
+              <Label class="shrink-0">
+                {{ t("policies.templates.settings.gdprTreatment") }}
+              </Label>
+              <Select v-model="gdprTreatment">
+                <SelectTrigger class="w-[220px]"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem
+                    v-for="treatment in GDPR_TREATMENTS"
+                    :key="treatment"
+                    :value="treatment"
+                  >
+                    {{
+                      t(`policies.templates.settings.gdprTreatments.${treatment}`)
+                    }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <Label class="shrink-0">
+                {{ t("policies.templates.settings.gdprScope") }}
+              </Label>
+              <Select v-model="gdprScope">
+                <SelectTrigger class="w-[220px]"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem
+                    v-for="scope in GDPR_SCOPES"
+                    :key="scope"
+                    :value="scope"
+                  >
+                    {{ t(`policies.templates.settings.gdprScopes.${scope}`) }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </template>
 
           <!-- PCI DSS: subsection + render approach -->
           <template v-else-if="selected === 'pci_dss'">
