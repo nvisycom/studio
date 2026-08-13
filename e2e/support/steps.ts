@@ -70,3 +70,33 @@ export async function createPolicyFromTemplate(
 
 	return name;
 }
+
+/**
+ * Step 4 — create a pipeline and attach the given policy. Opens the create
+ * sheet, names the pipeline, picks the policy in the MultiSelect (its options
+ * carry role="option" labelled by the policy name), and submits. Returns the
+ * pipeline name.
+ */
+export async function createPipeline(
+	page: Page,
+	slug: string,
+	policyName: string,
+	name = `E2E Pipeline ${Date.now().toString(36)}`,
+): Promise<string> {
+	await page.goto(`/w/${slug}/workflows`);
+
+	await page.getByTestId("pipeline-create").click();
+	await page.getByTestId("pipeline-name").fill(name);
+
+	// Attach the policy: open the picker, tick the option, close it.
+	await page.getByTestId("pipeline-policies").click();
+	await page.getByRole("option", { name: policyName }).click();
+	await page.keyboard.press("Escape");
+
+	await page.getByTestId("pipeline-submit").click();
+
+	// The sheet closes and the new pipeline appears in the list.
+	await expect(page.getByText(name, { exact: false })).toBeVisible();
+
+	return name;
+}

@@ -1,5 +1,6 @@
 import { test } from "@playwright/test";
 import {
+	createPipeline,
 	createPolicyFromTemplate,
 	createWorkspace,
 	signUp,
@@ -22,5 +23,8 @@ test("happy path: signup through pipeline run", async ({ page }) => {
 	const slug = await createWorkspace(page);
 
 	// Step 3 — create a policy from a template.
-	await createPolicyFromTemplate(page, slug);
+	const policyName = await createPolicyFromTemplate(page, slug);
+
+	// Step 4 — create a pipeline with that policy.
+	await createPipeline(page, slug, policyName);
 });

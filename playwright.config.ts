@@ -30,7 +30,16 @@ export default defineConfig({
 		screenshot: "only-on-failure",
 		video: "retain-on-failure",
 	},
-	projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+	projects: [
+		{
+			name: "chromium",
+			use: {
+				...devices["Desktop Chrome"],
+				// SLOWMO=<ms> paces actions when watching a headed run.
+				launchOptions: { slowMo: Number(process.env.SLOWMO ?? 0) },
+			},
+		},
+	],
 	webServer: process.env.PW_NO_SERVER
 		? undefined
 		: {

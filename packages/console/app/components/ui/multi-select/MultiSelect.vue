@@ -18,6 +18,10 @@ interface Option {
 	label: string;
 }
 
+// Forward attrs onto the trigger, not the (renderless) Combobox root, so a
+// caller's data-testid / aria-* / title lands on the element they interact with.
+defineOptions({ inheritAttrs: false });
+
 const model = defineModel<T[]>({ default: () => [] });
 
 const props = withDefaults(
@@ -42,7 +46,12 @@ function isSelected(value: T): boolean {
   <Combobox v-model="model" multiple>
     <ComboboxAnchor as-child class="w-auto">
       <ComboboxTrigger as-child>
-        <Button variant="outline" size="sm" class="h-9 font-normal">
+        <Button
+          v-bind="$attrs"
+          variant="outline"
+          size="sm"
+          class="h-9 font-normal"
+        >
           <Filter :size="14" class="mr-2 text-muted-foreground" />
           {{ props.label }}
           <Badge v-if="model.length" variant="secondary" class="ml-2">

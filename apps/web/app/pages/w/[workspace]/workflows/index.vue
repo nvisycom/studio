@@ -224,7 +224,11 @@ function rowActions(pipeline: PipelineRow): RowAction[] {
                     {{ t("workflows.actions.viewRuns") }}
                   </NuxtLink>
                 </Button>
-                <Button size="sm" @click="isCreateSheetOpen = true">
+                <Button
+                  size="sm"
+                  data-testid="pipeline-create"
+                  @click="isCreateSheetOpen = true"
+                >
                   <Workflow :size="16" class="mr-1.5" />
                   {{ t("workflows.actions.create") }}
                 </Button>
