@@ -128,7 +128,7 @@ async function handleMicrosoftSignup(): Promise<void> {
         <Label for="username" required>{{ t("auth.signup.username") }}</Label>
         <Input
           id="username"
-          name="username"
+          name="username" data-testid="signup-username"
           v-model="username"
           type="text"
           :placeholder="t('auth.signup.usernamePlaceholder')"
@@ -148,7 +148,7 @@ async function handleMicrosoftSignup(): Promise<void> {
         <Label for="email" required>{{ t("auth.shared.email") }}</Label>
         <Input
           id="email"
-          name="email"
+          name="email" data-testid="signup-email"
           v-model="email"
           type="email"
           :placeholder="t('auth.shared.emailPlaceholder')"
@@ -164,7 +164,7 @@ async function handleMicrosoftSignup(): Promise<void> {
         <div class="relative">
           <Input
             id="password"
-            name="password"
+            name="password" data-testid="signup-password"
             v-model="password"
             :type="showPassword ? 'text' : 'password'"
             :placeholder="t('auth.signup.passwordPlaceholder')"
@@ -186,7 +186,7 @@ async function handleMicrosoftSignup(): Promise<void> {
       <!-- Terms Agreement -->
       <div class="space-y-1">
         <div class="flex items-start gap-2">
-          <Checkbox id="terms" v-model="agreeToTerms" class="mt-0.5" />
+          <Checkbox id="terms" data-testid="signup-terms" v-model="agreeToTerms" class="mt-0.5" />
           <Label
             for="terms"
             class="text-sm font-normal cursor-pointer leading-snug text-muted-foreground"
@@ -238,7 +238,7 @@ async function handleMicrosoftSignup(): Promise<void> {
       </div>
 
       <!-- Submit Button -->
-      <Button type="submit" class="w-full h-10" :disabled="isSigningUp">
+      <Button type="submit" class="w-full h-10" data-testid="signup-submit" :disabled="isSigningUp">
         {{ isSigningUp ? t("auth.signup.submitting") : t("auth.signup.submit") }}
       </Button>
     </form>
