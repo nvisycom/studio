@@ -33,14 +33,14 @@ export function useMembers(query?: MaybeRef<ListMembers>) {
 			{ client, workspaceSlug },
 			{ username, updates }: { username: string; updates: UpdateMember },
 		) => client.members.updateMember(workspaceSlug, username, updates),
-		{ invalidates: membersQuery },
+		{ invalidates: "members" },
 	);
 
 	const removeMemberMutation = workspaceMutation(
 		({ client, workspaceSlug }, username: string) =>
 			client.members.removeMember(workspaceSlug, username),
 		{
-			invalidates: membersQuery,
+			invalidates: "members",
 			onMutate: (username) => optimistic.remove(username),
 			onError: (_error, username) => optimistic.restore(username),
 		},
@@ -48,7 +48,7 @@ export function useMembers(query?: MaybeRef<ListMembers>) {
 
 	const leaveMutation = workspaceMutation(
 		({ client, workspaceSlug }) => client.members.leaveWorkspace(workspaceSlug),
-		{ invalidates: membersQuery },
+		{ invalidates: "members" },
 	);
 
 	return {

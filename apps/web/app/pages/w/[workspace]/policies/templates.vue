@@ -246,6 +246,7 @@ async function create() {
             <Button
               variant="outline"
               class="w-full font-normal"
+              :data-testid="`policy-template-${template.kind}`"
               @click="openDialog(template.kind)"
             >
               {{ t("policies.templates.use") }}
@@ -273,6 +274,7 @@ async function create() {
             <Input
               id="template-name"
               v-model="displayName"
+              data-testid="policy-name"
               :placeholder="t('policies.templates.namePlaceholder')"
             />
           </div>
@@ -386,7 +388,11 @@ async function create() {
           <Button variant="outline" @click="selected = null">
             {{ t("policies.templates.cancel") }}
           </Button>
-          <Button :disabled="!isValid || isCreating" @click="create">
+          <Button
+            data-testid="policy-create"
+            :disabled="!isValid || isCreating"
+            @click="create"
+          >
             <Loader2 v-if="isCreating" class="mr-2 h-4 w-4 animate-spin" />
             {{ t("policies.templates.create") }}
           </Button>

@@ -290,7 +290,12 @@ function handleLoadMore() {
       <div
         class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center mb-4"
       >
-        <Button variant="default" size="sm" @click="openUploadDialog">
+        <Button
+          variant="default"
+          size="sm"
+          data-testid="files-upload"
+          @click="openUploadDialog"
+        >
           <Upload :size="16" class="mr-2" />
           {{ t("files.actions.upload") }}
         </Button>

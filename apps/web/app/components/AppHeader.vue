@@ -69,8 +69,8 @@ function openFeedbackModal() {
       <NotificationsDropdown />
       <Button
         variant="ghost"
-        size="sm"
-        class="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+        size="icon-sm"
+        class="rounded-full text-muted-foreground hover:text-foreground"
         :aria-label="t('feedback.title')"
         :title="t('feedback.title')"
         @click="openFeedbackModal"

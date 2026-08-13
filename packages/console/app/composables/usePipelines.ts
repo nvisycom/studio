@@ -27,7 +27,7 @@ export function usePipelines() {
 	const createPipelineMutation = workspaceMutation(
 		({ client, workspaceSlug }, pipeline: CreatePipeline) =>
 			client.pipelines.createPipeline(workspaceSlug, pipeline),
-		{ invalidates: pipelinesQuery },
+		{ invalidates: "pipelines" },
 	);
 
 	const updatePipelineMutation = workspaceMutation(
@@ -38,14 +38,14 @@ export function usePipelines() {
 				updates,
 			}: { pipelineSlug: string; updates: UpdatePipeline },
 		) => client.pipelines.updatePipeline(workspaceSlug, pipelineSlug, updates),
-		{ invalidates: pipelinesQuery },
+		{ invalidates: "pipelines" },
 	);
 
 	const deletePipelineMutation = workspaceMutation(
 		({ client, workspaceSlug }, pipelineSlug: string) =>
 			client.pipelines.deletePipeline(workspaceSlug, pipelineSlug),
 		{
-			invalidates: pipelinesQuery,
+			invalidates: "pipelines",
 			onMutate: (pipelineSlug) => optimistic.remove(pipelineSlug),
 			onError: (_error, pipelineSlug) => optimistic.restore(pipelineSlug),
 		},

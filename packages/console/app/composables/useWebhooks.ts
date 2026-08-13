@@ -25,7 +25,7 @@ export function useWebhooks() {
 	const createWebhookMutation = workspaceMutation(
 		({ client, workspaceSlug }, webhook: CreateWebhook) =>
 			client.webhooks.createWebhook(workspaceSlug, webhook),
-		{ invalidates: webhooksQuery },
+		{ invalidates: "webhooks" },
 	);
 
 	const updateWebhookMutation = workspaceMutation(
@@ -50,7 +50,7 @@ export function useWebhooks() {
 		({ client, workspaceSlug }, webhookId: string) =>
 			client.webhooks.deleteWebhook(workspaceSlug, webhookId),
 		{
-			invalidates: webhooksQuery,
+			invalidates: "webhooks",
 			onMutate: (webhookId) => optimistic.remove(webhookId),
 			onError: (_error, webhookId) => optimistic.restore(webhookId),
 		},

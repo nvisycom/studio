@@ -35,14 +35,14 @@ export function useInvites(query?: MaybeRef<ListInvites>) {
 	const sendInviteMutation = workspaceMutation(
 		({ client, workspaceSlug }, invite: CreateInvite) =>
 			client.invites.sendInvite(workspaceSlug, invite),
-		{ invalidates: invitesQuery },
+		{ invalidates: "invites" },
 	);
 
 	const cancelInviteMutation = workspaceMutation(
 		({ client, workspaceSlug }, inviteId: string) =>
 			client.invites.cancelInvite(workspaceSlug, inviteId),
 		{
-			invalidates: invitesQuery,
+			invalidates: "invites",
 			onMutate: (inviteId) => optimistic.remove(inviteId),
 			onError: (_error, inviteId) => optimistic.restore(inviteId),
 		},

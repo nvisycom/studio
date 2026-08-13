@@ -314,6 +314,7 @@ function cancel() {
             <Input
               id="pipeline-name"
               v-model="name"
+              data-testid="pipeline-name"
               :placeholder="t('workflows.create.namePlaceholder')"
             />
           </div>
@@ -365,6 +366,7 @@ function cancel() {
               :empty-text="t('workflows.create.policiesEmpty')"
               searchable
               content-class="w-64"
+              data-testid="pipeline-policies"
             />
           </div>
           <div v-if="selectedPolicies.length" class="flex flex-wrap gap-1.5">
@@ -537,7 +539,11 @@ function cancel() {
           <Button variant="outline" @click="cancel">
             {{ t("workflows.create.cancel") }}
           </Button>
-          <Button @click="submit" :disabled="!isFormValid || isLoading">
+          <Button
+            data-testid="pipeline-submit"
+            @click="submit"
+            :disabled="!isFormValid || isLoading"
+          >
             <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
             {{ t(keys.submit) }}
           </Button>

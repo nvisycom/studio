@@ -134,6 +134,7 @@ async function createWorkspace() {
               <Input
                 id="display-name"
                 v-model="displayName"
+                data-testid="workspace-name"
                 :placeholder="t('workspace.create.namePlaceholder')"
                 maxlength="100"
               />
@@ -244,7 +245,11 @@ async function createWorkspace() {
           <Button type="button" variant="outline" @click="open = false">
             {{ t("workspace.create.cancelButton") }}
           </Button>
-          <Button type="submit" :disabled="!isFormValid || isCreating">
+          <Button
+            type="submit"
+            data-testid="workspace-submit"
+            :disabled="!isFormValid || isCreating"
+          >
             <Loader2 v-if="isCreating" class="mr-2 h-4 w-4 animate-spin" />
             {{ t("workspace.create.submitButton") }}
           </Button>

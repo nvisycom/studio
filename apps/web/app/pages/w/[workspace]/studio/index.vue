@@ -25,31 +25,13 @@ onMounted(() => {
 	restoreSession();
 });
 
-// File type detection
-const fileExtension = computed(() => {
-	const fileName = activeFile.value?.displayName || "";
-	const ext = fileName.split(".").pop()?.toLowerCase() || "";
-	return ext;
-});
-
-const isImageFile = computed(() => {
-	const imageExtensions = ["png", "jpg", "jpeg", "gif", "webp", "bmp", "svg"];
-	return imageExtensions.includes(fileExtension.value);
-});
-
-const isTextFile = computed(() => {
-	const textExtensions = [
-		"txt",
-		"md",
-		"log",
-		"csv",
-		"json",
-		"xml",
-		"yaml",
-		"yml",
-	];
-	return textExtensions.includes(fileExtension.value);
-});
+// File type detection (drives which preview renderer to show).
+const isImageFile = computed(() =>
+	isImageFileName(activeFile.value?.displayName ?? ""),
+);
+const isTextFile = computed(() =>
+	isTextFileName(activeFile.value?.displayName ?? ""),
+);
 
 const zoomLevel = ref(100);
 
@@ -61,9 +43,21 @@ const panelTab = ref<"chat" | "audit">("audit");
 const entities = ref<TextEntityView[]>([]);
 const activeEntityId = ref<string | null>(null);
 
+// Whether a CSV's first row is a header. Shared so the audit list labels rows
+// the same way the table renders them.
+const withHeaders = ref(true);
+
 function focusEntity(id: string) {
 	activeEntityId.value = activeEntityId.value === id ? null : id;
 }
+function clearEntity() {
+	activeEntityId.value = null;
+}
+// Escape clears the entity selection — but only when one is active, so it
+// doesn't swallow Escape meant for another open overlay (chat input, dialog).
+useEventListener(document, "keydown", (e: KeyboardEvent) => {
+	if (e.key === "Escape" && activeEntityId.value) clearEntity();
+});
 
 // Chat panel state
 const chatVisible = ref(true);
@@ -151,10 +145,12 @@ function startResize(e: MouseEvent) {
         :chat-visible="chatVisible"
         :entities="entities"
         :active-entity-id="activeEntityId"
+        v-model:with-headers="withHeaders"
         @zoom-in="zoomIn"
         @zoom-out="zoomOut"
         @toggle-chat="toggleChat"
         @focus-entity="focusEntity"
+        @clear-entity="clearEntity"
       />
     </div>
 
@@ -208,6 +204,7 @@ function startResize(e: MouseEvent) {
           <StudioAuditPanel
             :file-id="activeFile?.fileId || null"
             :active-entity-id="activeEntityId"
+            :with-headers="withHeaders"
             @update:entities="entities = $event"
             @focus-entity="focusEntity"
           />

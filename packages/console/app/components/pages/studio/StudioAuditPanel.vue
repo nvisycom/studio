@@ -24,7 +24,24 @@ const props = defineProps<{
 	fileId: string | null;
 	/** Entity currently focused (from a highlight click), for row highlighting. */
 	activeEntityId?: string | null;
+	/** Whether the open CSV treats row 0 as a header (affects tabular labels). */
+	withHeaders?: boolean;
 }>();
+
+/**
+ * Label a tabular entity's cell. With headers on, use the column name (when the
+ * recognizer supplied one) and count data rows from 1; with headers off, there
+ * is no header, so show the column number and count every row including row 0.
+ */
+function cellLabel(cell: NonNullable<TextEntityView["cell"]>): string {
+	const n = cell.column + 1;
+	const column =
+		props.withHeaders && cell.columnName
+			? t("studio.audit.colNamed", { n, name: cell.columnName })
+			: t("studio.audit.colN", { n });
+	const row = props.withHeaders ? cell.row : cell.row + 1;
+	return t("studio.audit.cell", { column, row });
+}
 
 const emit = defineEmits<{
 	/** Detected entities, surfaced so the document overlay can highlight them. */
@@ -153,6 +170,13 @@ const confidencePct = (c: number) => `${Math.round(c * 100)}%`;
             >
               {{ p.displayName }}
             </SelectItem>
+            <!-- Avoid a blank menu box when there are no pipelines to pick. -->
+            <p
+              v-if="!pipelines?.length"
+              class="px-2 py-1.5 text-sm text-muted-foreground"
+            >
+              {{ t("studio.audit.noPipelines") }}
+            </p>
           </SelectContent>
         </Select>
 
@@ -272,7 +296,10 @@ const confidencePct = (c: number) => `${Math.round(c * 100)}%`;
             />
             <span class="min-w-0 flex-1">
               <span class="block truncate text-xs text-muted-foreground">
-                {{ t("studio.audit.bytes", { start: entity.start, end: entity.end }) }}
+                <template v-if="entity.cell">{{ cellLabel(entity.cell) }}</template>
+                <template v-else>
+                  {{ t("studio.audit.bytes", { start: entity.start, end: entity.end }) }}
+                </template>
               </span>
             </span>
             <span

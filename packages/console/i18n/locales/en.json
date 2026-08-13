@@ -459,12 +459,21 @@
 			},
 			"upload": {
 				"title": "Upload Files",
-				"description": "Drag and drop files here or click to browse",
-				"dropHint": "Drop files here to upload",
-				"browseButton": "Browse Files",
-				"uploading": "Uploading...",
+				"subtitle": "Add documents to your workspace. Up to {max} per file.",
+				"description": "Drag and drop files here",
+				"browseHint": "or click to browse",
+				"dropHint": "Drop files to upload",
+				"selected": "{count} file selected | {count} files selected",
+				"uploading": "Uploading…",
+				"uploadCount": "Upload {count} file | Upload {count} files",
+				"remove": "Remove file",
 				"cancel": "Cancel",
-				"done": "Done"
+				"done": "Done",
+				"errors": {
+					"unsupported": "Unsupported file type",
+					"tooLarge": "Exceeds the {max} limit",
+					"failed": "Upload failed"
+				}
 			}
 		},
 		"messages": {
@@ -1176,7 +1185,22 @@
 			"noFileHint": "Open a text file to run detection.",
 			"emptyTitle": "No entities found",
 			"emptyHint": "This pipeline detected nothing in the document.",
-			"apply": "Apply redaction"
+			"apply": "Apply redaction",
+			"noPipelines": "No pipelines yet. Create one first.",
+			"cell": "{column} · row {row}",
+			"colN": "col {n}",
+			"detail": {
+				"confidence": "Confidence",
+				"location": "Location",
+				"source": "Detected by",
+				"language": "Language"
+			},
+			"colNamed": "col {n} ({name})"
+		},
+		"preview": {
+			"table": "Table",
+			"raw": "Raw",
+			"withHeaders": "With headers"
 		}
 	},
 	"commandMenu": {
@@ -1747,6 +1771,152 @@
 				"title": "Report ready",
 				"message": "A scheduled report is ready"
 			}
+		}
+	},
+	"activities": {
+		"events": {
+			"workspaceCreated": {
+				"title": "Workspace created",
+				"message": "Workspace {workspaceSlug} was created"
+			},
+			"workspaceUpdated": {
+				"title": "Workspace updated",
+				"message": "Workspace {workspaceSlug} was updated"
+			},
+			"workspaceDeleted": {
+				"title": "Workspace deleted",
+				"message": "Workspace {workspaceSlug} was deleted"
+			},
+			"memberAdded": {
+				"title": "Member added",
+				"message": "{memberUsername} was added to the workspace"
+			},
+			"memberUpdated": {
+				"title": "Member updated",
+				"message": "{memberUsername}'s membership was updated"
+			},
+			"memberDeleted": {
+				"title": "Member removed",
+				"message": "{memberUsername} was removed from the workspace"
+			},
+			"inviteCreated": {
+				"title": "Invite sent",
+				"message": "An invite was sent to {email}"
+			},
+			"inviteAccepted": {
+				"title": "Invite accepted",
+				"message": "{email} accepted their invite"
+			},
+			"inviteDeclined": {
+				"title": "Invite declined",
+				"message": "{email} declined their invite"
+			},
+			"inviteCanceled": {
+				"title": "Invite canceled",
+				"message": "The invite for {email} was canceled"
+			},
+			"connectionCreated": {
+				"title": "Connection created",
+				"message": "A connection was created"
+			},
+			"connectionUpdated": {
+				"title": "Connection updated",
+				"message": "A connection was updated"
+			},
+			"connectionDeleted": {
+				"title": "Connection deleted",
+				"message": "A connection was deleted"
+			},
+			"connectionSyncCompleted": {
+				"title": "Sync completed",
+				"message": "A connection finished syncing"
+			},
+			"connectionSyncFailed": {
+				"title": "Sync failed",
+				"message": "A connection failed to sync"
+			},
+			"webhookCreated": {
+				"title": "Webhook created",
+				"message": "A webhook was created"
+			},
+			"webhookUpdated": {
+				"title": "Webhook updated",
+				"message": "A webhook was updated"
+			},
+			"webhookDeleted": {
+				"title": "Webhook deleted",
+				"message": "A webhook was deleted"
+			},
+			"webhookTriggered": {
+				"title": "Webhook triggered",
+				"message": "A webhook was triggered"
+			},
+			"fileCreated": {
+				"title": "File uploaded",
+				"message": "{fileName} was uploaded"
+			},
+			"fileUpdated": {
+				"title": "File updated",
+				"message": "{fileName} was updated"
+			},
+			"fileDeleted": {
+				"title": "File deleted",
+				"message": "{fileName} was deleted"
+			},
+			"fileVerified": {
+				"title": "File verified",
+				"message": "{fileName} was verified"
+			},
+			"pipelineCreated": {
+				"title": "Pipeline created",
+				"message": "Pipeline {pipelineSlug} was created"
+			},
+			"pipelineUpdated": {
+				"title": "Pipeline updated",
+				"message": "Pipeline {pipelineSlug} was updated"
+			},
+			"pipelineDeleted": {
+				"title": "Pipeline deleted",
+				"message": "Pipeline {pipelineSlug} was deleted"
+			},
+			"pipelineRunStarted": {
+				"title": "Run started",
+				"message": "A run started in {pipelineSlug}"
+			},
+			"pipelineRunAnalyzed": {
+				"title": "Run analyzed",
+				"message": "A run was analyzed in {pipelineSlug}"
+			},
+			"pipelineRunCompleted": {
+				"title": "Run completed",
+				"message": "A run finished in {pipelineSlug}"
+			},
+			"pipelineRunFailed": {
+				"title": "Run failed",
+				"message": "A run failed in {pipelineSlug}"
+			},
+			"policyCreated": {
+				"title": "Policy created",
+				"message": "A policy was created"
+			},
+			"policyUpdated": {
+				"title": "Policy updated",
+				"message": "A policy was updated"
+			},
+			"policyDeleted": {
+				"title": "Policy deleted",
+				"message": "A policy was deleted"
+			}
+		},
+		"category": {
+			"workspace": "Workspace",
+			"member": "Members",
+			"invite": "Invites",
+			"connection": "Connections",
+			"webhook": "Webhooks",
+			"file": "Files",
+			"pipeline": "Pipelines",
+			"policy": "Policies"
 		}
 	}
 }

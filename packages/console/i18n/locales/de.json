@@ -458,13 +458,22 @@
 				"cancel": "Abbrechen"
 			},
 			"upload": {
-				"title": "Dateien Hochladen",
-				"description": "Ziehen Sie Dateien hierher oder klicken Sie zum Durchsuchen",
-				"dropHint": "Dateien hier ablegen zum Hochladen",
-				"browseButton": "Dateien Durchsuchen",
-				"uploading": "Wird hochgeladen...",
+				"title": "Dateien hochladen",
+				"subtitle": "Fügen Sie Dokumente zu Ihrem Workspace hinzu. Bis zu {max} pro Datei.",
+				"description": "Dateien hierher ziehen",
+				"browseHint": "oder zum Durchsuchen klicken",
+				"dropHint": "Dateien zum Hochladen ablegen",
+				"selected": "{count} Datei ausgewählt | {count} Dateien ausgewählt",
+				"uploading": "Wird hochgeladen…",
+				"uploadCount": "{count} Datei hochladen | {count} Dateien hochladen",
+				"remove": "Datei entfernen",
 				"cancel": "Abbrechen",
-				"done": "Fertig"
+				"done": "Fertig",
+				"errors": {
+					"unsupported": "Nicht unterstützter Dateityp",
+					"tooLarge": "Überschreitet das Limit von {max}",
+					"failed": "Hochladen fehlgeschlagen"
+				}
 			}
 		},
 		"messages": {
@@ -1176,7 +1185,22 @@
 			"noFileHint": "Öffne eine Textdatei, um die Erkennung auszuführen.",
 			"emptyTitle": "Keine Entitäten gefunden",
 			"emptyHint": "Diese Pipeline hat im Dokument nichts erkannt.",
-			"apply": "Schwärzung anwenden"
+			"apply": "Schwärzung anwenden",
+			"noPipelines": "Noch keine Pipelines. Erstellen Sie zuerst eine.",
+			"cell": "{column} · Zeile {row}",
+			"colN": "Sp. {n}",
+			"detail": {
+				"confidence": "Konfidenz",
+				"location": "Position",
+				"source": "Erkannt von",
+				"language": "Sprache"
+			},
+			"colNamed": "Sp. {n} ({name})"
+		},
+		"preview": {
+			"table": "Tabelle",
+			"raw": "Roh",
+			"withHeaders": "Mit Kopfzeile"
 		}
 	},
 	"commandMenu": {
@@ -1747,6 +1771,152 @@
 				"title": "Bericht bereit",
 				"message": "Ein geplanter Bericht ist bereit"
 			}
+		}
+	},
+	"activities": {
+		"events": {
+			"workspaceCreated": {
+				"title": "Workspace erstellt",
+				"message": "Workspace {workspaceSlug} wurde erstellt"
+			},
+			"workspaceUpdated": {
+				"title": "Workspace aktualisiert",
+				"message": "Workspace {workspaceSlug} wurde aktualisiert"
+			},
+			"workspaceDeleted": {
+				"title": "Workspace gelöscht",
+				"message": "Workspace {workspaceSlug} wurde gelöscht"
+			},
+			"memberAdded": {
+				"title": "Mitglied hinzugefügt",
+				"message": "{memberUsername} wurde zum Workspace hinzugefügt"
+			},
+			"memberUpdated": {
+				"title": "Mitglied aktualisiert",
+				"message": "Die Mitgliedschaft von {memberUsername} wurde aktualisiert"
+			},
+			"memberDeleted": {
+				"title": "Mitglied entfernt",
+				"message": "{memberUsername} wurde aus dem Workspace entfernt"
+			},
+			"inviteCreated": {
+				"title": "Einladung gesendet",
+				"message": "Eine Einladung wurde an {email} gesendet"
+			},
+			"inviteAccepted": {
+				"title": "Einladung angenommen",
+				"message": "{email} hat die Einladung angenommen"
+			},
+			"inviteDeclined": {
+				"title": "Einladung abgelehnt",
+				"message": "{email} hat die Einladung abgelehnt"
+			},
+			"inviteCanceled": {
+				"title": "Einladung zurückgezogen",
+				"message": "Die Einladung für {email} wurde zurückgezogen"
+			},
+			"connectionCreated": {
+				"title": "Verbindung erstellt",
+				"message": "Eine Verbindung wurde erstellt"
+			},
+			"connectionUpdated": {
+				"title": "Verbindung aktualisiert",
+				"message": "Eine Verbindung wurde aktualisiert"
+			},
+			"connectionDeleted": {
+				"title": "Verbindung gelöscht",
+				"message": "Eine Verbindung wurde gelöscht"
+			},
+			"connectionSyncCompleted": {
+				"title": "Synchronisierung abgeschlossen",
+				"message": "Eine Verbindung hat die Synchronisierung abgeschlossen"
+			},
+			"connectionSyncFailed": {
+				"title": "Synchronisierung fehlgeschlagen",
+				"message": "Eine Verbindung konnte nicht synchronisiert werden"
+			},
+			"webhookCreated": {
+				"title": "Webhook erstellt",
+				"message": "Ein Webhook wurde erstellt"
+			},
+			"webhookUpdated": {
+				"title": "Webhook aktualisiert",
+				"message": "Ein Webhook wurde aktualisiert"
+			},
+			"webhookDeleted": {
+				"title": "Webhook gelöscht",
+				"message": "Ein Webhook wurde gelöscht"
+			},
+			"webhookTriggered": {
+				"title": "Webhook ausgelöst",
+				"message": "Ein Webhook wurde ausgelöst"
+			},
+			"fileCreated": {
+				"title": "Datei hochgeladen",
+				"message": "{fileName} wurde hochgeladen"
+			},
+			"fileUpdated": {
+				"title": "Datei aktualisiert",
+				"message": "{fileName} wurde aktualisiert"
+			},
+			"fileDeleted": {
+				"title": "Datei gelöscht",
+				"message": "{fileName} wurde gelöscht"
+			},
+			"fileVerified": {
+				"title": "Datei verifiziert",
+				"message": "{fileName} wurde verifiziert"
+			},
+			"pipelineCreated": {
+				"title": "Pipeline erstellt",
+				"message": "Pipeline {pipelineSlug} wurde erstellt"
+			},
+			"pipelineUpdated": {
+				"title": "Pipeline aktualisiert",
+				"message": "Pipeline {pipelineSlug} wurde aktualisiert"
+			},
+			"pipelineDeleted": {
+				"title": "Pipeline gelöscht",
+				"message": "Pipeline {pipelineSlug} wurde gelöscht"
+			},
+			"pipelineRunStarted": {
+				"title": "Lauf gestartet",
+				"message": "Ein Lauf wurde in {pipelineSlug} gestartet"
+			},
+			"pipelineRunAnalyzed": {
+				"title": "Lauf analysiert",
+				"message": "Ein Lauf wurde in {pipelineSlug} analysiert"
+			},
+			"pipelineRunCompleted": {
+				"title": "Lauf abgeschlossen",
+				"message": "Ein Lauf wurde in {pipelineSlug} abgeschlossen"
+			},
+			"pipelineRunFailed": {
+				"title": "Lauf fehlgeschlagen",
+				"message": "Ein Lauf ist in {pipelineSlug} fehlgeschlagen"
+			},
+			"policyCreated": {
+				"title": "Richtlinie erstellt",
+				"message": "Eine Richtlinie wurde erstellt"
+			},
+			"policyUpdated": {
+				"title": "Richtlinie aktualisiert",
+				"message": "Eine Richtlinie wurde aktualisiert"
+			},
+			"policyDeleted": {
+				"title": "Richtlinie gelöscht",
+				"message": "Eine Richtlinie wurde gelöscht"
+			}
+		},
+		"category": {
+			"workspace": "Workspace",
+			"member": "Mitglieder",
+			"invite": "Einladungen",
+			"connection": "Verbindungen",
+			"webhook": "Webhooks",
+			"file": "Dateien",
+			"pipeline": "Pipelines",
+			"policy": "Richtlinien"
 		}
 	}
 }

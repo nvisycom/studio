@@ -25,6 +25,7 @@ const isCreateWorkspaceSheetOpen = ref(false);
         <Button
           size="default"
           class="cursor-pointer gap-2"
+          data-testid="onboarding-create-workspace"
           @click="isCreateWorkspaceSheetOpen = true"
         >
           <Layers :size="16" />
