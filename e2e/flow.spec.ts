@@ -4,6 +4,7 @@ import {
 	createPolicyFromTemplate,
 	createWorkspace,
 	signUp,
+	uploadFile,
 } from "./support/steps";
 
 /**
@@ -27,4 +28,7 @@ test("happy path: signup through pipeline run", async ({ page }) => {
 
 	// Step 4 — create a pipeline with that policy.
 	await createPipeline(page, slug, policyName);
+
+	// Step 5 — upload a file.
+	await uploadFile(page, slug);
 });

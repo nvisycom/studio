@@ -178,6 +178,7 @@ function handleBrowseClick() {
             ref="fileInputRef"
             type="file"
             multiple
+            data-testid="upload-input"
             :accept="ACCEPTED_ACCEPT_ATTR"
             class="hidden"
             @change="handleFileSelect"
@@ -289,6 +290,7 @@ function handleBrowseClick() {
         </Button>
         <Button
           v-if="!allComplete"
+          data-testid="upload-submit"
           @click="startUpload"
           :disabled="!pendingFiles.length || isUploading"
           class="font-normal"

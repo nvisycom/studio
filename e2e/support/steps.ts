@@ -1,5 +1,12 @@
+import { fileURLToPath } from "node:url";
 import { type Page, expect } from "@playwright/test";
 import { type TestAccount, newTestAccount } from "./account";
+
+/** The upload fixture, resolved relative to this file so the cwd doesn't matter. */
+const SAMPLE_FILE = fileURLToPath(
+	new URL("../fixtures/sample.txt", import.meta.url),
+);
+const SAMPLE_FILE_NAME = "sample.txt";
 
 /**
  * Reusable happy-path steps, each driving one stage of the flow and asserting
@@ -99,4 +106,25 @@ export async function createPipeline(
 	await expect(page.getByText(name, { exact: false })).toBeVisible();
 
 	return name;
+}
+
+/**
+ * Step 5 — upload the sample file. Opens the upload dialog, sets the file on
+ * the hidden input (which stages it), submits, and waits for the dialog to
+ * close and the file to appear in the list. Returns the uploaded file name.
+ */
+export async function uploadFile(page: Page, slug: string): Promise<string> {
+	await page.goto(`/w/${slug}/files`);
+
+	await page.getByTestId("files-upload").click();
+	await page.getByTestId("upload-input").setInputFiles(SAMPLE_FILE);
+	await page.getByTestId("upload-submit").click();
+
+	// On success the dialog closes and the file lists.
+	await expect(page.getByTestId("upload-submit")).toBeHidden();
+	await expect(
+		page.getByText(SAMPLE_FILE_NAME, { exact: false }),
+	).toBeVisible();
+
+	return SAMPLE_FILE_NAME;
 }
