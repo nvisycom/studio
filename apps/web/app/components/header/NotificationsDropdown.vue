@@ -4,26 +4,19 @@ import {
 	DropdownMenuContent,
 	DropdownMenuTrigger,
 } from "#console/components/ui/dropdown-menu";
-import {
-	Tabs,
-	TabsContent,
-	TabsList,
-	TabsTrigger,
-} from "#console/components/ui/tabs";
 import { Button } from "#console/components/ui/button";
 import { Bell, Loader2, Inbox } from "@lucide/vue";
 
 const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
 
-const notificationsTab = ref("inbox");
 const isOpen = ref(false);
 
-const { notifications, unreadCount, isLoading, fetchNotifications } =
-	useNotifications();
+const { notifications, unreadCount, isLoading, open } = useNotifications();
 
-// Resolve each notification's typed payload into rendered copy once, so the
-// template stays declarative (the API ships no pre-rendered title/message).
+// The API ships no pre-rendered title/message — each notification carries a
+// typed payload keyed by notifyType — so resolve the copy once here and keep
+// the template declarative.
 const items = computed(() =>
 	(notifications.value ?? []).map((notification) => {
 		const { titleKey, messageKey, params } = notificationContent(
@@ -38,11 +31,14 @@ const items = computed(() =>
 	}),
 );
 
-// Fetch notifications when dropdown opens
-watch(isOpen, (open) => {
-	if (open) {
-		fetchNotifications();
-	}
+// Cap the badge so a large backlog stays a single digit-pair.
+const badgeLabel = computed(() =>
+	unreadCount.value > 99 ? "99+" : String(unreadCount.value),
+);
+
+// Load the list (and mark read) when the dropdown opens.
+watch(isOpen, (opened) => {
+	if (opened) open();
 });
 </script>
 
@@ -51,63 +47,57 @@ watch(isOpen, (open) => {
     <DropdownMenuTrigger as-child>
       <Button
         variant="ghost"
-        size="sm"
-        class="h-8 w-8 p-0 relative text-muted-foreground hover:text-foreground"
+        size="icon-sm"
+        class="relative rounded-full text-muted-foreground hover:text-foreground data-[state=open]:bg-muted data-[state=open]:text-foreground"
         :title="t('notifications.title')"
       >
         <Bell :size="16" />
         <span
           v-if="unreadCount > 0"
-          class="absolute -top-0.5 -right-0.5 size-2 bg-destructive rounded-full"
-        />
+          class="absolute -bottom-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-medium leading-none text-white"
+        >
+          {{ badgeLabel }}
+        </span>
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end" class="w-[380px] p-0">
-      <div class="p-4 border-b border-border/50">
-        <h3 class="font-medium text-sm text-foreground">
+      <div class="border-b border-border/50 p-4">
+        <h3 class="text-sm font-medium text-foreground">
           {{ t("notifications.title") }}
         </h3>
-        <p class="text-xs text-muted-foreground mt-0.5">
+        <p class="mt-0.5 text-xs text-muted-foreground">
           {{ t("notifications.subtitle") }}
         </p>
       </div>
 
-      <!-- Loading State -->
       <div v-if="isLoading" class="flex items-center justify-center py-12">
         <Loader2 :size="20" class="animate-spin text-muted-foreground" />
       </div>
 
-      <template v-else>
-        <div class="p-2 max-h-[400px] overflow-y-auto">
-          <div v-if="items.length > 0" class="space-y-1">
-            <div
-              v-for="item in items"
-              :key="item.id"
-              class="p-3 rounded-md hover:bg-muted/50 transition-colors cursor-pointer"
-            >
-              <div class="flex items-start justify-between gap-3">
-                <div class="flex-1 min-w-0">
-                  <p class="font-medium text-sm text-foreground">
-                    {{ item.title }}
-                  </p>
-                  <p class="text-sm text-muted-foreground mt-0.5 line-clamp-2">
-                    {{ item.message }}
-                  </p>
-                  <p class="text-xs text-muted-foreground/70 mt-1.5">
-                    {{ relativeTime(item.createdAt) }}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div v-else class="text-center py-12">
-            <Inbox :size="28" class="mx-auto text-muted-foreground/50 mb-3" />
-            <p class="text-sm text-muted-foreground">
-              {{ t("notifications.empty") }}
-            </p>
-          </div>
+      <div v-else-if="items.length" class="max-h-[400px] overflow-y-auto p-2">
+        <div
+          v-for="item in items"
+          :key="item.id"
+          class="cursor-pointer rounded-md p-3 transition-colors hover:bg-muted/50"
+        >
+          <p class="text-sm font-medium text-foreground">
+            {{ item.title }}
+          </p>
+          <p class="mt-0.5 line-clamp-2 text-sm text-muted-foreground">
+            {{ item.message }}
+          </p>
+          <p class="mt-1.5 text-xs text-muted-foreground/70">
+            {{ relativeTime(item.createdAt) }}
+          </p>
         </div>
-      </template>
+      </div>
+
+      <div v-else class="py-12 text-center">
+        <Inbox :size="28" class="mx-auto mb-3 text-muted-foreground/50" />
+        <p class="text-sm text-muted-foreground">
+          {{ t("notifications.empty") }}
+        </p>
+      </div>
     </DropdownMenuContent>
   </DropdownMenu>
 </template>
