@@ -1,4 +1,7 @@
 export { default as StudioDocumentPreview } from "./StudioDocumentPreview.vue";
+export { default as StudioCsvTable } from "./StudioCsvTable.vue";
+export { default as StudioCodeView } from "./StudioCodeView.vue";
+export { default as EntityDetailPopover } from "./EntityDetailPopover.vue";
 export { default as StudioChatPanel } from "./StudioChatPanel.vue";
 export { default as StudioAuditPanel } from "./StudioAuditPanel.vue";
 export { default as ChatMessage } from "./ChatMessage.vue";

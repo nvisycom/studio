@@ -1186,7 +1186,21 @@
 			"emptyTitle": "Keine Entitäten gefunden",
 			"emptyHint": "Diese Pipeline hat im Dokument nichts erkannt.",
 			"apply": "Schwärzung anwenden",
-			"noPipelines": "Noch keine Pipelines. Erstellen Sie zuerst eine."
+			"noPipelines": "Noch keine Pipelines. Erstellen Sie zuerst eine.",
+			"cell": "{column} · Zeile {row}",
+			"colN": "Sp. {n}",
+			"detail": {
+				"confidence": "Konfidenz",
+				"location": "Position",
+				"source": "Erkannt von",
+				"language": "Sprache"
+			},
+			"colNamed": "Sp. {n} ({name})"
+		},
+		"preview": {
+			"table": "Tabelle",
+			"raw": "Roh",
+			"withHeaders": "Mit Kopfzeile"
 		}
 	},
 	"commandMenu": {

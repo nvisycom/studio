@@ -1,7 +1,16 @@
 <script setup lang="ts">
-import { FileText, Loader2 } from "@lucide/vue";
+import { FileText, Loader2, Table, WrapText } from "@lucide/vue";
 import { ZoomControls } from "#console/components/pages/documents";
+import {
+	EntityDetailPopover,
+	StudioCodeView,
+	StudioCsvTable,
+} from "#console/components/pages/studio";
+import { Checkbox } from "#console/components/ui/checkbox";
+import { Label } from "#console/components/ui/label";
 import type { TextEntityView } from "#console/composables/useTextEntities";
+import { useDocumentSegments } from "#console/composables/useDocumentSegments";
+import { getFileExtension } from "#console/utils/file";
 
 const props = withDefaults(
 	defineProps<{
@@ -20,12 +29,23 @@ const props = withDefaults(
 	{ entities: () => [], activeEntityId: null },
 );
 
+// Whether the CSV's first row is a header. Owned by the page so the audit list
+// can label rows consistently; two-way so the toggle here updates it.
+const withHeaders = defineModel<boolean>("withHeaders", { default: true });
+
+// CSV can render as a table (default) or the raw highlighted text.
+const csvView = ref<"table" | "raw">("table");
+
 const emit = defineEmits<{
 	"zoom-in": [];
 	"zoom-out": [];
 	"toggle-chat": [];
 	"focus-entity": [id: string];
+	/** Clear the current entity selection (popover dismissed). */
+	"clear-entity": [];
 }>();
+
+const { t } = useI18n();
 
 // Text preview: the content URL is a blob object URL, so read its text and
 // render it in a <pre>. Re-fetch whenever the file (URL) changes.
@@ -52,80 +72,56 @@ watch(
 	{ immediate: true },
 );
 
-// Entity offsets are UTF-8 *byte* positions; JS strings are UTF-16. Build a
-// byte→char-index map so spans slice the string at the right code units.
-const byteToChar = computed<number[] | null>(() => {
-	const text = textContent.value;
-	if (!text || props.entities.length === 0) return null;
-	const encoder = new TextEncoder();
-	// Map[b] = char index at byte offset b. One entry per byte boundary + end.
-	const map: number[] = [];
-	let byte = 0;
-	for (let i = 0; i < text.length; i++) {
-		const codePoint = text.codePointAt(i)!;
-		const width = encoder.encode(String.fromCodePoint(codePoint)).length;
-		const isSurrogatePair = codePoint > 0xffff;
-		for (let b = 0; b < width; b++) map[byte + b] = i;
-		byte += width;
-		if (isSurrogatePair) i++; // skip the low surrogate
-	}
-	map[byte] = text.length; // end sentinel
-	return map;
+// File kind drives the renderer + formatting.
+const fileKind = computed(() => getFileExtension(props.displayName));
+const isCsv = computed(() => fileKind.value === "csv");
+const showCsvTable = computed(() => isCsv.value && csvView.value === "table");
+
+// The formatting + highlight pipeline (prettify, syntax tokens, byte→char and
+// span reconciliation) lives in a composable so this component stays about view
+// state. It yields the formatted text and the per-line coloured/flagged runs.
+const { formatted, lines } = useDocumentSegments({
+	text: textContent,
+	entities: () => props.entities,
+	fileKind,
 });
 
-/** A rendered run of text: either plain, or an entity span to highlight. */
-interface Segment {
-	text: string;
-	entity: TextEntityView | null;
-}
+// The focused entity object, for the detail popover.
+const activeEntity = computed(
+	() => props.entities.find((e) => e.id === props.activeEntityId) ?? null,
+);
 
-// Split the document into plain + entity segments, in order, skipping any
-// overlapping/out-of-range spans defensively.
-const segments = computed<Segment[]>(() => {
-	const text = textContent.value;
-	const map = byteToChar.value;
-	if (!text) return [];
-	if (!map) return [{ text, entity: null }];
-
-	const spans = [...props.entities]
-		.map((e) => ({ e, start: map[e.start], end: map[e.end] }))
-		.filter(
-			(s): s is { e: TextEntityView; start: number; end: number } =>
-				s.start != null && s.end != null && s.end > s.start,
-		)
-		.sort((a, b) => a.start - b.start);
-
-	const out: Segment[] = [];
-	let cursor = 0;
-	for (const { e, start, end } of spans) {
-		if (start < cursor) continue; // overlap — keep the earlier span
-		if (start > cursor)
-			out.push({ text: text.slice(cursor, start), entity: null });
-		out.push({ text: text.slice(start, end), entity: e });
-		cursor = end;
-	}
-	if (cursor < text.length)
-		out.push({ text: text.slice(cursor), entity: null });
-	return out;
-});
-
-// Scroll the focused entity into view when it changes.
-const textEl = ref<HTMLElement | null>(null);
+// Scroll the focused entity into view and anchor the detail popover to its
+// chip. The chip may live in the code view or the CSV table, so query from the
+// preview root.
+const rootEl = ref<HTMLElement | null>(null);
+const activeChipEl = ref<HTMLElement | null>(null);
 watch(
 	() => props.activeEntityId,
 	(id) => {
-		if (!id) return;
+		if (!id) {
+			activeChipEl.value = null;
+			return;
+		}
 		nextTick(() => {
-			textEl.value
-				?.querySelector<HTMLElement>(`[data-entity="${id}"]`)
-				?.scrollIntoView({ block: "center", behavior: "smooth" });
+			const el = rootEl.value?.querySelector<HTMLElement>(
+				`[data-entity="${id}"]`,
+			);
+			activeChipEl.value = el ?? null;
+			el?.scrollIntoView({ block: "center", behavior: "smooth" });
 		});
 	},
 );
 </script>
 
 <template>
-  <div class="h-full overflow-hidden relative">
+  <div ref="rootEl" class="h-full overflow-hidden relative">
+    <EntityDetailPopover
+      :entity="activeEntity"
+      :reference="activeChipEl"
+      :with-headers="withHeaders"
+      @close="emit('clear-entity')"
+    />
     <div class="h-full overflow-y-auto">
       <!-- Loading state -->
       <div v-if="isLoading" class="h-full flex items-center justify-center">
@@ -167,7 +163,7 @@ watch(
       </div>
 
       <!-- Text file preview -->
-      <div v-else-if="isText" class="min-h-full p-6">
+      <div v-else-if="isText" class="min-h-full p-4">
         <div
           v-if="isLoadingText"
           class="h-full flex items-center justify-center text-muted-foreground"
@@ -180,18 +176,67 @@ watch(
         >
           <p class="text-sm">Unable to load this file.</p>
         </div>
-        <pre
-          v-else
-          ref="textEl"
-          class="mx-auto max-w-4xl whitespace-pre-wrap break-words rounded-lg border border-border/50 bg-background p-4 font-mono text-xs leading-relaxed text-foreground"
-        ><template v-for="(seg, i) in segments" :key="i"><mark
-            v-if="seg.entity"
-            :data-entity="seg.entity.id"
-            :title="seg.entity.label"
-            class="cursor-pointer rounded-[3px] bg-muted px-0.5 text-foreground ring-border transition-shadow hover:ring-1"
-            :class="{ 'ring-2 ring-foreground': activeEntityId === seg.entity.id }"
-            @click="emit('focus-entity', seg.entity.id)"
-          >{{ seg.text }}</mark><template v-else>{{ seg.text }}</template></template></pre>
+        <div v-else class="space-y-3">
+          <!-- CSV controls: table/raw toggle + header-row option -->
+          <div
+            v-if="isCsv"
+            class="flex items-center justify-between gap-3"
+          >
+            <div class="inline-flex rounded-md border border-border/50 p-0.5">
+              <button
+                type="button"
+                class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-medium transition-colors"
+                :class="
+                  csvView === 'table'
+                    ? 'bg-muted text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                "
+                @click="csvView = 'table'"
+              >
+                <Table :size="14" /> {{ t("studio.preview.table") }}
+              </button>
+              <button
+                type="button"
+                class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-medium transition-colors"
+                :class="
+                  csvView === 'raw'
+                    ? 'bg-muted text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                "
+                @click="csvView = 'raw'"
+              >
+                <WrapText :size="14" /> {{ t("studio.preview.raw") }}
+              </button>
+            </div>
+            <div v-if="csvView === 'table'" class="flex items-center gap-2">
+              <Checkbox id="csv-headers" v-model="withHeaders" />
+              <Label
+                for="csv-headers"
+                class="cursor-pointer text-xs font-normal text-muted-foreground"
+              >
+                {{ t("studio.preview.withHeaders") }}
+              </Label>
+            </div>
+          </div>
+
+          <!-- CSV table view -->
+          <StudioCsvTable
+            v-if="showCsvTable"
+            :text="formatted.text"
+            :with-headers="withHeaders"
+            :entities="entities"
+            :active-entity-id="activeEntityId"
+            @focus-entity="emit('focus-entity', $event)"
+          />
+
+          <!-- Raw / code text view -->
+          <StudioCodeView
+            v-else
+            :lines="lines"
+            :active-entity-id="activeEntityId"
+            @focus-entity="emit('focus-entity', $event)"
+          />
+        </div>
       </div>
 
       <!-- Unsupported file type -->

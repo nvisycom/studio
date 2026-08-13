@@ -1186,7 +1186,21 @@
 			"emptyTitle": "No entities found",
 			"emptyHint": "This pipeline detected nothing in the document.",
 			"apply": "Apply redaction",
-			"noPipelines": "No pipelines yet. Create one first."
+			"noPipelines": "No pipelines yet. Create one first.",
+			"cell": "{column} · row {row}",
+			"colN": "col {n}",
+			"detail": {
+				"confidence": "Confidence",
+				"location": "Location",
+				"source": "Detected by",
+				"language": "Language"
+			},
+			"colNamed": "col {n} ({name})"
+		},
+		"preview": {
+			"table": "Table",
+			"raw": "Raw",
+			"withHeaders": "With headers"
 		}
 	},
 	"commandMenu": {
