@@ -43,12 +43,11 @@ export interface TextEntityView {
 /** Provenance/language shared by text + tabular entities, for the detail view. */
 function provenance(entity: {
 	language?: string;
-	provenance: { events: { source: string; before?: number }[] };
+	audit: { source: string; parents: unknown[] }[];
 }) {
-	// The birth event has no prior confidence; fall back to the first event.
+	// The birth event is the detection with no parents; fall back to the first.
 	const birth =
-		entity.provenance.events.find((ev) => ev.before == null) ??
-		entity.provenance.events[0];
+		entity.audit.find((ev) => ev.parents.length === 0) ?? entity.audit[0];
 	return { source: birth?.source, language: entity.language };
 }
 

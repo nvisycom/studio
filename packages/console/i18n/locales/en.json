@@ -1402,6 +1402,10 @@
 				"name": "CCPA",
 				"description": "Redact personal information covered by the CCPA."
 			},
+			"soc2_secrets": {
+				"name": "SOC 2 Secrets",
+				"description": "Detect and redact secrets and credentials such as API keys, tokens, and passwords."
+			},
 			"settings": {
 				"hipaaMethod": "De-identification method",
 				"hipaaMethods": {
@@ -1425,6 +1429,17 @@
 					"truncate_last_four": "Truncate to last four",
 					"hmac_sha256": "HMAC-SHA256",
 					"hmac_sha512": "HMAC-SHA512"
+				},
+				"hipaaAccount": "Account identifiers",
+				"hipaaAccounts": {
+					"standard": "Standard",
+					"extended": "Extended"
+				},
+				"gdprScope": "Scope",
+				"gdprScopes": {
+					"article9": "Article 9",
+					"article9_with_reid_hardening": "Article 9 + re-ID hardening",
+					"article9_and10": "Articles 9 & 10"
 				}
 			}
 		},
