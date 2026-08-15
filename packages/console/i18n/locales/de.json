@@ -1962,5 +1962,13 @@
 			"pipeline": "Pipelines",
 			"policy": "Richtlinien"
 		}
+	},
+	"userMenu": {
+		"theme": "Design",
+		"themeLight": "Hell",
+		"themeDark": "Dunkel",
+		"themeSystem": "System",
+		"language": "Sprache",
+		"documentation": "Dokumentation"
 	}
 }

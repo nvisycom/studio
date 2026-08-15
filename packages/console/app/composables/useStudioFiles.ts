@@ -20,8 +20,7 @@ export const STUDIO_OPEN_FILES_KEY = "studio-open-files";
 
 // Persisted, per-workspace session so open tabs survive a refresh. Only the
 // file identities + order + active tab are stored — the blob content URLs are
-// session-bound and re-downloaded on restore. Tracks which workspaces have
-// already been restored so we only re-open once per session.
+// session-bound and re-downloaded on restore.
 interface PersistedSession {
 	ids: string[];
 	active: string | null;
@@ -30,16 +29,26 @@ const persistedSessions = useLocalStorage<Record<string, PersistedSession>>(
 	STUDIO_OPEN_FILES_KEY,
 	{},
 );
-const restoredSlugs = new Set<string>();
+
+// Which workspace the in-memory tabs currently belong to. When the active
+// workspace changes, the tabs are swapped to that workspace's session (see the
+// slug watcher below), so the studio never shows another workspace's files.
+const loadedSlug = ref<string | null>(null);
+
+// The workspace-swap watcher is registered once, not per composable call.
+let swapWatcherRegistered = false;
 
 export function useStudioFiles() {
 	const { $nvisyClient } = useNuxtApp();
 	const { authToken } = useAuth();
 	const { currentWorkspaceSlug } = useWorkspaces();
 
-	// Snapshot the current in-memory tabs into localStorage for this workspace.
+	// Snapshot the current in-memory tabs into localStorage. Keyed off the
+	// workspace the tabs actually belong to (loadedSlug), not the reactive
+	// current slug, so a mid-switch persist can't write one workspace's tabs
+	// under another's key.
 	function persist() {
-		const slug = currentWorkspaceSlug.value;
+		const slug = loadedSlug.value ?? currentWorkspaceSlug.value;
 		if (!slug) return;
 		persistedSessions.value = {
 			...persistedSessions.value,
@@ -59,47 +68,42 @@ export function useStudioFiles() {
 	// Get all open files as array
 	const openFilesList = computed(() => Array.from(openFiles.value.values()));
 
-	// Open a file (add to open files and set as active)
-	async function openFile(fileId: string, file?: NvisyFile) {
-		// If already open, just set as active
-		if (openFiles.value.has(fileId)) {
-			activeFileId.value = fileId;
-			persist();
-			return;
-		}
-
-		// Add to open files with loading state
+	// Register a tab in loading state (synchronous, so tabs appear immediately).
+	function addLoadingTab(fileId: string, file?: NvisyFile) {
 		openFiles.value.set(fileId, {
 			fileId,
 			displayName: file?.displayName || "Loading...",
 			contentUrl: null,
 			isLoading: true,
 		});
-		activeFileId.value = fileId;
-		persist();
+	}
 
-		// Fetch file content
+	// Download a tab's metadata + content and fill it in. Assumes the tab is
+	// already registered (addLoadingTab). Safe to run many in parallel. Fetches
+	// against the workspace the tabs currently belong to (loadedSlug) and drops
+	// the result if the workspace switched away mid-download.
+	async function fetchIntoTab(fileId: string, file?: NvisyFile) {
+		const workspaceSlug = loadedSlug.value ?? currentWorkspaceSlug.value;
 		try {
 			const client = $nvisyClient.value;
-			const workspaceSlug = currentWorkspaceSlug.value;
 			if (!client || !workspaceSlug || !authToken.value?.apiToken) {
 				throw new Error("Not authenticated");
 			}
 
-			// Fetch file metadata if not provided
-			let fileData = file;
-			if (!fileData) {
-				fileData = await client.files.getFile(workspaceSlug, fileId);
-			}
-
-			// Download file content
+			const fileData =
+				file ?? (await client.files.getFile(workspaceSlug, fileId));
 			const contentUrl = await fetchFileContentUrl(
 				client,
 				workspaceSlug,
 				fileId,
 			);
 
-			// Update the open file entry
+			// Ignore if the workspace switched away, or the tab was closed, while
+			// this download was in flight.
+			if (loadedSlug.value !== workspaceSlug || !openFiles.value.has(fileId)) {
+				if (contentUrl) URL.revokeObjectURL(contentUrl);
+				return;
+			}
 			openFiles.value.set(fileId, {
 				fileId,
 				displayName: fileData.displayName,
@@ -109,15 +113,32 @@ export function useStudioFiles() {
 			persist();
 		} catch (error) {
 			console.error("Failed to load file:", error);
-			// Update with error state
 			const existing = openFiles.value.get(fileId);
-			if (existing) {
-				openFiles.value.set(fileId, {
-					...existing,
-					isLoading: false,
-				});
+			if (existing && loadedSlug.value === workspaceSlug) {
+				openFiles.value.set(fileId, { ...existing, isLoading: false });
 			}
 		}
+	}
+
+	// Open a file (add to open files and set as active)
+	async function openFile(fileId: string, file?: NvisyFile) {
+		// Tabs belong to the current workspace (covers the first open before any
+		// workspace switch has run).
+		if (currentWorkspaceSlug.value)
+			loadedSlug.value = currentWorkspaceSlug.value;
+
+		// If already open, just set as active
+		if (openFiles.value.has(fileId)) {
+			activeFileId.value = fileId;
+			persist();
+			return;
+		}
+
+		addLoadingTab(fileId, file);
+		activeFileId.value = fileId;
+		persist();
+
+		await fetchIntoTab(fileId, file);
 	}
 
 	// Close a file
@@ -180,28 +201,63 @@ export function useStudioFiles() {
 		persist();
 	}
 
-	// Re-open the persisted tabs for the current workspace after a refresh.
-	// Runs at most once per workspace per session; skips if tabs are already
-	// open in memory. Content is re-downloaded (fresh blob URLs) by openFile.
-	async function restoreSession() {
-		const slug = currentWorkspaceSlug.value;
-		if (!slug || restoredSlugs.has(slug)) return;
-		restoredSlugs.add(slug);
+	// Drop all in-memory tabs (revoking blob URLs) without touching what's
+	// persisted — used when swapping to another workspace's session.
+	function clearInMemory() {
+		for (const file of openFiles.value.values()) {
+			if (file.contentUrl) URL.revokeObjectURL(file.contentUrl);
+		}
+		openFiles.value.clear();
+		activeFileId.value = null;
+	}
 
-		// Already have tabs in memory (e.g. navigated here in-app) — nothing to do.
-		if (openFiles.value.size > 0) return;
-
+	// Load a workspace's persisted tabs into memory. Marks the in-memory tabs as
+	// belonging to `slug` first, so persist() writes back under the right key.
+	// All tabs are registered synchronously (so they appear at once, not one by
+	// one), then their content downloads in parallel.
+	async function loadSession(slug: string) {
+		loadedSlug.value = slug;
 		const session = persistedSessions.value[slug];
 		if (!session || session.ids.length === 0) return;
 
-		// Re-open in stored order, then restore the active tab.
+		// Show every tab immediately, active one first.
 		for (const fileId of session.ids) {
-			await openFile(fileId);
+			addLoadingTab(fileId);
 		}
-		if (session.active && openFiles.value.has(session.active)) {
-			activeFileId.value = session.active;
-			persist();
-		}
+		activeFileId.value =
+			session.active && session.ids.includes(session.active)
+				? session.active
+				: (session.ids[0] ?? null);
+		persist();
+
+		// Download all content concurrently.
+		await Promise.all(session.ids.map((fileId) => fetchIntoTab(fileId)));
+	}
+
+	// Re-open the persisted tabs for the current workspace (e.g. after a
+	// refresh). No-op if the current workspace's tabs are already loaded.
+	async function restoreSession() {
+		const slug = currentWorkspaceSlug.value;
+		if (!slug || loadedSlug.value === slug) return;
+		clearInMemory();
+		await loadSession(slug);
+	}
+
+	// Swap tabs whenever the active workspace changes, so the studio always
+	// shows the current workspace's files and never another's. Registered once
+	// in a detached effect scope so the watcher lives for the app's lifetime,
+	// independent of which component happened to trigger registration.
+	if (!swapWatcherRegistered) {
+		swapWatcherRegistered = true;
+		effectScope(true).run(() => {
+			watch(currentWorkspaceSlug, (slug) => {
+				if (!slug || loadedSlug.value === slug) return;
+				// The outgoing workspace's tabs were already persisted
+				// per-mutation under loadedSlug; just clear and load the new one.
+				clearInMemory();
+				void loadSession(slug);
+			});
+		});
 	}
 
 	return {

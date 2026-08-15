@@ -15,6 +15,7 @@ import {
 	FeedbackModal,
 	NotificationsDropdown,
 } from "@/components/header";
+import { AppHealth } from "@/components/footer";
 
 const route = useRoute();
 
@@ -65,7 +66,9 @@ function openFeedbackModal() {
       </Breadcrumb>
       <HeaderTabs ref="headerTabsRef" />
     </div>
-    <div class="flex items-center gap-1 px-4">
+    <div class="flex items-center gap-2 px-4">
+      <AppHealth />
+      <Separator orientation="vertical" class="h-4 bg-border/50" />
       <NotificationsDropdown />
       <Button
         variant="ghost"
