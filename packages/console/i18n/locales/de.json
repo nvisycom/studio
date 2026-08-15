@@ -70,7 +70,12 @@
 		"selectRow": "Zeile auswählen",
 		"openMenu": "Menü öffnen",
 		"showPassword": "Passwort anzeigen",
-		"hidePassword": "Passwort verbergen"
+		"hidePassword": "Passwort verbergen",
+		"filePicker": {
+			"placeholder": "Alle Dateien",
+			"search": "Dateien suchen…",
+			"empty": "Keine Dateien gefunden"
+		}
 	},
 	"settings": {
 		"workspace": {
@@ -1402,10 +1407,6 @@
 				"name": "CCPA",
 				"description": "Personenbezogene Daten gemäß CCPA schwärzen."
 			},
-			"soc2_secrets": {
-				"name": "SOC 2 Secrets",
-				"description": "Geheimnisse und Anmeldedaten wie API-Schlüssel, Token und Passwörter erkennen und schwärzen."
-			},
 			"settings": {
 				"hipaaMethod": "Anonymisierungsmethode",
 				"hipaaMethods": {
@@ -1476,7 +1477,35 @@
 				"cancelled": "Abgebrochen"
 			},
 			"noRunsDescription": "Ausführungen erscheinen hier, sobald dieser Arbeitsbereich Dateien verarbeitet.",
-			"footer": "Jede Ausführung protokolliert, wie eine Pipeline eine Datei erkannt und geschwärzt hat."
+			"footer": "Jede Ausführung protokolliert, wie eine Pipeline eine Datei erkannt und geschwärzt hat.",
+			"triggeredBy": "Ausgelöst von",
+			"openInStudio": "In Studio öffnen",
+			"menu": "Lauf-Aktionen",
+			"downloadAuditJson": "Audit herunterladen (JSON)",
+			"downloadAuditCsv": "Audit herunterladen (CSV)",
+			"auditDownloadFailed": "Audit konnte nicht heruntergeladen werden",
+			"seeDetails": "Details anzeigen",
+			"detail": {
+				"status": "Status",
+				"trigger": "Auslöser",
+				"started": "Gestartet",
+				"completed": "Abgeschlossen",
+				"duration": "Dauer",
+				"running": "Läuft noch",
+				"detectionLoading": "Erkennungen werden geladen.",
+				"detectionUnavailable": "Erkennungen nicht verfügbar.",
+				"detections": "{count} Entitäten erkannt | {count} Entität erkannt | {count} Entitäten erkannt",
+				"input": "Eingabe",
+				"output": "Ausgabe (geschwärzt)",
+				"error": "Fehler",
+				"runId": "Ausführungs-ID",
+				"copy": "Ausführungs-ID kopieren",
+				"copied": "Ausführungs-ID kopiert",
+				"tags": "Tags",
+				"downloadJson": "JSON herunterladen",
+				"downloadCsv": "CSV herunterladen",
+				"none": "—"
+			}
 		},
 		"learnMore": "Mehr erfahren",
 		"status": {

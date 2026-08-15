@@ -1,4 +1,5 @@
 export { default as EntityAvatar } from "./EntityAvatar.vue";
+export { default as FilePicker } from "./FilePicker.vue";
 export { default as AvatarUploadCard } from "./AvatarUploadCard.vue";
 export { default as ConfirmDialog } from "./ConfirmDialog.vue";
 export { default as DangerZoneCard } from "./DangerZoneCard.vue";

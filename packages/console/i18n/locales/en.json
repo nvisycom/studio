@@ -70,7 +70,12 @@
 		"selectRow": "Select row",
 		"openMenu": "Open menu",
 		"showPassword": "Show password",
-		"hidePassword": "Hide password"
+		"hidePassword": "Hide password",
+		"filePicker": {
+			"placeholder": "All files",
+			"search": "Search files…",
+			"empty": "No files found"
+		}
 	},
 	"settings": {
 		"workspace": {
@@ -1402,10 +1407,6 @@
 				"name": "CCPA",
 				"description": "Redact personal information covered by the CCPA."
 			},
-			"soc2_secrets": {
-				"name": "SOC 2 Secrets",
-				"description": "Detect and redact secrets and credentials such as API keys, tokens, and passwords."
-			},
 			"settings": {
 				"hipaaMethod": "De-identification method",
 				"hipaaMethods": {
@@ -1476,7 +1477,35 @@
 				"cancelled": "Cancelled"
 			},
 			"noRunsDescription": "Runs will appear here once this workspace processes files.",
-			"footer": "Each run records how a pipeline detected and redacted a file."
+			"footer": "Each run records how a pipeline detected and redacted a file.",
+			"triggeredBy": "Triggered by",
+			"openInStudio": "Open in Studio",
+			"menu": "Run actions",
+			"downloadAuditJson": "Download audit (JSON)",
+			"downloadAuditCsv": "Download audit (CSV)",
+			"auditDownloadFailed": "Couldn't download the audit",
+			"seeDetails": "See details",
+			"detail": {
+				"status": "Status",
+				"trigger": "Trigger",
+				"started": "Started",
+				"completed": "Completed",
+				"duration": "Duration",
+				"running": "Still running",
+				"detectionLoading": "Loading detections.",
+				"detectionUnavailable": "Detections unavailable.",
+				"detections": "{count} entities detected | {count} entity detected | {count} entities detected",
+				"input": "Input",
+				"output": "Output (redacted)",
+				"error": "Error",
+				"runId": "Run ID",
+				"copy": "Copy run ID",
+				"copied": "Run ID copied",
+				"tags": "Tags",
+				"downloadJson": "Download JSON",
+				"downloadCsv": "Download CSV",
+				"none": "—"
+			}
 		},
 		"learnMore": "Learn more",
 		"status": {
