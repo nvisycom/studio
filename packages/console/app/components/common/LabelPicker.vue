@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import type { ExtraLabel } from "#console/composables/useLabelOptions";
-import { X } from "@lucide/vue";
-import LabelOptionList from "./LabelOptionList.vue";
+import { Check, X } from "@lucide/vue";
 import {
 	Combobox,
 	ComboboxAnchor,
+	ComboboxEmpty,
+	ComboboxGroup,
 	ComboboxInput,
+	ComboboxItem,
 	ComboboxList,
 } from "#console/components/ui/combobox";
 
@@ -91,12 +93,29 @@ function remove(id: string) {
       align="start"
       :class="contentClass ?? 'w-(--reka-popper-anchor-width) min-w-72'"
     >
-      <LabelOptionList
-        :sections="sections"
-        :label-name="labelName"
-        :is-loading="isLoading"
-        :selected="(id) => model.includes(id)"
-      />
+      <div class="max-h-72 overflow-y-auto">
+        <ComboboxEmpty>
+          {{ isLoading ? t("common.labelPicker.loading") : t("common.labelPicker.empty") }}
+        </ComboboxEmpty>
+        <ComboboxGroup
+          v-for="[category, labels] in sections"
+          :key="category || '__uncategorized__'"
+        >
+          <div
+            class="px-2 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground"
+          >
+            {{ category || t("common.labelPicker.uncategorized") }}
+          </div>
+          <ComboboxItem v-for="label in labels" :key="label.id" :value="label.id">
+            <Check
+              :size="14"
+              class="mr-2 shrink-0"
+              :class="model.includes(label.id) ? 'opacity-100' : 'opacity-0'"
+            />
+            <span class="truncate">{{ labelName(label.id) }}</span>
+          </ComboboxItem>
+        </ComboboxGroup>
+      </div>
     </ComboboxList>
   </Combobox>
 </template>
