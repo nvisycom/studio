@@ -6,6 +6,7 @@ import {
 	StudioCodeView,
 	StudioCsvTable,
 } from "#console/components/pages/studio";
+import StudioDocxView from "./StudioDocxView.vue";
 import { Checkbox } from "#console/components/ui/checkbox";
 import { Label } from "#console/components/ui/label";
 import type { TextEntityView } from "#console/composables/useTextEntities";
@@ -19,6 +20,7 @@ const props = withDefaults(
 		isLoading: boolean;
 		isImage: boolean;
 		isText: boolean;
+		isDocx: boolean;
 		zoomLevel: number;
 		chatVisible: boolean;
 		/** Detected entities to highlight in the text (byte-offset spans). */
@@ -161,6 +163,9 @@ watch(
           />
         </div>
       </div>
+
+      <!-- Word document preview (read-only, rendered client-side) -->
+      <StudioDocxView v-else-if="isDocx" :content-url="contentUrl" />
 
       <!-- Text file preview -->
       <div v-else-if="isText" class="min-h-full p-4">

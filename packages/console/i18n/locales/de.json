@@ -1227,7 +1227,8 @@
 		"preview": {
 			"table": "Tabelle",
 			"raw": "Roh",
-			"withHeaders": "Mit Kopfzeile"
+			"withHeaders": "Mit Kopfzeile",
+			"docxFailed": "Dieses Word-Dokument konnte nicht dargestellt werden."
 		}
 	},
 	"commandMenu": {

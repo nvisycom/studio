@@ -34,6 +34,9 @@ const isImageFile = computed(() =>
 const isTextFile = computed(() =>
 	isTextFileName(activeFile.value?.displayName ?? ""),
 );
+const isDocxFile = computed(() =>
+	isDocxFileName(activeFile.value?.displayName ?? ""),
+);
 
 const zoomLevel = ref(100);
 
@@ -172,6 +175,7 @@ function startResize(e: MouseEvent) {
         :is-loading="activeFile?.isLoading || false"
         :is-image="isImageFile"
         :is-text="isTextFile"
+        :is-docx="isDocxFile"
         :zoom-level="zoomLevel"
         :chat-visible="chatVisible"
         :entities="audit.entities.value"

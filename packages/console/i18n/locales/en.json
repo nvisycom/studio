@@ -1227,7 +1227,8 @@
 		"preview": {
 			"table": "Table",
 			"raw": "Raw",
-			"withHeaders": "With headers"
+			"withHeaders": "With headers",
+			"docxFailed": "Couldn't render this Word document."
 		}
 	},
 	"commandMenu": {
