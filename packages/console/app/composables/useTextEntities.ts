@@ -1,5 +1,6 @@
 import type { Audit } from "@nvisy/sdk/datatypes";
 import type { MaybeRefOrGetter } from "vue";
+import { byteOffsetToChar, parseCsv } from "#console/utils/preview";
 
 /**
  * A tabular entity's cell locator. Tabular byte offsets (`start`/`end`) are
@@ -36,19 +37,110 @@ export interface TextEntityView {
 	confidence: number;
 	/** Recognizer/source that first found this entity (the birth event). */
 	source?: string;
+	/**
+	 * The specific pattern or model that matched, when the birth event was a
+	 * pattern/model recognition (e.g. `"ssn"`, `"gpt-4"`). More precise than
+	 * {@link source}; absent for other event kinds.
+	 */
+	detector?: string;
+	/** Whether {@link detector} names a regex pattern or an ML model. */
+	detectorKind?: "pattern" | "model";
 	/** Detected language of the surrounding text, when known (e.g. "en"). */
 	language?: string;
+	/**
+	 * The matched text, sliced from the document at this entity's offsets — the
+	 * actual found value (an email, a name). Present only when the document text
+	 * was supplied to the composable; absent for image/audio.
+	 */
+	text?: string;
 }
 
+/**
+ * A run of identical occurrences within one label group — same matched value +
+ * detector, differing only by location. `lead` is the first occurrence (its
+ * value/detector represent the cluster); `items` holds every occurrence in
+ * document order, so the UI can collapse them to one row with a count and step
+ * through the spans.
+ */
+export interface EntityCluster {
+	/** Stable identity for the cluster (the dedup key). */
+	key: string;
+	/** The representative occurrence (first in document order). */
+	lead: TextEntityView;
+	/** Every occurrence, in document order. */
+	items: TextEntityView[];
+}
+
+/** One label's entities within a category: its display name, items, clusters. */
+export interface LabelGroup {
+	/** Raw label id. */
+	label: string;
+	/** Catalog display name (falls back to the id). */
+	name: string;
+	/** Every occurrence for this label, in document order. */
+	items: TextEntityView[];
+	/** Occurrences clustered by identical value + detector. */
+	clusters: EntityCluster[];
+}
+
+/** A category section of the audit list: its label groups and total count. */
+export interface CategorizedGroup {
+	/** Catalog category, or null for uncategorized labels. */
+	category: string | null;
+	/** Total entities across the section's label groups. */
+	count: number;
+	/** The label groups under this category. */
+	labels: LabelGroup[];
+}
+
+/**
+ * Slice a matched value out of `source` by a UTF-8 byte-offset span. Offsets
+ * are byte positions (the entity's location); JS strings are UTF-16, so convert
+ * first. An unbounded `end` (Infinity, "the whole cell") runs to the end.
+ */
+function sliceBytes(source: string, start: number, end: number): string {
+	const from = byteOffsetToChar(source, start);
+	const to = Number.isFinite(end)
+		? byteOffsetToChar(source, end)
+		: source.length;
+	return source.slice(from, to);
+}
+
+/**
+ * A birth audit event, narrowed to the fields we read. `kind` is the
+ * discriminated recognition detail: a `pattern` match names the pattern, a
+ * `model` match names the model, any other kind carries neither.
+ */
+type BirthEvent = {
+	source: string;
+	parents: unknown[];
+	kind?: { kind: string; pattern?: { name: string }; model?: { name: string } };
+};
+
 /** Provenance/language shared by text + tabular entities, for the detail view. */
-function provenance(entity: {
-	language?: string;
-	audit: { source: string; parents: unknown[] }[];
-}) {
+function provenance(entity: { language?: string; audit: BirthEvent[] }) {
 	// The birth event is the detection with no parents; fall back to the first.
 	const birth =
 		entity.audit.find((ev) => ev.parents.length === 0) ?? entity.audit[0];
-	return { source: birth?.source, language: entity.language };
+
+	// Prefer the specific pattern/model name from the birth event's detail.
+	const kind = birth?.kind;
+	let detector: string | undefined;
+	let detectorKind: "pattern" | "model" | undefined;
+	if (kind?.kind === "pattern" && kind.pattern) {
+		detector = kind.pattern.name;
+		detectorKind = "pattern";
+	} else if (kind?.kind === "model" && kind.model) {
+		detector = kind.model.name;
+		detectorKind = "model";
+	}
+
+	return {
+		source: birth?.source,
+		detector,
+		detectorKind,
+		language: entity.language,
+	};
 }
 
 /**
@@ -61,37 +153,53 @@ function provenance(entity: {
  * the cell (the preview maps those onto the flat text). Image and audio have no
  * flat-text offsets and return nothing.
  *
- * Accepts a ref/getter so callers can bind it to reactive audit state.
+ * Accepts ref/getters so callers can bind reactive audit + document text. When
+ * `text` (the flat document content) is supplied, each entity also carries the
+ * matched `text` sliced from the document — the actual found value.
  */
-export function useTextEntities(audit: MaybeRefOrGetter<Audit | null>) {
+export function useTextEntities(
+	audit: MaybeRefOrGetter<Audit | null>,
+	text?: MaybeRefOrGetter<string | null>,
+) {
 	const entities = computed<TextEntityView[]>(() => {
 		const group = toValue(audit)?.body;
+		const doc = toValue(text) ?? null;
 
 		let views: TextEntityView[];
 		if (group?.modality === "text") {
+			// Slice the matched value straight from the flat document by its
+			// byte-offset span (converted to char indices for JS strings).
 			views = group.entities.map((record) => {
 				const e = record.entity;
+				const start = e.location.start;
+				const end = e.location.end;
 				return {
 					id: e.id,
 					label: e.label,
-					start: e.location.start,
-					end: e.location.end,
+					start,
+					end,
 					confidence: e.confidence,
 					...provenance(e),
+					...(doc ? { text: sliceBytes(doc, start, end) } : {}),
 				} satisfies TextEntityView;
 			});
 		} else if (group?.modality === "tabular") {
 			// Tabular locations are a cell (row/column) plus optional byte offsets
 			// *within* that cell. Carry the cell coords so the preview can place
-			// the span on the flat text; unset offsets mean the whole cell.
+			// the span on the flat text; unset offsets mean the whole cell. The
+			// matched value slices from the cell's own text, so parse once.
+			const rows = doc ? parseCsv(doc).rows : null;
 			views = group.entities.map((record) => {
 				const e = record.entity;
 				const loc = e.location;
+				const start = loc.start_offset ?? 0;
+				const end = loc.end_offset ?? Number.POSITIVE_INFINITY;
+				const cellValue = rows?.[loc.row_index]?.[loc.column_index];
 				return {
 					id: e.id,
 					label: e.label,
-					start: loc.start_offset ?? 0,
-					end: loc.end_offset ?? Number.POSITIVE_INFINITY,
+					start,
+					end,
 					cell: {
 						row: loc.row_index,
 						column: loc.column_index,
@@ -99,6 +207,9 @@ export function useTextEntities(audit: MaybeRefOrGetter<Audit | null>) {
 					},
 					confidence: e.confidence,
 					...provenance(e),
+					...(cellValue !== undefined
+						? { text: sliceBytes(cellValue, start, end) }
+						: {}),
 				} satisfies TextEntityView;
 			});
 		} else {
@@ -133,5 +244,65 @@ export function useTextEntities(audit: MaybeRefOrGetter<Audit | null>) {
 
 	const count = computed(() => entities.value.length);
 
-	return { entities, groups, count };
+	// Resolve label ids to catalog names + categories for the grouped list.
+	const { resolveLabel, labelName } = useLabels();
+
+	/**
+	 * Cluster a label group's entities by identical value + detector, preserving
+	 * document order. Entities that differ only by location (the same email found
+	 * many times) collapse into one cluster carrying every occurrence, so the UI
+	 * can show one row with a count + prev/next. The cluster key falls back to the
+	 * byte span when no matched text is available, so distinct spans stay distinct.
+	 */
+	function clusterItems(items: TextEntityView[]): EntityCluster[] {
+		const map = new Map<string, EntityCluster>();
+		const order: string[] = [];
+		for (const item of items) {
+			const key = `${item.text ?? `${item.start}:${item.end}`} ${item.detector ?? item.source ?? ""}`;
+			const existing = map.get(key);
+			if (existing) existing.items.push(item);
+			else {
+				map.set(key, { key, lead: item, items: [item] });
+				order.push(key);
+			}
+		}
+		return order.map((k) => map.get(k)!);
+	}
+
+	/**
+	 * Two-tier grouping for the audit list: entities grouped by label, then those
+	 * label groups clustered under their catalog category. A label the catalog
+	 * doesn't know (or one with no category) lands under a null category, which
+	 * the UI renders as "Uncategorized". Label groups keep the document order
+	 * established above; categories are sorted by name, with the uncategorized
+	 * bucket last.
+	 */
+	const categorizedGroups = computed<CategorizedGroup[]>(() => {
+		const byCategory = new Map<string | null, LabelGroup[]>();
+
+		for (const group of groups.value) {
+			const category = resolveLabel(group.label)?.category ?? null;
+			const enriched = {
+				label: group.label,
+				name: labelName(group.label),
+				items: group.items,
+				clusters: clusterItems(group.items),
+			};
+			const bucket = byCategory.get(category);
+			if (bucket) bucket.push(enriched);
+			else byCategory.set(category, [enriched]);
+		}
+
+		return Array.from(byCategory, ([category, labels]) => ({
+			category,
+			count: labels.reduce((n, l) => n + l.items.length, 0),
+			labels,
+		})).sort((a, b) => {
+			if (a.category === null) return 1;
+			if (b.category === null) return -1;
+			return a.category.localeCompare(b.category);
+		});
+	});
+
+	return { entities, groups, categorizedGroups, count };
 }

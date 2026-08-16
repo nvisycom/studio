@@ -1,7 +1,7 @@
 import type {
 	CreatePolicy,
 	Label,
-	Labels,
+	LabelScope,
 	ModalityRedactions,
 	PolicyDefinition,
 	PolicyRule,
@@ -15,15 +15,7 @@ import type {
 	SdkPredicate,
 	TextRedactionKind,
 } from "./model";
-import { DEFAULT_TEXT_TEMPLATE } from "./model";
-
-/** Split a comma-separated field into trimmed, non-empty values. */
-function splitValues(raw?: string): string[] {
-	return (raw ?? "")
-		.split(",")
-		.map((v) => v.trim())
-		.filter(Boolean);
-}
+import { csvToList, DEFAULT_TEXT_TEMPLATE } from "./model";
 
 /** Build one SDK predicate condition from an editable condition. */
 function buildCondition(p: EditablePredicate): SdkPredicate {
@@ -31,13 +23,13 @@ function buildCondition(p: EditablePredicate): SdkPredicate {
 		case "confidence":
 			return { kind: "confidence", min: p.min ?? 0 };
 		case "labelOneOf":
-			return { kind: "labelOneOf", labels: splitValues(p.values) };
-		case "labelInGroup":
-			return { kind: "labelInGroup", group: (p.values ?? "").trim() };
+			return { kind: "labelOneOf", labels: csvToList(p.values) };
+		case "labelInScope":
+			return { kind: "labelInScope", scope: (p.values ?? "").trim() };
 		case "coRef":
 			return { kind: "coRef", coref: (p.values ?? "").trim() };
 		default:
-			return { kind: "tagOneOf", tags: splitValues(p.values) };
+			return { kind: "tagOneOf", tags: csvToList(p.values) };
 	}
 }
 
@@ -55,16 +47,43 @@ function buildTextOp(
 ): TextRedaction {
 	switch (kind) {
 		case "mask":
-			return { kind: "mask", mask_char: op.maskChar || "*" };
+			return {
+				kind: "mask",
+				mask_char: op.maskChar || "*",
+				...(op.keepPrefix ? { keep_prefix: op.keepPrefix } : {}),
+				...(op.keepSuffix ? { keep_suffix: op.keepSuffix } : {}),
+			};
 		case "replace":
 			return {
 				kind: "replace",
 				template: op.template || DEFAULT_TEXT_TEMPLATE,
 			};
 		case "hash":
-			return { kind: "hash", algorithm: "sha256" };
+			return {
+				kind: "hash",
+				algorithm: op.algorithm ?? "sha256",
+				...(op.salt?.trim() ? { salt: op.salt.trim() } : {}),
+			};
+		case "hmac_hash":
+			return { kind: "hmac_hash", algorithm: op.algorithm ?? "sha256" };
+		case "truncate":
+			return {
+				kind: "truncate",
+				...(op.keepPrefix ? { keep_prefix: op.keepPrefix } : {}),
+				...(op.keepSuffix ? { keep_suffix: op.keepSuffix } : {}),
+			};
+		case "fake":
+			// Params (language, seed) aren't surfaced yet; ship the default template.
+			return { kind: "fake", fallback_template: DEFAULT_TEXT_TEMPLATE };
+		case "clamp":
+			// Numeric bucketing params aren't surfaced yet; the bare operator
+			// defaults to erasing non-numeric values.
+			return { kind: "clamp" };
+		case "generalize_date":
+			// Date params aren't surfaced yet; the SDK defaults to year / ISO.
+			return { kind: "generalize_date", granularity: "year", style: "iso" };
 		default:
-			return { kind }; // erase | keep
+			return { kind }; // erase | keep | pseudonymize | encrypt
 	}
 }
 
@@ -142,14 +161,14 @@ function buildRule(r: PolicyInput["rules"][number]): PolicyRule {
 			};
 }
 
-/** Build the custom-label catalog, preserving builtins from the original. */
-function buildLabels(input: PolicyInput): Labels | undefined {
+/** Build the custom-label schemas this policy introduces. */
+function buildCustomLabels(input: PolicyInput): Label[] | undefined {
 	// The editor's simple name/description/tags map to a single default-locale
 	// custom label.
 	const custom: Label[] = (input.labels ?? [])
 		.filter((l) => l.name.trim())
 		.map((l) => ({
-			id: crypto.randomUUID(),
+			id: l.id,
 			localizations: {
 				en: {
 					name: l.name.trim(),
@@ -158,36 +177,33 @@ function buildLabels(input: PolicyInput): Labels | undefined {
 						: {}),
 				},
 			},
-			tags: splitValues(l.tags),
+			tags: csvToList(l.tags),
 		}));
+	return custom.length > 0 ? custom : undefined;
+}
 
-	const builtins = input.original?.labels?.builtins;
-	if (custom.length === 0 && !builtins?.length) return undefined;
-	return {
-		...(builtins?.length ? { builtins } : {}),
-		...(custom.length > 0 ? { custom } : {}),
-	};
+/** Build the named label sets this policy detects (referenced by `labelInScope`). */
+function buildScopes(input: PolicyInput): LabelScope[] | undefined {
+	const scopes: LabelScope[] = (input.scopes ?? [])
+		.filter((s) => s.name.trim() && s.labels.length > 0)
+		.map((s) => ({
+			name: s.name.trim(),
+			...(s.description?.trim() ? { description: s.description.trim() } : {}),
+			labels: s.labels,
+		}));
+	return scopes.length > 0 ? scopes : undefined;
 }
 
 /**
  * Build the SDK policy definition body shared by create and update.
  *
  * The editor fully models predicated and table rules, the fallback, custom
- * labels, and groups. When editing, `builtins` from the original definition are
- * carried through untouched.
+ * labels, and label scopes.
  */
 export function buildDefinition(input: PolicyInput): PolicyDefinition {
 	const rules = input.rules.map(buildRule);
-	const labels = buildLabels(input);
-
-	// Named label groups (referenced by `labelInGroup` predicates).
-	const groups = (input.groups ?? [])
-		.filter((g) => g.name.trim())
-		.map((g) => ({
-			name: g.name.trim(),
-			description: g.description?.trim() || undefined,
-			labels: splitValues(g.labels),
-		}));
+	const custom = buildCustomLabels(input);
+	const scopes = buildScopes(input);
 
 	return {
 		id: input.id,
@@ -196,8 +212,8 @@ export function buildDefinition(input: PolicyInput): PolicyDefinition {
 		// `rules` is optional; omit it entirely for a fallback-only policy.
 		...(rules.length > 0 ? { rules } : {}),
 		...(input.fallback ? { fallback: buildAction(input.fallback) } : {}),
-		...(labels ? { labels } : {}),
-		...(groups.length > 0 ? { groups } : {}),
+		...(custom ? { custom } : {}),
+		...(scopes ? { scopes } : {}),
 	} as PolicyDefinition;
 }
 

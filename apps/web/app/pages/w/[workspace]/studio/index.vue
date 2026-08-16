@@ -5,9 +5,9 @@ import {
 	StudioDocumentPreview,
 	StudioChatPanel,
 	StudioAuditPanel,
+	StudioRunBar,
 } from "#console/components/pages/studio";
 import { Tabs, TabsList, TabsTrigger } from "#console/components/ui/tabs";
-import type { TextEntityView } from "#console/composables/useTextEntities";
 
 const { t } = useI18n();
 
@@ -15,6 +15,8 @@ useHead({ title: "Studio" });
 
 definePageMeta({
 	pageCategory: "header.category.studio",
+	// Hide the "Studio" breadcrumb so the open-file tabs get the full width.
+	hideCategory: true,
 });
 
 // Use studio files store for persistent open files
@@ -38,14 +40,40 @@ const zoomLevel = ref(100);
 // Right-panel tabs: Chat (existing) and Audit (detection results).
 const panelTab = ref<"chat" | "audit">("audit");
 
-// Detected entities + cross-focus, shared between the audit panel (list) and
-// the document preview (inline highlights).
-const entities = ref<TextEntityView[]>([]);
+// Cross-focus between the audit panel (list) and the document preview (inline
+// highlights). The detected entities themselves come from the shared audit
+// state below.
 const activeEntityId = ref<string | null>(null);
 
 // Whether a CSV's first row is a header. Shared so the audit list labels rows
 // the same way the table renders them.
 const withHeaders = ref(true);
+
+// The active file's flat text, read from its content blob. Shared with the
+// audit panel so it can show each detection's matched value. Only text-backed
+// files have usable content; others leave this null.
+const documentText = ref<string | null>(null);
+watch(
+	[() => activeFile.value?.contentUrl, isTextFile],
+	async ([url, isText]) => {
+		documentText.value = null;
+		if (!url || !isText) return;
+		try {
+			documentText.value = await (await fetch(url)).text();
+		} catch {
+			documentText.value = null;
+		}
+	},
+	{ immediate: true },
+);
+
+// Detection run + audit state for the active file, shared between the run bar
+// (pipeline + run controls), the audit panel (results list), and the document
+// preview (inline highlights).
+const audit = useStudioAudit(
+	() => activeFile.value?.fileId ?? null,
+	() => documentText.value,
+);
 
 function focusEntity(id: string) {
 	activeEntityId.value = activeEntityId.value === id ? null : id;
@@ -143,7 +171,7 @@ function startResize(e: MouseEvent) {
         :is-text="isTextFile"
         :zoom-level="zoomLevel"
         :chat-visible="chatVisible"
-        :entities="entities"
+        :entities="audit.entities.value"
         :active-entity-id="activeEntityId"
         v-model:with-headers="withHeaders"
         @zoom-in="zoomIn"
@@ -173,21 +201,30 @@ function startResize(e: MouseEvent) {
         </div>
       </div>
 
-      <!-- Tabbed panel: Chat | Audit -->
+      <!-- Tabbed panel: Chat | Audit, with run controls above the tabs so
+           they're shared across both tabs. -->
       <div
         v-if="chatVisible || isAnimating"
         class="flex h-full min-w-0 flex-1 flex-col overflow-hidden bg-background"
       >
+        <StudioRunBar
+          v-model:selected-pipeline="audit.selectedPipeline.value"
+          :pipelines="audit.pipelines.value"
+          :phase="audit.phase.value"
+          :run-status="audit.runStatus.value"
+          :can-run="audit.canRun.value"
+          @run="audit.run"
+        />
         <Tabs v-model="panelTab" class="border-b border-border/50 p-2">
           <TabsList class="w-full">
             <TabsTrigger value="audit" class="flex-1 gap-1.5">
               <ScanSearch :size="14" />
               {{ t("studio.audit.tabAudit") }}
               <span
-                v-if="entities.length"
+                v-if="audit.count.value"
                 class="rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground tabular-nums"
               >
-                {{ entities.length }}
+                {{ audit.count.value }}
               </span>
             </TabsTrigger>
             <TabsTrigger value="chat" class="flex-1 gap-1.5">
@@ -203,9 +240,14 @@ function startResize(e: MouseEvent) {
         <div v-show="panelTab === 'audit'" class="min-h-0 flex-1 overflow-hidden">
           <StudioAuditPanel
             :file-id="activeFile?.fileId || null"
+            :phase="audit.phase.value"
+            :entities="audit.entities.value"
+            :categorized-groups="audit.categorizedGroups.value"
+            :count="audit.count.value"
+            :error-message="audit.errorMessage.value"
+            :restored="audit.restored.value"
             :active-entity-id="activeEntityId"
             :with-headers="withHeaders"
-            @update:entities="entities = $event"
             @focus-entity="focusEntity"
           />
         </div>

@@ -4,13 +4,11 @@ import type {
 	EditableRule,
 	EditablePredicatedRule,
 	EditableTableRule,
-	EditableLabelEntry,
 	EditableAction,
 	EditableLabel,
-	EditableGroup,
+	EditableScope,
 	PredicateKind,
 	Modality,
-	TextRedactionKind,
 } from "#console/utils/policies";
 import {
 	buildCreatePolicy,
@@ -18,10 +16,20 @@ import {
 	rulesFromDefinition,
 	fallbackFromDefinition,
 	labelsFromDefinition,
-	groupsFromDefinition,
+	scopesFromDefinition,
 } from "#console/utils/policies";
+import { LabelPicker, LabelSelect, TagInput } from "#console/components/common";
 import { slugify } from "#console/utils/naming";
-import { Plus, Trash2, X, Sparkles, ChevronUp, ChevronDown } from "@lucide/vue";
+import {
+	Plus,
+	Trash2,
+	X,
+	Sparkles,
+	Hash,
+	Tag as TagIcon,
+	ChevronUp,
+	ChevronDown,
+} from "@lucide/vue";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
 import { Button } from "#console/components/ui/button";
@@ -61,23 +69,15 @@ const emit = defineEmits<{
 
 const isEdit = computed(() => !!props.policy);
 
+// Predicate conditions the editor offers. `labelInScope` covers matching by a
+// named label set, so a raw label-list condition isn't offered.
 const PREDICATE_KINDS: PredicateKind[] = [
 	"confidence",
-	"labelOneOf",
 	"tagOneOf",
-	"labelInGroup",
+	"labelInScope",
 	"coRef",
 ];
 const MODALITIES: Modality[] = ["text", "image", "audio", "tabular"];
-// Text vocabulary for the table-rule entry operator; the full per-modality
-// operator UI lives in ModalityActionEditor.
-const TEXT_KINDS: TextRedactionKind[] = [
-	"replace",
-	"mask",
-	"hash",
-	"erase",
-	"keep",
-];
 
 // Which modalities a rule/fallback action currently configures (for the summary).
 function activeModalities(action: EditableAction): Modality[] {
@@ -90,13 +90,13 @@ const description = ref("");
 const rules = ref<EditableRule[]>([]);
 const fallback = ref<EditableAction | null>(null);
 const labels = ref<EditableLabel[]>([]);
-const groups = ref<EditableGroup[]>([]);
+const scopes = ref<EditableScope[]>([]);
 const policyId = ref("");
 
 // Collapsible sections start collapsed; adding an item auto-expands them.
 const rulesOpen = ref(false);
 const labelsOpen = ref(false);
-const groupsOpen = ref(false);
+const scopesOpen = ref(false);
 
 // Fallback (a ModalityRedactions, like a rule action)
 function toggleFallback(enabled: boolean) {
@@ -105,28 +105,41 @@ function toggleFallback(enabled: boolean) {
 		: null;
 }
 
-// Labels catalog
+// The policy's own custom labels, offered inside each scope's picker under a
+// "Custom" group so a scope can cover them alongside catalogue labels.
+const customLabelOptions = computed(() =>
+	labels.value
+		.filter((l) => l.name.trim())
+		.map((l) => ({ id: l.id, name: l.name.trim() })),
+);
+
+// The named scopes a `labelInScope` condition can reference, deduped.
+const scopeNames = computed(() => [
+	...new Set(scopes.value.map((s) => s.name.trim()).filter(Boolean)),
+]);
+
+// Custom labels
 function addLabel() {
 	labelsOpen.value = true; // reveal the section so the new row is visible
 	labels.value = [
 		...labels.value,
-		{ key: crypto.randomUUID(), name: "", tags: "" },
+		{ key: crypto.randomUUID(), id: crypto.randomUUID(), name: "", tags: "" },
 	];
 }
 function removeLabel(key: string) {
 	labels.value = labels.value.filter((l) => l.key !== key);
 }
 
-// Label groups
-function addGroup() {
-	groupsOpen.value = true;
-	groups.value = [
-		...groups.value,
-		{ key: crypto.randomUUID(), name: "", labels: "" },
+// Label scopes
+function addScope() {
+	scopesOpen.value = true;
+	scopes.value = [
+		...scopes.value,
+		{ key: crypto.randomUUID(), name: "", labels: [] },
 	];
 }
-function removeGroup(key: string) {
-	groups.value = groups.value.filter((g) => g.key !== key);
+function removeScope(key: string) {
+	scopes.value = scopes.value.filter((s) => s.key !== key);
 }
 
 // On create the slug is immutable and always derived from the name; on edit it
@@ -182,7 +195,7 @@ function moveRule(index: number, delta: number) {
 }
 // Predicated-rule conditions
 function addPredicate(rule: EditablePredicatedRule) {
-	rule.predicates.push({ kind: "labelOneOf", values: "" });
+	rule.predicates.push({ kind: "labelInScope", values: "" });
 }
 function removePredicate(rule: EditablePredicatedRule, index: number) {
 	rule.predicates.splice(index, 1);
@@ -226,9 +239,7 @@ function currentInput() {
 		rules: rules.value,
 		fallback: fallback.value,
 		labels: labels.value,
-		groups: groups.value,
-		// Preserve definition fields the editor doesn't model (edit only).
-		original: props.policy?.definition,
+		scopes: scopes.value,
 	};
 }
 function metaSnapshot(): string {
@@ -266,10 +277,10 @@ function definitionSnapshot(): string {
 			description: l.description?.trim() ?? "",
 			tags: l.tags ?? "",
 		})),
-		groups: groups.value.map((g) => ({
-			name: g.name.trim(),
-			description: g.description?.trim() ?? "",
-			labels: g.labels ?? "",
+		scopes: scopes.value.map((s) => ({
+			name: s.name.trim(),
+			description: s.description?.trim() ?? "",
+			labels: [...s.labels].sort(),
 		})),
 	});
 }
@@ -310,9 +321,9 @@ watch(
 				labels.value = [];
 			}
 			try {
-				groups.value = groupsFromDefinition(policy.definition);
+				scopes.value = scopesFromDefinition(policy.definition);
 			} catch {
-				groups.value = [];
+				scopes.value = [];
 			}
 		} else {
 			policyId.value = crypto.randomUUID();
@@ -324,7 +335,7 @@ watch(
 			rules.value = [];
 			fallback.value = null;
 			labels.value = [];
-			groups.value = [];
+			scopes.value = [];
 		}
 		// Capture baselines after populating, so change tracking starts clean.
 		nextTick(() => {
@@ -378,8 +389,8 @@ function ruleSummary(rule: EditablePredicatedRule): string {
 				return t("policies.editor.summary.label", { values });
 			if (p.kind === "tagOneOf")
 				return t("policies.editor.summary.tag", { values });
-			if (p.kind === "labelInGroup")
-				return t("policies.editor.summary.group", { values });
+			if (p.kind === "labelInScope")
+				return t("policies.editor.summary.scope", { values });
 			return t("policies.editor.summary.coref", { values });
 		})
 		.join(t("policies.editor.summary.and"));
@@ -399,9 +410,14 @@ function ruleSummary(rule: EditablePredicatedRule): string {
 </script>
 
 <template>
-  <div class="space-y-6">
-    <!-- Identity (name / slug / description) -->
+  <div class="space-y-8">
+    <!-- DETAILS: identity (name / slug / description) -->
     <section class="space-y-4">
+      <p
+        class="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+      >
+        {{ t("policies.editor.groups.details") }}
+      </p>
       <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <div class="space-y-2">
           <Label for="policy-name" required>{{
@@ -442,9 +458,15 @@ function ruleSummary(rule: EditablePredicatedRule): string {
       </div>
     </section>
 
-    <!-- Definition (labels / rules / fallback) -->
-    <div class="space-y-8">
-    <!-- Labels catalog -->
+    <!-- VOCABULARY: label scopes + custom labels -->
+    <div class="space-y-4">
+    <p
+      class="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+    >
+      {{ t("policies.editor.groups.vocabulary") }}
+    </p>
+
+    <!-- Custom labels -->
     <Collapsible v-model:open="labelsOpen" as="section" class="space-y-3">
       <div class="flex items-center justify-between gap-2">
         <CollapsibleTrigger as-child>
@@ -474,42 +496,47 @@ function ruleSummary(rule: EditablePredicatedRule): string {
         </Button>
       </div>
       <CollapsibleContent class="space-y-3">
-      <div
-        v-for="label in labels"
-        :key="label.key"
-        class="space-y-2.5 rounded-lg border border-border/60 p-3"
-      >
-        <div class="flex items-center gap-2">
-          <Input
-            v-model="label.name"
-            :placeholder="t('policies.editor.labels.namePlaceholder')"
-            class="h-9 flex-1 font-mono text-sm"
-          />
-          <Button
-            variant="ghost"
-            size="icon"
-            class="size-9 shrink-0 text-muted-foreground hover:text-destructive"
-            @click="removeLabel(label.key)"
+        <div
+          v-for="label in labels"
+          :key="label.key"
+          class="overflow-hidden rounded-lg border border-border/60"
+        >
+          <!-- Header: the label name is its identity, plus delete. -->
+          <div
+            class="flex items-center gap-2 border-b border-border/60 bg-muted/30 pr-1.5 pl-1"
           >
-            <Trash2 :size="15" />
-          </Button>
+            <TagIcon :size="14" class="ml-1.5 shrink-0 text-muted-foreground" />
+            <Input
+              v-model="label.name"
+              :placeholder="t('policies.editor.labels.namePlaceholder')"
+              class="h-9 flex-1 border-0 bg-transparent px-1 font-mono text-sm shadow-none focus-visible:ring-0"
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              class="size-8 shrink-0 text-muted-foreground hover:text-destructive"
+              @click="removeLabel(label.key)"
+            >
+              <Trash2 :size="15" />
+            </Button>
+          </div>
+          <div class="space-y-2.5 p-2.5">
+            <Input
+              v-model="label.description"
+              :placeholder="t('policies.editor.labels.descriptionPlaceholder')"
+              class="h-9"
+            />
+            <TagInput
+              v-model="label.tags"
+              :placeholder="t('policies.editor.labels.tagsPlaceholder')"
+            />
+          </div>
         </div>
-        <Input
-          v-model="label.description"
-          :placeholder="t('policies.editor.labels.descriptionPlaceholder')"
-          class="h-9"
-        />
-        <Input
-          v-model="label.tags"
-          :placeholder="t('policies.editor.labels.tagsPlaceholder')"
-          class="h-9 font-mono text-sm"
-        />
-      </div>
       </CollapsibleContent>
     </Collapsible>
 
-    <!-- Label groups -->
-    <Collapsible v-model:open="groupsOpen" as="section" class="space-y-3">
+    <!-- Label scopes -->
+    <Collapsible v-model:open="scopesOpen" as="section" class="space-y-3">
       <div class="flex items-center justify-between gap-2">
         <CollapsibleTrigger as-child>
           <button
@@ -519,58 +546,75 @@ function ruleSummary(rule: EditablePredicatedRule): string {
             <ChevronDown
               :size="16"
               class="shrink-0 text-muted-foreground transition-transform"
-              :class="groupsOpen ? '' : '-rotate-90'"
+              :class="scopesOpen ? '' : '-rotate-90'"
             />
             <div>
               <h2 class="text-sm font-medium">
-                {{ t("policies.editor.groups.label") }}
-                <span class="text-muted-foreground">({{ groups.length }})</span>
+                {{ t("policies.editor.scopes.label") }}
+                <span class="text-muted-foreground">({{ scopes.length }})</span>
               </h2>
               <p class="text-xs text-muted-foreground">
-                {{ t("policies.editor.groups.hint") }}
+                {{ t("policies.editor.scopes.hint") }}
               </p>
             </div>
           </button>
         </CollapsibleTrigger>
-        <Button variant="outline" size="sm" @click="addGroup">
+        <Button variant="outline" size="sm" @click="addScope">
           <Plus :size="14" class="mr-1.5" />
-          {{ t("policies.editor.groups.add") }}
+          {{ t("policies.editor.scopes.add") }}
         </Button>
       </div>
       <CollapsibleContent class="space-y-3">
         <div
-          v-for="group in groups"
-          :key="group.key"
-          class="space-y-2.5 rounded-lg border border-border/60 p-3"
+          v-for="scope in scopes"
+          :key="scope.key"
+          class="overflow-hidden rounded-lg border border-border/60"
         >
-          <div class="flex items-center gap-2">
+          <!-- Scope header: the name is the scope's identity, plus its label
+               count and delete. -->
+          <div
+            class="flex items-center gap-2 border-b border-border/60 bg-muted/30 pr-1.5 pl-1"
+          >
+            <Hash :size="14" class="ml-1.5 shrink-0 text-muted-foreground" />
             <Input
-              v-model="group.name"
-              :placeholder="t('policies.editor.groups.namePlaceholder')"
-              class="h-9 flex-1 font-mono text-sm"
+              v-model="scope.name"
+              :placeholder="t('policies.editor.scopes.namePlaceholder')"
+              class="h-9 flex-1 border-0 bg-transparent px-1 font-mono text-sm shadow-none focus-visible:ring-0"
             />
+            <span
+              v-if="scope.labels.length"
+              class="shrink-0 text-xs tabular-nums text-muted-foreground"
+            >
+              {{ t("policies.editor.scopes.count", { count: scope.labels.length }) }}
+            </span>
             <Button
               variant="ghost"
               size="icon"
-              class="size-9 shrink-0 text-muted-foreground hover:text-destructive"
-              @click="removeGroup(group.key)"
+              class="size-8 shrink-0 text-muted-foreground hover:text-destructive"
+              @click="removeScope(scope.key)"
             >
               <Trash2 :size="15" />
             </Button>
           </div>
-          <div class="space-y-1.5">
-            <Label class="text-xs text-muted-foreground">
-              {{ t("policies.editor.groups.labelsLabel") }}
-            </Label>
-            <Textarea
-              v-model="group.labels"
-              :placeholder="t('policies.editor.groups.labelsPlaceholder')"
-              class="min-h-[60px] font-mono text-sm"
+          <div class="p-2.5">
+            <LabelPicker
+              v-model="scope.labels"
+              :extra-labels="customLabelOptions"
+              borderless
             />
           </div>
         </div>
       </CollapsibleContent>
     </Collapsible>
+    </div>
+
+    <!-- BEHAVIOR: rules + fallback -->
+    <div class="space-y-4">
+    <p
+      class="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+    >
+      {{ t("policies.editor.groups.behavior") }}
+    </p>
 
     <!-- Rules -->
     <Collapsible v-model:open="rulesOpen" as="section" class="space-y-3">
@@ -704,6 +748,38 @@ function ruleSummary(rule: EditablePredicatedRule): string {
                 max="1"
                 class="h-9 flex-1"
               />
+              <Select
+                v-else-if="pred.kind === 'labelInScope'"
+                v-model="pred.values"
+              >
+                <SelectTrigger class="h-9 flex-1">
+                  <SelectValue
+                    :placeholder="t('policies.editor.valuesPlaceholder.labelInScope')"
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem
+                    v-for="name in scopeNames"
+                    :key="name"
+                    :value="name"
+                    class="font-mono text-sm"
+                  >
+                    {{ name }}
+                  </SelectItem>
+                  <p
+                    v-if="!scopeNames.length"
+                    class="px-2 py-1.5 text-sm text-muted-foreground"
+                  >
+                    {{ t("policies.editor.predicate.scopeEmpty") }}
+                  </p>
+                </SelectContent>
+              </Select>
+              <TagInput
+                v-else-if="pred.kind === 'tagOneOf'"
+                v-model="pred.values"
+                :placeholder="t('policies.editor.valuesPlaceholder.tagOneOf')"
+                class="flex-1"
+              />
               <Input
                 v-else
                 v-model="pred.values"
@@ -742,7 +818,7 @@ function ruleSummary(rule: EditablePredicatedRule): string {
               <span class="h-px flex-1 bg-border/50" />
             </div>
 
-            <ModalityActionEditor :action="rule.action" />
+            <ModalityActionEditor :action="rule.action" bordered />
           </div>
 
           <!-- Summary -->
@@ -764,51 +840,31 @@ function ruleSummary(rule: EditablePredicatedRule): string {
             </span>
             <span class="h-px flex-1 bg-border/50" />
           </div>
-          <div
-            v-for="entry in rule.entries"
-            :key="entry.key"
-            class="flex items-center gap-2"
-          >
-            <Input
-              v-model="entry.label"
-              :placeholder="t('policies.editor.table.labelPlaceholder')"
-              class="h-9 w-[200px] shrink-0 font-mono text-sm"
-            />
-            <span class="shrink-0 text-xs text-muted-foreground">→</span>
-            <div class="flex flex-1 items-center gap-2">
-              <Select v-model="entry.action.modalities.text!.textKind">
-                <SelectTrigger class="h-9 w-[130px] shrink-0">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem v-for="k in TEXT_KINDS" :key="k" :value="k">
-                    {{ t(`policies.editor.textKind.${k}`) }}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <Input
-                v-if="entry.action.modalities.text?.textKind === 'replace'"
-                v-model="entry.action.modalities.text.template"
-                class="h-9 flex-1 font-mono text-sm"
-                placeholder="[{label}]"
+          <!-- Each entry: a label header, its per-modality actions hung on a
+               rail below it (no entry box — the modality blocks are the only
+               bordered level). -->
+          <div v-for="entry in rule.entries" :key="entry.key" class="space-y-2">
+            <div class="flex items-center gap-2">
+              <TagIcon :size="14" class="shrink-0 text-muted-foreground" />
+              <LabelSelect
+                v-model="entry.label"
+                :extra-labels="customLabelOptions"
+                :placeholder="t('policies.editor.table.labelPlaceholder')"
+                class="flex-1"
               />
-              <Input
-                v-else-if="entry.action.modalities.text?.textKind === 'mask'"
-                v-model="entry.action.modalities.text.maskChar"
-                class="h-9 w-16 text-center font-mono"
-                maxlength="1"
-                placeholder="*"
-              />
+              <Button
+                variant="ghost"
+                size="icon"
+                class="size-9 shrink-0 text-muted-foreground hover:text-destructive"
+                :aria-label="t('policies.editor.table.removeEntry')"
+                @click="removeEntry(rule, entry.key)"
+              >
+                <Trash2 :size="15" />
+              </Button>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              class="size-9 shrink-0 text-muted-foreground hover:text-destructive"
-              :aria-label="t('policies.editor.table.removeEntry')"
-              @click="removeEntry(rule, entry.key)"
-            >
-              <Trash2 :size="15" />
-            </Button>
+            <div class="ml-2 border-l border-border/60 pl-4">
+              <ModalityActionEditor :action="entry.action" />
+            </div>
           </div>
           <Button
             variant="outline"
@@ -841,12 +897,7 @@ function ruleSummary(rule: EditablePredicatedRule): string {
           @update:model-value="toggleFallback"
         />
       </div>
-      <div
-        v-if="fallback"
-        class="rounded-lg border border-border/60 p-3"
-      >
-        <ModalityActionEditor :action="fallback" />
-      </div>
+      <ModalityActionEditor v-if="fallback" :action="fallback" bordered />
     </section>
     </div>
   </div>
