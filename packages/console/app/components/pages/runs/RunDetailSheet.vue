@@ -72,11 +72,15 @@ watch(
 
 		auditLoading.value = true;
 		try {
-			audit.value = await getDetections(run.id);
+			const result = await getDetections(run.id);
+			// Ignore a stale response: the sheet may have moved to another run
+			// while this was in flight.
+			if (props.run?.id !== run.id) return;
+			audit.value = result;
 		} catch {
-			auditFailed.value = true;
+			if (props.run?.id === run.id) auditFailed.value = true;
 		} finally {
-			auditLoading.value = false;
+			if (props.run?.id === run.id) auditLoading.value = false;
 		}
 	},
 	{ immediate: true },
@@ -87,7 +91,14 @@ let copyTimer: ReturnType<typeof setTimeout> | undefined;
 
 async function copyRunId() {
 	if (!props.run) return;
-	await navigator.clipboard.writeText(props.run.id);
+	try {
+		await navigator.clipboard.writeText(props.run.id);
+	} catch {
+		// Clipboard access can be denied (insecure context, permission) — tell the
+		// user rather than silently failing.
+		toast.error(t("workflows.runs.detail.copyFailed"));
+		return;
+	}
 	copied.value = true;
 	toast(t("workflows.runs.detail.copied"));
 	clearTimeout(copyTimer);

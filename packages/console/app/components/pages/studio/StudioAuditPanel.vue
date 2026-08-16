@@ -35,8 +35,6 @@ const props = defineProps<{
 	count: number;
 	/** Failure message shown when the run failed. */
 	errorMessage?: string;
-	/** Whether the shown audit came from a prior run rather than this session. */
-	restored?: boolean;
 	/** Entity currently focused (from a highlight click), for row highlighting. */
 	activeEntityId?: string | null;
 	/** Whether the open CSV treats row 0 as a header (affects tabular labels). */
@@ -97,19 +95,14 @@ function clusterActive(cluster: EntityCluster): boolean {
 
 <template>
   <div class="flex h-full flex-col">
-    <!-- Toolbar: entity count + collapse-duplicates toggle. -->
+    <!-- Toolbar: collapse-duplicates toggle. -->
     <div
-      v-if="phase === 'analyzed'"
-      class="flex items-center gap-2 border-b border-border/50 bg-muted/30 px-3 py-2 text-xs text-muted-foreground"
+      v-if="phase === 'analyzed' && hasDuplicates"
+      class="flex items-center justify-end border-b border-border/50 bg-muted/30 px-3 py-2 text-xs text-muted-foreground"
     >
-      <span>
-        {{ t("studio.audit.found", { count }) }}
-        <span v-if="restored">· {{ t("studio.audit.fromLastRun") }}</span>
-      </span>
       <button
-        v-if="hasDuplicates"
         type="button"
-        class="ml-auto flex items-center gap-1 rounded-md px-1.5 py-0.5 transition-colors hover:bg-muted"
+        class="flex items-center gap-1 rounded-md px-1.5 py-0.5 transition-colors hover:bg-muted"
         :class="collapseDuplicates ? 'text-foreground' : 'text-muted-foreground'"
         :title="t('studio.audit.collapseDuplicates')"
         @click="collapseDuplicates = !collapseDuplicates"
@@ -284,9 +277,10 @@ function clusterActive(cluster: EntityCluster): boolean {
                 </div>
               </template>
 
-              <!-- Expanded: one row per occurrence (default). -->
+              <!-- Expanded: one row per occurrence. -->
+              <template v-else>
               <button
-                v-for="entity in collapseDuplicates ? [] : group.items"
+                v-for="entity in group.items"
                 :key="entity.id"
                 type="button"
                 class="flex w-full items-start gap-2 border-l py-1.5 pr-2 pl-3 text-left transition-colors hover:bg-muted/40"
@@ -336,6 +330,7 @@ function clusterActive(cluster: EntityCluster): boolean {
                   {{ confidencePct(entity.confidence) }}
                 </span>
               </button>
+              </template>
             </div>
           </CollapsibleContent>
         </Collapsible>

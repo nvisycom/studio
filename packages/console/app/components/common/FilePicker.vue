@@ -40,23 +40,36 @@ withDefaults(
 // Search box → debounced → the files query, so keystrokes don't spam the API.
 const search = ref("");
 const debouncedSearch = refDebounced(search, 250);
-const { files } = useFiles({
+const { files, getFile } = useFiles({
 	query: computed(() => ({ search: debouncedSearch.value || undefined })),
 	pageSize: 20,
 });
 
 // Remember the chosen file's name so the trigger label survives the search
-// results changing. Seed it from whichever result matches the current model.
+// results changing. Seed it from whichever result matches the current model; a
+// preselected id that isn't on the current page is resolved by a direct fetch,
+// so the trigger never falls back to the "all files" placeholder for a real
+// selection.
 const selectedLabel = ref("");
 watch(
 	[() => model.value, files],
-	([id, list]) => {
+	async ([id, list]) => {
 		if (!id) {
 			selectedLabel.value = "";
 			return;
 		}
 		const match = list?.find((f) => f.id === id);
-		if (match) selectedLabel.value = match.displayName;
+		if (match) {
+			selectedLabel.value = match.displayName;
+			return;
+		}
+		// Not on this page — fetch it directly to name the trigger.
+		try {
+			const file = await getFile(id);
+			if (model.value === id) selectedLabel.value = file.displayName;
+		} catch {
+			// Best-effort: leave the label as-is if the lookup fails.
+		}
 	},
 	{ immediate: true },
 );

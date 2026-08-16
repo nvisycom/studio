@@ -339,7 +339,7 @@ const columns = computed<VirtualColumn<(typeof sortedRuns.value)[number]>[]>(
       v-model:open="isDetailOpen"
       :run="detailRun"
       @open-in-studio="openInStudio"
-      @download-audit="(runId, format) => downloadAudit(runId, format, auditFileName(detailRun!, format))"
+      @download-audit="(_runId, format) => detailRun && downloadRunAudit(detailRun, format)"
     />
   </div>
 </template>

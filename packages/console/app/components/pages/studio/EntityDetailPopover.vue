@@ -37,13 +37,9 @@ const confidencePct = computed(() =>
 	props.entity ? `${Math.round(props.entity.confidence * 100)}%` : "",
 );
 
-// "Detected by": the recognizer kind (pattern/model) when the birth event named
-// one, else the raw source string.
-const detectedBy = computed(() => {
-	const e = props.entity;
-	if (!e) return "";
-	return e.detectorKind ?? e.source ?? "";
-});
+// "Detected by": the raw recognizer source. The pattern/model kind + name is
+// surfaced separately by detectorRow, so this row shows the source itself.
+const detectedBy = computed(() => props.entity?.source ?? "");
 
 // The named pattern/model on its own row, labeled by kind, when present.
 const detectorRow = computed(() => {

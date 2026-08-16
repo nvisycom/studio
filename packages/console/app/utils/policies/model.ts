@@ -1,6 +1,7 @@
 import type {
 	AudioRedaction,
 	ImageRedaction,
+	LocalizedText,
 	PolicyRule,
 	Predicate,
 	TextRedaction,
@@ -138,16 +139,25 @@ export interface EditableTableRule {
 
 export type EditableRule = EditablePredicatedRule | EditableTableRule;
 
-/** An entity-label catalog entry. */
+/**
+ * An entity-label catalog entry. The editor surfaces one locale's name +
+ * description (`locale`); every other localization is retained verbatim in
+ * `localizations` so editing a multilingual label never drops its other locales
+ * on save.
+ */
 export interface EditableLabel {
 	/** Local-only key for list rendering. */
 	key: string;
 	/** Stable label id (its `LabelRef`), so a scope can reference this label. */
 	id: string;
+	/** The locale the editable `name`/`description` map to (e.g. `"en"`). */
+	locale: string;
 	name: string;
 	description?: string;
 	/** comma-separated tags. */
 	tags?: string;
+	/** Every localization from the stored label, preserved across a save. */
+	localizations: LocalizedText;
 }
 
 /** A named set of labels a policy detects; a rule matches it via `labelInScope`. */

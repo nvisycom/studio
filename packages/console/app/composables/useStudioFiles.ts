@@ -122,9 +122,12 @@ export function useStudioFiles() {
 
 	// Open a file (add to open files and set as active)
 	async function openFile(fileId: string, file?: NvisyFile) {
-		// Tabs belong to the current workspace (covers the first open before any
-		// workspace switch has run).
-		if (currentWorkspaceSlug.value)
+		// Claim ownership only when no workspace owns the tabs yet (the very first
+		// open). Never re-attribute existing tabs here: if this runs after the
+		// active workspace changed but before the swap watcher fires, overwriting
+		// loadedSlug would relabel the previous workspace's tabs and make the
+		// watcher skip the swap. Transitions are the watcher's job.
+		if (!loadedSlug.value && currentWorkspaceSlug.value)
 			loadedSlug.value = currentWorkspaceSlug.value;
 
 		// If already open, just set as active

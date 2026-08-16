@@ -1188,9 +1188,7 @@
 			"run": "Run detection",
 			"runAgain": "Run again",
 			"restoring": "Restoring the last run…",
-			"fromLastRun": "from the last run",
 			"runFailed": "Detection failed. Please try again.",
-			"found": "{count} entities detected | {count} entity detected | {count} entities detected",
 			"bytes": "bytes {start}–{end}",
 			"status": {
 				"queued": "Queued…",
@@ -1291,8 +1289,6 @@
 			"moveUp": "Move rule up",
 			"moveDown": "Move rule down",
 			"removeRule": "Remove rule",
-			"when": "When",
-			"then": "Then",
 			"addCondition": "Add condition",
 			"valuesPlaceholder": {
 				"tagOneOf": "comma, separated tags",
@@ -1372,7 +1368,6 @@
 			"addPredicatedRule": "Conditional rule",
 			"addTableRule": "Label table",
 			"table": {
-				"label": "Labels",
 				"labelPlaceholder": "email_address",
 				"addEntry": "Add label",
 				"removeEntry": "Remove label"
@@ -1546,7 +1541,8 @@
 				"tags": "Tags",
 				"downloadJson": "Download JSON",
 				"downloadCsv": "Download CSV",
-				"none": "—"
+				"none": "—",
+				"copyFailed": "Couldn't copy the run id"
 			}
 		},
 		"learnMore": "Learn more",

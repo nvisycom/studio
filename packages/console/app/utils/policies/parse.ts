@@ -142,21 +142,25 @@ export function fallbackFromDefinition(
 }
 
 /**
- * Reconstruct the editable custom-label list from a stored definition. Each
- * label carries localized names, so we read the first available locale into the
- * editor's flat name/description.
+ * Reconstruct the editable custom-label list from a stored definition. The
+ * editor surfaces one locale (English when present, else the first available);
+ * every localization is retained so a save preserves the label's other locales.
  */
 export function labelsFromDefinition(
 	definition: PolicyDefinition,
 ): EditableLabel[] {
 	return (definition.custom ?? []).map((l) => {
-		const locale = Object.values(l.localizations)[0];
+		const localizations = l.localizations ?? {};
+		const locale = "en" in localizations ? "en" : Object.keys(localizations)[0];
+		const shown = locale ? localizations[locale] : undefined;
 		return {
 			key: crypto.randomUUID(),
 			id: l.id,
-			name: locale?.name ?? "",
-			description: locale?.description,
+			locale: locale ?? "en",
+			name: shown?.name ?? "",
+			description: shown?.description,
 			tags: l.tags.join(", "),
+			localizations,
 		};
 	});
 }

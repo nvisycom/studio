@@ -1188,9 +1188,7 @@
 			"run": "Erkennung ausführen",
 			"runAgain": "Erneut ausführen",
 			"restoring": "Letzter Lauf wird wiederhergestellt…",
-			"fromLastRun": "aus dem letzten Lauf",
 			"runFailed": "Erkennung fehlgeschlagen. Bitte erneut versuchen.",
-			"found": "{count} Entität erkannt | {count} Entität erkannt | {count} Entitäten erkannt",
 			"bytes": "Bytes {start}–{end}",
 			"status": {
 				"queued": "In Warteschlange…",
@@ -1291,8 +1289,6 @@
 			"moveUp": "Regel nach oben",
 			"moveDown": "Regel nach unten",
 			"removeRule": "Regel entfernen",
-			"when": "Wenn",
-			"then": "Dann",
 			"addCondition": "Bedingung hinzufügen",
 			"valuesPlaceholder": {
 				"tagOneOf": "kommagetrennte Tags",
@@ -1372,7 +1368,6 @@
 			"addPredicatedRule": "Bedingte Regel",
 			"addTableRule": "Label-Tabelle",
 			"table": {
-				"label": "Labels",
 				"labelPlaceholder": "email_address",
 				"addEntry": "Label hinzufügen",
 				"removeEntry": "Label entfernen"
@@ -1546,7 +1541,8 @@
 				"tags": "Tags",
 				"downloadJson": "JSON herunterladen",
 				"downloadCsv": "CSV herunterladen",
-				"none": "—"
+				"none": "—",
+				"copyFailed": "Lauf-ID konnte nicht kopiert werden"
 			}
 		},
 		"learnMore": "Mehr erfahren",

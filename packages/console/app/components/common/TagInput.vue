@@ -68,6 +68,7 @@ function onKeydown(event: KeyboardEvent) {
         type="button"
         class="rounded-sm text-muted-foreground transition-colors hover:text-foreground"
         :aria-label="t('common.tagInput.remove', { tag })"
+        @pointerdown.prevent
         @click="remove(tag)"
       >
         <X :size="13" />

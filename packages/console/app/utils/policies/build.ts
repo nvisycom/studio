@@ -17,6 +17,16 @@ import type {
 } from "./model";
 import { csvToList, DEFAULT_TEXT_TEMPLATE } from "./model";
 
+/**
+ * Coerce an editor number to a non-negative integer (or a fallback when unset).
+ * The inputs carry `min` attributes, but those don't guard this save path, so a
+ * negative or fractional value is normalized here before it reaches the SDK.
+ */
+function nonNegative(value: number | undefined, fallback: number): number {
+	if (value == null || !Number.isFinite(value)) return fallback;
+	return Math.max(0, Math.floor(value));
+}
+
 /** Build one SDK predicate condition from an editable condition. */
 function buildCondition(p: EditablePredicate): SdkPredicate {
 	switch (p.kind) {
@@ -46,13 +56,16 @@ function buildTextOp(
 	kind: TextRedactionKind,
 ): TextRedaction {
 	switch (kind) {
-		case "mask":
+		case "mask": {
+			const prefix = nonNegative(op.keepPrefix, 0);
+			const suffix = nonNegative(op.keepSuffix, 0);
 			return {
 				kind: "mask",
 				mask_char: op.maskChar || "*",
-				...(op.keepPrefix ? { keep_prefix: op.keepPrefix } : {}),
-				...(op.keepSuffix ? { keep_suffix: op.keepSuffix } : {}),
+				...(prefix ? { keep_prefix: prefix } : {}),
+				...(suffix ? { keep_suffix: suffix } : {}),
 			};
+		}
 		case "replace":
 			return {
 				kind: "replace",
@@ -66,12 +79,15 @@ function buildTextOp(
 			};
 		case "hmac_hash":
 			return { kind: "hmac_hash", algorithm: op.algorithm ?? "sha256" };
-		case "truncate":
+		case "truncate": {
+			const prefix = nonNegative(op.keepPrefix, 0);
+			const suffix = nonNegative(op.keepSuffix, 0);
 			return {
 				kind: "truncate",
-				...(op.keepPrefix ? { keep_prefix: op.keepPrefix } : {}),
-				...(op.keepSuffix ? { keep_suffix: op.keepSuffix } : {}),
+				...(prefix ? { keep_prefix: prefix } : {}),
+				...(suffix ? { keep_suffix: suffix } : {}),
 			};
+		}
 		case "fake":
 			// Params (language, seed) aren't surfaced yet; ship the default template.
 			return { kind: "fake", fallback_template: DEFAULT_TEXT_TEMPLATE };
@@ -99,9 +115,15 @@ function buildModalities(
 	if (mods.image) {
 		const k = mods.image.imageKind ?? "blur";
 		if (k === "blur")
-			out.image = { kind: "blur", sigma: mods.image.sigma ?? 8 };
+			out.image = {
+				kind: "blur",
+				sigma: Math.max(1, nonNegative(mods.image.sigma, 8)),
+			};
 		else if (k === "pixelate")
-			out.image = { kind: "pixelate", block_size: mods.image.blockSize ?? 16 };
+			out.image = {
+				kind: "pixelate",
+				block_size: Math.max(2, nonNegative(mods.image.blockSize, 16)),
+			};
 		else out.image = { kind: k }; // erase | keep
 	}
 	if (mods.audio) {
@@ -109,7 +131,7 @@ function buildModalities(
 		if (k === "beep")
 			out.audio = {
 				kind: "beep",
-				hz: mods.audio.hz ?? 1000,
+				hz: Math.max(1, nonNegative(mods.audio.hz, 1000)),
 				amplitude: 0.5,
 				waveform: "sine",
 			};
@@ -163,14 +185,15 @@ function buildRule(r: PolicyInput["rules"][number]): PolicyRule {
 
 /** Build the custom-label schemas this policy introduces. */
 function buildCustomLabels(input: PolicyInput): Label[] | undefined {
-	// The editor's simple name/description/tags map to a single default-locale
-	// custom label.
+	// The editor edits one locale's name/description; merge that back into the
+	// label's preserved localizations so a save never drops its other locales.
 	const custom: Label[] = (input.labels ?? [])
 		.filter((l) => l.name.trim())
 		.map((l) => ({
 			id: l.id,
 			localizations: {
-				en: {
+				...l.localizations,
+				[l.locale]: {
 					name: l.name.trim(),
 					...(l.description?.trim()
 						? { description: l.description.trim() }

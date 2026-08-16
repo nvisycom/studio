@@ -65,6 +65,8 @@ const props = withDefaults(
 const emit = defineEmits<{
 	create: [policy: CreatePolicy];
 	update: [slug: string, updates: UpdatePolicy];
+	/** Whether the form is submittable: valid, and (in edit mode) changed. */
+	"can-submit": [value: boolean];
 }>();
 
 const isEdit = computed(() => !!props.policy);
@@ -123,11 +125,32 @@ function addLabel() {
 	labelsOpen.value = true; // reveal the section so the new row is visible
 	labels.value = [
 		...labels.value,
-		{ key: crypto.randomUUID(), id: crypto.randomUUID(), name: "", tags: "" },
+		{
+			key: crypto.randomUUID(),
+			id: crypto.randomUUID(),
+			locale: "en",
+			name: "",
+			tags: "",
+			localizations: {},
+		},
 	];
 }
 function removeLabel(key: string) {
+	// Also drop the label's id wherever a scope or table rule referenced it, so
+	// a saved definition never points at a custom label that no longer exists.
+	const removed = labels.value.find((l) => l.key === key);
 	labels.value = labels.value.filter((l) => l.key !== key);
+	if (!removed) return;
+	for (const scope of scopes.value) {
+		scope.labels = scope.labels.filter((id) => id !== removed.id);
+	}
+	for (const rule of rules.value) {
+		if (rule.kind === "table") {
+			for (const entry of rule.entries) {
+				if (entry.label === removed.id) entry.label = "";
+			}
+		}
+	}
 }
 
 // Label scopes
@@ -222,7 +245,18 @@ const definitionValid = computed(() => {
 	// one rule or a fallback.
 	const rulesNamed = rules.value.every((r) => r.name.trim().length > 0);
 	const doesSomething = rules.value.length > 0 || !!fallback.value;
-	return rulesNamed && doesSomething;
+	// Every `label in scope` condition must reference a scope this policy
+	// defines — otherwise the rule would serialize an empty/dangling scope name.
+	const scopeRefsResolve = rules.value.every((r) =>
+		r.kind !== "predicated"
+			? true
+			: r.predicates.every(
+					(p) =>
+						p.kind !== "labelInScope" ||
+						scopeNames.value.includes((p.values ?? "").trim()),
+				),
+	);
+	return rulesNamed && doesSomething && scopeRefsResolve;
 });
 const isValid = computed(() => metaValid.value && definitionValid.value);
 
@@ -292,6 +326,14 @@ const hasDefinitionChanges = computed(
 const hasChanges = computed(
 	() => hasMetaChanges.value || hasDefinitionChanges.value,
 );
+
+// Whether the pinned sheet footer can submit: valid, and (edit) actually
+// changed. Emitted to the parent, which owns the footer button — a parent
+// computed reading this through a template ref wouldn't track it reactively.
+const canSubmit = computed(
+	() => isValid.value && (!isEdit.value || hasChanges.value),
+);
+watch(canSubmit, (value) => emit("can-submit", value), { immediate: true });
 
 // Populate from the policy prop (edit) or start fresh (create).
 watch(
@@ -467,35 +509,18 @@ function ruleSummary(rule: EditablePredicatedRule): string {
     </p>
 
     <!-- Custom labels -->
-    <Collapsible v-model:open="labelsOpen" as="section" class="space-y-3">
-      <div class="flex items-center justify-between gap-2">
-        <CollapsibleTrigger as-child>
-          <button
-            type="button"
-            class="flex flex-1 items-center gap-2 text-left"
-          >
-            <ChevronDown
-              :size="16"
-              class="shrink-0 text-muted-foreground transition-transform"
-              :class="labelsOpen ? '' : '-rotate-90'"
-            />
-            <div>
-              <h2 class="text-sm font-medium">
-                {{ t("policies.editor.labels.label") }}
-                <span class="text-muted-foreground">({{ labels.length }})</span>
-              </h2>
-              <p class="text-xs text-muted-foreground">
-                {{ t("policies.editor.labels.hint") }}
-              </p>
-            </div>
-          </button>
-        </CollapsibleTrigger>
+    <CollapsibleSection
+      v-model:open="labelsOpen"
+      :title="t('policies.editor.labels.label')"
+      :hint="t('policies.editor.labels.hint')"
+      :count="labels.length"
+    >
+      <template #action>
         <Button variant="outline" size="sm" @click="addLabel">
           <Plus :size="14" class="mr-1.5" />
           {{ t("policies.editor.labels.add") }}
         </Button>
-      </div>
-      <CollapsibleContent class="space-y-3">
+      </template>
         <div
           v-for="label in labels"
           :key="label.key"
@@ -532,39 +557,21 @@ function ruleSummary(rule: EditablePredicatedRule): string {
             />
           </div>
         </div>
-      </CollapsibleContent>
-    </Collapsible>
+    </CollapsibleSection>
 
     <!-- Label scopes -->
-    <Collapsible v-model:open="scopesOpen" as="section" class="space-y-3">
-      <div class="flex items-center justify-between gap-2">
-        <CollapsibleTrigger as-child>
-          <button
-            type="button"
-            class="flex flex-1 items-center gap-2 text-left"
-          >
-            <ChevronDown
-              :size="16"
-              class="shrink-0 text-muted-foreground transition-transform"
-              :class="scopesOpen ? '' : '-rotate-90'"
-            />
-            <div>
-              <h2 class="text-sm font-medium">
-                {{ t("policies.editor.scopes.label") }}
-                <span class="text-muted-foreground">({{ scopes.length }})</span>
-              </h2>
-              <p class="text-xs text-muted-foreground">
-                {{ t("policies.editor.scopes.hint") }}
-              </p>
-            </div>
-          </button>
-        </CollapsibleTrigger>
+    <CollapsibleSection
+      v-model:open="scopesOpen"
+      :title="t('policies.editor.scopes.label')"
+      :hint="t('policies.editor.scopes.hint')"
+      :count="scopes.length"
+    >
+      <template #action>
         <Button variant="outline" size="sm" @click="addScope">
           <Plus :size="14" class="mr-1.5" />
           {{ t("policies.editor.scopes.add") }}
         </Button>
-      </div>
-      <CollapsibleContent class="space-y-3">
+      </template>
         <div
           v-for="scope in scopes"
           :key="scope.key"
@@ -604,8 +611,7 @@ function ruleSummary(rule: EditablePredicatedRule): string {
             />
           </div>
         </div>
-      </CollapsibleContent>
-    </Collapsible>
+    </CollapsibleSection>
     </div>
 
     <!-- BEHAVIOR: rules + fallback -->
@@ -617,29 +623,13 @@ function ruleSummary(rule: EditablePredicatedRule): string {
     </p>
 
     <!-- Rules -->
-    <Collapsible v-model:open="rulesOpen" as="section" class="space-y-3">
-      <div class="flex items-center justify-between gap-2">
-        <CollapsibleTrigger as-child>
-          <button
-            type="button"
-            class="flex flex-1 items-center gap-2 text-left"
-          >
-            <ChevronDown
-              :size="16"
-              class="shrink-0 text-muted-foreground transition-transform"
-              :class="rulesOpen ? '' : '-rotate-90'"
-            />
-            <div>
-              <h2 class="text-sm font-medium">
-                {{ t("policies.editor.rulesLabel") }}
-                <span class="text-muted-foreground">({{ rules.length }})</span>
-              </h2>
-              <p class="text-xs text-muted-foreground">
-                {{ t("policies.editor.rulesHint") }}
-              </p>
-            </div>
-          </button>
-        </CollapsibleTrigger>
+    <CollapsibleSection
+      v-model:open="rulesOpen"
+      :title="t('policies.editor.rulesLabel')"
+      :hint="t('policies.editor.rulesHint')"
+      :count="rules.length"
+    >
+      <template #action>
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
             <Button variant="outline" size="sm">
@@ -656,9 +646,7 @@ function ruleSummary(rule: EditablePredicatedRule): string {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
-
-      <CollapsibleContent class="space-y-3">
+      </template>
       <div
         v-for="(rule, ruleIndex) in rules"
         :key="rule.key"
@@ -716,14 +704,6 @@ function ruleSummary(rule: EditablePredicatedRule): string {
         >
           <!-- WHEN -->
           <div class="space-y-2.5 px-4 py-3.5">
-            <div class="flex items-center gap-2">
-              <span
-                class="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
-              >
-                {{ t("policies.editor.when") }}
-              </span>
-              <span class="h-px flex-1 bg-border/50" />
-            </div>
             <div
               v-for="(pred, i) in rule.predicates"
               :key="i"
@@ -807,18 +787,10 @@ function ruleSummary(rule: EditablePredicatedRule): string {
             </Button>
           </div>
 
-          <!-- THEN -->
+          <!-- THEN: separated from the conditions by a thin divider -->
           <div class="space-y-2.5 px-4 py-3.5">
-            <div class="flex items-center gap-2">
-              <span
-                class="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
-              >
-                {{ t("policies.editor.then") }}
-              </span>
-              <span class="h-px flex-1 bg-border/50" />
-            </div>
-
-            <ModalityActionEditor :action="rule.action" bordered />
+            <span class="block h-px bg-border/50" />
+            <ModalityActionEditor :action="rule.action" />
           </div>
 
           <!-- Summary -->
@@ -832,37 +804,31 @@ function ruleSummary(rule: EditablePredicatedRule): string {
 
         <!-- Table rule: per-label action lookup -->
         <div v-else class="space-y-2.5 px-4 py-3.5">
-          <div class="flex items-center gap-2">
-            <span
-              class="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
-            >
-              {{ t("policies.editor.table.label") }}
-            </span>
-            <span class="h-px flex-1 bg-border/50" />
-          </div>
-          <!-- Each entry: a label header, its per-modality actions hung on a
-               rail below it (no entry box — the modality blocks are the only
-               bordered level). -->
-          <div v-for="entry in rule.entries" :key="entry.key" class="space-y-2">
+          <span class="block h-px bg-border/50" />
+          <!-- Each entry: a label, its per-modality actions indented on a rail
+               below it (the modality blocks are borderless — the rail groups
+               them under their label). -->
+          <div v-for="entry in rule.entries" :key="entry.key">
             <div class="flex items-center gap-2">
               <TagIcon :size="14" class="shrink-0 text-muted-foreground" />
-              <LabelSelect
-                v-model="entry.label"
-                :extra-labels="customLabelOptions"
-                :placeholder="t('policies.editor.table.labelPlaceholder')"
-                class="flex-1"
-              />
+              <div class="min-w-0 flex-1">
+                <LabelSelect
+                  v-model="entry.label"
+                  :extra-labels="customLabelOptions"
+                  :placeholder="t('policies.editor.table.labelPlaceholder')"
+                />
+              </div>
               <Button
                 variant="ghost"
                 size="icon"
-                class="size-9 shrink-0 text-muted-foreground hover:text-destructive"
+                class="size-8 shrink-0 text-muted-foreground hover:text-destructive"
                 :aria-label="t('policies.editor.table.removeEntry')"
                 @click="removeEntry(rule, entry.key)"
               >
                 <Trash2 :size="15" />
               </Button>
             </div>
-            <div class="ml-2 border-l border-border/60 pl-4">
+            <div class="ml-[7px] mt-1.5 border-l-2 border-border/60 pl-4">
               <ModalityActionEditor :action="entry.action" />
             </div>
           </div>
@@ -877,9 +843,7 @@ function ruleSummary(rule: EditablePredicatedRule): string {
           </Button>
         </div>
       </div>
-
-      </CollapsibleContent>
-    </Collapsible>
+    </CollapsibleSection>
 
     <!-- Fallback -->
     <section class="space-y-3">

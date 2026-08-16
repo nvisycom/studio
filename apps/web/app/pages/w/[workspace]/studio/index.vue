@@ -59,9 +59,12 @@ watch(
 		documentText.value = null;
 		if (!url || !isText) return;
 		try {
-			documentText.value = await (await fetch(url)).text();
+			const text = await (await fetch(url)).text();
+			// Ignore a stale response: the file may have changed while the fetch
+			// was in flight, so only apply it if this URL is still the active one.
+			if (activeFile.value?.contentUrl === url) documentText.value = text;
 		} catch {
-			documentText.value = null;
+			if (activeFile.value?.contentUrl === url) documentText.value = null;
 		}
 	},
 	{ immediate: true },
@@ -245,7 +248,6 @@ function startResize(e: MouseEvent) {
             :categorized-groups="audit.categorizedGroups.value"
             :count="audit.count.value"
             :error-message="audit.errorMessage.value"
-            :restored="audit.restored.value"
             :active-entity-id="activeEntityId"
             :with-headers="withHeaders"
             @focus-entity="focusEntity"

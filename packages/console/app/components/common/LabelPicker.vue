@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { Check, X } from "@lucide/vue";
+import type { ExtraLabel } from "#console/composables/useLabelOptions";
+import { X } from "@lucide/vue";
+import LabelOptionList from "./LabelOptionList.vue";
 import {
 	Combobox,
 	ComboboxAnchor,
-	ComboboxEmpty,
-	ComboboxGroup,
 	ComboboxInput,
-	ComboboxItem,
 	ComboboxList,
 } from "#console/components/ui/combobox";
 
@@ -33,36 +32,14 @@ const props = withDefaults(
 		 * Extra, non-catalogue labels to offer (e.g. a policy's own custom
 		 * labels). Grouped under their own section at the top of the list.
 		 */
-		extraLabels?: { id: string; name: string }[];
+		extraLabels?: ExtraLabel[];
 	}>(),
 	{ extraLabels: () => [] },
 );
 
-const { labelsByCategory, labelName: catalogName, isLoading } = useLabels();
-
-// Name a label id: an extra (custom) label first, else the catalogue, else the
-// raw id so a chip always reads as something.
-function labelName(id: string): string {
-	const extra = props.extraLabels.find((l) => l.id === id);
-	return extra ? extra.name : catalogName(id);
-}
-
-// The list sections: the extra labels under their own "Custom" group first,
-// then the catalogue grouped by category (uncategorized last). Only the id is
-// used to render each item (its name resolves via labelName). Extras with a
-// blank name are skipped so an empty custom-label row doesn't appear.
-const sections = computed<[string, { id: string }[]][]>(() => {
-	const named = props.extraLabels.filter((l) => l.name.trim());
-	const custom: [string, { id: string }[]][] = named.length
-		? [[t("common.labelPicker.custom"), named]]
-		: [];
-	const catalog = Object.entries(labelsByCategory.value).sort(([a], [b]) => {
-		if (!a) return 1;
-		if (!b) return -1;
-		return a.localeCompare(b);
-	});
-	return [...custom, ...catalog];
-});
+const { sections, labelName, isLoading } = useLabelOptions(
+	() => props.extraLabels,
+);
 
 function remove(id: string) {
 	model.value = model.value.filter((v) => v !== id);
@@ -114,33 +91,12 @@ function remove(id: string) {
       align="start"
       :class="contentClass ?? 'w-(--reka-popper-anchor-width) min-w-72'"
     >
-      <div class="max-h-72 overflow-y-auto">
-        <ComboboxEmpty>
-          {{ isLoading ? t("common.labelPicker.loading") : t("common.labelPicker.empty") }}
-        </ComboboxEmpty>
-        <ComboboxGroup
-          v-for="[category, labels] in sections"
-          :key="category || '__uncategorized__'"
-        >
-          <div
-            class="px-2 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground"
-          >
-            {{ category || t("common.labelPicker.uncategorized") }}
-          </div>
-          <ComboboxItem
-            v-for="label in labels"
-            :key="label.id"
-            :value="label.id"
-          >
-            <Check
-              :size="14"
-              class="mr-2 shrink-0"
-              :class="model.includes(label.id) ? 'opacity-100' : 'opacity-0'"
-            />
-            <span class="truncate">{{ labelName(label.id) }}</span>
-          </ComboboxItem>
-        </ComboboxGroup>
-      </div>
+      <LabelOptionList
+        :sections="sections"
+        :label-name="labelName"
+        :is-loading="isLoading"
+        :selected="(id) => model.includes(id)"
+      />
     </ComboboxList>
   </Combobox>
 </template>
