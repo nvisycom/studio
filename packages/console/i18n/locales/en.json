@@ -1353,7 +1353,9 @@
 			"fallback": {
 				"label": "Fallback",
 				"hint": "Applied to any match no rule handled.",
-				"applies": "when no rule above matches."
+				"applies": "when no rule above matches.",
+				"add": "Add fallback",
+				"empty": "No fallback. Add one to redact anything no rule handled."
 			},
 			"labels": {
 				"label": "Custom labels",

@@ -1353,7 +1353,9 @@
 			"fallback": {
 				"label": "Fallback",
 				"hint": "Wird auf jede Übereinstimmung angewendet, die keine Regel behandelt hat.",
-				"applies": "wenn keine Regel oben zutrifft."
+				"applies": "wenn keine Regel oben zutrifft.",
+				"add": "Fallback hinzufügen",
+				"empty": "Kein Fallback. Fügen Sie einen hinzu, um von keiner Regel behandelte Treffer zu schwärzen."
 			},
 			"labels": {
 				"label": "Benutzerdefinierte Labels",

@@ -39,8 +39,13 @@ const props = withDefaults(
 		 * surrounding card already provide the structure.
 		 */
 		bordered?: boolean;
+		/**
+		 * Hide the built-in "Add modality" control — used by the fallback, where a
+		 * section-level "Add fallback" menu adds modalities instead.
+		 */
+		hideAddModality?: boolean;
 	}>(),
-	{ bordered: false },
+	{ bordered: false, hideAddModality: false },
 );
 
 const MODALITIES: Modality[] = ["text", "image", "audio", "tabular"];
@@ -80,15 +85,16 @@ const PARAMLESS_TEXT_KINDS = new Set<TextRedactionKind>([
 ]);
 
 function defaultOperator(modality: Modality): EditableOperator {
+	// New operators default to erase across every modality.
 	switch (modality) {
 		case "image":
-			return { imageKind: "blur", sigma: 8 };
+			return { imageKind: "erase" };
 		case "audio":
-			return { audioKind: "silence" };
+			return { audioKind: "erase" };
 		case "tabular":
-			return { tabularKind: "replace", template: "[{label}]" };
+			return { tabularKind: "erase" };
 		default:
-			return { textKind: "replace", template: "[{label}]" };
+			return { textKind: "erase" };
 	}
 }
 
@@ -372,7 +378,7 @@ function removeModality(modality: Modality) {
       </div>
     </div>
 
-    <DropdownMenu v-if="availableModalities().length">
+    <DropdownMenu v-if="!hideAddModality && availableModalities().length">
       <DropdownMenuTrigger as-child>
         <Button
           variant="ghost"

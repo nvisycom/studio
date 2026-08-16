@@ -5,6 +5,7 @@ import type {
 	EditablePredicatedRule,
 	EditableTableRule,
 	EditableAction,
+	EditableOperator,
 	EditableLabel,
 	EditableScope,
 	PredicateKind,
@@ -34,7 +35,6 @@ import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
 import { Button } from "#console/components/ui/button";
 import { Textarea } from "#console/components/ui/textarea";
-import { Switch } from "#console/components/ui/switch";
 import {
 	Select,
 	SelectContent,
@@ -48,12 +48,8 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "#console/components/ui/dropdown-menu";
-import {
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
-} from "#console/components/ui/collapsible";
 import ModalityActionEditor from "./ModalityActionEditor.vue";
+import CollapsibleSection from "./CollapsibleSection.vue";
 
 const { t } = useI18n();
 
@@ -99,13 +95,45 @@ const policyId = ref("");
 const rulesOpen = ref(false);
 const labelsOpen = ref(false);
 const scopesOpen = ref(false);
+const fallbackOpen = ref(false);
 
 // Fallback (a ModalityRedactions, like a rule action)
-function toggleFallback(enabled: boolean) {
-	fallback.value = enabled
-		? { modalities: { text: { textKind: "replace", template: "[{label}]" } } }
-		: null;
+// The fallback's default operator for a given modality (mirrors the editor).
+function defaultFallbackOperator(m: Modality): EditableOperator {
+	// New operators default to erase across every modality.
+	switch (m) {
+		case "image":
+			return { imageKind: "erase" };
+		case "audio":
+			return { audioKind: "erase" };
+		case "tabular":
+			return { tabularKind: "erase" };
+		default:
+			return { textKind: "erase" };
+	}
 }
+// Modalities not yet configured on the fallback, for the "Add fallback" menu.
+const fallbackModalitiesAvailable = computed(() =>
+	MODALITIES.filter((m) => !fallback.value?.modalities?.[m]),
+);
+// How many modalities the fallback configures, shown as the section count.
+const fallbackModalityCount = computed(
+	() => MODALITIES.length - fallbackModalitiesAvailable.value.length,
+);
+// Add a modality to the fallback, creating the fallback if it didn't exist yet.
+function addFallbackModality(m: Modality) {
+	fallbackOpen.value = true;
+	const modalities = { ...fallback.value?.modalities };
+	modalities[m] = defaultFallbackOperator(m);
+	fallback.value = { modalities };
+}
+// Removing the fallback's last modality clears it back to the empty state.
+watch(
+	() => fallback.value && Object.keys(fallback.value.modalities).length === 0,
+	(empty) => {
+		if (empty) fallback.value = null;
+	},
+);
 
 // The policy's own custom labels, offered inside each scope's picker under a
 // "Custom" group so a scope can cover them alongside catalogue labels.
@@ -172,9 +200,7 @@ watch(displayName, (value) => {
 });
 
 function defaultAction(): EditableAction {
-	return {
-		modalities: { text: { textKind: "replace", template: "[{label}]" } },
-	};
+	return { modalities: { text: { textKind: "erase" } } };
 }
 
 function newPredicatedRule(): EditablePredicatedRule {
@@ -804,7 +830,6 @@ function ruleSummary(rule: EditablePredicatedRule): string {
 
         <!-- Table rule: per-label action lookup -->
         <div v-else class="space-y-2.5 px-4 py-3.5">
-          <span class="block h-px bg-border/50" />
           <!-- Each entry: a label, its per-modality actions indented on a rail
                below it (the modality blocks are borderless — the rail groups
                them under their label). -->
@@ -846,23 +871,41 @@ function ruleSummary(rule: EditablePredicatedRule): string {
     </CollapsibleSection>
 
     <!-- Fallback -->
-    <section class="space-y-3">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-sm font-medium">
-            {{ t("policies.editor.fallback.label") }}
-          </h2>
-          <p class="text-xs text-muted-foreground">
-            {{ t("policies.editor.fallback.hint") }}
-          </p>
-        </div>
-        <Switch
-          :model-value="!!fallback"
-          @update:model-value="toggleFallback"
-        />
-      </div>
-      <ModalityActionEditor v-if="fallback" :action="fallback" bordered />
-    </section>
+    <CollapsibleSection
+      v-model:open="fallbackOpen"
+      :title="t('policies.editor.fallback.label')"
+      :hint="t('policies.editor.fallback.hint')"
+      :count="fallbackModalityCount"
+    >
+      <template #action>
+        <DropdownMenu v-if="fallbackModalitiesAvailable.length">
+          <DropdownMenuTrigger as-child>
+            <Button variant="outline" size="sm">
+              <Plus :size="14" class="mr-1.5" />
+              {{ t("policies.editor.fallback.add") }}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              v-for="m in fallbackModalitiesAvailable"
+              :key="m"
+              @click="addFallbackModality(m)"
+            >
+              {{ t(`policies.editor.modality.${m}`) }}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </template>
+      <ModalityActionEditor
+        v-if="fallback"
+        :action="fallback"
+        bordered
+        hide-add-modality
+      />
+      <p v-else class="text-sm text-muted-foreground">
+        {{ t("policies.editor.fallback.empty") }}
+      </p>
+    </CollapsibleSection>
     </div>
   </div>
 </template>
