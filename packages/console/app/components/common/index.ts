@@ -1,4 +1,9 @@
 export { default as EntityAvatar } from "./EntityAvatar.vue";
+export { default as FilePicker } from "./FilePicker.vue";
+export { default as LabelPicker } from "./LabelPicker.vue";
+export { default as LabelSelect } from "./LabelSelect.vue";
+export { default as LabelOptionList } from "./LabelOptionList.vue";
+export { default as TagInput } from "./TagInput.vue";
 export { default as AvatarUploadCard } from "./AvatarUploadCard.vue";
 export { default as ConfirmDialog } from "./ConfirmDialog.vue";
 export { default as DangerZoneCard } from "./DangerZoneCard.vue";

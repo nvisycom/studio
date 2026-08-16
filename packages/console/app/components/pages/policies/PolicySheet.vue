@@ -33,18 +33,12 @@ const emit = defineEmits<{
 
 const isEdit = computed(() => !!props.policy || !!props.loadingPolicy);
 
-const form = ref<{
-	submit: () => void;
-	isValid: boolean;
-	hasChanges: boolean;
-} | null>(null);
+const form = ref<{ submit: () => void } | null>(null);
 
-// In edit mode the footer stays disabled until something actually changes; in
-// create mode it only needs a valid form.
-const canSubmit = computed(() => {
-	if (!form.value?.isValid) return false;
-	return isEdit.value ? form.value.hasChanges : true;
-});
+// The form drives whether its footer can submit (valid, and changed in edit
+// mode) via a `can-submit` event — a parent computed reading the child's
+// exposed computed through a template ref would not track it reactively.
+const canSubmit = ref(false);
 
 function onCreate(policy: CreatePolicy) {
 	emit("create", policy);
@@ -95,6 +89,7 @@ function cancel() {
           :is-loading="isLoading"
           @create="onCreate"
           @update="onUpdate"
+          @can-submit="canSubmit = $event"
         />
       </div>
 

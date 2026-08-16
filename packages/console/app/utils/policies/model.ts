@@ -1,7 +1,7 @@
 import type {
 	AudioRedaction,
 	ImageRedaction,
-	PolicyDefinition,
+	LocalizedText,
 	PolicyRule,
 	Predicate,
 	TextRedaction,
@@ -10,10 +10,10 @@ import type {
 /**
  * The policy editor's model: a flattened, editable representation of the SDK
  * policy schema. It covers AND-only predicate conditions (confidence / label /
- * tag / labelInGroup / coRef), per-modality redaction operators (text / image /
+ * tag / labelInScope / coRef), per-modality redaction operators (text / image /
  * audio / tabular), table rules, a fallback action, custom labels, and label
- * groups. Recursive predicate trees (`any` / `not`) and builtin labels are not
- * yet exposed; the build/parse steps preserve or degrade those.
+ * scopes. Recursive predicate trees (`any` / `not`) are not yet exposed; the
+ * build/parse steps preserve or degrade those.
  */
 
 // 0.16 merged the rule variants into one `PolicyRule` discriminated by `kind`.
@@ -34,8 +34,8 @@ export interface EditablePredicate {
 	/** For `confidence`: minimum in [0,1]. */
 	min?: number;
 	/**
-	 * For `labelOneOf` / `tagOneOf`: comma-separated values. For `labelInGroup`
-	 * (a group name) / `coRef` (a cluster id): a single value.
+	 * For `labelOneOf` / `tagOneOf`: comma-separated values. For `labelInScope`
+	 * (a scope name) / `coRef` (a cluster id): a single value.
 	 */
 	values?: string;
 }
@@ -49,9 +49,23 @@ type SubsetOf<T extends U, U> = T;
 // the build fail if the SDK renames or drops one of these kinds, without
 // widening the editor to operators it can't construct.
 export type TextRedactionKind = SubsetOf<
-	"erase" | "mask" | "replace" | "hash" | "keep",
+	| "erase"
+	| "keep"
+	| "mask"
+	| "replace"
+	| "hash"
+	| "hmac_hash"
+	| "truncate"
+	| "pseudonymize"
+	| "encrypt"
+	| "fake"
+	| "clamp"
+	| "generalize_date",
 	TextRedaction["kind"]
 >;
+
+/** SHA-2 variant for the hashing operators (`hash` / `hmac_hash`). */
+export type HashAlgorithm = "sha256" | "sha512";
 export type ImageRedactionKind = SubsetOf<
 	"erase" | "keep" | "blur" | "pixelate",
 	ImageRedaction["kind"]
@@ -71,6 +85,14 @@ export interface EditableOperator {
 	maskChar?: string;
 	/** text/tabular replace template. */
 	template?: string;
+	/** text/tabular chars kept at the start (mask / truncate). */
+	keepPrefix?: number;
+	/** text/tabular chars kept at the end (mask / truncate). */
+	keepSuffix?: number;
+	/** text/tabular hash variant (hash / hmac_hash). */
+	algorithm?: HashAlgorithm;
+	/** text/tabular hash salt. */
+	salt?: string;
 	/** image blur sigma. */
 	sigma?: number;
 	/** image pixelate block size. */
@@ -117,22 +139,34 @@ export interface EditableTableRule {
 
 export type EditableRule = EditablePredicatedRule | EditableTableRule;
 
-/** An entity-label catalog entry. */
+/**
+ * An entity-label catalog entry. The editor surfaces one locale's name +
+ * description (`locale`); every other localization is retained verbatim in
+ * `localizations` so editing a multilingual label never drops its other locales
+ * on save.
+ */
 export interface EditableLabel {
+	/** Local-only key for list rendering. */
 	key: string;
+	/** Stable label id (its `LabelRef`), so a scope can reference this label. */
+	id: string;
+	/** The locale the editable `name`/`description` map to (e.g. `"en"`). */
+	locale: string;
 	name: string;
 	description?: string;
 	/** comma-separated tags. */
 	tags?: string;
+	/** Every localization from the stored label, preserved across a save. */
+	localizations: LocalizedText;
 }
 
-/** A named cluster of label refs a rule can match via `labelInGroup`. */
-export interface EditableGroup {
+/** A named set of labels a policy detects; a rule matches it via `labelInScope`. */
+export interface EditableScope {
 	key: string;
 	name: string;
 	description?: string;
-	/** comma-separated label refs. */
-	labels: string;
+	/** Label ids this scope covers. */
+	labels: string[];
 }
 
 /** The full editor input for building a create/update policy payload. */
@@ -144,16 +178,24 @@ export interface PolicyInput {
 	rules: EditableRule[];
 	/** Catch-all action when no rule matches; null/undefined = none. */
 	fallback?: EditableAction | null;
-	/** Entity-label catalog (custom labels only). */
+	/** Custom label schemas this policy introduces. */
 	labels?: EditableLabel[];
-	/** Named label groups a rule can reference via `labelInGroup`. */
-	groups?: EditableGroup[];
-	/**
-	 * The original definition, when editing. Fields the editor doesn't model
-	 * (builtin labels) are preserved from here so a save never destroys them.
-	 */
-	original?: PolicyDefinition;
+	/** Named label sets this policy detects; rules reference them by name. */
+	scopes?: EditableScope[];
 }
 
 /** Default text action used whenever an action would otherwise be empty. */
 export const DEFAULT_TEXT_TEMPLATE = "[{label}]";
+
+/** Parse a comma-separated field into trimmed, non-empty values. */
+export function csvToList(csv?: string): string[] {
+	return (csv ?? "")
+		.split(",")
+		.map((v) => v.trim())
+		.filter(Boolean);
+}
+
+/** Serialize a list back to the comma-separated form the editor stores. */
+export function listToCsv(list: string[]): string {
+	return list.join(", ");
+}

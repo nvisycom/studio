@@ -80,12 +80,21 @@ export function useFiles(options: UseFilesOptions = {}) {
 		}
 	}
 
+	/** Fetch a single file's metadata by id (e.g. to name a preselected file). */
+	async function getFile(fileId: string) {
+		const { client, workspaceSlug } = requireContext();
+		return await client.files.getFile(workspaceSlug, fileId);
+	}
+
 	return {
 		// Query state
 		files,
 		isLoading: filesQuery.isLoading,
 		error: filesQuery.error,
 		refresh: filesQuery.refresh,
+
+		// Single file
+		getFile,
 
 		// Infinite scroll
 		loadMore,

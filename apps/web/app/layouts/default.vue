@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import AppSidebar from "@/components/sidebar/AppSidebar.vue";
 import AppHeader from "@/components/AppHeader.vue";
-import AppFooter from "@/components/AppFooter.vue";
 import { Loader2 } from "@lucide/vue";
 import { SidebarInset, SidebarProvider } from "#console/components/ui/sidebar";
+import { Toaster } from "#console/components/ui/sonner";
+import "vue-sonner/style.css";
 
-const route = useRoute();
 const { workspaces, currentWorkspaceSlug } = useWorkspaces();
 
 // Guard the workspace slug in the URL. Once the list loads, if the
@@ -26,10 +26,6 @@ watch(
 	},
 	{ immediate: true },
 );
-
-const hideFooter = computed(() => {
-	return route.path.startsWith("/studio");
-});
 
 // Only mount the page once the workspace slug is known-valid, so pages don't
 // fire data queries against a workspace the user can't access (which would
@@ -52,7 +48,10 @@ const showPage = computed(
           <Loader2 :size="24" class="animate-spin text-muted-foreground" />
         </div>
       </div>
-      <AppFooter v-if="!hideFooter" />
     </SidebarInset>
   </SidebarProvider>
+
+  <ClientOnly>
+    <Toaster />
+  </ClientOnly>
 </template>

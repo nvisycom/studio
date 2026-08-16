@@ -36,6 +36,23 @@ function onOpenChange(next: boolean) {
 const confidencePct = computed(() =>
 	props.entity ? `${Math.round(props.entity.confidence * 100)}%` : "",
 );
+
+// "Detected by": the raw recognizer source. The pattern/model kind + name is
+// surfaced separately by detectorRow, so this row shows the source itself.
+const detectedBy = computed(() => props.entity?.source ?? "");
+
+// The named pattern/model on its own row, labeled by kind, when present.
+const detectorRow = computed(() => {
+	const e = props.entity;
+	if (!e?.detector || !e.detectorKind) return null;
+	return {
+		label:
+			e.detectorKind === "pattern"
+				? t("studio.audit.detail.pattern")
+				: t("studio.audit.detail.model"),
+		name: e.detector,
+	};
+});
 const location = computed(() => {
 	const e = props.entity;
 	if (!e) return "";
@@ -61,7 +78,7 @@ const location = computed(() => {
       side="bottom"
       align="start"
       :side-offset="6"
-      class="w-56 p-0"
+      class="w-64 p-0"
       @open-auto-focus.prevent
     >
       <div v-if="entity" class="p-3">
@@ -83,12 +100,18 @@ const location = computed(() => {
             </dt>
             <dd class="truncate font-medium text-foreground">{{ location }}</dd>
           </div>
-          <div v-if="entity.source" class="flex justify-between gap-3">
+          <div v-if="detectedBy" class="flex justify-between gap-3">
             <dt class="shrink-0 text-muted-foreground">
               {{ t("studio.audit.detail.source") }}
             </dt>
             <dd class="truncate font-mono font-medium text-foreground">
-              {{ entity.source }}
+              {{ detectedBy }}
+            </dd>
+          </div>
+          <div v-if="detectorRow" class="flex justify-between gap-3">
+            <dt class="shrink-0 text-muted-foreground">{{ detectorRow.label }}</dt>
+            <dd class="truncate font-mono font-medium text-foreground">
+              {{ detectorRow.name }}
             </dd>
           </div>
           <div v-if="entity.language" class="flex justify-between gap-3">

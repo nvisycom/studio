@@ -1,27 +1,40 @@
 <script setup lang="ts">
-import type { Audit, PipelineRun } from "@nvisy/sdk/datatypes";
 import {
+	ChevronLeft,
+	ChevronRight,
+	Layers,
 	Loader2,
-	Play,
-	RotateCcw,
 	ScanSearch,
 	TriangleAlert,
 } from "@lucide/vue";
+import type { StudioAuditPhase } from "#console/composables/useStudioAudit";
+import type {
+	CategorizedGroup,
+	EntityCluster,
+	TextEntityView,
+} from "#console/composables/useTextEntities";
 import { Button } from "#console/components/ui/button";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "#console/components/ui/select";
-import type { TextEntityView } from "#console/composables/useTextEntities";
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "#console/components/ui/collapsible";
 
 const { t } = useI18n();
 
 const props = defineProps<{
 	/** The active file's id, or null when nothing is open. */
 	fileId: string | null;
+	/** Run lifecycle phase, driving which state the list shows. */
+	phase: StudioAuditPhase;
+	/** Detected entities, in document order. */
+	entities: TextEntityView[];
+	/** Entities grouped into category → label → clusters. */
+	categorizedGroups: CategorizedGroup[];
+	/** Total entity count. */
+	count: number;
+	/** Failure message shown when the run failed. */
+	errorMessage?: string;
 	/** Entity currently focused (from a highlight click), for row highlighting. */
 	activeEntityId?: string | null;
 	/** Whether the open CSV treats row 0 as a header (affects tabular labels). */
@@ -44,178 +57,59 @@ function cellLabel(cell: NonNullable<TextEntityView["cell"]>): string {
 }
 
 const emit = defineEmits<{
-	/** Detected entities, surfaced so the document overlay can highlight them. */
-	"update:entities": [entities: TextEntityView[]];
 	/** A row was clicked — focus its span in the document. */
 	"focus-entity": [id: string];
 }>();
 
-const { pipelines } = usePipelines();
-const { runDetection, findLatestRunForFile, getDetections } = useRuns();
+const confidencePct = (c: number) => `${Math.round(c * 100)}%`;
 
-const selectedPipeline = ref<string>("");
-// Default to the first pipeline once they load.
-watch(pipelines, (list) => {
-	if (!selectedPipeline.value && list?.length) {
-		selectedPipeline.value = list[0]!.slug;
-	}
-});
-
-type Phase = "idle" | "restoring" | "running" | "analyzed" | "failed";
-const phase = ref<Phase>("idle");
-// True when the shown audit came from a prior run (restored on file open)
-// rather than a run started in this session.
-const restored = ref(false);
-const runStatus = ref<PipelineRun["status"] | null>(null);
-const audit = ref<Audit | null>(null);
-const errorMessage = ref("");
-
-const { entities, groups, count } = useTextEntities(audit);
-// Surface entities to the parent whenever they change.
-watch(entities, (list) => emit("update:entities", list), { immediate: true });
-
-const canRun = computed(
-	() =>
-		!!props.fileId &&
-		!!selectedPipeline.value &&
-		phase.value !== "running" &&
-		phase.value !== "restoring",
+// Collapse identical occurrences (same value + detector) into one row. On by
+// default (a document usually repeats the same values); toggled from the
+// header. Only worth offering when a group actually has duplicates.
+const collapseDuplicates = ref(true);
+const hasDuplicates = computed(() =>
+	props.categorizedGroups.some((section) =>
+		section.labels.some((group) =>
+			group.clusters.some((cluster) => cluster.items.length > 1),
+		),
+	),
 );
 
-async function run() {
-	if (!props.fileId || !selectedPipeline.value) return;
-	phase.value = "running";
-	runStatus.value = "queued";
-	restored.value = false;
-	errorMessage.value = "";
-	audit.value = null;
-	try {
-		const result = await runDetection(
-			selectedPipeline.value,
-			{ fileId: props.fileId },
-			(status) => {
-				runStatus.value = status;
-			},
-		);
-		audit.value = result.audit;
-		phase.value = "analyzed";
-	} catch (err) {
-		phase.value = "failed";
-		errorMessage.value = getErrorMessage(err, t("studio.audit.runFailed"));
-	}
+// Per-cluster "which occurrence is focused" index, so prev/next steps through
+// the spans of a collapsed row. Keyed by the cluster's stable key.
+const clusterIndex = ref<Record<string, number>>({});
+
+function stepCluster(cluster: EntityCluster, delta: number) {
+	const total = cluster.items.length;
+	const current = clusterIndex.value[cluster.key] ?? 0;
+	const next = (current + delta + total) % total;
+	clusterIndex.value = { ...clusterIndex.value, [cluster.key]: next };
+	emit("focus-entity", cluster.items[next]!.id);
 }
 
-// On file change, clear the old audit and try to restore the file's most recent
-// run — its detections still live on the server even if the tab was closed.
-watch(
-	() => props.fileId,
-	async (fileId) => {
-		phase.value = "idle";
-		runStatus.value = null;
-		restored.value = false;
-		errorMessage.value = "";
-		audit.value = null;
-		if (!fileId) return;
-
-		phase.value = "restoring";
-		try {
-			const latest = await findLatestRunForFile(fileId);
-			// Bail if the user switched files while this was in flight, or the run
-			// state moved on (a fresh run may have started here meanwhile).
-			if (props.fileId !== fileId || phase.value !== "restoring") return;
-			if (!latest) {
-				phase.value = "idle";
-				return;
-			}
-			const restoredAudit = await getDetections(latest.id);
-			if (props.fileId !== fileId || phase.value !== "restoring") return;
-			audit.value = restoredAudit;
-			runStatus.value = latest.status;
-			restored.value = true;
-			phase.value = "analyzed";
-			if (pipelines.value?.some((p) => p.slug === latest.pipelineSlug)) {
-				selectedPipeline.value = latest.pipelineSlug;
-			}
-		} catch {
-			// Restore is best-effort; fall back to the idle state.
-			if (props.fileId === fileId && phase.value === "restoring") {
-				phase.value = "idle";
-			}
-		}
-	},
-	{ immediate: true },
-);
-
-const confidencePct = (c: number) => `${Math.round(c * 100)}%`;
+// A collapsed cluster reads as active when any of its occurrences is focused.
+function clusterActive(cluster: EntityCluster): boolean {
+	return cluster.items.some((e) => e.id === props.activeEntityId);
+}
 </script>
 
 <template>
   <div class="flex h-full flex-col">
-    <!-- Run controls -->
-    <div class="space-y-2.5 border-b border-border/50 bg-muted/30 p-3">
-      <div class="flex items-center gap-2">
-        <Select
-          v-model="selectedPipeline"
-          :disabled="phase === 'running'"
-        >
-          <SelectTrigger class="h-9 min-w-0 flex-1 text-sm">
-            <SelectValue :placeholder="t('studio.audit.pipelinePlaceholder')" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem
-              v-for="p in pipelines ?? []"
-              :key="p.slug"
-              :value="p.slug"
-              class="text-sm font-normal"
-            >
-              {{ p.displayName }}
-            </SelectItem>
-            <!-- Avoid a blank menu box when there are no pipelines to pick. -->
-            <p
-              v-if="!pipelines?.length"
-              class="px-2 py-1.5 text-sm text-muted-foreground"
-            >
-              {{ t("studio.audit.noPipelines") }}
-            </p>
-          </SelectContent>
-        </Select>
-
-        <Button
-          size="icon"
-          class="size-9 shrink-0"
-          :disabled="!canRun"
-          :title="
-            phase === 'analyzed' ? t('studio.audit.runAgain') : t('studio.audit.run')
-          "
-          @click="run"
-        >
-          <Loader2 v-if="phase === 'running'" :size="16" class="animate-spin" />
-          <RotateCcw v-else-if="phase === 'analyzed'" :size="16" />
-          <Play v-else :size="16" />
-        </Button>
-      </div>
-
-      <!-- Status line -->
-      <p
-        v-if="phase === 'restoring'"
-        class="flex items-center gap-1.5 px-0.5 text-xs text-muted-foreground"
+    <!-- Toolbar: collapse-duplicates toggle. -->
+    <div
+      v-if="phase === 'analyzed' && hasDuplicates"
+      class="flex items-center justify-end border-b border-border/50 bg-muted/30 px-3 py-2 text-xs text-muted-foreground"
+    >
+      <button
+        type="button"
+        class="flex items-center gap-1 rounded-md px-1.5 py-0.5 transition-colors hover:bg-muted"
+        :class="collapseDuplicates ? 'text-foreground' : 'text-muted-foreground'"
+        :title="t('studio.audit.collapseDuplicates')"
+        @click="collapseDuplicates = !collapseDuplicates"
       >
-        <Loader2 :size="12" class="animate-spin" />
-        {{ t("studio.audit.restoring") }}
-      </p>
-      <p
-        v-else-if="phase === 'running'"
-        class="px-0.5 text-xs text-muted-foreground"
-      >
-        {{ t(`studio.audit.status.${runStatus ?? "queued"}`) }}
-      </p>
-      <p
-        v-else-if="phase === 'analyzed'"
-        class="px-0.5 text-xs text-muted-foreground"
-      >
-        {{ t("studio.audit.found", { count }) }}
-        <span v-if="restored">· {{ t("studio.audit.fromLastRun") }}</span>
-      </p>
+        <Layers :size="12" />
+        {{ t("studio.audit.collapseDuplicates") }}
+      </button>
     </div>
 
     <!-- Body -->
@@ -268,47 +162,178 @@ const confidencePct = (c: number) => `${Math.round(c * 100)}%`;
         </p>
       </div>
 
-      <!-- Grouped entity list -->
+      <!-- Two-tier entity list: category → label → entities. Each category is
+           collapsible, expanded by default. -->
       <template v-else-if="phase === 'analyzed'">
-        <div v-for="group in groups" :key="group.label">
-          <div
-            class="flex items-center gap-2 px-3 pt-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground"
+        <Collapsible
+          v-for="section in categorizedGroups"
+          :key="section.category ?? '__uncategorized__'"
+          as="section"
+          default-open
+          class="group/category"
+        >
+          <!-- Category header (collapse trigger): a subtle band that owns the
+               section boundary, so the tiers read top-down. -->
+          <CollapsibleTrigger
+            class="sticky top-0 z-10 flex w-full items-center gap-1.5 bg-muted/50 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground backdrop-blur-sm transition-colors hover:text-foreground"
           >
-            <span class="font-mono normal-case tracking-normal">
-              {{ group.label }}
-            </span>
-            <span class="ml-auto font-semibold">{{ group.items.length }}</span>
-          </div>
-          <button
-            v-for="entity in group.items"
-            :key="entity.id"
-            type="button"
-            class="flex w-full items-center gap-2.5 border-l-2 px-3 py-2 text-left transition-colors hover:bg-muted/40"
-            :class="
-              activeEntityId === entity.id
-                ? 'border-foreground bg-muted'
-                : 'border-transparent'
-            "
-            @click="emit('focus-entity', entity.id)"
-          >
-            <span
-              class="h-5 w-2 shrink-0 rounded-sm bg-muted-foreground/40"
+            <ChevronRight
+              :size="11"
+              class="shrink-0 -ml-0.5 transition-transform duration-200 group-data-[state=open]/category:rotate-90"
             />
-            <span class="min-w-0 flex-1">
-              <span class="block truncate text-xs text-muted-foreground">
-                <template v-if="entity.cell">{{ cellLabel(entity.cell) }}</template>
-                <template v-else>
-                  {{ t("studio.audit.bytes", { start: entity.start, end: entity.end }) }}
-                </template>
-              </span>
+            <span>
+              {{ section.category ?? t("studio.audit.uncategorized") }}
             </span>
             <span
-              class="shrink-0 text-xs font-semibold tabular-nums text-muted-foreground"
+              class="ml-auto rounded-full bg-foreground/10 px-1.5 text-[10px] font-semibold leading-4 text-foreground/70"
             >
-              {{ confidencePct(entity.confidence) }}
+              {{ section.count }}
             </span>
-          </button>
-        </div>
+          </CollapsibleTrigger>
+
+          <CollapsibleContent>
+            <!-- Label groups within the category, indented under the header. -->
+            <div v-for="group in section.labels" :key="group.label" class="pl-3">
+              <div
+                class="flex items-center gap-2 px-2 pt-2 pb-0.5 text-xs font-medium text-foreground/80"
+              >
+                <span class="truncate">{{ group.name }}</span>
+                <span class="ml-auto text-[11px] text-muted-foreground/70">
+                  {{ group.items.length }}
+                </span>
+              </div>
+              <!-- Collapsed: one row per cluster of identical occurrences. -->
+              <template v-if="collapseDuplicates">
+                <div
+                  v-for="cluster in group.clusters"
+                  :key="cluster.key"
+                  class="flex w-full items-start gap-2 border-l py-1.5 pr-2 pl-3 text-left transition-colors hover:bg-muted/40"
+                  :class="
+                    clusterActive(cluster)
+                      ? 'border-foreground bg-muted'
+                      : 'border-border/60'
+                  "
+                >
+                  <button
+                    type="button"
+                    class="min-w-0 flex-1 text-left"
+                    @click="stepCluster(cluster, 0)"
+                  >
+                    <span
+                      v-if="cluster.lead.text"
+                      class="block truncate font-mono text-xs text-foreground"
+                    >
+                      {{ cluster.lead.text }}
+                    </span>
+                    <span
+                      class="block truncate text-[11px] text-muted-foreground"
+                      :class="{ 'mt-0.5': cluster.lead.text }"
+                    >
+                      <template v-if="cluster.lead.detectorKind === 'pattern'">
+                        {{ t("studio.audit.detectorPattern", { name: cluster.lead.detector }) }}
+                      </template>
+                      <template v-else-if="cluster.lead.detectorKind === 'model'">
+                        {{ t("studio.audit.detectorModel", { name: cluster.lead.detector }) }}
+                      </template>
+                      <template v-else-if="cluster.lead.source">
+                        {{ cluster.lead.source }}
+                      </template>
+                      <template v-if="cluster.lead.language">
+                        · {{ cluster.lead.language }}
+                      </template>
+                    </span>
+                  </button>
+                  <!-- Occurrence stepper for multi-occurrence clusters. -->
+                  <span
+                    v-if="cluster.items.length > 1"
+                    class="mt-0.5 flex shrink-0 items-center gap-0.5 text-[11px] text-muted-foreground"
+                  >
+                    <button
+                      type="button"
+                      class="rounded p-0.5 hover:bg-muted-foreground/10"
+                      :aria-label="t('studio.audit.prevOccurrence')"
+                      @click.stop="stepCluster(cluster, -1)"
+                    >
+                      <ChevronLeft :size="13" />
+                    </button>
+                    <span class="tabular-nums">
+                      {{ (clusterIndex[cluster.key] ?? 0) + 1 }}/{{ cluster.items.length }}
+                    </span>
+                    <button
+                      type="button"
+                      class="rounded p-0.5 hover:bg-muted-foreground/10"
+                      :aria-label="t('studio.audit.nextOccurrence')"
+                      @click.stop="stepCluster(cluster, 1)"
+                    >
+                      <ChevronRight :size="13" />
+                    </button>
+                  </span>
+                  <span
+                    v-else
+                    class="mt-0.5 shrink-0 text-[11px] tabular-nums text-muted-foreground/70"
+                  >
+                    {{ confidencePct(cluster.lead.confidence) }}
+                  </span>
+                </div>
+              </template>
+
+              <!-- Expanded: one row per occurrence. -->
+              <template v-else>
+              <button
+                v-for="entity in group.items"
+                :key="entity.id"
+                type="button"
+                class="flex w-full items-start gap-2 border-l py-1.5 pr-2 pl-3 text-left transition-colors hover:bg-muted/40"
+                :class="
+                  activeEntityId === entity.id
+                    ? 'border-foreground bg-muted'
+                    : 'border-border/60'
+                "
+                @click="emit('focus-entity', entity.id)"
+              >
+                <span class="min-w-0 flex-1">
+                  <!-- The matched value, when we could slice it from the doc. -->
+                  <span
+                    v-if="entity.text"
+                    class="block truncate font-mono text-xs text-foreground"
+                  >
+                    {{ entity.text }}
+                  </span>
+                  <!-- Meta line: location, then source and language. -->
+                  <span
+                    class="block truncate text-[11px] text-muted-foreground"
+                    :class="{ 'mt-0.5': entity.text }"
+                  >
+                    <template v-if="entity.cell">
+                      {{ cellLabel(entity.cell) }}
+                    </template>
+                    <template v-else>
+                      {{ t("studio.audit.bytes", { start: entity.start, end: entity.end }) }}
+                    </template>
+                    <template v-if="entity.detectorKind === 'pattern'">
+                      · {{ t("studio.audit.detectorPattern", { name: entity.detector }) }}
+                    </template>
+                    <template v-else-if="entity.detectorKind === 'model'">
+                      · {{ t("studio.audit.detectorModel", { name: entity.detector }) }}
+                    </template>
+                    <template v-else-if="entity.source">
+                      · {{ entity.source }}
+                    </template>
+                    <template v-if="entity.language">
+                      · {{ entity.language }}
+                    </template>
+                  </span>
+                </span>
+                <span
+                  class="mt-0.5 shrink-0 text-[11px] tabular-nums text-muted-foreground/70"
+                >
+                  {{ confidencePct(entity.confidence) }}
+                </span>
+              </button>
+              </template>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       </template>
     </div>
 

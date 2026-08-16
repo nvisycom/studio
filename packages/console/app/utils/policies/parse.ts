@@ -1,16 +1,15 @@
 import type {
-	Labels,
 	PolicyDefinition,
 	PolicyRule,
 	TextRedaction,
 } from "@nvisy/sdk/datatypes";
 import type {
 	EditableAction,
-	EditableGroup,
 	EditableLabel,
 	EditableOperator,
 	EditablePredicate,
 	EditableRule,
+	EditableScope,
 	ImageRedactionKind,
 	SdkAction,
 	SdkPredicate,
@@ -38,8 +37,8 @@ function predicateToEditable(pred: SdkPredicate): EditablePredicate[] {
 			editable.push({ kind: "labelOneOf", values: p.labels.join(", ") });
 		} else if (p.kind === "tagOneOf") {
 			editable.push({ kind: "tagOneOf", values: p.tags.join(", ") });
-		} else if (p.kind === "labelInGroup") {
-			editable.push({ kind: "labelInGroup", values: p.group });
+		} else if (p.kind === "labelInScope") {
+			editable.push({ kind: "labelInScope", values: p.scope });
 		} else if (p.kind === "coRef") {
 			editable.push({ kind: "coRef", values: p.coref });
 		}
@@ -54,10 +53,17 @@ function predicateToEditable(pred: SdkPredicate): EditablePredicate[] {
 // membership test narrows an SDK kind to the editor subset without a cast.
 const TEXT_KINDS = new Set<string>([
 	"erase",
+	"keep",
 	"mask",
 	"replace",
 	"hash",
-	"keep",
+	"hmac_hash",
+	"truncate",
+	"pseudonymize",
+	"encrypt",
+	"fake",
+	"clamp",
+	"generalize_date",
 ]);
 const IMAGE_KINDS = new Set<string>(["erase", "keep", "blur", "pixelate"]);
 
@@ -74,6 +80,13 @@ function textOpToEditable(op: TextRedaction): EditableOperator {
 		textKind: isTextKind(op.kind) ? op.kind : "replace",
 		maskChar: op.kind === "mask" ? op.mask_char : undefined,
 		template: op.kind === "replace" ? op.template : undefined,
+		keepPrefix:
+			op.kind === "mask" || op.kind === "truncate" ? op.keep_prefix : undefined,
+		keepSuffix:
+			op.kind === "mask" || op.kind === "truncate" ? op.keep_suffix : undefined,
+		algorithm:
+			op.kind === "hash" || op.kind === "hmac_hash" ? op.algorithm : undefined,
+		salt: op.kind === "hash" ? op.salt : undefined,
 	};
 }
 
@@ -84,6 +97,10 @@ function textToTabular(op: EditableOperator): EditableOperator {
 		tabularKind: op.textKind,
 		maskChar: op.maskChar,
 		template: op.template,
+		keepPrefix: op.keepPrefix,
+		keepSuffix: op.keepSuffix,
+		algorithm: op.algorithm,
+		salt: op.salt,
 	};
 }
 
@@ -125,34 +142,38 @@ export function fallbackFromDefinition(
 }
 
 /**
- * Reconstruct the editable label catalog from a stored definition. Each custom
- * label carries localized names, so we read the first available locale into the
- * editor's flat name/description.
+ * Reconstruct the editable custom-label list from a stored definition. The
+ * editor surfaces one locale (English when present, else the first available);
+ * every localization is retained so a save preserves the label's other locales.
  */
 export function labelsFromDefinition(
 	definition: PolicyDefinition,
 ): EditableLabel[] {
-	const labels: Labels | undefined = definition.labels;
-	return (labels?.custom ?? []).map((l) => {
-		const locale = Object.values(l.localizations)[0];
+	return (definition.custom ?? []).map((l) => {
+		const localizations = l.localizations ?? {};
+		const locale = "en" in localizations ? "en" : Object.keys(localizations)[0];
+		const shown = locale ? localizations[locale] : undefined;
 		return {
 			key: crypto.randomUUID(),
-			name: locale?.name ?? "",
-			description: locale?.description,
+			id: l.id,
+			locale: locale ?? "en",
+			name: shown?.name ?? "",
+			description: shown?.description,
 			tags: l.tags.join(", "),
+			localizations,
 		};
 	});
 }
 
-/** Reconstruct the editable label groups from a stored definition. */
-export function groupsFromDefinition(
+/** Reconstruct the editable label scopes from a stored definition. */
+export function scopesFromDefinition(
 	definition: PolicyDefinition,
-): EditableGroup[] {
-	return (definition.groups ?? []).map((g) => ({
+): EditableScope[] {
+	return (definition.scopes ?? []).map((s) => ({
 		key: crypto.randomUUID(),
-		name: g.name,
-		description: g.description,
-		labels: g.labels.join(", "),
+		name: s.name,
+		description: s.description,
+		labels: s.labels,
 	}));
 }
 

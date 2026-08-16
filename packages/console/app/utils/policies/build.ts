@@ -1,7 +1,7 @@
 import type {
 	CreatePolicy,
 	Label,
-	Labels,
+	LabelScope,
 	ModalityRedactions,
 	PolicyDefinition,
 	PolicyRule,
@@ -15,14 +15,16 @@ import type {
 	SdkPredicate,
 	TextRedactionKind,
 } from "./model";
-import { DEFAULT_TEXT_TEMPLATE } from "./model";
+import { csvToList, DEFAULT_TEXT_TEMPLATE } from "./model";
 
-/** Split a comma-separated field into trimmed, non-empty values. */
-function splitValues(raw?: string): string[] {
-	return (raw ?? "")
-		.split(",")
-		.map((v) => v.trim())
-		.filter(Boolean);
+/**
+ * Coerce an editor number to a non-negative integer (or a fallback when unset).
+ * The inputs carry `min` attributes, but those don't guard this save path, so a
+ * negative or fractional value is normalized here before it reaches the SDK.
+ */
+function nonNegative(value: number | undefined, fallback: number): number {
+	if (value == null || !Number.isFinite(value)) return fallback;
+	return Math.max(0, Math.floor(value));
 }
 
 /** Build one SDK predicate condition from an editable condition. */
@@ -31,13 +33,13 @@ function buildCondition(p: EditablePredicate): SdkPredicate {
 		case "confidence":
 			return { kind: "confidence", min: p.min ?? 0 };
 		case "labelOneOf":
-			return { kind: "labelOneOf", labels: splitValues(p.values) };
-		case "labelInGroup":
-			return { kind: "labelInGroup", group: (p.values ?? "").trim() };
+			return { kind: "labelOneOf", labels: csvToList(p.values) };
+		case "labelInScope":
+			return { kind: "labelInScope", scope: (p.values ?? "").trim() };
 		case "coRef":
 			return { kind: "coRef", coref: (p.values ?? "").trim() };
 		default:
-			return { kind: "tagOneOf", tags: splitValues(p.values) };
+			return { kind: "tagOneOf", tags: csvToList(p.values) };
 	}
 }
 
@@ -54,17 +56,50 @@ function buildTextOp(
 	kind: TextRedactionKind,
 ): TextRedaction {
 	switch (kind) {
-		case "mask":
-			return { kind: "mask", mask_char: op.maskChar || "*" };
+		case "mask": {
+			const prefix = nonNegative(op.keepPrefix, 0);
+			const suffix = nonNegative(op.keepSuffix, 0);
+			return {
+				kind: "mask",
+				mask_char: op.maskChar || "*",
+				...(prefix ? { keep_prefix: prefix } : {}),
+				...(suffix ? { keep_suffix: suffix } : {}),
+			};
+		}
 		case "replace":
 			return {
 				kind: "replace",
 				template: op.template || DEFAULT_TEXT_TEMPLATE,
 			};
 		case "hash":
-			return { kind: "hash", algorithm: "sha256" };
+			return {
+				kind: "hash",
+				algorithm: op.algorithm ?? "sha256",
+				...(op.salt?.trim() ? { salt: op.salt.trim() } : {}),
+			};
+		case "hmac_hash":
+			return { kind: "hmac_hash", algorithm: op.algorithm ?? "sha256" };
+		case "truncate": {
+			const prefix = nonNegative(op.keepPrefix, 0);
+			const suffix = nonNegative(op.keepSuffix, 0);
+			return {
+				kind: "truncate",
+				...(prefix ? { keep_prefix: prefix } : {}),
+				...(suffix ? { keep_suffix: suffix } : {}),
+			};
+		}
+		case "fake":
+			// Params (language, seed) aren't surfaced yet; ship the default template.
+			return { kind: "fake", fallback_template: DEFAULT_TEXT_TEMPLATE };
+		case "clamp":
+			// Numeric bucketing params aren't surfaced yet; the bare operator
+			// defaults to erasing non-numeric values.
+			return { kind: "clamp" };
+		case "generalize_date":
+			// Date params aren't surfaced yet; the SDK defaults to year / ISO.
+			return { kind: "generalize_date", granularity: "year", style: "iso" };
 		default:
-			return { kind }; // erase | keep
+			return { kind }; // erase | keep | pseudonymize | encrypt
 	}
 }
 
@@ -80,9 +115,15 @@ function buildModalities(
 	if (mods.image) {
 		const k = mods.image.imageKind ?? "blur";
 		if (k === "blur")
-			out.image = { kind: "blur", sigma: mods.image.sigma ?? 8 };
+			out.image = {
+				kind: "blur",
+				sigma: Math.max(1, nonNegative(mods.image.sigma, 8)),
+			};
 		else if (k === "pixelate")
-			out.image = { kind: "pixelate", block_size: mods.image.blockSize ?? 16 };
+			out.image = {
+				kind: "pixelate",
+				block_size: Math.max(2, nonNegative(mods.image.blockSize, 16)),
+			};
 		else out.image = { kind: k }; // erase | keep
 	}
 	if (mods.audio) {
@@ -90,7 +131,7 @@ function buildModalities(
 		if (k === "beep")
 			out.audio = {
 				kind: "beep",
-				hz: mods.audio.hz ?? 1000,
+				hz: Math.max(1, nonNegative(mods.audio.hz, 1000)),
 				amplitude: 0.5,
 				waveform: "sine",
 			};
@@ -142,52 +183,50 @@ function buildRule(r: PolicyInput["rules"][number]): PolicyRule {
 			};
 }
 
-/** Build the custom-label catalog, preserving builtins from the original. */
-function buildLabels(input: PolicyInput): Labels | undefined {
-	// The editor's simple name/description/tags map to a single default-locale
-	// custom label.
+/** Build the custom-label schemas this policy introduces. */
+function buildCustomLabels(input: PolicyInput): Label[] | undefined {
+	// The editor edits one locale's name/description; merge that back into the
+	// label's preserved localizations so a save never drops its other locales.
 	const custom: Label[] = (input.labels ?? [])
 		.filter((l) => l.name.trim())
 		.map((l) => ({
-			id: crypto.randomUUID(),
+			id: l.id,
 			localizations: {
-				en: {
+				...l.localizations,
+				[l.locale]: {
 					name: l.name.trim(),
 					...(l.description?.trim()
 						? { description: l.description.trim() }
 						: {}),
 				},
 			},
-			tags: splitValues(l.tags),
+			tags: csvToList(l.tags),
 		}));
+	return custom.length > 0 ? custom : undefined;
+}
 
-	const builtins = input.original?.labels?.builtins;
-	if (custom.length === 0 && !builtins?.length) return undefined;
-	return {
-		...(builtins?.length ? { builtins } : {}),
-		...(custom.length > 0 ? { custom } : {}),
-	};
+/** Build the named label sets this policy detects (referenced by `labelInScope`). */
+function buildScopes(input: PolicyInput): LabelScope[] | undefined {
+	const scopes: LabelScope[] = (input.scopes ?? [])
+		.filter((s) => s.name.trim() && s.labels.length > 0)
+		.map((s) => ({
+			name: s.name.trim(),
+			...(s.description?.trim() ? { description: s.description.trim() } : {}),
+			labels: s.labels,
+		}));
+	return scopes.length > 0 ? scopes : undefined;
 }
 
 /**
  * Build the SDK policy definition body shared by create and update.
  *
  * The editor fully models predicated and table rules, the fallback, custom
- * labels, and groups. When editing, `builtins` from the original definition are
- * carried through untouched.
+ * labels, and label scopes.
  */
 export function buildDefinition(input: PolicyInput): PolicyDefinition {
 	const rules = input.rules.map(buildRule);
-	const labels = buildLabels(input);
-
-	// Named label groups (referenced by `labelInGroup` predicates).
-	const groups = (input.groups ?? [])
-		.filter((g) => g.name.trim())
-		.map((g) => ({
-			name: g.name.trim(),
-			description: g.description?.trim() || undefined,
-			labels: splitValues(g.labels),
-		}));
+	const custom = buildCustomLabels(input);
+	const scopes = buildScopes(input);
 
 	return {
 		id: input.id,
@@ -196,8 +235,8 @@ export function buildDefinition(input: PolicyInput): PolicyDefinition {
 		// `rules` is optional; omit it entirely for a fallback-only policy.
 		...(rules.length > 0 ? { rules } : {}),
 		...(input.fallback ? { fallback: buildAction(input.fallback) } : {}),
-		...(labels ? { labels } : {}),
-		...(groups.length > 0 ? { groups } : {}),
+		...(custom ? { custom } : {}),
+		...(scopes ? { scopes } : {}),
 	} as PolicyDefinition;
 }
 

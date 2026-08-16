@@ -22,6 +22,7 @@ import {
 	Sidebar,
 	SidebarContent,
 	SidebarFooter,
+	SidebarGroup,
 	SidebarHeader,
 	SidebarMenu,
 	SidebarMenuButton,
@@ -144,7 +145,7 @@ const navObservability = computed(() => [
     </SidebarContent>
     <SidebarFooter class="gap-0 p-0">
       <SidebarSeparator />
-      <div class="p-2">
+      <SidebarGroup>
         <SidebarMenu>
           <SidebarMenuItem
             v-if="has('billing')"
@@ -191,7 +192,7 @@ const navObservability = computed(() => [
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-      </div>
+      </SidebarGroup>
       <SidebarSeparator />
       <div class="h-[calc(2.75rem-1px)] px-2 flex items-center">
         <NavUser />

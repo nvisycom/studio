@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Component } from "vue";
 import type {
+	PipelineRun,
 	PipelineRunStatus,
 	PipelineTriggerType,
 } from "@nvisy/sdk/datatypes";
@@ -8,16 +8,19 @@ import type { RunsFilter } from "#console/composables/useRuns";
 import {
 	ArrowLeft,
 	Loader2,
-	Loader,
-	Clock,
-	XCircle,
-	CircleCheck,
-	CircleSlash,
-	ClipboardCheck,
 	History,
 	ExternalLink,
+	ScanSearch,
+	FileJson,
+	FileSpreadsheet,
+	PanelRightOpen,
 } from "@lucide/vue";
+import type { RowAction } from "#console/components/pages/RowActions.vue";
 import type { VirtualColumn } from "#console/components/ui/virtual-table";
+import { EntityAvatar, FilePicker } from "#console/components/common";
+import { RunDetailSheet } from "#console/components/pages/runs";
+import { personLabel } from "#console/utils/naming";
+import { toast } from "vue-sonner";
 import { Button } from "#console/components/ui/button";
 import {
 	Card,
@@ -39,6 +42,75 @@ import {
 const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
 const { wLink } = useWorkspaceLink();
+const { resolveAvatarUrl } = useAvatarUrl();
+const { openFile } = useStudioFiles();
+
+// Run-detail sheet: opened from a row click or the "See details" action.
+const detailRun = ref<PipelineRun | null>(null);
+const isDetailOpen = ref(false);
+function openDetails(run: PipelineRun) {
+	detailRun.value = run;
+	isDetailOpen.value = true;
+}
+
+// Open a run's source document in the studio for review.
+function openInStudio(fileId: string) {
+	openFile(fileId);
+	navigateTo(wLink("/studio"));
+}
+
+// A stable base name for an exported audit: the source file (sans extension)
+// plus the short run id, so multiple runs of one file don't collide.
+function auditFileName(
+	run: (typeof sortedRuns.value)[number],
+	ext: string,
+): string {
+	const base = (run.inputFileName || run.inputFileId).replace(/\.[^.]+$/, "");
+	return `${base}-audit-${run.id.slice(0, 8)}.${ext}`;
+}
+
+async function downloadRunAudit(
+	run: (typeof sortedRuns.value)[number],
+	format: "json" | "csv",
+) {
+	try {
+		await downloadAudit(run.id, format, auditFileName(run, format));
+	} catch (error) {
+		toast.error(t("workflows.runs.auditDownloadFailed"), {
+			description: getErrorMessage(error, t("common.errors.tryAgain")),
+		});
+	}
+}
+
+function rowActions(run: (typeof sortedRuns.value)[number]): RowAction[] {
+	return [
+		{
+			key: "details",
+			label: t("workflows.runs.seeDetails"),
+			icon: PanelRightOpen,
+			select: () => openDetails(run),
+		},
+		{
+			key: "studio",
+			label: t("workflows.runs.openInStudio"),
+			icon: ScanSearch,
+			select: () => openInStudio(run.inputFileId),
+		},
+		{
+			key: "audit-json",
+			label: t("workflows.runs.downloadAuditJson"),
+			icon: FileJson,
+			separatorBefore: true,
+			select: () => downloadRunAudit(run, "json"),
+		},
+		{
+			key: "audit-csv",
+			label: t("workflows.runs.downloadAuditCsv"),
+			icon: FileSpreadsheet,
+			select: () => downloadRunAudit(run, "csv"),
+		},
+	];
+}
 
 useHead({ title: "Workflow Runs" });
 
@@ -53,14 +125,16 @@ const ALL = "all";
 const statusFilter = ref<PipelineRunStatus | typeof ALL>(ALL);
 const pipelineFilter = ref<string>(ALL);
 const triggerFilter = ref<PipelineTriggerType | typeof ALL>(ALL);
+const fileFilter = ref<string | null>(null);
 
 const runsFilter = computed<RunsFilter>(() => ({
 	...(statusFilter.value !== ALL && { status: statusFilter.value }),
 	...(triggerFilter.value !== ALL && { triggerType: triggerFilter.value }),
 	...(pipelineFilter.value !== ALL && { pipelineSlug: pipelineFilter.value }),
+	...(fileFilter.value && { fileId: fileFilter.value }),
 }));
 
-const { runs, isLoading } = useRuns(runsFilter);
+const { runs, isLoading, downloadAudit } = useRuns(runsFilter);
 
 const RUN_STATUSES: PipelineRunStatus[] = [
 	"queued",
@@ -72,24 +146,6 @@ const RUN_STATUSES: PipelineRunStatus[] = [
 ];
 
 const TRIGGER_TYPES: PipelineTriggerType[] = ["user", "system"];
-
-// Per-status presentation: icon + tint, following the run lifecycle.
-//   queued     — enqueued, no worker yet          (waiting)
-//   analyzing  — a worker is analyzing            (in progress)
-//   analyzed   — detection done, awaiting review  (needs action → amber)
-//   completed  — redaction applied, finished      (success → emerald)
-//   failed / cancelled                            (error / muted)
-const STATUS_META: Record<
-	PipelineRunStatus,
-	{ icon: Component; class: string; spin?: boolean }
-> = {
-	queued: { icon: Clock, class: "text-muted-foreground" },
-	analyzing: { icon: Loader, class: "text-blue-500", spin: true },
-	analyzed: { icon: ClipboardCheck, class: "text-amber-500" },
-	completed: { icon: CircleCheck, class: "text-emerald-500" },
-	failed: { icon: XCircle, class: "text-destructive" },
-	cancelled: { icon: CircleSlash, class: "text-muted-foreground" },
-};
 
 // The API filters; we only ensure newest-first ordering.
 const sortedRuns = computed(() =>
@@ -108,34 +164,32 @@ const columns = computed<VirtualColumn<(typeof sortedRuns.value)[number]>[]>(
 		{
 			key: "file",
 			header: t("workflows.runs.file"),
-			width: "140px",
 			cell: (r) => ({
-				type: "text",
-				value: r.inputFileId.slice(0, 8),
-				mono: true,
-				muted: true,
-				title: r.inputFileId,
+				type: "primary",
+				title: r.inputFileName || r.inputFileId,
+				// The redacted output, once the run produced one.
+				subtitle: r.outputFileName ?? undefined,
+				maxWidth: "max-w-xs",
 			}),
 		},
 		{
-			key: "trigger",
-			header: t("workflows.runs.trigger"),
-			width: "130px",
+			key: "triggeredBy",
+			header: t("workflows.runs.triggeredBy"),
+			width: "180px",
 			cell: (r) => ({
-				type: "badge",
-				label: t(`workflows.runs.triggerType.${r.triggerType}`),
+				type: "avatar",
+				name: personLabel(r.triggeredBy),
+				src: resolveAvatarUrl(r.triggeredBy.avatarUrl),
 			}),
 		},
 		{
 			key: "status",
 			header: t("workflows.runs.statusHeader"),
-			width: "160px",
+			width: "140px",
 			cell: (r) => ({
-				type: "status",
-				icon: STATUS_META[r.status].icon,
-				iconClass: STATUS_META[r.status].class,
-				spin: STATUS_META[r.status].spin,
+				type: "badge",
 				label: t(`workflows.runs.runStatus.${r.status}`),
+				variant: r.status === "failed" ? "destructive" : "secondary",
 			}),
 		},
 		{
@@ -185,6 +239,9 @@ const columns = computed<VirtualColumn<(typeof sortedRuns.value)[number]>[]>(
             </SelectItem>
           </SelectContent>
         </Select>
+
+        <!-- File filter -->
+        <FilePicker v-model="fileFilter" class="w-[190px]" />
 
         <!-- Trigger filter -->
         <Select v-model="triggerFilter">
@@ -248,12 +305,15 @@ const columns = computed<VirtualColumn<(typeof sortedRuns.value)[number]>[]>(
             v-else
             :rows="sortedRuns"
             :columns="columns"
+            :row-actions="rowActions"
+            :menu-label="t('workflows.runs.menu')"
             max-height="60vh"
             :empty="{
               icon: History,
               title: t('workflows.runs.noRunsFound'),
               description: t('workflows.runs.noRunsDescription'),
             }"
+            @row-click="openDetails"
           />
         </CardContent>
         <CardFooter
@@ -274,5 +334,12 @@ const columns = computed<VirtualColumn<(typeof sortedRuns.value)[number]>[]>(
         </CardFooter>
       </Card>
     </div>
+
+    <RunDetailSheet
+      v-model:open="isDetailOpen"
+      :run="detailRun"
+      @open-in-studio="openInStudio"
+      @download-audit="(_runId, format) => detailRun && downloadRunAudit(detailRun, format)"
+    />
   </div>
 </template>

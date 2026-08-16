@@ -59,6 +59,21 @@ export function useRuns(filter?: MaybeRefOrGetter<RunsFilter>) {
 		return await client.runs.getDetections(workspaceSlug, runId);
 	}
 
+	/** Download a run's audit as JSON or CSV, saved under `fileName`. */
+	async function downloadAudit(
+		runId: string,
+		format: "json" | "csv",
+		fileName: string,
+	): Promise<void> {
+		const { client, workspaceSlug } = requireContext();
+		const response =
+			format === "json"
+				? await client.runs.downloadAuditJson(workspaceSlug, runId)
+				: await client.runs.downloadAuditCsv(workspaceSlug, runId);
+		const url = URL.createObjectURL(await response.blob());
+		triggerBrowserDownload(url, fileName);
+	}
+
 	/**
 	 * The most recent run for a file that carries a usable audit (analyzed or
 	 * completed), or null if the file has never been run to a ready state. Used
@@ -140,6 +155,7 @@ export function useRuns(filter?: MaybeRefOrGetter<RunsFilter>) {
 		// Single run + detection flow
 		getRun,
 		getDetections,
+		downloadAudit,
 		findLatestRunForFile,
 		runDetection,
 	};

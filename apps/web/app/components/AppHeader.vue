@@ -15,14 +15,19 @@ import {
 	FeedbackModal,
 	NotificationsDropdown,
 } from "@/components/header";
+import { AppHealth } from "@/components/footer";
 
 const route = useRoute();
 
 // The page category (a `header.category.*` i18n key) is set per page via
-// definePageMeta and shown as the header breadcrumb.
+// definePageMeta and shown as the header breadcrumb. A page can set
+// `hideCategory: true` to reclaim the space for its own header content (the
+// studio does, for wider file tabs).
 const { t } = useI18n();
-const pageCategoryKey = computed(
-	() => route.meta.pageCategory as string | undefined,
+const pageCategoryKey = computed(() =>
+	route.meta.hideCategory
+		? undefined
+		: (route.meta.pageCategory as string | undefined),
 );
 const pageCategory = computed(() =>
 	pageCategoryKey.value ? t(pageCategoryKey.value) : undefined,
@@ -65,7 +70,9 @@ function openFeedbackModal() {
       </Breadcrumb>
       <HeaderTabs ref="headerTabsRef" />
     </div>
-    <div class="flex items-center gap-1 px-4">
+    <div class="flex items-center gap-2 px-4">
+      <AppHealth />
+      <Separator orientation="vertical" class="h-4 bg-border/50" />
       <NotificationsDropdown />
       <Button
         variant="ghost"

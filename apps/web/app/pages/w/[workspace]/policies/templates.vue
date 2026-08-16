@@ -66,7 +66,6 @@ const TEMPLATES: { kind: TemplateKind; category: string }[] = [
 	{ kind: "gdpr_article9", category: "GDPR" },
 	{ kind: "pci_dss", category: "PCI DSS" },
 	{ kind: "ccpa", category: "CCPA" },
-	{ kind: "soc2_secrets", category: "SOC 2" },
 ];
 
 // Selectable options for each template's settings.
@@ -154,8 +153,6 @@ function buildTemplate(kind: TemplateKind): PolicyTemplate {
 						? { part: "pan_render", render: pciRender.value }
 						: { part: "sav_erase" },
 			};
-		case "soc2_secrets":
-			return { kind: "soc2_secrets" };
 		default:
 			return { kind: "ccpa" };
 	}

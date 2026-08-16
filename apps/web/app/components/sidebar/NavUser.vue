@@ -5,7 +5,10 @@ import {
 	Command,
 	Moon,
 	Sun,
+	Monitor,
 	Home,
+	BookOpen,
+	Languages,
 	ExternalLink,
 	User,
 	Key,
@@ -16,7 +19,12 @@ import {
 	DropdownMenuContent,
 	DropdownMenuGroup,
 	DropdownMenuItem,
+	DropdownMenuRadioGroup,
+	DropdownMenuRadioItem,
 	DropdownMenuSeparator,
+	DropdownMenuSub,
+	DropdownMenuSubContent,
+	DropdownMenuSubTrigger,
 	DropdownMenuTrigger,
 } from "#console/components/ui/dropdown-menu";
 import {
@@ -30,8 +38,17 @@ import { personLabel } from "#console/utils/naming";
 import CommandMenu from "@/components/CommandMenu.vue";
 import CreateWorkspaceSheet from "#console/components/common/CreateWorkspaceSheet.vue";
 
-const { t } = useI18n();
+const { t, locale, locales, setLocale } = useI18n();
 const { wLink } = useWorkspaceLink();
+
+// Language submenu: show the active locale inline, switch on select.
+type LocaleCode = "en" | "de";
+const currentLocale = computed(() =>
+	locales.value.find((l) => l.code === locale.value),
+);
+function switchLocale(code: LocaleCode) {
+	setLocale(code);
+}
 const { getKbdKey } = useKbd();
 const { isMobile } = useSidebar();
 const { logout } = useAuth();
@@ -63,9 +80,24 @@ function openCommandMenu() {
 	isCommandMenuOpen.value = true;
 }
 
-function toggleTheme() {
-	colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
-}
+// Theme submenu: a three-way choice (light / dark / system) bound to the
+// color-mode preference.
+const themeOptions = [
+	{ value: "light", icon: Sun, labelKey: "userMenu.themeLight" },
+	{ value: "dark", icon: Moon, labelKey: "userMenu.themeDark" },
+	{ value: "system", icon: Monitor, labelKey: "userMenu.themeSystem" },
+] as const;
+const themePreference = computed({
+	get: () => colorMode.preference,
+	set: (value: string) => {
+		colorMode.preference = value;
+	},
+});
+const activeThemeLabel = computed(
+	() =>
+		themeOptions.find((o) => o.value === colorMode.preference)?.labelKey ??
+		"userMenu.themeSystem",
+);
 
 function handleLogout() {
 	logout();
@@ -162,11 +194,54 @@ defineShortcuts({
                 <Kbd>K</Kbd>
               </div>
             </DropdownMenuItem>
-            <DropdownMenuItem class="cursor-pointer" @click="toggleTheme">
-              <Sun v-if="colorMode.value === 'dark'" />
-              <Moon v-else />
-              {{ t("commandMenu.actions.toggleTheme") }}
-            </DropdownMenuItem>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <Languages />
+                {{ t("userMenu.language") }}
+                <span class="ml-auto text-xs uppercase text-muted-foreground">
+                  {{ currentLocale?.code }}
+                </span>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuRadioGroup
+                  :model-value="locale"
+                  @update:model-value="switchLocale($event as LocaleCode)"
+                >
+                  <DropdownMenuRadioItem
+                    v-for="loc in locales"
+                    :key="loc.code"
+                    :value="loc.code"
+                    class="cursor-pointer"
+                  >
+                    {{ loc.name }}
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <Sun v-if="colorMode.preference === 'light'" />
+                <Moon v-else-if="colorMode.preference === 'dark'" />
+                <Monitor v-else />
+                {{ t("userMenu.theme") }}
+                <span class="ml-auto text-xs text-muted-foreground">
+                  {{ t(activeThemeLabel) }}
+                </span>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuRadioGroup v-model="themePreference">
+                  <DropdownMenuRadioItem
+                    v-for="option in themeOptions"
+                    :key="option.value"
+                    :value="option.value"
+                    class="cursor-pointer"
+                  >
+                    <component :is="option.icon" :size="16" />
+                    {{ t(option.labelKey) }}
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
@@ -179,6 +254,18 @@ defineShortcuts({
               >
                 <Home />
                 {{ t("commandMenu.homePage") }}
+                <ExternalLink :size="12" class="ml-auto opacity-60" />
+              </a>
+            </DropdownMenuItem>
+            <DropdownMenuItem as-child>
+              <a
+                href="https://docs.nvisy.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="cursor-pointer flex items-center"
+              >
+                <BookOpen />
+                {{ t("userMenu.documentation") }}
                 <ExternalLink :size="12" class="ml-auto opacity-60" />
               </a>
             </DropdownMenuItem>

@@ -70,7 +70,28 @@
 		"selectRow": "Select row",
 		"openMenu": "Open menu",
 		"showPassword": "Show password",
-		"hidePassword": "Hide password"
+		"hidePassword": "Hide password",
+		"filePicker": {
+			"placeholder": "All files",
+			"search": "Search files…",
+			"empty": "No files found"
+		},
+		"labelPicker": {
+			"placeholder": "Select labels",
+			"empty": "No labels found",
+			"loading": "Loading labels…",
+			"uncategorized": "Other",
+			"remove": "Remove {name}",
+			"custom": "Custom",
+			"search": "Search labels…"
+		},
+		"tagInput": {
+			"placeholder": "Add a tag",
+			"remove": "Remove {tag}"
+		},
+		"labelSelect": {
+			"placeholder": "Select a label"
+		}
 	},
 	"settings": {
 		"workspace": {
@@ -1167,9 +1188,7 @@
 			"run": "Run detection",
 			"runAgain": "Run again",
 			"restoring": "Restoring the last run…",
-			"fromLastRun": "from the last run",
 			"runFailed": "Detection failed. Please try again.",
-			"found": "{count} entities detected | {count} entity detected | {count} entities detected",
 			"bytes": "bytes {start}–{end}",
 			"status": {
 				"queued": "Queued…",
@@ -1193,9 +1212,17 @@
 				"confidence": "Confidence",
 				"location": "Location",
 				"source": "Detected by",
-				"language": "Language"
+				"language": "Language",
+				"pattern": "Pattern",
+				"model": "Model"
 			},
-			"colNamed": "col {n} ({name})"
+			"colNamed": "col {n} ({name})",
+			"uncategorized": "Uncategorized",
+			"detectorPattern": "pattern ({name})",
+			"detectorModel": "model ({name})",
+			"collapseDuplicates": "Collapse duplicates",
+			"prevOccurrence": "Previous occurrence",
+			"nextOccurrence": "Next occurrence"
 		},
 		"preview": {
 			"table": "Table",
@@ -1262,14 +1289,11 @@
 			"moveUp": "Move rule up",
 			"moveDown": "Move rule down",
 			"removeRule": "Remove rule",
-			"when": "When",
-			"then": "Then",
 			"addCondition": "Add condition",
 			"valuesPlaceholder": {
-				"labelOneOf": "comma, separated labels",
 				"tagOneOf": "comma, separated tags",
-				"labelInGroup": "group name",
-				"coRef": "cluster id"
+				"coRef": "cluster id",
+				"labelInScope": "scope name"
 			},
 			"summary": {
 				"line": "When {conditions}, {action}.",
@@ -1279,22 +1303,29 @@
 				"tag": "tag is {values}",
 				"redact": "redact it",
 				"redactModalities": "redact {list}",
-				"group": "in group {values}",
-				"coref": "in cluster {values}"
+				"coref": "in cluster {values}",
+				"scope": "in scope {values}"
 			},
 			"predicate": {
 				"confidence": "Confidence ≥",
-				"labelOneOf": "Label is one of",
 				"tagOneOf": "Tag is one of",
-				"labelInGroup": "Label in group",
-				"coRef": "Same cluster as"
+				"coRef": "Coreference of",
+				"labelInScope": "Label in scope",
+				"scopeEmpty": "Define a scope first"
 			},
 			"textKind": {
 				"replace": "Replace",
 				"mask": "Mask",
 				"hash": "Hash",
 				"erase": "Erase",
-				"keep": "Keep"
+				"keep": "Keep",
+				"hmac_hash": "HMAC hash",
+				"truncate": "Truncate",
+				"pseudonymize": "Pseudonymize",
+				"encrypt": "Encrypt",
+				"fake": "Fake data",
+				"clamp": "Clamp",
+				"generalize_date": "Generalize date"
 			},
 			"imageKind": {
 				"blur": "Blur",
@@ -1314,7 +1345,7 @@
 				"audio": "Audio",
 				"tabular": "Tabular"
 			},
-			"addModality": "Add media",
+			"addModality": "Add modality",
 			"removeModality": "Remove media",
 			"sigma": "Sigma",
 			"blockSize": "Block",
@@ -1322,39 +1353,52 @@
 			"fallback": {
 				"label": "Fallback",
 				"hint": "Applied to any match no rule handled.",
-				"applies": "when no rule above matches."
+				"applies": "when no rule above matches.",
+				"add": "Add fallback",
+				"empty": "No fallback. Add one to redact anything no rule handled."
 			},
 			"labels": {
-				"label": "Label catalog",
+				"label": "Custom labels",
 				"hint": "Entity labels this policy recognizes.",
 				"add": "Add label",
 				"namePlaceholder": "LABEL_NAME",
 				"descriptionPlaceholder": "What this label means (optional)",
-				"tagsPlaceholder": "tags, comma separated"
+				"tagsPlaceholder": "Type a tag and press space"
 			},
 			"cancel": "Cancel",
 			"submit": "Create",
 			"addPredicatedRule": "Conditional rule",
 			"addTableRule": "Label table",
 			"table": {
-				"label": "Labels",
 				"labelPlaceholder": "email_address",
 				"addEntry": "Add label",
 				"removeEntry": "Remove label"
-			},
-			"groups": {
-				"label": "Label groups",
-				"hint": "Named clusters of labels a rule can match by group.",
-				"add": "Add group",
-				"namePlaceholder": "hipaa_18",
-				"labelsPlaceholder": "email_address, phone_number, ssn",
-				"labelsLabel": "Labels in this group"
 			},
 			"createTitle": "Create Policy",
 			"createDescription": "Define detection rules and how matches are redacted.",
 			"editTitle": "Edit Policy",
 			"editDescription": "Update detection rules and how matches are redacted.",
-			"slugPlaceholder": "auto-generated"
+			"slugPlaceholder": "auto-generated",
+			"scopes": {
+				"label": "Label scopes",
+				"hint": "Named sets of labels this policy detects; a rule can match a set by name.",
+				"add": "Add scope",
+				"namePlaceholder": "hipaa_18",
+				"count": "{count} label | {count} labels"
+			},
+			"groups": {
+				"details": "Details",
+				"vocabulary": "Vocabulary",
+				"behavior": "Behavior"
+			},
+			"param": {
+				"keepPrefix": "Keep start",
+				"keepSuffix": "Keep end",
+				"saltPlaceholder": "optional salt",
+				"sha256": "SHA-256",
+				"sha512": "SHA-512"
+			},
+			"moreOperators": "More operators"
 		},
 		"delete": {
 			"title": "Delete {name}?",
@@ -1401,10 +1445,6 @@
 			"ccpa": {
 				"name": "CCPA",
 				"description": "Redact personal information covered by the CCPA."
-			},
-			"soc2_secrets": {
-				"name": "SOC 2 Secrets",
-				"description": "Detect and redact secrets and credentials such as API keys, tokens, and passwords."
 			},
 			"settings": {
 				"hipaaMethod": "De-identification method",
@@ -1476,7 +1516,36 @@
 				"cancelled": "Cancelled"
 			},
 			"noRunsDescription": "Runs will appear here once this workspace processes files.",
-			"footer": "Each run records how a pipeline detected and redacted a file."
+			"footer": "Each run records how a pipeline detected and redacted a file.",
+			"triggeredBy": "Triggered by",
+			"openInStudio": "Open in Studio",
+			"menu": "Run actions",
+			"downloadAuditJson": "Download audit (JSON)",
+			"downloadAuditCsv": "Download audit (CSV)",
+			"auditDownloadFailed": "Couldn't download the audit",
+			"seeDetails": "See details",
+			"detail": {
+				"status": "Status",
+				"trigger": "Trigger",
+				"started": "Started",
+				"completed": "Completed",
+				"duration": "Duration",
+				"running": "Still running",
+				"detectionLoading": "Loading detections.",
+				"detectionUnavailable": "Detections unavailable.",
+				"detections": "{count} entities detected | {count} entity detected | {count} entities detected",
+				"input": "Input",
+				"output": "Output (redacted)",
+				"error": "Error",
+				"runId": "Run ID",
+				"copy": "Copy run ID",
+				"copied": "Run ID copied",
+				"tags": "Tags",
+				"downloadJson": "Download JSON",
+				"downloadCsv": "Download CSV",
+				"none": "—",
+				"copyFailed": "Couldn't copy the run id"
+			}
 		},
 		"learnMore": "Learn more",
 		"status": {
@@ -1933,5 +2002,13 @@
 			"pipeline": "Pipelines",
 			"policy": "Policies"
 		}
+	},
+	"userMenu": {
+		"theme": "Theme",
+		"themeLight": "Light",
+		"themeDark": "Dark",
+		"themeSystem": "System",
+		"language": "Language",
+		"documentation": "Documentation"
 	}
 }

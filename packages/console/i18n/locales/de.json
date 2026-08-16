@@ -70,7 +70,28 @@
 		"selectRow": "Zeile auswählen",
 		"openMenu": "Menü öffnen",
 		"showPassword": "Passwort anzeigen",
-		"hidePassword": "Passwort verbergen"
+		"hidePassword": "Passwort verbergen",
+		"filePicker": {
+			"placeholder": "Alle Dateien",
+			"search": "Dateien suchen…",
+			"empty": "Keine Dateien gefunden"
+		},
+		"labelPicker": {
+			"placeholder": "Labels auswählen",
+			"empty": "Keine Labels gefunden",
+			"loading": "Labels werden geladen…",
+			"uncategorized": "Andere",
+			"remove": "{name} entfernen",
+			"custom": "Benutzerdefiniert",
+			"search": "Labels suchen…"
+		},
+		"tagInput": {
+			"placeholder": "Tag hinzufügen",
+			"remove": "{tag} entfernen"
+		},
+		"labelSelect": {
+			"placeholder": "Label auswählen"
+		}
 	},
 	"settings": {
 		"workspace": {
@@ -1167,9 +1188,7 @@
 			"run": "Erkennung ausführen",
 			"runAgain": "Erneut ausführen",
 			"restoring": "Letzter Lauf wird wiederhergestellt…",
-			"fromLastRun": "aus dem letzten Lauf",
 			"runFailed": "Erkennung fehlgeschlagen. Bitte erneut versuchen.",
-			"found": "{count} Entität erkannt | {count} Entität erkannt | {count} Entitäten erkannt",
 			"bytes": "Bytes {start}–{end}",
 			"status": {
 				"queued": "In Warteschlange…",
@@ -1193,9 +1212,17 @@
 				"confidence": "Konfidenz",
 				"location": "Position",
 				"source": "Erkannt von",
-				"language": "Sprache"
+				"language": "Sprache",
+				"pattern": "Muster",
+				"model": "Modell"
 			},
-			"colNamed": "Sp. {n} ({name})"
+			"colNamed": "Sp. {n} ({name})",
+			"uncategorized": "Ohne Kategorie",
+			"detectorPattern": "Muster ({name})",
+			"detectorModel": "Modell ({name})",
+			"collapseDuplicates": "Duplikate zusammenfassen",
+			"prevOccurrence": "Vorheriges Vorkommen",
+			"nextOccurrence": "Nächstes Vorkommen"
 		},
 		"preview": {
 			"table": "Tabelle",
@@ -1262,14 +1289,11 @@
 			"moveUp": "Regel nach oben",
 			"moveDown": "Regel nach unten",
 			"removeRule": "Regel entfernen",
-			"when": "Wenn",
-			"then": "Dann",
 			"addCondition": "Bedingung hinzufügen",
 			"valuesPlaceholder": {
-				"labelOneOf": "kommagetrennte Labels",
 				"tagOneOf": "kommagetrennte Tags",
-				"labelInGroup": "Gruppenname",
-				"coRef": "Cluster-ID"
+				"coRef": "Cluster-ID",
+				"labelInScope": "Bereichsname"
 			},
 			"summary": {
 				"line": "Wenn {conditions}, {action}.",
@@ -1279,22 +1303,29 @@
 				"tag": "Tag {values} ist",
 				"redact": "schwärzen",
 				"redactModalities": "{list} schwärzen",
-				"group": "in Gruppe {values}",
-				"coref": "in Cluster {values}"
+				"coref": "in Cluster {values}",
+				"scope": "im Bereich {values}"
 			},
 			"predicate": {
 				"confidence": "Konfidenz ≥",
-				"labelOneOf": "Label ist eines von",
 				"tagOneOf": "Tag ist eines von",
-				"labelInGroup": "Label in Gruppe",
-				"coRef": "Gleiches Cluster wie"
+				"coRef": "Koreferenz von",
+				"labelInScope": "Label im Bereich",
+				"scopeEmpty": "Zuerst einen Bereich definieren"
 			},
 			"textKind": {
 				"replace": "Ersetzen",
 				"mask": "Maskieren",
 				"hash": "Hashen",
 				"erase": "Löschen",
-				"keep": "Behalten"
+				"keep": "Behalten",
+				"hmac_hash": "HMAC-Hash",
+				"truncate": "Kürzen",
+				"pseudonymize": "Pseudonymisieren",
+				"encrypt": "Verschlüsseln",
+				"fake": "Falsche Daten",
+				"clamp": "Begrenzen",
+				"generalize_date": "Datum verallgemeinern"
 			},
 			"imageKind": {
 				"blur": "Weichzeichnen",
@@ -1314,7 +1345,7 @@
 				"audio": "Audio",
 				"tabular": "Tabellarisch"
 			},
-			"addModality": "Medium hinzufügen",
+			"addModality": "Modalität hinzufügen",
 			"removeModality": "Medium entfernen",
 			"sigma": "Sigma",
 			"blockSize": "Block",
@@ -1322,39 +1353,52 @@
 			"fallback": {
 				"label": "Fallback",
 				"hint": "Wird auf jede Übereinstimmung angewendet, die keine Regel behandelt hat.",
-				"applies": "wenn keine Regel oben zutrifft."
+				"applies": "wenn keine Regel oben zutrifft.",
+				"add": "Fallback hinzufügen",
+				"empty": "Kein Fallback. Fügen Sie einen hinzu, um von keiner Regel behandelte Treffer zu schwärzen."
 			},
 			"labels": {
-				"label": "Label-Katalog",
+				"label": "Benutzerdefinierte Labels",
 				"hint": "Entitäts-Labels, die diese Richtlinie erkennt.",
 				"add": "Label hinzufügen",
 				"namePlaceholder": "LABEL_NAME",
 				"descriptionPlaceholder": "Was dieses Label bedeutet (optional)",
-				"tagsPlaceholder": "Tags, durch Komma getrennt"
+				"tagsPlaceholder": "Tag eingeben und Leertaste drücken"
 			},
 			"cancel": "Abbrechen",
 			"submit": "Erstellen",
 			"addPredicatedRule": "Bedingte Regel",
 			"addTableRule": "Label-Tabelle",
 			"table": {
-				"label": "Labels",
 				"labelPlaceholder": "email_address",
 				"addEntry": "Label hinzufügen",
 				"removeEntry": "Label entfernen"
-			},
-			"groups": {
-				"label": "Label-Gruppen",
-				"hint": "Benannte Cluster von Labels, die eine Regel per Gruppe matchen kann.",
-				"add": "Gruppe hinzufügen",
-				"namePlaceholder": "hipaa_18",
-				"labelsPlaceholder": "email_address, phone_number, ssn",
-				"labelsLabel": "Labels in dieser Gruppe"
 			},
 			"createTitle": "Richtlinie erstellen",
 			"createDescription": "Definieren Sie Erkennungsregeln und wie Treffer geschwärzt werden.",
 			"editTitle": "Richtlinie bearbeiten",
 			"editDescription": "Aktualisieren Sie Erkennungsregeln und wie Treffer geschwärzt werden.",
-			"slugPlaceholder": "automatisch generiert"
+			"slugPlaceholder": "automatisch generiert",
+			"scopes": {
+				"label": "Label-Bereiche",
+				"hint": "Benannte Label-Sets, die diese Richtlinie erkennt; eine Regel kann ein Set per Name matchen.",
+				"add": "Bereich hinzufügen",
+				"namePlaceholder": "hipaa_18",
+				"count": "{count} Label | {count} Labels"
+			},
+			"groups": {
+				"details": "Details",
+				"vocabulary": "Vokabular",
+				"behavior": "Verhalten"
+			},
+			"param": {
+				"keepPrefix": "Anfang behalten",
+				"keepSuffix": "Ende behalten",
+				"saltPlaceholder": "optionaler Salt",
+				"sha256": "SHA-256",
+				"sha512": "SHA-512"
+			},
+			"moreOperators": "Weitere Operatoren"
 		},
 		"delete": {
 			"title": "{name} löschen?",
@@ -1401,10 +1445,6 @@
 			"ccpa": {
 				"name": "CCPA",
 				"description": "Personenbezogene Daten gemäß CCPA schwärzen."
-			},
-			"soc2_secrets": {
-				"name": "SOC 2 Secrets",
-				"description": "Geheimnisse und Anmeldedaten wie API-Schlüssel, Token und Passwörter erkennen und schwärzen."
 			},
 			"settings": {
 				"hipaaMethod": "Anonymisierungsmethode",
@@ -1476,7 +1516,36 @@
 				"cancelled": "Abgebrochen"
 			},
 			"noRunsDescription": "Ausführungen erscheinen hier, sobald dieser Arbeitsbereich Dateien verarbeitet.",
-			"footer": "Jede Ausführung protokolliert, wie eine Pipeline eine Datei erkannt und geschwärzt hat."
+			"footer": "Jede Ausführung protokolliert, wie eine Pipeline eine Datei erkannt und geschwärzt hat.",
+			"triggeredBy": "Ausgelöst von",
+			"openInStudio": "In Studio öffnen",
+			"menu": "Lauf-Aktionen",
+			"downloadAuditJson": "Audit herunterladen (JSON)",
+			"downloadAuditCsv": "Audit herunterladen (CSV)",
+			"auditDownloadFailed": "Audit konnte nicht heruntergeladen werden",
+			"seeDetails": "Details anzeigen",
+			"detail": {
+				"status": "Status",
+				"trigger": "Auslöser",
+				"started": "Gestartet",
+				"completed": "Abgeschlossen",
+				"duration": "Dauer",
+				"running": "Läuft noch",
+				"detectionLoading": "Erkennungen werden geladen.",
+				"detectionUnavailable": "Erkennungen nicht verfügbar.",
+				"detections": "{count} Entitäten erkannt | {count} Entität erkannt | {count} Entitäten erkannt",
+				"input": "Eingabe",
+				"output": "Ausgabe (geschwärzt)",
+				"error": "Fehler",
+				"runId": "Ausführungs-ID",
+				"copy": "Ausführungs-ID kopieren",
+				"copied": "Ausführungs-ID kopiert",
+				"tags": "Tags",
+				"downloadJson": "JSON herunterladen",
+				"downloadCsv": "CSV herunterladen",
+				"none": "—",
+				"copyFailed": "Lauf-ID konnte nicht kopiert werden"
+			}
 		},
 		"learnMore": "Mehr erfahren",
 		"status": {
@@ -1933,5 +2002,13 @@
 			"pipeline": "Pipelines",
 			"policy": "Richtlinien"
 		}
+	},
+	"userMenu": {
+		"theme": "Design",
+		"themeLight": "Hell",
+		"themeDark": "Dunkel",
+		"themeSystem": "System",
+		"language": "Sprache",
+		"documentation": "Dokumentation"
 	}
 }
