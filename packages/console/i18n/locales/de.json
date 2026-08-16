@@ -1187,17 +1187,8 @@
 			"pipelinePlaceholder": "Pipeline auswählen",
 			"run": "Erkennung ausführen",
 			"runAgain": "Erneut ausführen",
-			"restoring": "Letzter Lauf wird wiederhergestellt…",
 			"runFailed": "Erkennung fehlgeschlagen. Bitte erneut versuchen.",
 			"bytes": "Bytes {start}–{end}",
-			"status": {
-				"queued": "In Warteschlange…",
-				"analyzing": "Dokument wird analysiert…",
-				"analyzed": "Analysiert",
-				"completed": "Abgeschlossen",
-				"failed": "Ausführung fehlgeschlagen",
-				"cancelled": "Ausführung abgebrochen"
-			},
 			"idleTitle": "Noch keine Erkennungen",
 			"idleHint": "Wähle eine Pipeline und führe die Erkennung aus, um sensible Entitäten zu finden.",
 			"noFile": "Kein Dokument geöffnet",
@@ -1222,7 +1213,8 @@
 			"detectorModel": "Modell ({name})",
 			"collapseDuplicates": "Duplikate zusammenfassen",
 			"prevOccurrence": "Vorheriges Vorkommen",
-			"nextOccurrence": "Nächstes Vorkommen"
+			"nextOccurrence": "Nächstes Vorkommen",
+			"metadata": "Metadaten"
 		},
 		"preview": {
 			"table": "Tabelle",

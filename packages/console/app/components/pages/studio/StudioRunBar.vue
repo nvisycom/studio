@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PipelineRun, PipelineSummary } from "@nvisy/sdk/datatypes";
+import type { PipelineSummary } from "@nvisy/sdk/datatypes";
 import { Loader2, Play, RotateCcw } from "@lucide/vue";
 import type { StudioAuditPhase } from "#console/composables/useStudioAudit";
 import { Button } from "#console/components/ui/button";
@@ -16,7 +16,6 @@ const { t } = useI18n();
 defineProps<{
 	pipelines: PipelineSummary[] | undefined;
 	phase: StudioAuditPhase;
-	runStatus: PipelineRun["status"] | null;
 	canRun: boolean;
 }>();
 
@@ -63,20 +62,5 @@ defineEmits<{ run: [] }>();
       <RotateCcw v-else-if="phase === 'analyzed'" :size="16" />
       <Play v-else :size="16" />
     </Button>
-
-    <!-- Live progress only; the settled count lives in the audit list header. -->
-    <p
-      v-if="phase === 'restoring'"
-      class="flex min-w-0 items-center gap-1.5 truncate text-xs text-muted-foreground"
-    >
-      <Loader2 :size="12" class="shrink-0 animate-spin" />
-      {{ t("studio.audit.restoring") }}
-    </p>
-    <p
-      v-else-if="phase === 'running'"
-      class="min-w-0 truncate text-xs text-muted-foreground"
-    >
-      {{ t(`studio.audit.status.${runStatus ?? "queued"}`) }}
-    </p>
   </div>
 </template>

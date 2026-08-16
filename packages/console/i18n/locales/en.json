@@ -1187,17 +1187,8 @@
 			"pipelinePlaceholder": "Select a pipeline",
 			"run": "Run detection",
 			"runAgain": "Run again",
-			"restoring": "Restoring the last run…",
 			"runFailed": "Detection failed. Please try again.",
 			"bytes": "bytes {start}–{end}",
-			"status": {
-				"queued": "Queued…",
-				"analyzing": "Analyzing the document…",
-				"analyzed": "Analyzed",
-				"completed": "Completed",
-				"failed": "Run failed",
-				"cancelled": "Run cancelled"
-			},
 			"idleTitle": "No detections yet",
 			"idleHint": "Pick a pipeline and run detection to find sensitive entities.",
 			"noFile": "No document open",
@@ -1222,7 +1213,8 @@
 			"detectorModel": "model ({name})",
 			"collapseDuplicates": "Collapse duplicates",
 			"prevOccurrence": "Previous occurrence",
-			"nextOccurrence": "Next occurrence"
+			"nextOccurrence": "Next occurrence",
+			"metadata": "Metadata"
 		},
 		"preview": {
 			"table": "Table",

@@ -1,6 +1,11 @@
 import type { Audit } from "@nvisy/sdk/datatypes";
 import type { MaybeRefOrGetter } from "vue";
-import { byteOffsetToChar, parseCsv } from "#console/utils/preview";
+import {
+	type DocxSourceRef,
+	byteOffsetToChar,
+	docxMatchedText,
+	parseCsv,
+} from "#console/utils/preview";
 
 /**
  * A tabular entity's cell locator. Tabular byte offsets (`start`/`end`) are
@@ -33,6 +38,22 @@ export interface TextEntityView {
 	end: number;
 	/** Cell coordinates for tabular entities; absent for plain text. */
 	cell?: CellLocation;
+	/**
+	 * Raw-source byte ranges this entity came from, per container part (for DOCX,
+	 * spans into `word/document.xml`). Present when the decoded text a recognizer
+	 * scanned differs from the raw source (DOCX/XML); empty for plain text/CSV,
+	 * where {@link start}/{@link end} already index the shown text. The DOCX
+	 * preview maps these onto its rendered runs.
+	 */
+	sourceRefs?: DocxSourceRef[];
+	/**
+	 * Whether this entity has an on-page location the preview can highlight and
+	 * scroll to. False for entities detected only in document metadata (e.g. a
+	 * DOCX hyperlink target in `word/_rels/...`, which isn't visible body text) —
+	 * their value still shows in the list, but the row isn't clickable. Defaults
+	 * to true for plain text / tabular, which are always locatable.
+	 */
+	locatable?: boolean;
 	/** Effective confidence, 0..1. */
 	confidence: number;
 	/** Recognizer/source that first found this entity (the birth event). */
@@ -48,9 +69,9 @@ export interface TextEntityView {
 	/** Detected language of the surrounding text, when known (e.g. "en"). */
 	language?: string;
 	/**
-	 * The matched text, sliced from the document at this entity's offsets — the
-	 * actual found value (an email, a name). Present only when the document text
-	 * was supplied to the composable; absent for image/audio.
+	 * The matched text — the actual found value (an email, a name). Sliced from
+	 * the flat document at this entity's offsets, or for DOCX from its rendered
+	 * runs via {@link sourceRefs}. Absent when neither is available (image/audio).
 	 */
 	text?: string;
 }
@@ -155,15 +176,19 @@ function provenance(entity: { language?: string; audit: BirthEvent[] }) {
  *
  * Accepts ref/getters so callers can bind reactive audit + document text. When
  * `text` (the flat document content) is supplied, each entity also carries the
- * matched `text` sliced from the document — the actual found value.
+ * matched `text` sliced from the document — the actual found value. DOCX has no
+ * flat text, so `docxRuns` provides the matched value instead: it is sliced from
+ * the entity's raw-source byte spans (`sourceRefs`) against the parsed runs.
  */
 export function useTextEntities(
 	audit: MaybeRefOrGetter<Audit | null>,
 	text?: MaybeRefOrGetter<string | null>,
+	docxParts?: MaybeRefOrGetter<Map<string, Uint8Array> | null>,
 ) {
 	const entities = computed<TextEntityView[]>(() => {
 		const group = toValue(audit)?.body;
 		const doc = toValue(text) ?? null;
+		const parts = toValue(docxParts) ?? null;
 
 		let views: TextEntityView[];
 		if (group?.modality === "text") {
@@ -173,14 +198,39 @@ export function useTextEntities(
 				const e = record.entity;
 				const start = e.location.range.start;
 				const end = e.location.range.end;
+				// Raw-source spans (DOCX/XML): the source bytes the decoded span came
+				// from, per container part. The preview maps document-body spans onto
+				// rendered runs; other parts (metadata) provide the value only.
+				const sourceRefs: DocxSourceRef[] | undefined = e.location.source?.map(
+					(ref) => ({
+						part: ref.part,
+						start: ref.range.start,
+						end: ref.range.end,
+					}),
+				);
+				// Matched value: from the flat text when we have it (plain/JSON/CSV),
+				// else sliced from the DOCX part bytes the source refs name.
+				let matched: string | undefined;
+				if (doc) matched = sliceBytes(doc, start, end);
+				else if (parts && sourceRefs?.length)
+					matched = docxMatchedText(parts, sourceRefs);
+				// Locatable when a span lands in the visible document body: plain
+				// text/CSV always; DOCX only when a ref targets `word/document.xml`.
+				const locatable = doc
+					? true
+					: (sourceRefs?.some(
+							(r) => !r.part || r.part === "word/document.xml",
+						) ?? false);
 				return {
 					id: e.id,
 					label: e.label,
 					start,
 					end,
 					confidence: e.confidence,
+					locatable,
 					...provenance(e),
-					...(doc ? { text: sliceBytes(doc, start, end) } : {}),
+					...(sourceRefs?.length ? { sourceRefs } : {}),
+					...(matched ? { text: matched } : {}),
 				} satisfies TextEntityView;
 			});
 		} else if (group?.modality === "tabular") {
@@ -258,7 +308,12 @@ export function useTextEntities(
 		const map = new Map<string, EntityCluster>();
 		const order: string[] = [];
 		for (const item of items) {
-			const key = `${item.text ?? `${item.start}:${item.end}`} ${item.detector ?? item.source ?? ""}`;
+			const value = item.text ?? `${item.start}:${item.end}`;
+			const detector = item.detector ?? item.source ?? "";
+			// Keep body vs metadata-only occurrences in separate clusters, so a row's
+			// clickability is unambiguous and the stepper never lands off-page.
+			const loc = item.locatable === false ? "meta" : "body";
+			const key = `${value} ${detector} ${loc}`;
 			const existing = map.get(key);
 			if (existing) existing.items.push(item);
 			else {

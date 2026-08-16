@@ -165,7 +165,13 @@ watch(
       </div>
 
       <!-- Word document preview (read-only, rendered client-side) -->
-      <StudioDocxView v-else-if="isDocx" :content-url="contentUrl" />
+      <StudioDocxView
+        v-else-if="isDocx"
+        :content-url="contentUrl"
+        :entities="entities"
+        :active-entity-id="activeEntityId"
+        @focus-entity="emit('focus-entity', $event)"
+      />
 
       <!-- Text file preview -->
       <div v-else-if="isText" class="min-h-full p-4">

@@ -1,17 +1,38 @@
 <script setup lang="ts">
 import { renderAsync } from "docx-preview";
+import JSZip from "jszip";
 import { Loader2, TriangleAlert } from "@lucide/vue";
+import type { TextEntityView } from "#console/composables/useTextEntities";
+import {
+	type DocxRun,
+	parseDocxRuns,
+	resolveDocxSpan,
+} from "#console/utils/preview";
 
 /**
- * Read-only Word (.docx) preview. The download is the original OOXML zip, so it
- * is rendered client-side with docx-preview: the file is fetched from its blob
- * URL as an ArrayBuffer and rendered into a container element. No entity
- * highlighting yet — the audit overlay is plain-text + byte-offset only.
+ * Read-only Word (.docx) preview with detected-entity highlighting.
+ *
+ * The download is the original OOXML zip, rendered client-side by docx-preview.
+ * Highlighting maps each entity's raw-source byte span (a `SourceRef` into
+ * `word/document.xml`) onto the rendered run it belongs to: we parse the same
+ * `document.xml` into ordered `<w:t>` runs (with byte spans), align those runs
+ * to the rendered text nodes in document order, then wrap the matched char
+ * range in a chip. Keying on the run sidesteps the synthetic text (tabs,
+ * symbols, footnotes) docx-preview injects, which would desync a char walk.
  */
-const props = defineProps<{
-	/** Blob object URL of the .docx file, or null when nothing is open. */
-	contentUrl: string | null;
-}>();
+const props = withDefaults(
+	defineProps<{
+		/** Blob object URL of the .docx file, or null when nothing is open. */
+		contentUrl: string | null;
+		/** Detected entities to highlight (their `sourceRefs` address the docx). */
+		entities?: TextEntityView[];
+		/** Currently focused entity id, for the ring + scroll-into-view. */
+		activeEntityId?: string | null;
+	}>(),
+	{ entities: () => [], activeEntityId: null },
+);
+
+const emit = defineEmits<{ "focus-entity": [id: string] }>();
 
 const { t } = useI18n();
 
@@ -19,10 +40,44 @@ const container = ref<HTMLElement | null>(null);
 const isLoading = ref(false);
 const hasError = ref(false);
 
+// The parsed <w:t> runs of the rendered doc, each paired with the DOM element
+// that holds its text (filled after a successful render + alignment). We store
+// the parent element (stable) rather than the text node, so chip wrapping —
+// which replaces the text node — never invalidates the reference; each pass
+// normalizes the parent and re-locates the run's text.
+let runNodes: { run: DocxRun; parent: HTMLElement }[] = [];
+
+/**
+ * Walk the rendered DOM's text nodes in document order and align them to the
+ * parsed runs. Both sequences follow `<w:t>` order, so we consume a run each
+ * time a text node carries its text; synthetic nodes (tab em-spaces, symbols)
+ * don't match the next run and are skipped.
+ */
+function alignRuns(root: HTMLElement, runs: DocxRun[]) {
+	const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+	const pairs: { run: DocxRun; parent: HTMLElement }[] = [];
+	let r = 0;
+	let node = walker.nextNode() as Text | null;
+	while (node && r < runs.length) {
+		const run = runs[r]!;
+		if (
+			node.nodeValue === run.text &&
+			run.text.length > 0 &&
+			node.parentElement
+		) {
+			pairs.push({ run, parent: node.parentElement });
+			r++;
+		}
+		node = walker.nextNode() as Text | null;
+	}
+	return pairs;
+}
+
 async function render(url: string, target: HTMLElement) {
 	isLoading.value = true;
 	hasError.value = false;
 	target.replaceChildren();
+	runNodes = [];
 	try {
 		const buffer = await (await fetch(url)).arrayBuffer();
 		// The file may have changed while the fetch was in flight.
@@ -33,6 +88,18 @@ async function render(url: string, target: HTMLElement) {
 			ignoreWidth: false,
 			breakPages: true,
 		});
+		if (props.contentUrl !== url || container.value !== target) return;
+		// This preview is read-only: neutralize hyperlinks so they don't navigate
+		// (and lose the link cursor / keyboard activation), keeping their text.
+		for (const a of target.querySelectorAll("a[href]")) {
+			a.removeAttribute("href");
+			a.removeAttribute("target");
+		}
+		// Parse the same document.xml for run byte-spans, then align to the DOM.
+		const zip = await JSZip.loadAsync(buffer);
+		const xml = await zip.file("word/document.xml")?.async("string");
+		if (xml) runNodes = alignRuns(target, parseDocxRuns(xml));
+		applyHighlights();
 	} catch {
 		if (props.contentUrl === url) {
 			hasError.value = true;
@@ -43,6 +110,126 @@ async function render(url: string, target: HTMLElement) {
 	}
 }
 
+/**
+ * Overlay entity chips onto the aligned runs. Each render pass rebuilds the
+ * chips from scratch (cheap; runs are already located), so focus changes and
+ * entity-set changes both flow through here.
+ */
+function applyHighlights() {
+	if (!runNodes.length) return;
+	// Clear previous chips: unwrap any highlight spans back to plain text so the
+	// run text nodes are whole again before re-wrapping.
+	clearHighlights();
+
+	// Group the resolved char ranges per run so a run with several entities is
+	// split once, left-to-right.
+	const perRun = new Map<
+		number,
+		{ start: number; end: number; entity: TextEntityView }[]
+	>();
+	const runs = runNodes.map((p) => p.run);
+	for (const entity of props.entities) {
+		for (const ref of entity.sourceRefs ?? []) {
+			// Only spans into the main document part map to these runs.
+			if (ref.part && ref.part !== "word/document.xml") continue;
+			for (const span of resolveDocxSpan(runs, ref.start, ref.end)) {
+				const list = perRun.get(span.runIndex) ?? [];
+				list.push({ start: span.charStart, end: span.charEnd, entity });
+				perRun.set(span.runIndex, list);
+			}
+		}
+	}
+
+	for (const { run, parent } of runNodes) {
+		const spans = perRun.get(run.index);
+		if (spans?.length) wrapRun(parent, run, spans);
+	}
+}
+
+/**
+ * Wrap each entity char range in the run's text with a chip `<span>`, preserving
+ * the plain text between/around them. The run's `<span>` holds a single text
+ * node after normalization; we locate the one matching the run text (a run span
+ * may hold nested markup, so match on content) and replace it with the split.
+ * Ranges are sorted and clamped; overlaps keep the first.
+ */
+function wrapRun(
+	parent: HTMLElement,
+	run: DocxRun,
+	spans: { start: number; end: number; entity: TextEntityView }[],
+) {
+	parent.normalize();
+	const node = [...parent.childNodes].find(
+		(n): n is Text => n.nodeType === Node.TEXT_NODE && n.nodeValue === run.text,
+	);
+	if (!node) return;
+	const text = node.nodeValue ?? "";
+	const sorted = [...spans].sort((a, b) => a.start - b.start);
+	const frag = document.createDocumentFragment();
+	let cursor = 0;
+	for (const s of sorted) {
+		const start = Math.max(s.start, cursor);
+		const end = Math.min(s.end, text.length);
+		if (end <= start) continue;
+		if (start > cursor) frag.append(text.slice(cursor, start));
+		const chip = document.createElement("span");
+		chip.className = "docx-chip";
+		chip.dataset.entity = s.entity.id;
+		chip.title = s.entity.label;
+		chip.textContent = text.slice(start, end);
+		frag.append(chip);
+		cursor = end;
+	}
+	if (cursor < text.length) frag.append(text.slice(cursor));
+	node.parentNode?.replaceChild(frag, node);
+}
+
+/** Unwrap all highlight chips, restoring the original run text nodes. */
+function clearHighlights() {
+	if (!container.value) return;
+	for (const chip of container.value.querySelectorAll<HTMLElement>(
+		".docx-chip",
+	)) {
+		chip.replaceWith(document.createTextNode(chip.textContent ?? ""));
+	}
+	// Merge each run span's split text nodes back into one so the next pass sees
+	// whole run text again.
+	for (const { parent } of runNodes) parent.normalize();
+}
+
+// Re-apply highlights when the entity set changes (a new run finished). A full
+// re-render isn't needed — the runs are already located.
+watch(
+	() => props.entities,
+	() => applyHighlights(),
+	{ deep: true },
+);
+
+// Reflect the active entity: ring the focused chip and scroll it into view.
+watch(
+	() => props.activeEntityId,
+	(id) => {
+		if (!container.value) return;
+		for (const el of container.value.querySelectorAll<HTMLElement>(
+			".docx-chip",
+		)) {
+			el.classList.toggle("docx-chip--active", el.dataset.entity === id);
+		}
+		if (id) {
+			container.value
+				.querySelector<HTMLElement>(`.docx-chip[data-entity="${id}"]`)
+				?.scrollIntoView({ block: "center", behavior: "smooth" });
+		}
+	},
+);
+
+// Chip clicks bubble as focus events (delegated, since chips are created
+// imperatively outside Vue's template).
+function onClick(e: MouseEvent) {
+	const chip = (e.target as HTMLElement).closest<HTMLElement>(".docx-chip");
+	if (chip?.dataset.entity) emit("focus-entity", chip.dataset.entity);
+}
+
 // Render whenever the file (or the container, after mount) changes.
 watch(
 	[() => props.contentUrl, container],
@@ -50,6 +237,7 @@ watch(
 		if (!target) return;
 		if (!url) {
 			target.replaceChildren();
+			runNodes = [];
 			hasError.value = false;
 			isLoading.value = false;
 			return;
@@ -79,7 +267,7 @@ watch(
     </div>
     <!-- docx-preview renders the document (its own centered, paginated wrapper
          with a grey backdrop and white pages) into this element. -->
-    <div ref="container" class="studio-docx" />
+    <div ref="container" class="studio-docx" @click="onClick" />
   </div>
 </template>
 
@@ -97,5 +285,24 @@ watch(
    which interfered with docx-preview's rendered canvas). */
 :global(.dark) .studio-docx-canvas {
 	scrollbar-color: var(--border) transparent;
+}
+
+/* Detected-entity chip: a calm amber tint over the run text, matching the code
+   view. Padding cancelled by negative margin so it never shifts the page text. */
+.studio-docx :deep(.docx-chip) {
+	--flag: oklch(0.68 0.15 65);
+	border-radius: 0.2rem;
+	padding: 0 0.15rem;
+	margin: 0 -0.15rem;
+	background-color: color-mix(in oklab, var(--flag) 22%, transparent);
+	cursor: pointer;
+	transition: background-color 0.15s, box-shadow 0.15s;
+}
+.studio-docx :deep(.docx-chip:hover) {
+	background-color: color-mix(in oklab, var(--flag) 34%, transparent);
+}
+.studio-docx :deep(.docx-chip--active) {
+	background-color: color-mix(in oklab, var(--flag) 38%, transparent);
+	box-shadow: 0 0 0 1.5px var(--flag);
 }
 </style>
