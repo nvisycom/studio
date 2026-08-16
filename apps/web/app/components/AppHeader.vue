@@ -53,10 +53,10 @@ function openFeedbackModal() {
   <header
     class="sticky top-0 z-10 flex h-11 shrink-0 items-center justify-between gap-2 border-b border-border/50 bg-background/80 backdrop-blur-sm"
   >
-    <div class="flex items-center gap-2 px-4">
+    <div class="flex min-w-0 flex-1 items-center gap-2 px-4">
       <SidebarTrigger class="-ml-1" />
       <Separator orientation="vertical" class="mr-2 h-4 bg-border/50" />
-      <Breadcrumb v-if="pageCategory">
+      <Breadcrumb v-if="pageCategory" class="shrink-0">
         <BreadcrumbList class="flex items-center">
           <BreadcrumbItem class="flex items-center">
             <BreadcrumbPage

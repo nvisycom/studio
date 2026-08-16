@@ -28,7 +28,7 @@ const KIND_CLASS: Record<TokenKind, string> = {
 
 <template>
   <div
-    class="code-view overflow-hidden rounded-lg border border-border/50 bg-card font-mono text-xs leading-[1.7]"
+    class="code-view overflow-hidden rounded-lg border border-border/50 bg-card font-mono text-xs leading-[1.7] shadow-sm"
   >
     <div v-for="(line, ln) in lines" :key="ln" class="flex hover:bg-muted/30">
       <!-- Line-number gutter -->

@@ -28,13 +28,47 @@ export function useStudioAudit(
 	const { runDetection, findLatestRunForFile, getDetections } = useRuns();
 
 	const selectedPipeline = ref<string>("");
-	// Default to the first pipeline once they load. On file open, this is then
-	// overridden with the file's latest-run pipeline when it has one (see below).
-	watch(pipelines, (list) => {
-		if (!selectedPipeline.value && list?.length) {
-			selectedPipeline.value = list[0]!.slug;
-		}
-	});
+	// The last value we set on `selectedPipeline` programmatically (default or
+	// adoption). The pipeline watcher runs asynchronously — after the sync block
+	// that set the value — so a boolean flag reset synchronously wouldn't span it.
+	// Instead we record the value and have the watcher skip a restore when the new
+	// selection equals it (i.e. it wasn't a user switch).
+	let programmaticPipeline: string | null = null;
+
+	// The pipeline of the file's most recent run, to adopt into the picker. Held
+	// separately because the run can resolve before the pipeline list loads; once
+	// the list is present, this wins over the "first pipeline" default so a
+	// refresh restores the file's own pipeline rather than resetting to the first.
+	const pendingAdoptPipeline = ref<string | null>(null);
+	// Whether the file-open restore has decided on adoption yet. We hold off the
+	// "first pipeline" default until it has, so the picker doesn't briefly show
+	// the wrong pipeline and then flicker to the adopted one. With no file open,
+	// there's nothing to adopt, so it's resolved immediately.
+	const adoptResolved = ref(!toValue(fileId));
+
+	// Pick the selected pipeline once the list loads (or the pending adoption
+	// arrives): the file's latest-run pipeline when known and still valid, else —
+	// only once adoption has resolved — the first pipeline. Only sets a default
+	// when nothing is selected yet.
+	watch(
+		[pipelines, pendingAdoptPipeline, adoptResolved],
+		([list, adopt, resolved]) => {
+			if (!list?.length) return;
+			const target =
+				adopt && list.some((p) => p.slug === adopt)
+					? adopt
+					: resolved && !selectedPipeline.value
+						? list[0]!.slug
+						: null;
+			if (target && target !== selectedPipeline.value) {
+				// Mark as programmatic so the pipeline watcher doesn't treat it as a
+				// user switch (which would start a competing/wrong restore).
+				programmaticPipeline = target;
+				selectedPipeline.value = target;
+			}
+		},
+		{ immediate: true },
+	);
 
 	const phase = ref<StudioAuditPhase>("idle");
 	// Restore token: bumped whenever a restore starts so an in-flight restore can
@@ -86,10 +120,6 @@ export function useStudioAudit(
 		}
 	}
 
-	// True while a file-open is adopting that file's latest-run pipeline, so the
-	// pipeline watcher below doesn't also fire a (duplicate) restore for it.
-	let adoptingPipeline = false;
-
 	// Restore the most recent run for a file — its detections still live on the
 	// server even if the tab was closed. When `pipelineSlug` is given, restore
 	// that pipeline's latest run; otherwise the file's latest run of any pipeline,
@@ -110,18 +140,16 @@ export function useStudioAudit(
 			// Bail if a newer restore started (file or pipeline changed) meanwhile.
 			if (token !== restoreToken) return;
 			if (!latest) {
+				// Adoption decided: no run for this file, so the default may apply.
+				if (opts.adopt) adoptResolved.value = true;
 				phase.value = "idle";
 				return;
 			}
-			// Adopt the run's pipeline into the picker without re-triggering a restore.
-			if (
-				opts.adopt &&
-				latest.pipelineSlug !== selectedPipeline.value &&
-				pipelines.value?.some((p) => p.slug === latest.pipelineSlug)
-			) {
-				adoptingPipeline = true;
-				selectedPipeline.value = latest.pipelineSlug;
-				adoptingPipeline = false;
+			// Record the run's pipeline to adopt into the picker, and mark adoption
+			// resolved so the selection watcher applies it (and never the default).
+			if (opts.adopt) {
+				pendingAdoptPipeline.value = latest.pipelineSlug;
+				adoptResolved.value = true;
 			}
 			const restoredAudit = await getDetections(latest.id);
 			if (token !== restoreToken) return;
@@ -130,7 +158,10 @@ export function useStudioAudit(
 			restored.value = true;
 			phase.value = "analyzed";
 		} catch {
-			if (token === restoreToken) phase.value = "idle";
+			if (token === restoreToken) {
+				if (opts.adopt) adoptResolved.value = true; // don't block the default
+				phase.value = "idle";
+			}
 		}
 	}
 
@@ -139,8 +170,11 @@ export function useStudioAudit(
 	watch(
 		() => toValue(fileId),
 		(file) => {
+			// Drop any prior file's pending adoption so it can't leak across files.
+			pendingAdoptPipeline.value = null;
 			if (!file) {
 				++restoreToken; // supersede any in-flight restore
+				adoptResolved.value = true; // nothing to adopt → default may apply
 				phase.value = "idle";
 				runStatus.value = null;
 				restored.value = false;
@@ -148,16 +182,25 @@ export function useStudioAudit(
 				audit.value = null;
 				return;
 			}
+			// Wait for this file's restore before defaulting, so the picker doesn't
+			// flicker through the wrong pipeline.
+			adoptResolved.value = false;
 			restoreLatest(file, { adopt: true });
 		},
 		{ immediate: true },
 	);
 
 	// When the user switches the pipeline, restore that pipeline's latest audit
-	// for the current file. Skipped while a file-open adopts its own pipeline
-	// (that flow restores directly, above).
+	// for the current file. A programmatic selection (default or adoption) sets
+	// `programmaticPipeline` to the same value and is skipped — the file-open flow
+	// already handles its restore, so we don't start a competing/wrong one.
 	watch(selectedPipeline, (pipeline) => {
-		if (adoptingPipeline) return;
+		if (pipeline === programmaticPipeline) {
+			programmaticPipeline = null; // consume; further changes are user switches
+			return;
+		}
+		// A manual switch overrides any pending adoption for this file.
+		pendingAdoptPipeline.value = null;
 		const file = toValue(fileId);
 		if (file && pipeline) restoreLatest(file, { pipelineSlug: pipeline });
 	});

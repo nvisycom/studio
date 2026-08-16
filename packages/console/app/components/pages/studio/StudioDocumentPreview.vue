@@ -124,7 +124,10 @@ watch(
       :with-headers="withHeaders"
       @close="emit('clear-entity')"
     />
-    <div class="h-full overflow-y-auto">
+    <div
+      class="h-full overflow-y-auto"
+      :class="{ 'bg-muted': isText }"
+    >
       <!-- Loading state -->
       <div v-if="isLoading" class="h-full flex items-center justify-center">
         <div class="text-center text-muted-foreground">
@@ -173,21 +176,23 @@ watch(
         @focus-entity="emit('focus-entity', $event)"
       />
 
-      <!-- Text file preview -->
-      <div v-else-if="isText" class="min-h-full p-4">
+      <!-- Text file preview: the content sits as a "page" (card) centered on the
+           muted canvas (painted on the scroll container above), matching the DOCX
+           preview's paper-on-canvas look. -->
+      <div v-else-if="isText" class="min-h-full p-6">
         <div
           v-if="isLoadingText"
-          class="h-full flex items-center justify-center text-muted-foreground"
+          class="flex h-full items-center justify-center text-muted-foreground"
         >
           <Loader2 :size="24" class="animate-spin" />
         </div>
         <div
           v-else-if="textError"
-          class="h-full flex items-center justify-center text-center text-muted-foreground"
+          class="flex h-full items-center justify-center text-center text-muted-foreground"
         >
           <p class="text-sm">Unable to load this file.</p>
         </div>
-        <div v-else class="space-y-3">
+        <div v-else class="mx-auto max-w-[850px] space-y-3">
           <!-- CSV controls: table/raw toggle + header-row option -->
           <div
             v-if="isCsv"
