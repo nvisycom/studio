@@ -171,8 +171,8 @@ export function useTextEntities(
 			// byte-offset span (converted to char indices for JS strings).
 			views = group.entities.map((record) => {
 				const e = record.entity;
-				const start = e.location.start;
-				const end = e.location.end;
+				const start = e.location.range.start;
+				const end = e.location.range.end;
 				return {
 					id: e.id,
 					label: e.label,
