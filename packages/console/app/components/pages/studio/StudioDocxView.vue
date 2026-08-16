@@ -61,7 +61,7 @@ watch(
 </script>
 
 <template>
-  <div class="relative h-full overflow-auto">
+  <div class="studio-docx-canvas relative h-full overflow-auto">
     <div
       v-if="isLoading"
       class="absolute inset-0 flex items-center justify-center"
@@ -90,5 +90,12 @@ watch(
 .studio-docx :deep(.docx-wrapper) {
 	background: var(--muted);
 	min-height: 100%;
+}
+
+/* In dark mode the default light scrollbar glares against the dark backdrop;
+   tint it to the theme via the standard scrollbar-color (no pseudo-elements,
+   which interfered with docx-preview's rendered canvas). */
+:global(.dark) .studio-docx-canvas {
+	scrollbar-color: var(--border) transparent;
 }
 </style>

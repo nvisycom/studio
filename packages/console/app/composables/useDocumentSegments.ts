@@ -9,6 +9,7 @@ import {
 	formatJson,
 	parseCsv,
 	resolveTabularSpan,
+	tokenizeCsv,
 	tokenizeJson,
 } from "#console/utils/preview";
 
@@ -53,10 +54,17 @@ export function useDocumentSegments(inputs: {
 		}
 	});
 
-	// Syntax-color tokens over the formatted text (JSON only for now).
-	const tokens = computed<Token[]>(() =>
-		fileKind.value === "json" ? tokenizeJson(formatted.value.text) : [],
-	);
+	// Syntax-color tokens over the formatted text (JSON + CSV).
+	const tokens = computed<Token[]>(() => {
+		switch (fileKind.value) {
+			case "json":
+				return tokenizeJson(formatted.value.text);
+			case "csv":
+				return tokenizeCsv(formatted.value.text);
+			default:
+				return [];
+		}
+	});
 
 	// Parsed CSV (grid + per-cell flat ranges), for placing tabular entities.
 	const parsedCsv = computed<ParsedCsv | null>(() =>
