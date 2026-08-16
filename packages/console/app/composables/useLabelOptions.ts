@@ -6,8 +6,16 @@ export interface ExtraLabel {
 	name: string;
 }
 
-/** A named list section for the picker: `[category, labels]`. */
-export type LabelSection = [string, { id: string }[]];
+/**
+ * A section of the picker list. `key` is a stable identity (distinct from the
+ * display `label`, which is user/locale text that could collide across
+ * sections); `label` is undefined for the uncategorized bucket.
+ */
+export interface LabelSection {
+	key: string;
+	label?: string;
+	items: { id: string }[];
+}
 
 /**
  * The option list shared by the label pickers: the catalogue grouped by
@@ -30,13 +38,20 @@ export function useLabelOptions(extraLabels: MaybeRefOrGetter<ExtraLabel[]>) {
 	const sections = computed<LabelSection[]>(() => {
 		const named = extras.value.filter((l) => l.name.trim());
 		const custom: LabelSection[] = named.length
-			? [[t("common.labelPicker.custom"), named]]
+			? [{ key: "custom", label: t("common.labelPicker.custom"), items: named }]
 			: [];
-		const catalog = Object.entries(labelsByCategory.value).sort(([a], [b]) => {
-			if (!a) return 1;
-			if (!b) return -1;
-			return a.localeCompare(b);
-		});
+		const catalog: LabelSection[] = Object.entries(labelsByCategory.value)
+			.sort(([a], [b]) => {
+				if (!a) return 1;
+				if (!b) return -1;
+				return a.localeCompare(b);
+			})
+			.map(([category, items]) => ({
+				// Namespace catalog keys so they can't collide with "custom".
+				key: category ? `cat:${category}` : "uncategorized",
+				label: category || undefined,
+				items,
+			}));
 		return [...custom, ...catalog];
 	});
 
