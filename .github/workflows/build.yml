@@ -5,7 +5,7 @@ on:
     branches:
       - "main"
     paths:
-      - "apps/**"
+      - "apps/web/**"
       - "packages/**"
       - "scripts/**"
       - "package.json"
@@ -13,7 +13,7 @@ on:
       - ".github/workflows/build.yml"
   pull_request:
     paths:
-      - "apps/**"
+      - "apps/web/**"
       - "packages/**"
       - "scripts/**"
       - "package.json"

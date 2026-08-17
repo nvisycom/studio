@@ -4,7 +4,7 @@
 name = "nvisy-desktop"
 description = "Nvisy Desktop"
 version = "0.1.0"
-rust-version = "1.77.2"
+rust-version = "1.97"
 edition = "2021"
 license = "Apache-2.0"
 publish = false
@@ -23,6 +23,4 @@ tauri-build = { version = "2.6.3" }
 [dependencies]
 tauri = { version = "2.11.3" }
 tauri-plugin-log = { version = "2" }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = { version = "1.0" }
 log = { version = "0.4" }
