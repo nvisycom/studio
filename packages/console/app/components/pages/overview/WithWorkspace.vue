@@ -356,7 +356,7 @@ const quickActions = [
                 v-for="file in recentFiles"
                 :key="file.id"
                 :to="wLink('/files')"
-                class="group flex items-center gap-3 py-2.5"
+                class="group flex min-h-14 items-center gap-3 py-2.5"
               >
                 <div
                   class="flex size-8 shrink-0 items-center justify-center rounded-md border border-border/60 bg-muted/40 text-muted-foreground"
@@ -426,7 +426,7 @@ const quickActions = [
                 v-for="run in recentRuns"
                 :key="run.id"
                 :to="wLink('/workflows/runs')"
-                class="flex items-center gap-3 py-2.5"
+                class="flex min-h-14 items-center gap-3 py-2.5"
               >
                 <div class="relative shrink-0">
                   <div

@@ -80,6 +80,8 @@ const hasDuplicates = computed(() =>
 const clusterIndex = ref<Record<string, number>>({});
 
 function stepCluster(cluster: EntityCluster, delta: number) {
+	// Metadata-only entities have no in-document span to focus.
+	if (cluster.lead.locatable === false) return;
 	const total = cluster.items.length;
 	const current = clusterIndex.value[cluster.key] ?? 0;
 	const next = (current + delta + total) % total;
@@ -91,6 +93,13 @@ function stepCluster(cluster: EntityCluster, delta: number) {
 function clusterActive(cluster: EntityCluster): boolean {
 	return cluster.items.some((e) => e.id === props.activeEntityId);
 }
+
+// Whether an entity can be located in the document (highlighted + scrolled to).
+// Entities detected only in metadata (e.g. a DOCX hyperlink target) can't; their
+// value still shows but the row isn't clickable. Undefined means locatable.
+const isLocatable = (e: TextEntityView) => e.locatable !== false;
+// A cluster is locatable when its representative occurrence is.
+const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
 </script>
 
 <template>
@@ -207,16 +216,19 @@ function clusterActive(cluster: EntityCluster): boolean {
                 <div
                   v-for="cluster in group.clusters"
                   :key="cluster.key"
-                  class="flex w-full items-start gap-2 border-l py-1.5 pr-2 pl-3 text-left transition-colors hover:bg-muted/40"
-                  :class="
+                  class="flex w-full items-start gap-2 border-l py-1.5 pr-2 pl-3 text-left transition-colors"
+                  :class="[
                     clusterActive(cluster)
                       ? 'border-foreground bg-muted'
-                      : 'border-border/60'
-                  "
+                      : 'border-border/60',
+                    clusterLocatable(cluster) ? 'hover:bg-muted/40' : 'opacity-60',
+                  ]"
                 >
                   <button
                     type="button"
                     class="min-w-0 flex-1 text-left"
+                    :class="clusterLocatable(cluster) ? '' : 'cursor-default'"
+                    :disabled="!clusterLocatable(cluster)"
                     @click="stepCluster(cluster, 0)"
                   >
                     <span
@@ -226,21 +238,31 @@ function clusterActive(cluster: EntityCluster): boolean {
                       {{ cluster.lead.text }}
                     </span>
                     <span
-                      class="block truncate text-[11px] text-muted-foreground"
+                      class="flex items-center gap-1 truncate text-[11px] text-muted-foreground"
                       :class="{ 'mt-0.5': cluster.lead.text }"
                     >
-                      <template v-if="cluster.lead.detectorKind === 'pattern'">
-                        {{ t("studio.audit.detectorPattern", { name: cluster.lead.detector }) }}
-                      </template>
-                      <template v-else-if="cluster.lead.detectorKind === 'model'">
-                        {{ t("studio.audit.detectorModel", { name: cluster.lead.detector }) }}
-                      </template>
-                      <template v-else-if="cluster.lead.source">
-                        {{ cluster.lead.source }}
-                      </template>
-                      <template v-if="cluster.lead.language">
-                        · {{ cluster.lead.language }}
-                      </template>
+                      <!-- Metadata-only marker: this value isn't in the visible
+                           body (e.g. a hyperlink target), so it can't be located. -->
+                      <span
+                        v-if="!clusterLocatable(cluster)"
+                        class="shrink-0 rounded bg-muted-foreground/15 px-1 py-px text-[10px] font-medium uppercase tracking-wide"
+                      >
+                        {{ t("studio.audit.metadata") }}
+                      </span>
+                      <span class="truncate">
+                        <template v-if="cluster.lead.detectorKind === 'pattern'">
+                          {{ t("studio.audit.detectorPattern", { name: cluster.lead.detector }) }}
+                        </template>
+                        <template v-else-if="cluster.lead.detectorKind === 'model'">
+                          {{ t("studio.audit.detectorModel", { name: cluster.lead.detector }) }}
+                        </template>
+                        <template v-else-if="cluster.lead.source">
+                          {{ cluster.lead.source }}
+                        </template>
+                        <template v-if="cluster.lead.language">
+                          · {{ cluster.lead.language }}
+                        </template>
+                      </span>
                     </span>
                   </button>
                   <!-- Occurrence stepper for multi-occurrence clusters. -->
@@ -250,7 +272,8 @@ function clusterActive(cluster: EntityCluster): boolean {
                   >
                     <button
                       type="button"
-                      class="rounded p-0.5 hover:bg-muted-foreground/10"
+                      class="rounded p-0.5 enabled:hover:bg-muted-foreground/10 disabled:cursor-default disabled:opacity-40"
+                      :disabled="!clusterLocatable(cluster)"
                       :aria-label="t('studio.audit.prevOccurrence')"
                       @click.stop="stepCluster(cluster, -1)"
                     >
@@ -261,7 +284,8 @@ function clusterActive(cluster: EntityCluster): boolean {
                     </span>
                     <button
                       type="button"
-                      class="rounded p-0.5 hover:bg-muted-foreground/10"
+                      class="rounded p-0.5 enabled:hover:bg-muted-foreground/10 disabled:cursor-default disabled:opacity-40"
+                      :disabled="!clusterLocatable(cluster)"
                       :aria-label="t('studio.audit.nextOccurrence')"
                       @click.stop="stepCluster(cluster, 1)"
                     >
@@ -283,13 +307,17 @@ function clusterActive(cluster: EntityCluster): boolean {
                 v-for="entity in group.items"
                 :key="entity.id"
                 type="button"
-                class="flex w-full items-start gap-2 border-l py-1.5 pr-2 pl-3 text-left transition-colors hover:bg-muted/40"
-                :class="
+                :disabled="!isLocatable(entity)"
+                class="flex w-full items-start gap-2 border-l py-1.5 pr-2 pl-3 text-left transition-colors"
+                :class="[
                   activeEntityId === entity.id
                     ? 'border-foreground bg-muted'
-                    : 'border-border/60'
-                "
-                @click="emit('focus-entity', entity.id)"
+                    : 'border-border/60',
+                  isLocatable(entity)
+                    ? 'hover:bg-muted/40'
+                    : 'cursor-default opacity-60',
+                ]"
+                @click="isLocatable(entity) && emit('focus-entity', entity.id)"
               >
                 <span class="min-w-0 flex-1">
                   <!-- The matched value, when we could slice it from the doc. -->
@@ -301,27 +329,35 @@ function clusterActive(cluster: EntityCluster): boolean {
                   </span>
                   <!-- Meta line: location, then source and language. -->
                   <span
-                    class="block truncate text-[11px] text-muted-foreground"
+                    class="flex items-center gap-1 truncate text-[11px] text-muted-foreground"
                     :class="{ 'mt-0.5': entity.text }"
                   >
-                    <template v-if="entity.cell">
-                      {{ cellLabel(entity.cell) }}
-                    </template>
-                    <template v-else>
-                      {{ t("studio.audit.bytes", { start: entity.start, end: entity.end }) }}
-                    </template>
-                    <template v-if="entity.detectorKind === 'pattern'">
-                      · {{ t("studio.audit.detectorPattern", { name: entity.detector }) }}
-                    </template>
-                    <template v-else-if="entity.detectorKind === 'model'">
-                      · {{ t("studio.audit.detectorModel", { name: entity.detector }) }}
-                    </template>
-                    <template v-else-if="entity.source">
-                      · {{ entity.source }}
-                    </template>
-                    <template v-if="entity.language">
-                      · {{ entity.language }}
-                    </template>
+                    <span
+                      v-if="!isLocatable(entity)"
+                      class="shrink-0 rounded bg-muted-foreground/15 px-1 py-px text-[10px] font-medium uppercase tracking-wide"
+                    >
+                      {{ t("studio.audit.metadata") }}
+                    </span>
+                    <span class="truncate">
+                      <template v-if="entity.cell">
+                        {{ cellLabel(entity.cell) }}
+                      </template>
+                      <template v-else>
+                        {{ t("studio.audit.bytes", { start: entity.start, end: entity.end }) }}
+                      </template>
+                      <template v-if="entity.detectorKind === 'pattern'">
+                        · {{ t("studio.audit.detectorPattern", { name: entity.detector }) }}
+                      </template>
+                      <template v-else-if="entity.detectorKind === 'model'">
+                        · {{ t("studio.audit.detectorModel", { name: entity.detector }) }}
+                      </template>
+                      <template v-else-if="entity.source">
+                        · {{ entity.source }}
+                      </template>
+                      <template v-if="entity.language">
+                        · {{ entity.language }}
+                      </template>
+                    </span>
                   </span>
                 </span>
                 <span

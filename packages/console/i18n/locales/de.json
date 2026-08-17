@@ -1187,21 +1187,12 @@
 			"pipelinePlaceholder": "Pipeline auswählen",
 			"run": "Erkennung ausführen",
 			"runAgain": "Erneut ausführen",
-			"restoring": "Letzter Lauf wird wiederhergestellt…",
 			"runFailed": "Erkennung fehlgeschlagen. Bitte erneut versuchen.",
 			"bytes": "Bytes {start}–{end}",
-			"status": {
-				"queued": "In Warteschlange…",
-				"analyzing": "Dokument wird analysiert…",
-				"analyzed": "Analysiert",
-				"completed": "Abgeschlossen",
-				"failed": "Ausführung fehlgeschlagen",
-				"cancelled": "Ausführung abgebrochen"
-			},
 			"idleTitle": "Noch keine Erkennungen",
 			"idleHint": "Wähle eine Pipeline und führe die Erkennung aus, um sensible Entitäten zu finden.",
 			"noFile": "Kein Dokument geöffnet",
-			"noFileHint": "Öffne eine Textdatei, um die Erkennung auszuführen.",
+			"noFileHint": "Öffne ein Dokument, um die Erkennung auszuführen.",
 			"emptyTitle": "Keine Entitäten gefunden",
 			"emptyHint": "Diese Pipeline hat im Dokument nichts erkannt.",
 			"apply": "Schwärzung anwenden",
@@ -1222,12 +1213,14 @@
 			"detectorModel": "Modell ({name})",
 			"collapseDuplicates": "Duplikate zusammenfassen",
 			"prevOccurrence": "Vorheriges Vorkommen",
-			"nextOccurrence": "Nächstes Vorkommen"
+			"nextOccurrence": "Nächstes Vorkommen",
+			"metadata": "Metadaten"
 		},
 		"preview": {
 			"table": "Tabelle",
 			"raw": "Roh",
-			"withHeaders": "Mit Kopfzeile"
+			"withHeaders": "Mit Kopfzeile",
+			"docxFailed": "Dieses Word-Dokument konnte nicht dargestellt werden."
 		}
 	},
 	"commandMenu": {

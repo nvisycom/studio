@@ -87,7 +87,7 @@ function cellParts(row: number, col: number, value: string): Part[] {
 </script>
 
 <template>
-  <div class="csv-table overflow-auto rounded-lg border border-border/50 bg-card">
+  <div class="csv-table overflow-auto rounded-lg border border-border/50 bg-card shadow-sm">
     <table class="border-collapse text-xs">
       <thead v-if="headers">
         <tr>

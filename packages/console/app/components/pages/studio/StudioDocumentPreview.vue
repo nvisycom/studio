@@ -6,6 +6,7 @@ import {
 	StudioCodeView,
 	StudioCsvTable,
 } from "#console/components/pages/studio";
+import StudioDocxView from "./StudioDocxView.vue";
 import { Checkbox } from "#console/components/ui/checkbox";
 import { Label } from "#console/components/ui/label";
 import type { TextEntityView } from "#console/composables/useTextEntities";
@@ -19,6 +20,7 @@ const props = withDefaults(
 		isLoading: boolean;
 		isImage: boolean;
 		isText: boolean;
+		isDocx: boolean;
 		zoomLevel: number;
 		chatVisible: boolean;
 		/** Detected entities to highlight in the text (byte-offset spans). */
@@ -122,7 +124,10 @@ watch(
       :with-headers="withHeaders"
       @close="emit('clear-entity')"
     />
-    <div class="h-full overflow-y-auto">
+    <div
+      class="h-full overflow-y-auto"
+      :class="{ 'bg-muted': isText }"
+    >
       <!-- Loading state -->
       <div v-if="isLoading" class="h-full flex items-center justify-center">
         <div class="text-center text-muted-foreground">
@@ -162,21 +167,33 @@ watch(
         </div>
       </div>
 
-      <!-- Text file preview -->
-      <div v-else-if="isText" class="min-h-full p-4">
+      <!-- Word document preview (read-only, rendered client-side) -->
+      <StudioDocxView
+        v-else-if="isDocx"
+        :content-url="contentUrl"
+        :entities="entities"
+        :active-entity-id="activeEntityId"
+        :zoom-level="zoomLevel"
+        @focus-entity="emit('focus-entity', $event)"
+      />
+
+      <!-- Text file preview: the content sits as a "page" (card) centered on the
+           muted canvas (painted on the scroll container above), matching the DOCX
+           preview's paper-on-canvas look. -->
+      <div v-else-if="isText" class="flex min-h-full flex-col p-6">
         <div
           v-if="isLoadingText"
-          class="h-full flex items-center justify-center text-muted-foreground"
+          class="flex flex-1 items-center justify-center text-muted-foreground"
         >
           <Loader2 :size="24" class="animate-spin" />
         </div>
         <div
           v-else-if="textError"
-          class="h-full flex items-center justify-center text-center text-muted-foreground"
+          class="flex flex-1 items-center justify-center text-center text-muted-foreground"
         >
           <p class="text-sm">Unable to load this file.</p>
         </div>
-        <div v-else class="space-y-3">
+        <div v-else class="mx-auto max-w-[850px] space-y-3">
           <!-- CSV controls: table/raw toggle + header-row option -->
           <div
             v-if="isCsv"

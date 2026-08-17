@@ -1,4 +1,9 @@
-import { type FormattedText, byteOffsetToChar, identity } from "./shared";
+import {
+	type FormattedText,
+	type Token,
+	byteOffsetToChar,
+	identity,
+} from "./shared";
 
 /**
  * CSV is shown as-is in the flat text view (identity map, so entity highlights
@@ -7,6 +12,68 @@ import { type FormattedText, byteOffsetToChar, identity } from "./shared";
  */
 export function formatCsv(raw: string): FormattedText {
 	return identity(raw);
+}
+
+/**
+ * Tokenize flat CSV into positioned color spans, mirroring `tokenizeJson` so the
+ * raw text view colors CSV the same way it colors JSON. `formatCsv` is identity,
+ * so token positions are char indices into the raw text directly.
+ *
+ * Scanning follows the same RFC-4180-ish rules as `parseCsv` (quoted fields may
+ * contain commas/newlines, `""` escapes a quote). Each field is classed:
+ * `key` for the whole header row (the first line), `number` for a bare numeric
+ * data cell, `string` for a quoted data cell. Delimiters, newlines, and plain
+ * unquoted text are left as gaps the caller renders in the base color.
+ */
+export function tokenizeCsv(text: string): Token[] {
+	const tokens: Token[] = [];
+	let line = 0; // 0 = header row
+	let fieldStart = 0;
+	let inQuotes = false;
+	let quoted = false; // this field opened with a quote
+
+	const endField = (end: number) => {
+		if (end <= fieldStart) return;
+		const value = text.slice(fieldStart, end);
+		let kind: Token["kind"] | null = null;
+		if (line === 0) {
+			kind = "key"; // header row is the anchor
+		} else if (quoted) {
+			kind = "string";
+		} else if (/^-?\d+(\.\d+)?$/.test(value.trim()) && value.trim() !== "") {
+			kind = "number";
+		}
+		if (kind) tokens.push({ start: fieldStart, end, kind });
+	};
+
+	for (let i = 0; i < text.length; i++) {
+		const ch = text[i];
+		if (inQuotes) {
+			if (ch === '"') {
+				if (text[i + 1] === '"')
+					i++; // escaped quote
+				else inQuotes = false;
+			}
+			continue;
+		}
+		if (ch === '"') {
+			inQuotes = true;
+			if (i === fieldStart) quoted = true; // opening quote of the field
+		} else if (ch === ",") {
+			endField(i);
+			fieldStart = i + 1;
+			quoted = false;
+		} else if (ch === "\n" || ch === "\r") {
+			endField(i);
+			if (ch === "\r" && text[i + 1] === "\n") i++; // CRLF
+			line++;
+			fieldStart = i + 1;
+			quoted = false;
+		}
+	}
+	// Flush the trailing field when the file doesn't end with a newline.
+	endField(text.length);
+	return tokens;
 }
 
 /** Char range `[start, end)` of one cell in the flat CSV text. */

@@ -5,6 +5,7 @@ import {
 	ComboboxEmpty,
 	ComboboxGroup,
 	ComboboxItem,
+	ComboboxLabel,
 } from "#console/components/ui/combobox";
 
 /**
@@ -30,16 +31,17 @@ defineProps<{
     <ComboboxEmpty>
       {{ isLoading ? t("common.labelPicker.loading") : t("common.labelPicker.empty") }}
     </ComboboxEmpty>
-    <ComboboxGroup
-      v-for="[category, labels] in sections"
-      :key="category || '__uncategorized__'"
-    >
-      <div
+    <ComboboxGroup v-for="section in sections" :key="section.key">
+      <ComboboxLabel
         class="px-2 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground"
       >
-        {{ category || t("common.labelPicker.uncategorized") }}
-      </div>
-      <ComboboxItem v-for="label in labels" :key="label.id" :value="label.id">
+        {{ section.label || t("common.labelPicker.uncategorized") }}
+      </ComboboxLabel>
+      <ComboboxItem
+        v-for="label in section.items"
+        :key="label.id"
+        :value="label.id"
+      >
         <Check
           :size="14"
           class="mr-2 shrink-0"

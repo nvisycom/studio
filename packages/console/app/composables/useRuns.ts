@@ -82,6 +82,7 @@ export function useRuns(filter?: MaybeRefOrGetter<RunsFilter>) {
 	 */
 	async function findLatestRunForFile(
 		fileId: string,
+		pipelineSlug?: string,
 	): Promise<PipelineRun | null> {
 		const { client, workspaceSlug } = requireContext();
 		const { items } = await client.runs.listRuns(workspaceSlug, {
@@ -91,6 +92,7 @@ export function useRuns(filter?: MaybeRefOrGetter<RunsFilter>) {
 		return (
 			items
 				.filter((r) => r.status === "analyzed" || r.status === "completed")
+				.filter((r) => !pipelineSlug || r.pipelineSlug === pipelineSlug)
 				.sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0] ?? null
 		);
 	}

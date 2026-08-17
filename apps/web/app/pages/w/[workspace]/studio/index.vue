@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useEventListener } from "@vueuse/core";
+import JSZip from "jszip";
 import { GripVertical, MessageSquare, ScanSearch } from "@lucide/vue";
 import {
 	StudioDocumentPreview,
@@ -33,6 +34,9 @@ const isImageFile = computed(() =>
 );
 const isTextFile = computed(() =>
 	isTextFileName(activeFile.value?.displayName ?? ""),
+);
+const isDocxFile = computed(() =>
+	isDocxFileName(activeFile.value?.displayName ?? ""),
 );
 
 const zoomLevel = ref(100);
@@ -70,12 +74,41 @@ watch(
 	{ immediate: true },
 );
 
+// DOCX part bytes (every zip entry), so the audit panel can slice each
+// detection's matched value from its raw-source byte spans — including parts
+// outside the visible body (e.g. hyperlink targets in `word/_rels/...`). DOCX
+// has no flat text, so `documentText` stays null for it.
+const docxParts = ref<Map<string, Uint8Array> | null>(null);
+watch(
+	[() => activeFile.value?.contentUrl, isDocxFile],
+	async ([url, isDocx]) => {
+		docxParts.value = null;
+		if (!url || !isDocx) return;
+		try {
+			const buffer = await (await fetch(url)).arrayBuffer();
+			const zip = await JSZip.loadAsync(buffer);
+			const parts = new Map<string, Uint8Array>();
+			await Promise.all(
+				Object.values(zip.files)
+					.filter((f) => !f.dir)
+					.map(async (f) => parts.set(f.name, await f.async("uint8array"))),
+			);
+			// Only apply if this URL is still the active one.
+			if (activeFile.value?.contentUrl === url) docxParts.value = parts;
+		} catch {
+			if (activeFile.value?.contentUrl === url) docxParts.value = null;
+		}
+	},
+	{ immediate: true },
+);
+
 // Detection run + audit state for the active file, shared between the run bar
 // (pipeline + run controls), the audit panel (results list), and the document
 // preview (inline highlights).
 const audit = useStudioAudit(
 	() => activeFile.value?.fileId ?? null,
 	() => documentText.value,
+	() => docxParts.value,
 );
 
 function focusEntity(id: string) {
@@ -172,6 +205,7 @@ function startResize(e: MouseEvent) {
         :is-loading="activeFile?.isLoading || false"
         :is-image="isImageFile"
         :is-text="isTextFile"
+        :is-docx="isDocxFile"
         :zoom-level="zoomLevel"
         :chat-visible="chatVisible"
         :entities="audit.entities.value"
@@ -214,7 +248,6 @@ function startResize(e: MouseEvent) {
           v-model:selected-pipeline="audit.selectedPipeline.value"
           :pipelines="audit.pipelines.value"
           :phase="audit.phase.value"
-          :run-status="audit.runStatus.value"
           :can-run="audit.canRun.value"
           @run="audit.run"
         />

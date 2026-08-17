@@ -80,6 +80,12 @@ export const TEXT_EXTENSIONS = [
 	"yaml",
 	"yml",
 ] as const;
+/**
+ * Word documents rendered client-side (docx-preview). Kept out of
+ * {@link TEXT_EXTENSIONS} so they are never read as raw text — the download is
+ * the original OOXML zip, not extracted text.
+ */
+export const DOCX_EXTENSIONS = ["docx"] as const;
 
 /** Whether a file name should be previewed as an image. */
 export function isImageFileName(fileName: string): boolean {
@@ -91,6 +97,13 @@ export function isImageFileName(fileName: string): boolean {
 /** Whether a file name should be previewed as text. */
 export function isTextFileName(fileName: string): boolean {
 	return (TEXT_EXTENSIONS as readonly string[]).includes(
+		getFileExtension(fileName),
+	);
+}
+
+/** Whether a file name should be previewed as a Word document. */
+export function isDocxFileName(fileName: string): boolean {
+	return (DOCX_EXTENSIONS as readonly string[]).includes(
 		getFileExtension(fileName),
 	);
 }
