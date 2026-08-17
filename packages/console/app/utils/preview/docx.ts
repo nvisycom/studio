@@ -73,7 +73,10 @@ function decodeXmlEntities(raw: string): string {
 export function parseDocxRuns(xml: string): DocxRun[] {
 	const runs: DocxRun[] = [];
 	const encoder = new TextEncoder();
-	const re = /<w:t\b[^>]*>([\s\S]*?)<\/w:t>/g;
+	// Quote-aware opening tag so a literal `>` inside an attribute value doesn't
+	// end the tag early (which would corrupt the run's byte offsets). Group 1 is
+	// the whole opening tag; group 2 is the run text.
+	const re = /(<w:t\b(?:[^"'<>]|"[^"]*"|'[^']*')*>)([\s\S]*?)<\/w:t>/g;
 	let match: RegExpExecArray | null;
 	let index = 0;
 	// Walk a char cursor and its byte offset together, encoding only the delta
@@ -83,8 +86,8 @@ export function parseDocxRuns(xml: string): DocxRun[] {
 	let byteCursor = 0;
 	// biome-ignore lint/suspicious/noAssignInExpressions: canonical regex-exec loop
 	while ((match = re.exec(xml)) !== null) {
-		const inner = match[1] ?? "";
-		const innerCharStart = match.index + match[0].indexOf(">") + 1;
+		const inner = match[2] ?? "";
+		const innerCharStart = match.index + (match[1] ?? "").length;
 		byteCursor += encoder.encode(xml.slice(charCursor, innerCharStart)).length;
 		charCursor = innerCharStart;
 		const byteStart = byteCursor;

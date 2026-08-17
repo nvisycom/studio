@@ -177,16 +177,17 @@ function applyHighlights() {
 function syncActiveChip(scroll: boolean) {
 	if (!container.value) return;
 	const id = props.activeEntityId;
+	let active: HTMLElement | null = null;
 	for (const el of container.value.querySelectorAll<HTMLElement>(
 		".docx-chip",
 	)) {
-		el.classList.toggle("docx-chip--active", el.dataset.entity === id);
+		const isActive = el.dataset.entity === id;
+		el.classList.toggle("docx-chip--active", isActive);
+		// Capture the match here rather than re-querying with the id interpolated
+		// into a selector (which would throw on `"`, `]`, `\`, etc. in an id).
+		if (isActive) active = el;
 	}
-	if (id && scroll) {
-		container.value
-			.querySelector<HTMLElement>(`.docx-chip[data-entity="${id}"]`)
-			?.scrollIntoView({ block: "center", behavior: "smooth" });
-	}
+	if (scroll) active?.scrollIntoView({ block: "center", behavior: "smooth" });
 }
 
 /**
