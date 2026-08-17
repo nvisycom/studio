@@ -98,7 +98,9 @@ export function useStudioAudit(
 	async function run() {
 		const file = toValue(fileId);
 		if (!file || !selectedPipeline.value) return;
-		++restoreToken; // supersede any in-flight restore so it can't clobber this
+		// Supersede any in-flight restore, and capture the token so a run that
+		// finishes after the active file changed can't overwrite the new state.
+		const token = ++restoreToken;
 		phase.value = "running";
 		runStatus.value = "queued";
 		restored.value = false;
@@ -109,12 +111,14 @@ export function useStudioAudit(
 				selectedPipeline.value,
 				{ fileId: file },
 				(status) => {
-					runStatus.value = status;
+					if (token === restoreToken) runStatus.value = status;
 				},
 			);
+			if (token !== restoreToken) return;
 			audit.value = result.audit;
 			phase.value = "analyzed";
 		} catch (err) {
+			if (token !== restoreToken) return;
 			phase.value = "failed";
 			errorMessage.value = getErrorMessage(err, t("studio.audit.runFailed"));
 		}
@@ -170,8 +174,15 @@ export function useStudioAudit(
 	watch(
 		() => toValue(fileId),
 		(file) => {
-			// Drop any prior file's pending adoption so it can't leak across files.
+			// Reset per-file pipeline state so the prior file's choice can't leak:
+			// clear the pending adoption, and clear the selection (programmatically,
+			// so the pipeline watcher doesn't treat it as a user switch) so the
+			// selection watcher can re-pick this file's adopted or default pipeline.
 			pendingAdoptPipeline.value = null;
+			if (selectedPipeline.value) {
+				programmaticPipeline = "";
+				selectedPipeline.value = "";
+			}
 			if (!file) {
 				++restoreToken; // supersede any in-flight restore
 				adoptResolved.value = true; // nothing to adopt → default may apply

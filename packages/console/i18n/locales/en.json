@@ -1192,7 +1192,7 @@
 			"idleTitle": "No detections yet",
 			"idleHint": "Pick a pipeline and run detection to find sensitive entities.",
 			"noFile": "No document open",
-			"noFileHint": "Open a text file to run detection.",
+			"noFileHint": "Open a document to run detection.",
 			"emptyTitle": "No entities found",
 			"emptyHint": "This pipeline detected nothing in the document.",
 			"apply": "Apply redaction",

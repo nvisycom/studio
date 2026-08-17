@@ -214,13 +214,13 @@ export function useTextEntities(
 				if (doc) matched = sliceBytes(doc, start, end);
 				else if (parts && sourceRefs?.length)
 					matched = docxMatchedText(parts, sourceRefs);
-				// Locatable when a span lands in the visible document body: plain
-				// text/CSV always; DOCX only when a ref targets `word/document.xml`.
-				const locatable = doc
-					? true
-					: (sourceRefs?.some(
-							(r) => !r.part || r.part === "word/document.xml",
-						) ?? false);
+				// Locatable unless the entity has source refs and none target the
+				// visible body (`word/document.xml`) — i.e. it's metadata-only (a DOCX
+				// hyperlink target). No source refs means a plain body position, so
+				// plain-text/JSON entities stay locatable regardless of fetch state.
+				const locatable =
+					!sourceRefs?.length ||
+					sourceRefs.some((r) => !r.part || r.part === "word/document.xml");
 				return {
 					id: e.id,
 					label: e.label,

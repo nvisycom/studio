@@ -272,7 +272,8 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
                   >
                     <button
                       type="button"
-                      class="rounded p-0.5 hover:bg-muted-foreground/10"
+                      class="rounded p-0.5 enabled:hover:bg-muted-foreground/10 disabled:cursor-default disabled:opacity-40"
+                      :disabled="!clusterLocatable(cluster)"
                       :aria-label="t('studio.audit.prevOccurrence')"
                       @click.stop="stepCluster(cluster, -1)"
                     >
@@ -283,7 +284,8 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
                     </span>
                     <button
                       type="button"
-                      class="rounded p-0.5 hover:bg-muted-foreground/10"
+                      class="rounded p-0.5 enabled:hover:bg-muted-foreground/10 disabled:cursor-default disabled:opacity-40"
+                      :disabled="!clusterLocatable(cluster)"
                       :aria-label="t('studio.audit.nextOccurrence')"
                       @click.stop="stepCluster(cluster, 1)"
                     >

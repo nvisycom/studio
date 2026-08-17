@@ -28,9 +28,17 @@ const props = withDefaults(
 		entities?: TextEntityView[];
 		/** Currently focused entity id, for the ring + scroll-into-view. */
 		activeEntityId?: string | null;
+		/** Zoom percentage (100 = actual size) applied to the rendered pages. */
+		zoomLevel?: number;
 	}>(),
-	{ entities: () => [], activeEntityId: null },
+	{ entities: () => [], activeEntityId: null, zoomLevel: 100 },
 );
+
+// Scale the rendered pages to the zoom level. `zoom` (not `transform: scale`)
+// reflows the layout box, so the scroll area and the grey canvas track the
+// scaled size — a transform would leave the container at its unscaled height,
+// letting you scroll past the shrunk document into empty space.
+const zoomStyle = computed(() => ({ zoom: props.zoomLevel / 100 }));
 
 const emit = defineEmits<{ "focus-entity": [id: string] }>();
 
@@ -47,11 +55,17 @@ const hasError = ref(false);
 // normalizes the parent and re-locates the run's text.
 let runNodes: { run: DocxRun; parent: HTMLElement }[] = [];
 
+// How many runs ahead to look when the current node doesn't match run `r`, so a
+// single run the renderer transformed (whitespace collapsing, xml:space, a split
+// run) can't stall alignment for every run after it.
+const ALIGN_LOOKAHEAD = 8;
+
 /**
  * Walk the rendered DOM's text nodes in document order and align them to the
  * parsed runs. Both sequences follow `<w:t>` order, so we consume a run each
- * time a text node carries its text; synthetic nodes (tab em-spaces, symbols)
- * don't match the next run and are skipped.
+ * time a text node carries its text. Synthetic nodes (tab em-spaces, symbols)
+ * don't match the next run and are skipped; a run that no node matches is
+ * skipped after a bounded lookahead, so one mismatch doesn't drop the rest.
  */
 function alignRuns(root: HTMLElement, runs: DocxRun[]) {
 	const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
@@ -59,14 +73,20 @@ function alignRuns(root: HTMLElement, runs: DocxRun[]) {
 	let r = 0;
 	let node = walker.nextNode() as Text | null;
 	while (node && r < runs.length) {
-		const run = runs[r]!;
-		if (
-			node.nodeValue === run.text &&
-			run.text.length > 0 &&
-			node.parentElement
-		) {
-			pairs.push({ run, parent: node.parentElement });
-			r++;
+		const value = node.nodeValue;
+		const parent = node.parentElement;
+		if (value && parent) {
+			// Match this node against the next few runs; skip any earlier ones the
+			// renderer didn't reproduce so later runs still align.
+			const limit = Math.min(r + ALIGN_LOOKAHEAD, runs.length);
+			for (let j = r; j < limit; j++) {
+				const run = runs[j]!;
+				if (run.text.length > 0 && run.text === value) {
+					pairs.push({ run, parent });
+					r = j + 1;
+					break;
+				}
+			}
 		}
 		node = walker.nextNode() as Text | null;
 	}
@@ -144,6 +164,29 @@ function applyHighlights() {
 		const spans = perRun.get(run.index);
 		if (spans?.length) wrapRun(parent, run, spans);
 	}
+	// Chips were recreated without the active ring; reapply it (no scroll — the
+	// focus itself didn't change) so a rebuild mid-focus keeps the highlight.
+	syncActiveChip(false);
+}
+
+/**
+ * Reflect the active entity on the chips: ring the focused one and, when
+ * `scroll` is set, bring it into view. Called both when the focus changes and
+ * after chips are rebuilt (so the ring survives a re-highlight).
+ */
+function syncActiveChip(scroll: boolean) {
+	if (!container.value) return;
+	const id = props.activeEntityId;
+	for (const el of container.value.querySelectorAll<HTMLElement>(
+		".docx-chip",
+	)) {
+		el.classList.toggle("docx-chip--active", el.dataset.entity === id);
+	}
+	if (id && scroll) {
+		container.value
+			.querySelector<HTMLElement>(`.docx-chip[data-entity="${id}"]`)
+			?.scrollIntoView({ block: "center", behavior: "smooth" });
+	}
 }
 
 /**
@@ -205,22 +248,11 @@ watch(
 	{ deep: true },
 );
 
-// Reflect the active entity: ring the focused chip and scroll it into view.
+// Reflect the active entity when the focus changes: ring the chip and scroll it
+// into view.
 watch(
 	() => props.activeEntityId,
-	(id) => {
-		if (!container.value) return;
-		for (const el of container.value.querySelectorAll<HTMLElement>(
-			".docx-chip",
-		)) {
-			el.classList.toggle("docx-chip--active", el.dataset.entity === id);
-		}
-		if (id) {
-			container.value
-				.querySelector<HTMLElement>(`.docx-chip[data-entity="${id}"]`)
-				?.scrollIntoView({ block: "center", behavior: "smooth" });
-		}
-	},
+	() => syncActiveChip(true),
 );
 
 // Chip clicks bubble as focus events (delegated, since chips are created
@@ -267,7 +299,12 @@ watch(
     </div>
     <!-- docx-preview renders the document (its own centered, paginated wrapper
          with a grey backdrop and white pages) into this element. -->
-    <div ref="container" class="studio-docx" @click="onClick" />
+    <div
+      ref="container"
+      class="studio-docx"
+      :style="zoomStyle"
+      @click="onClick"
+    />
   </div>
 </template>
 

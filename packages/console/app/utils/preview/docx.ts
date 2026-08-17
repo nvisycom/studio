@@ -55,7 +55,10 @@ function decodeXmlEntities(raw: string): string {
 					body[1] === "x" || body[1] === "X"
 						? Number.parseInt(body.slice(2), 16)
 						: Number.parseInt(body.slice(1), 10);
-				return Number.isNaN(code) ? whole : String.fromCodePoint(code);
+				// Keep the raw text for a malformed or out-of-range code point
+				// (> U+10FFFF), which would otherwise throw a RangeError.
+				if (Number.isNaN(code) || code < 0 || code > 0x10ffff) return whole;
+				return String.fromCodePoint(code);
 			}
 			return XML_ENTITIES[body] ?? whole;
 		},
@@ -70,23 +73,28 @@ function decodeXmlEntities(raw: string): string {
 export function parseDocxRuns(xml: string): DocxRun[] {
 	const runs: DocxRun[] = [];
 	const encoder = new TextEncoder();
-	// Byte offset of the start of `xml.slice(0, charIndex)` — computed lazily as
-	// we advance, so we never re-encode the whole prefix per run.
 	const re = /<w:t\b[^>]*>([\s\S]*?)<\/w:t>/g;
 	let match: RegExpExecArray | null;
 	let index = 0;
+	// Walk a char cursor and its byte offset together, encoding only the delta
+	// from the previous position to this run — matches come in document order, so
+	// the cursor only advances. This keeps parsing O(n), not O(n²).
+	let charCursor = 0;
+	let byteCursor = 0;
 	// biome-ignore lint/suspicious/noAssignInExpressions: canonical regex-exec loop
 	while ((match = re.exec(xml)) !== null) {
 		const inner = match[1] ?? "";
 		const innerCharStart = match.index + match[0].indexOf(">") + 1;
-		const innerCharEnd = innerCharStart + inner.length;
-		const byteStart = encoder.encode(xml.slice(0, innerCharStart)).length;
-		const byteEnd = byteStart + encoder.encode(inner).length;
+		byteCursor += encoder.encode(xml.slice(charCursor, innerCharStart)).length;
+		charCursor = innerCharStart;
+		const byteStart = byteCursor;
+		byteCursor += encoder.encode(inner).length;
+		charCursor = innerCharStart + inner.length;
 		runs.push({
 			index: index++,
 			text: decodeXmlEntities(inner),
 			byteStart,
-			byteEnd,
+			byteEnd: byteCursor,
 		});
 	}
 	return runs;

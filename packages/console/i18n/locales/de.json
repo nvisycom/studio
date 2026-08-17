@@ -1192,7 +1192,7 @@
 			"idleTitle": "Noch keine Erkennungen",
 			"idleHint": "Wähle eine Pipeline und führe die Erkennung aus, um sensible Entitäten zu finden.",
 			"noFile": "Kein Dokument geöffnet",
-			"noFileHint": "Öffne eine Textdatei, um die Erkennung auszuführen.",
+			"noFileHint": "Öffne ein Dokument, um die Erkennung auszuführen.",
 			"emptyTitle": "Keine Entitäten gefunden",
 			"emptyHint": "Diese Pipeline hat im Dokument nichts erkannt.",
 			"apply": "Schwärzung anwenden",

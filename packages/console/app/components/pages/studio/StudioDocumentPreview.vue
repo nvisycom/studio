@@ -173,22 +173,23 @@ watch(
         :content-url="contentUrl"
         :entities="entities"
         :active-entity-id="activeEntityId"
+        :zoom-level="zoomLevel"
         @focus-entity="emit('focus-entity', $event)"
       />
 
       <!-- Text file preview: the content sits as a "page" (card) centered on the
            muted canvas (painted on the scroll container above), matching the DOCX
            preview's paper-on-canvas look. -->
-      <div v-else-if="isText" class="min-h-full p-6">
+      <div v-else-if="isText" class="flex min-h-full flex-col p-6">
         <div
           v-if="isLoadingText"
-          class="flex h-full items-center justify-center text-muted-foreground"
+          class="flex flex-1 items-center justify-center text-muted-foreground"
         >
           <Loader2 :size="24" class="animate-spin" />
         </div>
         <div
           v-else-if="textError"
-          class="flex h-full items-center justify-center text-center text-muted-foreground"
+          class="flex flex-1 items-center justify-center text-center text-muted-foreground"
         >
           <p class="text-sm">Unable to load this file.</p>
         </div>
