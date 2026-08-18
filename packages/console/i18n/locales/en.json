@@ -507,7 +507,6 @@
 		"errors": {
 			"deleteFailed": "Failed to delete file",
 			"updateFailed": "Failed to update file",
-			"uploadFailed": "Failed to upload file",
 			"downloadFailed": "Failed to download file",
 			"loadFailed": "Failed to load files"
 		},
@@ -515,6 +514,10 @@
 			"original": "Original",
 			"redacted": "Redacted",
 			"audit": "Audit"
+		},
+		"view": {
+			"list": "List view",
+			"grid": "Grid view"
 		}
 	},
 	"members": {
@@ -1214,13 +1217,29 @@
 			"collapseDuplicates": "Collapse duplicates",
 			"prevOccurrence": "Previous occurrence",
 			"nextOccurrence": "Next occurrence",
-			"metadata": "Metadata"
+			"metadata": "Metadata",
+			"categories": {
+				"identity": "Identity",
+				"contact": "Contact",
+				"geographic": "Geographic",
+				"demographic": "Demographic",
+				"protected_characteristic": "Protected characteristic",
+				"financial": "Financial",
+				"health": "Health",
+				"biometric": "Biometric",
+				"judicial": "Judicial",
+				"credentials": "Credentials",
+				"network": "Network",
+				"organization": "Organization",
+				"contextual": "Contextual"
+			}
 		},
 		"preview": {
 			"table": "Table",
 			"raw": "Raw",
 			"withHeaders": "With headers",
-			"docxFailed": "Couldn't render this Word document."
+			"docxFailed": "Couldn't render this Word document.",
+			"textFailed": "Unable to load this file."
 		}
 	},
 	"commandMenu": {
@@ -1319,6 +1338,10 @@
 				"fake": "Fake data",
 				"clamp": "Clamp",
 				"generalize_date": "Generalize date"
+			},
+			"tabularKind": {
+				"drop_row": "Drop row",
+				"drop_column": "Drop column"
 			},
 			"imageKind": {
 				"blur": "Blur",
@@ -1809,7 +1832,6 @@
 	},
 	"notifications": {
 		"title": "Notifications",
-		"subtitle": "Stay updated with your latest activity",
 		"empty": "No notifications",
 		"events": {
 			"memberInvited": {

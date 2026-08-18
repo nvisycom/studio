@@ -7,10 +7,18 @@ import type { TokenKind } from "#console/utils/preview";
  * lines. Presentational — it renders the segment lines the parent computed and
  * bubbles chip clicks up.
  */
-defineProps<{
-	lines: Segment[][];
-	activeEntityId?: string | null;
-}>();
+withDefaults(
+	defineProps<{
+		lines: Segment[][];
+		activeEntityId?: string | null;
+		/**
+		 * Wrap long lines (default) or keep them on one line and scroll
+		 * horizontally. Prose/JSON/XML wrap; CSV rows scroll like the table view.
+		 */
+		wrap?: boolean;
+	}>(),
+	{ wrap: true },
+);
 
 defineEmits<{ "focus-entity": [id: string] }>();
 
@@ -28,9 +36,15 @@ const KIND_CLASS: Record<TokenKind, string> = {
 
 <template>
   <div
-    class="code-view overflow-hidden rounded-lg border border-border/50 bg-card font-mono text-xs leading-[1.7] shadow-sm"
+    class="code-view rounded-lg border border-border/50 bg-card font-mono text-xs leading-[1.7] shadow-sm"
+    :class="wrap ? 'overflow-hidden' : 'overflow-x-auto'"
   >
-    <div v-for="(line, ln) in lines" :key="ln" class="flex hover:bg-muted/30">
+    <div
+      v-for="(line, ln) in lines"
+      :key="ln"
+      class="flex hover:bg-muted/30"
+      :class="{ 'w-fit min-w-full': !wrap }"
+    >
       <!-- Line-number gutter -->
       <span
         class="w-12 shrink-0 select-none border-r border-border/50 bg-muted/20 px-3 text-right text-muted-foreground/50 tabular-nums"
@@ -38,11 +52,14 @@ const KIND_CLASS: Record<TokenKind, string> = {
         >{{ ln + 1 }}</span
       >
       <!-- Code content -->
-      <code class="whitespace-pre-wrap break-words px-4 text-foreground"
+      <code
+        class="px-4 text-foreground"
+        :class="wrap ? 'whitespace-pre-wrap break-words' : 'whitespace-pre'"
         ><template v-for="(seg, i) in line" :key="i"><button
             v-if="seg.entity"
             type="button"
             :data-entity="seg.entity.id"
+            :data-category="seg.entity.category ?? undefined"
             :title="seg.entity.label"
             class="chip"
             :class="{ 'chip--active': activeEntityId === seg.entity.id }"
@@ -58,14 +75,14 @@ const KIND_CLASS: Record<TokenKind, string> = {
 <style scoped>
 /* Code syntax palette — distinct but muted hues, tuned per theme so both
    grounds stay legible. Referenced from KIND_CLASS via text-[var(--code-*)]. */
+/* Entity-chip styling (the marker underline) is shared and lives in
+   assets/css/entities.css so every preview stays consistent. */
 .code-view {
 	--code-key: oklch(0.5 0.13 256); /* blue */
 	--code-string: oklch(0.5 0.11 152); /* green */
 	--code-number: oklch(0.52 0.13 65); /* amber */
 	--code-keyword: oklch(0.52 0.16 300); /* purple */
 	--code-punct: var(--color-muted-foreground);
-	/* Flagged-entity tint — a calm amber "attention", not an alarm red. */
-	--flag: oklch(0.68 0.15 65);
 }
 :global(.dark) .code-view {
 	--code-key: oklch(0.8 0.15 248); /* blue */
@@ -73,27 +90,5 @@ const KIND_CLASS: Record<TokenKind, string> = {
 	--code-number: oklch(0.87 0.14 74); /* amber */
 	--code-keyword: oklch(0.82 0.18 320); /* magenta-purple */
 	--code-punct: oklch(0.68 0 0);
-	--flag: oklch(0.82 0.15 75); /* brighter amber on dark */
-}
-
-/* Detected-entity chip: a calm amber tint; the text keeps its syntax color so
-   it stays readable. Horizontal padding cancelled by negative margin so it
-   never adds line height (no vertical bleed) or shifts surrounding glyphs. */
-.chip {
-	border-radius: 0.25rem;
-	padding: 0 0.25rem;
-	margin: 0 -0.25rem;
-	background-color: color-mix(in oklab, var(--flag) 15%, transparent);
-	color: inherit;
-	font: inherit;
-	cursor: pointer;
-	transition: background-color 0.15s, box-shadow 0.15s;
-}
-.chip:hover {
-	background-color: color-mix(in oklab, var(--flag) 25%, transparent);
-}
-.chip--active {
-	background-color: color-mix(in oklab, var(--flag) 28%, transparent);
-	box-shadow: 0 0 0 1.5px var(--flag);
 }
 </style>

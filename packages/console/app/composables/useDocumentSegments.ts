@@ -7,10 +7,12 @@ import {
 	type TokenKind,
 	formatCsv,
 	formatJson,
+	formatXml,
 	parseCsv,
 	resolveTabularSpan,
 	tokenizeCsv,
 	tokenizeJson,
+	tokenizeXml,
 } from "#console/utils/preview";
 
 /** A rendered run of text carrying its syntax color and any entity overlay. */
@@ -27,8 +29,8 @@ export interface Segment {
  *
  * This owns the offset-heavy pipeline (formatting, byte→char mapping, span
  * reconciliation) so the component stays about view state. Extension drives the
- * behaviour: `json` prettifies + colours, `csv` parses to a grid, others pass
- * through as plain highlighted text.
+ * behaviour: `json`/`xml` prettify + colour, `csv` parses to a grid, others
+ * pass through as plain highlighted text.
  */
 export function useDocumentSegments(inputs: {
 	text: MaybeRefOrGetter<string | null>;
@@ -47,6 +49,8 @@ export function useDocumentSegments(inputs: {
 		switch (fileKind.value) {
 			case "json":
 				return formatJson(text);
+			case "xml":
+				return formatXml(text);
 			case "csv":
 				return formatCsv(text);
 			default:
@@ -54,11 +58,13 @@ export function useDocumentSegments(inputs: {
 		}
 	});
 
-	// Syntax-color tokens over the formatted text (JSON + CSV).
+	// Syntax-color tokens over the formatted text (JSON + XML + CSV).
 	const tokens = computed<Token[]>(() => {
 		switch (fileKind.value) {
 			case "json":
 				return tokenizeJson(formatted.value.text);
+			case "xml":
+				return tokenizeXml(formatted.value.text);
 			case "csv":
 				return tokenizeCsv(formatted.value.text);
 			default:
@@ -93,8 +99,11 @@ export function useDocumentSegments(inputs: {
 	});
 
 	// Resolve entity spans onto the formatted text.
-	// - Text/JSON entities are document byte offsets: byte → raw char (byteMap) →
-	//   formatted char (the formatter's raw→formatted map; identity when empty).
+	// - Text/JSON entities are document byte offsets into the shown text: byte →
+	//   raw char (byteMap) → formatted char (the formatter's raw→formatted map).
+	// - XML entities' `range` indexes the *decoded* stream (entities resolved),
+	//   which differs from the raw text we show, so we use the `source` byte span
+	//   into the raw file instead — same as DOCX.
 	// - Tabular (CSV) entities are byte offsets *within a cell*: from the cell's
 	//   content start, advance by the byte offset converted to a char index.
 	const entitySpans = computed(() => {
@@ -103,6 +112,10 @@ export function useDocumentSegments(inputs: {
 		const fmtMap = formatted.value.map;
 		const toFormatted = (rawChar: number | undefined) =>
 			rawChar == null ? undefined : fmtMap.length ? fmtMap[rawChar] : rawChar;
+		const rawByteSpan = (startByte: number, endByte: number) => ({
+			start: toFormatted(byteMap?.[startByte]),
+			end: toFormatted(byteMap?.[endByte]),
+		});
 
 		const resolve = (e: TextEntityView): { start?: number; end?: number } => {
 			// Tabular: byte offsets within a cell → flat char range (csv helper).
@@ -113,12 +126,14 @@ export function useDocumentSegments(inputs: {
 					{}
 				);
 			}
-			// Text/JSON: document byte offset → raw char → formatted char.
 			if (!byteMap) return {};
-			return {
-				start: toFormatted(byteMap[e.start]),
-				end: toFormatted(byteMap[e.end]),
-			};
+			// XML (and any text with source refs): the entity's `range` indexes the
+			// decoded stream, but we show the raw file, so use the single-file source
+			// byte span instead (a `.part`-tagged ref belongs to another container).
+			const ref = e.sourceRefs?.find((r) => !r.part);
+			if (ref) return rawByteSpan(ref.start, ref.end);
+			// Plain text / JSON: decoded == raw, so the location range applies.
+			return rawByteSpan(e.start, e.end);
 		};
 
 		return entities.value

@@ -1,13 +1,14 @@
 /**
  * Client-side mapping from a detection's raw-source byte span (a `SourceRef`
- * into `word/document.xml`) to the rendered DOCX run it belongs to.
+ * into a DOCX part) to the rendered run it belongs to.
  *
  * docx-preview renders each `<w:r>` run as a `<span>` in document order but
  * drops the run's raw byte position, so highlighting can't work off the DOM
  * text alone (tabs, symbols, footnotes inject synthetic text that desyncs a
- * character walk). Instead we parse `document.xml` ourselves into ordered
- * `<w:t>` runs with their byte spans, stamp each rendered run with its ordinal,
- * and resolve a SourceRef byte range to (run ordinal, char range in that run).
+ * character walk). Instead we parse the rendered parts (the document body plus
+ * headers/footers/notes) ourselves into ordered `<w:t>` runs with their byte
+ * spans, each tagged with its part, and resolve a SourceRef's (part, byte range)
+ * to (run ordinal, char range in that run).
  *
  * A SourceRef's bytes always land inside `<w:t>` text (that is what the decoded
  * stream a recognizer scanned was built from), never in the tags between runs,
@@ -25,16 +26,51 @@ export interface DocxSourceRef {
 	end: number;
 }
 
-/** One `<w:t>` run: its text and its raw byte span in `document.xml`. */
+/** One `<w:t>` run: its text and its raw byte span within a container part. */
 export interface DocxRun {
-	/** Ordinal in document order (matches the rendered run's stamped index). */
+	/** The container part this run belongs to (e.g. `word/document.xml`, a
+	 * header, or a footer) — matches the `part` on a detection's `SourceRef`. */
+	part: string;
+	/** Ordinal in parse order (document.xml first, then aux parts). */
 	index: number;
 	/** The run's decoded text (XML entities resolved). */
 	text: string;
-	/** Byte offset in `document.xml` where the run's text content begins. */
+	/** Byte offset in the part where the run's text content begins. */
 	byteStart: number;
 	/** Byte offset (exclusive) where the run's text content ends. */
 	byteEnd: number;
+}
+
+/**
+ * DOCX parts that render as visible page text (so their runs can be highlighted
+ * and their entities are locatable): the main document body, plus headers,
+ * footers, and foot/endnotes. Other parts (`.rels`, styles, metadata) are not
+ * visible body text. `word/document.xml` is the common case.
+ */
+export function isRenderedDocxPart(part: string | undefined): boolean {
+	if (!part) return true; // no part = single-file source = the document body
+	return (
+		part === "word/document.xml" ||
+		/^word\/(header\d*|footer\d*|footnotes|endnotes)\.xml$/.test(part)
+	);
+}
+
+/**
+ * The kind of rendered region a DOCX part belongs to. docx-preview renders each
+ * kind into a distinct DOM container (headers into `<header>`, footers into
+ * `<footer>`, foot/endnotes into `<li>`, the body into neither), so grouping
+ * runs by category lets alignment restrict a text node to runs from the same
+ * region — without that, identical text in a header and the body could map to
+ * the wrong part. A single-file source (no part) is the body.
+ */
+export type DocxPartCategory = "body" | "header" | "footer" | "note";
+
+export function docxPartCategory(part: string | undefined): DocxPartCategory {
+	if (!part) return "body";
+	if (/^word\/header\d*\.xml$/.test(part)) return "header";
+	if (/^word\/footer\d*\.xml$/.test(part)) return "footer";
+	if (/^word\/(footnotes|endnotes)\.xml$/.test(part)) return "note";
+	return "body";
 }
 
 const XML_ENTITIES: Record<string, string> = {
@@ -66,11 +102,15 @@ function decodeXmlEntities(raw: string): string {
 }
 
 /**
- * Parse `document.xml` into ordered `<w:t>` runs with byte spans. Byte offsets
- * are into the UTF-8 source (what `SourceRef.range` indexes); the text is UTF-16
- * with entities decoded. Runs come out in document order, matching the render.
+ * Parse one part's XML into ordered `<w:t>` runs with byte spans. Byte offsets
+ * are into the part's UTF-8 source (what `SourceRef.range` indexes); the text is
+ * UTF-16 with entities decoded. `startIndex` continues the ordinal across parts.
  */
-export function parseDocxRuns(xml: string): DocxRun[] {
+function parsePartRuns(
+	part: string,
+	xml: string,
+	startIndex: number,
+): DocxRun[] {
 	const runs: DocxRun[] = [];
 	const encoder = new TextEncoder();
 	// Quote-aware opening tag so a literal `>` inside an attribute value doesn't
@@ -78,7 +118,7 @@ export function parseDocxRuns(xml: string): DocxRun[] {
 	// the whole opening tag; group 2 is the run text.
 	const re = /(<w:t\b(?:[^"'<>]|"[^"]*"|'[^']*')*>)([\s\S]*?)<\/w:t>/g;
 	let match: RegExpExecArray | null;
-	let index = 0;
+	let index = startIndex;
 	// Walk a char cursor and its byte offset together, encoding only the delta
 	// from the previous position to this run — matches come in document order, so
 	// the cursor only advances. This keeps parsing O(n), not O(n²).
@@ -94,11 +134,38 @@ export function parseDocxRuns(xml: string): DocxRun[] {
 		byteCursor += encoder.encode(inner).length;
 		charCursor = innerCharStart + inner.length;
 		runs.push({
+			part,
 			index: index++,
 			text: decodeXmlEntities(inner),
 			byteStart,
 			byteEnd: byteCursor,
 		});
+	}
+	return runs;
+}
+
+/**
+ * Parse a DOCX's rendered parts into ordered `<w:t>` runs, each tagged with its
+ * container part. Only parts that render as visible page text are parsed (see
+ * {@link isRenderedDocxPart}), so header/footer/footnote entities can be
+ * highlighted too — not just the main body. `parts` maps a part name to its XML.
+ */
+export function parseDocxParts(parts: Map<string, string>): DocxRun[] {
+	const runs: DocxRun[] = [];
+	// document.xml first (the common case), then the rest in name order for a
+	// stable, deterministic run ordinal sequence.
+	const names = [...parts.keys()]
+		.filter(isRenderedDocxPart)
+		.sort((a, b) =>
+			a === "word/document.xml"
+				? -1
+				: b === "word/document.xml"
+					? 1
+					: a.localeCompare(b),
+		);
+	for (const name of names) {
+		const xml = parts.get(name);
+		if (xml) runs.push(...parsePartRuns(name, xml, runs.length));
 	}
 	return runs;
 }
@@ -114,18 +181,22 @@ export interface DocxRunSpan {
 }
 
 /**
- * Resolve a raw-source byte range (from a `SourceRef` into `document.xml`) to
+ * Resolve a raw-source byte range (from a `SourceRef`) within a given part to
  * the run span(s) it covers. A range usually lands in one run; a span that the
  * backend fused across runs is returned as several. Byte offsets outside any
- * run's text are skipped. Char offsets are into the run's *decoded* text.
+ * run's text (or in another part) are skipped. Char offsets are into the run's
+ * *decoded* text. A missing `part` matches the main document body.
  */
 export function resolveDocxSpan(
 	runs: DocxRun[],
+	part: string | undefined,
 	byteStart: number,
 	byteEnd: number,
 ): DocxRunSpan[] {
+	const wanted = part ?? "word/document.xml";
 	const out: DocxRunSpan[] = [];
 	for (const run of runs) {
+		if (run.part !== wanted) continue;
 		if (run.byteEnd <= byteStart || run.byteStart >= byteEnd) continue;
 		// Overlap of [byteStart, byteEnd) with this run's byte span.
 		const from = Math.max(byteStart, run.byteStart);

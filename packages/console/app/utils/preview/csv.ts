@@ -25,7 +25,8 @@ export function formatCsv(raw: string): FormattedText {
  * data cell, `string` for a quoted data cell. Delimiters, newlines, and plain
  * unquoted text are left as gaps the caller renders in the base color.
  */
-export function tokenizeCsv(text: string): Token[] {
+export function tokenizeCsv(text: string, delimiter?: string): Token[] {
+	const delim = delimiter ?? detectDelimiter(text);
 	const tokens: Token[] = [];
 	let line = 0; // 0 = header row
 	let fieldStart = 0;
@@ -59,7 +60,7 @@ export function tokenizeCsv(text: string): Token[] {
 		if (ch === '"') {
 			inQuotes = true;
 			if (i === fieldStart) quoted = true; // opening quote of the field
-		} else if (ch === ",") {
+		} else if (ch === delim) {
 			endField(i);
 			fieldStart = i + 1;
 			quoted = false;
@@ -101,15 +102,69 @@ export interface ParsedCsv {
 	columns: number;
 }
 
+/** Delimiter candidates, in priority order for a tie. */
+const DELIMITERS = [",", "\t", ";", "|"] as const;
+
+/**
+ * Sniff the field delimiter from the text: for each candidate, count how often
+ * it appears *outside* quotes across the first few rows, and pick the most
+ * frequent (comma wins ties). Falls back to comma when nothing separates.
+ *
+ * Quote state is carried across line breaks and `""` is treated as an escaped
+ * quote, matching {@link parseCsv} — a quoted field may span multiple physical
+ * lines and contain the other candidates' characters, so a per-line scan would
+ * miscount them (e.g. commas inside a multiline quoted field of a `;`-delimited
+ * file). The sample is bounded by *record* rows, not physical lines, so a
+ * multiline quoted field doesn't cut the sample short.
+ */
+export function detectDelimiter(text: string): string {
+	// Bound the scan to the first ~10 records: count non-quoted newlines until the
+	// budget runs out, then stop. Quoted newlines don't advance the record count.
+	const MAX_ROWS = 10;
+	const counts = new Map<string, number>(DELIMITERS.map((d) => [d, 0]));
+	let inQuotes = false;
+	let rows = 0;
+	for (let i = 0; i < text.length && rows < MAX_ROWS; i++) {
+		const ch = text[i]!;
+		if (inQuotes) {
+			if (ch === '"') {
+				if (text[i + 1] === '"')
+					i++; // escaped quote
+				else inQuotes = false;
+			}
+			continue;
+		}
+		if (ch === '"') inQuotes = true;
+		else if (ch === "\n") rows++;
+		else {
+			const count = counts.get(ch);
+			if (count !== undefined) counts.set(ch, count + 1);
+		}
+	}
+	let best = ",";
+	let bestCount = 0;
+	// DELIMITERS order breaks ties: comma first, so an equal count keeps comma.
+	for (const delim of DELIMITERS) {
+		const count = counts.get(delim) ?? 0;
+		if (count > bestCount) {
+			bestCount = count;
+			best = delim;
+		}
+	}
+	return best;
+}
+
 /**
  * Parse flat CSV into a grid + per-cell flat char ranges in a single scan.
  *
- * RFC-4180-ish: comma-separated fields, `\n`/`\r\n` rows, double-quoted fields
- * (which may contain commas/newlines) with `""` escapes. The ranges cover the
- * *raw* field including its quotes, so tabular entity offsets (which are into
- * the flat text) still land; the parsed value has quotes stripped for display.
+ * RFC-4180-ish: fields separated by `delimiter` (auto-detected when omitted),
+ * `\n`/`\r\n` rows, double-quoted fields (which may contain the delimiter or
+ * newlines) with `""` escapes. The ranges cover the *raw* field including its
+ * quotes, so tabular entity offsets (which are into the flat text) still land;
+ * the parsed value has quotes stripped for display.
  */
-export function parseCsv(text: string): ParsedCsv {
+export function parseCsv(text: string, delimiter?: string): ParsedCsv {
+	const delim = delimiter ?? detectDelimiter(text);
 	const rows: string[][] = [];
 	const ranges = new Map<string, CellRange>();
 	let row: string[] = [];
@@ -151,7 +206,7 @@ export function parseCsv(text: string): ParsedCsv {
 		if (ch === '"') {
 			inQuotes = true;
 			if (i === cellStart) quoted = true; // opening quote of the field
-		} else if (ch === ",") {
+		} else if (ch === delim) {
 			endCell(i);
 			c++;
 			cellStart = i + 1;

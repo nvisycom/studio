@@ -60,12 +60,15 @@ function openInStudio(fileId: string) {
 }
 
 // A stable base name for an exported audit: the source file (sans extension)
-// plus the short run id, so multiple runs of one file don't collide.
+// plus the short run id, so multiple runs of one file don't collide. The CSV
+// export is delivered as a zip archive (entities.csv, provenance.csv,
+// reviews.csv), so its download is named `.zip`, not `.csv`.
 function auditFileName(
 	run: (typeof sortedRuns.value)[number],
-	ext: string,
+	format: "json" | "csv",
 ): string {
 	const base = (run.inputFileName || run.inputFileId).replace(/\.[^.]+$/, "");
+	const ext = format === "csv" ? "zip" : "json";
 	return `${base}-audit-${run.id.slice(0, 8)}.${ext}`;
 }
 

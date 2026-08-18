@@ -507,7 +507,6 @@
 		"errors": {
 			"deleteFailed": "Datei konnte nicht gelöscht werden",
 			"updateFailed": "Datei konnte nicht aktualisiert werden",
-			"uploadFailed": "Datei konnte nicht hochgeladen werden",
 			"downloadFailed": "Datei konnte nicht heruntergeladen werden",
 			"loadFailed": "Dateien konnten nicht geladen werden"
 		},
@@ -515,6 +514,10 @@
 			"original": "Original",
 			"redacted": "Geschwärzt",
 			"audit": "Audit"
+		},
+		"view": {
+			"list": "Listenansicht",
+			"grid": "Rasteransicht"
 		}
 	},
 	"members": {
@@ -1214,13 +1217,29 @@
 			"collapseDuplicates": "Duplikate zusammenfassen",
 			"prevOccurrence": "Vorheriges Vorkommen",
 			"nextOccurrence": "Nächstes Vorkommen",
-			"metadata": "Metadaten"
+			"metadata": "Metadaten",
+			"categories": {
+				"identity": "Identität",
+				"contact": "Kontakt",
+				"geographic": "Geografisch",
+				"demographic": "Demografisch",
+				"protected_characteristic": "Besondere Kategorie",
+				"financial": "Finanzen",
+				"health": "Gesundheit",
+				"biometric": "Biometrie",
+				"judicial": "Justiz",
+				"credentials": "Anmeldedaten",
+				"network": "Netzwerk",
+				"organization": "Organisation",
+				"contextual": "Kontextbezogen"
+			}
 		},
 		"preview": {
 			"table": "Tabelle",
 			"raw": "Roh",
 			"withHeaders": "Mit Kopfzeile",
-			"docxFailed": "Dieses Word-Dokument konnte nicht dargestellt werden."
+			"docxFailed": "Dieses Word-Dokument konnte nicht dargestellt werden.",
+			"textFailed": "Diese Datei konnte nicht geladen werden."
 		}
 	},
 	"commandMenu": {
@@ -1319,6 +1338,10 @@
 				"fake": "Falsche Daten",
 				"clamp": "Begrenzen",
 				"generalize_date": "Datum verallgemeinern"
+			},
+			"tabularKind": {
+				"drop_row": "Zeile entfernen",
+				"drop_column": "Spalte entfernen"
 			},
 			"imageKind": {
 				"blur": "Weichzeichnen",
@@ -1809,7 +1832,6 @@
 	},
 	"notifications": {
 		"title": "Benachrichtigungen",
-		"subtitle": "Bleiben Sie über Ihre neueste Aktivität informiert",
 		"empty": "Keine Benachrichtigungen",
 		"events": {
 			"memberInvited": {

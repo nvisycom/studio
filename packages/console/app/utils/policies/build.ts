@@ -15,7 +15,7 @@ import type {
 	SdkPredicate,
 	TextRedactionKind,
 } from "./model";
-import { csvToList, DEFAULT_TEXT_TEMPLATE } from "./model";
+import { csvToList, DEFAULT_TEXT_TEMPLATE, isTabularDropKind } from "./model";
 
 /**
  * Coerce an editor number to a non-negative integer (or a fallback when unset).
@@ -139,8 +139,13 @@ function buildModalities(
 	}
 	if (mods.tabular) {
 		const k = mods.tabular.tabularKind ?? "replace";
-		// The text vocabulary maps onto the tabular `cell` operator.
-		out.tabular = { kind: "cell", spec: buildTextOp(mods.tabular, k) };
+		if (isTabularDropKind(k)) {
+			// Drop the whole row / column — no cell operator, no params.
+			out.tabular = { kind: k };
+		} else {
+			// The text vocabulary maps onto the tabular `cell` operator.
+			out.tabular = { kind: "cell", spec: buildTextOp(mods.tabular, k) };
+		}
 	}
 	return out;
 }

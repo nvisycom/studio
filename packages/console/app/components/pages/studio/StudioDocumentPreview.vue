@@ -1,16 +1,12 @@
 <script setup lang="ts">
-import { FileText, Loader2, Table, WrapText } from "@lucide/vue";
+import { FileText, Loader2 } from "@lucide/vue";
 import { ZoomControls } from "#console/components/pages/documents";
-import {
-	EntityDetailPopover,
-	StudioCodeView,
-	StudioCsvTable,
-} from "#console/components/pages/studio";
+import { EntityDetailPopover } from "#console/components/pages/studio";
+import StudioCsvView from "./StudioCsvView.vue";
 import StudioDocxView from "./StudioDocxView.vue";
-import { Checkbox } from "#console/components/ui/checkbox";
-import { Label } from "#console/components/ui/label";
+import StudioImageView from "./StudioImageView.vue";
+import StudioTextView from "./StudioTextView.vue";
 import type { TextEntityView } from "#console/composables/useTextEntities";
-import { useDocumentSegments } from "#console/composables/useDocumentSegments";
 import { getFileExtension } from "#console/utils/file";
 
 const props = withDefaults(
@@ -35,9 +31,6 @@ const props = withDefaults(
 // can label rows consistently; two-way so the toggle here updates it.
 const withHeaders = defineModel<boolean>("withHeaders", { default: true });
 
-// CSV can render as a table (default) or the raw highlighted text.
-const csvView = ref<"table" | "raw">("table");
-
 const emit = defineEmits<{
 	"zoom-in": [];
 	"zoom-out": [];
@@ -47,46 +40,10 @@ const emit = defineEmits<{
 	"clear-entity": [];
 }>();
 
-const { t } = useI18n();
-
-// Text preview: the content URL is a blob object URL, so read its text and
-// render it in a <pre>. Re-fetch whenever the file (URL) changes.
-const textContent = ref<string | null>(null);
-const isLoadingText = ref(false);
-const textError = ref(false);
-
-watch(
-	() => [props.contentUrl, props.isText] as const,
-	async ([url, isText]) => {
-		textContent.value = null;
-		textError.value = false;
-		if (!url || !isText) return;
-		isLoadingText.value = true;
-		try {
-			const response = await fetch(url);
-			textContent.value = await response.text();
-		} catch {
-			textError.value = true;
-		} finally {
-			isLoadingText.value = false;
-		}
-	},
-	{ immediate: true },
-);
-
-// File kind drives the renderer + formatting.
+// File kind drives which preview renders. Each kind has its own self-contained
+// component (CSV, text/JSON, DOCX); this component dispatches between them.
 const fileKind = computed(() => getFileExtension(props.displayName));
 const isCsv = computed(() => fileKind.value === "csv");
-const showCsvTable = computed(() => isCsv.value && csvView.value === "table");
-
-// The formatting + highlight pipeline (prettify, syntax tokens, byte→char and
-// span reconciliation) lives in a composable so this component stays about view
-// state. It yields the formatted text and the per-line coloured/flagged runs.
-const { formatted, lines } = useDocumentSegments({
-	text: textContent,
-	entities: () => props.entities,
-	fileKind,
-});
 
 // The focused entity object, for the detail popover.
 const activeEntity = computed(
@@ -151,21 +108,12 @@ watch(
       </div>
 
       <!-- Image file preview -->
-      <div v-else-if="isImage" class="flex flex-col items-center gap-4 py-6">
-        <div
-          class="flex-shrink-0 shadow-lg"
-          :style="{
-            transform: `scale(${zoomLevel / 100})`,
-            transformOrigin: 'top center',
-          }"
-        >
-          <img
-            :src="contentUrl"
-            :alt="displayName"
-            class="max-w-[800px] bg-white"
-          />
-        </div>
-      </div>
+      <StudioImageView
+        v-else-if="isImage"
+        :content-url="contentUrl"
+        :display-name="displayName"
+        :zoom-level="zoomLevel"
+      />
 
       <!-- Word document preview (read-only, rendered client-side) -->
       <StudioDocxView
@@ -179,81 +127,25 @@ watch(
 
       <!-- Text file preview: the content sits as a "page" (card) centered on the
            muted canvas (painted on the scroll container above), matching the DOCX
-           preview's paper-on-canvas look. -->
+           preview's paper-on-canvas look. CSV has its own component (full width
+           so its table can spread); other text/JSON renders in the code view. -->
       <div v-else-if="isText" class="flex min-h-full flex-col p-6">
-        <div
-          v-if="isLoadingText"
-          class="flex flex-1 items-center justify-center text-muted-foreground"
-        >
-          <Loader2 :size="24" class="animate-spin" />
-        </div>
-        <div
-          v-else-if="textError"
-          class="flex flex-1 items-center justify-center text-center text-muted-foreground"
-        >
-          <p class="text-sm">Unable to load this file.</p>
-        </div>
-        <div v-else class="mx-auto max-w-[850px] space-y-3">
-          <!-- CSV controls: table/raw toggle + header-row option -->
-          <div
-            v-if="isCsv"
-            class="flex items-center justify-between gap-3"
-          >
-            <div class="inline-flex rounded-md border border-border/50 p-0.5">
-              <button
-                type="button"
-                class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-medium transition-colors"
-                :class="
-                  csvView === 'table'
-                    ? 'bg-muted text-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
-                "
-                @click="csvView = 'table'"
-              >
-                <Table :size="14" /> {{ t("studio.preview.table") }}
-              </button>
-              <button
-                type="button"
-                class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-medium transition-colors"
-                :class="
-                  csvView === 'raw'
-                    ? 'bg-muted text-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
-                "
-                @click="csvView = 'raw'"
-              >
-                <WrapText :size="14" /> {{ t("studio.preview.raw") }}
-              </button>
-            </div>
-            <div v-if="csvView === 'table'" class="flex items-center gap-2">
-              <Checkbox id="csv-headers" v-model="withHeaders" />
-              <Label
-                for="csv-headers"
-                class="cursor-pointer text-xs font-normal text-muted-foreground"
-              >
-                {{ t("studio.preview.withHeaders") }}
-              </Label>
-            </div>
-          </div>
-
-          <!-- CSV table view -->
-          <StudioCsvTable
-            v-if="showCsvTable"
-            :text="formatted.text"
-            :with-headers="withHeaders"
-            :entities="entities"
-            :active-entity-id="activeEntityId"
-            @focus-entity="emit('focus-entity', $event)"
-          />
-
-          <!-- Raw / code text view -->
-          <StudioCodeView
-            v-else
-            :lines="lines"
-            :active-entity-id="activeEntityId"
-            @focus-entity="emit('focus-entity', $event)"
-          />
-        </div>
+        <StudioCsvView
+          v-if="isCsv"
+          :content-url="contentUrl"
+          :entities="entities"
+          :active-entity-id="activeEntityId"
+          v-model:with-headers="withHeaders"
+          @focus-entity="emit('focus-entity', $event)"
+        />
+        <StudioTextView
+          v-else
+          :content-url="contentUrl"
+          :file-kind="fileKind"
+          :entities="entities"
+          :active-entity-id="activeEntityId"
+          @focus-entity="emit('focus-entity', $event)"
+        />
       </div>
 
       <!-- Unsupported file type -->

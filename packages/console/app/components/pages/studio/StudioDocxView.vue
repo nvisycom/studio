@@ -4,8 +4,11 @@ import JSZip from "jszip";
 import { Loader2, TriangleAlert } from "@lucide/vue";
 import type { TextEntityView } from "#console/composables/useTextEntities";
 import {
+	type DocxPartCategory,
 	type DocxRun,
-	parseDocxRuns,
+	docxPartCategory,
+	isRenderedDocxPart,
+	parseDocxParts,
 	resolveDocxSpan,
 } from "#console/utils/preview";
 
@@ -55,37 +58,84 @@ const hasError = ref(false);
 // normalizes the parent and re-locates the run's text.
 let runNodes: { run: DocxRun; parent: HTMLElement }[] = [];
 
-// How many runs ahead to look when the current node doesn't match run `r`, so a
-// single run the renderer transformed (whitespace collapsing, xml:space, a split
-// run) can't stall alignment for every run after it.
+// How many runs ahead to look within a part when the current node doesn't match
+// its next run, so a single run the renderer transformed (whitespace collapsing,
+// xml:space, a split run) can't stall alignment for the rest of that part.
 const ALIGN_LOOKAHEAD = 8;
 
 /**
- * Walk the rendered DOM's text nodes in document order and align them to the
- * parsed runs. Both sequences follow `<w:t>` order, so we consume a run each
- * time a text node carries its text. Synthetic nodes (tab em-spaces, symbols)
- * don't match the next run and are skipped; a run that no node matches is
- * skipped after a bounded lookahead, so one mismatch doesn't drop the rest.
+ * The rendered region a DOM text node sits in, from its nearest structural
+ * ancestor: docx-preview renders headers into `<header>`, footers into
+ * `<footer>`, and foot/endnotes into `<li>`; everything else is body content.
+ * A text node is only aligned to runs whose part is the same category, so
+ * identical text in (say) a header and the body can't cross-map.
+ */
+function nodeCategory(node: Text): DocxPartCategory {
+	for (
+		let el = node.parentElement;
+		el && el !== container.value;
+		el = el.parentElement
+	) {
+		const tag = el.tagName;
+		if (tag === "HEADER") return "header";
+		if (tag === "FOOTER") return "footer";
+		if (tag === "LI") return "note";
+	}
+	return "body";
+}
+
+/**
+ * Walk the rendered DOM's text nodes in order and align each to a parsed run.
+ * The parts render in the DOM in an order we don't control (docx-preview emits
+ * header -> body -> footer per page, not part-name order), so we track a cursor
+ * per part rather than one global one: each text node is matched against the
+ * next unconsumed run of a part in the *same rendered region* (body / header /
+ * footer / note), with a bounded lookahead for renderer-transformed runs.
+ * Restricting to the node's region keeps identical text across parts from
+ * cross-mapping. Synthetic nodes (tabs, symbols) match nothing and are skipped.
  */
 function alignRuns(root: HTMLElement, runs: DocxRun[]) {
 	const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
 	const pairs: { run: DocxRun; parent: HTMLElement }[] = [];
-	let r = 0;
+	// Group each part's runs (in order) with its own consume cursor, and index
+	// those groups by rendered region so a text node only considers its own.
+	const byPart = new Map<string, { runs: DocxRun[]; cursor: number }>();
+	const byCategory = new Map<
+		DocxPartCategory,
+		{ runs: DocxRun[]; cursor: number }[]
+	>();
+	for (const run of runs) {
+		let g = byPart.get(run.part);
+		if (!g) {
+			g = { runs: [], cursor: 0 };
+			byPart.set(run.part, g);
+			const cat = docxPartCategory(run.part);
+			const list = byCategory.get(cat) ?? [];
+			list.push(g);
+			byCategory.set(cat, list);
+		}
+		g.runs.push(run);
+	}
 	let node = walker.nextNode() as Text | null;
-	while (node && r < runs.length) {
+	while (node) {
 		const value = node.nodeValue;
 		const parent = node.parentElement;
 		if (value && parent) {
-			// Match this node against the next few runs; skip any earlier ones the
-			// renderer didn't reproduce so later runs still align.
-			const limit = Math.min(r + ALIGN_LOOKAHEAD, runs.length);
-			for (let j = r; j < limit; j++) {
-				const run = runs[j]!;
-				if (run.text.length > 0 && run.text === value) {
-					pairs.push({ run, parent });
-					r = j + 1;
-					break;
+			// Only parts from this node's rendered region are candidates; take the
+			// first next-unconsumed run (with lookahead) that matches and advance it.
+			for (const g of byCategory.get(nodeCategory(node)) ?? []) {
+				const limit = Math.min(g.cursor + ALIGN_LOOKAHEAD, g.runs.length);
+				let matched = false;
+				for (let j = g.cursor; j < limit; j++) {
+					const run = g.runs[j]!;
+					if (run.text.length > 0 && run.text === value) {
+						pairs.push({ run, parent });
+						g.cursor = j + 1;
+						matched = true;
+						break;
+					}
 				}
+				if (matched) break;
 			}
 		}
 		node = walker.nextNode() as Text | null;
@@ -115,10 +165,18 @@ async function render(url: string, target: HTMLElement) {
 			a.removeAttribute("href");
 			a.removeAttribute("target");
 		}
-		// Parse the same document.xml for run byte-spans, then align to the DOM.
+		// Parse every rendered part (document body + headers/footers/notes) for
+		// run byte-spans, then align them to the DOM. docx-preview renders those
+		// parts into the same tree, so a single ordered text-node walk aligns all.
 		const zip = await JSZip.loadAsync(buffer);
-		const xml = await zip.file("word/document.xml")?.async("string");
-		if (xml) runNodes = alignRuns(target, parseDocxRuns(xml));
+		const parts = new Map<string, string>();
+		await Promise.all(
+			Object.values(zip.files)
+				.filter((f) => !f.dir && isRenderedDocxPart(f.name))
+				.map(async (f) => parts.set(f.name, await f.async("string"))),
+		);
+		if (props.contentUrl !== url || container.value !== target) return;
+		runNodes = alignRuns(target, parseDocxParts(parts));
 		applyHighlights();
 	} catch {
 		if (props.contentUrl === url) {
@@ -150,9 +208,10 @@ function applyHighlights() {
 	const runs = runNodes.map((p) => p.run);
 	for (const entity of props.entities) {
 		for (const ref of entity.sourceRefs ?? []) {
-			// Only spans into the main document part map to these runs.
-			if (ref.part && ref.part !== "word/document.xml") continue;
-			for (const span of resolveDocxSpan(runs, ref.start, ref.end)) {
+			// Resolve within the ref's own part (document body, header, footer, …);
+			// spans in non-rendered parts (e.g. a .rels hyperlink target) match no
+			// run and are skipped.
+			for (const span of resolveDocxSpan(runs, ref.part, ref.start, ref.end)) {
 				const list = perRun.get(span.runIndex) ?? [];
 				list.push({ start: span.charStart, end: span.charEnd, entity });
 				perRun.set(span.runIndex, list);
@@ -219,6 +278,7 @@ function wrapRun(
 		const chip = document.createElement("span");
 		chip.className = "docx-chip";
 		chip.dataset.entity = s.entity.id;
+		if (s.entity.category) chip.dataset.category = s.entity.category;
 		chip.title = s.entity.label;
 		chip.textContent = text.slice(start, end);
 		frag.append(chip);
@@ -325,22 +385,6 @@ watch(
 	scrollbar-color: var(--border) transparent;
 }
 
-/* Detected-entity chip: a calm amber tint over the run text, matching the code
-   view. Padding cancelled by negative margin so it never shifts the page text. */
-.studio-docx :deep(.docx-chip) {
-	--flag: oklch(0.68 0.15 65);
-	border-radius: 0.2rem;
-	padding: 0 0.15rem;
-	margin: 0 -0.15rem;
-	background-color: color-mix(in oklab, var(--flag) 22%, transparent);
-	cursor: pointer;
-	transition: background-color 0.15s, box-shadow 0.15s;
-}
-.studio-docx :deep(.docx-chip:hover) {
-	background-color: color-mix(in oklab, var(--flag) 34%, transparent);
-}
-.studio-docx :deep(.docx-chip--active) {
-	background-color: color-mix(in oklab, var(--flag) 38%, transparent);
-	box-shadow: 0 0 0 1.5px var(--flag);
-}
+/* Entity-chip styling (the `.docx-chip` marker underline) is shared and lives
+   in assets/css/entities.css so every preview stays consistent. */
 </style>
