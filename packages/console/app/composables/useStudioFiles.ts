@@ -168,25 +168,6 @@ export function useStudioFiles() {
 		}
 	}
 
-	// Move a file to the front of the list
-	function moveFileToFront(fileId: string) {
-		if (!openFiles.value.has(fileId)) return;
-
-		const file = openFiles.value.get(fileId)!;
-		const newMap = new Map<string, OpenFile>();
-		newMap.set(fileId, file);
-
-		for (const [id, f] of openFiles.value) {
-			if (id !== fileId) {
-				newMap.set(id, f);
-			}
-		}
-
-		openFiles.value = newMap;
-		activeFileId.value = fileId;
-		persist();
-	}
-
 	// Check if a file is open
 	function isFileOpen(fileId: string) {
 		return openFiles.value.has(fileId);
@@ -273,7 +254,6 @@ export function useStudioFiles() {
 		openFile,
 		closeFile,
 		setActiveFile,
-		moveFileToFront,
 		isFileOpen,
 		closeAllFiles,
 		restoreSession,

@@ -40,7 +40,7 @@ definePageMeta({
 
 const { t } = useI18n();
 
-useHead({ title: t("tokens.title") });
+useHead({ title: () => t("tokens.title") });
 
 // Use the API tokens composable
 const {

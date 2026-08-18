@@ -9,7 +9,7 @@ import { NvisyApiError } from "@nvisy/sdk";
 
 const { t } = useI18n();
 
-useHead({ title: t("auth.login.title") });
+useHead({ title: () => t("auth.login.title") });
 
 definePageMeta({
 	layout: "auth",

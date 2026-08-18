@@ -16,7 +16,7 @@ definePageMeta({
 
 const { t } = useI18n();
 
-useHead({ title: t("analytics.overview.title") });
+useHead({ title: () => t("analytics.overview.title") });
 
 // Selected reporting period.
 const dateRange = ref("7d");

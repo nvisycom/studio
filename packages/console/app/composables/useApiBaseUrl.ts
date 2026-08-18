@@ -22,53 +22,67 @@ let initialized = false;
 function initialize() {
 	if (initialized || !import.meta.client) return;
 	initialized = true;
-	// Normalize on load so an override stored before a normalization change
-	// (e.g. one missing its `http://` scheme) self-heals.
+	// Re-normalize on load so an override stored before a normalization change
+	// self-heals (a missing scheme, a value now considered invalid). A stored
+	// value that no longer normalizes is dropped rather than kept broken.
 	const stored = localStorage.getItem(STORAGE_KEY);
-	if (stored) {
-		const normalized = normalize(stored);
-		override.value = normalized;
+	if (!stored) return;
+	const normalized = normalize(stored);
+	override.value = normalized;
+	if (normalized) {
 		if (normalized !== stored) localStorage.setItem(STORAGE_KEY, normalized);
+	} else {
+		localStorage.removeItem(STORAGE_KEY);
 	}
 }
 
-/** Whether a host is a loopback address (safe to talk to over plaintext HTTP). */
-function isLoopbackHost(host: string): boolean {
-	return (
-		host === "localhost" ||
-		host === "127.0.0.1" ||
-		host === "::1" ||
-		host === "[::1]"
-	);
+/**
+ * Whether a URL's hostname is a loopback address (safe over plaintext HTTP).
+ * `URL.hostname` keeps the brackets for IPv6 (`[::1]`), so strip them first.
+ */
+function isLoopbackHost(hostname: string): boolean {
+	const host = hostname.replace(/^\[|\]$/g, "");
+	return host === "localhost" || host === "127.0.0.1" || host === "::1";
 }
 
 /**
  * Normalize a user-entered server URL into an absolute base the SDK accepts:
  * trim it, add a scheme when none is given, and ensure a single trailing slash
  * (a bare `127.0.0.1:8080` would otherwise be treated as a relative URL and
- * every request would fail).
+ * every request would fail). Returns `null` for anything that isn't a usable
+ * http(s) URL (a bare `http://`, an unsupported scheme like `ftp://`, garbage).
  *
  * A schemeless host defaults to `https://` so credentials and the bearer token
  * aren't sent in plaintext to a remote server — except loopback hosts (the
- * local dev API), which default to `http://` since they don't have TLS.
+ * local dev API), which default to `http://` since they don't have TLS. The host
+ * is resolved with `URL` parsing so bracketed IPv6 (`[::1]:8080`) is handled.
  */
-function normalize(url: string): string {
-	let value = url.trim();
-	if (!value) return value;
-	if (!/^https?:\/\//i.test(value)) {
-		const host = value.split("/", 1)[0]!.split(":", 1)[0]!;
-		value = `${isLoopbackHost(host) ? "http" : "https"}://${value}`;
-	}
-	return value.endsWith("/") ? value : `${value}/`;
-}
+function normalize(url: string): string | null {
+	const value = url.trim();
+	if (!value) return null;
 
-/** Whether a normalized URL actually parses and has a host (rejects `http://`). */
-function isUsableUrl(url: string): boolean {
+	const hasScheme = /^[a-z][a-z0-9+.-]*:\/\//i.test(value);
+	// Parse to resolve the real host. For schemeless input, borrow `http://` so
+	// URL parsing succeeds, then pick the scheme from the resolved host.
+	let parsed: URL;
 	try {
-		return new URL(url).host.length > 0;
+		parsed = new URL(hasScheme ? value : `http://${value}`);
 	} catch {
-		return false;
+		return null;
 	}
+	if (!parsed.hostname) return null;
+
+	if (hasScheme) {
+		// Only http(s) are supported; reject e.g. ftp:// rather than mangle it.
+		if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+			return null;
+		}
+	} else {
+		parsed.protocol = isLoopbackHost(parsed.hostname) ? "http:" : "https:";
+	}
+
+	const base = parsed.toString();
+	return base.endsWith("/") ? base : `${base}/`;
 }
 
 export function useApiBaseUrl(): {
@@ -99,7 +113,7 @@ export function useApiBaseUrl(): {
 			return true;
 		}
 		const value = normalize(url);
-		if (!isUsableUrl(value)) return false;
+		if (!value) return false;
 		override.value = value;
 		if (import.meta.client) localStorage.setItem(STORAGE_KEY, value);
 		return true;

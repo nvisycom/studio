@@ -7,6 +7,7 @@ import { Button } from "#console/components/ui/button";
 // never sent), show an honest "coming soon" panel. Swap this for the real chat
 // once a support service exists.
 const { isOpen, toggle: toggleChat } = useHelpChat();
+const { t } = useI18n();
 </script>
 
 <template>
@@ -17,8 +18,14 @@ const { isOpen, toggle: toggleChat } = useHelpChat();
     <div
       class="flex items-center justify-between rounded-t-lg border-b border-border px-4 py-3"
     >
-      <span class="font-medium">Support</span>
-      <Button variant="ghost" size="sm" class="h-8 w-8 p-0" @click="toggleChat">
+      <span class="font-medium">{{ t("helpChat.title") }}</span>
+      <Button
+        variant="ghost"
+        size="sm"
+        class="h-8 w-8 p-0"
+        :aria-label="t('common.close')"
+        @click="toggleChat"
+      >
         <X :size="18" />
       </Button>
     </div>
@@ -27,9 +34,11 @@ const { isOpen, toggle: toggleChat } = useHelpChat();
       class="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center"
     >
       <MessagesSquare :size="28" class="text-muted-foreground/60" />
-      <p class="text-sm font-medium text-foreground">Live chat is coming soon</p>
+      <p class="text-sm font-medium text-foreground">
+        {{ t("helpChat.comingSoon") }}
+      </p>
       <p class="text-sm text-muted-foreground">
-        In the meantime, reach us at
+        {{ t("helpChat.contact") }}
         <a
           href="mailto:support@nvisy.com"
           class="text-foreground underline underline-offset-2"

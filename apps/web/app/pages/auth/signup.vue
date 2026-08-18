@@ -8,7 +8,7 @@ import { FeatureGate } from "#console/components/common";
 import { NvisyApiError } from "@nvisy/sdk";
 
 const { t } = useI18n();
-useHead({ title: t("auth.signup.title") });
+useHead({ title: () => t("auth.signup.title") });
 
 definePageMeta({
 	layout: "auth",

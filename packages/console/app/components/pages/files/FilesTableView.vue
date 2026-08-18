@@ -64,7 +64,7 @@ const columns = computed<VirtualColumn<NvisyFile>[]>(() => [
 	{
 		key: "uploadedBy",
 		header: t("files.table.headers.uploadedBy"),
-		width: "180px",
+		width: "140px",
 		cell: (f) => ({
 			type: "avatar",
 			name: personLabel(f.uploadedBy),

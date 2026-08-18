@@ -14,7 +14,7 @@ import { Switch } from "#console/components/ui/switch";
 
 const { t } = useI18n();
 
-useHead({ title: t("billing.title") });
+useHead({ title: () => t("billing.title") });
 
 definePageMeta({
 	pageCategory: "header.category.billing",

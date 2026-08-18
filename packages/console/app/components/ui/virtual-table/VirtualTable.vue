@@ -86,6 +86,26 @@ const columnDefs = useColumns<TRow>({
 		(slots[`cell-${key}`]?.({ row }) ?? null) as VNodeChild,
 });
 
+// The table's minimum usable width: each fixed column keeps its px width, each
+// flex column (no width, e.g. name) gets a readable floor, plus the leading
+// checkbox / trailing actions gutters. The table stays `w-full` and fills the
+// container above this; below it, the scroll container scrolls horizontally
+// instead of crushing the columns into one another.
+const FLEX_COLUMN_MIN = 200; // readable floor for an auto-sized column (e.g. name)
+const GUTTER_WIDTH = 40; // checkbox / actions columns
+const minTableWidth = computed(() => {
+	let width = 0;
+	if (props.selection) width += GUTTER_WIDTH;
+	if (props.rowActions) width += GUTTER_WIDTH;
+	for (const col of props.columns) {
+		const px = col.width?.endsWith("px")
+			? Number.parseInt(col.width, 10)
+			: undefined;
+		width += px ?? FLEX_COLUMN_MIN;
+	}
+	return width;
+});
+
 // ── TanStack table (core only) + virtualizer ──────────────────────────────
 
 const table = useTable({
@@ -185,7 +205,7 @@ function onRowContextMenu(event: MouseEvent, row: TRow) {
     :style="maxHeight ? { maxHeight } : undefined"
     @scroll="onScroll"
   >
-    <Table class="table-fixed">
+    <Table class="table-fixed" :style="{ minWidth: `${minTableWidth}px` }">
       <TableHeader
         class="sticky top-0 z-10 bg-background shadow-[inset_0_-1px_0_0_hsl(var(--border))]"
       >

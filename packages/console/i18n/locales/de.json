@@ -92,7 +92,7 @@
 		"labelSelect": {
 			"placeholder": "Label auswählen"
 		},
-		"comingSoon": "Bald verfügbar"
+		"close": "Schließen"
 	},
 	"settings": {
 		"workspace": {
@@ -1818,24 +1818,10 @@
 		"title": "Feedback",
 		"heading": "Feedback senden",
 		"description": "Wir freuen uns über Ihre Gedanken, Vorschläge oder Probleme, die Sie haben.",
-		"categoryLabel": "Kategorie",
-		"categoryPlaceholder": "Kategorie auswählen",
-		"categories": {
-			"bug": "Fehlerbericht",
-			"feature": "Funktionswunsch",
-			"improvement": "Verbesserung",
-			"question": "Frage",
-			"other": "Sonstiges"
-		},
-		"nameLabel": "Name",
-		"namePlaceholder": "Ihr Name",
-		"emailLabel": "E-Mail",
-		"emailPlaceholder": "ihre.email{'@'}beispiel.com",
-		"messageLabel": "Nachricht",
-		"messagePlaceholder": "Sagen Sie uns, was Sie denken...",
 		"cancel": "Abbrechen",
 		"submit": "Feedback senden",
-		"comingSoon": "Diese Funktion ist noch nicht verfügbar — bald verfügbar."
+		"comingSoon": "Diese Funktion ist noch nicht verfügbar — bald verfügbar.",
+		"contact": "In der Zwischenzeit erreichen Sie uns unter"
 	},
 	"account": {
 		"avatar": {
@@ -2164,5 +2150,10 @@
 			"stripeNote": "Alle Zahlungen werden sicher über Stripe abgewickelt.",
 			"pricingLink": "Vollständige Preisdetails anzeigen"
 		}
+	},
+	"helpChat": {
+		"title": "Support",
+		"comingSoon": "Live-Chat ist bald verfügbar",
+		"contact": "In der Zwischenzeit erreichen Sie uns unter"
 	}
 }

@@ -6,7 +6,7 @@ import { Label } from "#console/components/ui/label";
 
 const { t } = useI18n();
 
-useHead({ title: t("auth.resetPassword.title") });
+useHead({ title: () => t("auth.resetPassword.title") });
 
 definePageMeta({
 	layout: "auth",

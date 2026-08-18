@@ -386,9 +386,10 @@ const filteredProviders = computed(() => {
 		return matchesStatusAndSearch(provider, query);
 	});
 
-	// Sort providers
+	// Sort providers. Connectable providers always come first (by design — the
+	// name selector orders within each availability group, not globally), so a
+	// user scanning for something to connect sees the actionable ones up top.
 	return filtered.sort((a, b) => {
-		// Always put available first
 		if (a.status !== b.status) {
 			return a.status === "available" ? -1 : 1;
 		}
