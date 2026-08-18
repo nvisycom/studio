@@ -26,6 +26,9 @@ export default defineNuxtConfig({
 		public: {
 			nvisyApiUrl: isDev ? API_URL_DEV : API_URL_PROD,
 			nvisySdkLogging: isDev,
+			// Base URL of the web app for user-facing links (e.g. invite links).
+			// Empty on web — the current origin is already the web app.
+			webAppUrl: "",
 			// Deployment edition. "cloud" enables SaaS-only features (billing,
 			// OAuth, support chat); anything else is treated as self-hosted. Cloud
 			// builds set NUXT_PUBLIC_DEPLOYMENT=cloud; self-hosted leaves it unset.

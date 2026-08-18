@@ -54,8 +54,13 @@ function initializeAuth() {
 export function useAuth() {
 	initializeAuth();
 
-	const config = useRuntimeConfig();
 	const queryCache = useQueryCache();
+	// Login/signup run before an authed client exists, so they take the base URL
+	// and fetch directly. Use the effective URL (the user's override on desktop,
+	// else the config default) and the injected fetch (desktop: Tauri's native
+	// fetch, bypassing CORS) so auth reaches the same server the app will talk to.
+	const { baseUrl } = useApiBaseUrl();
+	const { apiFetch } = useApiFetch();
 
 	const isAuthenticated = computed(() => {
 		if (!authToken.value) return false;
@@ -66,7 +71,8 @@ export function useAuth() {
 	const loginMutation = useMutation({
 		mutation: async (credentials: Login) => {
 			return await sdkLogin(credentials, {
-				baseUrl: config.public.nvisyApiUrl as string,
+				baseUrl: baseUrl.value,
+				fetch: apiFetch.value,
 			});
 		},
 		onSuccess(data) {
@@ -77,7 +83,8 @@ export function useAuth() {
 	const signupMutation = useMutation({
 		mutation: async (details: Signup) => {
 			return await sdkSignup(details, {
-				baseUrl: config.public.nvisyApiUrl as string,
+				baseUrl: baseUrl.value,
+				fetch: apiFetch.value,
 			});
 		},
 		onSuccess(data) {

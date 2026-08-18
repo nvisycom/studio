@@ -1,4 +1,14 @@
 {
+	"auth": {
+		"server": {
+			"label": "Server URL",
+			"placeholder": "https://api.nvisy.com",
+			"description": "The Nvisy server to connect to. Leave blank for the default.",
+			"advanced": "Server settings",
+			"reset": "Use default",
+			"connectionError": "Couldn't reach the server. Check the Server URL and that the server is running."
+		}
+	},
 	"tray": {
 		"openStudio": "Open studio",
 		"minimizeToTray": "Minimize to tray",
