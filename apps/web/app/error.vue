@@ -2,7 +2,7 @@
 import type { NuxtError } from "#app";
 import { ArrowLeft, Home, RefreshCw } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
-import ThemeToggle from "@/components/footer/ThemeToggle.vue";
+import ThemeToggle from "#console/components/layout/footer/ThemeToggle.vue";
 
 const props = defineProps<{
 	error: NuxtError;

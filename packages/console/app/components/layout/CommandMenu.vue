@@ -239,7 +239,11 @@ async function executeAction(actionId: string) {
 					invitedRole: "member",
 					expiresIn: "in7Days",
 				});
-				const baseUrl = window.location.origin;
+				// Invite links must point at the web app, not the current origin —
+				// on desktop that origin is `tauri://`, which no one can open. Fall
+				// back to the current origin when no web-app URL is configured (web).
+				const baseUrl =
+					useRuntimeConfig().public.webAppUrl || window.location.origin;
 				const inviteUrl = `${baseUrl}/join/${result.inviteCode}`;
 				await navigator.clipboard.writeText(inviteUrl);
 				toast.success(t("commandMenu.actions.inviteCodeCreated"));

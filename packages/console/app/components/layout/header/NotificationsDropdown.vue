@@ -5,7 +5,7 @@ import {
 	DropdownMenuTrigger,
 } from "#console/components/ui/dropdown-menu";
 import { Button } from "#console/components/ui/button";
-import { AppHealth } from "@/components/footer";
+import { AppHealth } from "#console/components/layout/footer";
 import { Bell, Loader2, Inbox } from "@lucide/vue";
 
 const { t } = useI18n();

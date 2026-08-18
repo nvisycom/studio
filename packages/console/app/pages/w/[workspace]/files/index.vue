@@ -9,6 +9,7 @@ import {
 	FilesTableView,
 	UploadFilesDialog,
 } from "#console/components/pages/files";
+import { Button } from "#console/components/ui/button";
 
 const { t } = useI18n();
 const { wLink } = useWorkspaceLink();

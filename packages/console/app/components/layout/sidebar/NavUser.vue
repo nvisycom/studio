@@ -35,7 +35,7 @@ import {
 } from "#console/components/ui/sidebar";
 import { Kbd } from "#console/components/ui/kbd";
 import { personLabel } from "#console/utils/naming";
-import CommandMenu from "@/components/CommandMenu.vue";
+import CommandMenu from "#console/components/layout/CommandMenu.vue";
 import CreateWorkspaceSheet from "#console/components/common/CreateWorkspaceSheet.vue";
 
 const { t, locale, locales, setLocale } = useI18n();

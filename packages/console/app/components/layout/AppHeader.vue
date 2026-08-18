@@ -14,7 +14,7 @@ import {
 	HeaderTabs,
 	FeedbackModal,
 	NotificationsDropdown,
-} from "@/components/header";
+} from "#console/components/layout/header";
 
 const route = useRoute();
 

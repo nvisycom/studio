@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppSidebar from "@/components/sidebar/AppSidebar.vue";
-import AppHeader from "@/components/AppHeader.vue";
+import AppSidebar from "#console/components/layout/sidebar/AppSidebar.vue";
+import AppHeader from "#console/components/layout/AppHeader.vue";
 import { Loader2 } from "@lucide/vue";
 import { SidebarInset, SidebarProvider } from "#console/components/ui/sidebar";
 import { Toaster } from "#console/components/ui/sonner";

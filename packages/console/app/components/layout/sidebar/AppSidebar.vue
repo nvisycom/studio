@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import type { SidebarProps } from "#console/components/ui/sidebar";
+// Relative (not `#console`) so @vue/compiler-sfc can resolve the type when
+// extracting `defineProps` runtime props — its type resolver can't follow the
+// Nuxt `#console` alias for a file that lives inside the layer itself.
+import type { SidebarProps } from "../../ui/sidebar";
 import {
 	Puzzle,
 	Settings,
@@ -14,10 +17,10 @@ import {
 	Workflow,
 	ShieldCheck,
 } from "@lucide/vue";
-import NavMain from "@/components/sidebar/NavMain.vue";
-import NavUser from "@/components/sidebar/NavUser.vue";
-import WorkspaceSwitcher from "@/components/sidebar/WorkspaceSwitcher.vue";
-import HelpChat from "@/components/HelpChat.vue";
+import NavMain from "#console/components/layout/sidebar/NavMain.vue";
+import NavUser from "#console/components/layout/sidebar/NavUser.vue";
+import WorkspaceSwitcher from "#console/components/layout/sidebar/WorkspaceSwitcher.vue";
+import HelpChat from "#console/components/layout/HelpChat.vue";
 import {
 	Sidebar,
 	SidebarContent,

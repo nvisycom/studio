@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import ThemeToggle from "@/components/footer/ThemeToggle.vue";
-import LanguageSwitcher from "@/components/footer/LanguageSwitcher.vue";
+import ThemeToggle from "#console/components/layout/footer/ThemeToggle.vue";
+import LanguageSwitcher from "#console/components/layout/footer/LanguageSwitcher.vue";
 import AuroraGlow from "@/components/auth/AuroraGlow.vue";
 
 const { t } = useI18n();
