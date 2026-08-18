@@ -77,7 +77,7 @@ export function formatDuration(
 
 /** Format a date as a short "Mon D" label (e.g. "Jan 5"). */
 export function formatShortDate(date: string | number | Date): string {
-	return new Date(date).toLocaleDateString("en-US", {
+	return new Date(date).toLocaleDateString(undefined, {
 		month: "short",
 		day: "numeric",
 	});
@@ -85,7 +85,7 @@ export function formatShortDate(date: string | number | Date): string {
 
 /** Format a date as "Mon D, YYYY" (e.g. "Jan 5, 2024"). */
 export function formatLongDate(date: string | number | Date): string {
-	return new Date(date).toLocaleDateString("en-US", {
+	return new Date(date).toLocaleDateString(undefined, {
 		month: "short",
 		day: "numeric",
 		year: "numeric",
@@ -94,7 +94,7 @@ export function formatLongDate(date: string | number | Date): string {
 
 /** Format a date as "Mon D, YYYY, HH:MM:SS" (long date + time). */
 export function formatDateTime(date: string | number | Date): string {
-	return new Date(date).toLocaleString("en-US", {
+	return new Date(date).toLocaleString(undefined, {
 		month: "short",
 		day: "numeric",
 		year: "numeric",

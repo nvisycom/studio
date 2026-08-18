@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ThemeToggle from "@/components/footer/ThemeToggle.vue";
+import ThemeToggle from "#console/components/layout/footer/ThemeToggle.vue";
 </script>
 
 <!--

@@ -9,7 +9,7 @@ import { NvisyApiError } from "@nvisy/sdk";
 
 const { t } = useI18n();
 
-useHead({ title: t("auth.login.title") });
+useHead({ title: () => t("auth.login.title") });
 
 definePageMeta({
 	layout: "auth",
@@ -34,7 +34,8 @@ async function handleLogin(): Promise<void> {
 			password: password.value,
 			rememberMe: rememberMe.value,
 		});
-		navigateTo("/");
+		// Return the user to where they were headed before login, if any.
+		navigateTo(safeRedirectPath(useRoute().query.redirect) ?? "/");
 	} catch {
 		// Error is handled by the mutation
 	}
@@ -146,6 +147,10 @@ async function handleMicrosoftLogin(): Promise<void> {
           />
           <button
             type="button"
+            :aria-label="
+              showPassword ? t('common.hidePassword') : t('common.showPassword')
+            "
+            :aria-pressed="showPassword"
             @click="showPassword = !showPassword"
             class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
           >

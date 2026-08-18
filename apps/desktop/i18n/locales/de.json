@@ -1,0 +1,20 @@
+{
+	"auth": {
+		"server": {
+			"label": "Server-URL",
+			"placeholder": "https://api.nvisy.com",
+			"description": "Der Nvisy-Server, mit dem verbunden werden soll. Leer lassen für den Standard.",
+			"advanced": "Servereinstellungen",
+			"reset": "Standard verwenden",
+			"connectionError": "Server nicht erreichbar. Prüfen Sie die Server-URL und ob der Server läuft.",
+			"invalid": "Geben Sie eine gültige Server-URL ein (z. B. https://api.example.com)."
+		}
+	},
+	"tray": {
+		"openStudio": "Studio öffnen",
+		"minimizeToTray": "In die Ablage minimieren",
+		"enableNotifications": "Benachrichtigungen aktivieren",
+		"disableNotifications": "Benachrichtigungen deaktivieren",
+		"quit": "Beenden"
+	}
+}

@@ -8,7 +8,11 @@ import { Input } from "#console/components/ui/input";
  * Input + absolutely-positioned eye button that was duplicated per field.
  */
 defineProps<{
+	/** Forwarded to the input so a `<Label for>` targets it, not the wrapper. */
+	id?: string;
 	placeholder?: string;
+	/** Forwarded to the input so password managers behave (e.g. `new-password`). */
+	autocomplete?: string;
 }>();
 
 const { t } = useI18n();
@@ -19,15 +23,18 @@ const visible = ref(false);
 <template>
   <div class="relative max-w-md">
     <Input
+      :id="id"
       v-model="model"
       :type="visible ? 'text' : 'password'"
       :placeholder="placeholder"
+      :autocomplete="autocomplete"
       class="h-9 pr-10"
     />
     <button
       type="button"
       class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
       :aria-label="visible ? t('common.hidePassword') : t('common.showPassword')"
+      :aria-pressed="visible"
       @click="visible = !visible"
     >
       <EyeOff v-if="visible" :size="16" />

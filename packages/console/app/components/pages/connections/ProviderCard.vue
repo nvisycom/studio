@@ -34,13 +34,8 @@ interface Props {
 	provider: Provider;
 }
 
-/**
- * Component emits interface
- */
-interface Emits {
-	(e: "connect", id: string | number): void;
-	(e: "notifyMe", id: string | number): void;
-}
+/** Component emits. */
+type Emits = (e: "connect", id: string | number) => void;
 
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();

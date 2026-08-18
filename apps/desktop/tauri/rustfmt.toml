@@ -1,4 +1,10 @@
 # https://rust-lang.github.io/rustfmt
+#
+# The options below are nightly-only, so formatting requires the nightly
+# toolchain's rustfmt (`cargo +nightly fmt`). `unstable_features` opts in
+# explicitly rather than relying on the channel's implicit acceptance.
+
+unstable_features = true
 
 group_imports = "StdExternalCrate"
 imports_granularity = "Module"

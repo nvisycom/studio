@@ -91,7 +91,8 @@
 		},
 		"labelSelect": {
 			"placeholder": "Label auswählen"
-		}
+		},
+		"close": "Schließen"
 	},
 	"settings": {
 		"workspace": {
@@ -652,6 +653,7 @@
 		}
 	},
 	"tokens": {
+		"title": "API-Tokens",
 		"page": {
 			"description": "Verwalten Sie Ihre API-Tokens und Zugangsdaten"
 		},
@@ -741,7 +743,8 @@
 			"createFailed": "Token konnte nicht erstellt werden",
 			"revokeFailed": "Token konnte nicht widerrufen werden",
 			"someRevokeFailed": "{count} Token konnte nicht widerrufen werden | {count} Tokens konnten nicht widerrufen werden",
-			"renameFailed": "Token konnte nicht umbenannt werden"
+			"renameFailed": "Token konnte nicht umbenannt werden",
+			"loadFailed": "Ihre Tokens konnten nicht geladen werden. Bitte versuchen Sie es erneut."
 		}
 	},
 	"invite": {
@@ -908,8 +911,7 @@
 			"sorting": {
 				"label": "Sortieren",
 				"nameAsc": "Name (A-Z)",
-				"nameDesc": "Name (Z-A)",
-				"popularity": "Beliebteste"
+				"nameDesc": "Name (Z-A)"
 			},
 			"badges": {
 				"new": "Neu",
@@ -1497,7 +1499,8 @@
 					"article9_with_reid_hardening": "Artikel 9 + Re-ID-Härtung",
 					"article9_and10": "Artikel 9 & 10"
 				}
-			}
+			},
+			"slugEmpty": "Geben Sie einen Namen mit Buchstaben oder Zahlen ein, um einen Slug zu erzeugen."
 		},
 		"browseTemplates": "Vorlagen durchsuchen"
 	},
@@ -1561,7 +1564,8 @@
 				"downloadCsv": "CSV herunterladen",
 				"none": "—",
 				"copyFailed": "Lauf-ID konnte nicht kopiert werden"
-			}
+			},
+			"openInStudioFailed": "Die Datei konnte nicht im Studio geöffnet werden."
 		},
 		"learnMore": "Mehr erfahren",
 		"status": {
@@ -1684,6 +1688,53 @@
 			},
 			"emptyDescription": "Aktionen in diesem Arbeitsbereich erscheinen hier.",
 			"loadMore": "Mehr laden"
+		},
+		"common": {
+			"selectPeriod": "Zeitraum wählen",
+			"period24h": "Letzte 24 Stunden",
+			"period7d": "Letzte 7 Tage",
+			"period30d": "Letzte 30 Tage",
+			"period90d": "Letzte 90 Tage",
+			"import": "Importieren",
+			"export": "Exportieren"
+		},
+		"overview": {
+			"title": "Analysen",
+			"creditConsumption": {
+				"title": "Credit-Verbrauch",
+				"subtitle": "Über die Zeit verbrauchte KI- und Plattform-Credits"
+			},
+			"storageUsage": {
+				"title": "Speichernutzung",
+				"subtitle": "Speicherverbrauch für Original- und bearbeitete Dateien"
+			},
+			"documentTransfers": {
+				"title": "Dokumentübertragungen",
+				"subtitle": "Hoch- und heruntergeladene Dokumente"
+			},
+			"documentProcessing": {
+				"title": "Dokumentverarbeitung",
+				"subtitle": "Bearbeitete und verifizierte Dokumente"
+			}
+		},
+		"ai": {
+			"title": "KI-Analysen",
+			"aiUsage": {
+				"title": "KI-Nutzung",
+				"subtitle": "OCR- und VLM-Token-Verbrauch"
+			},
+			"cachePerformance": {
+				"title": "Cache-Leistung",
+				"subtitle": "VLM-Cache-Treffer und -Fehlschläge"
+			},
+			"errorRate": {
+				"title": "Fehlerrate",
+				"subtitle": "Systemfehler als Prozentsatz aller Anfragen"
+			},
+			"responseTime": {
+				"title": "Antwortzeit",
+				"subtitle": "Durchschnittliche API-Antwortlatenz"
+			}
 		}
 	},
 	"auth": {
@@ -1767,25 +1818,10 @@
 		"title": "Feedback",
 		"heading": "Feedback senden",
 		"description": "Wir freuen uns über Ihre Gedanken, Vorschläge oder Probleme, die Sie haben.",
-		"categoryLabel": "Kategorie",
-		"categoryPlaceholder": "Kategorie auswählen",
-		"categories": {
-			"bug": "Fehlerbericht",
-			"feature": "Funktionswunsch",
-			"improvement": "Verbesserung",
-			"question": "Frage",
-			"other": "Sonstiges"
-		},
-		"nameLabel": "Name",
-		"namePlaceholder": "Ihr Name",
-		"emailLabel": "E-Mail",
-		"emailPlaceholder": "ihre.email{'@'}beispiel.com",
-		"messageLabel": "Nachricht",
-		"messagePlaceholder": "Sagen Sie uns, was Sie denken...",
 		"cancel": "Abbrechen",
 		"submit": "Feedback senden",
-		"toastTitle": "Feedback gesendet",
-		"toastDescription": "Vielen Dank für Ihr Feedback! Wir werden es in Kürze prüfen."
+		"comingSoon": "Diese Funktion ist noch nicht verfügbar — bald verfügbar.",
+		"contact": "In der Zwischenzeit erreichen Sie uns unter"
 	},
 	"account": {
 		"avatar": {
@@ -1816,6 +1852,9 @@
 			"hint": "Um deine E-Mail-Adresse zu ändern, kontaktiere bitte den Support."
 		},
 		"password": {
+			"currentLabel": "Aktuelles Passwort",
+			"currentPlaceholder": "Aktuelles Passwort eingeben",
+			"currentRequired": "Geben Sie Ihr aktuelles Passwort ein",
 			"newLabel": "Neues Passwort",
 			"newPlaceholder": "Neues Passwort eingeben",
 			"newHint": "Mindestens 8 Zeichen.",
@@ -2025,5 +2064,96 @@
 		"themeSystem": "System",
 		"language": "Sprache",
 		"documentation": "Dokumentation"
+	},
+	"billing": {
+		"title": "Abrechnung",
+		"headings": {
+			"plansTitle": "Tarife",
+			"plansSubtitle": "Wählen Sie den Tarif, der am besten zu Ihrem Team passt",
+			"addonsTitle": "Add-ons",
+			"addonsSubtitle": "Erweitern Sie Ihren Arbeitsbereich mit zusätzlichen Funktionen"
+		},
+		"badges": {
+			"mostPopular": "Am beliebtesten",
+			"alpha": "ALPHA"
+		},
+		"price": {
+			"perMonth": "/Monat",
+			"custom": "Individuelle Preise"
+		},
+		"cta": {
+			"currentPlan": "Aktueller Tarif",
+			"upgradeToPro": "Auf Pro upgraden",
+			"contactSales": "Vertrieb kontaktieren"
+		},
+		"plans": {
+			"free": {
+				"name": "Free",
+				"description": "Für Einzelpersonen und kleine Teams für den Einstieg",
+				"cta": "Aktueller Tarif",
+				"features": {
+					"teamMembers": "Bis zu 3 Teammitglieder",
+					"documents": "100 Dokumente",
+					"storage": "1 GB Speicher",
+					"analytics": "Basis-Analysen",
+					"support": "Community-Support"
+				}
+			},
+			"pro": {
+				"name": "Pro",
+				"description": "Für wachsende Teams, die mehr Leistung benötigen",
+				"cta": "Auf Pro upgraden",
+				"features": {
+					"teamMembers": "Bis zu 20 Teammitglieder",
+					"documents": "Unbegrenzte Dokumente",
+					"storage": "50 GB Speicher",
+					"analytics": "Erweiterte Analysen",
+					"support": "Priorisierter Support",
+					"apiAccess": "API-Zugriff",
+					"integrations": "Individuelle Integrationen"
+				}
+			},
+			"enterprise": {
+				"name": "Enterprise",
+				"description": "Für große Organisationen mit individuellen Anforderungen",
+				"cta": "Vertrieb kontaktieren",
+				"features": {
+					"teamMembers": "Unbegrenzte Teammitglieder",
+					"documents": "Unbegrenzte Dokumente",
+					"storage": "Unbegrenzter Speicher",
+					"analytics": "Enterprise-Analysen",
+					"support": "Dedizierter Support",
+					"sso": "SSO & SAML",
+					"contracts": "Individuelle Verträge",
+					"sla": "SLA-Garantien"
+				}
+			}
+		},
+		"addons": {
+			"webhooks": {
+				"name": "Webhooks",
+				"description": "Echtzeit-Ereignisbenachrichtigungen an Ihre Endpunkte",
+				"docLabel": "Webhooks-Dokumentation lesen"
+			},
+			"aiInsights": {
+				"name": "AI Insights",
+				"description": "Erweiterte KI-gestützte Analysen und Empfehlungen",
+				"docLabel": "AI-Insights-Dokumentation lesen"
+			},
+			"onPremise": {
+				"name": "On-Premise-Runtimes",
+				"description": "Führen Sie die Verarbeitung auf Ihrer eigenen Infrastruktur aus",
+				"docLabel": "On-Premise-Dokumentation lesen"
+			}
+		},
+		"footer": {
+			"stripeNote": "Alle Zahlungen werden sicher über Stripe abgewickelt.",
+			"pricingLink": "Vollständige Preisdetails anzeigen"
+		}
+	},
+	"helpChat": {
+		"title": "Support",
+		"comingSoon": "Live-Chat ist bald verfügbar",
+		"contact": "In der Zwischenzeit erreichen Sie uns unter"
 	}
 }

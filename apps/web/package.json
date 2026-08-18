@@ -10,12 +10,16 @@
 		"generate": "nuxt generate",
 		"preview": "nuxt preview",
 		"postinstall": "nuxt prepare",
-		"typecheck": "nuxt typecheck ."
+		"typecheck": "nuxt typecheck .",
+		"fmt": "biome format --write .",
+		"lint": "biome lint .",
+		"check": "biome check .",
+		"ci": "biome ci ."
 	},
 	"dependencies": {
 		"@nuxtjs/device": "^4.0.0",
 		"@nvisy/console": "*",
-		"@nvisy/sdk": "^0.29.0",
+		"@nvisy/sdk": "^0.31.0",
 		"jszip": "^3.10.1",
 		"nuxt": "^4.5.2",
 		"vue": "^3.5.41",

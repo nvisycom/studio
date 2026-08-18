@@ -91,7 +91,8 @@
 		},
 		"labelSelect": {
 			"placeholder": "Select a label"
-		}
+		},
+		"close": "Close"
 	},
 	"settings": {
 		"workspace": {
@@ -652,6 +653,7 @@
 		}
 	},
 	"tokens": {
+		"title": "API Tokens",
 		"page": {
 			"description": "Manage your API tokens and access credentials"
 		},
@@ -741,7 +743,8 @@
 			"createFailed": "Failed to create token",
 			"revokeFailed": "Failed to revoke token",
 			"someRevokeFailed": "{count} token failed to revoke | {count} tokens failed to revoke",
-			"renameFailed": "Failed to rename token"
+			"renameFailed": "Failed to rename token",
+			"loadFailed": "Couldn't load your tokens. Please try again."
 		}
 	},
 	"invite": {
@@ -908,8 +911,7 @@
 			"sorting": {
 				"label": "Sort",
 				"nameAsc": "Name (A-Z)",
-				"nameDesc": "Name (Z-A)",
-				"popularity": "Most Popular"
+				"nameDesc": "Name (Z-A)"
 			},
 			"badges": {
 				"new": "New",
@@ -1497,7 +1499,8 @@
 					"article9_with_reid_hardening": "Article 9 + re-ID hardening",
 					"article9_and10": "Articles 9 & 10"
 				}
-			}
+			},
+			"slugEmpty": "Enter a name using letters or numbers to generate a slug."
 		},
 		"browseTemplates": "Browse templates"
 	},
@@ -1561,7 +1564,8 @@
 				"downloadCsv": "Download CSV",
 				"none": "—",
 				"copyFailed": "Couldn't copy the run id"
-			}
+			},
+			"openInStudioFailed": "Couldn't open the file in the studio."
 		},
 		"learnMore": "Learn more",
 		"status": {
@@ -1684,6 +1688,53 @@
 			},
 			"emptyDescription": "Actions in this workspace will show up here.",
 			"loadMore": "Load more"
+		},
+		"common": {
+			"selectPeriod": "Select period",
+			"period24h": "Last 24 hours",
+			"period7d": "Last 7 days",
+			"period30d": "Last 30 days",
+			"period90d": "Last 90 days",
+			"import": "Import",
+			"export": "Export"
+		},
+		"overview": {
+			"title": "Analytics",
+			"creditConsumption": {
+				"title": "Credit Consumption",
+				"subtitle": "AI and platform credits used over time"
+			},
+			"storageUsage": {
+				"title": "Storage Usage",
+				"subtitle": "Original and edited file storage consumption"
+			},
+			"documentTransfers": {
+				"title": "Document Transfers",
+				"subtitle": "Documents uploaded and downloaded"
+			},
+			"documentProcessing": {
+				"title": "Document Processing",
+				"subtitle": "Documents edited and verified"
+			}
+		},
+		"ai": {
+			"title": "AI Analytics",
+			"aiUsage": {
+				"title": "AI Usage",
+				"subtitle": "OCR and VLM token consumption"
+			},
+			"cachePerformance": {
+				"title": "Cache Performance",
+				"subtitle": "VLM cache hits and misses"
+			},
+			"errorRate": {
+				"title": "Error Rate",
+				"subtitle": "System errors as percentage of total requests"
+			},
+			"responseTime": {
+				"title": "Response Time",
+				"subtitle": "Average API response latency"
+			}
 		}
 	},
 	"auth": {
@@ -1767,25 +1818,10 @@
 		"title": "Feedback",
 		"heading": "Send Feedback",
 		"description": "We'd love to hear your thoughts, suggestions, or issues you're experiencing.",
-		"categoryLabel": "Category",
-		"categoryPlaceholder": "Select a category",
-		"categories": {
-			"bug": "Bug Report",
-			"feature": "Feature Request",
-			"improvement": "Improvement",
-			"question": "Question",
-			"other": "Other"
-		},
-		"nameLabel": "Name",
-		"namePlaceholder": "Your name",
-		"emailLabel": "Email",
-		"emailPlaceholder": "your.email{'@'}example.com",
-		"messageLabel": "Message",
-		"messagePlaceholder": "Tell us what you think...",
 		"cancel": "Cancel",
 		"submit": "Submit Feedback",
-		"toastTitle": "Feedback submitted",
-		"toastDescription": "Thank you for your feedback! We'll review it shortly."
+		"comingSoon": "This feature isn't available yet — check back soon.",
+		"contact": "In the meantime, reach us at"
 	},
 	"account": {
 		"avatar": {
@@ -1816,6 +1852,9 @@
 			"hint": "To change your email address, please contact support."
 		},
 		"password": {
+			"currentLabel": "Current password",
+			"currentPlaceholder": "Enter your current password",
+			"currentRequired": "Enter your current password",
 			"newLabel": "New password",
 			"newPlaceholder": "Enter new password",
 			"newHint": "Minimum 8 characters.",
@@ -2025,5 +2064,96 @@
 		"themeSystem": "System",
 		"language": "Language",
 		"documentation": "Documentation"
+	},
+	"billing": {
+		"title": "Billing",
+		"headings": {
+			"plansTitle": "Plans",
+			"plansSubtitle": "Choose the plan that works best for your team",
+			"addonsTitle": "Add-ons",
+			"addonsSubtitle": "Enhance your workspace with additional features"
+		},
+		"badges": {
+			"mostPopular": "Most Popular",
+			"alpha": "ALPHA"
+		},
+		"price": {
+			"perMonth": "/month",
+			"custom": "Custom Pricing"
+		},
+		"cta": {
+			"currentPlan": "Current Plan",
+			"upgradeToPro": "Upgrade to Pro",
+			"contactSales": "Contact Sales"
+		},
+		"plans": {
+			"free": {
+				"name": "Free",
+				"description": "For individuals and small teams getting started",
+				"cta": "Current Plan",
+				"features": {
+					"teamMembers": "Up to 3 team members",
+					"documents": "100 documents",
+					"storage": "1 GB storage",
+					"analytics": "Basic analytics",
+					"support": "Community support"
+				}
+			},
+			"pro": {
+				"name": "Pro",
+				"description": "For growing teams that need more power",
+				"cta": "Upgrade to Pro",
+				"features": {
+					"teamMembers": "Up to 20 team members",
+					"documents": "Unlimited documents",
+					"storage": "50 GB storage",
+					"analytics": "Advanced analytics",
+					"support": "Priority support",
+					"apiAccess": "API access",
+					"integrations": "Custom integrations"
+				}
+			},
+			"enterprise": {
+				"name": "Enterprise",
+				"description": "For large organizations with custom needs",
+				"cta": "Contact Sales",
+				"features": {
+					"teamMembers": "Unlimited team members",
+					"documents": "Unlimited documents",
+					"storage": "Unlimited storage",
+					"analytics": "Enterprise analytics",
+					"support": "Dedicated support",
+					"sso": "SSO & SAML",
+					"contracts": "Custom contracts",
+					"sla": "SLA guarantees"
+				}
+			}
+		},
+		"addons": {
+			"webhooks": {
+				"name": "Webhooks",
+				"description": "Real-time event notifications to your endpoints",
+				"docLabel": "Read webhooks docs"
+			},
+			"aiInsights": {
+				"name": "AI Insights",
+				"description": "Advanced AI-powered analytics and recommendations",
+				"docLabel": "Read AI Insights docs"
+			},
+			"onPremise": {
+				"name": "On-Premise Runtimes",
+				"description": "Run processing on your own infrastructure",
+				"docLabel": "Read On-Premise docs"
+			}
+		},
+		"footer": {
+			"stripeNote": "All payments are securely processed through Stripe.",
+			"pricingLink": "View full pricing details"
+		}
+	},
+	"helpChat": {
+		"title": "Support",
+		"comingSoon": "Live chat is coming soon",
+		"contact": "In the meantime, reach us at"
 	}
 }

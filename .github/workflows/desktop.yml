@@ -53,8 +53,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # JS only — the Rust `cargo check` is the dedicated `check` job below (it
+      # needs the Tauri system deps + toolchain this Node-only job doesn't set up).
       - name: Type check
-        run: npm run typecheck -w @nvisy/desktop
+        run: npm run typecheck:biome -w @nvisy/desktop
 
   fmt:
     name: Format

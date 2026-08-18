@@ -2,19 +2,21 @@
 
 [![Build](https://img.shields.io/github/actions/workflow/status/nvisycom/studio/build.yml?branch=main&label=build%20%26%20test&style=flat-square)](https://github.com/nvisycom/studio/actions/workflows/build.yml)
 
-Desktop shell for the Nvisy console, wrapping the web frontend in a Tauri window.
+Desktop shell for the Nvisy console — the web dashboard delivered as a native
+application, with a [Tauri 2](https://tauri.app/) (Rust) shell.
 
-## Overview
+## Features
 
-The same dashboard as the web app, delivered as a native desktop application.
-This app extends the shared [`@nvisy/console`](../../packages/console/) layer for
-its frontend and adds a [Tauri 2](https://tauri.app/) (Rust) shell in `tauri/`.
-Nuxt generates a static SPA that Tauri loads and hosts in a native window.
+- **Shared frontend:** extends the [`@nvisy/console`](../../packages/console/) layer; Nuxt generates a static SPA that Tauri hosts
+- **Tray-first:** a system-tray anchor manages the main window and app actions
+- **Native shell:** window management, persisted settings, and localized native UI in `tauri/src/`
 
 ## Requirements
 
 - Node.js 22.18+ and npm 10+ (shared with the rest of the workspace)
 - Rust + Cargo — see [tauri.app/start/prerequisites](https://tauri.app/start/prerequisites/)
+- Nightly `rustfmt` for formatting the Rust shell (its `rustfmt.toml` uses
+  nightly-only options): `rustup toolchain install nightly --component rustfmt`
 
 ## Development
 
@@ -27,8 +29,7 @@ npm run build -w @nvisy/desktop       # Build the frontend
 ## Notes
 
 - `tauri/` is managed by the Rust toolchain and is **not** linted or formatted
-  by Biome.
-- The desktop Rust build is not wired into CI yet.
+  by Biome; it has its own CI in [`desktop.yml`](../../.github/workflows/desktop.yml).
 
 ## License
 

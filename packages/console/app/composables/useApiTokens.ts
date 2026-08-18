@@ -1,5 +1,6 @@
 import type {
 	ApiToken,
+	ApiTokenWithJWT,
 	CreateApiToken,
 	UpdateApiToken,
 } from "@nvisy/sdk/datatypes";
@@ -26,7 +27,7 @@ export function useApiTokens() {
 	const optimistic = useOptimisticList(tokensQuery.data, (tk) => tk.id);
 
 	const createTokenMutation = useMutation({
-		mutation: async (token: CreateApiToken) => {
+		mutation: async (token: CreateApiToken): Promise<ApiTokenWithJWT> => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
 			return await client.apiTokens.createApiToken(token);

@@ -48,6 +48,9 @@ allow = [
     # Weak (file-level) copyleft; pulled in transitively by GTK/WebKit bindings.
     # Using these crates as-is does not affect our source.
     "MPL-2.0",
+    # Permissive data license on `webpki-roots` (the bundled TLS root
+    # certificates), pulled in transitively by tauri-plugin-http -> reqwest.
+    "CDLA-Permissive-2.0",
 ]
 
 # For compound licenses, block only if they contain a denied license
