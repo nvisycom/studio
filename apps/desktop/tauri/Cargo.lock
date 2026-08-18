@@ -1888,6 +1888,7 @@ name = "nvisy-desktop"
 version = "0.1.0"
 dependencies = [
  "log",
+ "serde",
  "tauri",
  "tauri-build",
  "tauri-plugin-log",

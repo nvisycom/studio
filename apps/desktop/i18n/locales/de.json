@@ -1,0 +1,9 @@
+{
+	"tray": {
+		"openStudio": "Studio öffnen",
+		"minimizeToTray": "In die Ablage minimieren",
+		"enableNotifications": "Benachrichtigungen aktivieren",
+		"disableNotifications": "Benachrichtigungen deaktivieren",
+		"quit": "Beenden"
+	}
+}

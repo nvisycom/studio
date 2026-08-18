@@ -17,14 +17,18 @@ homepage = "https://github.com/nvisycom/portal"
 name = "app_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
-[build-dependencies]
-tauri-build = { version = "2.6.3" }
-
 [dependencies]
 # Tauri
 tauri = { version = "2.11.3", features = ["tray-icon", "image-png"] }
 tauri-plugin-log = { version = "2" }
 tauri-plugin-store = { version = "2" }
 
+# Serialization
+serde = { version = "1", features = ["derive"] }
+
 # Observability
 log = { version = "0.4" }
+
+[build-dependencies]
+# Tauri
+tauri-build = { version = "2.6.3", features = [] }

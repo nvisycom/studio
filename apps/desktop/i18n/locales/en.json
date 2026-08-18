@@ -1,0 +1,9 @@
+{
+	"tray": {
+		"openStudio": "Open studio",
+		"minimizeToTray": "Minimize to tray",
+		"enableNotifications": "Enable notifications",
+		"disableNotifications": "Disable notifications",
+		"quit": "Quit"
+	}
+}

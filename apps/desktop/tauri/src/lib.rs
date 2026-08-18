@@ -1,3 +1,4 @@
+mod commands;
 mod settings;
 mod tray;
 
@@ -7,6 +8,7 @@ use tauri::Manager;
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
+        .invoke_handler(tauri::generate_handler![commands::set_tray_labels])
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(
