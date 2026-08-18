@@ -24,11 +24,25 @@ npm run tauri -w @nvisy/desktop dev   # App in a Tauri window
 npm run build -w @nvisy/desktop       # Build the frontend
 ```
 
+## Native shell
+
+The app is **tray-first**: the tray icon is its always-present anchor.
+
+- **Left-click** the tray → show and focus the main window.
+- **Right-click** the tray → menu:
+  - **Notifications: Enabled/Disabled** — toggles a flag persisted to
+    `settings.json` (via `tauri-plugin-store`); survives restart.
+  - **Quit** — exits the app.
+- **Closing the main window** (⌘W / red button) **hides** it rather than
+  quitting, so the app keeps running in the tray. Quit from the tray menu or ⌘Q.
+
+The Rust shell lives in `tauri/src/` — `tray.rs` (tray + window management),
+`settings.rs` (persisted settings), `lib.rs` (wiring).
+
 ## Notes
 
 - `tauri/` is managed by the Rust toolchain and is **not** linted or formatted
-  by Biome.
-- The desktop Rust build is not wired into CI yet.
+  by Biome. It has its own CI (`desktop.yml`: `cargo check`, `clippy`, `deny`).
 
 ## License
 
