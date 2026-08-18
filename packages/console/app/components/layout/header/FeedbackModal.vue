@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { toast } from "vue-sonner";
 import {
 	Dialog,
 	DialogContent,
@@ -54,15 +53,10 @@ function closeModal(): void {
 	resetModal();
 }
 
-function submitFeedback(): void {
-	// TODO: Implement feedback submission
-
-	toast(t("feedback.toastTitle"), {
-		description: t("feedback.toastDescription"),
-	});
-
-	closeModal();
-}
+// Feedback submission has no backend yet. Rather than report a success that
+// silently discards the message, the submit control is disabled and the dialog
+// shows a "coming soon" note (see the template). Wire this to the SDK once the
+// feedback endpoint exists.
 </script>
 
 <template>
@@ -125,11 +119,13 @@ function submitFeedback(): void {
         </div>
       </div>
 
-      <DialogFooter>
+      <DialogFooter class="sm:items-center sm:justify-between">
+        <p class="text-xs text-muted-foreground">
+          {{ t("feedback.comingSoon") }}
+        </p>
         <Button variant="outline" @click="closeModal">
           {{ t("feedback.cancel") }}
         </Button>
-        <Button @click="submitFeedback">{{ t("feedback.submit") }}</Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>

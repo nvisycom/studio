@@ -34,7 +34,8 @@ async function handleLogin(): Promise<void> {
 			password: password.value,
 			rememberMe: rememberMe.value,
 		});
-		navigateTo("/");
+		// Return the user to where they were headed before login, if any.
+		navigateTo(safeRedirectPath(useRoute().query.redirect) ?? "/");
 	} catch {
 		// Error is handled by the mutation
 	}

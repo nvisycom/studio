@@ -54,9 +54,24 @@ export default defineNuxtPlugin(() => {
 	// shallowRef (not computed): building a client is a side effect, and the SDK
 	// holds private class fields that a deep reactive proxy would break.
 	const nvisyClient: ShallowRef<Nvisy | null> = shallowRef(null);
+	// Switching servers invalidates the whole session: the token was minted by
+	// the old server (and would leak to the new one) and every cached query holds
+	// the old server's data. Clear auth + cache so the app returns to a clean
+	// login against the new server. Track the previous value so a token- or
+	// fetch-only change still just rebuilds the client.
+	let prevBaseUrl = baseUrl.value;
 	watch(
 		[() => authToken.value?.apiToken ?? null, baseUrl, apiFetch],
-		([token]) => {
+		([token, currentBaseUrl]) => {
+			if (currentBaseUrl !== prevBaseUrl) {
+				prevBaseUrl = currentBaseUrl;
+				if (authToken.value) {
+					// clearAuth() nulls the token, which re-triggers this watcher to
+					// rebuild the client as null (signed out).
+					clearAuth();
+					return;
+				}
+			}
 			nvisyClient.value = token ? makeClient(token) : null;
 		},
 		{ immediate: true },

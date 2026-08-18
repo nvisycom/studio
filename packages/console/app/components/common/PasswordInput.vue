@@ -9,6 +9,8 @@ import { Input } from "#console/components/ui/input";
  */
 defineProps<{
 	placeholder?: string;
+	/** Forwarded to the input so password managers behave (e.g. `new-password`). */
+	autocomplete?: string;
 }>();
 
 const { t } = useI18n();
@@ -22,6 +24,7 @@ const visible = ref(false);
       v-model="model"
       :type="visible ? 'text' : 'password'"
       :placeholder="placeholder"
+      :autocomplete="autocomplete"
       class="h-9 pr-10"
     />
     <button

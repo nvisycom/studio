@@ -68,6 +68,7 @@ const usernameError = computed(() => {
 });
 
 // Password form
+const currentPassword = ref("");
 const newPassword = ref("");
 const confirmPassword = ref("");
 const isUpdatingPassword = ref(false);
@@ -139,6 +140,10 @@ async function saveProfile() {
 }
 
 async function savePassword() {
+	if (!currentPassword.value) {
+		toast.error(t("account.password.currentRequired"));
+		return;
+	}
 	if (!newPassword.value) {
 		toast.error(t("account.password.required"));
 		return;
@@ -154,8 +159,16 @@ async function savePassword() {
 
 	isUpdatingPassword.value = true;
 	try {
-		await updateAccountAsync({ password: newPassword.value });
+		// A password change re-authenticates: the API verifies `currentPassword`
+		// before applying `newPassword`.
+		await updateAccountAsync({
+			password: {
+				currentPassword: currentPassword.value,
+				newPassword: newPassword.value,
+			},
+		});
 		toast.success(t("account.password.saved"));
+		currentPassword.value = "";
 		newPassword.value = "";
 		confirmPassword.value = "";
 	} catch (err) {
@@ -268,12 +281,24 @@ async function savePassword() {
             <!-- Password -->
             <div class="space-y-4 border-t border-border/50 pt-5">
               <div class="space-y-2">
+                <Label for="currentPassword" required>
+                  {{ t("account.password.currentLabel") }}
+                </Label>
+                <PasswordInput
+                  v-model="currentPassword"
+                  :placeholder="t('account.password.currentPlaceholder')"
+                  autocomplete="current-password"
+                />
+              </div>
+
+              <div class="space-y-2">
                 <Label for="newPassword" required>
                   {{ t("account.password.newLabel") }}
                 </Label>
                 <PasswordInput
                   v-model="newPassword"
                   :placeholder="t('account.password.newPlaceholder')"
+                  autocomplete="new-password"
                 />
                 <p class="text-xs text-muted-foreground">
                   {{ t("account.password.newHint") }}
@@ -287,6 +312,7 @@ async function savePassword() {
                 <PasswordInput
                   v-model="confirmPassword"
                   :placeholder="t('account.password.confirmPlaceholder')"
+                  autocomplete="new-password"
                 />
               </div>
             </div>
@@ -300,7 +326,7 @@ async function savePassword() {
             <Button
               size="sm"
               @click="savePassword"
-              :disabled="isUpdatingPassword || !newPassword"
+              :disabled="isUpdatingPassword || !currentPassword || !newPassword"
             >
               <Loader2
                 v-if="isUpdatingPassword"

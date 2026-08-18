@@ -52,31 +52,25 @@ const ocr = ref<OcrPolicy>("auto");
 // Retention state (shared model in utils/retention).
 const retention = ref(defaultRetentionForm());
 
-// Initialize the form from workspace data (once it loads / the workspace
-// changes).
+// Whether the form has been populated from a loaded workspace (change detection
+// stays off until then).
 const formInitialized = ref(false);
+
+// Initialize the form from workspace data whenever the loaded workspace changes
+// (first load or a workspace switch). A single watcher keyed on the workspace
+// avoids a reset-then-init race: two separate watchers (on the workspace and its
+// slug) both fire on a route change, and pre-flush order would let the reset run
+// after the init and blank the just-filled form.
 watch(
 	() => currentWorkspace.value,
 	(workspace) => {
-		if (workspace && !formInitialized.value) {
-			requireApproval.value = workspace.settings.requireApproval;
-			ocr.value = workspace.settings.ocr;
-			retention.value = retentionToForm(workspace.settings.retention);
-			formInitialized.value = true;
-		}
+		if (!workspace) return;
+		requireApproval.value = workspace.settings.requireApproval;
+		ocr.value = workspace.settings.ocr;
+		retention.value = retentionToForm(workspace.settings.retention);
+		formInitialized.value = true;
 	},
 	{ immediate: true },
-);
-
-// Re-initialize when the workspace changes.
-watch(
-	() => currentWorkspaceSlug.value,
-	() => {
-		formInitialized.value = false;
-		requireApproval.value = undefined;
-		ocr.value = "auto";
-		retention.value = defaultRetentionForm();
-	},
 );
 
 // The full WorkspaceSettings the form currently represents, used both for change

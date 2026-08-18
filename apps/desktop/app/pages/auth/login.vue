@@ -60,7 +60,8 @@ async function handleLogin(): Promise<void> {
 			password: password.value,
 			rememberMe: rememberMe.value,
 		});
-		navigateTo("/");
+		// Return the user to where they were headed before login, if any.
+		navigateTo(safeRedirectPath(useRoute().query.redirect) ?? "/");
 	} catch {
 		// A connection failure usually means the Server URL is wrong — reveal the
 		// field so the user can correct it. Auth errors surface via `loginError`.

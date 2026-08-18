@@ -1784,8 +1784,7 @@
 		"messagePlaceholder": "Tell us what you think...",
 		"cancel": "Cancel",
 		"submit": "Submit Feedback",
-		"toastTitle": "Feedback submitted",
-		"toastDescription": "Thank you for your feedback! We'll review it shortly."
+		"comingSoon": "This feature isn't available yet — check back soon."
 	},
 	"account": {
 		"avatar": {
@@ -1816,6 +1815,9 @@
 			"hint": "To change your email address, please contact support."
 		},
 		"password": {
+			"currentLabel": "Current password",
+			"currentPlaceholder": "Enter your current password",
+			"currentRequired": "Enter your current password",
 			"newLabel": "New password",
 			"newPlaceholder": "Enter new password",
 			"newHint": "Minimum 8 characters.",

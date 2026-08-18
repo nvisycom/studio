@@ -66,28 +66,19 @@ const deleteConfirmName = ref("");
 // Track if form has been initialized
 const formInitialized = ref(false);
 
-// Initialize form from workspace data
+// Initialize the form from workspace data whenever the loaded workspace changes
+// (first load or a workspace switch). A single watcher avoids a reset-then-init
+// race: separate watchers on the workspace and its slug both fire on a route
+// change, and pre-flush order would let the reset blank the just-filled form.
 watch(
 	() => currentWorkspace.value,
 	(workspace) => {
-		if (workspace && !formInitialized.value) {
-			workspaceName.value = workspace.displayName;
-			workspaceDescription.value = workspace.description ?? "";
-			formInitialized.value = true;
-		}
+		if (!workspace) return;
+		workspaceName.value = workspace.displayName;
+		workspaceDescription.value = workspace.description ?? "";
+		formInitialized.value = true;
 	},
 	{ immediate: true },
-);
-
-// Reset form when workspace changes
-watch(
-	() => currentWorkspaceSlug.value,
-	() => {
-		// Reset so the next workspace data triggers re-initialization
-		formInitialized.value = false;
-		workspaceName.value = "";
-		workspaceDescription.value = "";
-	},
 );
 
 // Check if current user is owner

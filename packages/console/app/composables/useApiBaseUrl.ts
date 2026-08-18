@@ -32,16 +32,33 @@ function initialize() {
 	}
 }
 
+/** Whether a host is a loopback address (safe to talk to over plaintext HTTP). */
+function isLoopbackHost(host: string): boolean {
+	return (
+		host === "localhost" ||
+		host === "127.0.0.1" ||
+		host === "::1" ||
+		host === "[::1]"
+	);
+}
+
 /**
  * Normalize a user-entered server URL into an absolute base the SDK accepts:
- * trim it, prepend `http://` when no scheme is given (a bare `127.0.0.1:8080`
- * would otherwise be treated as a relative URL and every request would fail),
- * and ensure a single trailing slash.
+ * trim it, add a scheme when none is given, and ensure a single trailing slash
+ * (a bare `127.0.0.1:8080` would otherwise be treated as a relative URL and
+ * every request would fail).
+ *
+ * A schemeless host defaults to `https://` so credentials and the bearer token
+ * aren't sent in plaintext to a remote server — except loopback hosts (the
+ * local dev API), which default to `http://` since they don't have TLS.
  */
 function normalize(url: string): string {
 	let value = url.trim();
 	if (!value) return value;
-	if (!/^https?:\/\//i.test(value)) value = `http://${value}`;
+	if (!/^https?:\/\//i.test(value)) {
+		const host = value.split("/", 1)[0]!.split(":", 1)[0]!;
+		value = `${isLoopbackHost(host) ? "http" : "https"}://${value}`;
+	}
 	return value.endsWith("/") ? value : `${value}/`;
 }
 

@@ -36,6 +36,12 @@ export default defineNuxtRouteMiddleware((to) => {
 	if (isPublicRoute) return;
 
 	if (!isAuthenticated.value) {
-		return navigateTo("/auth/login");
+		// Preserve where the user was headed (e.g. an invite at /join/[code],
+		// which needs auth to load) so login can return them there afterwards.
+		const redirect = safeRedirectPath(to.fullPath);
+		return navigateTo({
+			path: "/auth/login",
+			query: redirect ? { redirect } : undefined,
+		});
 	}
 });
