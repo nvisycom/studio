@@ -18,25 +18,16 @@ import {
 import AnalyticsAreaChart from "#console/components/pages/analytics/AnalyticsAreaChartLazy.vue";
 import { AREA_CHARTS } from "#console/components/pages/analytics/charts";
 
-useHead({ title: "Analytics" });
-
 definePageMeta({
 	pageCategory: "header.category.analytics",
 });
 
-// Date range for analytics
+const { t } = useI18n();
+
+useHead({ title: t("analytics.overview.title") });
+
+// Selected reporting period.
 const dateRange = ref("7d");
-
-// Check if on-premise deployment
-const isOnPremise = ref(false); // TODO: Get this from config/environment
-
-function exportAnalytics() {
-	// TODO: Implement actual export functionality
-}
-
-function importAnalytics() {
-	// TODO: Implement actual import functionality
-}
 </script>
 
 <template>
@@ -46,28 +37,30 @@ function importAnalytics() {
       <div class="flex items-center justify-between mb-6">
         <Select v-model="dateRange">
           <SelectTrigger class="w-[180px] h-9">
-            <SelectValue placeholder="Select period" />
+            <SelectValue :placeholder="t('analytics.common.selectPeriod')" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="24h">Last 24 hours</SelectItem>
-            <SelectItem value="7d">Last 7 days</SelectItem>
-            <SelectItem value="30d">Last 30 days</SelectItem>
-            <SelectItem value="90d">Last 90 days</SelectItem>
+            <SelectItem value="24h">{{ t("analytics.common.period24h") }}</SelectItem>
+            <SelectItem value="7d">{{ t("analytics.common.period7d") }}</SelectItem>
+            <SelectItem value="30d">{{ t("analytics.common.period30d") }}</SelectItem>
+            <SelectItem value="90d">{{ t("analytics.common.period90d") }}</SelectItem>
           </SelectContent>
         </Select>
 
         <div class="flex gap-2">
+          <!-- Import/Export aren't wired to a backend yet; disable them with a
+               tooltip rather than present buttons that silently do nothing. -->
           <Button
-            @click="importAnalytics"
             variant="outline"
-            :disabled="!isOnPremise"
+            disabled
+            :title="t('common.comingSoon')"
           >
             <Upload :size="16" class="mr-2" />
-            Import
+            {{ t("analytics.common.import") }}
           </Button>
-          <Button @click="exportAnalytics" variant="outline">
+          <Button variant="outline" disabled :title="t('common.comingSoon')">
             <Download :size="16" class="mr-2" />
-            Export
+            {{ t("analytics.common.export") }}
           </Button>
         </div>
       </div>
@@ -78,10 +71,10 @@ function importAnalytics() {
         <Card class="border-border/50">
           <CardHeader class="pb-2">
             <CardTitle class="text-sm font-medium"
-              >Credit Consumption</CardTitle
+              >{{ t("analytics.overview.creditConsumption.title") }}</CardTitle
             >
             <CardDescription class="text-xs text-muted-foreground"
-              >AI and platform credits used over time</CardDescription
+              >{{ t("analytics.overview.creditConsumption.subtitle") }}</CardDescription
             >
           </CardHeader>
           <CardContent class="pt-2">
@@ -92,9 +85,9 @@ function importAnalytics() {
         <!-- Storage Used Chart -->
         <Card class="border-border/50">
           <CardHeader class="pb-2">
-            <CardTitle class="text-sm font-medium">Storage Usage</CardTitle>
+            <CardTitle class="text-sm font-medium">{{ t("analytics.overview.storageUsage.title") }}</CardTitle>
             <CardDescription class="text-xs text-muted-foreground"
-              >Original and edited file storage consumption</CardDescription
+              >{{ t("analytics.overview.storageUsage.subtitle") }}</CardDescription
             >
           </CardHeader>
           <CardContent class="pt-2">
@@ -106,10 +99,10 @@ function importAnalytics() {
         <Card class="border-border/50">
           <CardHeader class="pb-2">
             <CardTitle class="text-sm font-medium"
-              >Document Transfers</CardTitle
+              >{{ t("analytics.overview.documentTransfers.title") }}</CardTitle
             >
             <CardDescription class="text-xs text-muted-foreground"
-              >Documents uploaded and downloaded</CardDescription
+              >{{ t("analytics.overview.documentTransfers.subtitle") }}</CardDescription
             >
           </CardHeader>
           <CardContent class="pt-2">
@@ -121,10 +114,10 @@ function importAnalytics() {
         <Card class="border-border/50">
           <CardHeader class="pb-2">
             <CardTitle class="text-sm font-medium"
-              >Document Processing</CardTitle
+              >{{ t("analytics.overview.documentProcessing.title") }}</CardTitle
             >
             <CardDescription class="text-xs text-muted-foreground"
-              >Documents edited and verified</CardDescription
+              >{{ t("analytics.overview.documentProcessing.subtitle") }}</CardDescription
             >
           </CardHeader>
           <CardContent class="pt-2">

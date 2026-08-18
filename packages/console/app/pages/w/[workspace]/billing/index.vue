@@ -12,7 +12,9 @@ import { Button } from "#console/components/ui/button";
 import { Badge } from "#console/components/ui/badge";
 import { Switch } from "#console/components/ui/switch";
 
-useHead({ title: "Billing" });
+const { t } = useI18n();
+
+useHead({ title: t("billing.title") });
 
 definePageMeta({
 	pageCategory: "header.category.billing",
@@ -22,91 +24,92 @@ definePageMeta({
 // Current plan
 const currentPlan = ref("free");
 
-// Plans data
+// Plans data. Display strings are stored as i18n keys and resolved via t() in
+// the template so the array stays declarative.
 const plans = [
 	{
 		id: "free",
-		name: "Free",
+		nameKey: "billing.plans.free.name",
 		price: 0,
-		description: "For individuals and small teams getting started",
-		features: [
-			"Up to 3 team members",
-			"100 documents",
-			"1 GB storage",
-			"Basic analytics",
-			"Community support",
+		descriptionKey: "billing.plans.free.description",
+		featureKeys: [
+			"billing.plans.free.features.teamMembers",
+			"billing.plans.free.features.documents",
+			"billing.plans.free.features.storage",
+			"billing.plans.free.features.analytics",
+			"billing.plans.free.features.support",
 		],
-		cta: "Current Plan",
+		ctaKey: "billing.plans.free.cta",
 		popular: false,
 	},
 	{
 		id: "pro",
-		name: "Pro",
+		nameKey: "billing.plans.pro.name",
 		price: 49,
-		description: "For growing teams that need more power",
-		features: [
-			"Up to 20 team members",
-			"Unlimited documents",
-			"50 GB storage",
-			"Advanced analytics",
-			"Priority support",
-			"API access",
-			"Custom integrations",
+		descriptionKey: "billing.plans.pro.description",
+		featureKeys: [
+			"billing.plans.pro.features.teamMembers",
+			"billing.plans.pro.features.documents",
+			"billing.plans.pro.features.storage",
+			"billing.plans.pro.features.analytics",
+			"billing.plans.pro.features.support",
+			"billing.plans.pro.features.apiAccess",
+			"billing.plans.pro.features.integrations",
 		],
-		cta: "Upgrade to Pro",
+		ctaKey: "billing.plans.pro.cta",
 		popular: true,
 	},
 	{
 		id: "enterprise",
-		name: "Enterprise",
+		nameKey: "billing.plans.enterprise.name",
 		price: null,
-		description: "For large organizations with custom needs",
-		features: [
-			"Unlimited team members",
-			"Unlimited documents",
-			"Unlimited storage",
-			"Enterprise analytics",
-			"Dedicated support",
-			"SSO & SAML",
-			"Custom contracts",
-			"SLA guarantees",
+		descriptionKey: "billing.plans.enterprise.description",
+		featureKeys: [
+			"billing.plans.enterprise.features.teamMembers",
+			"billing.plans.enterprise.features.documents",
+			"billing.plans.enterprise.features.storage",
+			"billing.plans.enterprise.features.analytics",
+			"billing.plans.enterprise.features.support",
+			"billing.plans.enterprise.features.sso",
+			"billing.plans.enterprise.features.contracts",
+			"billing.plans.enterprise.features.sla",
 		],
-		cta: "Contact Sales",
+		ctaKey: "billing.plans.enterprise.cta",
 		popular: false,
 	},
 ];
 
-// Add-ons data
+// Add-ons data. Display strings are stored as i18n keys and resolved via t().
 const addons = ref([
 	{
 		id: "webhooks",
-		name: "Webhooks",
-		description: "Real-time event notifications to your endpoints",
+		nameKey: "billing.addons.webhooks.name",
+		descriptionKey: "billing.addons.webhooks.description",
 		price: 19,
 		enabled: false,
 		alpha: false,
 		docUrl: "https://docs.nvisy.com/webhooks",
-		docLabel: "Read webhooks docs",
+		docLabelKey: "billing.addons.webhooks.docLabel",
 	},
 	{
 		id: "ai-insights",
-		name: "AI Insights",
-		description: "Advanced AI-powered analytics and recommendations",
+		nameKey: "billing.addons.aiInsights.name",
+		descriptionKey: "billing.addons.aiInsights.description",
 		price: 29,
 		enabled: false,
 		alpha: true,
 		docUrl: "https://docs.nvisy.com/ai-insights",
-		docLabel: "Read AI Insights docs",
+		docLabelKey: "billing.addons.aiInsights.docLabel",
 	},
 	{
 		id: "on-premise",
-		name: "On-Premise Runtimes",
-		description: "Run processing on your own infrastructure",
+		nameKey: "billing.addons.onPremise.name",
+		descriptionKey: "billing.addons.onPremise.description",
 		price: 99,
 		enabled: false,
 		alpha: true,
 		docUrl: "https://docs.nvisy.com/on-premise",
-		docLabel: "Read On-Premise docs",
+		docLabelKey: "billing.addons.onPremise.docLabel",
 	},
 ]);
 
@@ -134,9 +137,11 @@ function toggleAddon(addonId: string) {
       <!-- Plans Section -->
       <div class="mb-10">
         <div class="mb-6">
-          <h2 class="text-sm font-medium text-foreground">Plans</h2>
+          <h2 class="text-sm font-medium text-foreground">
+            {{ t("billing.headings.plansTitle") }}
+          </h2>
           <p class="text-xs text-muted-foreground">
-            Choose the plan that works best for your team
+            {{ t("billing.headings.plansSubtitle") }}
           </p>
         </div>
 
@@ -156,13 +161,15 @@ function toggleAddon(addonId: string) {
               class="absolute -top-3 left-1/2 -translate-x-1/2"
             >
               <Sparkles :size="12" class="mr-1" />
-              Most Popular
+              {{ t("billing.badges.mostPopular") }}
             </Badge>
 
             <CardHeader class="pb-4">
-              <CardTitle class="text-sm font-medium">{{ plan.name }}</CardTitle>
+              <CardTitle class="text-sm font-medium">{{
+                t(plan.nameKey)
+              }}</CardTitle>
               <CardDescription class="text-xs text-muted-foreground">{{
-                plan.description
+                t(plan.descriptionKey)
               }}</CardDescription>
             </CardHeader>
 
@@ -173,11 +180,13 @@ function toggleAddon(addonId: string) {
                   <span class="text-2xl font-medium text-foreground">
                     ${{ plan.price }}
                   </span>
-                  <span class="text-sm text-muted-foreground"> /month </span>
+                  <span class="text-sm text-muted-foreground">
+                    {{ t("billing.price.perMonth") }}
+                  </span>
                 </template>
                 <template v-else>
                   <span class="text-lg font-medium text-foreground">
-                    Custom Pricing
+                    {{ t("billing.price.custom") }}
                   </span>
                 </template>
               </div>
@@ -185,12 +194,12 @@ function toggleAddon(addonId: string) {
               <!-- Features -->
               <ul class="space-y-2">
                 <li
-                  v-for="feature in plan.features"
-                  :key="feature"
+                  v-for="featureKey in plan.featureKeys"
+                  :key="featureKey"
                   class="flex items-start gap-2 text-sm"
                 >
                   <Check :size="14" class="text-green-500 mt-0.5 shrink-0" />
-                  <span class="text-muted-foreground">{{ feature }}</span>
+                  <span class="text-muted-foreground">{{ t(featureKey) }}</span>
                 </li>
               </ul>
             </CardContent>
@@ -210,14 +219,14 @@ function toggleAddon(addonId: string) {
               >
                 <template v-if="currentPlan === plan.id">
                   <Check :size="16" class="mr-2" />
-                  Current Plan
+                  {{ t("billing.cta.currentPlan") }}
                 </template>
                 <template v-else-if="plan.id === 'enterprise'">
                   <Building2 :size="16" class="mr-2" />
-                  Contact Sales
+                  {{ t("billing.cta.contactSales") }}
                 </template>
                 <template v-else>
-                  {{ plan.cta }}
+                  {{ t(plan.ctaKey) }}
                 </template>
               </Button>
             </CardFooter>
@@ -228,9 +237,11 @@ function toggleAddon(addonId: string) {
       <!-- Add-ons Section -->
       <div>
         <div class="mb-6">
-          <h2 class="text-sm font-medium text-foreground">Add-ons</h2>
+          <h2 class="text-sm font-medium text-foreground">
+            {{ t("billing.headings.addonsTitle") }}
+          </h2>
           <p class="text-xs text-muted-foreground">
-            Enhance your workspace with additional features
+            {{ t("billing.headings.addonsSubtitle") }}
           </p>
         </div>
 
@@ -244,9 +255,9 @@ function toggleAddon(addonId: string) {
             <CardHeader class="pb-2">
               <div class="flex items-center justify-between">
                 <CardTitle class="text-sm font-medium flex items-center gap-2">
-                  {{ addon.name }}
+                  {{ t(addon.nameKey) }}
                   <Badge v-if="addon.alpha" variant="secondary" class="text-xs">
-                    ALPHA
+                    {{ t("billing.badges.alpha") }}
                   </Badge>
                 </CardTitle>
                 <Switch
@@ -255,7 +266,7 @@ function toggleAddon(addonId: string) {
                 />
               </div>
               <CardDescription class="text-xs text-muted-foreground">
-                {{ addon.description }}
+                {{ t(addon.descriptionKey) }}
               </CardDescription>
             </CardHeader>
 
@@ -264,7 +275,9 @@ function toggleAddon(addonId: string) {
                 <span class="text-xl font-medium text-foreground">
                   ${{ addon.price }}
                 </span>
-                <span class="text-sm text-muted-foreground"> /month </span>
+                <span class="text-sm text-muted-foreground">
+                  {{ t("billing.price.perMonth") }}
+                </span>
               </div>
             </CardContent>
 
@@ -277,7 +290,7 @@ function toggleAddon(addonId: string) {
                     rel="noopener noreferrer"
                     class="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors"
                   >
-                    {{ addon.docLabel }}
+                    {{ t(addon.docLabelKey) }}
                     <ExternalLink :size="12" />
                   </a>
                 </div>
@@ -290,14 +303,14 @@ function toggleAddon(addonId: string) {
       <!-- Footer note -->
       <div class="mt-8 text-center">
         <p class="text-xs text-muted-foreground">
-          All payments are securely processed through Stripe.
+          {{ t("billing.footer.stripeNote") }}
           <a
             href="https://nvisy.com/pricing"
             target="_blank"
             rel="noopener noreferrer"
             class="text-primary hover:underline"
           >
-            View full pricing details
+            {{ t("billing.footer.pricingLink") }}
           </a>
         </p>
       </div>
