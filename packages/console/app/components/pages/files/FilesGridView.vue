@@ -94,7 +94,7 @@ function onScroll(event: Event) {
 <template>
   <div
     ref="containerRef"
-    class="min-h-0 flex-1 overflow-auto rounded-md border p-4"
+    class="min-h-0 flex-1 overflow-auto"
     @scroll="onScroll"
   >
     <div class="relative w-full" :style="{ height: `${totalHeight}px` }">

@@ -1,23 +1,7 @@
 <script setup lang="ts">
-import type {
-	File as NvisyFile,
-	UpdateFile,
-	ListFiles,
-	ModalityToken,
-	FormatToken,
-} from "@nvisy/sdk/datatypes";
-import {
-	FileText,
-	LayoutGrid,
-	List,
-	Loader2,
-	Search,
-	Upload,
-} from "@lucide/vue";
+import type { File as NvisyFile, UpdateFile } from "@nvisy/sdk/datatypes";
+import { FileText, Loader2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
-import { Button } from "#console/components/ui/button";
-import { Input } from "#console/components/ui/input";
-import { MultiSelect } from "#console/components/ui/multi-select";
 import {
 	DeleteFileDialog,
 	EditFileDialog,
@@ -33,20 +17,22 @@ useHead({ title: "Files" });
 
 definePageMeta({
 	pageCategory: "header.category.files",
+	// The controls live in the app header (FilesHeaderControls), so reclaim the
+	// header's category slot for them.
+	hideCategory: true,
 });
 
-// Filter state — filtering is done server-side via the listFiles query.
-const searchQuery = ref("");
-const selectedModalities = ref<ModalityToken[]>([]);
-const selectedFormats = ref<FormatToken[]>([]);
-
-const filesQuery = computed<ListFiles>(() => ({
-	...(searchQuery.value.trim() && { search: searchQuery.value.trim() }),
-	...(selectedModalities.value.length && {
-		modality: selectedModalities.value,
-	}),
-	...(selectedFormats.value.length && { formats: selectedFormats.value }),
-}));
+// Search/filter/view state is shared with the header controls via useFilesView.
+const {
+	searchQuery,
+	selectedModalities,
+	selectedFormats,
+	viewMode,
+	uploadOpen: uploadDialogOpen,
+	filesQuery,
+	hasFilters,
+	clearFilters,
+} = useFilesView();
 
 const {
 	files,
@@ -64,53 +50,15 @@ const {
 	isLoadingMore,
 } = useFiles({ query: filesQuery });
 
-const viewMode = ref<"list" | "grid">("list");
 const isDraggingOver = ref(false);
 
 const deleteDialogOpen = ref(false);
 const editDialogOpen = ref(false);
-const uploadDialogOpen = ref(false);
 // Files dropped onto the page, handed to the upload dialog so a drop and a
 // browse share the same validated flow.
 const droppedFiles = ref<File[]>([]);
 const fileToDelete = ref<NvisyFile | null>(null);
 const fileToEdit = ref<NvisyFile | null>(null);
-
-const MODALITY_TOKENS: ModalityToken[] = ["text", "image", "tabular", "audio"];
-const FORMAT_TOKENS: FormatToken[] = [
-	"csv",
-	"docx",
-	"htm",
-	"html",
-	"jpeg",
-	"jpg",
-	"json",
-	"log",
-	"pdf",
-	"png",
-	"rtf",
-	"tif",
-	"tiff",
-	"txt",
-	"wav",
-	"xlsx",
-	"xml",
-];
-
-const modalityOptions = computed(() =>
-	MODALITY_TOKENS.map((value) => ({
-		value,
-		label: t(`files.filters.modalities.${value}`),
-	})),
-);
-const formatOptions = FORMAT_TOKENS.map((value) => ({ value, label: value }));
-
-const hasFilters = computed(
-	() =>
-		searchQuery.value.trim().length > 0 ||
-		selectedModalities.value.length > 0 ||
-		selectedFormats.value.length > 0,
-);
 
 // Selection — passed whole to the file views; the page reads it for bulk ops.
 const filesSelection = useSelection({
@@ -213,10 +161,11 @@ async function confirmEdit(data: UpdateFile) {
 	}
 }
 
-function openUploadDialog() {
-	droppedFiles.value = [];
-	uploadDialogOpen.value = true;
-}
+// Reset any dropped files when the dialog closes, so the next open (from the
+// header's upload button, which just flips the shared open state) starts empty.
+watch(uploadDialogOpen, (open) => {
+	if (!open) droppedFiles.value = [];
+});
 
 function handleUploadComplete() {
 	toast.success(t("files.messages.filesUploaded"));
@@ -261,12 +210,6 @@ function handleDrop(e: DragEvent) {
 	}
 }
 
-function clearFilters() {
-	searchQuery.value = "";
-	selectedModalities.value = [];
-	selectedFormats.value = [];
-}
-
 function handleLoadMore() {
 	if (hasMore.value && !isLoadingMore.value) {
 		loadMore();
@@ -283,75 +226,8 @@ function handleLoadMore() {
     @drop="handleDrop"
   >
     <div class="max-w-7xl mx-auto w-full flex flex-col flex-1 min-h-0">
-      <!-- Search, Filters, and Actions (always mounted, so a refetch
-           triggered by a filter change can't tear down an open dropdown) -->
-      <div
-        class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center mb-4"
-      >
-        <Button
-          variant="default"
-          size="sm"
-          data-testid="files-upload"
-          @click="openUploadDialog"
-        >
-          <Upload :size="16" class="mr-2" />
-          {{ t("files.actions.upload") }}
-        </Button>
-
-        <div class="relative flex-1">
-          <Search
-            :size="16"
-            class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-          />
-          <Input
-            v-model="searchQuery"
-            :placeholder="t('files.filters.search')"
-            class="pl-10 h-9"
-          />
-        </div>
-
-        <!-- Modality Filter -->
-        <MultiSelect
-          v-model="selectedModalities"
-          :options="modalityOptions"
-          :label="t('files.filters.modality')"
-          content-class="w-44"
-          item-class="capitalize"
-        />
-
-        <!-- Format Filter (searchable) -->
-        <MultiSelect
-          v-model="selectedFormats"
-          :options="formatOptions"
-          :label="t('files.filters.format')"
-          searchable
-          :search-placeholder="t('files.filters.formatSearch')"
-          :empty-text="t('files.filters.noFormats')"
-          item-class="font-mono text-xs"
-        />
-
-        <!-- View Toggle -->
-        <div class="flex items-center border border-border/50 rounded-md">
-          <Button
-            variant="ghost"
-            size="sm"
-            class="rounded-r-none px-2.5 h-9"
-            :class="{ 'bg-muted': viewMode === 'list' }"
-            @click="viewMode = 'list'"
-          >
-            <List :size="16" class="text-muted-foreground" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            class="rounded-l-none px-2.5 h-9"
-            :class="{ 'bg-muted': viewMode === 'grid' }"
-            @click="viewMode = 'grid'"
-          >
-            <LayoutGrid :size="16" class="text-muted-foreground" />
-          </Button>
-        </div>
-      </div>
+      <!-- Search, filters, view toggle, and upload live in the app header
+           (FilesHeaderControls), sharing state via useFilesView. -->
 
       <!-- Loading State -->
       <div v-if="isLoading" class="flex justify-center items-center py-12">
@@ -380,14 +256,16 @@ function handleLoadMore() {
           >
             <div
               v-if="isDraggingOver"
-              class="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-lg border-2 border-dashed border-border"
+              class="absolute inset-0 z-50 flex items-center justify-center rounded-lg bg-background/70 backdrop-blur-sm"
             >
-              <div class="text-center -mt-16">
-                <Upload
-                  :size="32"
-                  :stroke-width="1.5"
-                  class="mx-auto mb-3 text-muted-foreground"
-                />
+              <div
+                class="flex flex-col items-center gap-3 rounded-xl bg-muted/80 px-8 py-6 shadow-sm"
+              >
+                <div
+                  class="flex size-11 items-center justify-center rounded-full bg-background"
+                >
+                  <Upload :size="22" class="text-muted-foreground" />
+                </div>
                 <p class="text-sm font-medium text-foreground">
                   {{ t("files.dialogs.upload.dropHint") }}
                 </p>

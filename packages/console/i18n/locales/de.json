@@ -514,6 +514,10 @@
 			"original": "Original",
 			"redacted": "Geschwärzt",
 			"audit": "Audit"
+		},
+		"view": {
+			"list": "Listenansicht",
+			"grid": "Rasteransicht"
 		}
 	},
 	"members": {
@@ -1824,7 +1828,6 @@
 	},
 	"notifications": {
 		"title": "Benachrichtigungen",
-		"subtitle": "Bleiben Sie über Ihre neueste Aktivität informiert",
 		"empty": "Keine Benachrichtigungen",
 		"events": {
 			"memberInvited": {

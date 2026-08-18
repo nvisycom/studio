@@ -514,6 +514,10 @@
 			"original": "Original",
 			"redacted": "Redacted",
 			"audit": "Audit"
+		},
+		"view": {
+			"list": "List view",
+			"grid": "Grid view"
 		}
 	},
 	"members": {
@@ -1824,7 +1828,6 @@
 	},
 	"notifications": {
 		"title": "Notifications",
-		"subtitle": "Stay updated with your latest activity",
 		"empty": "No notifications",
 		"events": {
 			"memberInvited": {

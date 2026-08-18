@@ -109,8 +109,14 @@ function truncate(str: string, maxLength: number): string {
 
 <template>
   <!-- Outer wrapper fills the available header width so we can measure how much
-       room the tabs have; the inner pill hugs its actual tabs. -->
-  <div v-if="openFiles.length > 0" ref="strip" class="flex min-w-0 flex-1">
+       room the tabs have; the inner pill hugs its actual tabs. The left/right
+       padding clears the sidebar trigger and app chrome overlaid on the header
+       edges. -->
+  <div
+    v-if="openFiles.length > 0"
+    ref="strip"
+    class="flex min-w-0 flex-1 pl-9 pr-20"
+  >
     <div
       class="inline-flex h-9 max-w-full items-center gap-1 rounded-lg bg-muted p-1 text-muted-foreground"
     >
@@ -189,12 +195,6 @@ function truncate(str: string, maxLength: number): string {
     </TooltipProvider>
     </div>
   </div>
-
-  <!-- Empty state when no file is open -->
-  <div
-    v-else
-    class="inline-flex h-9 items-center justify-center rounded-lg bg-muted px-3 text-muted-foreground text-sm font-normal"
-  >
-    No file selected
-  </div>
+  <!-- Nothing is shown in the header when no file is open — the empty preview
+       area already conveys that, so the header stays clean. -->
 </template>

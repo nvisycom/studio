@@ -25,7 +25,8 @@ export function formatCsv(raw: string): FormattedText {
  * data cell, `string` for a quoted data cell. Delimiters, newlines, and plain
  * unquoted text are left as gaps the caller renders in the base color.
  */
-export function tokenizeCsv(text: string): Token[] {
+export function tokenizeCsv(text: string, delimiter?: string): Token[] {
+	const delim = delimiter ?? detectDelimiter(text);
 	const tokens: Token[] = [];
 	let line = 0; // 0 = header row
 	let fieldStart = 0;
@@ -59,7 +60,7 @@ export function tokenizeCsv(text: string): Token[] {
 		if (ch === '"') {
 			inQuotes = true;
 			if (i === fieldStart) quoted = true; // opening quote of the field
-		} else if (ch === ",") {
+		} else if (ch === delim) {
 			endField(i);
 			fieldStart = i + 1;
 			quoted = false;
@@ -101,15 +102,49 @@ export interface ParsedCsv {
 	columns: number;
 }
 
+/** Delimiter candidates, in priority order for a tie. */
+const DELIMITERS = [",", "\t", ";", "|"] as const;
+
+/**
+ * Sniff the field delimiter from the text: for each candidate, count how often
+ * it appears *outside* quotes on the first few non-empty lines, and pick the
+ * most frequent (comma wins ties). Falls back to comma when nothing separates.
+ */
+export function detectDelimiter(text: string): string {
+	const lines = text
+		.split(/\r?\n/)
+		.filter((l) => l.length > 0)
+		.slice(0, 10);
+	let best = ",";
+	let bestCount = 0;
+	for (const delim of DELIMITERS) {
+		let count = 0;
+		for (const line of lines) {
+			let inQuotes = false;
+			for (const ch of line) {
+				if (ch === '"') inQuotes = !inQuotes;
+				else if (ch === delim && !inQuotes) count++;
+			}
+		}
+		if (count > bestCount) {
+			bestCount = count;
+			best = delim;
+		}
+	}
+	return best;
+}
+
 /**
  * Parse flat CSV into a grid + per-cell flat char ranges in a single scan.
  *
- * RFC-4180-ish: comma-separated fields, `\n`/`\r\n` rows, double-quoted fields
- * (which may contain commas/newlines) with `""` escapes. The ranges cover the
- * *raw* field including its quotes, so tabular entity offsets (which are into
- * the flat text) still land; the parsed value has quotes stripped for display.
+ * RFC-4180-ish: fields separated by `delimiter` (auto-detected when omitted),
+ * `\n`/`\r\n` rows, double-quoted fields (which may contain the delimiter or
+ * newlines) with `""` escapes. The ranges cover the *raw* field including its
+ * quotes, so tabular entity offsets (which are into the flat text) still land;
+ * the parsed value has quotes stripped for display.
  */
-export function parseCsv(text: string): ParsedCsv {
+export function parseCsv(text: string, delimiter?: string): ParsedCsv {
+	const delim = delimiter ?? detectDelimiter(text);
 	const rows: string[][] = [];
 	const ranges = new Map<string, CellRange>();
 	let row: string[] = [];
@@ -151,7 +186,7 @@ export function parseCsv(text: string): ParsedCsv {
 		if (ch === '"') {
 			inQuotes = true;
 			if (i === cellStart) quoted = true; // opening quote of the field
-		} else if (ch === ",") {
+		} else if (ch === delim) {
 			endCell(i);
 			c++;
 			cellStart = i + 1;
