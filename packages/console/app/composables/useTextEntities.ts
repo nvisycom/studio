@@ -218,10 +218,16 @@ export function useTextEntities(
 						end: ref.range.end,
 					}),
 				);
-				// Matched value: from the flat text when we have it (plain/JSON/CSV),
-				// else sliced from the DOCX part bytes the source refs name.
+				// Matched value. `range` indexes the decoded stream, which for XML
+				// differs from the raw text we show, so when a single-file source ref
+				// is present slice the raw `doc` by that source byte span instead.
+				// DOCX has no flat `doc`, so it slices from the part bytes.
+				const rawRef = sourceRefs?.find((r) => !r.part);
 				let matched: string | undefined;
-				if (doc) matched = sliceBytes(doc, start, end);
+				if (doc)
+					matched = rawRef
+						? sliceBytes(doc, rawRef.start, rawRef.end)
+						: sliceBytes(doc, start, end);
 				else if (parts && sourceRefs?.length)
 					matched = docxMatchedText(parts, sourceRefs);
 				// Locatable unless the entity has source refs and none target a
