@@ -7,10 +7,18 @@ import type { TokenKind } from "#console/utils/preview";
  * lines. Presentational — it renders the segment lines the parent computed and
  * bubbles chip clicks up.
  */
-defineProps<{
-	lines: Segment[][];
-	activeEntityId?: string | null;
-}>();
+withDefaults(
+	defineProps<{
+		lines: Segment[][];
+		activeEntityId?: string | null;
+		/**
+		 * Wrap long lines (default) or keep them on one line and scroll
+		 * horizontally. Prose/JSON/XML wrap; CSV rows scroll like the table view.
+		 */
+		wrap?: boolean;
+	}>(),
+	{ wrap: true },
+);
 
 defineEmits<{ "focus-entity": [id: string] }>();
 
@@ -28,9 +36,15 @@ const KIND_CLASS: Record<TokenKind, string> = {
 
 <template>
   <div
-    class="code-view overflow-hidden rounded-lg border border-border/50 bg-card font-mono text-xs leading-[1.7] shadow-sm"
+    class="code-view rounded-lg border border-border/50 bg-card font-mono text-xs leading-[1.7] shadow-sm"
+    :class="wrap ? 'overflow-hidden' : 'overflow-x-auto'"
   >
-    <div v-for="(line, ln) in lines" :key="ln" class="flex hover:bg-muted/30">
+    <div
+      v-for="(line, ln) in lines"
+      :key="ln"
+      class="flex hover:bg-muted/30"
+      :class="{ 'w-fit min-w-full': !wrap }"
+    >
       <!-- Line-number gutter -->
       <span
         class="w-12 shrink-0 select-none border-r border-border/50 bg-muted/20 px-3 text-right text-muted-foreground/50 tabular-nums"
@@ -38,7 +52,9 @@ const KIND_CLASS: Record<TokenKind, string> = {
         >{{ ln + 1 }}</span
       >
       <!-- Code content -->
-      <code class="whitespace-pre-wrap break-words px-4 text-foreground"
+      <code
+        class="px-4 text-foreground"
+        :class="wrap ? 'whitespace-pre-wrap break-words' : 'whitespace-pre'"
         ><template v-for="(seg, i) in line" :key="i"><button
             v-if="seg.entity"
             type="button"

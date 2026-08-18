@@ -125,8 +125,8 @@ const { formatted, lines } = useDocumentSegments({
       </div>
     </div>
 
-    <!-- Table uses the full width (columns spread); raw is just text, so it
-         keeps a readable page width instead of stretching edge to edge. -->
+    <!-- Both views use the full width; the raw view keeps CSV rows on one line
+         and scrolls horizontally, like the table, rather than wrapping. -->
     <StudioCsvTable
       v-if="showTable"
       :text="formatted.text"
@@ -135,12 +135,12 @@ const { formatted, lines } = useDocumentSegments({
       :active-entity-id="activeEntityId"
       @focus-entity="emit('focus-entity', $event)"
     />
-    <div v-else class="max-w-[850px]">
-      <StudioCodeView
-        :lines="lines"
-        :active-entity-id="activeEntityId"
-        @focus-entity="emit('focus-entity', $event)"
-      />
-    </div>
+    <StudioCodeView
+      v-else
+      :lines="lines"
+      :active-entity-id="activeEntityId"
+      :wrap="false"
+      @focus-entity="emit('focus-entity', $event)"
+    />
   </div>
 </template>
