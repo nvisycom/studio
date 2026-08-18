@@ -126,6 +126,9 @@ function actionToEditable(action: SdkAction): EditableAction {
 	}
 	if (action?.tabular?.kind === "cell") {
 		modalities.tabular = textToTabular(textOpToEditable(action.tabular.spec));
+	} else if (action?.tabular) {
+		// A drop_row / drop_column operator carries no cell spec or params.
+		modalities.tabular = { tabularKind: action.tabular.kind };
 	}
 	// Ensure at least one modality is present for editing.
 	if (Object.keys(modalities).length === 0) {

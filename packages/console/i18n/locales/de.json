@@ -1339,6 +1339,10 @@
 				"clamp": "Begrenzen",
 				"generalize_date": "Datum verallgemeinern"
 			},
+			"tabularKind": {
+				"drop_row": "Zeile entfernen",
+				"drop_column": "Spalte entfernen"
+			},
 			"imageKind": {
 				"blur": "Weichzeichnen",
 				"pixelate": "Verpixeln",

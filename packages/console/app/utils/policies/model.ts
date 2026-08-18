@@ -72,8 +72,22 @@ export type ImageRedactionKind = SubsetOf<
 >;
 /** The editor supports every audio operator the SDK offers. */
 export type AudioRedactionKind = AudioRedaction["kind"];
-/** Tabular cells reuse the text vocabulary (wrapped in a `cell` operator). */
-export type TabularRedactionKind = TextRedactionKind;
+/**
+ * Tabular redaction: a cell operation (the full text vocabulary, wrapped in a
+ * `cell` operator) or dropping the whole row / column. The `drop_*` kinds carry
+ * no params.
+ */
+export type TabularRedactionKind =
+	| TextRedactionKind
+	| "drop_row"
+	| "drop_column";
+
+/** The row/column-dropping tabular kinds (no cell operator, no params). */
+export const TABULAR_DROP_KINDS = ["drop_row", "drop_column"] as const;
+export type TabularDropKind = (typeof TABULAR_DROP_KINDS)[number];
+export const isTabularDropKind = (
+	kind: TabularRedactionKind | undefined,
+): kind is TabularDropKind => kind === "drop_row" || kind === "drop_column";
 
 /** A per-modality redaction operator with the params its kind needs. */
 export interface EditableOperator {

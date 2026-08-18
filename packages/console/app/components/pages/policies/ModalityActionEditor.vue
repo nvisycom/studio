@@ -4,10 +4,13 @@ import type {
 	EditableOperator,
 	Modality,
 	TextRedactionKind,
+	TabularRedactionKind,
+	TabularDropKind,
 	ImageRedactionKind,
 	AudioRedactionKind,
 	HashAlgorithm,
 } from "#console/utils/policies";
+import { TABULAR_DROP_KINDS, isTabularDropKind } from "#console/utils/policies";
 import { ChevronRight, Plus, X } from "@lucide/vue";
 import { Input } from "#console/components/ui/input";
 import { Button } from "#console/components/ui/button";
@@ -98,17 +101,28 @@ function defaultOperator(modality: Modality): EditableOperator {
 	}
 }
 
-// The text/tabular kind of an operator, whichever modality owns it.
-function textyKind(op: EditableOperator, m: Modality): TextRedactionKind {
+// The text/tabular kind of an operator, whichever modality owns it. Tabular can
+// additionally be a drop kind (row / column), so it widens to the tabular union.
+function textyKind(op: EditableOperator, m: Modality): TabularRedactionKind {
 	return (m === "tabular" ? op.tabularKind : op.textKind) ?? "replace";
 }
 function setTextyKind(
 	op: EditableOperator,
 	m: Modality,
-	kind: TextRedactionKind,
+	kind: TabularRedactionKind,
 ) {
 	if (m === "tabular") op.tabularKind = kind;
-	else op.textKind = kind;
+	// The text modality never carries a drop kind; the picker can't emit one.
+	else op.textKind = kind as TextRedactionKind;
+}
+
+// The row/column-dropping kinds, offered only for the tabular modality.
+const DROP_KINDS: readonly TabularDropKind[] = TABULAR_DROP_KINDS;
+
+// Whether the current operator drops a whole row / column (no params, no
+// cell operator). Only tabular can reach this state.
+function isDrop(op: EditableOperator, m: Modality): boolean {
+	return m === "tabular" && isTabularDropKind(op.tabularKind);
 }
 
 // Whether a text/tabular select has expanded the full advanced operator list.
@@ -121,7 +135,7 @@ const showAdvanced = reactive<Partial<Record<Modality, boolean>>>({});
 // expanding the whole list).
 function leadKinds(m: Modality): TextRedactionKind[] {
 	const current = textyKind(props.action.modalities![m]!, m);
-	return ADVANCED_TEXT_KINDS.includes(current)
+	return !isTabularDropKind(current) && ADVANCED_TEXT_KINDS.includes(current)
 		? [...COMMON_TEXT_KINDS, current]
 		: COMMON_TEXT_KINDS;
 }
@@ -167,14 +181,17 @@ function removeModality(modality: Modality) {
             v-if="m === 'text' || m === 'tabular'"
             :model-value="textyKind(action.modalities![m]!, m)"
             @update:model-value="
-              setTextyKind(action.modalities![m]!, m, $event as TextRedactionKind)
+              setTextyKind(action.modalities![m]!, m, $event as TabularRedactionKind)
             "
             @update:open="(open: boolean) => { if (!open) showAdvanced[m] = false; }"
           >
             <SelectTrigger
               class="h-9 shrink-0"
               :class="
-                PARAMLESS_TEXT_KINDS.has(textyKind(action.modalities![m]!, m))
+                isDrop(action.modalities![m]!, m) ||
+                PARAMLESS_TEXT_KINDS.has(
+                  textyKind(action.modalities![m]!, m) as TextRedactionKind,
+                )
                   ? 'flex-1'
                   : 'w-40'
               "
@@ -200,6 +217,13 @@ function removeModality(modality: Modality) {
                 {{ t("policies.editor.moreOperators") }}
                 <ChevronRight :size="14" />
               </button>
+              <!-- Tabular-only: drop the whole matched row or column. -->
+              <template v-if="m === 'tabular'">
+                <SelectSeparator />
+                <SelectItem v-for="k in DROP_KINDS" :key="k" :value="k">
+                  {{ t(`policies.editor.tabularKind.${k}`) }}
+                </SelectItem>
+              </template>
             </SelectContent>
           </Select>
 

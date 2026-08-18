@@ -1339,6 +1339,10 @@
 				"clamp": "Clamp",
 				"generalize_date": "Generalize date"
 			},
+			"tabularKind": {
+				"drop_row": "Drop row",
+				"drop_column": "Drop column"
+			},
 			"imageKind": {
 				"blur": "Blur",
 				"pixelate": "Pixelate",
