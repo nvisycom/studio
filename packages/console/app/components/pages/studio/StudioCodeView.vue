@@ -43,6 +43,7 @@ const KIND_CLASS: Record<TokenKind, string> = {
             v-if="seg.entity"
             type="button"
             :data-entity="seg.entity.id"
+            :data-category="seg.entity.category ?? undefined"
             :title="seg.entity.label"
             class="chip"
             :class="{ 'chip--active': activeEntityId === seg.entity.id }"
@@ -58,14 +59,14 @@ const KIND_CLASS: Record<TokenKind, string> = {
 <style scoped>
 /* Code syntax palette — distinct but muted hues, tuned per theme so both
    grounds stay legible. Referenced from KIND_CLASS via text-[var(--code-*)]. */
+/* Entity-chip styling (the marker underline) is shared and lives in
+   assets/css/entities.css so every preview stays consistent. */
 .code-view {
 	--code-key: oklch(0.5 0.13 256); /* blue */
 	--code-string: oklch(0.5 0.11 152); /* green */
 	--code-number: oklch(0.52 0.13 65); /* amber */
 	--code-keyword: oklch(0.52 0.16 300); /* purple */
 	--code-punct: var(--color-muted-foreground);
-	/* Flagged-entity tint — a calm amber "attention", not an alarm red. */
-	--flag: oklch(0.68 0.15 65);
 }
 :global(.dark) .code-view {
 	--code-key: oklch(0.8 0.15 248); /* blue */
@@ -73,27 +74,5 @@ const KIND_CLASS: Record<TokenKind, string> = {
 	--code-number: oklch(0.87 0.14 74); /* amber */
 	--code-keyword: oklch(0.82 0.18 320); /* magenta-purple */
 	--code-punct: oklch(0.68 0 0);
-	--flag: oklch(0.82 0.15 75); /* brighter amber on dark */
-}
-
-/* Detected-entity chip: a calm amber tint; the text keeps its syntax color so
-   it stays readable. Horizontal padding cancelled by negative margin so it
-   never adds line height (no vertical bleed) or shifts surrounding glyphs. */
-.chip {
-	border-radius: 0.25rem;
-	padding: 0 0.25rem;
-	margin: 0 -0.25rem;
-	background-color: color-mix(in oklab, var(--flag) 15%, transparent);
-	color: inherit;
-	font: inherit;
-	cursor: pointer;
-	transition: background-color 0.15s, box-shadow 0.15s;
-}
-.chip:hover {
-	background-color: color-mix(in oklab, var(--flag) 25%, transparent);
-}
-.chip--active {
-	background-color: color-mix(in oklab, var(--flag) 28%, transparent);
-	box-shadow: 0 0 0 1.5px var(--flag);
 }
 </style>

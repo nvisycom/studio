@@ -56,6 +56,18 @@ function cellLabel(cell: NonNullable<TextEntityView["cell"]>): string {
 	return t("studio.audit.cell", { column, row });
 }
 
+/**
+ * Localized display name for a catalog category, falling back to the raw id for
+ * a custom/unknown category the locale map doesn't cover, and to "Uncategorized"
+ * when the label has no category.
+ */
+function categoryName(category: string | null): string {
+	if (!category) return t("studio.audit.uncategorized");
+	const key = `studio.audit.categories.${category}`;
+	const name = t(key);
+	return name === key ? category : name;
+}
+
 const emit = defineEmits<{
 	/** A row was clicked — focus its span in the document. */
 	"focus-entity": [id: string];
@@ -190,8 +202,13 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
               :size="11"
               class="shrink-0 -ml-0.5 transition-transform duration-200 group-data-[state=open]/category:rotate-90"
             />
+            <span
+              class="category-dot shrink-0"
+              :data-category="section.category ?? undefined"
+              aria-hidden="true"
+            />
             <span>
-              {{ section.category ?? t("studio.audit.uncategorized") }}
+              {{ categoryName(section.category) }}
             </span>
             <span
               class="ml-auto rounded-full bg-foreground/10 px-1.5 text-[10px] font-semibold leading-4 text-foreground/70"

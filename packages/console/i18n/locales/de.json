@@ -507,7 +507,6 @@
 		"errors": {
 			"deleteFailed": "Datei konnte nicht gelöscht werden",
 			"updateFailed": "Datei konnte nicht aktualisiert werden",
-			"uploadFailed": "Datei konnte nicht hochgeladen werden",
 			"downloadFailed": "Datei konnte nicht heruntergeladen werden",
 			"loadFailed": "Dateien konnten nicht geladen werden"
 		},
@@ -1214,13 +1213,29 @@
 			"collapseDuplicates": "Duplikate zusammenfassen",
 			"prevOccurrence": "Vorheriges Vorkommen",
 			"nextOccurrence": "Nächstes Vorkommen",
-			"metadata": "Metadaten"
+			"metadata": "Metadaten",
+			"categories": {
+				"identity": "Identität",
+				"contact": "Kontakt",
+				"geographic": "Geografisch",
+				"demographic": "Demografisch",
+				"protected_characteristic": "Besondere Kategorie",
+				"financial": "Finanzen",
+				"health": "Gesundheit",
+				"biometric": "Biometrie",
+				"judicial": "Justiz",
+				"credentials": "Anmeldedaten",
+				"network": "Netzwerk",
+				"organization": "Organisation",
+				"contextual": "Kontextbezogen"
+			}
 		},
 		"preview": {
 			"table": "Tabelle",
 			"raw": "Roh",
 			"withHeaders": "Mit Kopfzeile",
-			"docxFailed": "Dieses Word-Dokument konnte nicht dargestellt werden."
+			"docxFailed": "Dieses Word-Dokument konnte nicht dargestellt werden.",
+			"textFailed": "Diese Datei konnte nicht geladen werden."
 		}
 	},
 	"commandMenu": {

@@ -507,7 +507,6 @@
 		"errors": {
 			"deleteFailed": "Failed to delete file",
 			"updateFailed": "Failed to update file",
-			"uploadFailed": "Failed to upload file",
 			"downloadFailed": "Failed to download file",
 			"loadFailed": "Failed to load files"
 		},
@@ -1214,13 +1213,29 @@
 			"collapseDuplicates": "Collapse duplicates",
 			"prevOccurrence": "Previous occurrence",
 			"nextOccurrence": "Next occurrence",
-			"metadata": "Metadata"
+			"metadata": "Metadata",
+			"categories": {
+				"identity": "Identity",
+				"contact": "Contact",
+				"geographic": "Geographic",
+				"demographic": "Demographic",
+				"protected_characteristic": "Protected characteristic",
+				"financial": "Financial",
+				"health": "Health",
+				"biometric": "Biometric",
+				"judicial": "Judicial",
+				"credentials": "Credentials",
+				"network": "Network",
+				"organization": "Organization",
+				"contextual": "Contextual"
+			}
 		},
 		"preview": {
 			"table": "Table",
 			"raw": "Raw",
 			"withHeaders": "With headers",
-			"docxFailed": "Couldn't render this Word document."
+			"docxFailed": "Couldn't render this Word document.",
+			"textFailed": "Unable to load this file."
 		}
 	},
 	"commandMenu": {

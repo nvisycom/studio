@@ -1,5 +1,8 @@
 export { default as StudioDocumentPreview } from "./StudioDocumentPreview.vue";
 export { default as StudioCsvTable } from "./StudioCsvTable.vue";
+export { default as StudioCsvView } from "./StudioCsvView.vue";
+export { default as StudioTextView } from "./StudioTextView.vue";
+export { default as StudioImageView } from "./StudioImageView.vue";
 export { default as StudioDocxView } from "./StudioDocxView.vue";
 export { default as StudioCodeView } from "./StudioCodeView.vue";
 export { default as EntityDetailPopover } from "./EntityDetailPopover.vue";

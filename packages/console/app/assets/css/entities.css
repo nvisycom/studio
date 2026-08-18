@@ -1,0 +1,146 @@
+/*
+ * Detected-entity highlight — shared across every studio preview (text/code,
+ * CSV table, DOCX). The treatment is a marker underline: the matched text keeps
+ * its own color and stays fully legible, with a colored line beneath it so the
+ * span reads as annotated rather than blocked out. Focus adds a fuller line and
+ * a faint fill so the active entity stands out.
+ *
+ * The line color is per label category (`--flag`), so types are scannable at a
+ * glance: each chip carries `data-category="<category>"` and the rules below map
+ * it to a hue. Categories come from the label catalog; an unknown/custom or
+ * uncategorized entity falls back to the neutral base color.
+ *
+ * Both class names are styled: `.chip` (code + CSV, rendered in templates) and
+ * `.docx-chip` (DOCX, created imperatively). Defined globally so no preview
+ * duplicates the rules or needs `:deep()`.
+ *
+ * The 13 category hues are harmonized (one lightness/chroma band, spaced around
+ * the OKLCH wheel) so the set reads as a considered palette, not a rainbow, and
+ * every hue stays legible on both the light and dark preview surfaces.
+ */
+
+:root {
+	/* Neutral fallback: custom or uncategorized entities. */
+	--flag: oklch(0.55 0.03 260);
+
+	--flag-identity: oklch(0.55 0.15 264); /* blue */
+	--flag-contact: oklch(0.58 0.13 200); /* cyan */
+	--flag-geographic: oklch(0.58 0.13 160); /* teal-green */
+	--flag-demographic: oklch(0.6 0.13 130); /* green */
+	--flag-protected_characteristic: oklch(0.62 0.15 95); /* olive-gold */
+	--flag-financial: oklch(0.62 0.15 70); /* amber */
+	--flag-health: oklch(0.6 0.17 25); /* red */
+	--flag-biometric: oklch(0.55 0.18 350); /* magenta */
+	--flag-judicial: oklch(0.52 0.16 320); /* purple */
+	--flag-credentials: oklch(0.5 0.16 300); /* violet */
+	--flag-network: oklch(0.55 0.13 240); /* indigo */
+	--flag-organization: oklch(0.5 0.04 260); /* slate */
+	--flag-contextual: oklch(0.58 0.07 180); /* muted teal */
+}
+
+.dark {
+	/* Brighter band so the underline reads on the dark preview surface. */
+	--flag: oklch(0.72 0.03 260);
+
+	--flag-identity: oklch(0.72 0.14 264);
+	--flag-contact: oklch(0.74 0.12 200);
+	--flag-geographic: oklch(0.75 0.13 160);
+	--flag-demographic: oklch(0.78 0.14 130);
+	--flag-protected_characteristic: oklch(0.8 0.14 95);
+	--flag-financial: oklch(0.8 0.14 70);
+	--flag-health: oklch(0.72 0.16 25);
+	--flag-biometric: oklch(0.72 0.16 350);
+	--flag-judicial: oklch(0.7 0.16 320);
+	--flag-credentials: oklch(0.7 0.16 300);
+	--flag-network: oklch(0.72 0.13 240);
+	--flag-organization: oklch(0.72 0.04 260);
+	--flag-contextual: oklch(0.75 0.08 180);
+}
+
+/* Map a category to its hue via `--flag`, on any element carrying
+   `data-category` (a chip, a docx-chip, or an audit-list category dot). An
+   unknown/custom category keeps the neutral base `--flag`. `data-category` only
+   appears on our entity elements, so the bare attribute selector is safe. */
+[data-category="identity"] {
+	--flag: var(--flag-identity);
+}
+[data-category="contact"] {
+	--flag: var(--flag-contact);
+}
+[data-category="geographic"] {
+	--flag: var(--flag-geographic);
+}
+[data-category="demographic"] {
+	--flag: var(--flag-demographic);
+}
+[data-category="protected_characteristic"] {
+	--flag: var(--flag-protected_characteristic);
+}
+[data-category="financial"] {
+	--flag: var(--flag-financial);
+}
+[data-category="health"] {
+	--flag: var(--flag-health);
+}
+[data-category="biometric"] {
+	--flag: var(--flag-biometric);
+}
+[data-category="judicial"] {
+	--flag: var(--flag-judicial);
+}
+[data-category="credentials"] {
+	--flag: var(--flag-credentials);
+}
+[data-category="network"] {
+	--flag: var(--flag-network);
+}
+[data-category="organization"] {
+	--flag: var(--flag-organization);
+}
+[data-category="contextual"] {
+	--flag: var(--flag-contextual);
+}
+
+/* Audit-list category swatch: a small dot in the category's hue, tying the
+   grouped list to the in-document highlights. */
+.category-dot {
+	display: inline-block;
+	width: 0.5rem;
+	height: 0.5rem;
+	border-radius: 9999px;
+	background-color: var(--flag);
+}
+
+.chip,
+.docx-chip {
+	/* Marker underline; the text is untouched so it stays readable. Rendered as
+	   a gradient background rather than a border so it never affects layout
+	   (no line-height shift, no reflow of surrounding glyphs). */
+	background-image: linear-gradient(var(--flag), var(--flag));
+	background-repeat: no-repeat;
+	background-position: 0 100%;
+	background-size: 100% 0.12em;
+	border-radius: 0.1em;
+	padding-bottom: 0.04em;
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+	transition:
+		background-size 0.15s ease,
+		background-color 0.15s ease,
+		box-shadow 0.15s ease;
+}
+
+.chip:hover,
+.docx-chip:hover {
+	/* Thicker line + a whisper of fill on hover. */
+	background-size: 100% 0.16em;
+	background-color: color-mix(in oklab, var(--flag) 10%, transparent);
+}
+
+.chip--active,
+.docx-chip--active {
+	/* Focused entity: a bold underline and a light fill so it clearly leads. */
+	background-size: 100% 0.24em;
+	background-color: color-mix(in oklab, var(--flag) 18%, transparent);
+}

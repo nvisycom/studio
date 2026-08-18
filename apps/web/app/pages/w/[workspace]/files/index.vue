@@ -70,9 +70,11 @@ const isDraggingOver = ref(false);
 const deleteDialogOpen = ref(false);
 const editDialogOpen = ref(false);
 const uploadDialogOpen = ref(false);
+// Files dropped onto the page, handed to the upload dialog so a drop and a
+// browse share the same validated flow.
+const droppedFiles = ref<File[]>([]);
 const fileToDelete = ref<NvisyFile | null>(null);
 const fileToEdit = ref<NvisyFile | null>(null);
-const isUploadingDrop = ref(false);
 
 const MODALITY_TOKENS: ModalityToken[] = ["text", "image", "tabular", "audio"];
 const FORMAT_TOKENS: FormatToken[] = [
@@ -212,6 +214,7 @@ async function confirmEdit(data: UpdateFile) {
 }
 
 function openUploadDialog() {
+	droppedFiles.value = [];
 	uploadDialogOpen.value = true;
 }
 
@@ -245,21 +248,16 @@ function handleDragLeave(e: DragEvent) {
 	}
 }
 
-async function handleDrop(e: DragEvent) {
+function handleDrop(e: DragEvent) {
 	e.preventDefault();
 	isDraggingOver.value = false;
 
-	const droppedFiles = e.dataTransfer?.files;
-	if (droppedFiles && droppedFiles.length > 0) {
-		isUploadingDrop.value = true;
-		try {
-			await uploadFilesAsync(Array.from(droppedFiles));
-			toast.success(t("files.messages.filesUploaded"));
-		} catch {
-			toast.error(t("files.errors.uploadFailed"));
-		} finally {
-			isUploadingDrop.value = false;
-		}
+	const files = e.dataTransfer?.files;
+	if (files && files.length > 0) {
+		// Route the drop through the upload dialog so it's validated and reviewed
+		// the same as a browse — one unified upload flow.
+		droppedFiles.value = Array.from(files);
+		uploadDialogOpen.value = true;
 	}
 }
 
@@ -397,30 +395,6 @@ function handleLoadMore() {
             </div>
           </Transition>
 
-          <!-- Upload progress overlay -->
-          <Transition
-            enter-active-class="transition-opacity duration-200"
-            leave-active-class="transition-opacity duration-200"
-            enter-from-class="opacity-0"
-            leave-to-class="opacity-0"
-          >
-            <div
-              v-if="isUploadingDrop"
-              class="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-lg border border-border"
-            >
-              <div class="text-center -mt-16">
-                <Loader2
-                  :size="24"
-                  :stroke-width="1.5"
-                  class="mx-auto mb-3 text-muted-foreground animate-spin"
-                />
-                <p class="text-sm font-medium text-foreground">
-                  {{ t("files.dialogs.upload.uploading") }}
-                </p>
-              </div>
-            </div>
-          </Transition>
-
           <!-- List View (Data Table) -->
           <FilesTableView
             v-if="viewMode === 'list'"
@@ -508,6 +482,7 @@ function handleLoadMore() {
     <UploadFilesDialog
       v-model:open="uploadDialogOpen"
       :upload-fn="uploadFilesAsync"
+      :initial-files="droppedFiles"
       @uploaded="handleUploadComplete"
     />
   </div>

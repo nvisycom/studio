@@ -4,6 +4,7 @@ import {
 	type DocxSourceRef,
 	byteOffsetToChar,
 	docxMatchedText,
+	isRenderedDocxPart,
 	parseCsv,
 } from "#console/utils/preview";
 
@@ -29,6 +30,11 @@ export interface TextEntityView {
 	 * later; until then the id is the label.
 	 */
 	label: string;
+	/**
+	 * The label's catalog category (e.g. "contact", "financial"), or null when
+	 * the catalog doesn't know the label. Drives the highlight color per category.
+	 */
+	category: string | null;
 	/**
 	 * Byte offsets of the span. For text, offsets into the whole document; for
 	 * tabular, offsets *within the cell* named by {@link cell} (the preview maps
@@ -185,6 +191,10 @@ export function useTextEntities(
 	text?: MaybeRefOrGetter<string | null>,
 	docxParts?: MaybeRefOrGetter<Map<string, Uint8Array> | null>,
 ) {
+	// Resolve label ids to catalog names + categories (shared with the grouped
+	// list below). Read up here so each entity view can carry its category.
+	const { resolveLabel, labelName } = useLabels();
+
 	const entities = computed<TextEntityView[]>(() => {
 		const group = toValue(audit)?.body;
 		const doc = toValue(text) ?? null;
@@ -214,16 +224,18 @@ export function useTextEntities(
 				if (doc) matched = sliceBytes(doc, start, end);
 				else if (parts && sourceRefs?.length)
 					matched = docxMatchedText(parts, sourceRefs);
-				// Locatable unless the entity has source refs and none target the
-				// visible body (`word/document.xml`) — i.e. it's metadata-only (a DOCX
-				// hyperlink target). No source refs means a plain body position, so
-				// plain-text/JSON entities stay locatable regardless of fetch state.
+				// Locatable unless the entity has source refs and none target a
+				// rendered part (document body, header, footer, notes) — i.e. it's
+				// metadata-only (a DOCX hyperlink target in `.rels`). No source refs
+				// means a plain body position, so plain-text/JSON entities stay
+				// locatable regardless of fetch state.
 				const locatable =
 					!sourceRefs?.length ||
-					sourceRefs.some((r) => !r.part || r.part === "word/document.xml");
+					sourceRefs.some((r) => isRenderedDocxPart(r.part));
 				return {
 					id: e.id,
 					label: e.label,
+					category: resolveLabel(e.label)?.category ?? null,
 					start,
 					end,
 					confidence: e.confidence,
@@ -248,6 +260,7 @@ export function useTextEntities(
 				return {
 					id: e.id,
 					label: e.label,
+					category: resolveLabel(e.label)?.category ?? null,
 					start,
 					end,
 					cell: {
@@ -293,9 +306,6 @@ export function useTextEntities(
 	});
 
 	const count = computed(() => entities.value.length);
-
-	// Resolve label ids to catalog names + categories for the grouped list.
-	const { resolveLabel, labelName } = useLabels();
 
 	/**
 	 * Cluster a label group's entities by identical value + detector, preserving

@@ -30,6 +30,12 @@ interface UploadingFile {
 interface Props {
 	open: boolean;
 	uploadFn: (files: File[]) => Promise<unknown>;
+	/**
+	 * Files to seed the review list with when the dialog opens — e.g. files
+	 * dropped onto the page. They go through the same validation as browsed
+	 * files, so every upload flows through this one dialog.
+	 */
+	initialFiles?: File[];
 }
 
 interface Emits {
@@ -112,6 +118,15 @@ function addFiles(files: File[]) {
 	});
 	uploadingFiles.value.push(...added);
 }
+
+// Seed the review list from files handed in when the dialog opens (a page drop),
+// so they get the same validation and per-file feedback as browsed files.
+watch(
+	() => props.open,
+	(open) => {
+		if (open && props.initialFiles?.length) addFiles(props.initialFiles);
+	},
+);
 
 function removeFile(id: string) {
 	uploadingFiles.value = uploadingFiles.value.filter((f) => f.id !== id);

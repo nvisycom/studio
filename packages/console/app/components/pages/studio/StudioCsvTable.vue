@@ -88,7 +88,11 @@ function cellParts(row: number, col: number, value: string): Part[] {
 
 <template>
   <div class="csv-table overflow-auto rounded-lg border border-border/50 bg-card shadow-sm">
-    <table class="border-collapse text-xs">
+    <!-- w-full with the default auto layout: columns size to content, and any
+         width left over is distributed across them so the table fills the card
+         (no dead strip) without a spacer; it still overflows + scrolls when the
+         content is wider than the container. -->
+    <table class="w-full border-collapse text-xs">
       <thead v-if="headers">
         <tr>
           <th class="num-col" aria-hidden="true" />
@@ -123,6 +127,7 @@ function cellParts(row: number, col: number, value: string): Part[] {
                 v-if="part.entity"
                 type="button"
                 :data-entity="part.entity.id"
+                :data-category="part.entity.category ?? undefined"
                 :title="part.entity.label"
                 class="chip"
                 :class="{ 'chip--active': activeEntityId === part.entity.id }"
@@ -136,11 +141,31 @@ function cellParts(row: number, col: number, value: string): Part[] {
 </template>
 
 <style scoped>
+/* Entity-chip styling (the marker underline) is shared and lives in
+   assets/css/entities.css so every preview stays consistent. */
+
+/* Use a thin non-overlay scrollbar so it reserves its own track instead of
+   floating over the last row and hiding cells (macOS overlay scrollbars).
+   scrollbar-gutter keeps the layout stable whether or not it's shown. */
 .csv-table {
-	--flag: oklch(0.68 0.15 65);
+	scrollbar-gutter: stable;
+	scrollbar-width: thin;
+	scrollbar-color: var(--color-border) transparent;
+	/* Breathing room between the last row and the scrollbar track. */
+	padding-bottom: 0.5rem;
 }
-:global(.dark) .csv-table {
-	--flag: oklch(0.82 0.15 75);
+.csv-table::-webkit-scrollbar {
+	height: 10px;
+	width: 10px;
+}
+.csv-table::-webkit-scrollbar-thumb {
+	background: var(--color-border);
+	border-radius: 9999px;
+	border: 3px solid transparent;
+	background-clip: content-box;
+}
+.csv-table::-webkit-scrollbar-track {
+	background: transparent;
 }
 .num-col {
 	width: 3rem;
@@ -148,22 +173,5 @@ function cellParts(row: number, col: number, value: string): Part[] {
 	border-bottom: 1px solid var(--color-border);
 	border-right: 1px solid var(--color-border);
 	background-color: color-mix(in oklab, var(--color-muted) 20%, transparent);
-}
-.chip {
-	border-radius: 0.25rem;
-	padding: 0 0.25rem;
-	margin: 0 -0.25rem;
-	background-color: color-mix(in oklab, var(--flag) 15%, transparent);
-	color: inherit;
-	font: inherit;
-	cursor: pointer;
-	transition: background-color 0.15s, box-shadow 0.15s;
-}
-.chip:hover {
-	background-color: color-mix(in oklab, var(--flag) 25%, transparent);
-}
-.chip--active {
-	background-color: color-mix(in oklab, var(--flag) 28%, transparent);
-	box-shadow: 0 0 0 1.5px var(--flag);
 }
 </style>

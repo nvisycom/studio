@@ -18,6 +18,7 @@ export default defineNuxtConfig({
 	css: [
 		`${layerDir}app/assets/css/fonts.css`,
 		`${layerDir}app/assets/css/tailwind.css`,
+		`${layerDir}app/assets/css/entities.css`,
 	],
 
 	modules: [
