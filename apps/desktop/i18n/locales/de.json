@@ -6,7 +6,8 @@
 			"description": "Der Nvisy-Server, mit dem verbunden werden soll. Leer lassen für den Standard.",
 			"advanced": "Servereinstellungen",
 			"reset": "Standard verwenden",
-			"connectionError": "Server nicht erreichbar. Prüfen Sie die Server-URL und ob der Server läuft."
+			"connectionError": "Server nicht erreichbar. Prüfen Sie die Server-URL und ob der Server läuft.",
+			"invalid": "Geben Sie eine gültige Server-URL ein (z. B. https://api.example.com)."
 		}
 	},
 	"tray": {

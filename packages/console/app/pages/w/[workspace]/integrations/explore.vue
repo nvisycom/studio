@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Component } from "vue";
 import {
 	Search,
 	ArrowLeft,
@@ -83,7 +84,7 @@ interface Provider {
 interface Category {
 	key: string;
 	nameKey: string;
-	icon: any;
+	icon: Component;
 }
 
 const searchQuery = ref("");
@@ -344,45 +345,45 @@ function getTagName(tagKey: TagKey): string {
 	return t(`connections.explore.tags.${tagKey}`);
 }
 
+// Shared status + search predicate (the category filter is applied separately,
+// so the per-category counts and the "All" total can reuse the same test).
+// `query` is expected pre-lowercased and trimmed.
+function matchesStatusAndSearch(provider: Provider, query: string): boolean {
+	if (statusFilter.value === "available" && provider.status !== "available") {
+		return false;
+	}
+	if (
+		statusFilter.value === "unavailable" &&
+		provider.status !== "unavailable"
+	) {
+		return false;
+	}
+	if (!query) return true;
+	const name = getProviderName(provider).toLowerCase();
+	const description = getProviderDescription(provider).toLowerCase();
+	const tagNames = provider.tags
+		.map((tag) => getTagName(tag).toLowerCase())
+		.join(" ");
+	return (
+		name.includes(query) ||
+		description.includes(query) ||
+		tagNames.includes(query)
+	);
+}
+
 // Filter and sort providers
 const filteredProviders = computed(() => {
 	const query = searchQuery.value.toLowerCase().trim();
 
 	const filtered = providers.value.filter((provider) => {
-		// Category filter (multi-select)
+		// Category filter (multi-select); status + search are shared.
 		if (
 			selectedCategories.value.size > 0 &&
 			!selectedCategories.value.has(provider.category)
 		) {
 			return false;
 		}
-
-		// Status filter
-		if (statusFilter.value === "available" && provider.status !== "available") {
-			return false;
-		}
-		if (
-			statusFilter.value === "unavailable" &&
-			provider.status !== "unavailable"
-		) {
-			return false;
-		}
-
-		// Search filter
-		if (query) {
-			const name = getProviderName(provider).toLowerCase();
-			const description = getProviderDescription(provider).toLowerCase();
-			const tagNames = provider.tags
-				.map((tag) => getTagName(tag).toLowerCase())
-				.join(" ");
-			return (
-				name.includes(query) ||
-				description.includes(query) ||
-				tagNames.includes(query)
-			);
-		}
-
-		return true;
+		return matchesStatusAndSearch(provider, query);
 	});
 
 	// Sort providers
@@ -403,38 +404,13 @@ const filteredProviders = computed(() => {
 	});
 });
 
-// Providers filtered by search and status (but not category)
+// Providers filtered by search and status (but not category), used for the
+// per-category counts and the "All" total.
 const baseFilteredProviders = computed(() => {
 	const query = searchQuery.value.toLowerCase().trim();
-
-	return providers.value.filter((provider) => {
-		// Status filter
-		if (statusFilter.value === "available" && provider.status !== "available") {
-			return false;
-		}
-		if (
-			statusFilter.value === "unavailable" &&
-			provider.status !== "unavailable"
-		) {
-			return false;
-		}
-
-		// Search filter
-		if (query) {
-			const name = getProviderName(provider).toLowerCase();
-			const description = getProviderDescription(provider).toLowerCase();
-			const tagNames = provider.tags
-				.map((tag) => getTagName(tag).toLowerCase())
-				.join(" ");
-			return (
-				name.includes(query) ||
-				description.includes(query) ||
-				tagNames.includes(query)
-			);
-		}
-
-		return true;
-	});
+	return providers.value.filter((provider) =>
+		matchesStatusAndSearch(provider, query),
+	);
 });
 
 // Count providers per category (respects search and status filters)
@@ -509,10 +485,6 @@ async function handleConnect(connection: CreateConnection) {
 	} catch {
 		toast.error(t("connections.dialogs.connect.error"));
 	}
-}
-
-function notifyMe(_id: string | number) {
-	// TODO: Implement notify me functionality
 }
 </script>
 
@@ -656,7 +628,6 @@ function notifyMe(_id: string | number) {
             externalUrl: provider.externalUrl,
           }"
           @connect="connectProvider"
-          @notify-me="notifyMe"
         />
       </div>
 

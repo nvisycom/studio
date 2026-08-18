@@ -6,7 +6,8 @@
 			"description": "The Nvisy server to connect to. Leave blank for the default.",
 			"advanced": "Server settings",
 			"reset": "Use default",
-			"connectionError": "Couldn't reach the server. Check the Server URL and that the server is running."
+			"connectionError": "Couldn't reach the server. Check the Server URL and that the server is running.",
+			"invalid": "Enter a valid server URL (e.g. https://api.example.com)."
 		}
 	},
 	"tray": {

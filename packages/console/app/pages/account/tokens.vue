@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import type {
-	ApiToken,
-	ApiTokenWithJWT,
-	TokenExpiration,
-} from "@nvisy/sdk/datatypes";
+import type { ApiToken, TokenExpiration } from "@nvisy/sdk/datatypes";
 import { Key, Loader2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 
@@ -61,7 +57,7 @@ const {
 // The token listing flags which token authenticated the current request,
 // so the active session can be marked and protected from bulk revoke.
 const currentTokenId = computed<string | null>(
-	() => tokens.value?.find((t) => t.current)?.id ?? null,
+	() => tokens.value?.find((token) => token.current)?.id ?? null,
 );
 
 // Form state
@@ -111,7 +107,7 @@ async function createToken() {
 		});
 
 		// The result contains the JWT token (only shown once)
-		newTokenGenerated.value = (result as ApiTokenWithJWT).token || null;
+		newTokenGenerated.value = result.token || null;
 		isTokenCreatedModalOpen.value = true;
 		toast.success(t("tokens.messages.tokenCreated"));
 

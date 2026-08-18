@@ -62,6 +62,15 @@ function normalize(url: string): string {
 	return value.endsWith("/") ? value : `${value}/`;
 }
 
+/** Whether a normalized URL actually parses and has a host (rejects `http://`). */
+function isUsableUrl(url: string): boolean {
+	try {
+		return new URL(url).host.length > 0;
+	} catch {
+		return false;
+	}
+}
+
 export function useApiBaseUrl(): {
 	/** The effective base URL: the override when set, else the config default. */
 	baseUrl: Ref<string>;
@@ -69,23 +78,31 @@ export function useApiBaseUrl(): {
 	override: Ref<string | null>;
 	/** The build-time default, for showing as a placeholder / reset target. */
 	defaultUrl: string;
-	/** Persist an override; empty/whitespace clears it back to the default. */
-	setOverride: (url: string) => void;
+	/**
+	 * Persist an override. Empty/whitespace clears it back to the default.
+	 * Returns `false` (without persisting) when the input isn't a usable URL —
+	 * e.g. a bare `http://` — so the caller can surface a validation message
+	 * instead of storing a value that breaks every request.
+	 */
+	setOverride: (url: string) => boolean;
 } {
 	initialize();
 	const defaultUrl = useRuntimeConfig().public.nvisyApiUrl as string;
 
 	const baseUrl = computed(() => override.value || defaultUrl);
 
-	function setOverride(url: string) {
-		const value = normalize(url);
-		if (value) {
-			override.value = value;
-			if (import.meta.client) localStorage.setItem(STORAGE_KEY, value);
-		} else {
+	function setOverride(url: string): boolean {
+		// Empty input clears the override (back to the default) — a valid outcome.
+		if (!url.trim()) {
 			override.value = null;
 			if (import.meta.client) localStorage.removeItem(STORAGE_KEY);
+			return true;
 		}
+		const value = normalize(url);
+		if (!isUsableUrl(value)) return false;
+		override.value = value;
+		if (import.meta.client) localStorage.setItem(STORAGE_KEY, value);
+		return true;
 	}
 
 	return { baseUrl, override, defaultUrl, setOverride };

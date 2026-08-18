@@ -27,8 +27,12 @@ const serverUrl = ref(override.value ?? "");
 // server is visible on return rather than hidden behind the disclosure.
 const showServer = ref(override.value != null);
 
+const serverError = ref<string | null>(null);
+
 function applyServer() {
-	setOverride(serverUrl.value);
+	serverError.value = setOverride(serverUrl.value)
+		? null
+		: t("auth.server.invalid");
 }
 
 const apiError = computed(() =>
@@ -117,8 +121,11 @@ async function handleLogin(): Promise<void> {
               @change="applyServer"
               @blur="applyServer"
             />
-            <p class="text-xs text-muted-foreground">
-              {{ t("auth.server.description") }}
+            <p
+              class="text-xs"
+              :class="serverError ? 'text-destructive' : 'text-muted-foreground'"
+            >
+              {{ serverError ?? t("auth.server.description") }}
             </p>
           </div>
         </div>

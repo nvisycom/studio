@@ -160,8 +160,14 @@ function buildTemplate(kind: TemplateKind): PolicyTemplate {
 						? { part: "pan_render", render: pciRender.value }
 						: { part: "sav_erase" },
 			};
-		default:
-			return { kind: "ccpa" };
+		case "ccpa":
+			return { kind };
+		default: {
+			// Exhaustiveness: a new PolicyTemplate kind added to TEMPLATES must be
+			// handled here rather than silently building a CCPA policy.
+			const exhaustive: never = kind;
+			throw new Error(`Unsupported policy template kind: ${exhaustive}`);
+		}
 	}
 }
 

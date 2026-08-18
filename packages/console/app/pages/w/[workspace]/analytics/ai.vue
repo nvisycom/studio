@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Download, Upload } from "@lucide/vue";
-import { Button } from "#console/components/ui/button";
 import {
 	Card,
 	CardContent,
@@ -8,13 +6,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#console/components/ui/card";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "#console/components/ui/select";
+import AnalyticsToolbar from "#console/components/pages/analytics/AnalyticsToolbar.vue";
 import AnalyticsAreaChart from "#console/components/pages/analytics/AnalyticsAreaChartLazy.vue";
 import { AREA_CHARTS } from "#console/components/pages/analytics/charts";
 
@@ -34,32 +26,7 @@ const dateRange = ref("7d");
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="max-w-7xl mx-auto w-full">
       <!-- Toolbar -->
-      <div class="flex items-center justify-between mb-6">
-        <Select v-model="dateRange">
-          <SelectTrigger class="w-[180px] h-9">
-            <SelectValue :placeholder="t('analytics.common.selectPeriod')" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="24h">{{ t("analytics.common.period24h") }}</SelectItem>
-            <SelectItem value="7d">{{ t("analytics.common.period7d") }}</SelectItem>
-            <SelectItem value="30d">{{ t("analytics.common.period30d") }}</SelectItem>
-            <SelectItem value="90d">{{ t("analytics.common.period90d") }}</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <div class="flex gap-2">
-          <!-- Import/Export aren't wired to a backend yet; disable them with a
-               tooltip rather than present buttons that silently do nothing. -->
-          <Button variant="outline" disabled :title="t('common.comingSoon')">
-            <Upload :size="16" class="mr-2" />
-            {{ t("analytics.common.import") }}
-          </Button>
-          <Button variant="outline" disabled :title="t('common.comingSoon')">
-            <Download :size="16" class="mr-2" />
-            {{ t("analytics.common.export") }}
-          </Button>
-        </div>
-      </div>
+      <AnalyticsToolbar v-model:period="dateRange" />
 
       <!-- AI Charts -->
       <div class="grid gap-4 md:grid-cols-2 mb-4">

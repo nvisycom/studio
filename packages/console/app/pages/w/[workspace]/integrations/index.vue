@@ -73,8 +73,12 @@ const isConfigureConnectionDialogOpen = ref(false);
 const isDisconnectConnectionDialogOpen = ref(false);
 const selectedConnection = ref<Connection | null>(null);
 
+function findConnectionById(connectionId: string): Connection | undefined {
+	return connections.value?.find((c) => c.id === connectionId);
+}
+
 function openConfigureConnectionDialog(connectionId: string) {
-	const connection = connections.value?.find((c) => c.id === connectionId);
+	const connection = findConnectionById(connectionId);
 	if (connection) {
 		selectedConnection.value = connection;
 		isConfigureConnectionDialogOpen.value = true;
@@ -82,7 +86,7 @@ function openConfigureConnectionDialog(connectionId: string) {
 }
 
 function openDisconnectConnectionDialog(connectionId: string) {
-	const connection = connections.value?.find((c) => c.id === connectionId);
+	const connection = findConnectionById(connectionId);
 	if (connection) {
 		selectedConnection.value = connection;
 		isDisconnectConnectionDialogOpen.value = true;
@@ -317,11 +321,9 @@ async function testWebhook(webhookId: string) {
       </div>
 
       <template v-else>
-        <!-- Active Connections -->
-        <Card
-          v-if="connections && connections.length > 0"
-          class="mb-8 py-0 pt-6 rounded-xl border-border/50"
-        >
+        <!-- Active Connections. One card with a shared header/footer; only the
+             body switches between the table and the empty state. -->
+        <Card class="mb-8 py-0 pt-6 rounded-xl border-border/50">
           <CardHeader>
             <div class="flex items-center justify-between">
               <div>
@@ -333,7 +335,7 @@ async function testWebhook(webhookId: string) {
                 >
                 <CardDescription class="text-sm">{{
                   t("connections.sections.connectedServices.description", {
-                    count: connections.length,
+                    count: connections?.length ?? 0,
                   })
                 }}</CardDescription>
               </div>
@@ -366,6 +368,7 @@ async function testWebhook(webhookId: string) {
           </CardHeader>
           <CardContent>
             <ConnectionsTable
+              v-if="connections && connections.length > 0"
               :connections="connections"
               @configure="openConfigureConnectionDialog"
               @disconnect="openDisconnectConnectionDialog"
@@ -373,70 +376,7 @@ async function testWebhook(webhookId: string) {
               @test="handleTestConnection"
               @toggle-active="handleToggleActive"
             />
-          </CardContent>
-          <CardFooter
-            class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
-          >
-            <p class="text-xs text-muted-foreground">
-              {{ t("connections.messages.connectionFooter") }}
-              <a
-                href="https://docs.nvisy.com/connections"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-1 text-foreground hover:underline font-medium"
-              >
-                {{ t("connections.messages.documentation") }}
-                <ExternalLink :size="12" />
-              </a>
-            </p>
-          </CardFooter>
-        </Card>
-
-        <Card v-else class="mb-8 py-0 pt-6 rounded-xl border-border/50">
-          <CardHeader>
-            <div class="flex items-center justify-between">
-              <div>
-                <CardTitle
-                  class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
-                  >{{
-                    t("connections.sections.connectedServices.title")
-                  }}</CardTitle
-                >
-                <CardDescription class="text-sm">{{
-                  t("connections.sections.connectedServices.description", {
-                    count: 0,
-                  })
-                }}</CardDescription>
-              </div>
-              <div class="flex items-center gap-2">
-                <Button
-                  as-child
-                  variant="outline"
-                  size="sm"
-                  class="font-normal"
-                >
-                  <NuxtLink
-                    :to="wLink('/integrations/runs')"
-                    class="flex items-center gap-2"
-                  >
-                    <History :size="16" />
-                    {{ t("connections.actions.viewRuns") }}
-                  </NuxtLink>
-                </Button>
-                <Button as-child size="sm">
-                  <NuxtLink
-                    :to="wLink('/integrations/explore')"
-                    class="flex items-center gap-2"
-                  >
-                    <Compass :size="16" />
-                    {{ t("connections.actions.explore") }}
-                  </NuxtLink>
-                </Button>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div class="py-12">
+            <div v-else class="py-12">
               <div class="text-center">
                 <div
                   class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"

@@ -27,14 +27,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#console/components/ui/card";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "#console/components/ui/dialog";
+import { ConfirmDialog } from "#console/components/common";
 import { toast } from "vue-sonner";
 
 const { t } = useI18n();
@@ -271,34 +264,18 @@ async function confirmDelete() {
       </Card>
 
       <!-- Delete confirm -->
-      <Dialog
+      <ConfirmDialog
         :open="!!policyToDelete"
+        :title="
+          t('policies.delete.title', { name: policyToDelete?.displayName })
+        "
+        :description="t('policies.delete.description')"
+        :confirm-label="t('policies.delete.confirm')"
+        :cancel-label="t('policies.delete.cancel')"
+        :is-loading="isDeleting"
         @update:open="(v) => !v && (policyToDelete = null)"
-      >
-        <DialogContent class="max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {{ t("policies.delete.title", { name: policyToDelete?.displayName }) }}
-            </DialogTitle>
-            <DialogDescription>
-              {{ t("policies.delete.description") }}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" @click="policyToDelete = null">
-              {{ t("policies.delete.cancel") }}
-            </Button>
-            <Button
-              variant="destructive"
-              :disabled="isDeleting"
-              @click="confirmDelete"
-            >
-              <Loader2 v-if="isDeleting" class="mr-2 h-4 w-4 animate-spin" />
-              {{ t("policies.delete.confirm") }}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        @confirm="confirmDelete"
+      />
 
       <PolicySheet
         v-model:open="isSheetOpen"
