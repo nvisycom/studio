@@ -5,13 +5,15 @@ on:
     branches:
       - "main"
     paths:
-      - "app/**"
+      - "apps/**"
+      - "packages/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/security.yml"
   pull_request:
     paths:
-      - "app/**"
+      - "apps/**"
+      - "packages/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/security.yml"

@@ -5,19 +5,15 @@ on:
     branches:
       - "main"
     paths:
-      - "app/**"
-      - "i18n/**"
-      - "public/**"
-      - "nuxt.config.ts"
+      - "apps/web/**"
+      - "packages/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/performance.yml"
   pull_request:
     paths:
-      - "app/**"
-      - "i18n/**"
-      - "public/**"
-      - "nuxt.config.ts"
+      - "apps/web/**"
+      - "packages/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/performance.yml"
@@ -49,7 +45,7 @@ jobs:
         run: npm ci
 
       - name: Build webapp
-        run: npm run generate
+        run: npm run build:web
 
       - name: Start preview server
         run: |

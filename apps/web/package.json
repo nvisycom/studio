@@ -10,7 +10,11 @@
 		"generate": "nuxt generate",
 		"preview": "nuxt preview",
 		"postinstall": "nuxt prepare",
-		"typecheck": "nuxt typecheck ."
+		"typecheck": "nuxt typecheck .",
+		"fmt": "biome format --write .",
+		"lint": "biome lint .",
+		"check": "biome check .",
+		"ci": "biome ci ."
 	},
 	"dependencies": {
 		"@nuxtjs/device": "^4.0.0",

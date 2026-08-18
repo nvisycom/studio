@@ -1,8 +1,4 @@
 <script setup lang="ts">
-// Relative (not `#console`) so @vue/compiler-sfc can resolve the type when
-// extracting `defineProps` runtime props — its type resolver can't follow the
-// Nuxt `#console` alias for a file that lives inside the layer itself.
-import type { SidebarProps } from "../../ui/sidebar";
 import {
 	Puzzle,
 	Settings,
@@ -35,10 +31,10 @@ import {
 	useSidebar,
 } from "#console/components/ui/sidebar";
 
-const props = withDefaults(defineProps<SidebarProps>(), {
-	collapsible: "icon",
-});
-
+// This shell sidebar takes no props of its own — it's always the icon-
+// collapsible dashboard sidebar. Any attrs a caller sets fall through to
+// <Sidebar>. (Declaring the props here would force a type-import that
+// @vue/compiler-sfc can't resolve via `#console` from inside the layer.)
 const { t } = useI18n();
 const { state } = useSidebar();
 const { open: openHelpChat } = useHelpChat();
@@ -113,7 +109,7 @@ const navObservability = computed(() => [
 </script>
 
 <template>
-  <Sidebar v-bind="props">
+  <Sidebar collapsible="icon">
     <SidebarHeader class="h-[calc(2.75rem-1px)] p-2 justify-center">
       <WorkspaceSwitcher />
     </SidebarHeader>

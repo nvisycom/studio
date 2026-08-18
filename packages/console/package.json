@@ -6,7 +6,7 @@
 	"scripts": {
 		"shadcn:init": "npx shadcn-vue@latest init",
 		"shadcn:add": "npx shadcn-vue@latest add",
-		"format": "biome format --write .",
+		"fmt": "biome format --write .",
 		"lint": "biome lint .",
 		"check": "biome check .",
 		"ci": "biome ci ."

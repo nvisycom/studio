@@ -58,7 +58,7 @@ jobs:
         run: npm ci
 
       - name: Lint and format check
-        run: npm run ci
+        run: npm run ci:biome
 
   typecheck:
     name: Typecheck
@@ -77,8 +77,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # The desktop app's typecheck (JS + Rust) is owned by desktop.yml.
       - name: Type check
-        run: npm run typecheck
+        run: |
+          npm run typecheck -w @nvisy/webapp
+          npm run typecheck -w @nvisy/config
 
   build:
     name: Build
@@ -98,4 +101,4 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build
+        run: npm run build:web
