@@ -4,7 +4,9 @@ import JSZip from "jszip";
 import { Loader2, TriangleAlert } from "@lucide/vue";
 import type { TextEntityView } from "#console/composables/useTextEntities";
 import {
+	type DocxPartCategory,
 	type DocxRun,
+	docxPartCategory,
 	isRenderedDocxPart,
 	parseDocxParts,
 	resolveDocxSpan,
@@ -62,32 +64,66 @@ let runNodes: { run: DocxRun; parent: HTMLElement }[] = [];
 const ALIGN_LOOKAHEAD = 8;
 
 /**
+ * The rendered region a DOM text node sits in, from its nearest structural
+ * ancestor: docx-preview renders headers into `<header>`, footers into
+ * `<footer>`, and foot/endnotes into `<li>`; everything else is body content.
+ * A text node is only aligned to runs whose part is the same category, so
+ * identical text in (say) a header and the body can't cross-map.
+ */
+function nodeCategory(node: Text): DocxPartCategory {
+	for (
+		let el = node.parentElement;
+		el && el !== container.value;
+		el = el.parentElement
+	) {
+		const tag = el.tagName;
+		if (tag === "HEADER") return "header";
+		if (tag === "FOOTER") return "footer";
+		if (tag === "LI") return "note";
+	}
+	return "body";
+}
+
+/**
  * Walk the rendered DOM's text nodes in order and align each to a parsed run.
  * The parts render in the DOM in an order we don't control (docx-preview emits
  * header -> body -> footer per page, not part-name order), so we track a cursor
  * per part rather than one global one: each text node is matched against the
- * next unconsumed run of whichever part it belongs to, with a bounded lookahead
- * for renderer-transformed runs. Synthetic nodes (tabs, symbols) match nothing
- * and are skipped.
+ * next unconsumed run of a part in the *same rendered region* (body / header /
+ * footer / note), with a bounded lookahead for renderer-transformed runs.
+ * Restricting to the node's region keeps identical text across parts from
+ * cross-mapping. Synthetic nodes (tabs, symbols) match nothing and are skipped.
  */
 function alignRuns(root: HTMLElement, runs: DocxRun[]) {
 	const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
 	const pairs: { run: DocxRun; parent: HTMLElement }[] = [];
-	// Group each part's runs (in order) with its own consume cursor.
+	// Group each part's runs (in order) with its own consume cursor, and index
+	// those groups by rendered region so a text node only considers its own.
 	const byPart = new Map<string, { runs: DocxRun[]; cursor: number }>();
+	const byCategory = new Map<
+		DocxPartCategory,
+		{ runs: DocxRun[]; cursor: number }[]
+	>();
 	for (const run of runs) {
-		const g = byPart.get(run.part) ?? { runs: [], cursor: 0 };
+		let g = byPart.get(run.part);
+		if (!g) {
+			g = { runs: [], cursor: 0 };
+			byPart.set(run.part, g);
+			const cat = docxPartCategory(run.part);
+			const list = byCategory.get(cat) ?? [];
+			list.push(g);
+			byCategory.set(cat, list);
+		}
 		g.runs.push(run);
-		byPart.set(run.part, g);
 	}
 	let node = walker.nextNode() as Text | null;
 	while (node) {
 		const value = node.nodeValue;
 		const parent = node.parentElement;
 		if (value && parent) {
-			// Try each part's next unconsumed run (with lookahead); take the first
-			// match and advance that part past it.
-			for (const g of byPart.values()) {
+			// Only parts from this node's rendered region are candidates; take the
+			// first next-unconsumed run (with lookahead) that matches and advance it.
+			for (const g of byCategory.get(nodeCategory(node)) ?? []) {
 				const limit = Math.min(g.cursor + ALIGN_LOOKAHEAD, g.runs.length);
 				let matched = false;
 				for (let j = g.cursor; j < limit; j++) {

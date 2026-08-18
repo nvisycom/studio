@@ -10,8 +10,16 @@ import { type FormattedText, type Token, buildMap, identity } from "./shared";
  * whitespace), so `<a>value</a>` isn't split apart. Falls back to the raw text
  * (identity map) if the reindent would ever change a non-whitespace character
  * (mixed/whitespace-significant content) — same spirit as JSON's parse fallback.
+ *
+ * The reindent trims text runs, which is lossy for content where whitespace is
+ * significant, and `stripWs` (below) can't catch that — it drops *all*
+ * whitespace before comparing, so trimming leading/trailing spaces still passes.
+ * So any document that declares whitespace significant (a CDATA section, or an
+ * `xml:space="preserve"` attribute) is left verbatim up front rather than
+ * risking a silent trim.
  */
 export function formatXml(raw: string): FormattedText {
+	if (hasSignificantWhitespace(raw)) return identity(raw);
 	const formatted = reindentXml(raw);
 	if (formatted === null || stripWs(formatted) !== stripWs(raw)) {
 		return identity(raw);
@@ -20,6 +28,18 @@ export function formatXml(raw: string): FormattedText {
 }
 
 const stripWs = (s: string) => s.replace(/\s+/g, "");
+
+/**
+ * Whether the document contains content whose whitespace must be preserved
+ * exactly: a CDATA section (`<![CDATA[…]]>`), or an element carrying
+ * `xml:space="preserve"`. Reindenting trims text runs, so we skip it entirely
+ * for these rather than corrupt the displayed content.
+ */
+function hasSignificantWhitespace(raw: string): boolean {
+	return (
+		raw.includes("<![CDATA[") || /\bxml:space\s*=\s*["']preserve["']/.test(raw)
+	);
+}
 
 /**
  * Re-indent XML by walking its tags and text runs. Returns null if the input

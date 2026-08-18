@@ -107,25 +107,45 @@ const DELIMITERS = [",", "\t", ";", "|"] as const;
 
 /**
  * Sniff the field delimiter from the text: for each candidate, count how often
- * it appears *outside* quotes on the first few non-empty lines, and pick the
- * most frequent (comma wins ties). Falls back to comma when nothing separates.
+ * it appears *outside* quotes across the first few rows, and pick the most
+ * frequent (comma wins ties). Falls back to comma when nothing separates.
+ *
+ * Quote state is carried across line breaks and `""` is treated as an escaped
+ * quote, matching {@link parseCsv} — a quoted field may span multiple physical
+ * lines and contain the other candidates' characters, so a per-line scan would
+ * miscount them (e.g. commas inside a multiline quoted field of a `;`-delimited
+ * file). The sample is bounded by *record* rows, not physical lines, so a
+ * multiline quoted field doesn't cut the sample short.
  */
 export function detectDelimiter(text: string): string {
-	const lines = text
-		.split(/\r?\n/)
-		.filter((l) => l.length > 0)
-		.slice(0, 10);
+	// Bound the scan to the first ~10 records: count non-quoted newlines until the
+	// budget runs out, then stop. Quoted newlines don't advance the record count.
+	const MAX_ROWS = 10;
+	const counts = new Map<string, number>(DELIMITERS.map((d) => [d, 0]));
+	let inQuotes = false;
+	let rows = 0;
+	for (let i = 0; i < text.length && rows < MAX_ROWS; i++) {
+		const ch = text[i]!;
+		if (inQuotes) {
+			if (ch === '"') {
+				if (text[i + 1] === '"')
+					i++; // escaped quote
+				else inQuotes = false;
+			}
+			continue;
+		}
+		if (ch === '"') inQuotes = true;
+		else if (ch === "\n") rows++;
+		else {
+			const count = counts.get(ch);
+			if (count !== undefined) counts.set(ch, count + 1);
+		}
+	}
 	let best = ",";
 	let bestCount = 0;
+	// DELIMITERS order breaks ties: comma first, so an equal count keeps comma.
 	for (const delim of DELIMITERS) {
-		let count = 0;
-		for (const line of lines) {
-			let inQuotes = false;
-			for (const ch of line) {
-				if (ch === '"') inQuotes = !inQuotes;
-				else if (ch === delim && !inQuotes) count++;
-			}
-		}
+		const count = counts.get(delim) ?? 0;
 		if (count > bestCount) {
 			bestCount = count;
 			best = delim;

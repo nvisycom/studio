@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { File as NvisyFile, UpdateFile } from "@nvisy/sdk/datatypes";
-import { FileText, Loader2 } from "@lucide/vue";
+import { FileText, Loader2, Upload } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import {
 	DeleteFileDialog,

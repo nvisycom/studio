@@ -34,30 +34,11 @@ const emit = defineEmits<{ "focus-entity": [id: string] }>();
 const { t } = useI18n();
 
 // Read the CSV text from its blob URL; re-fetch when the file changes.
-const textContent = ref<string | null>(null);
-const isLoadingText = ref(false);
-const textError = ref(false);
-
-watch(
-	() => props.contentUrl,
-	async (url) => {
-		textContent.value = null;
-		textError.value = false;
-		if (!url) return;
-		isLoadingText.value = true;
-		try {
-			const response = await fetch(url);
-			const text = await response.text();
-			// Ignore a stale response if the file changed while the fetch was in flight.
-			if (props.contentUrl === url) textContent.value = text;
-		} catch {
-			if (props.contentUrl === url) textError.value = true;
-		} finally {
-			if (props.contentUrl === url) isLoadingText.value = false;
-		}
-	},
-	{ immediate: true },
-);
+const {
+	text: textContent,
+	isLoading: isLoadingText,
+	error: textError,
+} = useBlobText(() => props.contentUrl);
 
 // Table (default) or the raw highlighted text.
 const view = ref<"table" | "raw">("table");

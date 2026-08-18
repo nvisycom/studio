@@ -55,6 +55,24 @@ export function isRenderedDocxPart(part: string | undefined): boolean {
 	);
 }
 
+/**
+ * The kind of rendered region a DOCX part belongs to. docx-preview renders each
+ * kind into a distinct DOM container (headers into `<header>`, footers into
+ * `<footer>`, foot/endnotes into `<li>`, the body into neither), so grouping
+ * runs by category lets alignment restrict a text node to runs from the same
+ * region — without that, identical text in a header and the body could map to
+ * the wrong part. A single-file source (no part) is the body.
+ */
+export type DocxPartCategory = "body" | "header" | "footer" | "note";
+
+export function docxPartCategory(part: string | undefined): DocxPartCategory {
+	if (!part) return "body";
+	if (/^word\/header\d*\.xml$/.test(part)) return "header";
+	if (/^word\/footer\d*\.xml$/.test(part)) return "footer";
+	if (/^word\/(footnotes|endnotes)\.xml$/.test(part)) return "note";
+	return "body";
+}
+
 const XML_ENTITIES: Record<string, string> = {
 	amp: "&",
 	lt: "<",
