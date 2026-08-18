@@ -652,6 +652,7 @@
 		}
 	},
 	"tokens": {
+		"title": "API-Tokens",
 		"page": {
 			"description": "Verwalten Sie Ihre API-Tokens und Zugangsdaten"
 		},
@@ -741,7 +742,8 @@
 			"createFailed": "Token konnte nicht erstellt werden",
 			"revokeFailed": "Token konnte nicht widerrufen werden",
 			"someRevokeFailed": "{count} Token konnte nicht widerrufen werden | {count} Tokens konnten nicht widerrufen werden",
-			"renameFailed": "Token konnte nicht umbenannt werden"
+			"renameFailed": "Token konnte nicht umbenannt werden",
+			"loadFailed": "Ihre Tokens konnten nicht geladen werden. Bitte versuchen Sie es erneut."
 		}
 	},
 	"invite": {
@@ -908,8 +910,7 @@
 			"sorting": {
 				"label": "Sortieren",
 				"nameAsc": "Name (A-Z)",
-				"nameDesc": "Name (Z-A)",
-				"popularity": "Beliebteste"
+				"nameDesc": "Name (Z-A)"
 			},
 			"badges": {
 				"new": "Neu",
@@ -1497,7 +1498,8 @@
 					"article9_with_reid_hardening": "Artikel 9 + Re-ID-Härtung",
 					"article9_and10": "Artikel 9 & 10"
 				}
-			}
+			},
+			"slugEmpty": "Geben Sie einen Namen mit Buchstaben oder Zahlen ein, um einen Slug zu erzeugen."
 		},
 		"browseTemplates": "Vorlagen durchsuchen"
 	},
@@ -1561,7 +1563,8 @@
 				"downloadCsv": "CSV herunterladen",
 				"none": "—",
 				"copyFailed": "Lauf-ID konnte nicht kopiert werden"
-			}
+			},
+			"openInStudioFailed": "Die Datei konnte nicht im Studio geöffnet werden."
 		},
 		"learnMore": "Mehr erfahren",
 		"status": {

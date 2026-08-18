@@ -118,6 +118,17 @@ const STATUS_META: Record<
 	cancelled: { icon: CircleSlash, class: "text-muted-foreground" },
 };
 
+// Status comes from the API; fall back to a neutral icon if the backend ever
+// adds a status the map doesn't cover, so one unknown cell can't blank the table.
+const FALLBACK_STATUS_META = {
+	icon: Clock,
+	class: "text-muted-foreground",
+	spin: false,
+};
+function statusMeta(status: SyncStatus) {
+	return STATUS_META[status] ?? FALLBACK_STATUS_META;
+}
+
 const columns = computed<VirtualColumn<ConnectionSync>[]>(() => [
 	{
 		key: "connection",
@@ -173,7 +184,7 @@ const columns = computed<VirtualColumn<ConnectionSync>[]>(() => [
 	{
 		key: "cancel",
 		header: "",
-		width: "w-10",
+		width: "40px",
 		align: "right",
 		cell: () => ({ type: "custom" }),
 	},
@@ -273,12 +284,12 @@ const columns = computed<VirtualColumn<ConnectionSync>[]>(() => [
             <template #cell-status="{ row }">
               <div class="flex items-center gap-2">
                 <component
-                  :is="STATUS_META[row.status].icon"
+                  :is="statusMeta(row.status).icon"
                   :size="14"
                   :class="[
                     'shrink-0',
-                    STATUS_META[row.status].class,
-                    STATUS_META[row.status].spin && 'animate-spin',
+                    statusMeta(row.status).class,
+                    statusMeta(row.status).spin && 'animate-spin',
                   ]"
                 />
                 <span class="text-sm">

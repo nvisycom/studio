@@ -31,19 +31,6 @@ const notifyViaEmail = ref(false);
 const appEvents = ref<NotificationEvent[]>([]);
 const emailEvents = ref<NotificationEvent[]>([]);
 
-// Initialize form from settings data
-watch(
-	settings,
-	(s) => {
-		if (s) {
-			notifyViaEmail.value = s.notifyViaEmail;
-			appEvents.value = [...s.notificationEventsApp];
-			emailEvents.value = [...s.notificationEventsEmail];
-		}
-	},
-	{ immediate: true },
-);
-
 // Auto-save when email toggle changes
 async function toggleEmailNotifications(value: boolean) {
 	notifyViaEmail.value = value;
@@ -183,6 +170,23 @@ const hasEventChanges = computed(() => {
 		!sameEvents(emailEvents.value, settings.value.notificationEventsEmail)
 	);
 });
+
+// Initialize the form from settings data. `settings` refetches whenever the
+// email toggle auto-saves (updateSettingsAsync invalidates the query), so only
+// adopt the server's event lists when the local selection has no unsaved edits
+// — otherwise a channel toggle would silently discard in-progress checkboxes.
+watch(
+	settings,
+	(s) => {
+		if (!s) return;
+		notifyViaEmail.value = s.notifyViaEmail;
+		if (!hasEventChanges.value) {
+			appEvents.value = [...s.notificationEventsApp];
+			emailEvents.value = [...s.notificationEventsEmail];
+		}
+	},
+	{ immediate: true },
+);
 
 // Add or remove an event from one channel's selection.
 function toggleEvent(

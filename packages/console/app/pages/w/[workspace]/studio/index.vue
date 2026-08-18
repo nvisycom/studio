@@ -170,29 +170,33 @@ function toggleChat() {
 	}
 }
 
-// Resize handling. useEventListener auto-removes on scope dispose, so a
-// mid-drag unmount can't leak document listeners.
+// Resize handling. The document listeners are registered once during setup (so
+// `useEventListener`'s scope-bound cleanup actually attaches and a mid-drag
+// unmount can't leak them) and simply no-op unless a drag is in progress. The
+// drag origin is captured on mousedown.
+const resizeOrigin = ref<{ x: number; width: number } | null>(null);
+
 function startResize(e: MouseEvent) {
 	if (isAnimating.value) return;
-
 	isResizing.value = true;
-	const startX = e.clientX;
-	const startWidth = chatWidth.value;
-
-	const stopMove = useEventListener(document, "mousemove", (ev: MouseEvent) => {
-		const delta = startX - ev.clientX;
-		chatWidth.value = Math.min(
-			Math.max(startWidth + delta, minChatWidth),
-			maxChatWidth,
-		);
-	});
-
-	const stopUp = useEventListener(document, "mouseup", () => {
-		isResizing.value = false;
-		stopMove();
-		stopUp();
-	});
+	resizeOrigin.value = { x: e.clientX, width: chatWidth.value };
 }
+
+useEventListener(document, "mousemove", (ev: MouseEvent) => {
+	const origin = resizeOrigin.value;
+	if (!origin) return;
+	const delta = origin.x - ev.clientX;
+	chatWidth.value = Math.min(
+		Math.max(origin.width + delta, minChatWidth),
+		maxChatWidth,
+	);
+});
+
+useEventListener(document, "mouseup", () => {
+	if (!resizeOrigin.value) return;
+	isResizing.value = false;
+	resizeOrigin.value = null;
+});
 </script>
 
 <template>

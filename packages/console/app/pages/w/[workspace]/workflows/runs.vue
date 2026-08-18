@@ -53,9 +53,14 @@ function openDetails(run: PipelineRun) {
 	isDetailOpen.value = true;
 }
 
-// Open a run's source document in the studio for review.
+// Open a run's source document in the studio for review. `openFile` fetches the
+// file into a tab; surface a failure rather than let it reject unhandled.
 function openInStudio(fileId: string) {
-	openFile(fileId);
+	openFile(fileId).catch((error) => {
+		toast.error(t("workflows.runs.openInStudioFailed"), {
+			description: getErrorMessage(error, t("common.errors.tryAgain")),
+		});
+	});
 	navigateTo(wLink("/studio"));
 }
 

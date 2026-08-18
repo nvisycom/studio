@@ -38,13 +38,13 @@ import {
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
 
-useHead({ title: "API Tokens" });
-
 definePageMeta({
 	pageCategory: "header.category.settings",
 });
 
 const { t } = useI18n();
+
+useHead({ title: t("tokens.title") });
 
 // Use the API tokens composable
 const {
@@ -156,6 +156,8 @@ function openDeleteMultipleDialog() {
 }
 
 async function deleteSelectedTokens() {
+	// Guard against a double-confirm firing concurrent revocations.
+	if (isRevoking.value) return;
 	const tokenIds = Array.from(selectedTokens.value);
 	const results = await Promise.allSettled(
 		tokenIds.map((tokenId) => revokeTokenAsync(tokenId)),
@@ -302,7 +304,7 @@ async function renameToken(newName: string) {
           <!-- Error State -->
           <div v-else-if="error" class="text-center py-12">
             <p class="text-sm text-destructive">
-              Failed to load tokens: {{ error.message }}
+              {{ t("tokens.errors.loadFailed") }}
             </p>
           </div>
 
@@ -365,7 +367,11 @@ async function renameToken(newName: string) {
             </p>
             <p class="text-xs text-muted-foreground">
               {{ t("tokens.modals.delete.lastUsed") }}:
-              {{ tokenToDelete.lastUsedAt ?? t("tokens.modals.delete.never") }}
+              {{
+                tokenToDelete.lastUsedAt
+                  ? formatDateTime(tokenToDelete.lastUsedAt)
+                  : t("tokens.modals.delete.never")
+              }}
             </p>
           </div>
         </template>
@@ -376,10 +382,15 @@ async function renameToken(newName: string) {
         :open="isDeleteMultipleDialogOpen"
         :title="t('tokens.modals.deleteMultiple.title')"
         :description="
-          t('tokens.modals.deleteMultiple.description', selectedTokens.size)
+          t(
+            'tokens.modals.deleteMultiple.description',
+            { count: selectedTokens.size },
+            selectedTokens.size,
+          )
         "
         :confirm-label="`${t('tokens.modals.deleteMultiple.confirmButton')} (${selectedTokens.size})`"
         :cancel-label="t('tokens.modals.deleteMultiple.cancelButton')"
+        :is-loading="isRevoking"
         @update:open="isDeleteMultipleDialogOpen = $event"
         @confirm="deleteSelectedTokens"
       />

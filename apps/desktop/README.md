@@ -15,6 +15,8 @@ application, with a [Tauri 2](https://tauri.app/) (Rust) shell.
 
 - Node.js 22.18+ and npm 10+ (shared with the rest of the workspace)
 - Rust + Cargo — see [tauri.app/start/prerequisites](https://tauri.app/start/prerequisites/)
+- Nightly `rustfmt` for formatting the Rust shell (its `rustfmt.toml` uses
+  nightly-only options): `rustup toolchain install nightly --component rustfmt`
 
 ## Development
 

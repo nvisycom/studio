@@ -73,11 +73,15 @@ const newPassword = ref("");
 const confirmPassword = ref("");
 const isUpdatingPassword = ref(false);
 
-// Initialize the profile form from account data.
+// Seed the profile form from account data once. `account` refetches on side
+// effects (e.g. an avatar upload); re-seeding would revert fields the user is
+// still editing, so only fill the form the first time it loads.
+let formSeeded = false;
 watch(
 	account,
 	(acc) => {
-		if (acc) {
+		if (acc && !formSeeded) {
+			formSeeded = true;
 			displayName.value = acc.displayName || "";
 			username.value = acc.username || "";
 			email.value = acc.emailAddress || "";
@@ -285,6 +289,7 @@ async function savePassword() {
                   {{ t("account.password.currentLabel") }}
                 </Label>
                 <PasswordInput
+                  id="currentPassword"
                   v-model="currentPassword"
                   :placeholder="t('account.password.currentPlaceholder')"
                   autocomplete="current-password"
@@ -296,6 +301,7 @@ async function savePassword() {
                   {{ t("account.password.newLabel") }}
                 </Label>
                 <PasswordInput
+                  id="newPassword"
                   v-model="newPassword"
                   :placeholder="t('account.password.newPlaceholder')"
                   autocomplete="new-password"
@@ -310,6 +316,7 @@ async function savePassword() {
                   {{ t("account.password.confirmLabel") }}
                 </Label>
                 <PasswordInput
+                  id="confirmPassword"
                   v-model="confirmPassword"
                   :placeholder="t('account.password.confirmPlaceholder')"
                   autocomplete="new-password"

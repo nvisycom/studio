@@ -242,8 +242,10 @@ async function executeAction(actionId: string) {
 				// Invite links must point at the web app, not the current origin —
 				// on desktop that origin is `tauri://`, which no one can open. Fall
 				// back to the current origin when no web-app URL is configured (web).
-				const baseUrl =
-					useRuntimeConfig().public.webAppUrl || window.location.origin;
+				// Strip any trailing slash so the join path doesn't double up.
+				const baseUrl = (
+					useRuntimeConfig().public.webAppUrl || window.location.origin
+				).replace(/\/+$/, "");
 				const inviteUrl = `${baseUrl}/join/${result.inviteCode}`;
 				await navigator.clipboard.writeText(inviteUrl);
 				toast.success(t("commandMenu.actions.inviteCodeCreated"));

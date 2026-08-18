@@ -138,6 +138,13 @@ const isValid = computed(
 	() => displayName.value.trim().length >= 3 && slug.value.length > 0,
 );
 
+// The slug is derived from the name and strips non-ASCII characters, so a name
+// made only of those yields an empty slug. Surface that so a disabled Create
+// button isn't unexplained.
+const slugIsEmpty = computed(
+	() => displayName.value.trim().length > 0 && slug.value.length === 0,
+);
+
 // Assemble the discriminated PolicyTemplate for the selected kind + settings.
 function buildTemplate(kind: TemplateKind): PolicyTemplate {
 	switch (kind) {
@@ -304,8 +311,15 @@ async function create() {
               class="font-mono text-sm text-muted-foreground"
               :placeholder="t('policies.templates.slugPlaceholder')"
             />
-            <p class="text-xs text-muted-foreground">
-              {{ t("policies.templates.slugHint") }}
+            <p
+              class="text-xs"
+              :class="slugIsEmpty ? 'text-destructive' : 'text-muted-foreground'"
+            >
+              {{
+                slugIsEmpty
+                  ? t("policies.templates.slugEmpty")
+                  : t("policies.templates.slugHint")
+              }}
             </p>
           </div>
 

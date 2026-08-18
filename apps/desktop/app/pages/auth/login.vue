@@ -154,6 +154,10 @@ async function handleLogin(): Promise<void> {
               <button
                 type="button"
                 class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                :aria-label="
+                  showPassword ? t('common.hidePassword') : t('common.showPassword')
+                "
+                :aria-pressed="showPassword"
                 @click="showPassword = !showPassword"
               >
                 <Eye v-if="!showPassword" :size="16" />

@@ -78,13 +78,13 @@ const isCreateWorkspaceSheetOpen = ref(false);
           </SidebarMenuButton>
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          class="w-[--reka-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+          class="w-(--reka-dropdown-menu-trigger-width) min-w-56 rounded-lg"
           align="start"
           :side="isMobile ? 'bottom' : 'right'"
           :side-offset="4"
         >
           <DropdownMenuItem
-            v-for="(workspace, index) in workspaces"
+            v-for="workspace in workspaces"
             :key="workspace.slug"
             class="flex items-center gap-2 px-2 py-1.5 mb-0.5 rounded-md cursor-pointer"
             :class="
@@ -106,12 +106,6 @@ const isCreateWorkspaceSheetOpen = ref(false);
                 {{ t(`members.roles.${workspace.memberRole}`) }}
               </span>
             </div>
-            <span
-              v-if="index < 9"
-              class="ml-auto text-xs tracking-widest text-muted-foreground/70"
-            >
-              ⌘{{ index + 1 }}
-            </span>
           </DropdownMenuItem>
           <DropdownMenuSeparator v-if="workspaces && workspaces.length > 0" />
           <DropdownMenuItem

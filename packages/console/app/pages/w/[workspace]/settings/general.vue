@@ -94,9 +94,14 @@ const hasInfoChanges = computed(() => {
 });
 
 // Functions
-function copyWorkspaceId() {
+async function copyWorkspaceId() {
 	if (!currentWorkspaceSlug.value) return;
-	navigator.clipboard.writeText(currentWorkspaceSlug.value);
+	try {
+		await navigator.clipboard.writeText(currentWorkspaceSlug.value);
+	} catch (err) {
+		toast.error(getErrorMessage(err, t("common.errors.tryAgain")));
+		return;
+	}
 	copiedWorkspaceId.value = true;
 	toast.success(t("settings.workspace.messages.idCopied"));
 	setTimeout(() => {

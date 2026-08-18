@@ -652,6 +652,7 @@
 		}
 	},
 	"tokens": {
+		"title": "API Tokens",
 		"page": {
 			"description": "Manage your API tokens and access credentials"
 		},
@@ -741,7 +742,8 @@
 			"createFailed": "Failed to create token",
 			"revokeFailed": "Failed to revoke token",
 			"someRevokeFailed": "{count} token failed to revoke | {count} tokens failed to revoke",
-			"renameFailed": "Failed to rename token"
+			"renameFailed": "Failed to rename token",
+			"loadFailed": "Couldn't load your tokens. Please try again."
 		}
 	},
 	"invite": {
@@ -908,8 +910,7 @@
 			"sorting": {
 				"label": "Sort",
 				"nameAsc": "Name (A-Z)",
-				"nameDesc": "Name (Z-A)",
-				"popularity": "Most Popular"
+				"nameDesc": "Name (Z-A)"
 			},
 			"badges": {
 				"new": "New",
@@ -1497,7 +1498,8 @@
 					"article9_with_reid_hardening": "Article 9 + re-ID hardening",
 					"article9_and10": "Articles 9 & 10"
 				}
-			}
+			},
+			"slugEmpty": "Enter a name using letters or numbers to generate a slug."
 		},
 		"browseTemplates": "Browse templates"
 	},
@@ -1561,7 +1563,8 @@
 				"downloadCsv": "Download CSV",
 				"none": "—",
 				"copyFailed": "Couldn't copy the run id"
-			}
+			},
+			"openInStudioFailed": "Couldn't open the file in the studio."
 		},
 		"learnMore": "Learn more",
 		"status": {

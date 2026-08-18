@@ -113,7 +113,7 @@ const addons = ref([
 function selectPlan(planId: string) {
 	if (planId === "enterprise") {
 		// Open contact sales
-		window.open("https://nvisy.com/contact", "_blank");
+		window.open("https://nvisy.com/contact", "_blank", "noopener,noreferrer");
 	} else if (planId !== currentPlan.value) {
 		// TODO: Handle plan upgrade/downgrade
 	}
@@ -274,6 +274,7 @@ function toggleAddon(addonId: string) {
                   <a
                     :href="addon.docUrl"
                     target="_blank"
+                    rel="noopener noreferrer"
                     class="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors"
                   >
                     {{ addon.docLabel }}
@@ -293,6 +294,7 @@ function toggleAddon(addonId: string) {
           <a
             href="https://nvisy.com/pricing"
             target="_blank"
+            rel="noopener noreferrer"
             class="text-primary hover:underline"
           >
             View full pricing details
