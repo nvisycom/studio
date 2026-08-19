@@ -26,3 +26,12 @@ pub fn toggle_spotlight<R: Runtime>(app: AppHandle<R>) {
 pub fn hide_spotlight<R: Runtime>(app: AppHandle<R>) {
     spotlight::hide(&app);
 }
+
+/// Open the main window and dismiss the spotlight launcher — the "Open the app"
+/// affordance. Reveals (and focuses) the main window first, then hides the
+/// launcher so it doesn't linger in front of it.
+#[tauri::command]
+pub fn open_main_window<R: Runtime>(app: AppHandle<R>) {
+    tray::show_main_window(&app);
+    spotlight::hide(&app);
+}

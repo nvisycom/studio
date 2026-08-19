@@ -15,6 +15,7 @@ pub fn run() {
             commands::set_tray_labels,
             commands::toggle_spotlight,
             commands::hide_spotlight,
+            commands::open_main_window,
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {

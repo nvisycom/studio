@@ -58,8 +58,9 @@ onBeforeUnmount(() => {
 });
 
 function openApp(): void {
-	// Reveal the main window, then get out of the way.
-	if (isTauri()) invoke("toggle_spotlight").catch(() => {});
+	// Reveal the main window, then dismiss the launcher (one native command so
+	// the window is shown before the spotlight hides).
+	if (isTauri()) invoke("open_main_window").catch(() => {});
 }
 </script>
 
