@@ -19,6 +19,7 @@
 		"quit": "Beenden"
 	},
 	"spotlight": {
+		"label": "Nvisy fragen oder Datei anhängen",
 		"placeholder": "Womit kann ich dir heute helfen?",
 		"context": {
 			"chat": "Neuer Chat",

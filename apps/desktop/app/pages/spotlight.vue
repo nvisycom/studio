@@ -83,6 +83,7 @@ function openApp(): void {
           ref="inputRef"
           v-model="query"
           type="text"
+          :aria-label="t('spotlight.label')"
           :placeholder="t('spotlight.placeholder')"
           class="min-w-0 flex-1 border-0 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/70"
           @keydown.enter="submit"
