@@ -274,10 +274,12 @@ function handleLoadMore() {
             </div>
           </Transition>
 
-          <!-- List View (Data Table) -->
+          <!-- List View (Data Table). The VirtualTable fills its parent's
+               height on its own (its scroll container is `h-full`), so no class
+               is passed here — VirtualTable is multi-root, so an inherited
+               `class` would be dropped with a Vue warning anyway. -->
           <FilesTableView
             v-if="viewMode === 'list'"
-            class="h-full"
             :files="files"
             :selection="filesSelection"
             @view="viewFile"

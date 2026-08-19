@@ -13,8 +13,31 @@
 	"tray": {
 		"openStudio": "Studio öffnen",
 		"minimizeToTray": "In die Ablage minimieren",
+		"spotlight": "Schnellbefehl",
 		"enableNotifications": "Benachrichtigungen aktivieren",
 		"disableNotifications": "Benachrichtigungen deaktivieren",
 		"quit": "Beenden"
+	},
+	"spotlight": {
+		"placeholder": "Womit kann ich dir heute helfen?",
+		"context": {
+			"chat": "Neuer Chat",
+			"file": "Datei anhängen"
+		},
+		"intent": {
+			"message": "Nachricht",
+			"file": "Datei"
+		},
+		"hint": {
+			"message": "Zum Senden an den Assistenten Enter drücken",
+			"file": "Sieht nach einer Datei aus – zum Anhängen Enter drücken"
+		},
+		"submit": "Senden",
+		"dismiss": "Schließen",
+		"comingSoon": {
+			"title": "Der Assistent ist bald da",
+			"description": "Chat und schnelle Dateiaktionen folgen in Kürze. Öffne solange die App, um loszulegen."
+		},
+		"openApp": "App öffnen"
 	}
 }

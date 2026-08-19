@@ -9,7 +9,10 @@ export default defineNuxtConfig({
 	extends: ["@nvisy/console"],
 
 	compatibilityDate: "2025-07-15",
-	devtools: { enabled: true },
+	// The desktop app is a product shell, not a browser dev surface — the
+	// DevTools toolbar overlays the (chromeless) spotlight window and its own
+	// routes fall through to our 404. Keep it off.
+	devtools: { enabled: false },
 	telemetry: { enabled: false },
 	ssr: false, // SPA mode — required for Tauri
 

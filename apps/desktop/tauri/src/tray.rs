@@ -17,13 +17,14 @@ use tauri::menu::{MenuBuilder, MenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::{AppHandle, Manager, Runtime, WindowEvent};
 
-use crate::settings;
+use crate::{settings, spotlight};
 
 /// Label of the main window (matches `tauri.conf.json`).
 pub const MAIN_WINDOW: &str = "main";
 
 /// Menu item ids.
 const MENU_WINDOW: &str = "window";
+const MENU_SPOTLIGHT: &str = "spotlight";
 const MENU_NOTIFICATIONS: &str = "notifications";
 const MENU_QUIT: &str = "quit";
 
@@ -35,6 +36,7 @@ const MENU_QUIT: &str = "quit";
 pub struct TrayLabels {
     pub open_studio: String,
     pub minimize_to_tray: String,
+    pub spotlight: String,
     pub enable_notifications: String,
     pub disable_notifications: String,
     pub quit: String,
@@ -46,6 +48,7 @@ impl Default for TrayLabels {
         Self {
             open_studio: "Open studio".into(),
             minimize_to_tray: "Minimize to tray".into(),
+            spotlight: "Quick command".into(),
             enable_notifications: "Enable notifications".into(),
             disable_notifications: "Disable notifications".into(),
             quit: "Quit".into(),
@@ -80,6 +83,7 @@ impl TrayLabels {
 /// window close, the label-push command) can refresh them.
 pub struct TrayMenu<R: Runtime> {
     window: MenuItem<R>,
+    spotlight: MenuItem<R>,
     notifications: MenuItem<R>,
     quit: MenuItem<R>,
     labels: Mutex<TrayLabels>,
@@ -98,6 +102,7 @@ pub fn create<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
         true,
         None::<&str>,
     )?;
+    let spotlight = MenuItem::with_id(app, MENU_SPOTLIGHT, &labels.spotlight, true, None::<&str>)?;
     let notifications = MenuItem::with_id(
         app,
         MENU_NOTIFICATIONS,
@@ -108,6 +113,7 @@ pub fn create<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
     let quit = MenuItem::with_id(app, MENU_QUIT, &labels.quit, true, None::<&str>)?;
     let menu = MenuBuilder::new(app)
         .item(&window)
+        .item(&spotlight)
         .item(&notifications)
         .separator()
         .item(&quit)
@@ -115,6 +121,7 @@ pub fn create<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
 
     app.manage(TrayMenu {
         window,
+        spotlight,
         notifications,
         quit,
         labels: Mutex::new(labels),
@@ -154,6 +161,7 @@ pub fn apply_labels<R: Runtime>(app: &AppHandle<R>, labels: TrayLabels) {
         return;
     };
     let _ = menu.window.set_text(labels.window(window_visible(app)));
+    let _ = menu.spotlight.set_text(&labels.spotlight);
     let _ = menu
         .notifications
         .set_text(labels.notifications(settings::notifications_enabled(app)));
@@ -180,6 +188,7 @@ fn on_menu_event<R: Runtime>(app: &AppHandle<R>, id: &str) {
                 show_main_window(app);
             }
         }
+        MENU_SPOTLIGHT => spotlight::toggle(app),
         MENU_NOTIFICATIONS => {
             let enabled = !settings::notifications_enabled(app);
             settings::set_notifications_enabled(app, enabled);

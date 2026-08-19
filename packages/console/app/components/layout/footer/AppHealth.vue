@@ -1,8 +1,10 @@
 <template>
   <ClientOnly>
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger as-child>
+    <!-- No TooltipProvider: the app-level provider from SidebarProvider
+         (layouts/default) already wraps the header this lives in. A nested
+         provider crashes reka-ui's slot render on navigation. -->
+    <Tooltip>
+      <TooltipTrigger as-child>
           <div class="relative flex-shrink-0 cursor-default">
             <!-- Loading state -->
             <div
@@ -37,7 +39,6 @@
         </TooltipTrigger>
         <TooltipContent>{{ tooltip }}</TooltipContent>
       </Tooltip>
-    </TooltipProvider>
 
     <template #fallback>
       <div
@@ -51,7 +52,6 @@
 import {
 	Tooltip,
 	TooltipContent,
-	TooltipProvider,
 	TooltipTrigger,
 } from "#console/components/ui/tooltip";
 
