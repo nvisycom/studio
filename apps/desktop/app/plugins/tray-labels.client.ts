@@ -25,6 +25,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 			labels: {
 				openStudio: i18n.t("tray.openStudio"),
 				minimizeToTray: i18n.t("tray.minimizeToTray"),
+				spotlight: i18n.t("tray.spotlight"),
 				enableNotifications: i18n.t("tray.enableNotifications"),
 				disableNotifications: i18n.t("tray.disableNotifications"),
 				quit: i18n.t("tray.quit"),

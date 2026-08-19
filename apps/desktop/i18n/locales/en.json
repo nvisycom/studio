@@ -13,8 +13,32 @@
 	"tray": {
 		"openStudio": "Open studio",
 		"minimizeToTray": "Minimize to tray",
+		"spotlight": "Quick command",
 		"enableNotifications": "Enable notifications",
 		"disableNotifications": "Disable notifications",
 		"quit": "Quit"
+	},
+	"spotlight": {
+		"label": "Ask Nvisy or attach a file",
+		"placeholder": "What can I help you with today?",
+		"context": {
+			"chat": "New chat",
+			"file": "Attach file"
+		},
+		"intent": {
+			"message": "Message",
+			"file": "File"
+		},
+		"hint": {
+			"message": "Press Enter to send to the assistant",
+			"file": "Looks like a file — press Enter to attach"
+		},
+		"submit": "Send",
+		"dismiss": "Close",
+		"comingSoon": {
+			"title": "The assistant is on its way",
+			"description": "Chat and quick file actions land here soon. For now, open the app to get started."
+		},
+		"openApp": "Open the app"
 	}
 }

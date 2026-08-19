@@ -3,17 +3,18 @@
   "identifier": "default",
   "description": "enables the default permissions",
   "windows": [
-    "main"
+    "main",
+    "spotlight"
   ],
   "permissions": [
     "core:default",
+    "global-shortcut:default",
     {
       "identifier": "http:default",
       "allow": [
         { "url": "https://*:*" },
         { "url": "http://localhost:*" },
-        { "url": "http://127.0.0.1:*" },
-        { "url": "http://[::1]:*" }
+        { "url": "http://127.0.0.1:*" }
       ]
     }
   ]

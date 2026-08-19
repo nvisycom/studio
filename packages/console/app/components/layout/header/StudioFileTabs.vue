@@ -3,7 +3,6 @@ import { X, Loader2 } from "@lucide/vue";
 import {
 	Tooltip,
 	TooltipContent,
-	TooltipProvider,
 	TooltipTrigger,
 } from "#console/components/ui/tooltip";
 import { Button } from "#console/components/ui/button";
@@ -63,12 +62,14 @@ function truncate(str: string, maxLength: number): string {
     ref="strip"
     class="tab-strip flex min-w-0 flex-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
   >
+    <!-- No TooltipProvider here: the app-level provider from SidebarProvider
+         (layouts/default) already wraps the header. A nested provider crashes
+         reka-ui's slot render (currentRenderingInstance.ce null) on navigation. -->
     <div
       class="inline-flex h-9 items-center gap-1 rounded-lg bg-muted p-1 text-muted-foreground"
     >
-      <TooltipProvider>
-        <Tooltip v-for="file in openFiles" :key="file.fileId">
-          <TooltipTrigger as-child>
+      <Tooltip v-for="file in openFiles" :key="file.fileId">
+        <TooltipTrigger as-child>
             <div
               :data-file-id="file.fileId"
               :class="[
@@ -100,7 +101,6 @@ function truncate(str: string, maxLength: number): string {
             <p>{{ file.displayName }}</p>
           </TooltipContent>
         </Tooltip>
-      </TooltipProvider>
     </div>
   </div>
   <!-- Nothing is shown in the header when no file is open — the empty preview
