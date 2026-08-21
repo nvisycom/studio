@@ -541,6 +541,11 @@
 					"24hours": "24 Hours",
 					"7days": "7 Days",
 					"30days": "30 Days"
+				},
+				"expiryShort": {
+					"24hours": "in 24h",
+					"7days": "in 7d",
+					"30days": "in 30d"
 				}
 			},
 			"search": {
@@ -580,7 +585,6 @@
 		},
 		"messages": {
 			"inviteFooter": "Invited members will receive an email with instructions to join your project.",
-			"reviewFooter": "Project owners cannot be removed. Transfer ownership first to remove the current owner.",
 			"inviteSent": "Invitation sent successfully",
 			"linkCopied": "Invite link copied to clipboard",
 			"memberRemoved": "Member removed successfully",
@@ -589,7 +593,9 @@
 			"membersPartiallyRemoved": "Some members could not be removed",
 			"inviteCanceled": "Invitation canceled successfully",
 			"invitesCanceled": "Invitations canceled successfully",
-			"invitesPartiallyCanceled": "Some invitations could not be canceled"
+			"invitesPartiallyCanceled": "Some invitations could not be canceled",
+			"invitesSent": "Invite sent | {count} invites sent",
+			"invitesPartiallySent": "Some invites sent"
 		},
 		"errors": {
 			"inviteFailed": "Failed to send invitation",
@@ -599,7 +605,8 @@
 			"updateFailed": "Failed to update member",
 			"someRemoveFailed": "{count} member failed to be removed | {count} members failed to be removed",
 			"cancelFailed": "Failed to cancel invitation",
-			"someCancelFailed": "{count} invitation failed to be canceled | {count} invitations failed to be canceled"
+			"someCancelFailed": "{count} invitation failed to be canceled | {count} invitations failed to be canceled",
+			"someInvitesFailed": "{count} invite couldn't be sent | {count} invites couldn't be sent"
 		},
 		"roles": {
 			"owner": "Owner",
@@ -649,6 +656,23 @@
 				"description": "Change the role for this team member.",
 				"memberLabel": "Member",
 				"roleLabel": "Role"
+			},
+			"invite": {
+				"title": "Invite members",
+				"description": "Add people by email, or share a link anyone can use to join.",
+				"emailsLabel": "Email addresses",
+				"emailsPlaceholder": "Add email, then Enter",
+				"emailsHint": "Separate with Enter, comma, or space. One invalid address won't block the rest.",
+				"removeEmail": "Remove {email}",
+				"roleLabel": "Role",
+				"expiryLabel": "Invite expires",
+				"linkTitle": "Or share a join link",
+				"linkHint": "Anyone with the link joins as {role}, expires {expiry}.",
+				"generateLink": "Generate link",
+				"countValid": "{count} valid | {count} valid",
+				"countInvalid": "{count} invalid | {count} invalid",
+				"send": "Send invite | Send {count} invites",
+				"sendEmpty": "Send invites"
 			}
 		}
 	},
@@ -1237,6 +1261,8 @@
 			}
 		},
 		"preview": {
+			"emptyTitle": "No document selected",
+			"emptyDescription": "Select a file from the Files page to preview",
 			"table": "Table",
 			"raw": "Raw",
 			"withHeaders": "With headers",
@@ -1663,19 +1689,6 @@
 				"by": "Performed by"
 			},
 			"empty": "No activity found",
-			"exportDialog": {
-				"title": "Export Logs",
-				"description": "Configure export settings for your logs",
-				"dateRange": "Date Range",
-				"selectDateRange": "Select date range",
-				"eventTypes": "Event Types",
-				"info": "Info",
-				"warning": "Warning",
-				"error": "Error",
-				"cancel": "Cancel",
-				"exportJson": "Export as JSON",
-				"exportCsv": "Export as CSV"
-			},
 			"category": {
 				"placeholder": "Category",
 				"all": "All categories",

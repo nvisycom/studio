@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import type { DateRange } from "reka-ui";
-import type { Ref } from "vue";
 import type { Component } from "vue";
-import { getLocalTimeZone, today } from "@internationalized/date";
 import {
 	Download,
 	Upload,
 	Search,
-	Calendar,
 	FileText,
 	History,
 	Link2,
@@ -47,22 +43,6 @@ import {
 	SelectValue,
 } from "#console/components/ui/select";
 import { Input } from "#console/components/ui/input";
-import { Checkbox } from "#console/components/ui/checkbox";
-import { Label } from "#console/components/ui/label";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "#console/components/ui/dialog";
-import { RangeCalendar } from "#console/components/ui/range-calendar";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "#console/components/ui/popover";
 
 const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
@@ -142,39 +122,10 @@ const filteredActivities = computed(() => {
 	return list;
 });
 
-// Export/Import stubs (unchanged — still TODO).
+// Import is on-premise-only and not wired yet; export has no backend either, so
+// both stay disabled (export was a fake modal — removed). Wire these once the
+// log export/import endpoints exist.
 const isOnPremise = ref(false);
-const isExportModalOpen = ref(false);
-const start = today(getLocalTimeZone());
-const end = start.add({ days: 7 });
-const exportDateRange = ref({ start, end }) as Ref<DateRange>;
-const isCalendarOpen = ref(false);
-const exportEventTypes = ref({ info: true, warning: true, error: true });
-
-const formattedExportDateRange = computed(() => {
-	if (!exportDateRange.value.start || !exportDateRange.value.end) {
-		return t("analytics.logs.exportDialog.selectDateRange");
-	}
-	const startDate = new Date(
-		exportDateRange.value.start.year,
-		exportDateRange.value.start.month - 1,
-		exportDateRange.value.start.day,
-	);
-	const endDate = new Date(
-		exportDateRange.value.end.year,
-		exportDateRange.value.end.month - 1,
-		exportDateRange.value.end.day,
-	);
-	return `${formatLongDate(startDate)} - ${formatLongDate(endDate)}`;
-});
-
-function openExportModal() {
-	isExportModalOpen.value = true;
-}
-function handleExport(_format: "csv" | "json") {
-	// TODO: Implement actual export functionality
-	isExportModalOpen.value = false;
-}
 function importLogs() {
 	// TODO: Implement actual import functionality
 }
@@ -235,7 +186,8 @@ function importLogs() {
                 <Upload :size="16" class="mr-2" />
                 {{ t("analytics.logs.import") }}
               </Button>
-              <Button variant="outline" size="sm" @click="openExportModal">
+              <!-- Export has no backend yet; disabled until it does. -->
+              <Button variant="outline" size="sm" disabled>
                 <Download :size="16" class="mr-2" />
                 {{ t("analytics.logs.export") }}
               </Button>
@@ -344,95 +296,6 @@ function importLogs() {
         </CardContent>
       </Card>
 
-      <!-- Export Modal (stub) -->
-      <Dialog v-model:open="isExportModalOpen">
-        <DialogContent class="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>
-              {{ t("analytics.logs.exportDialog.title") }}
-            </DialogTitle>
-            <DialogDescription>
-              {{ t("analytics.logs.exportDialog.description") }}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div class="space-y-6 py-4">
-            <!-- Date Range -->
-            <div class="space-y-2">
-              <Label class="text-sm font-medium">
-                {{ t("analytics.logs.exportDialog.dateRange") }}
-              </Label>
-              <Popover v-model:open="isCalendarOpen">
-                <PopoverTrigger as-child>
-                  <Button
-                    variant="outline"
-                    class="h-9 w-full justify-start text-left font-normal"
-                  >
-                    <Calendar :size="16" class="mr-2 text-muted-foreground" />
-                    {{ formattedExportDateRange }}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent class="w-auto p-0" align="start">
-                  <RangeCalendar v-model="exportDateRange" />
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            <!-- Event Types -->
-            <div class="space-y-2">
-              <Label class="text-sm font-medium">
-                {{ t("analytics.logs.exportDialog.eventTypes") }}
-              </Label>
-              <div class="space-y-2">
-                <div class="flex items-center space-x-2">
-                  <Checkbox id="export-info" v-model="exportEventTypes.info" />
-                  <label
-                    for="export-info"
-                    class="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    {{ t("analytics.logs.exportDialog.info") }}
-                  </label>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <Checkbox
-                    id="export-warning"
-                    v-model="exportEventTypes.warning"
-                  />
-                  <label
-                    for="export-warning"
-                    class="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    {{ t("analytics.logs.exportDialog.warning") }}
-                  </label>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <Checkbox id="export-error" v-model="exportEventTypes.error" />
-                  <label
-                    for="export-error"
-                    class="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    {{ t("analytics.logs.exportDialog.error") }}
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" @click="isExportModalOpen = false">
-              {{ t("analytics.logs.exportDialog.cancel") }}
-            </Button>
-            <Button variant="outline" @click="handleExport('json')">
-              <Download :size="16" class="mr-2" />
-              {{ t("analytics.logs.exportDialog.exportJson") }}
-            </Button>
-            <Button @click="handleExport('csv')">
-              <Download :size="16" class="mr-2" />
-              {{ t("analytics.logs.exportDialog.exportCsv") }}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   </div>
 </template>

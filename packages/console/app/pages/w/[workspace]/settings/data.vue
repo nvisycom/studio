@@ -66,7 +66,9 @@ watch(
 	(workspace) => {
 		if (!workspace) return;
 		requireApproval.value = workspace.settings.requireApproval;
-		ocr.value = workspace.settings.ocr;
+		// `ocr` and `retention` are optional in the SDK; fall back to the SDK's
+		// own defaults (ocr "auto"; retention "forever" per scope, in the helper).
+		ocr.value = workspace.settings.ocr ?? "auto";
 		retention.value = retentionToForm(workspace.settings.retention);
 		formInitialized.value = true;
 	},
@@ -95,7 +97,9 @@ const hasRetentionChanges = computed(() => {
 	const ws = currentWorkspace.value;
 	if (!ws || !formInitialized.value) return false;
 	const edited = editedSettings.value.retention;
-	const saved = ws.settings.retention;
+	// Normalize the saved retention the same way the form is loaded, so missing
+	// (SDK-defaulted) scopes compare against the form's "forever" defaults.
+	const saved = formToRetention(retentionToForm(ws.settings.retention));
 	return RETENTION_TARGETS.some(
 		(target) => !retentionEquals(edited[target], saved[target]),
 	);

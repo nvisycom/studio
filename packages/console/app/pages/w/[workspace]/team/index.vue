@@ -14,7 +14,7 @@ import { toast } from "vue-sonner";
 
 import {
 	EditMemberModal,
-	InviteMembersCard,
+	InviteMembersModal,
 	TeamListCard,
 } from "#console/components/pages/team";
 import { ConfirmDialog } from "#console/components/common";
@@ -70,9 +70,12 @@ const {
 	refresh: refreshInvites,
 } = useInvites(invitesQuery);
 
-// UI feedback state
-const copiedInviteLink = ref(false);
-const inviteSent = ref(false);
+// Invite modal state. The generated join link is surfaced in the modal (URL +
+// the role/expiry it was minted with), rather than only landing on the clipboard.
+const isInviteModalOpen = ref(false);
+const generatedLink = ref<string | null>(null);
+const generatedRole = ref<WorkspaceRole | null>(null);
+const generatedExpiry = ref<InviteExpiration | null>(null);
 
 // Modal State
 const memberToDelete = ref<Member | null>(null);
@@ -126,47 +129,75 @@ const invitesSelection = useSelection({
 
 // ===== Invite Functions =====
 
-async function handleSendInvite(
-	email: string,
+function openInviteModal() {
+	// Fresh link state each open, so a previous session's link never lingers.
+	generatedLink.value = null;
+	generatedRole.value = null;
+	generatedExpiry.value = null;
+	isInviteModalOpen.value = true;
+}
+
+// Invite several emails at once. Each is a separate call (the SDK invites one at
+// a time); we report partial success rather than failing the whole batch on one
+// bad address — mirroring the bulk member/invite actions below.
+async function handleSendInvites(
+	emails: string[],
 	role: WorkspaceRole,
 	expiry: InviteExpiration,
 ) {
-	try {
-		await sendInviteAsync({
-			inviteeEmail: email,
-			invitedRole: role,
-			expiresIn: expiry,
+	const results = await Promise.allSettled(
+		emails.map((email) =>
+			sendInviteAsync({
+				inviteeEmail: email,
+				invitedRole: role,
+				expiresIn: expiry,
+			}),
+		),
+	);
+
+	const succeeded = results.filter((r) => r.status === "fulfilled").length;
+	const failed = results.length - succeeded;
+
+	if (succeeded > 0) await refreshInvites();
+
+	if (failed === 0) {
+		toast.success(t("members.messages.invitesSent", succeeded));
+		isInviteModalOpen.value = false;
+	} else if (succeeded > 0) {
+		toast.warning(t("members.messages.invitesPartiallySent"), {
+			description: t("members.errors.someInvitesFailed", { count: failed }),
 		});
-		inviteSent.value = true;
-		toast.success(t("members.messages.inviteSent"));
-		setTimeout(() => {
-			inviteSent.value = false;
-		}, 2000);
-	} catch (err) {
-		const errorMessage = getErrorMessage(err, t("members.errors.inviteFailed"));
-		toast.error(t("members.errors.inviteFailed"), {
-			description: errorMessage,
-		});
+		isInviteModalOpen.value = false;
+	} else {
+		toast.error(t("members.errors.inviteFailed"));
 	}
 }
 
-async function handleCopyLink(role: WorkspaceRole, expiry: InviteExpiration) {
+async function handleGenerateLink(
+	role: WorkspaceRole,
+	expiry: InviteExpiration,
+) {
 	try {
 		const result = await generateCodeAsync({
 			invitedRole: role,
 			expiresIn: expiry,
 		});
-		const baseUrl = window.location.origin;
-		const inviteUrl = `${baseUrl}/join/${result.inviteCode}`;
-		await navigator.clipboard.writeText(inviteUrl);
-		copiedInviteLink.value = true;
-		toast.success(t("members.messages.linkCopied"));
-		setTimeout(() => {
-			copiedInviteLink.value = false;
-		}, 2000);
+		generatedLink.value = `${window.location.origin}/join/${result.inviteCode}`;
+		generatedRole.value = role;
+		generatedExpiry.value = expiry;
 		await refreshInvites();
 	} catch (err) {
 		toast.error(getErrorMessage(err, t("members.errors.linkFailed")));
+	}
+}
+
+async function handleCopyGeneratedLink() {
+	if (!generatedLink.value) return;
+	try {
+		await navigator.clipboard.writeText(generatedLink.value);
+		toast.success(t("members.messages.linkCopied"));
+	} catch {
+		toast.error(t("members.errors.linkCopyFailed"));
 	}
 }
 
@@ -313,17 +344,24 @@ function handleSortingChange(
 
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
-    <div class="mx-auto w-full max-w-6xl">
-      <InviteMembersCard
+    <div class="mx-auto flex w-full max-w-6xl flex-col gap-4">
+      <!-- Inviting is an intentional action behind the button in the list
+           header (opens the modal), rather than an always-open form. -->
+      <InviteMembersModal
+        :open="isInviteModalOpen"
         :is-sending="isSending"
         :is-generating="isGenerating"
-        :copied-invite-link="copiedInviteLink"
-        :invite-sent="inviteSent"
-        @send-invite="handleSendInvite"
-        @copy-link="handleCopyLink"
+        :generated-link="generatedLink"
+        :generated-role="generatedRole"
+        :generated-expiry="generatedExpiry"
+        @update:open="isInviteModalOpen = $event"
+        @send="handleSendInvites"
+        @generate-link="handleGenerateLink"
+        @copy-link="handleCopyGeneratedLink"
       />
 
       <TeamListCard
+        @invite="openInviteModal"
         :members="filteredMembers"
         :invites="filteredInvites"
         :is-loading-members="isLoadingMembers"

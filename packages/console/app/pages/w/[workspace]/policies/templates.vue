@@ -46,15 +46,18 @@ type HipaaMethod = Extract<
 	PolicyTemplate,
 	{ kind: "hipaa_deidentification" }
 >["method"];
-type HipaaAccounts = Extract<
-	PolicyTemplate,
-	{ kind: "hipaa_deidentification" }
->["accounts"];
+// `accounts` is optional on the template in the SDK; the picker always has a
+// concrete value, so strip the `undefined` for the option list and v-model.
+type HipaaAccounts = NonNullable<
+	Extract<PolicyTemplate, { kind: "hipaa_deidentification" }>["accounts"]
+>;
 type GdprTreatment = Extract<
 	PolicyTemplate,
 	{ kind: "gdpr_article9" }
 >["treatment"];
-type GdprScope = Extract<PolicyTemplate, { kind: "gdpr_article9" }>["scope"];
+type GdprScope = NonNullable<
+	Extract<PolicyTemplate, { kind: "gdpr_article9" }>["scope"]
+>;
 type PciPart = Extract<PolicyTemplate, { kind: "pci_dss" }>["part"]["part"];
 type PciRender = Extract<
 	Extract<PolicyTemplate, { kind: "pci_dss" }>["part"],

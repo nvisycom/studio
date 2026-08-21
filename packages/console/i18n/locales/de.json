@@ -541,6 +541,11 @@
 					"24hours": "24 Stunden",
 					"7days": "7 Tagen",
 					"30days": "30 Tagen"
+				},
+				"expiryShort": {
+					"24hours": "in 24 Std.",
+					"7days": "in 7 T.",
+					"30days": "in 30 T."
 				}
 			},
 			"search": {
@@ -580,7 +585,6 @@
 		},
 		"messages": {
 			"inviteFooter": "Eingeladene Mitglieder erhalten eine E-Mail mit Anweisungen zum Beitritt zu Ihrem Projekt.",
-			"reviewFooter": "Projekteigentümer können nicht entfernt werden. Übertragen Sie zunächst das Eigentum, um den aktuellen Eigentümer zu entfernen.",
 			"inviteSent": "Einladung erfolgreich gesendet",
 			"linkCopied": "Einladungslink in die Zwischenablage kopiert",
 			"memberRemoved": "Mitglied erfolgreich entfernt",
@@ -589,7 +593,9 @@
 			"inviteCanceled": "Einladung erfolgreich storniert",
 			"invitesCanceled": "Einladungen erfolgreich storniert",
 			"invitesPartiallyCanceled": "Einige Einladungen konnten nicht storniert werden",
-			"membersPartiallyRemoved": "Einige Mitglieder konnten nicht entfernt werden"
+			"membersPartiallyRemoved": "Einige Mitglieder konnten nicht entfernt werden",
+			"invitesSent": "Einladung gesendet | {count} Einladungen gesendet",
+			"invitesPartiallySent": "Einige Einladungen gesendet"
 		},
 		"errors": {
 			"inviteFailed": "Einladung konnte nicht gesendet werden",
@@ -599,7 +605,8 @@
 			"updateFailed": "Mitglied konnte nicht aktualisiert werden",
 			"cancelFailed": "Einladung konnte nicht storniert werden",
 			"someCancelFailed": "{count} Einladung konnte nicht storniert werden | {count} Einladungen konnten nicht storniert werden",
-			"someRemoveFailed": "{count} Mitglied konnte nicht entfernt werden | {count} Mitglieder konnten nicht entfernt werden"
+			"someRemoveFailed": "{count} Mitglied konnte nicht entfernt werden | {count} Mitglieder konnten nicht entfernt werden",
+			"someInvitesFailed": "{count} Einladung konnte nicht gesendet werden | {count} Einladungen konnten nicht gesendet werden"
 		},
 		"roles": {
 			"owner": "Eigentümer",
@@ -649,6 +656,23 @@
 				"description": "Ändern Sie die Rolle für dieses Teammitglied.",
 				"memberLabel": "Mitglied",
 				"roleLabel": "Rolle"
+			},
+			"invite": {
+				"title": "Mitglieder einladen",
+				"description": "Personen per E-Mail hinzufügen oder einen Link zum Beitreten teilen.",
+				"emailsLabel": "E-Mail-Adressen",
+				"emailsPlaceholder": "E-Mail eingeben, dann Enter",
+				"emailsHint": "Mit Enter, Komma oder Leerzeichen trennen. Eine ungültige Adresse blockiert die übrigen nicht.",
+				"removeEmail": "{email} entfernen",
+				"roleLabel": "Rolle",
+				"expiryLabel": "Einladung läuft ab",
+				"linkTitle": "Oder einen Beitrittslink teilen",
+				"linkHint": "Wer den Link hat, tritt als {role} bei, läuft {expiry} ab.",
+				"generateLink": "Link erstellen",
+				"countValid": "{count} gültig | {count} gültig",
+				"countInvalid": "{count} ungültig | {count} ungültig",
+				"send": "Einladung senden | {count} Einladungen senden",
+				"sendEmpty": "Einladungen senden"
 			}
 		}
 	},
@@ -1237,6 +1261,8 @@
 			}
 		},
 		"preview": {
+			"emptyTitle": "Kein Dokument ausgewählt",
+			"emptyDescription": "Wählen Sie auf der Seite „Dateien“ eine Datei zur Vorschau aus",
 			"table": "Tabelle",
 			"raw": "Roh",
 			"withHeaders": "Mit Kopfzeile",
@@ -1663,19 +1689,6 @@
 				"by": "Ausgeführt von"
 			},
 			"empty": "Keine Aktivität gefunden",
-			"exportDialog": {
-				"title": "Protokolle exportieren",
-				"description": "Exporteinstellungen für Ihre Protokolle konfigurieren",
-				"dateRange": "Zeitraum",
-				"selectDateRange": "Zeitraum wählen",
-				"eventTypes": "Ereignistypen",
-				"info": "Info",
-				"warning": "Warnung",
-				"error": "Fehler",
-				"cancel": "Abbrechen",
-				"exportJson": "Als JSON exportieren",
-				"exportCsv": "Als CSV exportieren"
-			},
 			"category": {
 				"placeholder": "Kategorie",
 				"all": "Alle Kategorien",
