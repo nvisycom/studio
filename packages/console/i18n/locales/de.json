@@ -1680,7 +1680,6 @@
 			"searchPlaceholder": "Aktivität suchen...",
 			"title": "Aktivitätsprotokolle",
 			"count": "{count} Ereignis | {count} Ereignisse",
-			"import": "Importieren",
 			"export": "Exportieren",
 			"table": {
 				"time": "Zeit",
@@ -1700,7 +1699,18 @@
 				"file": "Dateien"
 			},
 			"emptyDescription": "Aktionen in diesem Arbeitsbereich erscheinen hier.",
-			"loadMore": "Mehr laden"
+			"loadMore": "Mehr laden",
+			"exportDialog": {
+				"title": "Aktivitätsprotokoll exportieren",
+				"description": "Aktivitätsprotokoll des Arbeitsbereichs für den gewählten Zeitraum herunterladen.",
+				"dateRange": "Zeitraum",
+				"selectDateRange": "Zeitraum auswählen",
+				"format": "Format",
+				"csv": "CSV",
+				"json": "JSON",
+				"export": "Exportieren",
+				"failed": "Das Aktivitätsprotokoll konnte nicht exportiert werden."
+			}
 		},
 		"common": {
 			"selectPeriod": "Zeitraum wählen",

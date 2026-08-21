@@ -1680,7 +1680,6 @@
 			"searchPlaceholder": "Search activity...",
 			"title": "Activity Logs",
 			"count": "{count} event | {count} events",
-			"import": "Import",
 			"export": "Export",
 			"table": {
 				"time": "Time",
@@ -1700,7 +1699,18 @@
 				"file": "Files"
 			},
 			"emptyDescription": "Actions in this workspace will show up here.",
-			"loadMore": "Load more"
+			"loadMore": "Load more",
+			"exportDialog": {
+				"title": "Export activity log",
+				"description": "Download the workspace activity log for the selected date range.",
+				"dateRange": "Date range",
+				"selectDateRange": "Select a date range",
+				"format": "Format",
+				"csv": "CSV",
+				"json": "JSON",
+				"export": "Export",
+				"failed": "Couldn't export the activity log."
+			}
 		},
 		"common": {
 			"selectPeriod": "Select period",

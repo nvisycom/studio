@@ -30,6 +30,25 @@ export function useActivities(options?: { pageSize?: number }) {
 		});
 	});
 
+	/**
+	 * Download the activity log as CSV or JSON, saved under `fileName`. The
+	 * optional date range is inclusive, `YYYY-MM-DD` (UTC); omit it to use the
+	 * SDK's default window.
+	 */
+	async function exportActivities(
+		fileName: string,
+		options: { format: "csv" | "json"; from?: string; to?: string },
+	): Promise<void> {
+		const { client, workspaceSlug } = requireContext();
+		const response = await client.activities.exportActivities(workspaceSlug, {
+			format: options.format,
+			...(options.from && { from: options.from }),
+			...(options.to && { to: options.to }),
+		});
+		const url = URL.createObjectURL(await response.blob());
+		triggerBrowserDownload(url, fileName);
+	}
+
 	return {
 		activities,
 		isLoading: activitiesQuery.isLoading,
@@ -38,5 +57,6 @@ export function useActivities(options?: { pageSize?: number }) {
 		hasMore,
 		loadMore,
 		isLoadingMore,
+		exportActivities,
 	};
 }

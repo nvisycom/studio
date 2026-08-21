@@ -2,7 +2,6 @@
 import type { Component } from "vue";
 import {
 	Download,
-	Upload,
 	Search,
 	FileText,
 	History,
@@ -43,12 +42,20 @@ import {
 	SelectValue,
 } from "#console/components/ui/select";
 import { Input } from "#console/components/ui/input";
+import { toast } from "vue-sonner";
+import LogsExportModal from "#console/components/pages/analytics/LogsExportModal.vue";
 
 const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
 const { resolveAvatarUrl } = useAvatarUrl();
-const { activities, isLoading, hasMore, loadMore, isLoadingMore } =
-	useActivities({ pageSize: 50 });
+const {
+	activities,
+	isLoading,
+	hasMore,
+	loadMore,
+	isLoadingMore,
+	exportActivities,
+} = useActivities({ pageSize: 50 });
 
 useHead({ title: "Logs" });
 
@@ -122,12 +129,26 @@ const filteredActivities = computed(() => {
 	return list;
 });
 
-// Import is on-premise-only and not wired yet; export has no backend either, so
-// both stay disabled (export was a fake modal — removed). Wire these once the
-// log export/import endpoints exist.
-const isOnPremise = ref(false);
-function importLogs() {
-	// TODO: Implement actual import functionality
+// Export: a date-range + format modal that downloads the activity log via the
+// SDK's exportActivities endpoint.
+const isExportModalOpen = ref(false);
+const isExporting = ref(false);
+
+async function handleExport(options: {
+	format: "csv" | "json";
+	from?: string;
+	to?: string;
+}) {
+	isExporting.value = true;
+	try {
+		const fileName = `activity-log.${options.format}`;
+		await exportActivities(fileName, options);
+		isExportModalOpen.value = false;
+	} catch (err) {
+		toast.error(getErrorMessage(err, t("analytics.logs.exportDialog.failed")));
+	} finally {
+		isExporting.value = false;
+	}
 }
 </script>
 
@@ -180,14 +201,8 @@ function importLogs() {
               <Button
                 variant="outline"
                 size="sm"
-                :disabled="!isOnPremise"
-                @click="importLogs"
+                @click="isExportModalOpen = true"
               >
-                <Upload :size="16" class="mr-2" />
-                {{ t("analytics.logs.import") }}
-              </Button>
-              <!-- Export has no backend yet; disabled until it does. -->
-              <Button variant="outline" size="sm" disabled>
                 <Download :size="16" class="mr-2" />
                 {{ t("analytics.logs.export") }}
               </Button>
@@ -296,6 +311,12 @@ function importLogs() {
         </CardContent>
       </Card>
 
+      <LogsExportModal
+        :open="isExportModalOpen"
+        :is-exporting="isExporting"
+        @update:open="isExportModalOpen = $event"
+        @export="handleExport"
+      />
     </div>
   </div>
 </template>
