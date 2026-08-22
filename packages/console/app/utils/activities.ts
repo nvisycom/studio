@@ -20,6 +20,20 @@ export interface ActivityContent {
 	category: string;
 }
 
+// Categories the UI has icons and `activities.category.*` labels for. An event
+// whose prefix isn't one of these (a newer API) falls back to "unknown" so the
+// row doesn't render an unresolved i18n key.
+const KNOWN_CATEGORIES = new Set([
+	"workspace",
+	"member",
+	"invite",
+	"connection",
+	"webhook",
+	"file",
+	"pipeline",
+	"policy",
+]);
+
 /**
  * Map an activity payload to its i18n title/message descriptors plus category.
  *
@@ -99,15 +113,16 @@ export function activityContent(payload: ActivityPayload): ActivityContent {
 		case "policy.deleted":
 			return content("policyDeleted", "policy", payload.data);
 		// Version skew: a deployed API newer than this bundle can emit a `type`
-		// the pinned SDK union doesn't cover. Fall back to a generic entry
-		// (category = the segment before the first dot) so the row still renders.
-		// `type` is narrowed to `never` here (all known cases handled), so widen
-		// it back to string to read the runtime value.
+		// the pinned SDK union doesn't cover. Fall back to a generic entry so the
+		// row still renders. `type` is narrowed to `never` here (all known cases
+		// handled), so widen it back to string to read the runtime value. Only
+		// keep the prefix as the category when it's one we have a label for;
+		// otherwise use "unknown" so the UI never shows an unresolved key.
 		default: {
 			const unknownType = type as string;
-			return content("unknown", unknownType.split(".")[0] ?? "workspace", {
-				type: unknownType,
-			});
+			const prefix = unknownType.split(".")[0] ?? "";
+			const category = KNOWN_CATEGORIES.has(prefix) ? prefix : "unknown";
+			return content("unknown", category, { type: unknownType });
 		}
 	}
 }

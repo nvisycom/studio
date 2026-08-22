@@ -2054,7 +2054,8 @@
 			"webhook": "Webhooks",
 			"file": "Files",
 			"pipeline": "Pipelines",
-			"policy": "Policies"
+			"policy": "Policies",
+			"unknown": "Other"
 		}
 	},
 	"userMenu": {
