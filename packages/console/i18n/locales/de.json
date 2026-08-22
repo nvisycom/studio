@@ -1297,8 +1297,6 @@
 		"title": "Richtlinien",
 		"count": "{count} Richtlinie | {count} Richtlinien",
 		"create": "Neue Richtlinie",
-		"footer": "Richtlinien legen fest, wie erkannte Entitäten geschwärzt, unterdrückt oder geprüft werden.",
-		"learnMore": "Mehr erfahren",
 		"empty": {
 			"title": "Noch keine Richtlinien",
 			"description": "Erstellen Sie eine, um Schwärzungsregeln zu definieren."
@@ -1532,7 +1530,6 @@
 	"workflows": {
 		"title": "Pipelines",
 		"count": "{count} Pipeline konfiguriert | {count} Pipelines konfiguriert",
-		"footer": "Pipelines automatisieren Dokumentenerkennung und -schwärzung.",
 		"runs": {
 			"title": "Pipeline-Ausführungen",
 			"backToWorkflows": "Zurück zu Pipelines",
@@ -1560,7 +1557,6 @@
 				"cancelled": "Abgebrochen"
 			},
 			"noRunsDescription": "Ausführungen erscheinen hier, sobald dieser Arbeitsbereich Dateien verarbeitet.",
-			"footer": "Jede Ausführung protokolliert, wie eine Pipeline eine Datei erkannt und geschwärzt hat.",
 			"triggeredBy": "Ausgelöst von",
 			"openInStudio": "In Studio öffnen",
 			"menu": "Lauf-Aktionen",
@@ -1592,7 +1588,6 @@
 			},
 			"openInStudioFailed": "Die Datei konnte nicht im Studio geöffnet werden."
 		},
-		"learnMore": "Mehr erfahren",
 		"status": {
 			"draft": "Entwurf",
 			"enabled": "Aktiviert",

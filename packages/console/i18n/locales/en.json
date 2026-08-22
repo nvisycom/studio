@@ -1297,8 +1297,6 @@
 		"title": "Policies",
 		"count": "{count} policy | {count} policies",
 		"create": "New policy",
-		"footer": "Policies decide how detected entities are redacted, suppressed, or audited.",
-		"learnMore": "Learn more",
 		"empty": {
 			"title": "No policies yet",
 			"description": "Create one to define redaction rules."
@@ -1532,7 +1530,6 @@
 	"workflows": {
 		"title": "Pipelines",
 		"count": "{count} pipeline configured | {count} pipelines configured",
-		"footer": "Pipelines automate document detection and redaction.",
 		"runs": {
 			"title": "Pipeline runs",
 			"backToWorkflows": "Back to pipelines",
@@ -1560,7 +1557,6 @@
 				"cancelled": "Cancelled"
 			},
 			"noRunsDescription": "Runs will appear here once this workspace processes files.",
-			"footer": "Each run records how a pipeline detected and redacted a file.",
 			"triggeredBy": "Triggered by",
 			"openInStudio": "Open in Studio",
 			"menu": "Run actions",
@@ -1592,7 +1588,6 @@
 			},
 			"openInStudioFailed": "Couldn't open the file in the studio."
 		},
-		"learnMore": "Learn more",
 		"status": {
 			"draft": "Draft",
 			"enabled": "Enabled",

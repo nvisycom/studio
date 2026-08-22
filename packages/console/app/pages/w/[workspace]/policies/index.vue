@@ -13,20 +13,11 @@ import {
 	Pencil,
 	ShieldCheck,
 	Trash2,
-	ExternalLink,
 	LayoutTemplate,
 } from "@lucide/vue";
 import { personLabel } from "#console/utils/naming";
 import { VirtualTable } from "#console/components/ui/virtual-table";
 import { Button } from "#console/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "#console/components/ui/card";
 import { ConfirmDialog } from "#console/components/common";
 import { toast } from "vue-sonner";
 
@@ -196,72 +187,55 @@ async function confirmDelete() {
 </script>
 
 <template>
-  <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
-    <div class="mx-auto w-full max-w-6xl">
-      <Card class="rounded-xl border-border/50 py-0 pt-6">
-        <CardHeader>
-          <div class="flex items-start justify-between">
-            <div>
-              <CardTitle
-                class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
-              >
-                {{ t("policies.title") }}
-              </CardTitle>
-              <CardDescription class="text-sm">
-                {{ t("policies.count", { count: policies?.length ?? 0 }) }}
-              </CardDescription>
-            </div>
-            <div class="flex items-center gap-2">
-              <Button as-child variant="outline" size="sm" class="font-normal">
-                <NuxtLink :to="wLink('/policies/templates')">
-                  <LayoutTemplate :size="16" class="mr-1.5" />
-                  {{ t("policies.browseTemplates") }}
-                </NuxtLink>
-              </Button>
-              <Button size="sm" @click="openCreate">
-                <ShieldCheck :size="16" class="mr-1.5" />
-                {{ t("policies.create") }}
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <!-- Loading -->
-          <div v-if="isLoading" class="flex items-center justify-center py-12">
-            <Loader2 :size="24" class="animate-spin text-muted-foreground" />
-          </div>
-
-          <VirtualTable
-            v-else
-            :rows="policyRows"
-            :columns="columns"
-            :row-actions="rowActions"
-            :menu-label="t('policies.table.menu')"
-            max-height="60vh"
-            :empty="{
-              icon: ShieldCheck,
-              title: t('policies.empty.title'),
-              description: t('policies.empty.description'),
-            }"
-          />
-        </CardContent>
-        <CardFooter
-          class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
-        >
-          <p class="text-xs text-muted-foreground">
-            {{ t("policies.footer") }}
-            <a
-              href="https://docs.nvisy.com/policies"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-1 text-foreground hover:underline font-medium"
-            >
-              {{ t("policies.learnMore") }}
-              <ExternalLink :size="12" />
-            </a>
+  <!-- Fixed-height page so the table fills and scrolls (like /files). -->
+  <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6 h-[calc(100vh-5.5rem)]">
+    <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 min-h-0">
+      <!-- Header row: title on the left, actions on the right. -->
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h1 class="text-lg font-semibold text-foreground">
+            {{ t("policies.title") }}
+          </h1>
+          <p class="text-sm text-muted-foreground">
+            {{ t("policies.count", { count: policies?.length ?? 0 }) }}
           </p>
-        </CardFooter>
-      </Card>
+        </div>
+        <div class="flex shrink-0 items-center gap-2">
+          <Button as-child variant="outline" size="sm" class="font-normal">
+            <NuxtLink :to="wLink('/policies/templates')">
+              <LayoutTemplate :size="16" class="mr-1.5" />
+              {{ t("policies.browseTemplates") }}
+            </NuxtLink>
+          </Button>
+          <Button size="sm" @click="openCreate">
+            <ShieldCheck :size="16" class="mr-1.5" />
+            {{ t("policies.create") }}
+          </Button>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div
+        v-if="isLoading"
+        class="flex flex-1 items-center justify-center py-12"
+      >
+        <Loader2 :size="24" class="animate-spin text-muted-foreground" />
+      </div>
+
+      <!-- Bare full-width table, filling the remaining height. -->
+      <div v-else class="relative min-h-0 flex-1">
+        <VirtualTable
+          :rows="policyRows"
+          :columns="columns"
+          :row-actions="rowActions"
+          :menu-label="t('policies.table.menu')"
+          :empty="{
+            icon: ShieldCheck,
+            title: t('policies.empty.title'),
+            description: t('policies.empty.description'),
+          }"
+        />
+      </div>
 
       <!-- Delete confirm -->
       <ConfirmDialog
