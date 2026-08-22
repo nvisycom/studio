@@ -32,7 +32,8 @@ export interface ActivityContent {
  * callers guard that and only pass a defined payload here.
  */
 export function activityContent(payload: ActivityPayload): ActivityContent {
-	switch (payload.type) {
+	const { type } = payload;
+	switch (type) {
 		case "workspace.created":
 			return content("workspaceCreated", "workspace", payload.data);
 		case "workspace.updated":
@@ -97,6 +98,17 @@ export function activityContent(payload: ActivityPayload): ActivityContent {
 			return content("policyUpdated", "policy", payload.data);
 		case "policy.deleted":
 			return content("policyDeleted", "policy", payload.data);
+		// Version skew: a deployed API newer than this bundle can emit a `type`
+		// the pinned SDK union doesn't cover. Fall back to a generic entry
+		// (category = the segment before the first dot) so the row still renders.
+		// `type` is narrowed to `never` here (all known cases handled), so widen
+		// it back to string to read the runtime value.
+		default: {
+			const unknownType = type as string;
+			return content("unknown", unknownType.split(".")[0] ?? "workspace", {
+				type: unknownType,
+			});
+		}
 	}
 }
 

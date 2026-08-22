@@ -1155,6 +1155,9 @@
 				"cancelled": "Abgebrochen"
 			},
 			"noRunsDescription": "Ausführungen erscheinen hier, sobald Ihre Verbindungen synchronisieren."
+		},
+		"errors": {
+			"loadFailed": "Verbindungen konnten nicht geladen werden."
 		}
 	},
 	"sidebar": {
@@ -1901,6 +1904,10 @@
 			"pipelineRunFailed": {
 				"title": "Lauf fehlgeschlagen",
 				"message": "{inputFileName} ist in {pipelineSlug} fehlgeschlagen: {error}"
+			},
+			"unknown": {
+				"title": "Benachrichtigung",
+				"message": "Sie haben eine neue Benachrichtigung"
 			}
 		}
 	},
@@ -2033,6 +2040,10 @@
 			"connectionSyncStarted": {
 				"title": "Synchronisierung gestartet",
 				"message": "Eine Verbindung hat die Synchronisierung gestartet"
+			},
+			"unknown": {
+				"title": "Aktivität",
+				"message": "Eine Aktivität wurde aufgezeichnet"
 			}
 		},
 		"category": {

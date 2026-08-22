@@ -43,7 +43,22 @@ function levelFor(count: number): 0 | 1 | 2 | 3 | 4 {
 	return 1;
 }
 
-const isoDate = (d: Date) => d.toISOString().slice(0, 10);
+// A date-only `YYYY-MM-DD` key from a Date's LOCAL parts (not `toISOString`,
+// which is UTC and would shift the day for viewers east/west of UTC, making
+// keys disagree with the server's date strings).
+const isoDate = (d: Date) => {
+	const y = d.getFullYear();
+	const m = String(d.getMonth() + 1).padStart(2, "0");
+	const day = String(d.getDate()).padStart(2, "0");
+	return `${y}-${m}-${day}`;
+};
+
+// Parse a `YYYY-MM-DD` key back into a local Date (its own components), so
+// month labels don't drift across the UTC boundary.
+const parseIsoDate = (iso: string) => {
+	const [y, m, d] = iso.split("-").map(Number);
+	return new Date(y!, m! - 1, d!);
+};
 
 // The grid window: the last DAYS days, aligned so each column is a Sun–Sat week.
 // Columns are weeks (oldest -> newest); rows are weekday (Sun at top).
@@ -69,7 +84,10 @@ const weeks = computed<Cell[][]>(() => {
 		const col: Cell[] = [];
 		for (let d = 0; d < 7; d++) {
 			if (cursor > today) break;
-			const date = isoDate(cursor);
+			// Snapshot the day before advancing the shared cursor, so the label
+			// can't drift if the statements are ever reordered.
+			const day = new Date(cursor);
+			const date = isoDate(day);
 			const count = countByDate.value.get(date) ?? 0;
 			col.push({
 				date,
@@ -77,7 +95,7 @@ const weeks = computed<Cell[][]>(() => {
 				level: levelFor(count),
 				label: t("analytics.activity.cell", {
 					count,
-					date: dateFormatter.value.format(cursor),
+					date: dateFormatter.value.format(day),
 				}),
 			});
 			cursor.setDate(cursor.getDate() + 1);
@@ -104,9 +122,10 @@ const monthLabels = computed(() => {
 	weeks.value.forEach((col, i) => {
 		const first = col[0];
 		if (!first) return;
-		const month = new Date(first.date).getMonth();
+		const firstDate = parseIsoDate(first.date);
+		const month = firstDate.getMonth();
 		if (month !== prevMonth) {
-			labels.push({ col: i, name: monthFmt.format(new Date(first.date)) });
+			labels.push({ col: i, name: monthFmt.format(firstDate) });
 			prevMonth = month;
 		}
 	});

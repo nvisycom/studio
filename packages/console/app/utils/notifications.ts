@@ -32,7 +32,8 @@ export interface NotificationContent {
 export function notificationContent(
 	payload: NotificationPayload,
 ): NotificationContent {
-	switch (payload.type) {
+	const { type } = payload;
+	switch (type) {
 		case "member.invited":
 			return content("memberInvited", payload.data, "/team");
 		case "member.joined":
@@ -55,6 +56,11 @@ export function notificationContent(
 			return content("pipelineRunCompleted", payload.data, "/workflows/runs");
 		case "pipeline.run.failed":
 			return content("pipelineRunFailed", payload.data, "/workflows/runs");
+		// Version skew: a newer API can emit a `type` outside the pinned SDK
+		// union. Fall back to a generic entry so the notification still renders
+		// (no route — we can't know where an unknown event should link).
+		default:
+			return content("unknown", { type: type as string });
 	}
 }
 

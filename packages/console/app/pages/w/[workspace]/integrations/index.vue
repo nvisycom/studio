@@ -25,6 +25,8 @@ definePageMeta({
 const {
 	connections,
 	isLoading,
+	error,
+	refresh,
 	updateConnectionAsync,
 	deleteConnectionAsync,
 	startSyncAsync,
@@ -179,6 +181,19 @@ async function handleTestConnection(connectionId: string) {
         class="flex flex-1 items-center justify-center py-12"
       >
         <Loader2 :size="24" class="animate-spin text-muted-foreground" />
+      </div>
+
+      <!-- Error: surface the failure with a retry, not an empty state. -->
+      <div
+        v-else-if="error"
+        class="flex flex-1 flex-col items-center justify-center gap-3 py-12 text-center"
+      >
+        <p class="text-sm text-destructive">
+          {{ error.message || t("connections.errors.loadFailed") }}
+        </p>
+        <Button variant="outline" size="sm" @click="refresh()">
+          {{ t("common.errors.tryAgain") }}
+        </Button>
       </div>
 
       <!-- Bare full-width table, filling the remaining height. -->

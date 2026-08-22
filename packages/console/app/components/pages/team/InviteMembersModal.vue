@@ -45,7 +45,8 @@ interface Emits {
 		expiry: InviteExpiration,
 	): void;
 	(e: "generate-link", role: WorkspaceRole, expiry: InviteExpiration): void;
-	(e: "copy-link"): void;
+	/** The parent performs the copy and reports whether it succeeded. */
+	(e: "copy-link", onResult: (ok: boolean) => void): void;
 }
 
 const props = defineProps<Props>();
@@ -144,13 +145,17 @@ function generateLink(): void {
 	emit("generate-link", role.value, expiry.value);
 }
 
-async function copyLink(): Promise<void> {
+function copyLink(): void {
 	if (!props.generatedLink) return;
-	emit("copy-link");
-	copied.value = true;
-	setTimeout(() => {
-		copied.value = false;
-	}, 2000);
+	// Show the success check only once the parent confirms the copy succeeded —
+	// the clipboard write can fail, and we shouldn't contradict the error toast.
+	emit("copy-link", (ok) => {
+		if (!ok) return;
+		copied.value = true;
+		setTimeout(() => {
+			copied.value = false;
+		}, 2000);
+	});
 }
 </script>
 

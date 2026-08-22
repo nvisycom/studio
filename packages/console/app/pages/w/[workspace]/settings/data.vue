@@ -93,7 +93,10 @@ const hasOptionsChanges = computed(() => {
 	if (!ws || !formInitialized.value) return false;
 	return (
 		editedSettings.value.requireApproval !== ws.settings.requireApproval ||
-		editedSettings.value.ocr !== ws.settings.ocr
+		// `ocr` is optional in the SDK and defaults to "auto"; normalize the saved
+		// value the same way the form does, so an absent value isn't seen as a
+		// change against the form's "auto" default.
+		editedSettings.value.ocr !== (ws.settings.ocr ?? "auto")
 	);
 });
 const hasRetentionChanges = computed(() => {

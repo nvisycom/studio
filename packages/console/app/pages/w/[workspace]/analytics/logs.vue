@@ -132,10 +132,18 @@ watch(calendarRange, (range) => {
 	};
 });
 
+// Parse a `YYYY-MM-DD` string into a local Date (its own components), so the
+// label doesn't shift a day for viewers off UTC (`new Date("YYYY-MM-DD")` is
+// parsed as UTC midnight).
+const localDate = (iso: string) => {
+	const [y, m, d] = iso.split("-").map(Number);
+	return new Date(y!, m! - 1, d!);
+};
+
 const rangeLabel = computed(() => {
 	const { from, to } = dateRange.value;
 	if (!from || !to) return t("analytics.logs.filters.anyDate");
-	return `${formatLongDate(from)} – ${formatLongDate(to)}`;
+	return `${formatLongDate(localDate(from))} – ${formatLongDate(localDate(to))}`;
 });
 
 function clearDateRange() {

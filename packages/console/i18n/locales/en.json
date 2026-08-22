@@ -1155,6 +1155,9 @@
 				"cancelled": "Cancelled"
 			},
 			"noRunsDescription": "Runs will appear here once your connections sync."
+		},
+		"errors": {
+			"loadFailed": "Couldn't load connections."
 		}
 	},
 	"sidebar": {
@@ -1901,6 +1904,10 @@
 			"pipelineRunFailed": {
 				"title": "Run failed",
 				"message": "{inputFileName} failed in {pipelineSlug}: {error}"
+			},
+			"unknown": {
+				"title": "Notification",
+				"message": "You have a new notification"
 			}
 		}
 	},
@@ -2033,6 +2040,10 @@
 			"connectionSyncStarted": {
 				"title": "Sync started",
 				"message": "A connection started syncing"
+			},
+			"unknown": {
+				"title": "Activity",
+				"message": "An activity was recorded"
 			}
 		},
 		"category": {

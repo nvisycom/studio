@@ -1,4 +1,4 @@
-import type { Retention } from "@nvisy/sdk/datatypes";
+import type { Retention, RetentionSettings } from "@nvisy/sdk/datatypes";
 
 /**
  * Shared model for the workspace retention form (used by the create-workspace
@@ -70,11 +70,7 @@ export function formToRetention(form: RetentionForm) {
  * defaults to "forever", matching the SDK's own default.
  */
 const FOREVER: Retention = { mode: "forever" };
-export function retentionToForm(r?: {
-	auditLogs?: Retention;
-	originalDocuments?: Retention;
-	redactedDocuments?: Retention;
-}): RetentionForm {
+export function retentionToForm(r?: RetentionSettings): RetentionForm {
 	return {
 		auditLogs: retentionToField(r?.auditLogs ?? FOREVER),
 		originalDocuments: retentionToField(r?.originalDocuments ?? FOREVER),

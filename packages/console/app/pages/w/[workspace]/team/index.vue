@@ -191,13 +191,15 @@ async function handleGenerateLink(
 	}
 }
 
-async function handleCopyGeneratedLink() {
-	if (!generatedLink.value) return;
+async function handleCopyGeneratedLink(onResult: (ok: boolean) => void) {
+	if (!generatedLink.value) return onResult(false);
 	try {
 		await navigator.clipboard.writeText(generatedLink.value);
 		toast.success(t("members.messages.linkCopied"));
+		onResult(true);
 	} catch {
 		toast.error(t("members.errors.linkCopyFailed"));
+		onResult(false);
 	}
 }
 
