@@ -5,9 +5,10 @@ import type { NotificationPayload } from "@nvisy/sdk/datatypes";
  * the caller renders it: `t(titleKey)` and `t(messageKey, params)`.
  *
  * The API no longer ships a pre-rendered title/message — each notification
- * carries a typed {@link NotificationPayload} discriminated by `notifyType`,
- * and the client turns it into copy. Keeping that mapping here (rather than in
- * the dropdown) keeps the component declarative and the strings in one place.
+ * carries a typed {@link NotificationPayload} discriminated by `type`, with the
+ * event data under a nested `data` object, and the client turns it into copy.
+ * Keeping that mapping here (rather than in the dropdown) keeps the component
+ * declarative and the strings in one place.
  */
 export interface NotificationContent {
 	titleKey: string;
@@ -15,8 +16,7 @@ export interface NotificationContent {
 	params: Record<string, unknown>;
 	/**
 	 * Where clicking the notification takes the user, as a workspace-relative
-	 * path (the caller prefixes it with the current workspace link). Absent when
-	 * there's no meaningful destination (e.g. a system announcement).
+	 * path (the caller prefixes it with the current workspace link).
 	 */
 	to?: string;
 }
@@ -25,73 +25,36 @@ export interface NotificationContent {
  * Map a notification payload to its i18n title/message descriptors and a target
  * route.
  *
- * Keys live under `notifications.events.<notifyType>` in the locale files,
- * with the colon/dot in the event name flattened to a dot-free segment
- * (e.g. `connection:sync.completed` → `connectionSyncCompleted`).
+ * Keys live under `notifications.events.<key>` in the locale files, with the
+ * dots in the event name flattened to a dot-free segment (e.g.
+ * `connection.sync.completed` → `connectionSyncCompleted`).
  */
 export function notificationContent(
 	payload: NotificationPayload,
 ): NotificationContent {
-	switch (payload.notifyType) {
+	switch (payload.type) {
 		case "member.invited":
-			return content(
-				"memberInvited",
-				{ invitedBy: payload.invitedBy, workspaceSlug: payload.workspaceSlug },
-				"/team",
-			);
+			return content("memberInvited", payload.data, "/team");
 		case "member.joined":
-			return content(
-				"memberJoined",
-				{
-					memberUsername: payload.memberUsername,
-					workspaceSlug: payload.workspaceSlug,
-				},
-				"/team",
-			);
+			return content("memberJoined", payload.data, "/team");
 		case "connection.sync.completed":
 			return content(
 				"connectionSyncCompleted",
-				{ recordsSynced: payload.recordsSynced },
+				payload.data,
 				"/integrations/runs",
 			);
 		case "connection.sync.failed":
 			return content(
 				"connectionSyncFailed",
-				{ error: payload.error },
+				payload.data,
 				"/integrations/runs",
 			);
 		case "pipeline.run.analyzed":
-			return content(
-				"pipelineRunAnalyzed",
-				{
-					pipelineSlug: payload.pipelineSlug,
-					inputFileName: payload.inputFileName,
-				},
-				"/workflows/runs",
-			);
+			return content("pipelineRunAnalyzed", payload.data, "/workflows/runs");
 		case "pipeline.run.completed":
-			return content(
-				"pipelineRunCompleted",
-				{
-					pipelineSlug: payload.pipelineSlug,
-					inputFileName: payload.inputFileName,
-				},
-				"/workflows/runs",
-			);
+			return content("pipelineRunCompleted", payload.data, "/workflows/runs");
 		case "pipeline.run.failed":
-			return content(
-				"pipelineRunFailed",
-				{
-					pipelineSlug: payload.pipelineSlug,
-					inputFileName: payload.inputFileName,
-					error: payload.error,
-				},
-				"/workflows/runs",
-			);
-		case "system.announcement":
-			return content("systemAnnouncement", { message: payload.message });
-		case "system.report":
-			return content("systemReport", { reportId: payload.reportId });
+			return content("pipelineRunFailed", payload.data, "/workflows/runs");
 	}
 }
 

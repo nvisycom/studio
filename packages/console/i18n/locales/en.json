@@ -21,7 +21,6 @@
 			},
 			"analytics": {
 				"overview": "Overview",
-				"ai": "AI",
 				"logs": "Logs"
 			},
 			"policies": {
@@ -262,17 +261,6 @@
 						"name": "Run Failed",
 						"description": "When a pipeline run fails"
 					}
-				},
-				"system": {
-					"name": "System",
-					"announcement": {
-						"name": "Announcements",
-						"description": "Important system announcements"
-					},
-					"report": {
-						"name": "Reports",
-						"description": "When a scheduled report is ready"
-					}
 				}
 			},
 			"messages": {
@@ -395,6 +383,17 @@
 				"activityDescription": "Actions in this workspace will show up here.",
 				"filesDescription": "Upload documents to see them here.",
 				"runsDescription": "Pipeline runs will show up here."
+			}
+		},
+		"stats": {
+			"runs": {
+				"label": "Pipeline runs",
+				"errorRate": "{percent}% error rate",
+				"noErrorSignal": "No completed runs yet"
+			},
+			"storage": {
+				"label": "Storage used",
+				"files": "{count} file | {count} files"
 			}
 		}
 	},
@@ -1677,9 +1676,6 @@
 	},
 	"analytics": {
 		"logs": {
-			"searchPlaceholder": "Search activity...",
-			"title": "Activity Logs",
-			"count": "{count} event | {count} events",
 			"export": "Export",
 			"table": {
 				"time": "Time",
@@ -1699,7 +1695,6 @@
 				"file": "Files"
 			},
 			"emptyDescription": "Actions in this workspace will show up here.",
-			"loadMore": "Load more",
 			"exportDialog": {
 				"title": "Export activity log",
 				"description": "Download the workspace activity log for the selected date range.",
@@ -1710,54 +1705,51 @@
 				"json": "JSON",
 				"export": "Export",
 				"failed": "Couldn't export the activity log."
+			},
+			"filters": {
+				"anyDate": "Any date",
+				"clearDates": "Clear dates"
 			}
-		},
-		"common": {
-			"selectPeriod": "Select period",
-			"period24h": "Last 24 hours",
-			"period7d": "Last 7 days",
-			"period30d": "Last 30 days",
-			"period90d": "Last 90 days",
-			"import": "Import",
-			"export": "Export"
 		},
 		"overview": {
-			"title": "Analytics",
-			"creditConsumption": {
-				"title": "Credit Consumption",
-				"subtitle": "AI and platform credits used over time"
-			},
-			"storageUsage": {
-				"title": "Storage Usage",
-				"subtitle": "Original and edited file storage consumption"
-			},
-			"documentTransfers": {
-				"title": "Document Transfers",
-				"subtitle": "Documents uploaded and downloaded"
-			},
-			"documentProcessing": {
-				"title": "Document Processing",
-				"subtitle": "Documents edited and verified"
-			}
+			"title": "Analytics"
 		},
-		"ai": {
-			"title": "AI Analytics",
-			"aiUsage": {
-				"title": "AI Usage",
-				"subtitle": "OCR and VLM token consumption"
-			},
-			"cachePerformance": {
-				"title": "Cache Performance",
-				"subtitle": "VLM cache hits and misses"
-			},
-			"errorRate": {
-				"title": "Error Rate",
-				"subtitle": "System errors as percentage of total requests"
-			},
-			"responseTime": {
-				"title": "Response Time",
-				"subtitle": "Average API response latency"
-			}
+		"kpis": {
+			"runs": "Pipeline runs",
+			"storage": "Storage used",
+			"usage": "AI usage",
+			"errorRate": "{percent}% errors",
+			"avgDuration": "avg {duration}",
+			"noSignal": "no data yet",
+			"files": "{count} file | {count} files",
+			"tokens": "{count} tokens",
+			"tokenSplit": "{input} in · {output} out",
+			"p95Duration": "p95 {duration}"
+		},
+		"activity": {
+			"title": "Run activity",
+			"totalSuffix": "runs in the last year",
+			"cell": "{count} runs on {date} | {count} run on {date} | {count} runs on {date}",
+			"less": "Less",
+			"more": "More"
+		},
+		"trends": {
+			"runs": "Runs",
+			"tokens": "Tokens",
+			"runsTitle": "Runs per day",
+			"tokensTitle": "Tokens per day",
+			"errorRate": "Error rate",
+			"avgDuration": "Avg duration",
+			"errorRateTitle": "Error rate per day",
+			"avgDurationTitle": "Avg run time per day"
+		},
+		"breakdowns": {
+			"runsByStatus": "Runs by status",
+			"storageByKind": "Storage by kind",
+			"usageByModel": "Usage by model",
+			"noRuns": "No runs yet.",
+			"noStorage": "No files stored yet.",
+			"noUsage": "No AI usage yet."
 		}
 	},
 	"auth": {
@@ -1779,6 +1771,8 @@
 			"title": "Sign In",
 			"heading": "Welcome back",
 			"subtitle": "Sign in to your account to continue",
+			"identifier": "Email or username",
+			"identifierPlaceholder": "you{'@'}example.com or username",
 			"passwordPlaceholder": "Enter your password",
 			"forgotPassword": "Forgot password?",
 			"rememberMe": "Keep me signed in",
@@ -1923,14 +1917,6 @@
 			"pipelineRunFailed": {
 				"title": "Run failed",
 				"message": "{inputFileName} failed in {pipelineSlug}: {error}"
-			},
-			"systemAnnouncement": {
-				"title": "Announcement",
-				"message": "{message}"
-			},
-			"systemReport": {
-				"title": "Report ready",
-				"message": "A scheduled report is ready"
 			}
 		}
 	},
@@ -2008,10 +1994,6 @@
 				"title": "Webhook deleted",
 				"message": "A webhook was deleted"
 			},
-			"webhookTriggered": {
-				"title": "Webhook triggered",
-				"message": "A webhook was triggered"
-			},
 			"fileCreated": {
 				"title": "File uploaded",
 				"message": "{fileName} was uploaded"
@@ -2023,10 +2005,6 @@
 			"fileDeleted": {
 				"title": "File deleted",
 				"message": "{fileName} was deleted"
-			},
-			"fileVerified": {
-				"title": "File verified",
-				"message": "{fileName} was verified"
 			},
 			"pipelineCreated": {
 				"title": "Pipeline created",
@@ -2067,6 +2045,10 @@
 			"policyDeleted": {
 				"title": "Policy deleted",
 				"message": "A policy was deleted"
+			},
+			"connectionSyncStarted": {
+				"title": "Sync started",
+				"message": "A connection started syncing"
 			}
 		},
 		"category": {

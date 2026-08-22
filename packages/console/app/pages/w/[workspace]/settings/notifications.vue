@@ -132,26 +132,6 @@ const categories = computed<
 			},
 		],
 	},
-	{
-		id: "system",
-		name: t("settings.notifications.categories.system.name"),
-		events: [
-			{
-				event: "system.announcement",
-				name: t("settings.notifications.categories.system.announcement.name"),
-				description: t(
-					"settings.notifications.categories.system.announcement.description",
-				),
-			},
-			{
-				event: "system.report",
-				name: t("settings.notifications.categories.system.report.name"),
-				description: t(
-					"settings.notifications.categories.system.report.description",
-				),
-			},
-		],
-	},
 ]);
 
 // Order-independent equality for two event lists.

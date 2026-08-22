@@ -8,7 +8,6 @@ import {
 	User,
 	Bell,
 	BarChart3,
-	Cpu,
 	FileSearch,
 	Plug,
 	Compass,
@@ -72,7 +71,6 @@ const currentAccountTab = computed(() => {
 });
 
 const currentAnalyticsTab = computed(() => {
-	if (subPath.value === "/analytics/ai") return "ai";
 	if (subPath.value.startsWith("/analytics/logs")) return "logs";
 	return "overview";
 });
@@ -229,12 +227,6 @@ defineExpose({
         <NuxtLink :to="wLink('/analytics')" class="flex items-center gap-2">
           <BarChart3 :size="16" />
           {{ t("header.tabs.analytics.overview") }}
-        </NuxtLink>
-      </TabsTrigger>
-      <TabsTrigger value="ai" as-child>
-        <NuxtLink :to="wLink('/analytics/ai')" class="flex items-center gap-2">
-          <Cpu :size="16" />
-          {{ t("header.tabs.analytics.ai") }}
         </NuxtLink>
       </TabsTrigger>
       <TabsTrigger value="logs" as-child>

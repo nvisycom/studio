@@ -21,7 +21,6 @@
 			},
 			"analytics": {
 				"overview": "Übersicht",
-				"ai": "KI",
 				"logs": "Protokolle"
 			},
 			"policies": {
@@ -262,17 +261,6 @@
 						"name": "Lauf fehlgeschlagen",
 						"description": "Wenn ein Pipeline-Lauf fehlschlägt"
 					}
-				},
-				"system": {
-					"name": "System",
-					"announcement": {
-						"name": "Ankündigungen",
-						"description": "Wichtige Systemankündigungen"
-					},
-					"report": {
-						"name": "Berichte",
-						"description": "Wenn ein geplanter Bericht bereit ist"
-					}
 				}
 			},
 			"messages": {
@@ -395,6 +383,17 @@
 				"activityDescription": "Aktionen in diesem Arbeitsbereich erscheinen hier.",
 				"filesDescription": "Laden Sie Dokumente hoch, um sie hier zu sehen.",
 				"runsDescription": "Pipeline-Ausführungen erscheinen hier."
+			}
+		},
+		"stats": {
+			"runs": {
+				"label": "Pipeline-Läufe",
+				"errorRate": "{percent}% Fehlerrate",
+				"noErrorSignal": "Noch keine abgeschlossenen Läufe"
+			},
+			"storage": {
+				"label": "Belegter Speicher",
+				"files": "{count} Datei | {count} Dateien"
 			}
 		}
 	},
@@ -1677,9 +1676,6 @@
 	},
 	"analytics": {
 		"logs": {
-			"searchPlaceholder": "Aktivität suchen...",
-			"title": "Aktivitätsprotokolle",
-			"count": "{count} Ereignis | {count} Ereignisse",
 			"export": "Exportieren",
 			"table": {
 				"time": "Zeit",
@@ -1699,7 +1695,6 @@
 				"file": "Dateien"
 			},
 			"emptyDescription": "Aktionen in diesem Arbeitsbereich erscheinen hier.",
-			"loadMore": "Mehr laden",
 			"exportDialog": {
 				"title": "Aktivitätsprotokoll exportieren",
 				"description": "Aktivitätsprotokoll des Arbeitsbereichs für den gewählten Zeitraum herunterladen.",
@@ -1710,54 +1705,51 @@
 				"json": "JSON",
 				"export": "Exportieren",
 				"failed": "Das Aktivitätsprotokoll konnte nicht exportiert werden."
+			},
+			"filters": {
+				"anyDate": "Beliebiges Datum",
+				"clearDates": "Daten löschen"
 			}
-		},
-		"common": {
-			"selectPeriod": "Zeitraum wählen",
-			"period24h": "Letzte 24 Stunden",
-			"period7d": "Letzte 7 Tage",
-			"period30d": "Letzte 30 Tage",
-			"period90d": "Letzte 90 Tage",
-			"import": "Importieren",
-			"export": "Exportieren"
 		},
 		"overview": {
-			"title": "Analysen",
-			"creditConsumption": {
-				"title": "Credit-Verbrauch",
-				"subtitle": "Über die Zeit verbrauchte KI- und Plattform-Credits"
-			},
-			"storageUsage": {
-				"title": "Speichernutzung",
-				"subtitle": "Speicherverbrauch für Original- und bearbeitete Dateien"
-			},
-			"documentTransfers": {
-				"title": "Dokumentübertragungen",
-				"subtitle": "Hoch- und heruntergeladene Dokumente"
-			},
-			"documentProcessing": {
-				"title": "Dokumentverarbeitung",
-				"subtitle": "Bearbeitete und verifizierte Dokumente"
-			}
+			"title": "Analysen"
 		},
-		"ai": {
-			"title": "KI-Analysen",
-			"aiUsage": {
-				"title": "KI-Nutzung",
-				"subtitle": "OCR- und VLM-Token-Verbrauch"
-			},
-			"cachePerformance": {
-				"title": "Cache-Leistung",
-				"subtitle": "VLM-Cache-Treffer und -Fehlschläge"
-			},
-			"errorRate": {
-				"title": "Fehlerrate",
-				"subtitle": "Systemfehler als Prozentsatz aller Anfragen"
-			},
-			"responseTime": {
-				"title": "Antwortzeit",
-				"subtitle": "Durchschnittliche API-Antwortlatenz"
-			}
+		"kpis": {
+			"runs": "Pipeline-Läufe",
+			"storage": "Belegter Speicher",
+			"usage": "KI-Nutzung",
+			"errorRate": "{percent}% Fehler",
+			"avgDuration": "Ø {duration}",
+			"noSignal": "noch keine Daten",
+			"files": "{count} Datei | {count} Dateien",
+			"tokens": "{count} Tokens",
+			"tokenSplit": "{input} ein · {output} aus",
+			"p95Duration": "p95 {duration}"
+		},
+		"activity": {
+			"title": "Lauf-Aktivität",
+			"totalSuffix": "Läufe im letzten Jahr",
+			"cell": "{count} Läufe am {date} | {count} Lauf am {date} | {count} Läufe am {date}",
+			"less": "Weniger",
+			"more": "Mehr"
+		},
+		"trends": {
+			"runs": "Läufe",
+			"tokens": "Tokens",
+			"runsTitle": "Läufe pro Tag",
+			"tokensTitle": "Tokens pro Tag",
+			"errorRate": "Fehlerrate",
+			"avgDuration": "Ø Dauer",
+			"errorRateTitle": "Fehlerrate pro Tag",
+			"avgDurationTitle": "Ø Laufzeit pro Tag"
+		},
+		"breakdowns": {
+			"runsByStatus": "Läufe nach Status",
+			"storageByKind": "Speicher nach Art",
+			"usageByModel": "Nutzung nach Modell",
+			"noRuns": "Noch keine Läufe.",
+			"noStorage": "Noch keine Dateien gespeichert.",
+			"noUsage": "Noch keine KI-Nutzung."
 		}
 	},
 	"auth": {
@@ -1779,6 +1771,8 @@
 			"title": "Anmelden",
 			"heading": "Willkommen zurück",
 			"subtitle": "Melden Sie sich an, um fortzufahren",
+			"identifier": "E-Mail oder Benutzername",
+			"identifierPlaceholder": "name{'@'}beispiel.de oder Benutzername",
 			"passwordPlaceholder": "Passwort eingeben",
 			"forgotPassword": "Passwort vergessen?",
 			"rememberMe": "Angemeldet bleiben",
@@ -1923,14 +1917,6 @@
 			"pipelineRunFailed": {
 				"title": "Lauf fehlgeschlagen",
 				"message": "{inputFileName} ist in {pipelineSlug} fehlgeschlagen: {error}"
-			},
-			"systemAnnouncement": {
-				"title": "Ankündigung",
-				"message": "{message}"
-			},
-			"systemReport": {
-				"title": "Bericht bereit",
-				"message": "Ein geplanter Bericht ist bereit"
 			}
 		}
 	},
@@ -2008,10 +1994,6 @@
 				"title": "Webhook gelöscht",
 				"message": "Ein Webhook wurde gelöscht"
 			},
-			"webhookTriggered": {
-				"title": "Webhook ausgelöst",
-				"message": "Ein Webhook wurde ausgelöst"
-			},
 			"fileCreated": {
 				"title": "Datei hochgeladen",
 				"message": "{fileName} wurde hochgeladen"
@@ -2023,10 +2005,6 @@
 			"fileDeleted": {
 				"title": "Datei gelöscht",
 				"message": "{fileName} wurde gelöscht"
-			},
-			"fileVerified": {
-				"title": "Datei verifiziert",
-				"message": "{fileName} wurde verifiziert"
 			},
 			"pipelineCreated": {
 				"title": "Pipeline erstellt",
@@ -2067,6 +2045,10 @@
 			"policyDeleted": {
 				"title": "Richtlinie gelöscht",
 				"message": "Eine Richtlinie wurde gelöscht"
+			},
+			"connectionSyncStarted": {
+				"title": "Synchronisierung gestartet",
+				"message": "Eine Verbindung hat die Synchronisierung gestartet"
 			}
 		},
 		"category": {

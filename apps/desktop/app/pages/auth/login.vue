@@ -52,7 +52,8 @@ const errorMessage = computed(() =>
 		: loginError.value?.message || t("auth.login.genericError"),
 );
 
-const email = ref("");
+// Accepts an email OR a username — the SDK's Login takes a single `identifier`.
+const identifier = ref("");
 const password = ref("");
 const rememberMe = ref(false);
 const showPassword = ref(false);
@@ -60,7 +61,7 @@ const showPassword = ref(false);
 async function handleLogin(): Promise<void> {
 	try {
 		await loginAsync({
-			identifier: email.value,
+			identifier: identifier.value,
 			password: password.value,
 			rememberMe: rememberMe.value,
 		});
@@ -132,16 +133,18 @@ async function handleLogin(): Promise<void> {
 
         <form class="space-y-4" @submit.prevent="handleLogin">
           <div class="space-y-2">
-            <Label for="email" required>{{ t("auth.shared.email") }}</Label>
+            <Label for="identifier" required>
+              {{ t("auth.login.identifier") }}
+            </Label>
             <Input
-              id="email"
-              v-model="email"
-              name="email"
-              type="email"
-              :placeholder="t('auth.shared.emailPlaceholder')"
+              id="identifier"
+              v-model="identifier"
+              name="identifier"
+              type="text"
+              :placeholder="t('auth.login.identifierPlaceholder')"
               class="h-10"
               required
-              autocomplete="email"
+              autocomplete="username"
             />
           </div>
 
