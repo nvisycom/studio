@@ -9,6 +9,10 @@ import {
 	StudioRunBar,
 } from "#console/components/pages/studio";
 import { Tabs, TabsList, TabsTrigger } from "#console/components/ui/tabs";
+import {
+	HeaderSocket,
+	StudioFileTabs,
+} from "#console/components/layout/header";
 
 const { t } = useI18n();
 
@@ -201,6 +205,11 @@ useEventListener(document, "mouseup", () => {
 
 <template>
   <div class="absolute inset-0 overflow-hidden bg-muted/30 flex">
+    <!-- Open-file tabs live in the app header via the socket. -->
+    <HeaderSocket>
+      <StudioFileTabs />
+    </HeaderSocket>
+
     <!-- Main Canvas Panel -->
     <div class="flex-1 min-w-0 h-full">
       <StudioDocumentPreview

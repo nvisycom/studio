@@ -8,13 +8,8 @@ import type {
 import type { RowAction } from "#console/components/pages/RowActions.vue";
 import type { VirtualColumn } from "#console/components/ui/virtual-table";
 import { PolicySheet } from "#console/components/pages/policies";
-import {
-	Loader2,
-	Pencil,
-	ShieldCheck,
-	Trash2,
-	LayoutTemplate,
-} from "@lucide/vue";
+import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
+import { Loader2, Pencil, ShieldCheck, Trash2 } from "@lucide/vue";
 import { personLabel } from "#console/utils/naming";
 import { VirtualTable } from "#console/components/ui/virtual-table";
 import { Button } from "#console/components/ui/button";
@@ -23,13 +18,16 @@ import { toast } from "vue-sonner";
 
 const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
-const { wLink } = useWorkspaceLink();
 const { resolveAvatarUrl } = useAvatarUrl();
+const sectionTabs = useSectionTabs();
 
 useHead({ title: "Policies" });
 
 definePageMeta({
 	pageCategory: "header.category.policies",
+	// The socket renders the section tabs, so hide the breadcrumb category to
+	// avoid showing "Policies" twice.
+	hideCategory: true,
 });
 
 const {
@@ -190,28 +188,21 @@ async function confirmDelete() {
   <!-- Fixed-height page so the table fills and scrolls (like /files). -->
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6 h-[calc(100vh-5.5rem)]">
     <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 min-h-0">
-      <!-- Header row: title on the left, actions on the right. -->
+      <!-- Section tabs live in the app header via the socket; page actions stay
+           on the page, above the table. -->
+      <HeaderSocket>
+        <SectionTabs :tabs="sectionTabs.policies.value" />
+      </HeaderSocket>
+
+      <!-- Action row above the table. -->
       <div class="flex items-center justify-between gap-3">
-        <div>
-          <h1 class="text-lg font-semibold text-foreground">
-            {{ t("policies.title") }}
-          </h1>
-          <p class="text-sm text-muted-foreground">
-            {{ t("policies.count", { count: policies?.length ?? 0 }) }}
-          </p>
-        </div>
-        <div class="flex shrink-0 items-center gap-2">
-          <Button as-child variant="outline" size="sm" class="font-normal">
-            <NuxtLink :to="wLink('/policies/templates')">
-              <LayoutTemplate :size="16" class="mr-1.5" />
-              {{ t("policies.browseTemplates") }}
-            </NuxtLink>
-          </Button>
-          <Button size="sm" @click="openCreate">
-            <ShieldCheck :size="16" class="mr-1.5" />
-            {{ t("policies.create") }}
-          </Button>
-        </div>
+        <p class="text-sm text-muted-foreground">
+          {{ t("policies.count", { count: policies?.length ?? 0 }) }}
+        </p>
+        <Button size="sm" @click="openCreate">
+          <ShieldCheck :size="16" class="mr-1.5" />
+          {{ t("policies.create") }}
+        </Button>
       </div>
 
       <!-- Loading -->

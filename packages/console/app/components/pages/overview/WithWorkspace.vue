@@ -122,20 +122,24 @@ function activityIcon(category: string): Component {
 
 // View-models for the recent-activity list. Activities whose payload didn't
 // decode (undefined) carry no localizable copy, so we drop them.
+// Cap at 5 like the recent files/runs cards. We fetch a few extra (pageSize: 8)
+// so undecoded payloads (dropped below) still leave enough to fill 5.
 const recentActivities = computed(() =>
-	(activities.value ?? []).flatMap((activity) => {
-		if (!activity.payload) return [];
-		const c = activityContent(activity.payload);
-		return [
-			{
-				id: activity.id,
-				icon: activityIcon(c.category),
-				text: t(c.messageKey, c.params),
-				performedBy: activity.performedBy,
-				createdAt: activity.createdAt,
-			},
-		];
-	}),
+	(activities.value ?? [])
+		.flatMap((activity) => {
+			if (!activity.payload) return [];
+			const c = activityContent(activity.payload);
+			return [
+				{
+					id: activity.id,
+					icon: activityIcon(c.category),
+					text: t(c.messageKey, c.params),
+					performedBy: activity.performedBy,
+					createdAt: activity.createdAt,
+				},
+			];
+		})
+		.slice(0, 5),
 );
 
 const recentFiles = computed(() => (files.value ?? []).slice(0, 5));

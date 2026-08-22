@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Loader2, Workflow, Pencil, Trash2, History } from "@lucide/vue";
+import { Loader2, Workflow, Pencil, Trash2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import type {
 	CreatePipeline,
@@ -11,19 +11,21 @@ import type { RowAction } from "#console/components/pages/RowActions.vue";
 import type { VirtualColumn } from "#console/components/ui/virtual-table";
 import { Button } from "#console/components/ui/button";
 import { VirtualTable } from "#console/components/ui/virtual-table";
+import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 import { personLabel } from "#console/utils/naming";
 import { ConfirmDialog } from "#console/components/common";
 import { PipelineSheet } from "#console/components/pages/workflows";
 
 const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
-const { wLink } = useWorkspaceLink();
 const { resolveAvatarUrl } = useAvatarUrl();
+const sectionTabs = useSectionTabs();
 
 useHead({ title: "Workflows" });
 
 definePageMeta({
 	pageCategory: "header.category.workflows",
+	hideCategory: true,
 });
 
 const {
@@ -183,32 +185,24 @@ function rowActions(pipeline: PipelineRow): RowAction[] {
   <!-- Fixed-height page so the table fills and scrolls (like /files). -->
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6 h-[calc(100vh-5.5rem)]">
     <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 min-h-0">
-      <!-- Header row: title on the left, actions on the right. -->
+      <!-- Section tabs in the app-header socket. -->
+      <HeaderSocket>
+        <SectionTabs :tabs="sectionTabs.workflows.value" />
+      </HeaderSocket>
+
+      <!-- Action row above the table. -->
       <div class="flex items-center justify-between gap-3">
-        <div>
-          <h1 class="text-lg font-semibold text-foreground">
-            {{ t("workflows.title") }}
-          </h1>
-          <p class="text-sm text-muted-foreground">
-            {{ t("workflows.count", { count: pipelines?.length ?? 0 }) }}
-          </p>
-        </div>
-        <div class="flex shrink-0 items-center gap-2">
-          <Button as-child variant="outline" size="sm" class="font-normal">
-            <NuxtLink :to="wLink('/workflows/runs')">
-              <History :size="16" />
-              {{ t("workflows.actions.viewRuns") }}
-            </NuxtLink>
-          </Button>
-          <Button
-            size="sm"
-            data-testid="pipeline-create"
-            @click="isCreateSheetOpen = true"
-          >
-            <Workflow :size="16" class="mr-1.5" />
-            {{ t("workflows.actions.create") }}
-          </Button>
-        </div>
+        <p class="text-sm text-muted-foreground">
+          {{ t("workflows.count", { count: pipelines?.length ?? 0 }) }}
+        </p>
+        <Button
+          size="sm"
+          data-testid="pipeline-create"
+          @click="isCreateSheetOpen = true"
+        >
+          <Workflow :size="16" class="mr-1.5" />
+          {{ t("workflows.actions.create") }}
+        </Button>
       </div>
 
       <!-- Loading -->

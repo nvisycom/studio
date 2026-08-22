@@ -3,6 +3,7 @@
 		"tabs": {
 			"connections": {
 				"connections": "Verbindungen",
+				"webhooks": "Webhooks",
 				"explore": "Erkunden",
 				"runs": "Ausführungen"
 			},
@@ -795,13 +796,11 @@
 		},
 		"sections": {
 			"connectedServices": {
-				"title": "Verbundene Dienste",
 				"description": "{count} Verbindung konfiguriert | {count} Verbindungen konfiguriert",
 				"noIntegrationsTitle": "Noch keine aktiven Verbindungen",
 				"noIntegrationsDescription": "Durchsuchen Sie verfügbare Anbieter, um zu beginnen"
 			},
 			"webhooks": {
-				"title": "Webhook-Endpunkte",
 				"description": "{count} Webhook konfiguriert | {count} Webhooks konfiguriert",
 				"noWebhooksTitle": "Keine Webhooks konfiguriert",
 				"noWebhooksDescription": "Erstellen Sie Ihren ersten Webhook, um Echtzeit-Benachrichtigungen zu erhalten"
@@ -1101,8 +1100,6 @@
 			}
 		},
 		"messages": {
-			"connectionFooter": "Erfahren Sie mehr über Integrationen in unserer",
-			"webhookFooter": "Erfahren Sie mehr über Webhooks in unserer",
 			"documentation": "Dokumentation"
 		},
 		"toast": {
@@ -1131,8 +1128,6 @@
 			"webhookTestFailedDescription": "Antwort {statusCode} erhalten"
 		},
 		"runs": {
-			"title": "Integrationsausführungen",
-			"backToConnections": "Zurück zu Verbindungen",
 			"allStatus": "Alle Status",
 			"runsFound": "{count} Synchronisierung | {count} Synchronisierungen",
 			"statusHeader": "Status",
@@ -1159,8 +1154,7 @@
 				"failed": "Fehlgeschlagen",
 				"cancelled": "Abgebrochen"
 			},
-			"noRunsDescription": "Ausführungen erscheinen hier, sobald Ihre Verbindungen synchronisieren.",
-			"footer": "Jede Ausführung protokolliert eine Verbindungssynchronisierung und die verarbeiteten Datensätze."
+			"noRunsDescription": "Ausführungen erscheinen hier, sobald Ihre Verbindungen synchronisieren."
 		}
 	},
 	"sidebar": {
@@ -1458,7 +1452,6 @@
 		},
 		"templates": {
 			"title": "Richtlinienvorlagen",
-			"back": "Zurück zu den Richtlinien",
 			"dialogTitle": "Richtlinie benennen",
 			"nameLabel": "Name",
 			"namePlaceholder": "HIPAA Safe Harbor",
@@ -1524,15 +1517,12 @@
 				}
 			},
 			"slugEmpty": "Geben Sie einen Namen mit Buchstaben oder Zahlen ein, um einen Slug zu erzeugen."
-		},
-		"browseTemplates": "Vorlagen durchsuchen"
+		}
 	},
 	"workflows": {
 		"title": "Pipelines",
 		"count": "{count} Pipeline konfiguriert | {count} Pipelines konfiguriert",
 		"runs": {
-			"title": "Pipeline-Ausführungen",
-			"backToWorkflows": "Zurück zu Pipelines",
 			"status": "Status",
 			"allStatus": "Alle Status",
 			"allPipelines": "Alle Pipelines",
@@ -1604,7 +1594,6 @@
 		"actions": {
 			"create": "Pipeline erstellen",
 			"delete": "Löschen",
-			"viewRuns": "Ausführungen",
 			"edit": "Bearbeiten"
 		},
 		"empty": {

@@ -13,14 +13,17 @@ import {
 import { Button } from "#console/components/ui/button";
 import { Switch } from "#console/components/ui/switch";
 import { Checkbox } from "#console/components/ui/checkbox";
+import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 
 useHead({ title: "Notifications" });
 
 definePageMeta({
 	pageCategory: "header.category.settings",
+	hideCategory: true,
 });
 
 const { t } = useI18n();
+const sectionTabs = useSectionTabs();
 
 // Composable
 const { settings, isLoading, updateSettingsAsync, isUpdating } =
@@ -201,6 +204,11 @@ async function saveEventSettings() {
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="max-w-3xl mx-auto w-full">
+      <!-- Section tabs in the app-header socket. -->
+      <HeaderSocket>
+        <SectionTabs :tabs="sectionTabs.settings.value" />
+      </HeaderSocket>
+
       <!-- Loading State -->
       <div v-if="isLoading" class="flex items-center justify-center py-12">
         <Loader2 :size="24" class="animate-spin text-muted-foreground" />

@@ -3,6 +3,7 @@
 		"tabs": {
 			"connections": {
 				"connections": "Connections",
+				"webhooks": "Webhooks",
 				"explore": "Explore",
 				"runs": "Runs"
 			},
@@ -795,13 +796,11 @@
 		},
 		"sections": {
 			"connectedServices": {
-				"title": "Connected Services",
 				"description": "{count} connection configured | {count} connections configured",
 				"noIntegrationsTitle": "No active connections yet",
 				"noIntegrationsDescription": "Get started by browsing available providers"
 			},
 			"webhooks": {
-				"title": "Webhook Endpoints",
 				"description": "{count} webhook configured | {count} webhooks configured",
 				"noWebhooksTitle": "No webhooks configured",
 				"noWebhooksDescription": "Create your first webhook to start receiving real-time notifications"
@@ -1101,8 +1100,6 @@
 			}
 		},
 		"messages": {
-			"connectionFooter": "Learn more about connections in our",
-			"webhookFooter": "Learn more about webhooks in our",
 			"documentation": "documentation"
 		},
 		"toast": {
@@ -1131,8 +1128,6 @@
 			"webhookTestFailedDescription": "Received {statusCode} response"
 		},
 		"runs": {
-			"title": "Integration Runs",
-			"backToConnections": "Back to Connections",
 			"allStatus": "All Status",
 			"runsFound": "{count} sync | {count} syncs",
 			"statusHeader": "Status",
@@ -1159,8 +1154,7 @@
 				"failed": "Failed",
 				"cancelled": "Cancelled"
 			},
-			"noRunsDescription": "Runs will appear here once your connections sync.",
-			"footer": "Each run records a connection sync and the records it processed."
+			"noRunsDescription": "Runs will appear here once your connections sync."
 		}
 	},
 	"sidebar": {
@@ -1458,7 +1452,6 @@
 		},
 		"templates": {
 			"title": "Policy templates",
-			"back": "Back to policies",
 			"dialogTitle": "Name your policy",
 			"nameLabel": "Name",
 			"namePlaceholder": "HIPAA Safe Harbor",
@@ -1524,15 +1517,12 @@
 				}
 			},
 			"slugEmpty": "Enter a name using letters or numbers to generate a slug."
-		},
-		"browseTemplates": "Browse templates"
+		}
 	},
 	"workflows": {
 		"title": "Pipelines",
 		"count": "{count} pipeline configured | {count} pipelines configured",
 		"runs": {
-			"title": "Pipeline runs",
-			"backToWorkflows": "Back to pipelines",
 			"status": "Status",
 			"allStatus": "All statuses",
 			"allPipelines": "All pipelines",
@@ -1604,7 +1594,6 @@
 		"actions": {
 			"create": "Create Pipeline",
 			"delete": "Delete",
-			"viewRuns": "View Runs",
 			"edit": "Edit"
 		},
 		"empty": {

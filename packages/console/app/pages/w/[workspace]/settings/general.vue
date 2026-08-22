@@ -17,14 +17,17 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from "#console/components/ui/alert-dialog";
+import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 
 useHead({ title: "Workspace Settings" });
 
 definePageMeta({
 	pageCategory: "header.category.settings",
+	hideCategory: true,
 });
 
 const { t } = useI18n();
+const sectionTabs = useSectionTabs();
 
 // Composables
 const {
@@ -211,6 +214,11 @@ const canDelete = computed(() => {
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="max-w-3xl mx-auto w-full">
+      <!-- Section tabs in the app-header socket. -->
+      <HeaderSocket>
+        <SectionTabs :tabs="sectionTabs.settings.value" />
+      </HeaderSocket>
+
       <!-- Loading State -->
       <div
         v-if="isLoadingWorkspaces"

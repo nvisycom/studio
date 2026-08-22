@@ -29,14 +29,17 @@ import {
 	retentionEquals,
 	retentionToForm,
 } from "#console/utils/retention";
+import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 
 useHead({ title: "Workspace Data" });
 
 definePageMeta({
 	pageCategory: "header.category.settings",
+	hideCategory: true,
 });
 
 const { t } = useI18n();
+const sectionTabs = useSectionTabs();
 
 const {
 	currentWorkspace,
@@ -127,6 +130,11 @@ async function saveWorkspaceSettings() {
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="max-w-3xl mx-auto w-full">
+      <!-- Section tabs in the app-header socket. -->
+      <HeaderSocket>
+        <SectionTabs :tabs="sectionTabs.settings.value" />
+      </HeaderSocket>
+
       <!-- Loading State -->
       <div
         v-if="isLoadingWorkspaces"

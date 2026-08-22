@@ -6,7 +6,6 @@ import type {
 } from "@nvisy/sdk/datatypes";
 import type { RunsFilter } from "#console/composables/useRuns";
 import {
-	ArrowLeft,
 	Loader2,
 	History,
 	ScanSearch,
@@ -22,6 +21,7 @@ import { personLabel } from "#console/utils/naming";
 import { toast } from "vue-sonner";
 import { Button } from "#console/components/ui/button";
 import { VirtualTable } from "#console/components/ui/virtual-table";
+import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 import {
 	Select,
 	SelectContent,
@@ -115,7 +115,10 @@ useHead({ title: "Workflow Runs" });
 
 definePageMeta({
 	pageCategory: "header.category.workflows",
+	hideCategory: true,
 });
+
+const sectionTabs = useSectionTabs();
 
 const { pipelines } = usePipelines();
 
@@ -209,24 +212,16 @@ const columns = computed<VirtualColumn<(typeof sortedRuns.value)[number]>[]>(
   <!-- Fixed-height page so the table fills and scrolls (like /files). -->
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6 h-[calc(100vh-5.5rem)]">
     <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 min-h-0">
-      <!-- Title + count. -->
-      <div>
-        <h1 class="text-lg font-semibold text-foreground">
-          {{ t("workflows.runs.title") }}
-        </h1>
-        <p class="text-sm text-muted-foreground">
-          {{ t("workflows.runs.runsFound", { count: sortedRuns.length }) }}
-        </p>
-      </div>
+      <!-- Section tabs in the app-header socket. -->
+      <HeaderSocket>
+        <SectionTabs :tabs="sectionTabs.workflows.value" />
+      </HeaderSocket>
 
       <!-- Filter toolbar. -->
       <div class="flex flex-wrap items-center gap-3">
-        <Button as-child variant="outline" class="font-normal">
-          <NuxtLink :to="wLink('/workflows')" class="flex items-center gap-2">
-            <ArrowLeft :size="16" />
-            {{ t("workflows.runs.backToWorkflows") }}
-          </NuxtLink>
-        </Button>
+        <p class="shrink-0 text-sm text-muted-foreground">
+          {{ t("workflows.runs.runsFound", { count: sortedRuns.length }) }}
+        </p>
 
         <div class="flex-1" />
 

@@ -36,8 +36,10 @@ import { RangeCalendar } from "#console/components/ui/range-calendar";
 import type { DateRange } from "reka-ui";
 import { toast } from "vue-sonner";
 import LogsExportModal from "#console/components/pages/analytics/LogsExportModal.vue";
+import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 
 const { t } = useI18n();
+const sectionTabs = useSectionTabs();
 const { relativeTime } = useRelativeTime();
 const { resolveAvatarUrl } = useAvatarUrl();
 
@@ -45,6 +47,7 @@ useHead({ title: "Logs" });
 
 definePageMeta({
 	pageCategory: "header.category.analytics",
+	hideCategory: true,
 });
 
 // ── Filters (server-side, via listActivities) ──────────────────────────────
@@ -235,6 +238,11 @@ async function handleExport(options: {
   <!-- Fixed-height page so the virtual table fills and scrolls (like /files). -->
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6 h-[calc(100vh-5.5rem)]">
     <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 min-h-0">
+      <!-- Section tabs in the app-header socket. -->
+      <HeaderSocket>
+        <SectionTabs :tabs="sectionTabs.analytics.value" />
+      </HeaderSocket>
+
       <!-- Filters on the left, export on the right. -->
       <div class="flex flex-wrap items-center gap-3">
         <Select v-model="category">

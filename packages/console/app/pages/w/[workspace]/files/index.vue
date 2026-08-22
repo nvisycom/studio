@@ -10,6 +10,10 @@ import {
 	UploadFilesDialog,
 } from "#console/components/pages/files";
 import { Button } from "#console/components/ui/button";
+import {
+	HeaderSocket,
+	FilesHeaderControls,
+} from "#console/components/layout/header";
 
 const { t } = useI18n();
 const { wLink } = useWorkspaceLink();
@@ -227,8 +231,11 @@ function handleLoadMore() {
     @drop="handleDrop"
   >
     <div class="max-w-7xl mx-auto w-full flex flex-col flex-1 min-h-0">
-      <!-- Search, filters, view toggle, and upload live in the app header
-           (FilesHeaderControls), sharing state via useFilesView. -->
+      <!-- Search, filters, view toggle, and upload live in the app header via
+           the socket, sharing state with this page via useFilesView. -->
+      <HeaderSocket>
+        <FilesHeaderControls />
+      </HeaderSocket>
 
       <!-- Loading State -->
       <div v-if="isLoading" class="flex justify-center items-center py-12">

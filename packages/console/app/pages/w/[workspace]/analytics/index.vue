@@ -11,12 +11,15 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#console/components/ui/card";
+import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 
 definePageMeta({
 	pageCategory: "header.category.analytics",
+	hideCategory: true,
 });
 
 const { t } = useI18n();
+const sectionTabs = useSectionTabs();
 useHead({ title: () => t("analytics.overview.title") });
 
 const { analytics, isLoading, timeSeries, isLoadingTimeSeries } =
@@ -181,6 +184,11 @@ const usageByModel = computed<BreakdownRow[]>(() =>
 <template>
   <div class="flex flex-1 flex-col gap-6 p-4 pt-4 pb-6">
     <div class="mx-auto flex w-full max-w-7xl flex-col gap-6">
+      <!-- Section tabs in the app-header socket. -->
+      <HeaderSocket>
+        <SectionTabs :tabs="sectionTabs.analytics.value" />
+      </HeaderSocket>
+
       <!-- KPI tiles -->
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <template v-if="isLoading && !analytics">
