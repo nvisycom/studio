@@ -1,4 +1,4 @@
-import type { Retention } from "@nvisy/sdk/datatypes";
+import type { Retention, RetentionSettings } from "@nvisy/sdk/datatypes";
 
 /**
  * Shared model for the workspace retention form (used by the create-workspace
@@ -64,16 +64,17 @@ export function formToRetention(form: RetentionForm) {
 	};
 }
 
-/** An existing SDK retention object -> the editable form. */
-export function retentionToForm(r: {
-	auditLogs: Retention;
-	originalDocuments: Retention;
-	redactedDocuments: Retention;
-}): RetentionForm {
+/**
+ * An existing SDK retention object -> the editable form. Every scope is optional
+ * on `RetentionSettings` (and the whole object may be absent); a missing scope
+ * defaults to "forever", matching the SDK's own default.
+ */
+const FOREVER: Retention = { mode: "forever" };
+export function retentionToForm(r?: RetentionSettings): RetentionForm {
 	return {
-		auditLogs: retentionToField(r.auditLogs),
-		originalDocuments: retentionToField(r.originalDocuments),
-		redactedDocuments: retentionToField(r.redactedDocuments),
+		auditLogs: retentionToField(r?.auditLogs ?? FOREVER),
+		originalDocuments: retentionToField(r?.originalDocuments ?? FOREVER),
+		redactedDocuments: retentionToField(r?.redactedDocuments ?? FOREVER),
 	};
 }
 

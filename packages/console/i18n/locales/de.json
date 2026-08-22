@@ -3,6 +3,7 @@
 		"tabs": {
 			"connections": {
 				"connections": "Verbindungen",
+				"webhooks": "Webhooks",
 				"explore": "Erkunden",
 				"runs": "Ausführungen"
 			},
@@ -21,7 +22,6 @@
 			},
 			"analytics": {
 				"overview": "Übersicht",
-				"ai": "KI",
 				"logs": "Protokolle"
 			},
 			"policies": {
@@ -262,17 +262,6 @@
 						"name": "Lauf fehlgeschlagen",
 						"description": "Wenn ein Pipeline-Lauf fehlschlägt"
 					}
-				},
-				"system": {
-					"name": "System",
-					"announcement": {
-						"name": "Ankündigungen",
-						"description": "Wichtige Systemankündigungen"
-					},
-					"report": {
-						"name": "Berichte",
-						"description": "Wenn ein geplanter Bericht bereit ist"
-					}
 				}
 			},
 			"messages": {
@@ -395,6 +384,17 @@
 				"activityDescription": "Aktionen in diesem Arbeitsbereich erscheinen hier.",
 				"filesDescription": "Laden Sie Dokumente hoch, um sie hier zu sehen.",
 				"runsDescription": "Pipeline-Ausführungen erscheinen hier."
+			}
+		},
+		"stats": {
+			"runs": {
+				"label": "Pipeline-Läufe",
+				"errorRate": "{percent}% Fehlerrate",
+				"noErrorSignal": "Noch keine abgeschlossenen Läufe"
+			},
+			"storage": {
+				"label": "Belegter Speicher",
+				"files": "{count} Datei | {count} Dateien"
 			}
 		}
 	},
@@ -541,6 +541,11 @@
 					"24hours": "24 Stunden",
 					"7days": "7 Tagen",
 					"30days": "30 Tagen"
+				},
+				"expiryShort": {
+					"24hours": "in 24 Std.",
+					"7days": "in 7 T.",
+					"30days": "in 30 T."
 				}
 			},
 			"search": {
@@ -580,7 +585,6 @@
 		},
 		"messages": {
 			"inviteFooter": "Eingeladene Mitglieder erhalten eine E-Mail mit Anweisungen zum Beitritt zu Ihrem Projekt.",
-			"reviewFooter": "Projekteigentümer können nicht entfernt werden. Übertragen Sie zunächst das Eigentum, um den aktuellen Eigentümer zu entfernen.",
 			"inviteSent": "Einladung erfolgreich gesendet",
 			"linkCopied": "Einladungslink in die Zwischenablage kopiert",
 			"memberRemoved": "Mitglied erfolgreich entfernt",
@@ -589,7 +593,9 @@
 			"inviteCanceled": "Einladung erfolgreich storniert",
 			"invitesCanceled": "Einladungen erfolgreich storniert",
 			"invitesPartiallyCanceled": "Einige Einladungen konnten nicht storniert werden",
-			"membersPartiallyRemoved": "Einige Mitglieder konnten nicht entfernt werden"
+			"membersPartiallyRemoved": "Einige Mitglieder konnten nicht entfernt werden",
+			"invitesSent": "Einladung gesendet | {count} Einladungen gesendet",
+			"invitesPartiallySent": "Einige Einladungen gesendet"
 		},
 		"errors": {
 			"inviteFailed": "Einladung konnte nicht gesendet werden",
@@ -599,7 +605,8 @@
 			"updateFailed": "Mitglied konnte nicht aktualisiert werden",
 			"cancelFailed": "Einladung konnte nicht storniert werden",
 			"someCancelFailed": "{count} Einladung konnte nicht storniert werden | {count} Einladungen konnten nicht storniert werden",
-			"someRemoveFailed": "{count} Mitglied konnte nicht entfernt werden | {count} Mitglieder konnten nicht entfernt werden"
+			"someRemoveFailed": "{count} Mitglied konnte nicht entfernt werden | {count} Mitglieder konnten nicht entfernt werden",
+			"someInvitesFailed": "{count} Einladung konnte nicht gesendet werden | {count} Einladungen konnten nicht gesendet werden"
 		},
 		"roles": {
 			"owner": "Eigentümer",
@@ -649,6 +656,23 @@
 				"description": "Ändern Sie die Rolle für dieses Teammitglied.",
 				"memberLabel": "Mitglied",
 				"roleLabel": "Rolle"
+			},
+			"invite": {
+				"title": "Mitglieder einladen",
+				"description": "Personen per E-Mail hinzufügen oder einen Link zum Beitreten teilen.",
+				"emailsLabel": "E-Mail-Adressen",
+				"emailsPlaceholder": "E-Mail eingeben, dann Enter",
+				"emailsHint": "Mit Enter, Komma oder Leerzeichen trennen. Eine ungültige Adresse blockiert die übrigen nicht.",
+				"removeEmail": "{email} entfernen",
+				"roleLabel": "Rolle",
+				"expiryLabel": "Einladung läuft ab",
+				"linkTitle": "Oder einen Beitrittslink teilen",
+				"linkHint": "Wer den Link hat, tritt als {role} bei, läuft {expiry} ab.",
+				"generateLink": "Link erstellen",
+				"countValid": "{count} gültig | {count} gültig",
+				"countInvalid": "{count} ungültig | {count} ungültig",
+				"send": "Einladung senden | {count} Einladungen senden",
+				"sendEmpty": "Einladungen senden"
 			}
 		}
 	},
@@ -772,13 +796,11 @@
 		},
 		"sections": {
 			"connectedServices": {
-				"title": "Verbundene Dienste",
 				"description": "{count} Verbindung konfiguriert | {count} Verbindungen konfiguriert",
 				"noIntegrationsTitle": "Noch keine aktiven Verbindungen",
 				"noIntegrationsDescription": "Durchsuchen Sie verfügbare Anbieter, um zu beginnen"
 			},
 			"webhooks": {
-				"title": "Webhook-Endpunkte",
 				"description": "{count} Webhook konfiguriert | {count} Webhooks konfiguriert",
 				"noWebhooksTitle": "Keine Webhooks konfiguriert",
 				"noWebhooksDescription": "Erstellen Sie Ihren ersten Webhook, um Echtzeit-Benachrichtigungen zu erhalten"
@@ -1078,8 +1100,6 @@
 			}
 		},
 		"messages": {
-			"connectionFooter": "Erfahren Sie mehr über Integrationen in unserer",
-			"webhookFooter": "Erfahren Sie mehr über Webhooks in unserer",
 			"documentation": "Dokumentation"
 		},
 		"toast": {
@@ -1108,8 +1128,6 @@
 			"webhookTestFailedDescription": "Antwort {statusCode} erhalten"
 		},
 		"runs": {
-			"title": "Integrationsausführungen",
-			"backToConnections": "Zurück zu Verbindungen",
 			"allStatus": "Alle Status",
 			"runsFound": "{count} Synchronisierung | {count} Synchronisierungen",
 			"statusHeader": "Status",
@@ -1136,8 +1154,10 @@
 				"failed": "Fehlgeschlagen",
 				"cancelled": "Abgebrochen"
 			},
-			"noRunsDescription": "Ausführungen erscheinen hier, sobald Ihre Verbindungen synchronisieren.",
-			"footer": "Jede Ausführung protokolliert eine Verbindungssynchronisierung und die verarbeiteten Datensätze."
+			"noRunsDescription": "Ausführungen erscheinen hier, sobald Ihre Verbindungen synchronisieren."
+		},
+		"errors": {
+			"loadFailed": "Verbindungen konnten nicht geladen werden."
 		}
 	},
 	"sidebar": {
@@ -1237,6 +1257,8 @@
 			}
 		},
 		"preview": {
+			"emptyTitle": "Kein Dokument ausgewählt",
+			"emptyDescription": "Wählen Sie auf der Seite „Dateien“ eine Datei zur Vorschau aus",
 			"table": "Tabelle",
 			"raw": "Roh",
 			"withHeaders": "Mit Kopfzeile",
@@ -1272,8 +1294,6 @@
 		"title": "Richtlinien",
 		"count": "{count} Richtlinie | {count} Richtlinien",
 		"create": "Neue Richtlinie",
-		"footer": "Richtlinien legen fest, wie erkannte Entitäten geschwärzt, unterdrückt oder geprüft werden.",
-		"learnMore": "Mehr erfahren",
 		"empty": {
 			"title": "Noch keine Richtlinien",
 			"description": "Erstellen Sie eine, um Schwärzungsregeln zu definieren."
@@ -1435,7 +1455,6 @@
 		},
 		"templates": {
 			"title": "Richtlinienvorlagen",
-			"back": "Zurück zu den Richtlinien",
 			"dialogTitle": "Richtlinie benennen",
 			"nameLabel": "Name",
 			"namePlaceholder": "HIPAA Safe Harbor",
@@ -1501,16 +1520,12 @@
 				}
 			},
 			"slugEmpty": "Geben Sie einen Namen mit Buchstaben oder Zahlen ein, um einen Slug zu erzeugen."
-		},
-		"browseTemplates": "Vorlagen durchsuchen"
+		}
 	},
 	"workflows": {
 		"title": "Pipelines",
 		"count": "{count} Pipeline konfiguriert | {count} Pipelines konfiguriert",
-		"footer": "Pipelines automatisieren Dokumentenerkennung und -schwärzung.",
 		"runs": {
-			"title": "Pipeline-Ausführungen",
-			"backToWorkflows": "Zurück zu Pipelines",
 			"status": "Status",
 			"allStatus": "Alle Status",
 			"allPipelines": "Alle Pipelines",
@@ -1535,7 +1550,6 @@
 				"cancelled": "Abgebrochen"
 			},
 			"noRunsDescription": "Ausführungen erscheinen hier, sobald dieser Arbeitsbereich Dateien verarbeitet.",
-			"footer": "Jede Ausführung protokolliert, wie eine Pipeline eine Datei erkannt und geschwärzt hat.",
 			"triggeredBy": "Ausgelöst von",
 			"openInStudio": "In Studio öffnen",
 			"menu": "Lauf-Aktionen",
@@ -1567,7 +1581,6 @@
 			},
 			"openInStudioFailed": "Die Datei konnte nicht im Studio geöffnet werden."
 		},
-		"learnMore": "Mehr erfahren",
 		"status": {
 			"draft": "Entwurf",
 			"enabled": "Aktiviert",
@@ -1584,7 +1597,6 @@
 		"actions": {
 			"create": "Pipeline erstellen",
 			"delete": "Löschen",
-			"viewRuns": "Ausführungen",
 			"edit": "Bearbeiten"
 		},
 		"empty": {
@@ -1651,10 +1663,6 @@
 	},
 	"analytics": {
 		"logs": {
-			"searchPlaceholder": "Aktivität suchen...",
-			"title": "Aktivitätsprotokolle",
-			"count": "{count} Ereignis | {count} Ereignisse",
-			"import": "Importieren",
 			"export": "Exportieren",
 			"table": {
 				"time": "Zeit",
@@ -1663,19 +1671,6 @@
 				"by": "Ausgeführt von"
 			},
 			"empty": "Keine Aktivität gefunden",
-			"exportDialog": {
-				"title": "Protokolle exportieren",
-				"description": "Exporteinstellungen für Ihre Protokolle konfigurieren",
-				"dateRange": "Zeitraum",
-				"selectDateRange": "Zeitraum wählen",
-				"eventTypes": "Ereignistypen",
-				"info": "Info",
-				"warning": "Warnung",
-				"error": "Fehler",
-				"cancel": "Abbrechen",
-				"exportJson": "Als JSON exportieren",
-				"exportCsv": "Als CSV exportieren"
-			},
 			"category": {
 				"placeholder": "Kategorie",
 				"all": "Alle Kategorien",
@@ -1687,54 +1682,61 @@
 				"file": "Dateien"
 			},
 			"emptyDescription": "Aktionen in diesem Arbeitsbereich erscheinen hier.",
-			"loadMore": "Mehr laden"
-		},
-		"common": {
-			"selectPeriod": "Zeitraum wählen",
-			"period24h": "Letzte 24 Stunden",
-			"period7d": "Letzte 7 Tage",
-			"period30d": "Letzte 30 Tage",
-			"period90d": "Letzte 90 Tage",
-			"import": "Importieren",
-			"export": "Exportieren"
+			"exportDialog": {
+				"title": "Aktivitätsprotokoll exportieren",
+				"description": "Aktivitätsprotokoll des Arbeitsbereichs für den gewählten Zeitraum herunterladen.",
+				"dateRange": "Zeitraum",
+				"selectDateRange": "Zeitraum auswählen",
+				"format": "Format",
+				"csv": "CSV",
+				"json": "JSON",
+				"export": "Exportieren",
+				"failed": "Das Aktivitätsprotokoll konnte nicht exportiert werden."
+			},
+			"filters": {
+				"anyDate": "Beliebiges Datum",
+				"clearDates": "Daten löschen"
+			}
 		},
 		"overview": {
-			"title": "Analysen",
-			"creditConsumption": {
-				"title": "Credit-Verbrauch",
-				"subtitle": "Über die Zeit verbrauchte KI- und Plattform-Credits"
-			},
-			"storageUsage": {
-				"title": "Speichernutzung",
-				"subtitle": "Speicherverbrauch für Original- und bearbeitete Dateien"
-			},
-			"documentTransfers": {
-				"title": "Dokumentübertragungen",
-				"subtitle": "Hoch- und heruntergeladene Dokumente"
-			},
-			"documentProcessing": {
-				"title": "Dokumentverarbeitung",
-				"subtitle": "Bearbeitete und verifizierte Dokumente"
-			}
+			"title": "Analysen"
 		},
-		"ai": {
-			"title": "KI-Analysen",
-			"aiUsage": {
-				"title": "KI-Nutzung",
-				"subtitle": "OCR- und VLM-Token-Verbrauch"
-			},
-			"cachePerformance": {
-				"title": "Cache-Leistung",
-				"subtitle": "VLM-Cache-Treffer und -Fehlschläge"
-			},
-			"errorRate": {
-				"title": "Fehlerrate",
-				"subtitle": "Systemfehler als Prozentsatz aller Anfragen"
-			},
-			"responseTime": {
-				"title": "Antwortzeit",
-				"subtitle": "Durchschnittliche API-Antwortlatenz"
-			}
+		"kpis": {
+			"runs": "Pipeline-Läufe",
+			"storage": "Belegter Speicher",
+			"usage": "KI-Nutzung",
+			"errorRate": "{percent}% Fehler",
+			"avgDuration": "Ø {duration}",
+			"noSignal": "noch keine Daten",
+			"files": "{count} Datei | {count} Dateien",
+			"tokens": "{count} Tokens",
+			"tokenSplit": "{input} ein · {output} aus",
+			"p95Duration": "p95 {duration}"
+		},
+		"activity": {
+			"title": "Lauf-Aktivität",
+			"totalSuffix": "Läufe im letzten Jahr",
+			"cell": "{count} Läufe am {date} | {count} Lauf am {date} | {count} Läufe am {date}",
+			"less": "Weniger",
+			"more": "Mehr"
+		},
+		"trends": {
+			"runs": "Läufe",
+			"tokens": "Tokens",
+			"runsTitle": "Läufe pro Tag",
+			"tokensTitle": "Tokens pro Tag",
+			"errorRate": "Fehlerrate",
+			"avgDuration": "Ø Dauer",
+			"errorRateTitle": "Fehlerrate pro Tag",
+			"avgDurationTitle": "Ø Laufzeit pro Tag"
+		},
+		"breakdowns": {
+			"runsByStatus": "Läufe nach Status",
+			"storageByKind": "Speicher nach Art",
+			"usageByModel": "Nutzung nach Modell",
+			"noRuns": "Noch keine Läufe.",
+			"noStorage": "Noch keine Dateien gespeichert.",
+			"noUsage": "Noch keine KI-Nutzung."
 		}
 	},
 	"auth": {
@@ -1756,6 +1758,8 @@
 			"title": "Anmelden",
 			"heading": "Willkommen zurück",
 			"subtitle": "Melden Sie sich an, um fortzufahren",
+			"identifier": "E-Mail oder Benutzername",
+			"identifierPlaceholder": "name{'@'}beispiel.de oder Benutzername",
 			"passwordPlaceholder": "Passwort eingeben",
 			"forgotPassword": "Passwort vergessen?",
 			"rememberMe": "Angemeldet bleiben",
@@ -1901,13 +1905,9 @@
 				"title": "Lauf fehlgeschlagen",
 				"message": "{inputFileName} ist in {pipelineSlug} fehlgeschlagen: {error}"
 			},
-			"systemAnnouncement": {
-				"title": "Ankündigung",
-				"message": "{message}"
-			},
-			"systemReport": {
-				"title": "Bericht bereit",
-				"message": "Ein geplanter Bericht ist bereit"
+			"unknown": {
+				"title": "Benachrichtigung",
+				"message": "Sie haben eine neue Benachrichtigung"
 			}
 		}
 	},
@@ -1985,10 +1985,6 @@
 				"title": "Webhook gelöscht",
 				"message": "Ein Webhook wurde gelöscht"
 			},
-			"webhookTriggered": {
-				"title": "Webhook ausgelöst",
-				"message": "Ein Webhook wurde ausgelöst"
-			},
 			"fileCreated": {
 				"title": "Datei hochgeladen",
 				"message": "{fileName} wurde hochgeladen"
@@ -2000,10 +1996,6 @@
 			"fileDeleted": {
 				"title": "Datei gelöscht",
 				"message": "{fileName} wurde gelöscht"
-			},
-			"fileVerified": {
-				"title": "Datei verifiziert",
-				"message": "{fileName} wurde verifiziert"
 			},
 			"pipelineCreated": {
 				"title": "Pipeline erstellt",
@@ -2044,6 +2036,14 @@
 			"policyDeleted": {
 				"title": "Richtlinie gelöscht",
 				"message": "Eine Richtlinie wurde gelöscht"
+			},
+			"connectionSyncStarted": {
+				"title": "Synchronisierung gestartet",
+				"message": "Eine Verbindung hat die Synchronisierung gestartet"
+			},
+			"unknown": {
+				"title": "Aktivität",
+				"message": "Eine Aktivität wurde aufgezeichnet"
 			}
 		},
 		"category": {
@@ -2054,7 +2054,8 @@
 			"webhook": "Webhooks",
 			"file": "Dateien",
 			"pipeline": "Pipelines",
-			"policy": "Richtlinien"
+			"policy": "Richtlinien",
+			"unknown": "Sonstiges"
 		}
 	},
 	"userMenu": {

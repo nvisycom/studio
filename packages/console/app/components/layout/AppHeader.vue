@@ -8,10 +8,8 @@ import {
 	BreadcrumbItem,
 	BreadcrumbList,
 	BreadcrumbPage,
-	BreadcrumbSeparator,
 } from "#console/components/ui/breadcrumb";
 import {
-	HeaderTabs,
 	FeedbackModal,
 	NotificationsDropdown,
 } from "#console/components/layout/header";
@@ -31,14 +29,6 @@ const pageCategoryKey = computed(() =>
 const pageCategory = computed(() =>
 	pageCategoryKey.value ? t(pageCategoryKey.value) : undefined,
 );
-
-// Ref to HeaderTabs component
-const headerTabsRef = ref<InstanceType<typeof HeaderTabs> | null>(null);
-
-// Check if header tabs are visible
-const hasVisibleTabs = computed(() => {
-	return headerTabsRef.value?.hasVisibleTabs ?? false;
-});
 
 // Modal states
 const isFeedbackModalOpen = ref(false);
@@ -64,7 +54,9 @@ function openFeedbackModal() {
     </div>
 
     <!-- Middle: page content. `min-w-0` lets it shrink/truncate instead of
-         pushing the chrome off-screen. -->
+         pushing the chrome off-screen. A page shows EITHER the breadcrumb
+         category OR its own header row (tabs/controls) teleported into the
+         socket — pages with a socket header set `hideCategory`. -->
     <div class="flex min-w-0 flex-1 items-center gap-2">
       <Breadcrumb v-if="pageCategory" class="shrink-0">
         <BreadcrumbList class="flex items-center">
@@ -75,10 +67,12 @@ function openFeedbackModal() {
               {{ pageCategory }}
             </BreadcrumbPage>
           </BreadcrumbItem>
-          <BreadcrumbSeparator v-if="hasVisibleTabs" />
         </BreadcrumbList>
       </Breadcrumb>
-      <HeaderTabs ref="headerTabsRef" class="min-w-0 flex-1" />
+      <!-- The socket: a page teleports its own header row here via HeaderSocket.
+           `display: contents` so an empty socket takes no space; the teleported
+           child carries its own `flex-1`. -->
+      <div id="header-socket" class="contents" />
     </div>
 
     <!-- Right: persistent app chrome. -->

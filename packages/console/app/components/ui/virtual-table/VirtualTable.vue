@@ -11,7 +11,6 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-	TableEmpty,
 } from "#console/components/ui/table";
 import {
 	DropdownMenu,
@@ -67,8 +66,12 @@ const emit = defineEmits<{
 	"row-click": [row: TRow];
 }>();
 
-const slots =
-	defineSlots<Record<`cell-${string}`, (props: { row: TRow }) => unknown>>();
+const slots = defineSlots<
+	Record<`cell-${string}`, (props: { row: TRow }) => unknown> & {
+		/** Optional CTA shown under the empty-state text (e.g. "Clear filters"). */
+		"empty-action"?: () => unknown;
+	}
+>();
 
 const { t } = useI18n();
 
@@ -120,6 +123,11 @@ const table = useTable({
 });
 
 const containerRef = ref<HTMLDivElement | null>(null);
+
+// When there are no rows, the empty state renders in place of the table so it
+// can fill and center in the available height (instead of a short cell clinging
+// to the top). Only when an `empty` descriptor was provided.
+const isEmpty = computed(() => props.rows.length === 0 && !!props.empty);
 
 const rowVirtualizer = useVirtualizer(
 	computed(() => ({
@@ -205,7 +213,35 @@ function onRowContextMenu(event: MouseEvent, row: TRow) {
     :style="maxHeight ? { maxHeight } : undefined"
     @scroll="onScroll"
   >
-    <Table class="table-fixed" :style="{ minWidth: `${minTableWidth}px` }">
+    <!-- Empty state: rendered instead of the table so it fills and centers in
+         the available height. -->
+    <div
+      v-if="isEmpty && empty"
+      class="flex h-full min-h-[240px] flex-col items-center justify-center py-16 text-center"
+    >
+      <div
+        class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
+      >
+        <component :is="empty.icon" class="size-5 text-muted-foreground" />
+      </div>
+      <p class="mb-1 text-sm font-medium text-foreground">{{ empty.title }}</p>
+      <p
+        v-if="empty.description"
+        class="max-w-sm text-sm text-muted-foreground"
+      >
+        {{ empty.description }}
+      </p>
+      <!-- Optional CTA (e.g. a "Clear filters" button). -->
+      <div v-if="$slots['empty-action']" class="mt-4">
+        <slot name="empty-action" />
+      </div>
+    </div>
+
+    <Table
+      v-else
+      class="table-fixed"
+      :style="{ minWidth: `${minTableWidth}px` }"
+    >
       <TableHeader
         class="sticky top-0 z-10 bg-background shadow-[inset_0_-1px_0_0_hsl(var(--border))]"
       >
@@ -232,7 +268,11 @@ function onRowContextMenu(event: MouseEvent, row: TRow) {
 
       <TableBody>
         <template v-if="table.getRowModel().rows.length > 0">
-          <tr v-if="paddingTop > 0" :style="{ height: `${paddingTop}px` }" aria-hidden="true" />
+          <tr
+            v-if="paddingTop > 0"
+            :style="{ height: `${paddingTop}px` }"
+            aria-hidden="true"
+          />
 
           <TableRow
             v-for="virtualRow in virtualRows"
@@ -260,22 +300,11 @@ function onRowContextMenu(event: MouseEvent, row: TRow) {
             </TableCell>
           </TableRow>
 
-          <tr v-if="paddingBottom > 0" :style="{ height: `${paddingBottom}px` }" />
+          <tr
+            v-if="paddingBottom > 0"
+            :style="{ height: `${paddingBottom}px` }"
+          />
         </template>
-
-        <TableEmpty v-else :colspan="columnDefs.length">
-          <div v-if="empty" class="py-8 text-center">
-            <div
-              class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
-            >
-              <component :is="empty.icon" class="size-5 text-muted-foreground" />
-            </div>
-            <p class="mb-1 text-sm text-foreground">{{ empty.title }}</p>
-            <p v-if="empty.description" class="text-xs text-muted-foreground">
-              {{ empty.description }}
-            </p>
-          </div>
-        </TableEmpty>
       </TableBody>
     </Table>
   </div>

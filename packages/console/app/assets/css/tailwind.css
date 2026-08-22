@@ -106,6 +106,12 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  /* Run-activity heatmap ramp (indigo), light theme. Level 0 = empty cell. */
+  --activity-lvl-0: oklch(0.94 0.004 272);
+  --activity-lvl-1: oklch(0.86 0.06 272);
+  --activity-lvl-2: oklch(0.72 0.12 272);
+  --activity-lvl-3: oklch(0.56 0.17 272);
+  --activity-lvl-4: oklch(0.42 0.19 272);
 }
 
 .dark {
@@ -141,6 +147,12 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.25 0 0);
   --sidebar-ring: oklch(0.439 0 0);
+  /* Run-activity heatmap ramp (indigo), dark theme — brightens with volume. */
+  --activity-lvl-0: oklch(0.26 0.01 272);
+  --activity-lvl-1: oklch(0.36 0.08 272);
+  --activity-lvl-2: oklch(0.48 0.13 272);
+  --activity-lvl-3: oklch(0.62 0.17 272);
+  --activity-lvl-4: oklch(0.76 0.16 272);
 }
 
 @layer base {

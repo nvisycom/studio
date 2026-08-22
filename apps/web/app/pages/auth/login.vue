@@ -21,8 +21,9 @@ const apiError = computed(() =>
 	loginError.value instanceof NvisyApiError ? loginError.value : null,
 );
 
-// Form state
-const email = ref("");
+// Form state. The identifier accepts an email OR a username (the SDK's Login
+// takes a single `identifier`), so it isn't constrained to email input.
+const identifier = ref("");
 const password = ref("");
 const rememberMe = ref(false);
 const showPassword = ref(false);
@@ -30,7 +31,7 @@ const showPassword = ref(false);
 async function handleLogin(): Promise<void> {
 	try {
 		await loginAsync({
-			identifier: email.value,
+			identifier: identifier.value,
 			password: password.value,
 			rememberMe: rememberMe.value,
 		});
@@ -108,18 +109,18 @@ async function handleMicrosoftLogin(): Promise<void> {
 
     <!-- Form -->
     <form @submit.prevent="handleLogin" class="space-y-4">
-      <!-- Email -->
+      <!-- Email or username -->
       <div class="space-y-2">
-        <Label for="email" required>{{ t("auth.shared.email") }}</Label>
+        <Label for="identifier" required>{{ t("auth.login.identifier") }}</Label>
         <Input
-          id="email"
-          name="email"
-          v-model="email"
-          type="email"
-          :placeholder="t('auth.shared.emailPlaceholder')"
+          id="identifier"
+          name="identifier"
+          v-model="identifier"
+          type="text"
+          :placeholder="t('auth.login.identifierPlaceholder')"
           class="h-10"
           required
-          autocomplete="email"
+          autocomplete="username"
         />
       </div>
 

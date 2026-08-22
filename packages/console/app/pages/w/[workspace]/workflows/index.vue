@@ -1,12 +1,5 @@
 <script setup lang="ts">
-import {
-	ExternalLink,
-	Loader2,
-	Workflow,
-	Pencil,
-	Trash2,
-	History,
-} from "@lucide/vue";
+import { Loader2, Workflow, Pencil, Trash2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import type {
 	CreatePipeline,
@@ -17,28 +10,22 @@ import type {
 import type { RowAction } from "#console/components/pages/RowActions.vue";
 import type { VirtualColumn } from "#console/components/ui/virtual-table";
 import { Button } from "#console/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "#console/components/ui/card";
 import { VirtualTable } from "#console/components/ui/virtual-table";
+import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 import { personLabel } from "#console/utils/naming";
 import { ConfirmDialog } from "#console/components/common";
 import { PipelineSheet } from "#console/components/pages/workflows";
 
 const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
-const { wLink } = useWorkspaceLink();
 const { resolveAvatarUrl } = useAvatarUrl();
+const sectionTabs = useSectionTabs();
 
 useHead({ title: "Workflows" });
 
 definePageMeta({
 	pageCategory: "header.category.workflows",
+	hideCategory: true,
 });
 
 const {
@@ -195,79 +182,53 @@ function rowActions(pipeline: PipelineRow): RowAction[] {
 </script>
 
 <template>
-  <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
-    <div class="max-w-6xl mx-auto w-full">
-      <!-- Loading State -->
-      <div v-if="isLoading" class="flex items-center justify-center py-12">
+  <!-- Fixed-height page so the table fills and scrolls (like /files). -->
+  <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6 h-[calc(100vh-5.5rem)]">
+    <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 min-h-0">
+      <!-- Section tabs in the app-header socket. -->
+      <HeaderSocket>
+        <SectionTabs :tabs="sectionTabs.workflows.value" />
+      </HeaderSocket>
+
+      <!-- Action row above the table. -->
+      <div class="flex items-center justify-between gap-3">
+        <p class="text-sm text-muted-foreground">
+          {{ t("workflows.count", { count: pipelines?.length ?? 0 }) }}
+        </p>
+        <Button
+          size="sm"
+          data-testid="pipeline-create"
+          @click="isCreateSheetOpen = true"
+        >
+          <Workflow :size="16" class="mr-1.5" />
+          {{ t("workflows.actions.create") }}
+        </Button>
+      </div>
+
+      <!-- Loading -->
+      <div
+        v-if="isLoading"
+        class="flex flex-1 items-center justify-center py-12"
+      >
         <Loader2 :size="24" class="animate-spin text-muted-foreground" />
       </div>
 
-      <template v-else>
-        <!-- Workflows Card -->
-        <Card class="py-0 pt-6 rounded-xl border-border/50">
-          <CardHeader>
-            <div class="flex items-center justify-between">
-              <div>
-                <CardTitle
-                  class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
-                >
-                  {{ t("workflows.title") }}
-                </CardTitle>
-                <CardDescription class="text-sm">
-                  {{ t("workflows.count", { count: pipelines?.length ?? 0 }) }}
-                </CardDescription>
-              </div>
-              <div class="flex items-center gap-2">
-                <Button as-child variant="outline" size="sm" class="font-normal">
-                  <NuxtLink :to="wLink('/workflows/runs')">
-                    <History :size="16" />
-                    {{ t("workflows.actions.viewRuns") }}
-                  </NuxtLink>
-                </Button>
-                <Button
-                  size="sm"
-                  data-testid="pipeline-create"
-                  @click="isCreateSheetOpen = true"
-                >
-                  <Workflow :size="16" class="mr-1.5" />
-                  {{ t("workflows.actions.create") }}
-                </Button>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <VirtualTable
-              :rows="pipelineRows"
-              :columns="columns"
-              :row-actions="rowActions"
-              :menu-label="t('workflows.table.menu')"
-              max-height="60vh"
-              :empty="{
-                icon: Workflow,
-                title: t('workflows.empty.title'),
-                description: t('workflows.empty.description'),
-              }"
-            />
-          </CardContent>
-          <CardFooter
-            class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
-          >
-            <p class="text-xs text-muted-foreground">
-              {{ t("workflows.footer") }}
-              <a
-                href="https://docs.nvisy.com/pipelines"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-1 text-foreground hover:underline font-medium"
-              >
-                {{ t("workflows.learnMore") }}
-                <ExternalLink :size="12" />
-              </a>
-            </p>
-          </CardFooter>
-        </Card>
+      <!-- Bare full-width table, filling the remaining height. -->
+      <div v-else class="relative min-h-0 flex-1">
+        <VirtualTable
+          :rows="pipelineRows"
+          :columns="columns"
+          :row-actions="rowActions"
+          :menu-label="t('workflows.table.menu')"
+          :empty="{
+            icon: Workflow,
+            title: t('workflows.empty.title'),
+            description: t('workflows.empty.description'),
+          }"
+        />
+      </div>
 
-        <PipelineSheet
+      <PipelineSheet
           v-model:open="isCreateSheetOpen"
           :is-loading="isCreating"
           :policies="policies ?? undefined"
@@ -306,7 +267,6 @@ function rowActions(pipeline: PipelineRow): RowAction[] {
             </div>
           </template>
         </ConfirmDialog>
-      </template>
     </div>
   </div>
 </template>

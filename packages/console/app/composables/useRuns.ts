@@ -66,10 +66,9 @@ export function useRuns(filter?: MaybeRefOrGetter<RunsFilter>) {
 		fileName: string,
 	): Promise<void> {
 		const { client, workspaceSlug } = requireContext();
-		const response =
-			format === "json"
-				? await client.runs.downloadAuditJson(workspaceSlug, runId)
-				: await client.runs.downloadAuditCsv(workspaceSlug, runId);
+		const response = await client.runs.downloadAudit(workspaceSlug, runId, {
+			format,
+		});
 		const url = URL.createObjectURL(await response.blob());
 		triggerBrowserDownload(url, fileName);
 	}

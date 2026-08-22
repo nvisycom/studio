@@ -26,6 +26,7 @@ import {
 	ConnectConnectionDialog,
 	ConnectLlmDialog,
 } from "#console/components/pages/connections";
+import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 import type { StorageProvider, LlmProvider } from "#console/utils/connections";
 import {
 	storageProviderForCard,
@@ -35,6 +36,7 @@ import type { CreateConnection } from "@nvisy/sdk/datatypes";
 import { toast } from "vue-sonner";
 
 const { t } = useI18n();
+const sectionTabs = useSectionTabs();
 const { wLink } = useWorkspaceLink();
 const { createConnectionAsync, isCreating } = useConnections();
 
@@ -42,6 +44,7 @@ useHead({ title: "Explore Providers" });
 
 definePageMeta({
 	pageCategory: "header.category.integrations",
+	hideCategory: true,
 });
 
 /**
@@ -492,6 +495,11 @@ async function handleConnect(connection: CreateConnection) {
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="max-w-6xl mx-auto w-full">
+      <!-- Section tabs in the app-header socket. -->
+      <HeaderSocket>
+        <SectionTabs :tabs="sectionTabs.integrations.value" />
+      </HeaderSocket>
+
       <!-- Header with Back Button and Search -->
       <div
         class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center mb-6"

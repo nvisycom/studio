@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import type { Connection } from "@nvisy/sdk/datatypes";
 import type { RowAction } from "#console/components/pages/RowActions.vue";
-import type { VirtualColumn } from "#console/components/ui/virtual-table";
+import type {
+	VirtualColumn,
+	VirtualTableEmpty,
+} from "#console/components/ui/virtual-table";
 import { Edit, Trash2, HardDrive, RefreshCw, PlugZap } from "@lucide/vue";
 import { Switch } from "#console/components/ui/switch";
 import { VirtualTable } from "#console/components/ui/virtual-table";
@@ -12,6 +15,7 @@ const { relativeTime } = useRelativeTime();
 
 defineProps<{
 	connections: Connection[];
+	empty?: VirtualTableEmpty;
 }>();
 
 const emit = defineEmits<{
@@ -110,7 +114,7 @@ function rowActions(connection: Connection): RowAction[] {
     :columns="columns"
     :row-actions="rowActions"
     :menu-label="t('connections.table.actions.menu')"
-    max-height="60vh"
+    :empty="empty"
   >
     <!-- Name + provider logo -->
     <template #cell-name="{ row }">

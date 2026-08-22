@@ -31,6 +31,7 @@ import { EntityAvatar } from "#console/components/common";
 import { personLabel } from "#console/utils/naming";
 import { getFileIcon } from "#console/utils/file";
 import { activityContent } from "#console/utils/activities";
+import OverviewStats from "./OverviewStats.vue";
 
 const { t } = useI18n();
 const { wLink } = useWorkspaceLink();
@@ -121,20 +122,24 @@ function activityIcon(category: string): Component {
 
 // View-models for the recent-activity list. Activities whose payload didn't
 // decode (undefined) carry no localizable copy, so we drop them.
+// Cap at 5 like the recent files/runs cards. We fetch a few extra (pageSize: 8)
+// so undecoded payloads (dropped below) still leave enough to fill 5.
 const recentActivities = computed(() =>
-	(activities.value ?? []).flatMap((activity) => {
-		if (!activity.payload) return [];
-		const c = activityContent(activity.payload);
-		return [
-			{
-				id: activity.id,
-				icon: activityIcon(c.category),
-				text: t(c.messageKey, c.params),
-				performedBy: activity.performedBy,
-				createdAt: activity.createdAt,
-			},
-		];
-	}),
+	(activities.value ?? [])
+		.flatMap((activity) => {
+			if (!activity.payload) return [];
+			const c = activityContent(activity.payload);
+			return [
+				{
+					id: activity.id,
+					icon: activityIcon(c.category),
+					text: t(c.messageKey, c.params),
+					performedBy: activity.performedBy,
+					createdAt: activity.createdAt,
+				},
+			];
+		})
+		.slice(0, 5),
 );
 
 const recentFiles = computed(() => (files.value ?? []).slice(0, 5));
@@ -196,45 +201,62 @@ const quickActions = [
 
 <template>
   <div class="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8">
+    <!-- Workspace stat totals (runs, storage). -->
+    <OverviewStats />
+
     <!-- Top row: recent activity, plus the setup card while unfinished. -->
     <div class="grid gap-6" :class="showSetupCard ? 'lg:grid-cols-2' : ''">
       <!-- Recent activity -->
       <Card class="rounded-xl border-border/50 py-0 pt-6">
         <CardHeader>
-          <CardTitle
-            class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
-          >
-            {{ t("overview.sections.recentActivity") }}
-          </CardTitle>
+          <div class="flex items-start justify-between">
+            <CardTitle
+              class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+            >
+              {{ t("overview.sections.recentActivity") }}
+            </CardTitle>
+            <NuxtLink
+              v-if="recentActivities.length"
+              :to="wLink('/analytics/logs')"
+              class="text-xs text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {{ t("overview.sections.viewAll") }}
+            </NuxtLink>
+          </div>
         </CardHeader>
         <CardContent class="pb-6">
           <div v-if="recentActivities.length" class="-my-1 flex flex-col">
             <div
               v-for="activity in recentActivities"
               :key="activity.id"
-              class="flex items-start gap-3 py-2.5"
+              class="flex min-h-14 items-center gap-3 py-2.5"
             >
               <div
-                class="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md border border-border/60 bg-muted/40 text-muted-foreground"
+                class="flex size-8 shrink-0 items-center justify-center rounded-md border border-border/60 bg-muted/40 text-muted-foreground"
               >
                 <component
                   :is="activity.icon"
-                  :size="14"
+                  :size="16"
                   :stroke-width="1.75"
                 />
               </div>
-              <div class="min-w-0 flex-1">
-                <p class="text-sm text-foreground">
-                  {{ activity.text }}
-                </p>
-                <p class="mt-0.5 text-xs text-muted-foreground">
-                  {{
-                    activity.performedBy.displayName ??
-                    activity.performedBy.username
-                  }}
-                  · {{ relativeTime(activity.createdAt) }}
-                </p>
+              <p class="min-w-0 flex-1 truncate text-sm text-foreground">
+                {{ activity.text }}
+              </p>
+              <div class="flex min-w-0 shrink items-center gap-2">
+                <EntityAvatar
+                  size="sm"
+                  class="shrink-0"
+                  :name="personLabel(activity.performedBy)"
+                  :src="resolveAvatarUrl(activity.performedBy.avatarUrl)"
+                />
+                <span class="truncate text-sm text-muted-foreground">
+                  {{ personLabel(activity.performedBy) }}
+                </span>
               </div>
+              <span class="shrink-0 text-xs text-muted-foreground">
+                {{ relativeTime(activity.createdAt) }}
+              </span>
             </div>
           </div>
           <div v-else class="py-10 text-center">

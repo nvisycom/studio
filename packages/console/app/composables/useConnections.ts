@@ -39,7 +39,15 @@ export function useConnections() {
 			client.connections.updateConnection(workspaceSlug, connectionId, updates),
 		{
 			onMutate({ connectionId, updates }) {
-				optimistic.apply(connectionId, updates);
+				// Optimistically reflect only the fields that render on the row and
+				// are read-shape compatible. `config`/`sync` use write-only input
+				// types (e.g. SyncScheduleInput vs the read SyncSchedule), so they
+				// can't merge into a `Connection`; settle()/refresh reconciles them.
+				const patch: Partial<Connection> = {};
+				if (updates.displayName !== undefined)
+					patch.displayName = updates.displayName;
+				if (updates.isActive !== undefined) patch.isActive = updates.isActive;
+				optimistic.apply(connectionId, patch);
 			},
 			onSettled(data, _error, { connectionId }) {
 				optimistic.settle(

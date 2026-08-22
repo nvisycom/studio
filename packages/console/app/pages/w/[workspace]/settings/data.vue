@@ -29,14 +29,17 @@ import {
 	retentionEquals,
 	retentionToForm,
 } from "#console/utils/retention";
+import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 
 useHead({ title: "Workspace Data" });
 
 definePageMeta({
 	pageCategory: "header.category.settings",
+	hideCategory: true,
 });
 
 const { t } = useI18n();
+const sectionTabs = useSectionTabs();
 
 const {
 	currentWorkspace,
@@ -66,7 +69,9 @@ watch(
 	(workspace) => {
 		if (!workspace) return;
 		requireApproval.value = workspace.settings.requireApproval;
-		ocr.value = workspace.settings.ocr;
+		// `ocr` and `retention` are optional in the SDK; fall back to the SDK's
+		// own defaults (ocr "auto"; retention "forever" per scope, in the helper).
+		ocr.value = workspace.settings.ocr ?? "auto";
 		retention.value = retentionToForm(workspace.settings.retention);
 		formInitialized.value = true;
 	},
@@ -88,14 +93,19 @@ const hasOptionsChanges = computed(() => {
 	if (!ws || !formInitialized.value) return false;
 	return (
 		editedSettings.value.requireApproval !== ws.settings.requireApproval ||
-		editedSettings.value.ocr !== ws.settings.ocr
+		// `ocr` is optional in the SDK and defaults to "auto"; normalize the saved
+		// value the same way the form does, so an absent value isn't seen as a
+		// change against the form's "auto" default.
+		editedSettings.value.ocr !== (ws.settings.ocr ?? "auto")
 	);
 });
 const hasRetentionChanges = computed(() => {
 	const ws = currentWorkspace.value;
 	if (!ws || !formInitialized.value) return false;
 	const edited = editedSettings.value.retention;
-	const saved = ws.settings.retention;
+	// Normalize the saved retention the same way the form is loaded, so missing
+	// (SDK-defaulted) scopes compare against the form's "forever" defaults.
+	const saved = formToRetention(retentionToForm(ws.settings.retention));
 	return RETENTION_TARGETS.some(
 		(target) => !retentionEquals(edited[target], saved[target]),
 	);
@@ -123,6 +133,11 @@ async function saveWorkspaceSettings() {
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="max-w-3xl mx-auto w-full">
+      <!-- Section tabs in the app-header socket. -->
+      <HeaderSocket>
+        <SectionTabs :tabs="sectionTabs.settings.value" />
+      </HeaderSocket>
+
       <!-- Loading State -->
       <div
         v-if="isLoadingWorkspaces"

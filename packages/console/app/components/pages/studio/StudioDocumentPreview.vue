@@ -40,6 +40,8 @@ const emit = defineEmits<{
 	"clear-entity": [];
 }>();
 
+const { t } = useI18n();
+
 // File kind drives which preview renders. Each kind has its own self-contained
 // component (CSV, text/JSON, DOCX); this component dispatches between them.
 const fileKind = computed(() => getFileExtension(props.displayName));
@@ -100,9 +102,9 @@ watch(
       >
         <div class="text-center text-muted-foreground">
           <FileText :size="64" class="mx-auto mb-4 opacity-20" />
-          <p class="text-sm font-normal">No document selected</p>
+          <p class="text-sm font-normal">{{ t("studio.preview.emptyTitle") }}</p>
           <p class="text-xs mt-2">
-            Select a file from the Files page to preview
+            {{ t("studio.preview.emptyDescription") }}
           </p>
         </div>
       </div>

@@ -3,6 +3,7 @@
 		"tabs": {
 			"connections": {
 				"connections": "Connections",
+				"webhooks": "Webhooks",
 				"explore": "Explore",
 				"runs": "Runs"
 			},
@@ -21,7 +22,6 @@
 			},
 			"analytics": {
 				"overview": "Overview",
-				"ai": "AI",
 				"logs": "Logs"
 			},
 			"policies": {
@@ -262,17 +262,6 @@
 						"name": "Run Failed",
 						"description": "When a pipeline run fails"
 					}
-				},
-				"system": {
-					"name": "System",
-					"announcement": {
-						"name": "Announcements",
-						"description": "Important system announcements"
-					},
-					"report": {
-						"name": "Reports",
-						"description": "When a scheduled report is ready"
-					}
 				}
 			},
 			"messages": {
@@ -395,6 +384,17 @@
 				"activityDescription": "Actions in this workspace will show up here.",
 				"filesDescription": "Upload documents to see them here.",
 				"runsDescription": "Pipeline runs will show up here."
+			}
+		},
+		"stats": {
+			"runs": {
+				"label": "Pipeline runs",
+				"errorRate": "{percent}% error rate",
+				"noErrorSignal": "No completed runs yet"
+			},
+			"storage": {
+				"label": "Storage used",
+				"files": "{count} file | {count} files"
 			}
 		}
 	},
@@ -541,6 +541,11 @@
 					"24hours": "24 Hours",
 					"7days": "7 Days",
 					"30days": "30 Days"
+				},
+				"expiryShort": {
+					"24hours": "in 24h",
+					"7days": "in 7d",
+					"30days": "in 30d"
 				}
 			},
 			"search": {
@@ -580,7 +585,6 @@
 		},
 		"messages": {
 			"inviteFooter": "Invited members will receive an email with instructions to join your project.",
-			"reviewFooter": "Project owners cannot be removed. Transfer ownership first to remove the current owner.",
 			"inviteSent": "Invitation sent successfully",
 			"linkCopied": "Invite link copied to clipboard",
 			"memberRemoved": "Member removed successfully",
@@ -589,7 +593,9 @@
 			"membersPartiallyRemoved": "Some members could not be removed",
 			"inviteCanceled": "Invitation canceled successfully",
 			"invitesCanceled": "Invitations canceled successfully",
-			"invitesPartiallyCanceled": "Some invitations could not be canceled"
+			"invitesPartiallyCanceled": "Some invitations could not be canceled",
+			"invitesSent": "Invite sent | {count} invites sent",
+			"invitesPartiallySent": "Some invites sent"
 		},
 		"errors": {
 			"inviteFailed": "Failed to send invitation",
@@ -599,7 +605,8 @@
 			"updateFailed": "Failed to update member",
 			"someRemoveFailed": "{count} member failed to be removed | {count} members failed to be removed",
 			"cancelFailed": "Failed to cancel invitation",
-			"someCancelFailed": "{count} invitation failed to be canceled | {count} invitations failed to be canceled"
+			"someCancelFailed": "{count} invitation failed to be canceled | {count} invitations failed to be canceled",
+			"someInvitesFailed": "{count} invite couldn't be sent | {count} invites couldn't be sent"
 		},
 		"roles": {
 			"owner": "Owner",
@@ -649,6 +656,23 @@
 				"description": "Change the role for this team member.",
 				"memberLabel": "Member",
 				"roleLabel": "Role"
+			},
+			"invite": {
+				"title": "Invite members",
+				"description": "Add people by email, or share a link anyone can use to join.",
+				"emailsLabel": "Email addresses",
+				"emailsPlaceholder": "Add email, then Enter",
+				"emailsHint": "Separate with Enter, comma, or space. One invalid address won't block the rest.",
+				"removeEmail": "Remove {email}",
+				"roleLabel": "Role",
+				"expiryLabel": "Invite expires",
+				"linkTitle": "Or share a join link",
+				"linkHint": "Anyone with the link joins as {role}, expires {expiry}.",
+				"generateLink": "Generate link",
+				"countValid": "{count} valid | {count} valid",
+				"countInvalid": "{count} invalid | {count} invalid",
+				"send": "Send invite | Send {count} invites",
+				"sendEmpty": "Send invites"
 			}
 		}
 	},
@@ -772,13 +796,11 @@
 		},
 		"sections": {
 			"connectedServices": {
-				"title": "Connected Services",
 				"description": "{count} connection configured | {count} connections configured",
 				"noIntegrationsTitle": "No active connections yet",
 				"noIntegrationsDescription": "Get started by browsing available providers"
 			},
 			"webhooks": {
-				"title": "Webhook Endpoints",
 				"description": "{count} webhook configured | {count} webhooks configured",
 				"noWebhooksTitle": "No webhooks configured",
 				"noWebhooksDescription": "Create your first webhook to start receiving real-time notifications"
@@ -1078,8 +1100,6 @@
 			}
 		},
 		"messages": {
-			"connectionFooter": "Learn more about connections in our",
-			"webhookFooter": "Learn more about webhooks in our",
 			"documentation": "documentation"
 		},
 		"toast": {
@@ -1108,8 +1128,6 @@
 			"webhookTestFailedDescription": "Received {statusCode} response"
 		},
 		"runs": {
-			"title": "Integration Runs",
-			"backToConnections": "Back to Connections",
 			"allStatus": "All Status",
 			"runsFound": "{count} sync | {count} syncs",
 			"statusHeader": "Status",
@@ -1136,8 +1154,10 @@
 				"failed": "Failed",
 				"cancelled": "Cancelled"
 			},
-			"noRunsDescription": "Runs will appear here once your connections sync.",
-			"footer": "Each run records a connection sync and the records it processed."
+			"noRunsDescription": "Runs will appear here once your connections sync."
+		},
+		"errors": {
+			"loadFailed": "Couldn't load connections."
 		}
 	},
 	"sidebar": {
@@ -1237,6 +1257,8 @@
 			}
 		},
 		"preview": {
+			"emptyTitle": "No document selected",
+			"emptyDescription": "Select a file from the Files page to preview",
 			"table": "Table",
 			"raw": "Raw",
 			"withHeaders": "With headers",
@@ -1272,8 +1294,6 @@
 		"title": "Policies",
 		"count": "{count} policy | {count} policies",
 		"create": "New policy",
-		"footer": "Policies decide how detected entities are redacted, suppressed, or audited.",
-		"learnMore": "Learn more",
 		"empty": {
 			"title": "No policies yet",
 			"description": "Create one to define redaction rules."
@@ -1435,7 +1455,6 @@
 		},
 		"templates": {
 			"title": "Policy templates",
-			"back": "Back to policies",
 			"dialogTitle": "Name your policy",
 			"nameLabel": "Name",
 			"namePlaceholder": "HIPAA Safe Harbor",
@@ -1501,16 +1520,12 @@
 				}
 			},
 			"slugEmpty": "Enter a name using letters or numbers to generate a slug."
-		},
-		"browseTemplates": "Browse templates"
+		}
 	},
 	"workflows": {
 		"title": "Pipelines",
 		"count": "{count} pipeline configured | {count} pipelines configured",
-		"footer": "Pipelines automate document detection and redaction.",
 		"runs": {
-			"title": "Pipeline runs",
-			"backToWorkflows": "Back to pipelines",
 			"status": "Status",
 			"allStatus": "All statuses",
 			"allPipelines": "All pipelines",
@@ -1535,7 +1550,6 @@
 				"cancelled": "Cancelled"
 			},
 			"noRunsDescription": "Runs will appear here once this workspace processes files.",
-			"footer": "Each run records how a pipeline detected and redacted a file.",
 			"triggeredBy": "Triggered by",
 			"openInStudio": "Open in Studio",
 			"menu": "Run actions",
@@ -1567,7 +1581,6 @@
 			},
 			"openInStudioFailed": "Couldn't open the file in the studio."
 		},
-		"learnMore": "Learn more",
 		"status": {
 			"draft": "Draft",
 			"enabled": "Enabled",
@@ -1584,7 +1597,6 @@
 		"actions": {
 			"create": "Create Pipeline",
 			"delete": "Delete",
-			"viewRuns": "View Runs",
 			"edit": "Edit"
 		},
 		"empty": {
@@ -1651,10 +1663,6 @@
 	},
 	"analytics": {
 		"logs": {
-			"searchPlaceholder": "Search activity...",
-			"title": "Activity Logs",
-			"count": "{count} event | {count} events",
-			"import": "Import",
 			"export": "Export",
 			"table": {
 				"time": "Time",
@@ -1663,19 +1671,6 @@
 				"by": "Performed by"
 			},
 			"empty": "No activity found",
-			"exportDialog": {
-				"title": "Export Logs",
-				"description": "Configure export settings for your logs",
-				"dateRange": "Date Range",
-				"selectDateRange": "Select date range",
-				"eventTypes": "Event Types",
-				"info": "Info",
-				"warning": "Warning",
-				"error": "Error",
-				"cancel": "Cancel",
-				"exportJson": "Export as JSON",
-				"exportCsv": "Export as CSV"
-			},
 			"category": {
 				"placeholder": "Category",
 				"all": "All categories",
@@ -1687,54 +1682,61 @@
 				"file": "Files"
 			},
 			"emptyDescription": "Actions in this workspace will show up here.",
-			"loadMore": "Load more"
-		},
-		"common": {
-			"selectPeriod": "Select period",
-			"period24h": "Last 24 hours",
-			"period7d": "Last 7 days",
-			"period30d": "Last 30 days",
-			"period90d": "Last 90 days",
-			"import": "Import",
-			"export": "Export"
+			"exportDialog": {
+				"title": "Export activity log",
+				"description": "Download the workspace activity log for the selected date range.",
+				"dateRange": "Date range",
+				"selectDateRange": "Select a date range",
+				"format": "Format",
+				"csv": "CSV",
+				"json": "JSON",
+				"export": "Export",
+				"failed": "Couldn't export the activity log."
+			},
+			"filters": {
+				"anyDate": "Any date",
+				"clearDates": "Clear dates"
+			}
 		},
 		"overview": {
-			"title": "Analytics",
-			"creditConsumption": {
-				"title": "Credit Consumption",
-				"subtitle": "AI and platform credits used over time"
-			},
-			"storageUsage": {
-				"title": "Storage Usage",
-				"subtitle": "Original and edited file storage consumption"
-			},
-			"documentTransfers": {
-				"title": "Document Transfers",
-				"subtitle": "Documents uploaded and downloaded"
-			},
-			"documentProcessing": {
-				"title": "Document Processing",
-				"subtitle": "Documents edited and verified"
-			}
+			"title": "Analytics"
 		},
-		"ai": {
-			"title": "AI Analytics",
-			"aiUsage": {
-				"title": "AI Usage",
-				"subtitle": "OCR and VLM token consumption"
-			},
-			"cachePerformance": {
-				"title": "Cache Performance",
-				"subtitle": "VLM cache hits and misses"
-			},
-			"errorRate": {
-				"title": "Error Rate",
-				"subtitle": "System errors as percentage of total requests"
-			},
-			"responseTime": {
-				"title": "Response Time",
-				"subtitle": "Average API response latency"
-			}
+		"kpis": {
+			"runs": "Pipeline runs",
+			"storage": "Storage used",
+			"usage": "AI usage",
+			"errorRate": "{percent}% errors",
+			"avgDuration": "avg {duration}",
+			"noSignal": "no data yet",
+			"files": "{count} file | {count} files",
+			"tokens": "{count} tokens",
+			"tokenSplit": "{input} in · {output} out",
+			"p95Duration": "p95 {duration}"
+		},
+		"activity": {
+			"title": "Run activity",
+			"totalSuffix": "runs in the last year",
+			"cell": "{count} runs on {date} | {count} run on {date} | {count} runs on {date}",
+			"less": "Less",
+			"more": "More"
+		},
+		"trends": {
+			"runs": "Runs",
+			"tokens": "Tokens",
+			"runsTitle": "Runs per day",
+			"tokensTitle": "Tokens per day",
+			"errorRate": "Error rate",
+			"avgDuration": "Avg duration",
+			"errorRateTitle": "Error rate per day",
+			"avgDurationTitle": "Avg run time per day"
+		},
+		"breakdowns": {
+			"runsByStatus": "Runs by status",
+			"storageByKind": "Storage by kind",
+			"usageByModel": "Usage by model",
+			"noRuns": "No runs yet.",
+			"noStorage": "No files stored yet.",
+			"noUsage": "No AI usage yet."
 		}
 	},
 	"auth": {
@@ -1756,6 +1758,8 @@
 			"title": "Sign In",
 			"heading": "Welcome back",
 			"subtitle": "Sign in to your account to continue",
+			"identifier": "Email or username",
+			"identifierPlaceholder": "you{'@'}example.com or username",
 			"passwordPlaceholder": "Enter your password",
 			"forgotPassword": "Forgot password?",
 			"rememberMe": "Keep me signed in",
@@ -1901,13 +1905,9 @@
 				"title": "Run failed",
 				"message": "{inputFileName} failed in {pipelineSlug}: {error}"
 			},
-			"systemAnnouncement": {
-				"title": "Announcement",
-				"message": "{message}"
-			},
-			"systemReport": {
-				"title": "Report ready",
-				"message": "A scheduled report is ready"
+			"unknown": {
+				"title": "Notification",
+				"message": "You have a new notification"
 			}
 		}
 	},
@@ -1985,10 +1985,6 @@
 				"title": "Webhook deleted",
 				"message": "A webhook was deleted"
 			},
-			"webhookTriggered": {
-				"title": "Webhook triggered",
-				"message": "A webhook was triggered"
-			},
 			"fileCreated": {
 				"title": "File uploaded",
 				"message": "{fileName} was uploaded"
@@ -2000,10 +1996,6 @@
 			"fileDeleted": {
 				"title": "File deleted",
 				"message": "{fileName} was deleted"
-			},
-			"fileVerified": {
-				"title": "File verified",
-				"message": "{fileName} was verified"
 			},
 			"pipelineCreated": {
 				"title": "Pipeline created",
@@ -2044,6 +2036,14 @@
 			"policyDeleted": {
 				"title": "Policy deleted",
 				"message": "A policy was deleted"
+			},
+			"connectionSyncStarted": {
+				"title": "Sync started",
+				"message": "A connection started syncing"
+			},
+			"unknown": {
+				"title": "Activity",
+				"message": "An activity was recorded"
 			}
 		},
 		"category": {
@@ -2054,7 +2054,8 @@
 			"webhook": "Webhooks",
 			"file": "Files",
 			"pipeline": "Pipelines",
-			"policy": "Policies"
+			"policy": "Policies",
+			"unknown": "Other"
 		}
 	},
 	"userMenu": {

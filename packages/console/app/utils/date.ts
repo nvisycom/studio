@@ -75,6 +75,21 @@ export function formatDuration(
 	return `${minutes}m ${seconds}s`;
 }
 
+/**
+ * Format a raw millisecond duration compactly: sub-second as "850ms", under a
+ * minute as "4.2s", otherwise "2m 5s". For analytics figures (avg/p95 run time).
+ */
+export function formatDurationMs(ms: number): string {
+	if (ms < 1000) return `${Math.round(ms)}ms`;
+	if (ms < MINUTE) return `${(ms / 1000).toFixed(1)}s`;
+	// Round to whole seconds first, then split — otherwise rounding the
+	// remainder can produce "1m 60s" instead of "2m 0s".
+	const totalSeconds = Math.round(ms / 1000);
+	const minutes = Math.floor(totalSeconds / 60);
+	const seconds = totalSeconds % 60;
+	return `${minutes}m ${seconds}s`;
+}
+
 /** Format a date as a short "Mon D" label (e.g. "Jan 5"). */
 export function formatShortDate(date: string | number | Date): string {
 	return new Date(date).toLocaleDateString(undefined, {

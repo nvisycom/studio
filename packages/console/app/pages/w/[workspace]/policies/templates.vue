@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { CreatePolicy, PolicyTemplate } from "@nvisy/sdk/datatypes";
-import { ArrowLeft, Loader2, ShieldCheck, Search } from "@lucide/vue";
+import { Loader2, ShieldCheck, Search } from "@lucide/vue";
+import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
@@ -29,12 +30,14 @@ import { toast } from "vue-sonner";
 import { slugify } from "#console/utils/naming";
 
 const { t } = useI18n();
+const sectionTabs = useSectionTabs();
 const { wLink } = useWorkspaceLink();
 
 useHead({ title: "Policy Templates" });
 
 definePageMeta({
 	pageCategory: "header.category.policies",
+	hideCategory: true,
 });
 
 const { createPolicyAsync, isCreating } = usePolicies();
@@ -46,15 +49,18 @@ type HipaaMethod = Extract<
 	PolicyTemplate,
 	{ kind: "hipaa_deidentification" }
 >["method"];
-type HipaaAccounts = Extract<
-	PolicyTemplate,
-	{ kind: "hipaa_deidentification" }
->["accounts"];
+// `accounts` is optional on the template in the SDK; the picker always has a
+// concrete value, so strip the `undefined` for the option list and v-model.
+type HipaaAccounts = NonNullable<
+	Extract<PolicyTemplate, { kind: "hipaa_deidentification" }>["accounts"]
+>;
 type GdprTreatment = Extract<
 	PolicyTemplate,
 	{ kind: "gdpr_article9" }
 >["treatment"];
-type GdprScope = Extract<PolicyTemplate, { kind: "gdpr_article9" }>["scope"];
+type GdprScope = NonNullable<
+	Extract<PolicyTemplate, { kind: "gdpr_article9" }>["scope"]
+>;
 type PciPart = Extract<PolicyTemplate, { kind: "pci_dss" }>["part"]["part"];
 type PciRender = Extract<
 	Extract<PolicyTemplate, { kind: "pci_dss" }>["part"],
@@ -194,29 +200,27 @@ async function create() {
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="mx-auto w-full max-w-6xl">
-      <!-- Header with back button and search -->
-      <div
-        class="mb-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center"
-      >
-        <Button as-child variant="outline" class="font-normal">
-          <NuxtLink :to="wLink('/policies')" class="flex items-center gap-2">
-            <ArrowLeft :size="16" />
-            {{ t("policies.templates.back") }}
-          </NuxtLink>
-        </Button>
+      <!-- Section tabs live in the app header via the socket; the search sits
+           in its actions slot. -->
+      <HeaderSocket>
+        <SectionTabs :tabs="sectionTabs.policies.value">
+          <template #actions>
+            <div class="relative w-56">
+              <Search
+                :size="16"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              />
+              <Input
+                v-model="searchQuery"
+                :placeholder="t('policies.templates.searchPlaceholder')"
+                class="h-9 pl-10"
+              />
+            </div>
+          </template>
+        </SectionTabs>
+      </HeaderSocket>
 
-        <div class="relative flex-1">
-          <Search
-            :size="16"
-            class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-          />
-          <Input
-            v-model="searchQuery"
-            :placeholder="t('policies.templates.searchPlaceholder')"
-            class="h-9 pl-10"
-          />
-        </div>
-      </div>
+      <div class="mb-6" />
 
       <!-- No results -->
       <div

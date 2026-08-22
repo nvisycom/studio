@@ -7,7 +7,6 @@ import type {
 } from "@nvisy/sdk/datatypes";
 import type { VirtualColumn } from "#console/components/ui/virtual-table";
 import {
-	ArrowLeft,
 	Loader2,
 	Loader,
 	CircleCheck,
@@ -17,19 +16,10 @@ import {
 	HardDrive,
 	Ban,
 	History,
-	ExternalLink,
 } from "@lucide/vue";
 import { formatDuration } from "#console/utils/date";
 import { providerIcon } from "#console/utils/connections";
 import { Button } from "#console/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "#console/components/ui/card";
 import { VirtualTable } from "#console/components/ui/virtual-table";
 import {
 	Select,
@@ -38,16 +28,18 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "#console/components/ui/select";
+import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 import { toast } from "vue-sonner";
 
 const { t } = useI18n();
+const sectionTabs = useSectionTabs();
 const { relativeTime } = useRelativeTime();
-const { wLink } = useWorkspaceLink();
 
 useHead({ title: "Connection Syncs" });
 
 definePageMeta({
 	pageCategory: "header.category.integrations",
+	hideCategory: true,
 });
 
 const SYNC_STATUSES: SyncStatus[] = [
@@ -192,16 +184,19 @@ const columns = computed<VirtualColumn<ConnectionSync>[]>(() => [
 </script>
 
 <template>
-  <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
-    <div class="mx-auto w-full max-w-6xl">
-      <!-- Toolbar -->
-      <div class="mb-6 flex flex-wrap items-center gap-3">
-        <Button as-child variant="outline" class="font-normal">
-          <NuxtLink :to="wLink('/integrations')" class="flex items-center gap-2">
-            <ArrowLeft :size="16" />
-            {{ t("connections.runs.backToConnections") }}
-          </NuxtLink>
-        </Button>
+  <!-- Fixed-height page so the table fills and scrolls (like /files). -->
+  <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6 h-[calc(100vh-5.5rem)]">
+    <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 min-h-0">
+      <!-- Section tabs in the app-header socket. -->
+      <HeaderSocket>
+        <SectionTabs :tabs="sectionTabs.integrations.value" />
+      </HeaderSocket>
+
+      <!-- Filter toolbar: count on the left, status filter on the right. -->
+      <div class="flex flex-wrap items-center gap-3">
+        <p class="shrink-0 text-sm text-muted-foreground">
+          {{ t("connections.runs.runsFound", { count: syncs.length }) }}
+        </p>
 
         <div class="flex-1" />
 
@@ -225,38 +220,23 @@ const columns = computed<VirtualColumn<ConnectionSync>[]>(() => [
         </Select>
       </div>
 
-      <Card class="rounded-xl border-border/50 py-0 pt-6">
-        <CardHeader>
-          <CardTitle
-            class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
-          >
-            {{ t("connections.runs.title") }}
-          </CardTitle>
-          <CardDescription class="text-sm">
-            {{ t("connections.runs.runsFound", { count: syncs.length }) }}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <!-- Loading -->
-          <div
-            v-if="isLoading"
-            class="flex items-center justify-center py-12"
-          >
-            <Loader2 :size="24" class="animate-spin text-muted-foreground" />
-          </div>
+      <!-- Loading -->
+      <div v-if="isLoading" class="flex flex-1 items-center justify-center py-12">
+        <Loader2 :size="24" class="animate-spin text-muted-foreground" />
+      </div>
 
-          <VirtualTable
-            v-else
-            :rows="syncs"
-            :columns="columns"
-            max-height="60vh"
-            :empty="{
-              icon: History,
-              title: t('connections.runs.noRunsFound'),
-              description: t('connections.runs.noRunsDescription'),
-            }"
-            @load-more="handleLoadMore"
-          >
+      <!-- Bare full-width table, filling the remaining height. -->
+      <div v-else class="relative min-h-0 flex-1">
+        <VirtualTable
+          :rows="syncs"
+          :columns="columns"
+          :empty="{
+            icon: History,
+            title: t('connections.runs.noRunsFound'),
+            description: t('connections.runs.noRunsDescription'),
+          }"
+          @load-more="handleLoadMore"
+        >
             <!-- Connection + provider logo -->
             <template #cell-connection="{ row }">
               <div class="flex items-center gap-2.5">
@@ -318,25 +298,8 @@ const columns = computed<VirtualColumn<ConnectionSync>[]>(() => [
                 <Ban :size="15" class="text-muted-foreground" />
               </Button>
             </template>
-          </VirtualTable>
-        </CardContent>
-        <CardFooter
-          class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
-        >
-          <p class="text-xs text-muted-foreground">
-            {{ t("connections.runs.footer") }}
-            <a
-              href="https://docs.nvisy.com/connections"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-1 text-foreground hover:underline font-medium"
-            >
-              {{ t("connections.messages.documentation") }}
-              <ExternalLink :size="12" />
-            </a>
-          </p>
-        </CardFooter>
-      </Card>
+        </VirtualTable>
+      </div>
     </div>
   </div>
 </template>

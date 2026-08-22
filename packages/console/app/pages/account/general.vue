@@ -6,15 +6,18 @@ import { Label } from "#console/components/ui/label";
 import { AvatarUploadCard, PasswordInput } from "#console/components/common";
 import { personLabel } from "#console/utils/naming";
 import { Card, CardContent, CardFooter } from "#console/components/ui/card";
+import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 import { toast } from "vue-sonner";
 
 useHead({ title: "Account" });
 
 definePageMeta({
 	pageCategory: "header.category.settings",
+	hideCategory: true,
 });
 
 const { t } = useI18n();
+const sectionTabs = useSectionTabs();
 
 const {
 	account,
@@ -188,6 +191,11 @@ async function savePassword() {
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
     <div class="mx-auto w-full max-w-3xl">
+      <!-- Section tabs in the app-header socket. -->
+      <HeaderSocket>
+        <SectionTabs :tabs="sectionTabs.account.value" />
+      </HeaderSocket>
+
       <!-- Loading State -->
       <div v-if="isLoading" class="flex items-center justify-center py-12">
         <Loader2 :size="24" class="animate-spin text-muted-foreground" />

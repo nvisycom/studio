@@ -6,10 +6,8 @@ import type {
 } from "@nvisy/sdk/datatypes";
 import type { RunsFilter } from "#console/composables/useRuns";
 import {
-	ArrowLeft,
 	Loader2,
 	History,
-	ExternalLink,
 	ScanSearch,
 	FileJson,
 	FileSpreadsheet,
@@ -22,15 +20,8 @@ import { RunDetailSheet } from "#console/components/pages/runs";
 import { personLabel } from "#console/utils/naming";
 import { toast } from "vue-sonner";
 import { Button } from "#console/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "#console/components/ui/card";
 import { VirtualTable } from "#console/components/ui/virtual-table";
+import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 import {
 	Select,
 	SelectContent,
@@ -124,7 +115,10 @@ useHead({ title: "Workflow Runs" });
 
 definePageMeta({
 	pageCategory: "header.category.workflows",
+	hideCategory: true,
 });
+
+const sectionTabs = useSectionTabs();
 
 const { pipelines } = usePipelines();
 
@@ -215,16 +209,19 @@ const columns = computed<VirtualColumn<(typeof sortedRuns.value)[number]>[]>(
 </script>
 
 <template>
-  <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6">
-    <div class="mx-auto w-full max-w-6xl">
-      <!-- Toolbar -->
-      <div class="mb-6 flex flex-wrap items-center gap-3">
-        <Button as-child variant="outline" class="font-normal">
-          <NuxtLink :to="wLink('/workflows')" class="flex items-center gap-2">
-            <ArrowLeft :size="16" />
-            {{ t("workflows.runs.backToWorkflows") }}
-          </NuxtLink>
-        </Button>
+  <!-- Fixed-height page so the table fills and scrolls (like /files). -->
+  <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6 h-[calc(100vh-5.5rem)]">
+    <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 min-h-0">
+      <!-- Section tabs in the app-header socket. -->
+      <HeaderSocket>
+        <SectionTabs :tabs="sectionTabs.workflows.value" />
+      </HeaderSocket>
+
+      <!-- Filter toolbar. -->
+      <div class="flex flex-wrap items-center gap-3">
+        <p class="shrink-0 text-sm text-muted-foreground">
+          {{ t("workflows.runs.runsFound", { count: sortedRuns.length }) }}
+        </p>
 
         <div class="flex-1" />
 
@@ -292,55 +289,29 @@ const columns = computed<VirtualColumn<(typeof sortedRuns.value)[number]>[]>(
         </Select>
       </div>
 
-      <Card class="rounded-xl border-border/50 py-0 pt-6">
-        <CardHeader>
-          <CardTitle
-            class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
-          >
-            {{ t("workflows.runs.title") }}
-          </CardTitle>
-          <CardDescription class="text-sm">
-            {{ t("workflows.runs.runsFound", { count: sortedRuns.length }) }}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <!-- Loading -->
-          <div v-if="isLoading" class="flex items-center justify-center py-12">
-            <Loader2 :size="24" class="animate-spin text-muted-foreground" />
-          </div>
+      <!-- Loading -->
+      <div
+        v-if="isLoading"
+        class="flex flex-1 items-center justify-center py-12"
+      >
+        <Loader2 :size="24" class="animate-spin text-muted-foreground" />
+      </div>
 
-          <VirtualTable
-            v-else
-            :rows="sortedRuns"
-            :columns="columns"
-            :row-actions="rowActions"
-            :menu-label="t('workflows.runs.menu')"
-            max-height="60vh"
-            :empty="{
-              icon: History,
-              title: t('workflows.runs.noRunsFound'),
-              description: t('workflows.runs.noRunsDescription'),
-            }"
-            @row-click="openDetails"
-          />
-        </CardContent>
-        <CardFooter
-          class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl"
-        >
-          <p class="text-xs text-muted-foreground">
-            {{ t("workflows.runs.footer") }}
-            <a
-              href="https://docs.nvisy.com/pipelines"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-1 text-foreground hover:underline font-medium"
-            >
-              {{ t("workflows.learnMore") }}
-              <ExternalLink :size="12" />
-            </a>
-          </p>
-        </CardFooter>
-      </Card>
+      <!-- Bare full-width table, filling the remaining height. -->
+      <div v-else class="relative min-h-0 flex-1">
+        <VirtualTable
+          :rows="sortedRuns"
+          :columns="columns"
+          :row-actions="rowActions"
+          :menu-label="t('workflows.runs.menu')"
+          :empty="{
+            icon: History,
+            title: t('workflows.runs.noRunsFound'),
+            description: t('workflows.runs.noRunsDescription'),
+          }"
+          @row-click="openDetails"
+        />
+      </div>
     </div>
 
     <RunDetailSheet

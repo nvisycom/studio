@@ -8,15 +8,10 @@ import type {
 	WorkspaceRole,
 } from "@nvisy/sdk/datatypes";
 import type { Selection } from "#console/composables/useSelection";
-import { Search, Loader2 } from "@lucide/vue";
+import { Search, Loader2, UserPlus } from "@lucide/vue";
+import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import { MembersTable, InvitesTable } from "#console/components/pages/team";
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-} from "#console/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "#console/components/ui/tabs";
 import {
 	Select,
@@ -47,6 +42,7 @@ const emit = defineEmits<{
 	cancelInvite: [inviteId: string];
 	deleteSelectedMembers: [];
 	cancelSelectedInvites: [];
+	invite: [];
 }>();
 
 const { t } = useI18n();
@@ -102,9 +98,10 @@ watch(selectedRoleFilter, (role) => emit("update:roleFilter", role));
 </script>
 
 <template>
-  <Card class="overflow-hidden rounded-xl border-border/50 py-0 pt-6">
-    <CardHeader>
-      <Tabs v-model="activeTab" class="mb-4 w-full">
+  <div class="flex flex-col gap-4">
+    <!-- Tabs on the left, the primary Invite action on the right. -->
+    <div class="flex items-center justify-between gap-3">
+      <Tabs v-model="activeTab">
         <TabsList>
           <TabsTrigger value="members">
             {{ t("members.page.tabs.teamMembers") }}
@@ -114,9 +111,14 @@ watch(selectedRoleFilter, (role) => emit("update:roleFilter", role));
           </TabsTrigger>
         </TabsList>
       </Tabs>
+      <Button class="shrink-0" @click="emit('invite')">
+        <UserPlus :size="16" />
+        {{ t("members.modals.invite.title") }}
+      </Button>
+    </div>
 
-      <!-- Search and Filters -->
-      <div class="flex items-center gap-3">
+    <!-- Search and Filters -->
+    <div class="flex items-center gap-3">
         <div class="relative flex-1">
           <Search
             :size="16"
@@ -162,9 +164,9 @@ watch(selectedRoleFilter, (role) => emit("update:roleFilter", role));
             </SelectItem>
           </SelectContent>
         </Select>
-      </div>
-    </CardHeader>
-    <CardContent>
+    </div>
+
+    <div>
       <!-- Members Tab -->
       <div v-if="activeTab === 'members'">
         <div
@@ -201,13 +203,6 @@ watch(selectedRoleFilter, (role) => emit("update:roleFilter", role));
           @cancel-selected="emit('cancelSelectedInvites')"
         />
       </div>
-    </CardContent>
-    <CardFooter
-      class="rounded-b-xl border-t border-border/50 bg-muted/30 pb-6"
-    >
-      <p class="text-xs text-muted-foreground">
-        {{ t("members.messages.reviewFooter") }}
-      </p>
-    </CardFooter>
-  </Card>
+    </div>
+  </div>
 </template>
