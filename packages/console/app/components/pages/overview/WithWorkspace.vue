@@ -27,7 +27,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#console/components/ui/card";
-import { EntityAvatar } from "#console/components/common";
+import { ActivityIcon, EntityAvatar } from "#console/components/common";
 import { personLabel } from "#console/utils/naming";
 import { getFileIcon } from "#console/utils/file";
 import { activityContent } from "#console/utils/activities";
@@ -133,6 +133,7 @@ const recentActivities = computed(() =>
 				{
 					id: activity.id,
 					icon: activityIcon(c.category),
+					action: c.action,
 					text: t(c.messageKey, c.params),
 					performedBy: activity.performedBy,
 					createdAt: activity.createdAt,
@@ -231,15 +232,7 @@ const quickActions = [
               :key="activity.id"
               class="flex min-h-14 items-center gap-3 py-2.5"
             >
-              <div
-                class="flex size-8 shrink-0 items-center justify-center rounded-md border border-border/60 bg-muted/40 text-muted-foreground"
-              >
-                <component
-                  :is="activity.icon"
-                  :size="16"
-                  :stroke-width="1.75"
-                />
-              </div>
+              <ActivityIcon :icon="activity.icon" :action="activity.action" />
               <p class="min-w-0 flex-1 truncate text-sm text-foreground">
                 {{ activity.text }}
               </p>

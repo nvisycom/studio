@@ -18,6 +18,8 @@ export interface ActivityContent {
 	messageKey: string;
 	params: Record<string, unknown>;
 	category: string;
+	/** The verb — the last segment of the event `type` (created/updated/…). */
+	action: string;
 }
 
 // Categories the UI has icons and `activities.category.*` labels for. An event
@@ -46,6 +48,16 @@ const KNOWN_CATEGORIES = new Set([
  * callers guard that and only pass a defined payload here.
  */
 export function activityContent(payload: ActivityPayload): ActivityContent {
+	const type = payload.type as string;
+	// The verb is the segment after the last dot (e.g. `pipeline.run.completed`
+	// → "completed"). Drives the action badge on the activity icon.
+	const action = type.slice(type.lastIndexOf(".") + 1);
+	return { ...resolveContent(payload), action };
+}
+
+function resolveContent(
+	payload: ActivityPayload,
+): Omit<ActivityContent, "action"> {
 	const { type } = payload;
 	switch (type) {
 		case "workspace.created":
@@ -131,11 +143,40 @@ function content(
 	key: string,
 	category: string,
 	params: Record<string, unknown>,
-): ActivityContent {
+): Omit<ActivityContent, "action"> {
 	return {
 		titleKey: `activities.events.${key}.title`,
 		messageKey: `activities.events.${key}.message`,
 		params,
 		category,
 	};
+}
+
+// The action badge is a single colored dot — one shape, the color carries the
+// meaning (the row's message spells out the verb). Green = additive/success,
+// red = removal/failure, amber = change, blue = a run in motion, muted = neutral
+// or unknown. Tints match those used elsewhere in the app.
+// A quiet accent dot, not an alert: desaturated and low-opacity in light mode so
+// it sits behind the icon, a touch brighter (but still restrained) in dark mode
+// where it needs to read against the dark surface. Color carries the meaning —
+// green = additive/success, red = removal/failure, amber = change, blue = a run
+// in motion, muted = neutral/unknown; the row's message spells out the verb.
+const ACTION_COLOR: Record<string, string> = {
+	created: "bg-emerald-600/50 dark:bg-emerald-500/60",
+	added: "bg-emerald-600/50 dark:bg-emerald-500/60",
+	accepted: "bg-emerald-600/50 dark:bg-emerald-500/60",
+	completed: "bg-emerald-600/50 dark:bg-emerald-500/60",
+	updated: "bg-amber-600/50 dark:bg-amber-500/60",
+	deleted: "bg-red-700/50 dark:bg-red-500/60",
+	failed: "bg-red-700/50 dark:bg-red-500/60",
+	declined: "bg-red-700/50 dark:bg-red-500/60",
+	canceled: "bg-muted-foreground/40 dark:bg-muted-foreground/60",
+	started: "bg-blue-600/50 dark:bg-blue-500/60",
+	analyzed: "bg-blue-600/50 dark:bg-blue-500/60",
+	triggered: "bg-blue-600/50 dark:bg-blue-500/60",
+};
+
+/** Background color class for an activity action's badge dot (muted if unknown). */
+export function activityActionColor(action: string): string {
+	return ACTION_COLOR[action] ?? "bg-muted-foreground";
 }

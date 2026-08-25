@@ -69,16 +69,23 @@ export function useActivities(options?: {
 
 	/**
 	 * Download the activity log as CSV or JSON, saved under `fileName`. The
-	 * optional date range is inclusive, `YYYY-MM-DD` (UTC); omit it to use the
-	 * SDK's default window.
+	 * optional date range is inclusive, `YYYY-MM-DD` (UTC), and `type` narrows to
+	 * specific activity types (e.g. `file.created`); omit each to use the SDK's
+	 * defaults (its window, all types).
 	 */
 	async function exportActivities(
 		fileName: string,
-		exportOptions: { format: "csv" | "json"; from?: string; to?: string },
+		exportOptions: {
+			format: "csv" | "json";
+			from?: string;
+			to?: string;
+			type?: ActivityType[];
+		},
 	): Promise<void> {
 		const { client, workspaceSlug } = requireContext();
 		const response = await client.activities.exportActivities(workspaceSlug, {
 			format: exportOptions.format,
+			...(exportOptions.type?.length && { type: exportOptions.type }),
 			...(exportOptions.from && { from: exportOptions.from }),
 			...(exportOptions.to && { to: exportOptions.to }),
 		});

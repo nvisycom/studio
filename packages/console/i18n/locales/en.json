@@ -1664,10 +1664,13 @@
 	"analytics": {
 		"logs": {
 			"export": "Export",
+			"exportFormat": "Export format",
+			"exportCsv": "Export as CSV",
+			"exportJson": "Export as JSON",
+			"exportFailed": "Couldn't export the activity log.",
 			"table": {
 				"time": "Time",
-				"type": "Type",
-				"message": "Description",
+				"event": "Event",
 				"by": "Performed by"
 			},
 			"empty": "No activity found",
@@ -1682,17 +1685,6 @@
 				"file": "Files"
 			},
 			"emptyDescription": "Actions in this workspace will show up here.",
-			"exportDialog": {
-				"title": "Export activity log",
-				"description": "Download the workspace activity log for the selected date range.",
-				"dateRange": "Date range",
-				"selectDateRange": "Select a date range",
-				"format": "Format",
-				"csv": "CSV",
-				"json": "JSON",
-				"export": "Export",
-				"failed": "Couldn't export the activity log."
-			},
 			"filters": {
 				"anyDate": "Any date",
 				"clearDates": "Clear dates"

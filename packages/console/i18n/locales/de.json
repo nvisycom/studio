@@ -1664,10 +1664,13 @@
 	"analytics": {
 		"logs": {
 			"export": "Exportieren",
+			"exportFormat": "Exportformat",
+			"exportCsv": "Als CSV exportieren",
+			"exportJson": "Als JSON exportieren",
+			"exportFailed": "Das Aktivitätsprotokoll konnte nicht exportiert werden.",
 			"table": {
 				"time": "Zeit",
-				"type": "Typ",
-				"message": "Beschreibung",
+				"event": "Ereignis",
 				"by": "Ausgeführt von"
 			},
 			"empty": "Keine Aktivität gefunden",
@@ -1682,17 +1685,6 @@
 				"file": "Dateien"
 			},
 			"emptyDescription": "Aktionen in diesem Arbeitsbereich erscheinen hier.",
-			"exportDialog": {
-				"title": "Aktivitätsprotokoll exportieren",
-				"description": "Aktivitätsprotokoll des Arbeitsbereichs für den gewählten Zeitraum herunterladen.",
-				"dateRange": "Zeitraum",
-				"selectDateRange": "Zeitraum auswählen",
-				"format": "Format",
-				"csv": "CSV",
-				"json": "JSON",
-				"export": "Exportieren",
-				"failed": "Das Aktivitätsprotokoll konnte nicht exportiert werden."
-			},
 			"filters": {
 				"anyDate": "Beliebiges Datum",
 				"clearDates": "Daten löschen"
