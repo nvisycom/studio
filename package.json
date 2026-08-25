@@ -37,11 +37,11 @@
 		"e2e:headed": "SLOWMO=800 playwright test --headed"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.5.7",
+		"@biomejs/biome": "^2.5.10",
 		"@playwright/test": "^1.50.0",
 		"@types/node": "^26.1.2",
 		"typescript": "^6.0.3",
-		"vue-tsc": "^3.3.9"
+		"vue-tsc": "^3.3.11"
 	},
 	"overrides": {
 		"vite": "^8.2.0",
