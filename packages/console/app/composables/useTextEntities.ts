@@ -1,4 +1,4 @@
-import type { Audit } from "@nvisy/sdk/datatypes";
+import type { Audit, TextEntity, TabularEntity } from "@nvisy/sdk/datatypes";
 import type { MaybeRefOrGetter } from "vue";
 import {
 	type DocxSourceRef,
@@ -138,27 +138,22 @@ function sliceBytes(source: string, start: number, end: number): string {
  * discriminated recognition detail: a `pattern` match names the pattern, a
  * `model` match names the model, any other kind carries neither.
  */
-type BirthEvent = {
-	source: string;
-	parents: unknown[];
-	kind?: { kind: string; pattern?: { name: string }; model?: { name: string } };
-};
-
 /** Provenance/language shared by text + tabular entities, for the detail view. */
-function provenance(entity: { language?: string; audit: BirthEvent[] }) {
+function provenance(entity: TextEntity | TabularEntity) {
 	// The birth event is the detection with no parents; fall back to the first.
 	const birth =
 		entity.audit.find((ev) => ev.parents.length === 0) ?? entity.audit[0];
 
-	// Prefer the specific pattern/model name from the birth event's detail.
+	// Prefer the specific pattern/model name from the birth event's detail. The
+	// detail is typed per kind, so narrow on `kind.kind` before reading it.
 	const kind = birth?.kind;
 	let detector: string | undefined;
 	let detectorKind: "pattern" | "model" | undefined;
-	if (kind?.kind === "pattern" && kind.pattern) {
-		detector = kind.pattern.name;
+	if (kind?.kind === "pattern") {
+		detector = kind.detail.pattern.name;
 		detectorKind = "pattern";
-	} else if (kind?.kind === "model" && kind.model) {
-		detector = kind.model.name;
+	} else if (kind?.kind === "model") {
+		detector = kind.detail.model.name;
 		detectorKind = "model";
 	}
 
@@ -196,7 +191,7 @@ export function useTextEntities(
 	const { resolveLabel, labelName } = useLabels();
 
 	const entities = computed<TextEntityView[]>(() => {
-		const group = toValue(audit)?.body;
+		const group = toValue(audit)?.report.body;
 		const doc = toValue(text) ?? null;
 		const parts = toValue(docxParts) ?? null;
 
@@ -204,8 +199,7 @@ export function useTextEntities(
 		if (group?.modality === "text") {
 			// Slice the matched value straight from the flat document by its
 			// byte-offset span (converted to char indices for JS strings).
-			views = group.entities.map((record) => {
-				const e = record.entity;
+			views = group.entities.map((e) => {
 				const start = e.location.range.start;
 				const end = e.location.range.end;
 				// Raw-source spans (DOCX/XML): the source bytes the decoded span came
@@ -257,8 +251,7 @@ export function useTextEntities(
 			// the span on the flat text; unset offsets mean the whole cell. The
 			// matched value slices from the cell's own text, so parse once.
 			const rows = doc ? parseCsv(doc).rows : null;
-			views = group.entities.map((record) => {
-				const e = record.entity;
+			views = group.entities.map((e) => {
 				const loc = e.location;
 				const start = loc.start_offset ?? 0;
 				const end = loc.end_offset ?? Number.POSITIVE_INFINITY;

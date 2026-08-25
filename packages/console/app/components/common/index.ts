@@ -1,3 +1,4 @@
+export { default as ActivityIcon } from "./ActivityIcon.vue";
 export { default as EntityAvatar } from "./EntityAvatar.vue";
 export { default as FilePicker } from "./FilePicker.vue";
 export { default as LabelPicker } from "./LabelPicker.vue";

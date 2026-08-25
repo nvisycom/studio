@@ -5,10 +5,12 @@ import type { ActivityFilters } from "#console/composables/useActivities";
 import type { VirtualColumn } from "#console/components/ui/virtual-table";
 import {
 	Calendar,
+	ChevronDown,
 	Download,
 	FileText,
 	History,
 	Link2,
+	Loader2,
 	Mail,
 	Play,
 	Settings2,
@@ -19,6 +21,7 @@ import {
 import { Button } from "#console/components/ui/button";
 import { personLabel } from "#console/utils/naming";
 import { activityContent } from "#console/utils/activities";
+import { ActivityIcon } from "#console/components/common";
 import { VirtualTable } from "#console/components/ui/virtual-table";
 import {
 	Select,
@@ -33,9 +36,14 @@ import {
 	PopoverTrigger,
 } from "#console/components/ui/popover";
 import { RangeCalendar } from "#console/components/ui/range-calendar";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "#console/components/ui/dropdown-menu";
 import type { DateRange } from "reka-ui";
 import { toast } from "vue-sonner";
-import LogsExportModal from "#console/components/pages/analytics/LogsExportModal.vue";
 import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 
 const { t } = useI18n();
@@ -166,8 +174,8 @@ const activityRows = computed(() =>
 		return [
 			{
 				id: activity.id,
-				category: c.category,
 				icon: activityIcon(c.category),
+				action: c.action,
 				text: t(c.messageKey, c.params),
 				performedBy: activity.performedBy,
 				createdAt: activity.createdAt,
@@ -177,65 +185,56 @@ const activityRows = computed(() =>
 );
 type ActivityRow = (typeof activityRows.value)[number];
 
-// Columns for the shared VirtualTable (matching the files table's look): a
-// muted relative time, the event as an icon+label, the localized message, and
-// the actor's avatar.
+// Columns for the shared VirtualTable (matching the files table's look): the
+// event as an icon (category glyph + colored action dot) beside its localized
+// message, the actor's avatar, then a muted relative time trailing on the right.
 const columns = computed<VirtualColumn<ActivityRow>[]>(() => [
 	{
-		key: "time",
-		header: t("analytics.logs.table.time"),
-		width: "150px",
-		cell: (row) => ({
-			type: "text",
-			value: relativeTime(row.createdAt),
-			muted: true,
-		}),
-	},
-	{
-		key: "type",
-		header: t("analytics.logs.table.type"),
-		width: "170px",
-		cell: (row) => ({
-			type: "status",
-			icon: row.icon,
-			iconClass: "text-muted-foreground",
-			label: t(`activities.category.${row.category}`),
-		}),
-	},
-	{
 		key: "message",
-		header: t("analytics.logs.table.message"),
-		cell: (row) => ({ type: "text", value: row.text }),
+		header: t("analytics.logs.table.event"),
+		cell: () => ({ type: "custom" }),
 	},
 	{
 		key: "by",
 		header: t("analytics.logs.table.by"),
-		width: "220px",
+		width: "200px",
 		cell: (row) => ({
 			type: "avatar",
 			name: personLabel(row.performedBy),
 			src: resolveAvatarUrl(row.performedBy.avatarUrl),
 		}),
 	},
+	{
+		key: "time",
+		header: t("analytics.logs.table.time"),
+		width: "130px",
+		align: "right",
+		cell: (row) => ({
+			type: "text",
+			value: relativeTime(row.createdAt),
+			muted: true,
+		}),
+	},
 ]);
 
-// Export: a date-range + format modal that downloads the activity log via the
-// SDK's exportActivities endpoint.
-const isExportModalOpen = ref(false);
+// Export downloads the activity log via the SDK, honoring the filters currently
+// applied to the table (category → `type`, and the date range) so the file
+// matches what's on screen.
 const isExporting = ref(false);
 
-async function handleExport(options: {
-	format: "csv" | "json";
-	from?: string;
-	to?: string;
-}) {
+async function handleExport(format: "csv" | "json") {
+	if (isExporting.value) return;
 	isExporting.value = true;
 	try {
-		const fileName = `activity-log.${options.format}`;
-		await exportActivities(fileName, options);
-		isExportModalOpen.value = false;
+		const f = filters.value;
+		await exportActivities(`activity-log.${format}`, {
+			format,
+			type: f.type,
+			from: f.from,
+			to: f.to,
+		});
 	} catch (err) {
-		toast.error(getErrorMessage(err, t("analytics.logs.exportDialog.failed")));
+		toast.error(getErrorMessage(err, t("analytics.logs.exportFailed")));
 	} finally {
 		isExporting.value = false;
 	}
@@ -292,11 +291,41 @@ async function handleExport(options: {
           {{ t("analytics.logs.filters.clearDates") }}
         </Button>
 
-        <div class="ml-auto">
-          <Button variant="outline" size="sm" @click="isExportModalOpen = true">
-            <Download :size="16" class="mr-2" />
+        <!-- Export honors the active category + date-range filters above. The
+             main button downloads CSV; the chevron picks the format. -->
+        <div class="ml-auto flex">
+          <Button
+            variant="outline"
+            size="sm"
+            class="h-9 rounded-r-none border-r-0"
+            :disabled="isExporting"
+            @click="handleExport('csv')"
+          >
+            <Loader2 v-if="isExporting" :size="16" class="mr-2 animate-spin" />
+            <Download v-else :size="16" class="mr-2" />
             {{ t("analytics.logs.export") }}
           </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <Button
+                variant="outline"
+                size="sm"
+                class="h-9 rounded-l-none px-2"
+                :disabled="isExporting"
+                :aria-label="t('analytics.logs.exportFormat')"
+              >
+                <ChevronDown :size="16" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem @select="handleExport('csv')">
+                {{ t("analytics.logs.exportCsv") }}
+              </DropdownMenuItem>
+              <DropdownMenuItem @select="handleExport('json')">
+                {{ t("analytics.logs.exportJson") }}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -311,15 +340,15 @@ async function handleExport(options: {
             description: t('analytics.logs.emptyDescription'),
           }"
           @load-more="loadMore"
-        />
+        >
+          <template #cell-message="{ row }">
+            <div class="flex items-center gap-3">
+              <ActivityIcon :icon="row.icon" :action="row.action" />
+              <span class="truncate text-foreground">{{ row.text }}</span>
+            </div>
+          </template>
+        </VirtualTable>
       </div>
-
-      <LogsExportModal
-        :open="isExportModalOpen"
-        :is-exporting="isExporting"
-        @update:open="isExportModalOpen = $event"
-        @export="handleExport"
-      />
     </div>
   </div>
 </template>
