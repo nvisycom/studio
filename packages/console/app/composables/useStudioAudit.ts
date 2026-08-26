@@ -1,15 +1,15 @@
-import type { Audit, PipelineRun } from "@nvisy/sdk/datatypes";
+import type { Audit, Detection } from "@nvisy/sdk/datatypes";
 import type { MaybeRefOrGetter } from "vue";
 
-/** Lifecycle phase of the studio's detection run. */
+/** Lifecycle phase of the studio's detection. `complete` = analysis ready. */
 export type StudioAuditPhase =
 	| "idle"
 	| "restoring"
 	| "running"
-	| "analyzed"
+	| "complete"
 	| "failed";
 
-/** Lifecycle of applying redactions to an analyzed run. */
+/** Lifecycle of applying redactions to a complete detection. */
 export type StudioRedactPhase = "idle" | "redacting" | "done" | "failed";
 
 /**
@@ -25,16 +25,18 @@ export function useStudioAudit(
 	fileId: MaybeRefOrGetter<string | null>,
 	documentText: MaybeRefOrGetter<string | null>,
 	docxParts?: MaybeRefOrGetter<Map<string, Uint8Array> | null>,
+	fileName?: MaybeRefOrGetter<string | null>,
 ) {
 	const { t } = useI18n();
 	const { pipelines } = usePipelines();
 	const {
 		runDetection,
-		findLatestRunForFile,
-		getDetections,
-		redactRun,
+		findLatestForFile,
+		getAnalysis,
+		createRedaction,
+		findLatestRedaction,
 		downloadOutput,
-	} = useRuns();
+	} = useDetections();
 
 	const selectedPipeline = ref<string>("");
 	// The last value we set on `selectedPipeline` programmatically (default or
@@ -83,19 +85,21 @@ export function useStudioAudit(
 	// Restore token: bumped whenever a restore starts so an in-flight restore can
 	// tell it has been superseded (file or pipeline changed) and bail.
 	let restoreToken = 0;
-	// True when the shown audit came from a prior run (restored on file open)
-	// rather than a run started in this session.
+	// True when the shown audit came from a prior detection (restored on file
+	// open) rather than one started in this session.
 	const restored = ref(false);
-	const runStatus = ref<PipelineRun["status"] | null>(null);
+	const detectionStatus = ref<Detection["status"] | null>(null);
 	const audit = ref<Audit | null>(null);
 	const errorMessage = ref("");
 
-	// The run backing the shown audit — the target for redaction. Set whenever an
-	// audit is shown (a fresh run or a restored one); cleared when there's none.
-	const runId = ref<string | null>(null);
+	// The detection backing the shown audit — the target for redaction. Set
+	// whenever an audit is shown (fresh or restored); cleared when there's none.
+	const detectionId = ref<string | null>(null);
+	// The active file's display name, so a redacted download gets a sensible name.
+	const detectionFileName = ref<string | null>(null);
 
-	// Redaction lifecycle for the current run, and the redacted output it produced
-	// (present once done, so the UI can offer a download).
+	// Redaction lifecycle for the current detection, and the redacted output it
+	// produced (present once done, so the UI can offer a download).
 	const redactPhase = ref<StudioRedactPhase>("idle");
 	const redactError = ref("");
 	const output = ref<{ fileId: string; fileName: string } | null>(null);
@@ -114,11 +118,12 @@ export function useStudioAudit(
 			phase.value !== "restoring",
 	);
 
-	// Redaction is offered once a run has analyzed (and isn't already redacting).
+	// Redaction is offered once a detection is complete (and isn't already
+	// redacting).
 	const canRedact = computed(
 		() =>
-			phase.value === "analyzed" &&
-			!!runId.value &&
+			phase.value === "complete" &&
+			!!detectionId.value &&
 			redactPhase.value !== "redacting",
 	);
 
@@ -128,27 +133,37 @@ export function useStudioAudit(
 		output.value = null;
 	}
 
+	// The download name for a redacted output: the input's name tagged `.redacted`
+	// (keeping its extension so it still opens), falling back to the file id.
+	function redactedName(fileId: string): string {
+		const base = detectionFileName.value;
+		if (!base) return fileId;
+		const dot = base.lastIndexOf(".");
+		return dot > 0
+			? `${base.slice(0, dot)}.redacted${base.slice(dot)}`
+			: `${base}.redacted`;
+	}
+
 	/**
-	 * Apply redactions to the analyzed run, producing its redacted output file.
-	 * On success `output` carries the file to download; guarded so a stale result
-	 * (the active file changed mid-request) can't overwrite newer state.
+	 * Apply redactions to the complete detection, producing its redacted output
+	 * file. On success `output` carries the file to download; guarded so a stale
+	 * result (the active file changed mid-request) can't overwrite newer state.
 	 */
 	async function redact() {
-		const target = runId.value;
+		const target = detectionId.value;
 		if (!target || redactPhase.value === "redacting") return;
 		const token = restoreToken;
 		redactPhase.value = "redacting";
 		redactError.value = "";
 		try {
-			const run = await redactRun(target);
+			const result = await createRedaction(target);
 			if (token !== restoreToken) return;
-			if (!run.outputFileId)
-				throw new Error("The run produced no output file.");
+			if (!result.outputFileId)
+				throw new Error("The redaction produced no output file.");
 			output.value = {
-				fileId: run.outputFileId,
-				fileName: run.outputFileName ?? run.outputFileId,
+				fileId: result.outputFileId,
+				fileName: redactedName(result.outputFileId),
 			};
-			runStatus.value = run.status;
 			redactPhase.value = "done";
 		} catch (err) {
 			if (token !== restoreToken) return;
@@ -166,28 +181,29 @@ export function useStudioAudit(
 	async function run() {
 		const file = toValue(fileId);
 		if (!file || !selectedPipeline.value) return;
-		// Supersede any in-flight restore, and capture the token so a run that
-		// finishes after the active file changed can't overwrite the new state.
+		// Supersede any in-flight restore, and capture the token so a detection
+		// that finishes after the active file changed can't overwrite new state.
 		const token = ++restoreToken;
 		phase.value = "running";
-		runStatus.value = "queued";
+		detectionStatus.value = "pending";
 		restored.value = false;
 		errorMessage.value = "";
 		audit.value = null;
-		runId.value = null;
+		detectionId.value = null;
+		detectionFileName.value = toValue(fileName) ?? null;
 		resetRedaction();
 		try {
 			const result = await runDetection(
 				selectedPipeline.value,
 				{ fileId: file },
 				(status) => {
-					if (token === restoreToken) runStatus.value = status;
+					if (token === restoreToken) detectionStatus.value = status;
 				},
 			);
 			if (token !== restoreToken) return;
 			audit.value = result.audit;
-			runId.value = result.runId;
-			phase.value = "analyzed";
+			detectionId.value = result.detectionId;
+			phase.value = "complete";
 		} catch (err) {
 			if (token !== restoreToken) return;
 			phase.value = "failed";
@@ -195,9 +211,9 @@ export function useStudioAudit(
 		}
 	}
 
-	// Restore the most recent run for a file — its detections still live on the
-	// server even if the tab was closed. When `pipelineSlug` is given, restore
-	// that pipeline's latest run; otherwise the file's latest run of any pipeline,
+	// Restore the most recent detection for a file — it still lives on the server
+	// even if the tab was closed. When `pipelineSlug` is given, restore that
+	// pipeline's latest detection; otherwise the file's latest of any pipeline,
 	// adopting its pipeline into the picker (`adopt`). Best-effort: falls back to
 	// idle when nothing is found or the request is superseded.
 	async function restoreLatest(
@@ -206,41 +222,44 @@ export function useStudioAudit(
 	) {
 		const token = ++restoreToken;
 		phase.value = "restoring";
-		runStatus.value = null;
+		detectionStatus.value = null;
 		restored.value = false;
 		errorMessage.value = "";
 		audit.value = null;
-		runId.value = null;
+		detectionId.value = null;
+		detectionFileName.value = toValue(fileName) ?? null;
 		resetRedaction();
 		try {
-			const latest = await findLatestRunForFile(file, opts.pipelineSlug);
+			const latest = await findLatestForFile(file, opts.pipelineSlug);
 			// Bail if a newer restore started (file or pipeline changed) meanwhile.
 			if (token !== restoreToken) return;
 			if (!latest) {
-				// Adoption decided: no run for this file, so the default may apply.
+				// Adoption decided: no detection for this file, so the default may apply.
 				if (opts.adopt) adoptResolved.value = true;
 				phase.value = "idle";
 				return;
 			}
-			// Record the run's pipeline to adopt into the picker, and mark adoption
-			// resolved so the selection watcher applies it (and never the default).
+			// Record the detection's pipeline to adopt into the picker, and mark
+			// adoption resolved so the selection watcher applies it (never the default).
 			if (opts.adopt) {
 				pendingAdoptPipeline.value = latest.pipelineSlug;
 				adoptResolved.value = true;
 			}
-			const restoredAudit = await getDetections(latest.id);
+			const restoredAudit = await getAnalysis(latest.id);
 			if (token !== restoreToken) return;
 			audit.value = restoredAudit;
-			runId.value = latest.id;
-			runStatus.value = latest.status;
+			detectionId.value = latest.id;
+			detectionStatus.value = latest.status;
 			restored.value = true;
-			phase.value = "analyzed";
-			// A run that already produced its redacted output: surface it so the
+			phase.value = "complete";
+			// If this detection was already redacted, surface its output so the
 			// panel offers the download without re-running redaction.
-			if (latest.outputFileId) {
+			const redaction = await findLatestRedaction(latest.id);
+			if (token !== restoreToken) return;
+			if (redaction?.outputFileId) {
 				output.value = {
-					fileId: latest.outputFileId,
-					fileName: latest.outputFileName ?? latest.outputFileId,
+					fileId: redaction.outputFileId,
+					fileName: redactedName(redaction.outputFileId),
 				};
 				redactPhase.value = "done";
 			}
@@ -270,11 +289,12 @@ export function useStudioAudit(
 				++restoreToken; // supersede any in-flight restore
 				adoptResolved.value = true; // nothing to adopt → default may apply
 				phase.value = "idle";
-				runStatus.value = null;
+				detectionStatus.value = null;
 				restored.value = false;
 				errorMessage.value = "";
 				audit.value = null;
-				runId.value = null;
+				detectionId.value = null;
+				detectionFileName.value = null;
 				resetRedaction();
 				return;
 			}
@@ -306,7 +326,7 @@ export function useStudioAudit(
 		selectedPipeline,
 		phase,
 		restored,
-		runStatus,
+		detectionStatus,
 		audit,
 		errorMessage,
 		entities,

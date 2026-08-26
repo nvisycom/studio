@@ -29,7 +29,7 @@ const { t } = useI18n();
 const props = defineProps<{
 	/** The active file's id, or null when nothing is open. */
 	fileId: string | null;
-	/** Run lifecycle phase, driving which state the list shows. */
+	/** Detection lifecycle phase, driving which state the list shows. */
 	phase: StudioAuditPhase;
 	/** Detected entities, in document order. */
 	entities: TextEntityView[];
@@ -37,15 +37,15 @@ const props = defineProps<{
 	categorizedGroups: CategorizedGroup[];
 	/** Total entity count. */
 	count: number;
-	/** Failure message shown when the run failed. */
+	/** Failure message shown when the detection failed. */
 	errorMessage?: string;
 	/** Entity currently focused (from a highlight click), for row highlighting. */
 	activeEntityId?: string | null;
 	/** Whether the open CSV treats row 0 as a header (affects tabular labels). */
 	withHeaders?: boolean;
-	/** Redaction lifecycle for the analyzed run. */
+	/** Redaction lifecycle for the complete detection. */
 	redactPhase?: StudioRedactPhase;
-	/** Whether redaction can be applied right now (analyzed, not in flight). */
+	/** Whether redaction can be applied right now (complete, not in flight). */
 	canRedact?: boolean;
 	/** Failure message shown when redaction failed. */
 	redactError?: string;
@@ -83,7 +83,7 @@ function categoryName(category: string | null): string {
 const emit = defineEmits<{
 	/** A row was clicked — focus its span in the document. */
 	"focus-entity": [id: string];
-	/** Apply redaction to the analyzed run. */
+	/** Apply redaction to the complete detection. */
 	redact: [];
 	/** Download the redacted output file. */
 	"download-output": [];
@@ -134,7 +134,7 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
   <div class="flex h-full flex-col">
     <!-- Toolbar: collapse-duplicates toggle. -->
     <div
-      v-if="phase === 'analyzed' && hasDuplicates"
+      v-if="phase === 'complete' && hasDuplicates"
       class="flex items-center justify-end border-b border-border/50 bg-muted/30 px-3 py-2 text-xs text-muted-foreground"
     >
       <button
@@ -160,7 +160,7 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
         <p class="text-xs text-destructive">{{ errorMessage }}</p>
       </div>
 
-      <!-- Restoring a previous run -->
+      <!-- Restoring a previous detection -->
       <div
         v-else-if="phase === 'restoring'"
         class="flex h-full items-center justify-center"
@@ -186,9 +186,9 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
         </p>
       </div>
 
-      <!-- Empty (analyzed, nothing found) -->
+      <!-- Empty (complete, nothing found) -->
       <div
-        v-else-if="phase === 'analyzed' && count === 0"
+        v-else-if="phase === 'complete' && count === 0"
         class="flex h-full flex-col items-center justify-center px-6 text-center"
       >
         <p class="mb-1 text-sm text-foreground">
@@ -201,7 +201,7 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
 
       <!-- Two-tier entity list: category → label → entities. Each category is
            collapsible, expanded by default. -->
-      <template v-else-if="phase === 'analyzed'">
+      <template v-else-if="phase === 'complete'">
         <Collapsible
           v-for="section in categorizedGroups"
           :key="section.category ?? '__uncategorized__'"
@@ -406,10 +406,10 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
       </template>
     </div>
 
-    <!-- Redaction footer: apply redaction to the analyzed run, then download the
+    <!-- Redaction footer: apply redaction to the complete detection, then download the
          redacted output it produces. -->
     <div
-      v-if="phase === 'analyzed' && count > 0"
+      v-if="phase === 'complete' && count > 0"
       class="border-t border-border/50 bg-muted/30 p-3"
     >
       <!-- Redaction failed: show why, keep the button available to retry. -->

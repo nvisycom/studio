@@ -111,26 +111,30 @@ const categories = computed<
 		name: t("settings.notifications.categories.pipelines.name"),
 		events: [
 			{
-				event: "pipeline.run.analyzed",
-				name: t("settings.notifications.categories.pipelines.runAnalyzed.name"),
-				description: t(
-					"settings.notifications.categories.pipelines.runAnalyzed.description",
-				),
-			},
-			{
-				event: "pipeline.run.completed",
+				event: "pipeline.detection.completed",
 				name: t(
-					"settings.notifications.categories.pipelines.runCompleted.name",
+					"settings.notifications.categories.pipelines.detectionCompleted.name",
 				),
 				description: t(
-					"settings.notifications.categories.pipelines.runCompleted.description",
+					"settings.notifications.categories.pipelines.detectionCompleted.description",
 				),
 			},
 			{
-				event: "pipeline.run.failed",
-				name: t("settings.notifications.categories.pipelines.runFailed.name"),
+				event: "pipeline.detection.failed",
+				name: t(
+					"settings.notifications.categories.pipelines.detectionFailed.name",
+				),
 				description: t(
-					"settings.notifications.categories.pipelines.runFailed.description",
+					"settings.notifications.categories.pipelines.detectionFailed.description",
+				),
+			},
+			{
+				event: "pipeline.redaction.created",
+				name: t(
+					"settings.notifications.categories.pipelines.redactionCreated.name",
+				),
+				description: t(
+					"settings.notifications.categories.pipelines.redactionCreated.description",
 				),
 			},
 		],

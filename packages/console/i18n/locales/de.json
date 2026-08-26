@@ -9,7 +9,7 @@
 			},
 			"workflows": {
 				"index": "Pipelines",
-				"runs": "Ausführungen"
+				"detections": "Erkennungen"
 			},
 			"settings": {
 				"general": "Allgemein",
@@ -250,17 +250,17 @@
 				},
 				"pipelines": {
 					"name": "Pipelines",
-					"runAnalyzed": {
-						"name": "Lauf analysiert",
-						"description": "Wenn ein Pipeline-Lauf die Analyse abschließt"
+					"detectionCompleted": {
+						"name": "Erkennung abgeschlossen",
+						"description": "Wenn eine Pipeline-Erkennung die Analyse abschließt"
 					},
-					"runCompleted": {
-						"name": "Lauf abgeschlossen",
-						"description": "Wenn ein Pipeline-Lauf abgeschlossen wird"
+					"detectionFailed": {
+						"name": "Erkennung fehlgeschlagen",
+						"description": "Wenn eine Pipeline-Erkennung fehlschlägt"
 					},
-					"runFailed": {
-						"name": "Lauf fehlgeschlagen",
-						"description": "Wenn ein Pipeline-Lauf fehlschlägt"
+					"redactionCreated": {
+						"name": "Schwärzung bereit",
+						"description": "Wenn eine geschwärzte Kopie erstellt wird"
 					}
 				}
 			},
@@ -375,22 +375,22 @@
 		"sections": {
 			"recentActivity": "Letzte Aktivitäten",
 			"recentFiles": "Letzte Dateien",
-			"recentRuns": "Letzte Ausführungen",
+			"recentDetections": "Letzte Erkennungen",
 			"viewAll": "Alle anzeigen",
 			"empty": {
 				"activity": "Noch keine Aktivität",
 				"files": "Noch keine Dateien",
-				"runs": "Noch keine Ausführungen",
+				"detections": "Noch keine Erkennungen",
 				"activityDescription": "Aktionen in diesem Arbeitsbereich erscheinen hier.",
 				"filesDescription": "Laden Sie Dokumente hoch, um sie hier zu sehen.",
-				"runsDescription": "Pipeline-Ausführungen erscheinen hier."
+				"detectionsDescription": "Pipeline-Erkennungen erscheinen hier."
 			}
 		},
 		"stats": {
-			"runs": {
-				"label": "Pipeline-Läufe",
+			"detections": {
+				"label": "Pipeline-Erkennungen",
 				"errorRate": "{percent}% Fehlerrate",
-				"noErrorSignal": "Noch keine abgeschlossenen Läufe"
+				"noErrorSignal": "Noch keine abgeschlossenen Erkennungen"
 			},
 			"storage": {
 				"label": "Belegter Speicher",
@@ -514,7 +514,8 @@
 		"kind": {
 			"original": "Original",
 			"redacted": "Geschwärzt",
-			"audit": "Audit"
+			"audit": "Audit",
+			"review": "Prüfung"
 		},
 		"view": {
 			"list": "Listenansicht",
@@ -1529,7 +1530,7 @@
 	"workflows": {
 		"title": "Pipelines",
 		"count": "{count} Pipeline konfiguriert | {count} Pipelines konfiguriert",
-		"runs": {
+		"detections": {
 			"status": "Status",
 			"allStatus": "Alle Status",
 			"allPipelines": "Alle Pipelines",
@@ -1539,24 +1540,22 @@
 			"file": "Datei",
 			"trigger": "Auslöser",
 			"started": "Gestartet",
-			"runsFound": "{count} Ausführung | {count} Ausführungen",
-			"noRunsFound": "Keine Ausführungen gefunden",
+			"runsFound": "{count} Erkennung | {count} Erkennungen",
+			"noRunsFound": "Keine Erkennungen gefunden",
 			"triggerType": {
 				"user": "Manuell",
 				"system": "Automatisch"
 			},
-			"runStatus": {
-				"queued": "In Warteschlange",
-				"analyzing": "Wird analysiert",
-				"analyzed": "Analysiert",
-				"completed": "Abgeschlossen",
-				"failed": "Fehlgeschlagen",
-				"cancelled": "Abgebrochen"
+			"detectionStatus": {
+				"pending": "Ausstehend",
+				"executing": "Wird ausgeführt",
+				"complete": "Abgeschlossen",
+				"failed": "Fehlgeschlagen"
 			},
-			"noRunsDescription": "Ausführungen erscheinen hier, sobald dieser Arbeitsbereich Dateien verarbeitet.",
+			"noRunsDescription": "Erkennungen erscheinen hier, sobald dieser Arbeitsbereich Dateien verarbeitet.",
 			"triggeredBy": "Ausgelöst von",
 			"openInStudio": "In Studio öffnen",
-			"menu": "Lauf-Aktionen",
+			"menu": "Erkennungsaktionen",
 			"downloadAuditJson": "Audit herunterladen (JSON)",
 			"downloadAuditCsv": "Audit herunterladen (CSV)",
 			"auditDownloadFailed": "Audit konnte nicht heruntergeladen werden",
@@ -1572,16 +1571,15 @@
 				"detectionUnavailable": "Erkennungen nicht verfügbar.",
 				"detections": "{count} Entitäten erkannt | {count} Entität erkannt | {count} Entitäten erkannt",
 				"input": "Eingabe",
-				"output": "Ausgabe (geschwärzt)",
 				"error": "Fehler",
-				"runId": "Ausführungs-ID",
-				"copy": "Ausführungs-ID kopieren",
-				"copied": "Ausführungs-ID kopiert",
+				"detectionId": "Erkennungs-ID",
+				"copy": "Erkennungs-ID kopieren",
+				"copied": "Erkennungs-ID kopiert",
 				"tags": "Tags",
 				"downloadJson": "JSON herunterladen",
 				"downloadCsv": "CSV herunterladen",
 				"none": "—",
-				"copyFailed": "Lauf-ID konnte nicht kopiert werden"
+				"copyFailed": "Erkennungs-ID konnte nicht kopiert werden"
 			},
 			"openInStudioFailed": "Die Datei konnte nicht im Studio geöffnet werden."
 		},
@@ -1698,7 +1696,7 @@
 			"title": "Analysen"
 		},
 		"kpis": {
-			"runs": "Pipeline-Läufe",
+			"detections": "Pipeline-Erkennungen",
 			"storage": "Belegter Speicher",
 			"usage": "KI-Nutzung",
 			"errorRate": "{percent}% Fehler",
@@ -1710,27 +1708,27 @@
 			"p95Duration": "p95 {duration}"
 		},
 		"activity": {
-			"title": "Lauf-Aktivität",
-			"totalSuffix": "Läufe im letzten Jahr",
-			"cell": "{count} Läufe am {date} | {count} Lauf am {date} | {count} Läufe am {date}",
+			"title": "Erkennungsaktivität",
+			"totalSuffix": "Erkennungen im letzten Jahr",
+			"cell": "{count} Erkennungen am {date} | {count} Erkennung am {date} | {count} Erkennungen am {date}",
 			"less": "Weniger",
 			"more": "Mehr"
 		},
 		"trends": {
-			"runs": "Läufe",
+			"detections": "Erkennungen",
 			"tokens": "Tokens",
-			"runsTitle": "Läufe pro Tag",
+			"detectionsTitle": "Erkennungen pro Tag",
 			"tokensTitle": "Tokens pro Tag",
 			"errorRate": "Fehlerrate",
 			"avgDuration": "Ø Dauer",
 			"errorRateTitle": "Fehlerrate pro Tag",
-			"avgDurationTitle": "Ø Laufzeit pro Tag"
+			"avgDurationTitle": "Ø Erkennungszeit pro Tag"
 		},
 		"breakdowns": {
-			"runsByStatus": "Läufe nach Status",
+			"detectionsByStatus": "Erkennungen nach Status",
 			"storageByKind": "Speicher nach Art",
 			"usageByModel": "Nutzung nach Modell",
-			"noRuns": "Noch keine Läufe.",
+			"noDetections": "Noch keine Erkennungen.",
 			"noStorage": "Noch keine Dateien gespeichert.",
 			"noUsage": "Noch keine KI-Nutzung."
 		}
@@ -1889,17 +1887,17 @@
 				"title": "Synchronisierung fehlgeschlagen",
 				"message": "Eine Verbindung konnte nicht synchronisiert werden: {error}"
 			},
-			"pipelineRunAnalyzed": {
-				"title": "Lauf analysiert",
+			"pipelineDetectionCompleted": {
+				"title": "Erkennung abgeschlossen",
 				"message": "{inputFileName} wurde in {pipelineSlug} analysiert"
 			},
-			"pipelineRunCompleted": {
-				"title": "Lauf abgeschlossen",
-				"message": "{inputFileName} wurde in {pipelineSlug} abgeschlossen"
-			},
-			"pipelineRunFailed": {
-				"title": "Lauf fehlgeschlagen",
+			"pipelineDetectionFailed": {
+				"title": "Erkennung fehlgeschlagen",
 				"message": "{inputFileName} ist in {pipelineSlug} fehlgeschlagen: {error}"
+			},
+			"pipelineRedactionCreated": {
+				"title": "Schwärzung bereit",
+				"message": "Eine geschwärzte Kopie von {inputFileName} ist bereit"
 			},
 			"unknown": {
 				"title": "Benachrichtigung",
@@ -2005,21 +2003,21 @@
 				"title": "Pipeline gelöscht",
 				"message": "Pipeline {pipelineSlug} wurde gelöscht"
 			},
-			"pipelineRunStarted": {
-				"title": "Lauf gestartet",
-				"message": "Ein Lauf wurde in {pipelineSlug} gestartet"
+			"pipelineDetectionStarted": {
+				"title": "Erkennung gestartet",
+				"message": "Eine Erkennung wurde in {pipelineSlug} gestartet"
 			},
-			"pipelineRunAnalyzed": {
-				"title": "Lauf analysiert",
-				"message": "Ein Lauf wurde in {pipelineSlug} analysiert"
+			"pipelineDetectionCompleted": {
+				"title": "Erkennung abgeschlossen",
+				"message": "Eine Erkennung wurde in {pipelineSlug} abgeschlossen"
 			},
-			"pipelineRunCompleted": {
-				"title": "Lauf abgeschlossen",
-				"message": "Ein Lauf wurde in {pipelineSlug} abgeschlossen"
+			"pipelineDetectionFailed": {
+				"title": "Erkennung fehlgeschlagen",
+				"message": "Eine Erkennung ist in {pipelineSlug} fehlgeschlagen"
 			},
-			"pipelineRunFailed": {
-				"title": "Lauf fehlgeschlagen",
-				"message": "Ein Lauf ist in {pipelineSlug} fehlgeschlagen"
+			"pipelineRedactionCreated": {
+				"title": "Schwärzung erstellt",
+				"message": "Eine geschwärzte Kopie wurde in {pipelineSlug} erstellt"
 			},
 			"policyCreated": {
 				"title": "Richtlinie erstellt",

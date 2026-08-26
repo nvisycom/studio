@@ -9,7 +9,7 @@
 			},
 			"workflows": {
 				"index": "Pipelines",
-				"runs": "Runs"
+				"detections": "Detections"
 			},
 			"settings": {
 				"general": "General",
@@ -250,17 +250,17 @@
 				},
 				"pipelines": {
 					"name": "Pipelines",
-					"runAnalyzed": {
-						"name": "Run Analyzed",
-						"description": "When a pipeline run finishes analysis"
+					"detectionCompleted": {
+						"name": "Detection Completed",
+						"description": "When a pipeline detection finishes analysis"
 					},
-					"runCompleted": {
-						"name": "Run Completed",
-						"description": "When a pipeline run completes"
+					"detectionFailed": {
+						"name": "Detection Failed",
+						"description": "When a pipeline detection fails"
 					},
-					"runFailed": {
-						"name": "Run Failed",
-						"description": "When a pipeline run fails"
+					"redactionCreated": {
+						"name": "Redaction Ready",
+						"description": "When a redacted copy is created"
 					}
 				}
 			},
@@ -375,22 +375,22 @@
 		"sections": {
 			"recentActivity": "Recent activity",
 			"recentFiles": "Recent files",
-			"recentRuns": "Recent runs",
+			"recentDetections": "Recent detections",
 			"viewAll": "View all",
 			"empty": {
 				"activity": "No activity yet",
 				"files": "No files yet",
-				"runs": "No runs yet",
+				"detections": "No detections yet",
 				"activityDescription": "Actions in this workspace will show up here.",
 				"filesDescription": "Upload documents to see them here.",
-				"runsDescription": "Pipeline runs will show up here."
+				"detectionsDescription": "Pipeline detections will show up here."
 			}
 		},
 		"stats": {
-			"runs": {
-				"label": "Pipeline runs",
+			"detections": {
+				"label": "Pipeline detections",
 				"errorRate": "{percent}% error rate",
-				"noErrorSignal": "No completed runs yet"
+				"noErrorSignal": "No completed detections yet"
 			},
 			"storage": {
 				"label": "Storage used",
@@ -514,7 +514,8 @@
 		"kind": {
 			"original": "Original",
 			"redacted": "Redacted",
-			"audit": "Audit"
+			"audit": "Audit",
+			"review": "Review"
 		},
 		"view": {
 			"list": "List view",
@@ -1529,7 +1530,7 @@
 	"workflows": {
 		"title": "Pipelines",
 		"count": "{count} pipeline configured | {count} pipelines configured",
-		"runs": {
+		"detections": {
 			"status": "Status",
 			"allStatus": "All statuses",
 			"allPipelines": "All pipelines",
@@ -1539,24 +1540,22 @@
 			"file": "File",
 			"trigger": "Trigger",
 			"started": "Started",
-			"runsFound": "{count} run | {count} runs",
-			"noRunsFound": "No runs found",
+			"runsFound": "{count} detection | {count} detections",
+			"noRunsFound": "No detections found",
 			"triggerType": {
 				"user": "Manual",
 				"system": "Automatic"
 			},
-			"runStatus": {
-				"queued": "Queued",
-				"analyzing": "Analyzing",
-				"analyzed": "Analyzed",
-				"completed": "Completed",
-				"failed": "Failed",
-				"cancelled": "Cancelled"
+			"detectionStatus": {
+				"pending": "Pending",
+				"executing": "Executing",
+				"complete": "Complete",
+				"failed": "Failed"
 			},
-			"noRunsDescription": "Runs will appear here once this workspace processes files.",
+			"noRunsDescription": "Detections will appear here once this workspace processes files.",
 			"triggeredBy": "Triggered by",
 			"openInStudio": "Open in Studio",
-			"menu": "Run actions",
+			"menu": "Detection actions",
 			"downloadAuditJson": "Download audit (JSON)",
 			"downloadAuditCsv": "Download audit (CSV)",
 			"auditDownloadFailed": "Couldn't download the audit",
@@ -1572,16 +1571,15 @@
 				"detectionUnavailable": "Detections unavailable.",
 				"detections": "{count} entities detected | {count} entity detected | {count} entities detected",
 				"input": "Input",
-				"output": "Output (redacted)",
 				"error": "Error",
-				"runId": "Run ID",
-				"copy": "Copy run ID",
-				"copied": "Run ID copied",
+				"detectionId": "Detection ID",
+				"copy": "Copy detection ID",
+				"copied": "Detection ID copied",
 				"tags": "Tags",
 				"downloadJson": "Download JSON",
 				"downloadCsv": "Download CSV",
 				"none": "—",
-				"copyFailed": "Couldn't copy the run id"
+				"copyFailed": "Couldn't copy the detection id"
 			},
 			"openInStudioFailed": "Couldn't open the file in the studio."
 		},
@@ -1698,7 +1696,7 @@
 			"title": "Analytics"
 		},
 		"kpis": {
-			"runs": "Pipeline runs",
+			"detections": "Pipeline detections",
 			"storage": "Storage used",
 			"usage": "AI usage",
 			"errorRate": "{percent}% errors",
@@ -1710,27 +1708,27 @@
 			"p95Duration": "p95 {duration}"
 		},
 		"activity": {
-			"title": "Run activity",
-			"totalSuffix": "runs in the last year",
-			"cell": "{count} runs on {date} | {count} run on {date} | {count} runs on {date}",
+			"title": "Detection activity",
+			"totalSuffix": "detections in the last year",
+			"cell": "{count} detections on {date} | {count} detection on {date} | {count} detections on {date}",
 			"less": "Less",
 			"more": "More"
 		},
 		"trends": {
-			"runs": "Runs",
+			"detections": "Detections",
 			"tokens": "Tokens",
-			"runsTitle": "Runs per day",
+			"detectionsTitle": "Detections per day",
 			"tokensTitle": "Tokens per day",
 			"errorRate": "Error rate",
 			"avgDuration": "Avg duration",
 			"errorRateTitle": "Error rate per day",
-			"avgDurationTitle": "Avg run time per day"
+			"avgDurationTitle": "Avg detection time per day"
 		},
 		"breakdowns": {
-			"runsByStatus": "Runs by status",
+			"detectionsByStatus": "Detections by status",
 			"storageByKind": "Storage by kind",
 			"usageByModel": "Usage by model",
-			"noRuns": "No runs yet.",
+			"noDetections": "No detections yet.",
 			"noStorage": "No files stored yet.",
 			"noUsage": "No AI usage yet."
 		}
@@ -1889,17 +1887,17 @@
 				"title": "Sync failed",
 				"message": "A connection failed to sync: {error}"
 			},
-			"pipelineRunAnalyzed": {
-				"title": "Run analyzed",
+			"pipelineDetectionCompleted": {
+				"title": "Detection completed",
 				"message": "{inputFileName} was analyzed in {pipelineSlug}"
 			},
-			"pipelineRunCompleted": {
-				"title": "Run completed",
-				"message": "{inputFileName} finished in {pipelineSlug}"
-			},
-			"pipelineRunFailed": {
-				"title": "Run failed",
+			"pipelineDetectionFailed": {
+				"title": "Detection failed",
 				"message": "{inputFileName} failed in {pipelineSlug}: {error}"
+			},
+			"pipelineRedactionCreated": {
+				"title": "Redaction ready",
+				"message": "A redacted copy of {inputFileName} is ready"
 			},
 			"unknown": {
 				"title": "Notification",
@@ -2005,21 +2003,21 @@
 				"title": "Pipeline deleted",
 				"message": "Pipeline {pipelineSlug} was deleted"
 			},
-			"pipelineRunStarted": {
-				"title": "Run started",
-				"message": "A run started in {pipelineSlug}"
+			"pipelineDetectionStarted": {
+				"title": "Detection started",
+				"message": "A detection started in {pipelineSlug}"
 			},
-			"pipelineRunAnalyzed": {
-				"title": "Run analyzed",
-				"message": "A run was analyzed in {pipelineSlug}"
+			"pipelineDetectionCompleted": {
+				"title": "Detection completed",
+				"message": "A detection finished in {pipelineSlug}"
 			},
-			"pipelineRunCompleted": {
-				"title": "Run completed",
-				"message": "A run finished in {pipelineSlug}"
+			"pipelineDetectionFailed": {
+				"title": "Detection failed",
+				"message": "A detection failed in {pipelineSlug}"
 			},
-			"pipelineRunFailed": {
-				"title": "Run failed",
-				"message": "A run failed in {pipelineSlug}"
+			"pipelineRedactionCreated": {
+				"title": "Redaction created",
+				"message": "A redacted copy was created in {pipelineSlug}"
 			},
 			"policyCreated": {
 				"title": "Policy created",

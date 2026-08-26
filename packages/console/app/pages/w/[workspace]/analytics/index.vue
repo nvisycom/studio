@@ -2,7 +2,7 @@
 import { Play, Database, Cpu, AlertTriangle, Timer } from "@lucide/vue";
 import type { AreaChartSpec } from "#console/components/pages/analytics/charts";
 import type { BreakdownRow } from "#console/components/pages/analytics/AnalyticsBreakdown.vue";
-import RunActivityGrid from "#console/components/pages/analytics/RunActivityGrid.vue";
+import DetectionActivityGrid from "#console/components/pages/analytics/DetectionActivityGrid.vue";
 import AnalyticsBreakdown from "#console/components/pages/analytics/AnalyticsBreakdown.vue";
 import AnalyticsAreaChart from "#console/components/pages/analytics/AnalyticsAreaChartLazy.vue";
 import {
@@ -30,30 +30,30 @@ const kpis = computed(() => {
 	const a = analytics.value;
 	if (!a) return [];
 	const errorRate =
-		a.runs.errorRate === undefined
+		a.detections.errorRate === undefined
 			? t("analytics.kpis.noSignal")
 			: t("analytics.kpis.errorRate", {
-					percent: (a.runs.errorRate * 100).toFixed(1),
+					percent: (a.detections.errorRate * 100).toFixed(1),
 				});
 	const avg =
-		a.runs.avgDurationMs === undefined
+		a.detections.avgDurationMs === undefined
 			? t("analytics.kpis.noSignal")
 			: t("analytics.kpis.avgDuration", {
-					duration: formatDurationMs(a.runs.avgDurationMs),
+					duration: formatDurationMs(a.detections.avgDurationMs),
 				});
 	// p95 (tail latency) only when a run has completed.
 	const p95 =
-		a.runs.p95DurationMs === undefined
+		a.detections.p95DurationMs === undefined
 			? null
 			: t("analytics.kpis.p95Duration", {
-					duration: formatDurationMs(a.runs.p95DurationMs),
+					duration: formatDurationMs(a.detections.p95DurationMs),
 				});
 	return [
 		{
-			key: "runs",
+			key: "detections",
 			icon: Play,
-			label: t("analytics.kpis.runs"),
-			value: a.runs.total.toLocaleString(),
+			label: t("analytics.kpis.detections"),
+			value: a.detections.total.toLocaleString(),
 			sub: [errorRate, avg, p95].filter(Boolean).join(" · "),
 		},
 		{
@@ -84,7 +84,7 @@ const kpis = computed(() => {
 const trendData = computed(() =>
 	(timeSeries.value?.points ?? []).map((p) => ({
 		date: new Date(p.date),
-		runs: p.runs,
+		detections: p.runs,
 		tokens: p.totalTokens ?? 0,
 		errorPct: (p.errorRate ?? 0) * 100,
 		avgSeconds: (p.avgDurationMs ?? 0) / 1000,
@@ -100,8 +100,13 @@ function trendSpec(
 	return { series: [{ key, label, color, icon }], data: trendData.value };
 }
 
-const runsTrend = computed(() =>
-	trendSpec("runs", t("analytics.trends.runs"), "var(--chart-1)", Play),
+const detectionsTrend = computed(() =>
+	trendSpec(
+		"detections",
+		t("analytics.trends.detections"),
+		"var(--chart-1)",
+		Play,
+	),
 );
 const tokensTrend = computed(() =>
 	trendSpec("tokens", t("analytics.trends.tokens"), "var(--chart-2)", Cpu),
@@ -146,10 +151,10 @@ function toRows<T>(
 		}));
 }
 
-const runsByStatus = computed<BreakdownRow[]>(() =>
-	toRows(analytics.value?.runs.byStatus ?? [], {
+const detectionsByStatus = computed<BreakdownRow[]>(() =>
+	toRows(analytics.value?.detections.byStatus ?? [], {
 		value: (e) => e.count,
-		label: (e) => t(`workflows.runs.runStatus.${e.status}`),
+		label: (e) => t(`workflows.detections.detectionStatus.${e.status}`),
 		format: (e) => e.count.toLocaleString(),
 		keyOf: (e) => e.status,
 	}),
@@ -232,7 +237,7 @@ const usageByModel = computed<BreakdownRow[]>(() =>
       </div>
 
       <!-- Run activity heatmap -->
-      <RunActivityGrid
+      <DetectionActivityGrid
         :time-series="timeSeries"
         :is-loading="isLoadingTimeSeries"
       />
@@ -242,11 +247,11 @@ const usageByModel = computed<BreakdownRow[]>(() =>
         <Card class="rounded-xl border-border/50">
           <CardHeader class="pb-2">
             <CardTitle class="text-sm font-medium">
-              {{ t("analytics.trends.runsTitle") }}
+              {{ t("analytics.trends.detectionsTitle") }}
             </CardTitle>
           </CardHeader>
           <CardContent class="pt-2">
-            <AnalyticsAreaChart :spec="runsTrend" />
+            <AnalyticsAreaChart :spec="detectionsTrend" />
           </CardContent>
         </Card>
 
@@ -287,8 +292,8 @@ const usageByModel = computed<BreakdownRow[]>(() =>
       <!-- Breakdowns -->
       <div class="grid gap-4 md:grid-cols-3">
         <AnalyticsBreakdown
-          :title="t('analytics.breakdowns.runsByStatus')"
-          :rows="runsByStatus"
+          :title="t('analytics.breakdowns.detectionsByStatus')"
+          :rows="detectionsByStatus"
           :empty-text="t('analytics.breakdowns.noRuns')"
         />
         <AnalyticsBreakdown

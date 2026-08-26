@@ -48,11 +48,12 @@ function formatDate(dateStr: string | null | undefined): string {
 }
 
 // File kind is surfaced subtly as a ring on the file-icon tile (not a column):
-// originals stay neutral; redacted/audit get a tinted ring + tooltip.
+// originals stay neutral; redacted/audit/review get a tinted ring + tooltip.
 const KIND_RING: Record<NvisyFile["fileKind"], string> = {
 	original: "",
 	redacted: "ring-1 ring-amber-400/60 dark:ring-amber-500/50",
 	audit: "ring-1 ring-blue-400/60 dark:ring-blue-500/50",
+	review: "ring-1 ring-violet-400/60 dark:ring-violet-500/50",
 };
 
 const columns = computed<VirtualColumn<NvisyFile>[]>(() => [

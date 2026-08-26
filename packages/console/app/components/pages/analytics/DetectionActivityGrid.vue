@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import type { RunTimeSeries } from "@nvisy/sdk/datatypes";
+import type { DetectionTimeSeries } from "@nvisy/sdk/datatypes";
 
 /**
- * GitHub-style heatmap of daily pipeline-run volume over the last ~year. Each
- * cell is one day, colored by run count against a stepped intensity ramp; the
- * ramp is a single accent hue (not the status/2FA greens), so it reads as
- * "volume" without colliding with semantic color.
+ * GitHub-style heatmap of daily pipeline-detection volume over the last ~year.
+ * Each cell is one day, colored by detection count against a stepped intensity
+ * ramp; the ramp is a single accent hue (not the status/2FA greens), so it reads
+ * as "volume" without colliding with semantic color.
  */
 const props = defineProps<{
-	timeSeries: RunTimeSeries | undefined;
+	timeSeries: DetectionTimeSeries | undefined;
 	isLoading: boolean;
 }>();
 

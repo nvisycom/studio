@@ -49,7 +49,7 @@ const KNOWN_CATEGORIES = new Set([
  */
 export function activityContent(payload: ActivityPayload): ActivityContent {
 	const type = payload.type as string;
-	// The verb is the segment after the last dot (e.g. `pipeline.run.completed`
+	// The verb is the segment after the last dot (e.g. `pipeline.detection.completed`
 	// → "completed"). Drives the action badge on the activity icon.
 	const action = type.slice(type.lastIndexOf(".") + 1);
 	return { ...resolveContent(payload), action };
@@ -110,14 +110,14 @@ function resolveContent(
 			return content("pipelineUpdated", "pipeline", payload.data);
 		case "pipeline.deleted":
 			return content("pipelineDeleted", "pipeline", payload.data);
-		case "pipeline.run.started":
-			return content("pipelineRunStarted", "pipeline", payload.data);
-		case "pipeline.run.analyzed":
-			return content("pipelineRunAnalyzed", "pipeline", payload.data);
-		case "pipeline.run.completed":
-			return content("pipelineRunCompleted", "pipeline", payload.data);
-		case "pipeline.run.failed":
-			return content("pipelineRunFailed", "pipeline", payload.data);
+		case "pipeline.detection.started":
+			return content("pipelineDetectionStarted", "pipeline", payload.data);
+		case "pipeline.detection.completed":
+			return content("pipelineDetectionCompleted", "pipeline", payload.data);
+		case "pipeline.detection.failed":
+			return content("pipelineDetectionFailed", "pipeline", payload.data);
+		case "pipeline.redaction.created":
+			return content("pipelineRedactionCreated", "pipeline", payload.data);
 		case "policy.created":
 			return content("policyCreated", "policy", payload.data);
 		case "policy.updated":
@@ -152,10 +152,6 @@ function content(
 	};
 }
 
-// The action badge is a single colored dot — one shape, the color carries the
-// meaning (the row's message spells out the verb). Green = additive/success,
-// red = removal/failure, amber = change, blue = a run in motion, muted = neutral
-// or unknown. Tints match those used elsewhere in the app.
 // A quiet accent dot, not an alert: desaturated and low-opacity in light mode so
 // it sits behind the icon, a touch brighter (but still restrained) in dark mode
 // where it needs to read against the dark surface. Color carries the meaning —

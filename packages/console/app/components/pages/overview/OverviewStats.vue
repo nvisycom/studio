@@ -22,10 +22,10 @@ interface Stat {
 // Error rate is a fraction (0–1) that's omitted until a run reaches a terminal
 // state — so it's "no signal yet", not 0%.
 const errorRateLabel = computed(() => {
-	const rate = analytics.value?.runs.errorRate;
+	const rate = analytics.value?.detections.errorRate;
 	return rate === undefined
-		? t("overview.stats.runs.noErrorSignal")
-		: t("overview.stats.runs.errorRate", {
+		? t("overview.stats.detections.noErrorSignal")
+		: t("overview.stats.detections.errorRate", {
 				percent: (rate * 100).toFixed(1),
 			});
 });
@@ -35,10 +35,10 @@ const stats = computed<Stat[]>(() => {
 	if (!a) return [];
 	return [
 		{
-			key: "runs",
+			key: "detections",
 			icon: Play,
-			label: t("overview.stats.runs.label"),
-			value: a.runs.total.toLocaleString(),
+			label: t("overview.stats.detections.label"),
+			value: a.detections.total.toLocaleString(),
 			sub: errorRateLabel.value,
 		},
 		{

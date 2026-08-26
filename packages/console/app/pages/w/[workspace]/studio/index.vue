@@ -116,6 +116,7 @@ const audit = useStudioAudit(
 	() => activeFile.value?.fileId ?? null,
 	() => documentText.value,
 	() => docxParts.value,
+	() => activeFile.value?.displayName ?? null,
 );
 
 function focusEntity(id: string) {

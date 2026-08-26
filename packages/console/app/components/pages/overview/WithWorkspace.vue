@@ -17,7 +17,7 @@ import {
 	Webhook as WebhookIcon,
 	X,
 } from "@lucide/vue";
-import type { PipelineRunStatus } from "@nvisy/sdk/datatypes";
+import type { DetectionStatus } from "@nvisy/sdk/datatypes";
 import { useLocalStorage } from "@vueuse/core";
 import type { Component } from "vue";
 import {
@@ -42,7 +42,7 @@ const { members } = useMembers();
 const { files } = useFiles();
 const { policies } = usePolicies();
 const { activities } = useActivities({ pageSize: 8 });
-const { runs } = useRuns();
+const { detections } = useDetections();
 
 // --- Setup progress -----------------------------------------------------
 // Each step's `done` flag is derived from real data. While setup is incomplete
@@ -100,7 +100,7 @@ function dismissSetup(): void {
 }
 
 // The setup card shows while setup is unfinished and hasn't been hidden. The
-// live dashboard (activity / files / runs) always renders alongside it.
+// live dashboard (activity / files / detections) always renders alongside it.
 const showSetupCard = computed(() => !allSetUp.value && !isDismissed.value);
 
 // --- Recent activity ----------------------------------------------------
@@ -122,7 +122,7 @@ function activityIcon(category: string): Component {
 
 // View-models for the recent-activity list. Activities whose payload didn't
 // decode (undefined) carry no localizable copy, so we drop them.
-// Cap at 5 like the recent files/runs cards. We fetch a few extra (pageSize: 8)
+// Cap at 5 like the recent files/detections cards. We fetch a few extra (pageSize: 8)
 // so undecoded payloads (dropped below) still leave enough to fill 5.
 const recentActivities = computed(() =>
 	(activities.value ?? [])
@@ -145,39 +145,37 @@ const recentActivities = computed(() =>
 
 const recentFiles = computed(() => (files.value ?? []).slice(0, 5));
 
-// --- Recent runs --------------------------------------------------------
-// Most-recent pipeline runs, newest first. A run is shown by the document it
-// analyzes (mirroring the Recent files card): a file-icon tile carrying a
+// --- Recent detections --------------------------------------------------
+// Most-recent pipeline detections, newest first. Each is shown by the document
+// it analyzes (mirroring the Recent files card): a file-icon tile carrying a
 // small status badge in its corner, the pipeline as secondary detail, and the
 // account that triggered it.
-const recentRuns = computed(() =>
-	[...(runs.value ?? [])]
+const recentDetections = computed(() =>
+	[...(detections.value ?? [])]
 		.sort((a, b) => b.startedAt.localeCompare(a.startedAt))
 		.slice(0, 5)
-		.map((run) => ({
-			id: run.id,
-			status: run.status,
-			pipelineSlug: run.pipelineSlug,
-			startedAt: run.startedAt,
-			triggeredBy: run.triggeredBy,
+		.map((detection) => ({
+			id: detection.id,
+			status: detection.status,
+			pipelineSlug: detection.pipelineSlug,
+			startedAt: detection.startedAt,
+			triggeredBy: detection.triggeredBy,
 			// The source document; fall back to the id when the name is absent.
-			fileName: run.inputFileName || run.inputFileId,
+			fileName: detection.inputFileName || detection.inputFileId,
 		})),
 );
 
 // Corner status glyph on the file tile. Restrained color: failure is
-// destructive, a completed run reads as foreground, everything in-between
+// destructive, a complete detection reads as foreground, everything in-between
 // stays muted (no rainbow) in keeping with the monochrome system.
-const RUN_STATUS_ICON: Record<
-	PipelineRunStatus,
+const DETECTION_STATUS_ICON: Record<
+	DetectionStatus,
 	{ icon: Component; class: string; spin?: boolean }
 > = {
-	queued: { icon: Clock, class: "text-muted-foreground" },
-	analyzing: { icon: Loader2, class: "text-muted-foreground", spin: true },
-	analyzed: { icon: ClipboardCheck, class: "text-muted-foreground" },
-	completed: { icon: Check, class: "text-foreground" },
+	pending: { icon: Clock, class: "text-muted-foreground" },
+	executing: { icon: Loader2, class: "text-muted-foreground", spin: true },
+	complete: { icon: Check, class: "text-foreground" },
 	failed: { icon: X, class: "text-destructive" },
-	cancelled: { icon: CircleSlash, class: "text-muted-foreground" },
 };
 
 // Quick actions (always available)
@@ -202,7 +200,7 @@ const quickActions = [
 
 <template>
   <div class="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8">
-    <!-- Workspace stat totals (runs, storage). -->
+    <!-- Workspace stat totals (detections, storage). -->
     <OverviewStats />
 
     <!-- Top row: recent activity, plus the setup card while unfinished. -->
@@ -424,11 +422,11 @@ const quickActions = [
               <CardTitle
                 class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
               >
-                {{ t("overview.sections.recentRuns") }}
+                {{ t("overview.sections.recentDetections") }}
               </CardTitle>
               <NuxtLink
-                v-if="recentRuns.length"
-                :to="wLink('/workflows/runs')"
+                v-if="recentDetections.length"
+                :to="wLink('/workflows/detections')"
                 class="text-xs text-muted-foreground transition-colors hover:text-foreground"
               >
                 {{ t("overview.sections.viewAll") }}
@@ -436,11 +434,11 @@ const quickActions = [
             </div>
           </CardHeader>
           <CardContent class="pb-6">
-            <div v-if="recentRuns.length" class="-my-1 flex flex-col">
+            <div v-if="recentDetections.length" class="-my-1 flex flex-col">
               <NuxtLink
-                v-for="run in recentRuns"
-                :key="run.id"
-                :to="wLink('/workflows/runs')"
+                v-for="detection in recentDetections"
+                :key="detection.id"
+                :to="wLink('/workflows/detections')"
                 class="flex min-h-14 items-center gap-3 py-2.5"
               >
                 <div class="relative shrink-0">
@@ -448,47 +446,47 @@ const quickActions = [
                     class="flex size-8 items-center justify-center rounded-md border border-border/60 bg-muted/40 text-muted-foreground"
                   >
                     <component
-                      :is="getFileIcon(run.fileName)"
+                      :is="getFileIcon(detection.fileName)"
                       :size="16"
                       :stroke-width="1.75"
                     />
                   </div>
                   <span
-                    :title="t(`workflows.runs.runStatus.${run.status}`)"
+                    :title="t(`workflows.detections.detectionStatus.${detection.status}`)"
                     class="absolute -bottom-1 -right-1 flex size-[18px] items-center justify-center rounded-full border border-border bg-background ring-2 ring-background"
                   >
                     <component
-                      :is="RUN_STATUS_ICON[run.status].icon"
+                      :is="DETECTION_STATUS_ICON[detection.status].icon"
                       :size="11"
                       :stroke-width="2.5"
                       :class="[
-                        RUN_STATUS_ICON[run.status].class,
-                        RUN_STATUS_ICON[run.status].spin && 'animate-spin',
+                        DETECTION_STATUS_ICON[detection.status].class,
+                        DETECTION_STATUS_ICON[detection.status].spin && 'animate-spin',
                       ]"
                     />
                   </span>
                 </div>
                 <div class="min-w-0 flex-1">
                   <p class="truncate text-sm font-medium text-foreground">
-                    {{ run.fileName }}
+                    {{ detection.fileName }}
                   </p>
                   <p class="truncate font-mono text-xs text-muted-foreground">
-                    {{ run.pipelineSlug }}
+                    {{ detection.pipelineSlug }}
                   </p>
                 </div>
                 <div class="flex min-w-0 shrink items-center gap-2">
                   <EntityAvatar
                     size="sm"
                     class="shrink-0"
-                    :name="personLabel(run.triggeredBy)"
-                    :src="resolveAvatarUrl(run.triggeredBy.avatarUrl)"
+                    :name="personLabel(detection.triggeredBy)"
+                    :src="resolveAvatarUrl(detection.triggeredBy.avatarUrl)"
                   />
                   <span class="truncate text-sm text-muted-foreground">
-                    {{ personLabel(run.triggeredBy) }}
+                    {{ personLabel(detection.triggeredBy) }}
                   </span>
                 </div>
                 <span class="shrink-0 text-xs text-muted-foreground">
-                  {{ relativeTime(run.startedAt) }}
+                  {{ relativeTime(detection.startedAt) }}
                 </span>
               </NuxtLink>
             </div>
@@ -499,10 +497,10 @@ const quickActions = [
                 <Play class="size-5 text-muted-foreground" />
               </div>
               <p class="mb-1 text-sm text-foreground">
-                {{ t("overview.sections.empty.runs") }}
+                {{ t("overview.sections.empty.detections") }}
               </p>
               <p class="text-xs text-muted-foreground">
-                {{ t("overview.sections.empty.runsDescription") }}
+                {{ t("overview.sections.empty.detectionsDescription") }}
               </p>
             </div>
           </CardContent>
