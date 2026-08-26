@@ -7,12 +7,14 @@ import StudioDocxView from "./StudioDocxView.vue";
 import StudioImageView from "./StudioImageView.vue";
 import StudioTextView from "./StudioTextView.vue";
 import type { TextEntityView } from "#console/composables/useTextEntities";
-import { getFileExtension } from "#console/utils/file";
 
 const props = withDefaults(
 	defineProps<{
 		contentUrl: string | null;
 		displayName: string;
+		/** The file's real extension (from the API), the source of truth for
+		 * which sub-view renders — not parsed from the display name. */
+		fileExtension: string;
 		isLoading: boolean;
 		isImage: boolean;
 		isText: boolean;
@@ -43,8 +45,10 @@ const emit = defineEmits<{
 const { t } = useI18n();
 
 // File kind drives which preview renders. Each kind has its own self-contained
-// component (CSV, text/JSON, DOCX); this component dispatches between them.
-const fileKind = computed(() => getFileExtension(props.displayName));
+// component (CSV, text/JSON, DOCX); this component dispatches between them. Keyed
+// off the API's real extension, so a redacted `report.csv.redacted` still reads
+// as CSV.
+const fileKind = computed(() => props.fileExtension.toLowerCase());
 const isCsv = computed(() => fileKind.value === "csv");
 
 // The focused entity object, for the detail popover.

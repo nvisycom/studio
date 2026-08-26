@@ -49,10 +49,10 @@ export function useSectionTabs() {
 			to: "/workflows",
 		},
 		{
-			value: "runs",
-			label: t("header.tabs.workflows.runs"),
+			value: "detections",
+			label: t("header.tabs.workflows.detections"),
 			icon: History,
-			to: "/workflows/runs",
+			to: "/workflows/detections",
 		},
 	]);
 

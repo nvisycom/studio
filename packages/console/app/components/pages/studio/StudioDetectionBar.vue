@@ -55,11 +55,11 @@ defineEmits<{ run: [] }>();
       size="icon"
       class="size-8 shrink-0"
       :disabled="!canRun"
-      :title="phase === 'analyzed' ? t('studio.audit.runAgain') : t('studio.audit.run')"
+      :title="phase === 'complete' ? t('studio.audit.runAgain') : t('studio.audit.run')"
       @click="$emit('run')"
     >
       <Loader2 v-if="phase === 'running'" :size="16" class="animate-spin" />
-      <RotateCcw v-else-if="phase === 'analyzed'" :size="16" />
+      <RotateCcw v-else-if="phase === 'complete'" :size="16" />
       <Play v-else :size="16" />
     </Button>
   </div>

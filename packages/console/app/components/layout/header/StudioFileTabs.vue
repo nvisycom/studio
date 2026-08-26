@@ -82,7 +82,11 @@ function truncate(str: string, maxLength: number): string {
             >
               <div class="relative flex-shrink-0">
                 <Loader2 v-if="file.isLoading" :size="14" class="animate-spin" />
-                <component :is="getFileIcon(file.displayName)" v-else :size="14" />
+                <component
+                  :is="getFileIconForExtension(file.fileExtension)"
+                  v-else
+                  :size="14"
+                />
               </div>
               <span class="flex-1 truncate text-sm">
                 {{ truncate(file.displayName, 20) }}

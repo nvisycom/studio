@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type {
-	PipelineRun,
-	PipelineRunStatus,
+	Detection,
+	DetectionStatus,
 	PipelineTriggerType,
 } from "@nvisy/sdk/datatypes";
-import type { RunsFilter } from "#console/composables/useRuns";
+import type { DetectionsFilter } from "#console/composables/useDetections";
 import {
 	Loader2,
 	History,
@@ -16,7 +16,7 @@ import {
 import type { RowAction } from "#console/components/pages/RowActions.vue";
 import type { VirtualColumn } from "#console/components/ui/virtual-table";
 import { EntityAvatar, FilePicker } from "#console/components/common";
-import { RunDetailSheet } from "#console/components/pages/runs";
+import { DetectionDetailSheet } from "#console/components/pages/detections";
 import { personLabel } from "#console/utils/naming";
 import { toast } from "vue-sonner";
 import { Button } from "#console/components/ui/button";
@@ -36,19 +36,19 @@ const { wLink } = useWorkspaceLink();
 const { resolveAvatarUrl } = useAvatarUrl();
 const { openFile } = useStudioFiles();
 
-// Run-detail sheet: opened from a row click or the "See details" action.
-const detailRun = ref<PipelineRun | null>(null);
+// Detection-detail sheet: opened from a row click or the "See details" action.
+const detailDetection = ref<Detection | null>(null);
 const isDetailOpen = ref(false);
-function openDetails(run: PipelineRun) {
-	detailRun.value = run;
+function openDetails(detection: Detection) {
+	detailDetection.value = detection;
 	isDetailOpen.value = true;
 }
 
-// Open a run's source document in the studio for review. `openFile` fetches the
+// Open a detection's source document in the studio for review. `openFile` fetches the
 // file into a tab; surface a failure rather than let it reject unhandled.
 function openInStudio(fileId: string) {
 	openFile(fileId).catch((error) => {
-		toast.error(t("workflows.runs.openInStudioFailed"), {
+		toast.error(t("workflows.detections.openInStudioFailed"), {
 			description: getErrorMessage(error, t("common.errors.tryAgain")),
 		});
 	});
@@ -56,62 +56,67 @@ function openInStudio(fileId: string) {
 }
 
 // A stable base name for an exported audit: the source file (sans extension)
-// plus the short run id, so multiple runs of one file don't collide. The CSV
+// plus the short detection id, so multiple detections of one file don't collide. The CSV
 // export is delivered as a zip archive (entities.csv, provenance.csv,
 // reviews.csv), so its download is named `.zip`, not `.csv`.
 function auditFileName(
-	run: (typeof sortedRuns.value)[number],
+	detection: (typeof sortedDetections.value)[number],
 	format: "json" | "csv",
 ): string {
-	const base = (run.inputFileName || run.inputFileId).replace(/\.[^.]+$/, "");
+	const base = (detection.inputFileName || detection.inputFileId).replace(
+		/\.[^.]+$/,
+		"",
+	);
 	const ext = format === "csv" ? "zip" : "json";
-	return `${base}-audit-${run.id.slice(0, 8)}.${ext}`;
+	return `${base}-audit-${detection.id.slice(0, 8)}.${ext}`;
 }
 
-async function downloadRunAudit(
-	run: (typeof sortedRuns.value)[number],
+async function downloadDetectionAudit(
+	detection: (typeof sortedDetections.value)[number],
 	format: "json" | "csv",
 ) {
 	try {
-		await downloadAudit(run.id, format, auditFileName(run, format));
+		await downloadAudit(detection.id, format, auditFileName(detection, format));
 	} catch (error) {
-		toast.error(t("workflows.runs.auditDownloadFailed"), {
+		toast.error(t("workflows.detections.auditDownloadFailed"), {
 			description: getErrorMessage(error, t("common.errors.tryAgain")),
 		});
 	}
 }
 
-function rowActions(run: (typeof sortedRuns.value)[number]): RowAction[] {
+function rowActions(
+	detection: (typeof sortedDetections.value)[number],
+): RowAction[] {
 	return [
 		{
 			key: "details",
-			label: t("workflows.runs.seeDetails"),
+			label: t("workflows.detections.seeDetails"),
 			icon: PanelRightOpen,
-			select: () => openDetails(run),
+			select: () => openDetails(detection),
 		},
 		{
 			key: "studio",
-			label: t("workflows.runs.openInStudio"),
+			label: t("workflows.detections.openInStudio"),
 			icon: ScanSearch,
-			select: () => openInStudio(run.inputFileId),
+			select: () => openInStudio(detection.inputFileId),
 		},
 		{
 			key: "audit-json",
-			label: t("workflows.runs.downloadAuditJson"),
+			label: t("workflows.detections.downloadAuditJson"),
 			icon: FileJson,
 			separatorBefore: true,
-			select: () => downloadRunAudit(run, "json"),
+			select: () => downloadDetectionAudit(detection, "json"),
 		},
 		{
 			key: "audit-csv",
-			label: t("workflows.runs.downloadAuditCsv"),
+			label: t("workflows.detections.downloadAuditCsv"),
 			icon: FileSpreadsheet,
-			select: () => downloadRunAudit(run, "csv"),
+			select: () => downloadDetectionAudit(detection, "csv"),
 		},
 	];
 }
 
-useHead({ title: "Workflow Runs" });
+useHead({ title: "Detections" });
 
 definePageMeta({
 	pageCategory: "header.category.workflows",
@@ -122,90 +127,87 @@ const sectionTabs = useSectionTabs();
 
 const { pipelines } = usePipelines();
 
-// Filters are applied server-side via listRuns/listPipelineRuns.
+// Filters are applied server-side via listDetections/listPipelineDetections.
 const ALL = "all";
-const statusFilter = ref<PipelineRunStatus | typeof ALL>(ALL);
+const statusFilter = ref<DetectionStatus | typeof ALL>(ALL);
 const pipelineFilter = ref<string>(ALL);
 const triggerFilter = ref<PipelineTriggerType | typeof ALL>(ALL);
 const fileFilter = ref<string | null>(null);
 
-const runsFilter = computed<RunsFilter>(() => ({
+const detectionsFilter = computed<DetectionsFilter>(() => ({
 	...(statusFilter.value !== ALL && { status: statusFilter.value }),
 	...(triggerFilter.value !== ALL && { triggerType: triggerFilter.value }),
 	...(pipelineFilter.value !== ALL && { pipelineSlug: pipelineFilter.value }),
 	...(fileFilter.value && { fileId: fileFilter.value }),
 }));
 
-const { runs, isLoading, downloadAudit } = useRuns(runsFilter);
+const { detections, isLoading, downloadAudit } =
+	useDetections(detectionsFilter);
 
-const RUN_STATUSES: PipelineRunStatus[] = [
-	"queued",
-	"analyzing",
-	"analyzed",
-	"completed",
+const DETECTION_STATUSES: DetectionStatus[] = [
+	"pending",
+	"executing",
+	"complete",
 	"failed",
-	"cancelled",
 ];
 
 const TRIGGER_TYPES: PipelineTriggerType[] = ["user", "system"];
 
 // The API filters; we only ensure newest-first ordering.
-const sortedRuns = computed(() =>
-	[...(runs.value ?? [])].sort((a, b) =>
+const sortedDetections = computed(() =>
+	[...(detections.value ?? [])].sort((a, b) =>
 		b.startedAt.localeCompare(a.startedAt),
 	),
 );
 
-const columns = computed<VirtualColumn<(typeof sortedRuns.value)[number]>[]>(
-	() => [
-		{
-			key: "pipeline",
-			header: t("workflows.runs.pipeline"),
-			cell: (r) => ({ type: "text", value: r.pipelineSlug, mono: true }),
-		},
-		{
-			key: "file",
-			header: t("workflows.runs.file"),
-			cell: (r) => ({
-				type: "primary",
-				title: r.inputFileName || r.inputFileId,
-				// The redacted output, once the run produced one.
-				subtitle: r.outputFileName ?? undefined,
-				maxWidth: "max-w-xs",
-			}),
-		},
-		{
-			key: "triggeredBy",
-			header: t("workflows.runs.triggeredBy"),
-			width: "180px",
-			cell: (r) => ({
-				type: "avatar",
-				name: personLabel(r.triggeredBy),
-				src: resolveAvatarUrl(r.triggeredBy.avatarUrl),
-			}),
-		},
-		{
-			key: "status",
-			header: t("workflows.runs.statusHeader"),
-			width: "140px",
-			cell: (r) => ({
-				type: "badge",
-				label: t(`workflows.runs.runStatus.${r.status}`),
-				variant: r.status === "failed" ? "destructive" : "secondary",
-			}),
-		},
-		{
-			key: "started",
-			header: t("workflows.runs.started"),
-			width: "140px",
-			cell: (r) => ({
-				type: "text",
-				value: relativeTime(r.startedAt),
-				muted: true,
-			}),
-		},
-	],
-);
+const columns = computed<
+	VirtualColumn<(typeof sortedDetections.value)[number]>[]
+>(() => [
+	{
+		key: "pipeline",
+		header: t("workflows.detections.pipeline"),
+		cell: (r) => ({ type: "text", value: r.pipelineSlug, mono: true }),
+	},
+	{
+		key: "file",
+		header: t("workflows.detections.file"),
+		cell: (r) => ({
+			type: "primary",
+			title: r.inputFileName || r.inputFileId,
+			maxWidth: "max-w-xs",
+		}),
+	},
+	{
+		key: "triggeredBy",
+		header: t("workflows.detections.triggeredBy"),
+		width: "180px",
+		cell: (r) => ({
+			type: "avatar",
+			name: personLabel(r.triggeredBy),
+			src: resolveAvatarUrl(r.triggeredBy.avatarUrl),
+		}),
+	},
+	{
+		key: "status",
+		header: t("workflows.detections.statusHeader"),
+		width: "140px",
+		cell: (r) => ({
+			type: "badge",
+			label: t(`workflows.detections.detectionStatus.${r.status}`),
+			variant: r.status === "failed" ? "destructive" : "secondary",
+		}),
+	},
+	{
+		key: "started",
+		header: t("workflows.detections.started"),
+		width: "140px",
+		cell: (r) => ({
+			type: "text",
+			value: relativeTime(r.startedAt),
+			muted: true,
+		}),
+	},
+]);
 </script>
 
 <template>
@@ -220,7 +222,7 @@ const columns = computed<VirtualColumn<(typeof sortedRuns.value)[number]>[]>(
       <!-- Filter toolbar. -->
       <div class="flex flex-wrap items-center gap-3">
         <p class="shrink-0 text-sm text-muted-foreground">
-          {{ t("workflows.runs.runsFound", { count: sortedRuns.length }) }}
+          {{ t("workflows.detections.runsFound", { count: sortedDetections.length }) }}
         </p>
 
         <div class="flex-1" />
@@ -228,11 +230,11 @@ const columns = computed<VirtualColumn<(typeof sortedRuns.value)[number]>[]>(
         <!-- Pipeline filter -->
         <Select v-model="pipelineFilter">
           <SelectTrigger class="h-9 w-[170px] text-sm">
-            <SelectValue :placeholder="t('workflows.runs.pipeline')" />
+            <SelectValue :placeholder="t('workflows.detections.pipeline')" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all" class="text-sm font-normal">
-              {{ t("workflows.runs.allPipelines") }}
+              {{ t("workflows.detections.allPipelines") }}
             </SelectItem>
             <SelectItem
               v-for="p in pipelines ?? []"
@@ -251,11 +253,11 @@ const columns = computed<VirtualColumn<(typeof sortedRuns.value)[number]>[]>(
         <!-- Trigger filter -->
         <Select v-model="triggerFilter">
           <SelectTrigger class="h-9 w-[150px] text-sm">
-            <SelectValue :placeholder="t('workflows.runs.trigger')" />
+            <SelectValue :placeholder="t('workflows.detections.trigger')" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all" class="text-sm font-normal">
-              {{ t("workflows.runs.allTriggers") }}
+              {{ t("workflows.detections.allTriggers") }}
             </SelectItem>
             <SelectItem
               v-for="tt in TRIGGER_TYPES"
@@ -263,7 +265,7 @@ const columns = computed<VirtualColumn<(typeof sortedRuns.value)[number]>[]>(
               :value="tt"
               class="text-sm font-normal"
             >
-              {{ t(`workflows.runs.triggerType.${tt}`) }}
+              {{ t(`workflows.detections.triggerType.${tt}`) }}
             </SelectItem>
           </SelectContent>
         </Select>
@@ -271,19 +273,19 @@ const columns = computed<VirtualColumn<(typeof sortedRuns.value)[number]>[]>(
         <!-- Status filter -->
         <Select v-model="statusFilter">
           <SelectTrigger class="h-9 w-[160px] text-sm">
-            <SelectValue :placeholder="t('workflows.runs.status')" />
+            <SelectValue :placeholder="t('workflows.detections.status')" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all" class="text-sm font-normal">
-              {{ t("workflows.runs.allStatus") }}
+              {{ t("workflows.detections.allStatus") }}
             </SelectItem>
             <SelectItem
-              v-for="s in RUN_STATUSES"
+              v-for="s in DETECTION_STATUSES"
               :key="s"
               :value="s"
               class="text-sm font-normal"
             >
-              {{ t(`workflows.runs.runStatus.${s}`) }}
+              {{ t(`workflows.detections.detectionStatus.${s}`) }}
             </SelectItem>
           </SelectContent>
         </Select>
@@ -300,25 +302,25 @@ const columns = computed<VirtualColumn<(typeof sortedRuns.value)[number]>[]>(
       <!-- Bare full-width table, filling the remaining height. -->
       <div v-else class="relative min-h-0 flex-1">
         <VirtualTable
-          :rows="sortedRuns"
+          :rows="sortedDetections"
           :columns="columns"
           :row-actions="rowActions"
-          :menu-label="t('workflows.runs.menu')"
+          :menu-label="t('workflows.detections.menu')"
           :empty="{
             icon: History,
-            title: t('workflows.runs.noRunsFound'),
-            description: t('workflows.runs.noRunsDescription'),
+            title: t('workflows.detections.noRunsFound'),
+            description: t('workflows.detections.noRunsDescription'),
           }"
           @row-click="openDetails"
         />
       </div>
     </div>
 
-    <RunDetailSheet
+    <DetectionDetailSheet
       v-model:open="isDetailOpen"
-      :run="detailRun"
+      :detection="detailDetection"
       @open-in-studio="openInStudio"
-      @download-audit="(_runId, format) => detailRun && downloadRunAudit(detailRun, format)"
+      @download-audit="(_id, format) => detailDetection && downloadDetectionAudit(detailDetection, format)"
     />
   </div>
 </template>

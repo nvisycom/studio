@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import { useEventListener } from "@vueuse/core";
+import { SplitterPanel } from "reka-ui";
 import JSZip from "jszip";
-import { GripVertical, MessageSquare, ScanSearch } from "@lucide/vue";
+import { MessageSquare, ScanSearch } from "@lucide/vue";
 import {
 	StudioDocumentPreview,
 	StudioChatPanel,
 	StudioAuditPanel,
-	StudioRunBar,
+	StudioDetectionBar,
 } from "#console/components/pages/studio";
+import {
+	ResizablePanelGroup,
+	ResizablePanel,
+	ResizableHandle,
+} from "#console/components/ui/resizable";
 import { Tabs, TabsList, TabsTrigger } from "#console/components/ui/tabs";
 import {
 	HeaderSocket,
@@ -32,16 +38,13 @@ onMounted(() => {
 	restoreSession();
 });
 
-// File type detection (drives which preview renderer to show).
-const isImageFile = computed(() =>
-	isImageFileName(activeFile.value?.displayName ?? ""),
-);
-const isTextFile = computed(() =>
-	isTextFileName(activeFile.value?.displayName ?? ""),
-);
-const isDocxFile = computed(() =>
-	isDocxFileName(activeFile.value?.displayName ?? ""),
-);
+// File type detection (drives which preview renderer to show). Keyed off the
+// file's real `fileExtension` from the API, not its display name — a redacted
+// file is named `report.csv.redacted`, so the name's suffix would misread it.
+const fileExtension = computed(() => activeFile.value?.fileExtension ?? "");
+const isImageFile = computed(() => isImageExtension(fileExtension.value));
+const isTextFile = computed(() => isTextExtension(fileExtension.value));
+const isDocxFile = computed(() => isDocxExtension(fileExtension.value));
 
 const zoomLevel = ref(100);
 
@@ -106,13 +109,14 @@ watch(
 	{ immediate: true },
 );
 
-// Detection run + audit state for the active file, shared between the run bar
-// (pipeline + run controls), the audit panel (results list), and the document
+// Detection run + audit state for the active file, shared between the detection bar
+// (pipeline + detection controls), the audit panel (results list), and the document
 // preview (inline highlights).
 const audit = useStudioAudit(
 	() => activeFile.value?.fileId ?? null,
 	() => documentText.value,
 	() => docxParts.value,
+	() => activeFile.value?.displayName ?? null,
 );
 
 function focusEntity(id: string) {
@@ -127,80 +131,28 @@ useEventListener(document, "keydown", (e: KeyboardEvent) => {
 	if (e.key === "Escape" && activeEntityId.value) clearEntity();
 });
 
-// Chat panel state
-const chatVisible = ref(true);
-const chatWidth = ref(400);
-const savedChatWidth = ref(400);
-const isAnimating = ref(false);
-const isResizing = ref(false);
-
-const minChatWidth = 320;
-const maxChatWidth = 800;
-
 function zoomIn() {
-	if (zoomLevel.value < 200) {
-		zoomLevel.value += 10;
-	}
+	if (zoomLevel.value < 200) zoomLevel.value += 10;
 }
-
 function zoomOut() {
-	if (zoomLevel.value > 50) {
-		zoomLevel.value -= 10;
-	}
+	if (zoomLevel.value > 50) zoomLevel.value -= 10;
 }
 
-function toggleChat() {
-	if (isAnimating.value) return;
+// The right-hand inspector (Audit / Chat) is a resizable, collapsible split
+// panel. The Splitter owns sizing (percent-based), keyboard resize, and — via
+// `auto-save-id` — persisting the layout across reloads; we only hold a ref to
+// drive collapse from the document toolbar's toggle and a flag to flip its icon.
+// Typed against reka-ui's SplitterPanel (our ResizablePanel wrapper forwards its
+// ref to it), which exposes collapse()/expand()/isCollapsed.
+const inspectorPanel = ref<InstanceType<typeof SplitterPanel> | null>(null);
+const inspectorCollapsed = ref(false);
 
-	isAnimating.value = true;
-
-	if (chatVisible.value) {
-		// Save current width before closing
-		savedChatWidth.value = chatWidth.value;
-		chatWidth.value = 0;
-		setTimeout(() => {
-			chatVisible.value = false;
-			isAnimating.value = false;
-		}, 300);
-	} else {
-		// Restore saved width
-		chatVisible.value = true;
-		nextTick(() => {
-			chatWidth.value = savedChatWidth.value;
-			setTimeout(() => {
-				isAnimating.value = false;
-			}, 300);
-		});
-	}
+function toggleInspector() {
+	const panel = inspectorPanel.value;
+	if (!panel) return;
+	if (panel.isCollapsed) panel.expand();
+	else panel.collapse();
 }
-
-// Resize handling. The document listeners are registered once during setup (so
-// `useEventListener`'s scope-bound cleanup actually attaches and a mid-drag
-// unmount can't leak them) and simply no-op unless a drag is in progress. The
-// drag origin is captured on mousedown.
-const resizeOrigin = ref<{ x: number; width: number } | null>(null);
-
-function startResize(e: MouseEvent) {
-	if (isAnimating.value) return;
-	isResizing.value = true;
-	resizeOrigin.value = { x: e.clientX, width: chatWidth.value };
-}
-
-useEventListener(document, "mousemove", (ev: MouseEvent) => {
-	const origin = resizeOrigin.value;
-	if (!origin) return;
-	const delta = origin.x - ev.clientX;
-	chatWidth.value = Math.min(
-		Math.max(origin.width + delta, minChatWidth),
-		maxChatWidth,
-	);
-});
-
-useEventListener(document, "mouseup", () => {
-	if (!resizeOrigin.value) return;
-	isResizing.value = false;
-	resizeOrigin.value = null;
-});
 </script>
 
 <template>
@@ -210,96 +162,108 @@ useEventListener(document, "mouseup", () => {
       <StudioFileTabs />
     </HeaderSocket>
 
-    <!-- Main Canvas Panel -->
-    <div class="flex-1 min-w-0 h-full">
-      <StudioDocumentPreview
-        :content-url="activeFile?.contentUrl || null"
-        :display-name="activeFile?.displayName || ''"
-        :is-loading="activeFile?.isLoading || false"
-        :is-image="isImageFile"
-        :is-text="isTextFile"
-        :is-docx="isDocxFile"
-        :zoom-level="zoomLevel"
-        :chat-visible="chatVisible"
-        :entities="audit.entities.value"
-        :active-entity-id="activeEntityId"
-        v-model:with-headers="withHeaders"
-        @zoom-in="zoomIn"
-        @zoom-out="zoomOut"
-        @toggle-chat="toggleChat"
-        @focus-entity="focusEntity"
-        @clear-entity="clearEntity"
-      />
-    </div>
-
-    <!-- Chat Panel with Resize Handle -->
-    <div
-      class="h-full flex overflow-hidden"
-      :class="{ 'transition-[width] duration-300 ease-in-out': !isResizing }"
-      :style="{ width: chatVisible || isAnimating ? `${chatWidth}px` : '0px' }"
+    <!-- Document canvas + inspector, split by a resizable, collapsible divider.
+         The Splitter persists its layout (`auto-save-id`) across reloads. -->
+    <ResizablePanelGroup
+      direction="horizontal"
+      auto-save-id="studio-inspector"
+      class="h-full"
     >
-      <!-- Resize Handle -->
-      <div
-        v-if="chatVisible"
-        class="w-px h-full cursor-col-resize flex items-center justify-center bg-border relative after:absolute after:inset-y-0 after:left-1/2 after:w-1 after:-translate-x-1/2 flex-shrink-0 group"
-        @mousedown="startResize"
-      >
-        <div
-          class="bg-border z-10 flex h-4 w-3 items-center justify-center rounded-xs border"
-        >
-          <GripVertical class="size-2.5" />
-        </div>
-      </div>
-
-      <!-- Tabbed panel: Chat | Audit, with run controls above the tabs so
-           they're shared across both tabs. -->
-      <div
-        v-if="chatVisible || isAnimating"
-        class="flex h-full min-w-0 flex-1 flex-col overflow-hidden bg-background"
-      >
-        <StudioRunBar
-          v-model:selected-pipeline="audit.selectedPipeline.value"
-          :pipelines="audit.pipelines.value"
-          :phase="audit.phase.value"
-          :can-run="audit.canRun.value"
-          @run="audit.run"
+      <!-- Document canvas -->
+      <ResizablePanel :min-size="30" class="min-w-0">
+        <StudioDocumentPreview
+          :content-url="activeFile?.contentUrl || null"
+          :display-name="activeFile?.displayName || ''"
+          :file-extension="fileExtension"
+          :is-loading="activeFile?.isLoading || false"
+          :is-image="isImageFile"
+          :is-text="isTextFile"
+          :is-docx="isDocxFile"
+          :zoom-level="zoomLevel"
+          :chat-visible="!inspectorCollapsed"
+          :entities="audit.entities.value"
+          :active-entity-id="activeEntityId"
+          v-model:with-headers="withHeaders"
+          @zoom-in="zoomIn"
+          @zoom-out="zoomOut"
+          @toggle-chat="toggleInspector"
+          @focus-entity="focusEntity"
+          @clear-entity="clearEntity"
         />
-        <Tabs v-model="panelTab" class="border-b border-border/50 p-2">
-          <TabsList class="w-full">
-            <TabsTrigger value="audit" class="flex-1 gap-1.5">
-              <ScanSearch :size="14" />
-              {{ t("studio.audit.tabAudit") }}
-              <span
-                v-if="audit.count.value"
-                class="rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground tabular-nums"
-              >
-                {{ audit.count.value }}
-              </span>
-            </TabsTrigger>
-            <TabsTrigger value="chat" class="flex-1 gap-1.5">
-              <MessageSquare :size="14" />
-              {{ t("studio.audit.tabChat") }}
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+      </ResizablePanel>
 
-        <div v-show="panelTab === 'chat'" class="min-h-0 flex-1 overflow-hidden">
-          <StudioChatPanel />
-        </div>
-        <div v-show="panelTab === 'audit'" class="min-h-0 flex-1 overflow-hidden">
-          <StudioAuditPanel
-            :file-id="activeFile?.fileId || null"
+      <ResizableHandle with-handle />
+
+      <!-- Inspector: Audit / Chat, with shared detection controls above the tabs.
+           Collapses to nothing when the toolbar toggle hides it. -->
+      <ResizablePanel
+        ref="inspectorPanel"
+        :default-size="28"
+        :min-size="20"
+        :max-size="45"
+        collapsible
+        :collapsed-size="0"
+        class="min-w-0 bg-background"
+        @collapse="inspectorCollapsed = true"
+        @expand="inspectorCollapsed = false"
+      >
+        <div class="flex h-full min-w-0 flex-col overflow-hidden">
+          <StudioDetectionBar
+            v-model:selected-pipeline="audit.selectedPipeline.value"
+            :pipelines="audit.pipelines.value"
             :phase="audit.phase.value"
-            :entities="audit.entities.value"
-            :categorized-groups="audit.categorizedGroups.value"
-            :count="audit.count.value"
-            :error-message="audit.errorMessage.value"
-            :active-entity-id="activeEntityId"
-            :with-headers="withHeaders"
-            @focus-entity="focusEntity"
+            :can-run="audit.canRun.value"
+            @run="audit.run"
           />
+          <Tabs v-model="panelTab" class="border-b border-border/50 p-2">
+            <TabsList class="w-full">
+              <TabsTrigger value="audit" class="flex-1 gap-1.5">
+                <ScanSearch :size="14" />
+                {{ t("studio.audit.tabAudit") }}
+                <span
+                  v-if="audit.count.value"
+                  class="rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground tabular-nums"
+                >
+                  {{ audit.count.value }}
+                </span>
+              </TabsTrigger>
+              <TabsTrigger value="chat" class="flex-1 gap-1.5">
+                <MessageSquare :size="14" />
+                {{ t("studio.audit.tabChat") }}
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          <div
+            v-show="panelTab === 'chat'"
+            class="min-h-0 flex-1 overflow-hidden"
+          >
+            <StudioChatPanel />
+          </div>
+          <div
+            v-show="panelTab === 'audit'"
+            class="min-h-0 flex-1 overflow-hidden"
+          >
+            <StudioAuditPanel
+              :file-id="activeFile?.fileId || null"
+              :phase="audit.phase.value"
+              :entities="audit.entities.value"
+              :categorized-groups="audit.categorizedGroups.value"
+              :count="audit.count.value"
+              :error-message="audit.errorMessage.value"
+              :active-entity-id="activeEntityId"
+              :with-headers="withHeaders"
+              :redact-phase="audit.redactPhase.value"
+              :can-redact="audit.canRedact.value"
+              :redact-error="audit.redactError.value"
+              :output="audit.output.value"
+              @focus-entity="focusEntity"
+              @redact="audit.redact"
+              @download-output="audit.downloadRedacted"
+            />
+          </div>
         </div>
-      </div>
-    </div>
+      </ResizablePanel>
+    </ResizablePanelGroup>
   </div>
 </template>

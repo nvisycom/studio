@@ -87,25 +87,40 @@ export const TEXT_EXTENSIONS = [
  */
 export const DOCX_EXTENSIONS = ["docx"] as const;
 
+// Extension-first predicates. Prefer these when the API gives you a file's real
+// `fileExtension` — a redacted file's display name (e.g. `report.csv.redacted`)
+// ends in `.redacted`, so deriving the type from the name misreads it, while the
+// `fileExtension` field stays `csv`. The `*FileName` variants below are for
+// local files (a browser `File.name`) that carry no separate extension.
+
+/** Whether an extension is previewed as an image. */
+export function isImageExtension(ext: string): boolean {
+	return (IMAGE_EXTENSIONS as readonly string[]).includes(ext.toLowerCase());
+}
+
+/** Whether an extension is previewed as text. */
+export function isTextExtension(ext: string): boolean {
+	return (TEXT_EXTENSIONS as readonly string[]).includes(ext.toLowerCase());
+}
+
+/** Whether an extension is previewed as a Word document. */
+export function isDocxExtension(ext: string): boolean {
+	return (DOCX_EXTENSIONS as readonly string[]).includes(ext.toLowerCase());
+}
+
 /** Whether a file name should be previewed as an image. */
 export function isImageFileName(fileName: string): boolean {
-	return (IMAGE_EXTENSIONS as readonly string[]).includes(
-		getFileExtension(fileName),
-	);
+	return isImageExtension(getFileExtension(fileName));
 }
 
 /** Whether a file name should be previewed as text. */
 export function isTextFileName(fileName: string): boolean {
-	return (TEXT_EXTENSIONS as readonly string[]).includes(
-		getFileExtension(fileName),
-	);
+	return isTextExtension(getFileExtension(fileName));
 }
 
 /** Whether a file name should be previewed as a Word document. */
 export function isDocxFileName(fileName: string): boolean {
-	return (DOCX_EXTENSIONS as readonly string[]).includes(
-		getFileExtension(fileName),
-	);
+	return isDocxExtension(getFileExtension(fileName));
 }
 
 /**
@@ -147,11 +162,9 @@ export function formatFileSize(bytes: number): string {
 	return `${parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`;
 }
 
-/**
- * Pick a Lucide icon component for a file based on its extension.
- */
-export function getFileIcon(fileName: string): Component {
-	switch (getFileExtension(fileName)) {
+/** Pick a Lucide icon component from a file's extension. */
+export function getFileIconForExtension(ext: string): Component {
+	switch (ext.toLowerCase()) {
 		case "pdf":
 		case "doc":
 		case "docx":
@@ -186,4 +199,13 @@ export function getFileIcon(fileName: string): Component {
 		default:
 			return FileIcon;
 	}
+}
+
+/**
+ * Pick a Lucide icon component for a file based on its name's extension. For a
+ * file with a known `fileExtension` (from the API), prefer
+ * {@link getFileIconForExtension} so a `.redacted` display name doesn't misread.
+ */
+export function getFileIcon(fileName: string): Component {
+	return getFileIconForExtension(getFileExtension(fileName));
 }

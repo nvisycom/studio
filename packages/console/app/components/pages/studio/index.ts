@@ -8,6 +8,6 @@ export { default as StudioCodeView } from "./StudioCodeView.vue";
 export { default as EntityDetailPopover } from "./EntityDetailPopover.vue";
 export { default as StudioChatPanel } from "./StudioChatPanel.vue";
 export { default as StudioAuditPanel } from "./StudioAuditPanel.vue";
-export { default as StudioRunBar } from "./StudioRunBar.vue";
+export { default as StudioDetectionBar } from "./StudioDetectionBar.vue";
 export { default as ChatMessage } from "./ChatMessage.vue";
 export { default as MessageInput } from "./MessageInput.vue";
