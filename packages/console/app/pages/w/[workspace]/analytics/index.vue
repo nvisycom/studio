@@ -294,7 +294,7 @@ const usageByModel = computed<BreakdownRow[]>(() =>
         <AnalyticsBreakdown
           :title="t('analytics.breakdowns.detectionsByStatus')"
           :rows="detectionsByStatus"
-          :empty-text="t('analytics.breakdowns.noRuns')"
+          :empty-text="t('analytics.breakdowns.noDetections')"
         />
         <AnalyticsBreakdown
           :title="t('analytics.breakdowns.storageByKind')"
