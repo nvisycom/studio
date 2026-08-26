@@ -2,7 +2,6 @@ import type {
 	Audit,
 	CreateDetection,
 	Detection,
-	RedactionResult,
 	WorkspaceDetectionsQuery,
 } from "@nvisy/sdk/datatypes";
 import type { MaybeRefOrGetter } from "vue";
@@ -95,49 +94,6 @@ export function useDetections(filter?: MaybeRefOrGetter<DetectionsFilter>) {
 	}
 
 	/**
-	 * Apply redactions to a complete detection, producing its redacted output
-	 * file. Redaction is its own resource: this returns a {@link RedactionResult}
-	 * carrying `outputFileId`, the redacted document to download.
-	 */
-	async function createRedaction(
-		detectionId: string,
-	): Promise<RedactionResult> {
-		const { client, workspaceSlug } = requireContext();
-		return await client.detections.createRedaction(
-			workspaceSlug,
-			detectionId,
-			{},
-		);
-	}
-
-	/** The most recent redaction of a detection, or null if it has none yet. */
-	async function findLatestRedaction(
-		detectionId: string,
-	): Promise<RedactionResult | null> {
-		const { client, workspaceSlug } = requireContext();
-		const { items } = await client.detections.listRedactions(
-			workspaceSlug,
-			detectionId,
-			{ limit: 1 },
-		);
-		return items[0] ?? null;
-	}
-
-	/** Download a redaction's output file, saved under `fileName`. */
-	async function downloadOutput(
-		outputFileId: string,
-		fileName: string,
-	): Promise<void> {
-		const { client, workspaceSlug } = requireContext();
-		const response = await client.files.downloadFile(
-			workspaceSlug,
-			outputFileId,
-		);
-		const url = URL.createObjectURL(await response.blob());
-		triggerBrowserDownload(url, fileName);
-	}
-
-	/**
 	 * Stream a detection's status changes over SSE until it settles, then return
 	 * the final status. Yields the current status first, then each transition.
 	 * `onStatus` reports every tick so the UI can show live progress.
@@ -203,10 +159,5 @@ export function useDetections(filter?: MaybeRefOrGetter<DetectionsFilter>) {
 		downloadAudit,
 		findLatestForFile,
 		runDetection,
-
-		// Redaction
-		createRedaction,
-		findLatestRedaction,
-		downloadOutput,
 	};
 }

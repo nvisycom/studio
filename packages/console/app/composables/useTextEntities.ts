@@ -25,6 +25,12 @@ export interface TextEntityView {
 	/** Stable entity id (UUIDv7 from recognition). */
 	id: string;
 	/**
+	 * Which modality group this entity came from. Determines the bucket a
+	 * reviewer edit (suppress/retag) lands in when building the redaction
+	 * `EditSet` — text and tabular entities go to different arrays.
+	 */
+	modality: "text" | "tabular";
+	/**
 	 * Raw label id, shown verbatim for now (e.g. "person", "email_address"). A
 	 * workspace label catalog will resolve these to display names + categories
 	 * later; until then the id is the label.
@@ -234,6 +240,7 @@ export function useTextEntities(
 					sourceRefs.some((r) => isRenderedDocxPart(r.part));
 				return {
 					id: e.id,
+					modality: "text",
 					label: e.label,
 					category: resolveLabel(e.label)?.category ?? null,
 					start,
@@ -258,6 +265,7 @@ export function useTextEntities(
 				const cellValue = rows?.[loc.row_index]?.[loc.column_index];
 				return {
 					id: e.id,
+					modality: "tabular",
 					label: e.label,
 					category: resolveLabel(e.label)?.category ?? null,
 					start,

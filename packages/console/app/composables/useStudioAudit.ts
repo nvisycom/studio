@@ -1,4 +1,4 @@
-import type { Audit, Detection } from "@nvisy/sdk/datatypes";
+import type { Audit, Detection, EditSet } from "@nvisy/sdk/datatypes";
 import type { MaybeRefOrGetter } from "vue";
 
 /** Lifecycle phase of the studio's detection. `complete` = analysis ready. */
@@ -29,14 +29,12 @@ export function useStudioAudit(
 ) {
 	const { t } = useI18n();
 	const { pipelines } = usePipelines();
+	const { runDetection, findLatestForFile, getAnalysis } = useDetections();
 	const {
-		runDetection,
-		findLatestForFile,
-		getAnalysis,
 		createRedaction,
-		findLatestRedaction,
+		findLatestForDetection: findLatestRedaction,
 		downloadOutput,
-	} = useDetections();
+	} = useRedactions();
 
 	const selectedPipeline = ref<string>("");
 	// The last value we set on `selectedPipeline` programmatically (default or
@@ -110,6 +108,54 @@ export function useStudioAudit(
 		docxParts,
 	);
 
+	// Ids of entities the reviewer chose to keep (suppress from redaction).
+	// Cleared whenever a new audit is shown (a fresh run or a restore), so it
+	// never leaks across files or detections.
+	const suppressed = ref<Set<string>>(new Set());
+
+	function resetEdits() {
+		suppressed.value = new Set();
+	}
+
+	/** Whether an entity is kept (excluded from redaction). */
+	function isSuppressed(id: string): boolean {
+		return suppressed.value.has(id);
+	}
+
+	// Reassign a fresh Set so computeds re-evaluate (Vue doesn't track Set adds).
+	function toggleSuppress(id: string) {
+		const next = new Set(suppressed.value);
+		if (next.has(id)) next.delete(id);
+		else next.add(id);
+		suppressed.value = next;
+	}
+
+	const suppressedCount = computed(
+		() => entities.value.filter((e) => suppressed.value.has(e.id)).length,
+	);
+	/** How many entities the redaction will actually redact (total minus kept). */
+	const effectiveRedactCount = computed(
+		() => count.value - suppressedCount.value,
+	);
+
+	// Assemble the reviewer edits into the redaction EditSet, bucketing each kept
+	// entity's `suppress` edit by its modality. Returns undefined when nothing is
+	// suppressed, so the redact call omits `edits` (redact exactly as detected).
+	function buildEditSet(): EditSet | undefined {
+		if (suppressed.value.size === 0) return undefined;
+		const text: NonNullable<EditSet["text"]> = [];
+		const tabular: NonNullable<EditSet["tabular"]> = [];
+		for (const entity of entities.value) {
+			if (!suppressed.value.has(entity.id)) continue;
+			const bucket = entity.modality === "tabular" ? tabular : text;
+			bucket.push({ op: "suppress", id: entity.id });
+		}
+		const set: EditSet = {};
+		if (text.length) set.text = text;
+		if (tabular.length) set.tabular = tabular;
+		return text.length || tabular.length ? set : undefined;
+	}
+
 	const canRun = computed(
 		() =>
 			!!toValue(fileId) &&
@@ -156,7 +202,7 @@ export function useStudioAudit(
 		redactPhase.value = "redacting";
 		redactError.value = "";
 		try {
-			const result = await createRedaction(target);
+			const result = await createRedaction(target, buildEditSet());
 			if (token !== restoreToken) return;
 			if (!result.outputFileId)
 				throw new Error("The redaction produced no output file.");
@@ -192,6 +238,7 @@ export function useStudioAudit(
 		detectionId.value = null;
 		detectionFileName.value = toValue(fileName) ?? null;
 		resetRedaction();
+		resetEdits();
 		try {
 			const result = await runDetection(
 				selectedPipeline.value,
@@ -229,6 +276,7 @@ export function useStudioAudit(
 		detectionId.value = null;
 		detectionFileName.value = toValue(fileName) ?? null;
 		resetRedaction();
+		resetEdits();
 		try {
 			const latest = await findLatestForFile(file, opts.pipelineSlug);
 			// Bail if a newer restore started (file or pipeline changed) meanwhile.
@@ -302,6 +350,7 @@ export function useStudioAudit(
 				detectionId.value = null;
 				detectionFileName.value = null;
 				resetRedaction();
+				resetEdits();
 				return;
 			}
 			// Wait for this file's restore before defaulting, so the picker doesn't
@@ -347,5 +396,11 @@ export function useStudioAudit(
 		canRedact,
 		redact,
 		downloadRedacted,
+		// Reviewer edits (keep/suppress)
+		suppressed,
+		isSuppressed,
+		toggleSuppress,
+		suppressedCount,
+		effectiveRedactCount,
 	};
 }

@@ -257,9 +257,12 @@ function toggleInspector() {
               :can-redact="audit.canRedact.value"
               :redact-error="audit.redactError.value"
               :output="audit.output.value"
+              :suppressed="audit.suppressed.value"
+              :effective-redact-count="audit.effectiveRedactCount.value"
               @focus-entity="focusEntity"
               @redact="audit.redact"
               @download-output="audit.downloadRedacted"
+              @toggle-suppress="audit.toggleSuppress"
             />
           </div>
         </div>
