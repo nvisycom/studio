@@ -9,7 +9,13 @@ import type { RowAction } from "#console/components/pages/RowActions.vue";
 import type { VirtualColumn } from "#console/components/ui/virtual-table";
 import { PolicySheet } from "#console/components/pages/policies";
 import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
-import { Loader2, Pencil, ShieldCheck, Trash2 } from "@lucide/vue";
+import {
+	LayoutTemplate,
+	Loader2,
+	Pencil,
+	ShieldCheck,
+	Trash2,
+} from "@lucide/vue";
 import { personLabel } from "#console/utils/naming";
 import { VirtualTable } from "#console/components/ui/virtual-table";
 import { Button } from "#console/components/ui/button";
@@ -19,6 +25,7 @@ import { toast } from "vue-sonner";
 const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
 const { resolveAvatarUrl } = useAvatarUrl();
+const { wLink } = useWorkspaceLink();
 const sectionTabs = useSectionTabs();
 
 useHead({ title: "Policies" });
@@ -199,10 +206,21 @@ async function confirmDelete() {
         <p class="text-sm text-muted-foreground">
           {{ t("policies.count", { count: policies?.length ?? 0 }) }}
         </p>
-        <Button size="sm" @click="openCreate">
-          <ShieldCheck :size="16" class="mr-1.5" />
-          {{ t("policies.create") }}
-        </Button>
+        <div class="flex shrink-0 items-center gap-2">
+          <Button as-child variant="outline" size="sm" class="font-normal">
+            <NuxtLink
+              :to="wLink('/policies/templates')"
+              class="flex items-center gap-1.5"
+            >
+              <LayoutTemplate :size="16" />
+              {{ t("policies.viewTemplates") }}
+            </NuxtLink>
+          </Button>
+          <Button size="sm" @click="openCreate">
+            <ShieldCheck :size="16" class="mr-1.5" />
+            {{ t("policies.create") }}
+          </Button>
+        </div>
       </div>
 
       <!-- Loading -->

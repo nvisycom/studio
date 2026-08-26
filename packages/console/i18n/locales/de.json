@@ -1302,6 +1302,7 @@
 		"title": "Richtlinien",
 		"count": "{count} Richtlinie | {count} Richtlinien",
 		"create": "Neue Richtlinie",
+		"viewTemplates": "Vorlagen ansehen",
 		"empty": {
 			"title": "Noch keine Richtlinien",
 			"description": "Erstellen Sie eine, um Schwärzungsregeln zu definieren."

@@ -1302,6 +1302,7 @@
 		"title": "Policies",
 		"count": "{count} policy | {count} policies",
 		"create": "New policy",
+		"viewTemplates": "View templates",
 		"empty": {
 			"title": "No policies yet",
 			"description": "Create one to define redaction rules."
