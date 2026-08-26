@@ -123,7 +123,7 @@ const kindTitle = (file: NvisyFile) =>
           :title="kindTitle(row)"
         >
           <component
-            :is="getFileIcon(row.displayName)"
+            :is="getFileIconForExtension(row.fileExtension)"
             :size="16"
             class="text-muted-foreground"
           />

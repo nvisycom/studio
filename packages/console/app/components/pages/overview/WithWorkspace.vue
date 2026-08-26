@@ -29,7 +29,7 @@ import {
 } from "#console/components/ui/card";
 import { ActivityIcon, EntityAvatar } from "#console/components/common";
 import { personLabel } from "#console/utils/naming";
-import { getFileIcon } from "#console/utils/file";
+import { getFileIcon, getFileIconForExtension } from "#console/utils/file";
 import { activityContent } from "#console/utils/activities";
 import OverviewStats from "./OverviewStats.vue";
 
@@ -377,7 +377,7 @@ const quickActions = [
                   class="flex size-8 shrink-0 items-center justify-center rounded-md border border-border/60 bg-muted/40 text-muted-foreground"
                 >
                   <component
-                    :is="getFileIcon(file.displayName)"
+                    :is="getFileIconForExtension(file.fileExtension)"
                     :size="16"
                     :stroke-width="1.75"
                   />

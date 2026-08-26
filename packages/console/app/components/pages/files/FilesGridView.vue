@@ -129,7 +129,7 @@ function onScroll(event: Event) {
                 class="mb-3 flex size-16 items-center justify-center rounded-lg bg-muted"
               >
                 <component
-                  :is="getFileIcon(file.displayName)"
+                  :is="getFileIconForExtension(file.fileExtension)"
                   :size="32"
                   class="text-muted-foreground"
                 />

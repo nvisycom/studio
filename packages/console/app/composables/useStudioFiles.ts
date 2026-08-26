@@ -4,6 +4,13 @@ import { useLocalStorage } from "@vueuse/core";
 export interface OpenFile {
 	fileId: string;
 	displayName: string;
+	/**
+	 * The file's real extension from the API (e.g. `csv`), the source of truth for
+	 * the preview renderer. Prefer this over parsing {@link displayName}, whose
+	 * suffix lies for derived files (a redacted `report.csv` is `report.csv.redacted`).
+	 * Empty until the file's metadata loads.
+	 */
+	fileExtension: string;
 	contentUrl: string | null;
 	isLoading: boolean;
 }
@@ -73,6 +80,7 @@ export function useStudioFiles() {
 		openFiles.value.set(fileId, {
 			fileId,
 			displayName: file?.displayName || "Loading...",
+			fileExtension: file?.fileExtension ?? "",
 			contentUrl: null,
 			isLoading: true,
 		});
@@ -107,6 +115,7 @@ export function useStudioFiles() {
 			openFiles.value.set(fileId, {
 				fileId,
 				displayName: fileData.displayName,
+				fileExtension: fileData.fileExtension,
 				contentUrl,
 				isLoading: false,
 			});
