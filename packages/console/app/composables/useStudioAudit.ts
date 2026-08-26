@@ -9,6 +9,9 @@ export type StudioAuditPhase =
 	| "analyzed"
 	| "failed";
 
+/** Lifecycle of applying redactions to an analyzed run. */
+export type StudioRedactPhase = "idle" | "redacting" | "done" | "failed";
+
 /**
  * Owns the studio's detection run + audit lifecycle for the active file: the
  * pipeline choice, running detection, restoring the file's most recent run, and
@@ -25,7 +28,13 @@ export function useStudioAudit(
 ) {
 	const { t } = useI18n();
 	const { pipelines } = usePipelines();
-	const { runDetection, findLatestRunForFile, getDetections } = useRuns();
+	const {
+		runDetection,
+		findLatestRunForFile,
+		getDetections,
+		redactRun,
+		downloadOutput,
+	} = useRuns();
 
 	const selectedPipeline = ref<string>("");
 	// The last value we set on `selectedPipeline` programmatically (default or
@@ -81,6 +90,16 @@ export function useStudioAudit(
 	const audit = ref<Audit | null>(null);
 	const errorMessage = ref("");
 
+	// The run backing the shown audit — the target for redaction. Set whenever an
+	// audit is shown (a fresh run or a restored one); cleared when there's none.
+	const runId = ref<string | null>(null);
+
+	// Redaction lifecycle for the current run, and the redacted output it produced
+	// (present once done, so the UI can offer a download).
+	const redactPhase = ref<StudioRedactPhase>("idle");
+	const redactError = ref("");
+	const output = ref<{ fileId: string; fileName: string } | null>(null);
+
 	const { entities, categorizedGroups, count } = useTextEntities(
 		audit,
 		documentText,
@@ -95,6 +114,55 @@ export function useStudioAudit(
 			phase.value !== "restoring",
 	);
 
+	// Redaction is offered once a run has analyzed (and isn't already redacting).
+	const canRedact = computed(
+		() =>
+			phase.value === "analyzed" &&
+			!!runId.value &&
+			redactPhase.value !== "redacting",
+	);
+
+	function resetRedaction() {
+		redactPhase.value = "idle";
+		redactError.value = "";
+		output.value = null;
+	}
+
+	/**
+	 * Apply redactions to the analyzed run, producing its redacted output file.
+	 * On success `output` carries the file to download; guarded so a stale result
+	 * (the active file changed mid-request) can't overwrite newer state.
+	 */
+	async function redact() {
+		const target = runId.value;
+		if (!target || redactPhase.value === "redacting") return;
+		const token = restoreToken;
+		redactPhase.value = "redacting";
+		redactError.value = "";
+		try {
+			const run = await redactRun(target);
+			if (token !== restoreToken) return;
+			if (!run.outputFileId)
+				throw new Error("The run produced no output file.");
+			output.value = {
+				fileId: run.outputFileId,
+				fileName: run.outputFileName ?? run.outputFileId,
+			};
+			runStatus.value = run.status;
+			redactPhase.value = "done";
+		} catch (err) {
+			if (token !== restoreToken) return;
+			redactPhase.value = "failed";
+			redactError.value = getErrorMessage(err, t("studio.audit.redactFailed"));
+		}
+	}
+
+	/** Download the redacted output file produced by {@link redact}. */
+	async function downloadRedacted() {
+		if (!output.value) return;
+		await downloadOutput(output.value.fileId, output.value.fileName);
+	}
+
 	async function run() {
 		const file = toValue(fileId);
 		if (!file || !selectedPipeline.value) return;
@@ -106,6 +174,8 @@ export function useStudioAudit(
 		restored.value = false;
 		errorMessage.value = "";
 		audit.value = null;
+		runId.value = null;
+		resetRedaction();
 		try {
 			const result = await runDetection(
 				selectedPipeline.value,
@@ -116,6 +186,7 @@ export function useStudioAudit(
 			);
 			if (token !== restoreToken) return;
 			audit.value = result.audit;
+			runId.value = result.runId;
 			phase.value = "analyzed";
 		} catch (err) {
 			if (token !== restoreToken) return;
@@ -139,6 +210,8 @@ export function useStudioAudit(
 		restored.value = false;
 		errorMessage.value = "";
 		audit.value = null;
+		runId.value = null;
+		resetRedaction();
 		try {
 			const latest = await findLatestRunForFile(file, opts.pipelineSlug);
 			// Bail if a newer restore started (file or pipeline changed) meanwhile.
@@ -158,9 +231,19 @@ export function useStudioAudit(
 			const restoredAudit = await getDetections(latest.id);
 			if (token !== restoreToken) return;
 			audit.value = restoredAudit;
+			runId.value = latest.id;
 			runStatus.value = latest.status;
 			restored.value = true;
 			phase.value = "analyzed";
+			// A run that already produced its redacted output: surface it so the
+			// panel offers the download without re-running redaction.
+			if (latest.outputFileId) {
+				output.value = {
+					fileId: latest.outputFileId,
+					fileName: latest.outputFileName ?? latest.outputFileId,
+				};
+				redactPhase.value = "done";
+			}
 		} catch {
 			if (token === restoreToken) {
 				if (opts.adopt) adoptResolved.value = true; // don't block the default
@@ -191,6 +274,8 @@ export function useStudioAudit(
 				restored.value = false;
 				errorMessage.value = "";
 				audit.value = null;
+				runId.value = null;
+				resetRedaction();
 				return;
 			}
 			// Wait for this file's restore before defaulting, so the picker doesn't
@@ -229,5 +314,12 @@ export function useStudioAudit(
 		count,
 		canRun,
 		run,
+		// Redaction
+		redactPhase,
+		redactError,
+		output,
+		canRedact,
+		redact,
+		downloadRedacted,
 	};
 }

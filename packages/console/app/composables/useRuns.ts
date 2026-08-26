@@ -97,6 +97,30 @@ export function useRuns(filter?: MaybeRefOrGetter<RunsFilter>) {
 	}
 
 	/**
+	 * Apply redactions to an analyzed run, producing its redacted output file.
+	 * Returns the updated run once it completes — carrying `outputFileId` /
+	 * `outputFileName`, the redacted document to download.
+	 */
+	async function redactRun(runId: string): Promise<PipelineRun> {
+		const { client, workspaceSlug } = requireContext();
+		return await client.runs.redact(workspaceSlug, runId);
+	}
+
+	/** Download a run's redacted output file, saved under `fileName`. */
+	async function downloadOutput(
+		outputFileId: string,
+		fileName: string,
+	): Promise<void> {
+		const { client, workspaceSlug } = requireContext();
+		const response = await client.files.downloadFile(
+			workspaceSlug,
+			outputFileId,
+		);
+		const url = URL.createObjectURL(await response.blob());
+		triggerBrowserDownload(url, fileName);
+	}
+
+	/**
 	 * Stream a run's status changes over SSE until it settles, then return the
 	 * final status. Yields the current status first, then each transition.
 	 * `onStatus` reports every tick so the UI can show live progress.
@@ -125,7 +149,7 @@ export function useRuns(filter?: MaybeRefOrGetter<RunsFilter>) {
 		pipelineSlug: string,
 		body: CreatePipelineRun,
 		onStatus?: (status: PipelineRun["status"]) => void,
-	): Promise<{ audit: Audit }> {
+	): Promise<{ runId: string; audit: Audit }> {
 		const { client, workspaceSlug } = requireContext();
 		const created = await client.runs.createRun(
 			workspaceSlug,
@@ -143,7 +167,7 @@ export function useRuns(filter?: MaybeRefOrGetter<RunsFilter>) {
 		}
 
 		const audit = await getDetections(created.id);
-		return { audit };
+		return { runId: created.id, audit };
 	}
 
 	return {
@@ -159,5 +183,7 @@ export function useRuns(filter?: MaybeRefOrGetter<RunsFilter>) {
 		downloadAudit,
 		findLatestRunForFile,
 		runDetection,
+		redactRun,
+		downloadOutput,
 	};
 }

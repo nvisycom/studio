@@ -61,7 +61,7 @@ export function useColumns<TRow extends { id: string }>(
 			cols.push({
 				id: col.key,
 				size: col.width?.endsWith("px")
-					? Number.parseInt(col.width)
+					? Number.parseInt(col.width, 10)
 					: undefined,
 				header: () =>
 					h(

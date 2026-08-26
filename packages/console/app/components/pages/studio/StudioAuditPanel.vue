@@ -2,12 +2,16 @@
 import {
 	ChevronLeft,
 	ChevronRight,
+	Download,
 	Layers,
 	Loader2,
 	ScanSearch,
 	TriangleAlert,
 } from "@lucide/vue";
-import type { StudioAuditPhase } from "#console/composables/useStudioAudit";
+import type {
+	StudioAuditPhase,
+	StudioRedactPhase,
+} from "#console/composables/useStudioAudit";
 import type {
 	CategorizedGroup,
 	EntityCluster,
@@ -39,6 +43,14 @@ const props = defineProps<{
 	activeEntityId?: string | null;
 	/** Whether the open CSV treats row 0 as a header (affects tabular labels). */
 	withHeaders?: boolean;
+	/** Redaction lifecycle for the analyzed run. */
+	redactPhase?: StudioRedactPhase;
+	/** Whether redaction can be applied right now (analyzed, not in flight). */
+	canRedact?: boolean;
+	/** Failure message shown when redaction failed. */
+	redactError?: string;
+	/** The redacted output produced by redaction, once done. */
+	output?: { fileId: string; fileName: string } | null;
 }>();
 
 /**
@@ -71,6 +83,10 @@ function categoryName(category: string | null): string {
 const emit = defineEmits<{
 	/** A row was clicked — focus its span in the document. */
 	"focus-entity": [id: string];
+	/** Apply redaction to the analyzed run. */
+	redact: [];
+	/** Download the redacted output file. */
+	"download-output": [];
 }>();
 
 const confidencePct = (c: number) => `${Math.round(c * 100)}%`;
@@ -390,13 +406,57 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
       </template>
     </div>
 
-    <!-- Apply redaction (deferred: detection only for now) -->
+    <!-- Redaction footer: apply redaction to the analyzed run, then download the
+         redacted output it produces. -->
     <div
       v-if="phase === 'analyzed' && count > 0"
       class="border-t border-border/50 bg-muted/30 p-3"
     >
-      <Button variant="outline" size="sm" class="w-full" disabled>
-        {{ t("studio.audit.apply") }}
+      <!-- Redaction failed: show why, keep the button available to retry. -->
+      <p
+        v-if="redactPhase === 'failed' && redactError"
+        class="mb-2 flex items-start gap-1.5 text-xs text-destructive"
+      >
+        <TriangleAlert :size="13" class="mt-px shrink-0" />
+        <span>{{ redactError }}</span>
+      </p>
+
+      <!-- Done: the redacted file is ready to download. -->
+      <template v-if="redactPhase === 'done' && output">
+        <Button
+          size="sm"
+          class="w-full"
+          @click="emit('download-output')"
+        >
+          <Download :size="15" />
+          {{ t("studio.audit.downloadRedacted") }}
+        </Button>
+        <p class="mt-1.5 truncate text-center text-[11px] text-muted-foreground">
+          {{ output.fileName }}
+        </p>
+      </template>
+
+      <!-- Idle / redacting / failed: apply (or retry) redaction. -->
+      <Button
+        v-else
+        variant="outline"
+        size="sm"
+        class="w-full"
+        :disabled="!canRedact"
+        @click="emit('redact')"
+      >
+        <Loader2
+          v-if="redactPhase === 'redacting'"
+          :size="15"
+          class="animate-spin"
+        />
+        {{
+          redactPhase === "redacting"
+            ? t("studio.audit.redacting")
+            : redactPhase === "failed"
+              ? t("studio.audit.retryRedaction")
+              : t("studio.audit.apply")
+        }}
       </Button>
     </div>
   </div>
