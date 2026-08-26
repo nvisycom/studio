@@ -155,8 +155,8 @@ function content(
 // A quiet accent dot, not an alert: desaturated and low-opacity in light mode so
 // it sits behind the icon, a touch brighter (but still restrained) in dark mode
 // where it needs to read against the dark surface. Color carries the meaning —
-// green = additive/success, red = removal/failure, amber = change, blue = a run
-// in motion, muted = neutral/unknown; the row's message spells out the verb.
+// green = additive/success, red = removal/failure, amber = change, blue = an
+// operation in motion, muted = neutral/unknown; the row's message spells out the verb.
 const ACTION_COLOR: Record<string, string> = {
 	created: "bg-emerald-600/50 dark:bg-emerald-500/60",
 	added: "bg-emerald-600/50 dark:bg-emerald-500/60",

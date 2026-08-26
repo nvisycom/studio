@@ -13,12 +13,12 @@ export type StudioAuditPhase =
 export type StudioRedactPhase = "idle" | "redacting" | "done" | "failed";
 
 /**
- * Owns the studio's detection run + audit lifecycle for the active file: the
- * pipeline choice, running detection, restoring the file's most recent run, and
+ * Owns the studio's detection + audit lifecycle for the active file: the
+ * pipeline choice, running detection, restoring the file's most recent detection, and
  * the flattened entities the document + audit panel render.
  *
- * Call this once per studio page and share its result — the run bar drives the
- * pipeline/run controls while the audit panel and document overlay read the
+ * Call this once per studio page and share its result — the detection bar drives the
+ * pipeline/detection controls while the audit panel and document overlay read the
  * entities, so both must observe the same state.
  */
 export function useStudioAudit(
@@ -46,8 +46,8 @@ export function useStudioAudit(
 	// selection equals it (i.e. it wasn't a user switch).
 	let programmaticPipeline: string | null = null;
 
-	// The pipeline of the file's most recent run, to adopt into the picker. Held
-	// separately because the run can resolve before the pipeline list loads; once
+	// The pipeline of the file's most recent detection, to adopt into the picker. Held
+	// separately because the detection can resolve before the pipeline list loads; once
 	// the list is present, this wins over the "first pipeline" default so a
 	// refresh restores the file's own pipeline rather than resetting to the first.
 	const pendingAdoptPipeline = ref<string | null>(null);
@@ -58,7 +58,7 @@ export function useStudioAudit(
 	const adoptResolved = ref(!toValue(fileId));
 
 	// Pick the selected pipeline once the list loads (or the pending adoption
-	// arrives): the file's latest-run pipeline when known and still valid, else —
+	// arrives): the file's latest-detection pipeline when known and still valid, else —
 	// only once adoption has resolved — the first pipeline. Only sets a default
 	// when nothing is selected yet.
 	watch(
@@ -277,7 +277,7 @@ export function useStudioAudit(
 		}
 	}
 
-	// On file open, restore the file's most recent run and adopt its pipeline, so
+	// On file open, restore the file's most recent detection and adopt its pipeline, so
 	// opening a file shows its latest audit under the pipeline that produced it.
 	watch(
 		() => toValue(fileId),

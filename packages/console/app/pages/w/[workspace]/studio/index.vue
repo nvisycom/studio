@@ -7,7 +7,7 @@ import {
 	StudioDocumentPreview,
 	StudioChatPanel,
 	StudioAuditPanel,
-	StudioRunBar,
+	StudioDetectionBar,
 } from "#console/components/pages/studio";
 import {
 	ResizablePanelGroup,
@@ -109,8 +109,8 @@ watch(
 	{ immediate: true },
 );
 
-// Detection run + audit state for the active file, shared between the run bar
-// (pipeline + run controls), the audit panel (results list), and the document
+// Detection run + audit state for the active file, shared between the detection bar
+// (pipeline + detection controls), the audit panel (results list), and the document
 // preview (inline highlights).
 const audit = useStudioAudit(
 	() => activeFile.value?.fileId ?? null,
@@ -194,7 +194,7 @@ function toggleInspector() {
 
       <ResizableHandle with-handle />
 
-      <!-- Inspector: Audit / Chat, with shared run controls above the tabs.
+      <!-- Inspector: Audit / Chat, with shared detection controls above the tabs.
            Collapses to nothing when the toolbar toggle hides it. -->
       <ResizablePanel
         ref="inspectorPanel"
@@ -208,7 +208,7 @@ function toggleInspector() {
         @expand="inspectorCollapsed = false"
       >
         <div class="flex h-full min-w-0 flex-col overflow-hidden">
-          <StudioRunBar
+          <StudioDetectionBar
             v-model:selected-pipeline="audit.selectedPipeline.value"
             :pipelines="audit.pipelines.value"
             :phase="audit.phase.value"

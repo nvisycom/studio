@@ -49,11 +49,6 @@ export function useDetections(filter?: MaybeRefOrGetter<DetectionsFilter>) {
 		},
 	);
 
-	async function getDetection(detectionId: string): Promise<Detection> {
-		const { client, workspaceSlug } = requireContext();
-		return await client.detections.getDetection(workspaceSlug, detectionId);
-	}
-
 	/** Fetch a detection's analysis (the audit — detected entities + provenance). */
 	async function getAnalysis(detectionId: string): Promise<Audit> {
 		const { client, workspaceSlug } = requireContext();
@@ -204,7 +199,6 @@ export function useDetections(filter?: MaybeRefOrGetter<DetectionsFilter>) {
 		refresh: detectionsQuery.refresh,
 
 		// Single detection + analysis flow
-		getDetection,
 		getAnalysis,
 		downloadAudit,
 		findLatestForFile,

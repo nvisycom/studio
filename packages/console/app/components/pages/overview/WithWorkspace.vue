@@ -343,7 +343,7 @@ const quickActions = [
       </Card>
     </div>
 
-    <!-- Recent files + recent runs -->
+    <!-- Recent files + recent detections -->
     <div class="grid gap-6 lg:grid-cols-2">
         <!-- Recent files -->
         <Card class="rounded-xl border-border/50 py-0 pt-6">
@@ -415,7 +415,7 @@ const quickActions = [
           </CardContent>
         </Card>
 
-        <!-- Recent runs -->
+        <!-- Recent detections -->
         <Card class="rounded-xl border-border/50 py-0 pt-6">
           <CardHeader>
             <div class="flex items-start justify-between">

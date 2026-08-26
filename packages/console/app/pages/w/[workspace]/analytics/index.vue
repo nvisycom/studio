@@ -25,7 +25,7 @@ useHead({ title: () => t("analytics.overview.title") });
 const { analytics, isLoading, timeSeries, isLoadingTimeSeries } =
 	useAnalytics();
 
-// ── KPI tiles: run health + storage + usage, from the snapshot ──────────────
+// ── KPI tiles: detection health + storage + usage, from the snapshot ────────
 const kpis = computed(() => {
 	const a = analytics.value;
 	if (!a) return [];
@@ -41,7 +41,7 @@ const kpis = computed(() => {
 			: t("analytics.kpis.avgDuration", {
 					duration: formatDurationMs(a.detections.avgDurationMs),
 				});
-	// p95 (tail latency) only when a run has completed.
+	// p95 (tail latency) only when a detection has completed.
 	const p95 =
 		a.detections.p95DurationMs === undefined
 			? null
@@ -80,10 +80,11 @@ const kpis = computed(() => {
 
 // ── Trend charts: real daily time-series -> AreaChartSpec ───────────────────
 // Duration is charted in seconds and error rate as a percentage, so the axes
-// read naturally; days without a completed run contribute 0.
+// read naturally; days without a completed detection contribute 0.
 const trendData = computed(() =>
 	(timeSeries.value?.points ?? []).map((p) => ({
 		date: new Date(p.date),
+		// The SDK's day-entry count field is still named `runs`.
 		detections: p.runs,
 		tokens: p.totalTokens ?? 0,
 		errorPct: (p.errorRate ?? 0) * 100,
@@ -128,7 +129,7 @@ const durationTrend = computed(() =>
 	),
 );
 
-// ── Breakdown cards: runs-by-status, storage-by-kind, usage-by-model ────────
+// ── Breakdown cards: detections-by-status, storage-by-kind, usage-by-model ──
 function toRows<T>(
 	items: T[],
 	spec: {
@@ -236,7 +237,7 @@ const usageByModel = computed<BreakdownRow[]>(() =>
         </Card>
       </div>
 
-      <!-- Run activity heatmap -->
+      <!-- Detection activity heatmap -->
       <DetectionActivityGrid
         :time-series="timeSeries"
         :is-loading="isLoadingTimeSeries"

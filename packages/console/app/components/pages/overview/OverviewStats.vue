@@ -5,7 +5,7 @@ import { Card } from "#console/components/ui/card";
 
 /**
  * A compact stat strip at the top of the overview: workspace-level totals from
- * `useAnalytics` (pipeline runs and stored files). Totals only here — the full
+ * `useAnalytics` (pipeline detections and stored files). Totals only here — the full
  * per-status / per-kind / per-model breakdowns live on the analytics pages.
  */
 const { t } = useI18n();
@@ -19,7 +19,7 @@ interface Stat {
 	sub: string;
 }
 
-// Error rate is a fraction (0–1) that's omitted until a run reaches a terminal
+// Error rate is a fraction (0–1) that's omitted until a detection reaches a terminal
 // state — so it's "no signal yet", not 0%.
 const errorRateLabel = computed(() => {
 	const rate = analytics.value?.detections.errorRate;
