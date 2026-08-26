@@ -114,7 +114,9 @@ function openInStudio() {
 }
 
 function downloadAudit(format: "json" | "csv") {
-	if (props.detection) emit("download-audit", props.detection.id, format);
+	// The audit only exists once the detection is complete.
+	if (props.detection && hasDetection.value)
+		emit("download-audit", props.detection.id, format);
 }
 </script>
 
@@ -299,7 +301,8 @@ function downloadAudit(format: "json" | "csv") {
             <ExternalLink :size="16" class="mr-2" />
             {{ t("workflows.detections.openInStudio") }}
           </Button>
-          <div class="flex items-center gap-2">
+          <!-- Audit download is only meaningful once the detection is complete. -->
+          <div v-if="hasDetection" class="flex items-center gap-2">
             <Button
               variant="outline"
               class="flex-1"

@@ -253,15 +253,21 @@ export function useStudioAudit(
 			restored.value = true;
 			phase.value = "complete";
 			// If this detection was already redacted, surface its output so the
-			// panel offers the download without re-running redaction.
-			const redaction = await findLatestRedaction(latest.id);
-			if (token !== restoreToken) return;
-			if (redaction?.outputFileId) {
-				output.value = {
-					fileId: redaction.outputFileId,
-					fileName: redactedName(redaction.outputFileId),
-				};
-				redactPhase.value = "done";
+			// panel offers the download without re-running redaction. Isolated: a
+			// failed lookup just means "no restorable redaction" and must not undo
+			// the audit we already restored above.
+			try {
+				const redaction = await findLatestRedaction(latest.id);
+				if (token !== restoreToken) return;
+				if (redaction?.outputFileId) {
+					output.value = {
+						fileId: redaction.outputFileId,
+						fileName: redactedName(redaction.outputFileId),
+					};
+					redactPhase.value = "done";
+				}
+			} catch {
+				// Leave redaction as not-yet-applied; the audit stays restored.
 			}
 		} catch {
 			if (token === restoreToken) {
