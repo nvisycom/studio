@@ -7,10 +7,13 @@ import {
 	EyeOff,
 	Layers,
 	Loader2,
+	Plus,
 	ScanSearch,
 	TriangleAlert,
+	X,
 } from "@lucide/vue";
 import type {
+	AddedEntity,
 	StudioAuditPhase,
 	StudioRedactPhase,
 } from "#console/composables/useStudioAudit";
@@ -55,6 +58,8 @@ const props = defineProps<{
 	output?: { fileId: string; fileName: string } | null;
 	/** Ids of entities the reviewer kept (suppressed), for rendering state. */
 	suppressed?: Set<string>;
+	/** Entities the reviewer added by selecting text. */
+	added?: AddedEntity[];
 	/** How many entities the redaction will actually redact (total minus kept). */
 	effectiveRedactCount?: number;
 }>();
@@ -68,7 +73,11 @@ const emit = defineEmits<{
 	"download-output": [];
 	/** Keep/redact toggle for one entity (suppress). */
 	"toggle-suppress": [id: string];
+	/** Remove a reviewer-added entity by its index. */
+	"remove-added": [index: number];
 }>();
+
+const { labelName } = useLabels();
 
 // Keep/suppress helpers. A cluster groups identical occurrences, so its toggle
 // fans out to every occurrence's id (consistent with how the list collapses
@@ -208,9 +217,9 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
         </p>
       </div>
 
-      <!-- Empty (complete, nothing found) -->
+      <!-- Empty (complete, nothing detected and nothing added) -->
       <div
-        v-else-if="phase === 'complete' && count === 0"
+        v-else-if="phase === 'complete' && count === 0 && !added?.length"
         class="flex h-full flex-col items-center justify-center px-6 text-center"
       >
         <p class="mb-1 text-sm text-foreground">
@@ -222,8 +231,62 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
       </div>
 
       <!-- Two-tier entity list: category → label → entities. Each category is
-           collapsible, expanded by default. -->
+           collapsible, expanded by default. Plus a band for entities the
+           reviewer added by selecting text. -->
       <template v-else-if="phase === 'complete'">
+        <!-- Added by the reviewer — mirrors a category section so it reads as one
+             of the tiers, with a "+" marker instead of a category dot. -->
+        <section v-if="added?.length">
+          <div
+            class="sticky top-0 z-10 flex w-full items-center gap-1.5 bg-muted/50 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground backdrop-blur-sm"
+          >
+            <Plus :size="12" class="shrink-0 text-emerald-600 dark:text-emerald-500" />
+            <span>{{ t("studio.audit.addedByYou") }}</span>
+            <span
+              class="ml-auto rounded-full bg-foreground/10 px-1.5 text-[10px] font-semibold leading-4 text-foreground/70"
+            >
+              {{ added.length }}
+            </span>
+          </div>
+          <!-- Rows indented under the header like a label group's rows. Clicking
+               focuses the entity's highlight in the document, like detected rows. -->
+          <div class="pl-3">
+            <div
+              v-for="(item, i) in added"
+              :key="item.id"
+              class="group/row flex w-full items-start gap-2 border-l py-1.5 pr-2 pl-3 transition-colors"
+              :class="
+                activeEntityId === item.id
+                  ? 'border-foreground bg-muted'
+                  : 'border-border/60 hover:bg-muted/40'
+              "
+            >
+              <button
+                type="button"
+                class="min-w-0 flex-1 text-left"
+                @click="emit('focus-entity', item.id)"
+              >
+                <span class="block truncate font-mono text-xs text-foreground">
+                  {{ item.text }}
+                </span>
+                <span
+                  class="mt-0.5 flex items-center gap-1 truncate text-[11px] text-muted-foreground"
+                >
+                  <span class="truncate">{{ labelName(item.label) }}</span>
+                </span>
+              </button>
+              <button
+                type="button"
+                class="mt-0.5 shrink-0 rounded p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-muted-foreground/10 hover:text-foreground focus-visible:opacity-100 group-hover/row:opacity-100"
+                :title="t('studio.audit.removeAdded')"
+                @click.stop="emit('remove-added', i)"
+              >
+                <X :size="13" />
+              </button>
+            </div>
+          </div>
+        </section>
+
         <Collapsible
           v-for="section in categorizedGroups"
           :key="section.category ?? '__uncategorized__'"

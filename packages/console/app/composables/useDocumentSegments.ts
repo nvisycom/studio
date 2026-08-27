@@ -20,6 +20,13 @@ export interface Segment {
 	text: string;
 	kind: TokenKind | null;
 	entity: TextEntityView | null;
+	/**
+	 * Char offset of this segment's first character in the formatted text. For
+	 * unformatted files (plain text) the formatted text equals the raw file, so
+	 * this doubles as a document char offset — the basis for turning a reviewer's
+	 * text selection into a byte-offset span.
+	 */
+	start: number;
 }
 
 /**
@@ -191,24 +198,70 @@ export function useDocumentSegments(inputs: {
 				text: text.slice(start, end),
 				kind: kindAt(start),
 				entity: entityAt(start),
+				start,
 			});
 		}
 		return out;
 	});
 
 	// Group segments into lines for the numbered gutter. A segment spanning a
-	// newline is split at each break so every line holds only its own runs.
+	// newline is split at each break so every line holds only its own runs; each
+	// part keeps its own char `start` (advanced past preceding parts + newlines)
+	// so a selection maps back to the right offset.
 	const lines = computed<Segment[][]>(() => {
 		const out: Segment[][] = [[]];
 		for (const seg of segments.value) {
 			const parts = seg.text.split("\n");
+			let offset = seg.start;
 			parts.forEach((part, i) => {
 				if (i > 0) out.push([]); // newline → start a new line
-				if (part) out[out.length - 1]!.push({ ...seg, text: part });
+				if (part)
+					out[out.length - 1]!.push({ ...seg, text: part, start: offset });
+				offset += part.length + 1; // + the split-out "\n"
 			});
 		}
 		return out;
 	});
 
-	return { formatted, lines };
+	// Whether a reviewer can add entities by selecting text here. Works for any
+	// flat-text preview (plain text, JSON, XML) — a selection's formatted-char
+	// offset maps back to a source byte offset via the formatter's raw→formatted
+	// map ({@link formattedToRaw}). CSV is a grid, not flat text with such a map,
+	// so it's excluded.
+	const canAddEntities = computed(() => fileKind.value !== "csv");
+
+	// Inverse of the formatter's raw→formatted char map: for each formatted char
+	// index, the raw char index it came from. Built by walking the raw→formatted
+	// map (monotonic) and filling every formatted position with the latest raw
+	// index at or before it. Empty map (plain text) means identity.
+	const formattedToRaw = computed<number[] | null>(() => {
+		const map = formatted.value.map; // raw index → formatted index
+		if (map.length === 0) return null; // identity: formatted === raw
+		const fmtLen = formatted.value.text.length;
+		const inverse: number[] = new Array(fmtLen + 1);
+		let raw = 0;
+		for (let f = 0; f <= fmtLen; f++) {
+			// Advance raw while its formatted position is still <= f.
+			while (raw < map.length - 1 && map[raw + 1]! <= f) raw++;
+			inverse[f] = raw;
+		}
+		return inverse;
+	});
+
+	// A formatted-char offset (from a document selection over the shown text) →
+	// UTF-8 byte offset into the RAW file, which is what the API's entity
+	// locations use. Resolves formatted → raw char (identity for plain text),
+	// then encodes the raw prefix. Gated by {@link canAddEntities}.
+	function charToByte(formattedOffset: number): number {
+		const raw = rawText.value ?? "";
+		const inverse = formattedToRaw.value;
+		const rawChar = inverse
+			? (inverse[Math.max(0, Math.min(formattedOffset, inverse.length - 1))] ??
+				0)
+			: formattedOffset;
+		const clamped = Math.max(0, Math.min(rawChar, raw.length));
+		return new TextEncoder().encode(raw.slice(0, clamped)).length;
+	}
+
+	return { formatted, lines, canAddEntities, charToByte };
 }

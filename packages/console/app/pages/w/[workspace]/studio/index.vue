@@ -181,14 +181,16 @@ function toggleInspector() {
           :is-docx="isDocxFile"
           :zoom-level="zoomLevel"
           :chat-visible="!inspectorCollapsed"
-          :entities="audit.entities.value"
+          :entities="audit.highlightEntities.value"
           :active-entity-id="activeEntityId"
+          :can-add="audit.phase.value === 'complete'"
           v-model:with-headers="withHeaders"
           @zoom-in="zoomIn"
           @zoom-out="zoomOut"
           @toggle-chat="toggleInspector"
           @focus-entity="focusEntity"
           @clear-entity="clearEntity"
+          @add-entity="audit.addEntity($event)"
         />
       </ResizablePanel>
 
@@ -258,11 +260,13 @@ function toggleInspector() {
               :redact-error="audit.redactError.value"
               :output="audit.output.value"
               :suppressed="audit.suppressed.value"
+              :added="audit.added.value"
               :effective-redact-count="audit.effectiveRedactCount.value"
               @focus-entity="focusEntity"
               @redact="audit.redact"
               @download-output="audit.downloadRedacted"
               @toggle-suppress="audit.toggleSuppress"
+              @remove-added="audit.removeAdded"
             />
           </div>
         </div>

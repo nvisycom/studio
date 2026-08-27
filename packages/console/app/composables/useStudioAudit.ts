@@ -1,5 +1,6 @@
 import type { Audit, Detection, EditSet } from "@nvisy/sdk/datatypes";
 import type { MaybeRefOrGetter } from "vue";
+import type { TextEntityView } from "#console/composables/useTextEntities";
 
 /** Lifecycle phase of the studio's detection. `complete` = analysis ready. */
 export type StudioAuditPhase =
@@ -11,6 +12,27 @@ export type StudioAuditPhase =
 
 /** Lifecycle of applying redactions to a complete detection. */
 export type StudioRedactPhase = "idle" | "redacting" | "done" | "failed";
+
+/**
+ * An entity the reviewer added by selecting text — a span the detection missed.
+ * `id` is a stable client key (for the document highlight + focus); the byte
+ * offsets locate it in the source; `text` is the selected value, for display.
+ */
+export interface AddedEntity {
+	id: string;
+	label: string;
+	byteStart: number;
+	byteEnd: number;
+	text: string;
+}
+
+/** The document-selection payload the reviewer confirms into an {@link AddedEntity}. */
+export interface AddEntityInput {
+	byteStart: number;
+	byteEnd: number;
+	label: string;
+	text: string;
+}
 
 /**
  * Owns the studio's detection + audit lifecycle for the active file: the
@@ -29,6 +51,7 @@ export function useStudioAudit(
 ) {
 	const { t } = useI18n();
 	const { pipelines } = usePipelines();
+	const { resolveLabel } = useLabels();
 	const { runDetection, findLatestForFile, getAnalysis } = useDetections();
 	const {
 		createRedaction,
@@ -109,12 +132,20 @@ export function useStudioAudit(
 	);
 
 	// Ids of entities the reviewer chose to keep (suppress from redaction).
-	// Cleared whenever a new audit is shown (a fresh run or a restore), so it
-	// never leaks across files or detections.
+	// Cleared whenever a new audit is shown (a fresh run or a restore), so edits
+	// never leak across files or detections.
 	const suppressed = ref<Set<string>>(new Set());
+	// Entities the reviewer added by selecting text — a stable id (for the
+	// document highlight + focus), a label + byte span, and the selected text for
+	// display, to redact what the detection missed. Text-modality only (plain
+	// text) for now.
+	let nextAddedId = 0;
+	const added = ref<AddedEntity[]>([]);
 
 	function resetEdits() {
 		suppressed.value = new Set();
+		added.value = [];
+		nextAddedId = 0;
 	}
 
 	/** Whether an entity is kept (excluded from redaction). */
@@ -130,25 +161,71 @@ export function useStudioAudit(
 		suppressed.value = next;
 	}
 
+	/** Add a reviewer-marked entity (a byte span + label + shown text) to redact. */
+	function addEntity(input: AddEntityInput) {
+		added.value = [...added.value, { id: `added:${nextAddedId++}`, ...input }];
+	}
+
+	/** Drop a previously added entity by its index. */
+	function removeAdded(index: number) {
+		added.value = added.value.filter((_, i) => i !== index);
+	}
+
 	const suppressedCount = computed(
 		() => entities.value.filter((e) => suppressed.value.has(e.id)).length,
 	);
-	/** How many entities the redaction will actually redact (total minus kept). */
+	/**
+	 * How many entities the redaction will actually redact: detected entities
+	 * (minus kept ones) plus the ones the reviewer added.
+	 */
 	const effectiveRedactCount = computed(
-		() => count.value - suppressedCount.value,
+		() => count.value - suppressedCount.value + added.value.length,
 	);
 
-	// Assemble the reviewer edits into the redaction EditSet, bucketing each kept
-	// entity's `suppress` edit by its modality. Returns undefined when nothing is
-	// suppressed, so the redact call omits `edits` (redact exactly as detected).
+	// Reviewer-added entities as highlight-ready views, so the document preview
+	// marks them with the same chip treatment as detected ones (colored by the
+	// label's category). Their id is a stable synthetic key, not a server id.
+	const addedEntities = computed<TextEntityView[]>(() =>
+		added.value.map((a) => ({
+			id: a.id,
+			modality: "text",
+			label: a.label,
+			category: resolveLabel(a.label)?.category ?? null,
+			start: a.byteStart,
+			end: a.byteEnd,
+			confidence: 1,
+			text: a.text,
+		})),
+	);
+
+	// Entities the document highlights: everything detected plus the reviewer's
+	// additions. The audit panel keeps its own detected-vs-added split; this is
+	// only for the in-document overlay.
+	const highlightEntities = computed<TextEntityView[]>(() => [
+		...entities.value,
+		...addedEntities.value,
+	]);
+
+	// Assemble the reviewer edits into the redaction EditSet: a `suppress` edit
+	// per kept entity (bucketed by modality) and an `add` edit per reviewer-marked
+	// span (text-modality). Returns undefined when there are no edits, so the
+	// redact call omits `edits` (redact exactly as detected).
 	function buildEditSet(): EditSet | undefined {
-		if (suppressed.value.size === 0) return undefined;
+		if (suppressed.value.size === 0 && added.value.length === 0)
+			return undefined;
 		const text: NonNullable<EditSet["text"]> = [];
 		const tabular: NonNullable<EditSet["tabular"]> = [];
 		for (const entity of entities.value) {
 			if (!suppressed.value.has(entity.id)) continue;
 			const bucket = entity.modality === "tabular" ? tabular : text;
 			bucket.push({ op: "suppress", id: entity.id });
+		}
+		for (const a of added.value) {
+			text.push({
+				op: "add",
+				label: a.label,
+				location: { range: { start: a.byteStart, end: a.byteEnd } },
+			});
 		}
 		const set: EditSet = {};
 		if (text.length) set.text = text;
@@ -396,10 +473,14 @@ export function useStudioAudit(
 		canRedact,
 		redact,
 		downloadRedacted,
-		// Reviewer edits (keep/suppress)
+		// Reviewer edits
 		suppressed,
 		isSuppressed,
 		toggleSuppress,
+		added,
+		addEntity,
+		removeAdded,
+		highlightEntities,
 		suppressedCount,
 		effectiveRedactCount,
 	};

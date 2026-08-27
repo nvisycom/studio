@@ -7,6 +7,7 @@ import StudioDocxView from "./StudioDocxView.vue";
 import StudioImageView from "./StudioImageView.vue";
 import StudioTextView from "./StudioTextView.vue";
 import type { TextEntityView } from "#console/composables/useTextEntities";
+import type { AddEntityInput } from "#console/composables/useStudioAudit";
 
 const props = withDefaults(
 	defineProps<{
@@ -25,8 +26,10 @@ const props = withDefaults(
 		entities?: TextEntityView[];
 		/** Currently focused entity id, for the ring + scroll-into-view. */
 		activeEntityId?: string | null;
+		/** Whether the reviewer may add entities by selecting text (detection complete). */
+		canAdd?: boolean;
 	}>(),
-	{ entities: () => [], activeEntityId: null },
+	{ entities: () => [], activeEntityId: null, canAdd: false },
 );
 
 // Whether the CSV's first row is a header. Owned by the page so the audit list
@@ -40,6 +43,8 @@ const emit = defineEmits<{
 	"focus-entity": [id: string];
 	/** Clear the current entity selection (popover dismissed). */
 	"clear-entity": [];
+	/** A reviewer marked a text span as a new entity to redact. */
+	"add-entity": [payload: AddEntityInput];
 }>();
 
 const { t } = useI18n();
@@ -150,7 +155,9 @@ watch(
           :file-kind="fileKind"
           :entities="entities"
           :active-entity-id="activeEntityId"
+          :can-add="canAdd"
           @focus-entity="emit('focus-entity', $event)"
+          @add-entity="emit('add-entity', $event)"
         />
       </div>
 
