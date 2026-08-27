@@ -39,7 +39,7 @@ const { sections, labelName, isLoading } = useLabelOptions(
 </script>
 
 <template>
-  <Combobox v-model="model" :ignore-filter="false" :open-on-click="true">
+  <Combobox v-model="model" :open-on-click="true">
     <ComboboxAnchor as-child>
       <ComboboxTrigger as-child>
         <Button
@@ -60,7 +60,13 @@ const { sections, labelName, isLoading } = useLabelOptions(
       align="start"
       :class="contentClass ?? 'w-(--reka-popper-anchor-width) min-w-64'"
     >
-      <ComboboxInput :placeholder="t('common.labelPicker.search')" />
+      <!-- Keep this a pure search field: `display-value` returns "" so selecting
+           a label doesn't write its name back into the input — which would then
+           filter the list down to just that one label. -->
+      <ComboboxInput
+        :display-value="() => ''"
+        :placeholder="t('common.labelPicker.search')"
+      />
       <LabelOptionList
         :sections="sections"
         :label-name="labelName"
