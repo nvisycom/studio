@@ -1,81 +1,74 @@
-import { type FormattedText, type Token, buildMap, identity } from "./shared";
+import { type FormattedText, type Token, identity } from "./shared";
 
-const ESCAPES: Record<string, string> = {
-	'"': '"',
-	"\\": "\\",
-	"/": "/",
-	b: "\b",
-	f: "\f",
-	n: "\n",
-	r: "\r",
-	t: "\t",
-};
+const isWhitespace = (ch: string) =>
+	ch === " " || ch === "\t" || ch === "\n" || ch === "\r";
+
+/** Length of the escape sequence at `s[i]` (which must be a backslash): 6 for
+ * `\uXXXX`, 2 for every other (`\"`, `\n`, `\\`, …). */
+function escapeLength(s: string, i: number): number {
+	return s[i + 1] === "u" ? 6 : 2;
+}
 
 /**
- * Decode the JSON escape sequences inside string literals, tracking where each
- * raw char index moves to in the decoded text. Prettifying alone only reflows
- * whitespace, but `JSON.parse` also *collapses* escapes (`\uXXXX` → one char,
- * `\n` → newline), so the raw→formatted map has to account for that shift — the
- * whitespace-only {@link buildMap} can't. This yields the raw→decoded step; the
- * decoded text then differs from the formatted text only in whitespace.
- *
- * Only string *contents* are decoded; structural characters pass through. A
- * surrogate pair written as two `\uXXXX` escapes decodes to two UTF-16 units,
- * which is exactly how JS strings hold it, so indices stay consistent.
+ * Build the raw→formatted char-index map by walking both JSON strings in
+ * lockstep. They encode the same value in the same order, differing only in
+ * (a) whitespace *between* tokens and (b) how string contents are escaped —
+ * `JSON.stringify` resolves `\uXXXX`/`\/` (e.g. `A`→`A`, `\/`→`/`) but
+ * preserves `\"`, `\\`, `\n`, … as-is. So a whitespace-only {@link buildMap}
+ * drifts on escapes; instead, pair one logical character from each side at a
+ * time — an escape sequence on the raw side pairs with its formatted
+ * counterpart (an escape or a single char), whatever their differing lengths.
  */
-function decodeJsonStrings(raw: string): { decoded: string; map: number[] } {
-	const out: string[] = [];
+function buildJsonMap(raw: string, formatted: string): number[] {
 	const map: number[] = new Array(raw.length + 1);
-	let d = 0;
-	let i = 0;
+	let r = 0;
+	let f = 0;
 	let inString = false;
-	while (i < raw.length) {
-		const ch = raw[i]!;
-		if (ch === '"') {
-			inString = !inString;
-			map[i] = d;
-			out.push(ch);
-			d++;
-			i++;
-			continue;
-		}
-		if (inString && ch === "\\") {
-			const next = raw[i + 1];
-			if (next === "u") {
-				const decoded = String.fromCharCode(
-					Number.parseInt(raw.slice(i + 2, i + 6), 16),
-				);
-				for (let k = 0; k < 6; k++) map[i + k] = d;
-				out.push(decoded);
-				d += decoded.length;
-				i += 6;
+	while (r < raw.length) {
+		// Between tokens, each side has its own whitespace — advance independently.
+		if (!inString) {
+			if (isWhitespace(raw[r]!)) {
+				while (f < formatted.length && isWhitespace(formatted[f]!)) f++;
+				map[r] = f;
+				r++;
 				continue;
 			}
-			const decoded = ESCAPES[next ?? ""] ?? next ?? "";
-			map[i] = d;
-			map[i + 1] = d;
-			out.push(decoded);
-			d++;
-			i += 2;
+			while (f < formatted.length && isWhitespace(formatted[f]!)) f++;
+		}
+		if (raw[r] === '"') {
+			inString = !inString;
+			map[r] = f;
+			r++;
+			f++;
 			continue;
 		}
-		map[i] = d;
-		out.push(ch);
-		d++;
-		i++;
+		if (inString && raw[r] === "\\") {
+			// One escaped char: consume the raw escape and its formatted form (which
+			// may be a shorter/longer escape or a single resolved char).
+			const rl = escapeLength(raw, r);
+			const fl = formatted[f] === "\\" ? escapeLength(formatted, f) : 1;
+			for (let k = 0; k < rl; k++) map[r + k] = f;
+			r += rl;
+			f += fl;
+			continue;
+		}
+		map[r] = f;
+		r++;
+		f++;
 	}
-	map[raw.length] = d; // end sentinel
-	return { decoded: out.join(""), map };
+	while (f < formatted.length && isWhitespace(formatted[f]!)) f++;
+	map[raw.length] = formatted.length; // end sentinel
+	return map;
 }
 
 /**
  * Pretty-print JSON with 2-space indentation. Falls back to the raw text
  * (identity map) when it doesn't parse, so a malformed file still shows.
  *
- * The raw→formatted char map composes two steps: raw→decoded (escapes collapse,
- * {@link decodeJsonStrings}) then decoded→formatted (whitespace reflow only,
- * {@link buildMap}) — so highlight/add-entity offsets are correct even when the
- * source uses `\uXXXX` / `\"` escapes that differ from the shown text.
+ * The raw→formatted char map ({@link buildJsonMap}) accounts for both the
+ * whitespace reflow and JSON's escape re-encoding, so highlight/add-entity
+ * offsets stay correct even when the source uses `\uXXXX` / `\"` / `\n` escapes
+ * that differ from the shown text.
  */
 export function formatJson(raw: string): FormattedText {
 	let formatted: string;
@@ -84,13 +77,7 @@ export function formatJson(raw: string): FormattedText {
 	} catch {
 		return identity(raw);
 	}
-	const { decoded, map: rawToDecoded } = decodeJsonStrings(raw);
-	const decodedToFormatted = buildMap(decoded, formatted);
-	// Compose: raw char → decoded char → formatted char.
-	const map = rawToDecoded.map(
-		(d) => decodedToFormatted[d] ?? formatted.length,
-	);
-	return { text: formatted, map };
+	return { text: formatted, map: buildJsonMap(raw, formatted) };
 }
 
 /**

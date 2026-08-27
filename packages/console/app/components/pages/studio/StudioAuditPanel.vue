@@ -80,15 +80,21 @@ const emit = defineEmits<{
 
 const { labelName } = useLabels();
 
-// Keep/suppress helpers. A cluster groups identical occurrences, so its toggle
-// fans out to every occurrence's id (consistent with how the list collapses
-// them). Reading state off the lead is enough — the whole cluster moves together.
+// Keep/suppress helpers. A cluster groups identical occurrences; its toggle
+// moves the whole cluster to one target state. Occurrences can be suppressed
+// individually in expanded mode, so the cluster reads as suppressed only when
+// *every* occurrence is, and toggling drives all to a single target (suppress
+// unless already fully suppressed) — flipping each independently would leave a
+// mixed cluster inconsistent.
 const isSuppressed = (id: string) => !!props.suppressed?.has(id);
 function clusterSuppressed(cluster: EntityCluster): boolean {
-	return isSuppressed(cluster.lead.id);
+	return cluster.items.every((e) => isSuppressed(e.id));
 }
 function toggleClusterSuppress(cluster: EntityCluster) {
-	for (const e of cluster.items) emit("toggle-suppress", e.id);
+	const target = !clusterSuppressed(cluster);
+	for (const e of cluster.items) {
+		if (isSuppressed(e.id) !== target) emit("toggle-suppress", e.id);
+	}
 }
 
 // How many entities the "Apply" button will redact (excludes kept ones).
@@ -559,9 +565,10 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
     </div>
 
     <!-- Redaction footer: apply redaction to the complete detection, then download the
-         redacted output it produces. -->
+         redacted output it produces. Shown whenever there's something to redact —
+         detected entities, or ones the reviewer added even if none were detected. -->
     <div
-      v-if="phase === 'complete' && count > 0"
+      v-if="phase === 'complete' && (count > 0 || !!added?.length)"
       class="border-t border-border/50 bg-muted/30 p-3"
     >
       <!-- Redaction failed: show why, keep the button available to retry. -->

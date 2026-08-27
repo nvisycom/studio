@@ -136,8 +136,11 @@
 	background-color: color-mix(in oklab, var(--flag) 10%, transparent);
 }
 
-.chip--active,
-.docx-chip--active {
+/* Doubled class so active outranks `.chip:hover` (equal-specificity otherwise,
+   and hover wins by source order) — a focused chip that's also hovered keeps its
+   active styling. */
+.chip.chip--active,
+.docx-chip.docx-chip--active {
 	/* Focused entity: a bold underline and a light fill so it clearly leads. */
 	box-shadow: inset 0 -4px 0 -1px var(--flag);
 	background-color: color-mix(in oklab, var(--flag) 18%, transparent);
