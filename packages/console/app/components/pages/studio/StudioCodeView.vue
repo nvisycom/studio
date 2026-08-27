@@ -60,6 +60,7 @@ const KIND_CLASS: Record<TokenKind, string> = {
             type="button"
             :data-entity="seg.entity.id"
             :data-category="seg.entity.category ?? undefined"
+            :data-suppressed="seg.entity.suppressed || undefined"
             :data-start="seg.start"
             :title="seg.entity.label"
             class="chip"

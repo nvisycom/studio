@@ -45,6 +45,8 @@ const emit = defineEmits<{
 	"clear-entity": [];
 	/** A reviewer marked a text span as a new entity to redact. */
 	"add-entity": [payload: AddEntityInput];
+	/** Keep/redact toggle for an entity (from its detail popover). */
+	"toggle-suppress": [id: string];
 }>();
 
 const { t } = useI18n();
@@ -91,6 +93,7 @@ watch(
       :reference="activeChipEl"
       :with-headers="withHeaders"
       @close="emit('clear-entity')"
+      @toggle-suppress="emit('toggle-suppress', $event)"
     />
     <div
       class="h-full overflow-y-auto"

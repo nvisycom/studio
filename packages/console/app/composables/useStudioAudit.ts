@@ -213,16 +213,20 @@ export function useStudioAudit(
 			end: a.byteEnd,
 			confidence: 1,
 			text: a.text,
+			added: true,
 		})),
 	);
 
 	// Entities the document highlights: everything detected plus the reviewer's
-	// additions. The audit panel keeps its own detected-vs-added split; this is
-	// only for the in-document overlay.
-	const highlightEntities = computed<TextEntityView[]>(() => [
-		...entities.value,
-		...addedEntities.value,
-	]);
+	// additions, each flagged with its suppressed state so a kept entity's chip
+	// dims (it won't be redacted). The audit panel keeps its own detected-vs-added
+	// split; this is only for the in-document overlay.
+	const highlightEntities = computed<TextEntityView[]>(() =>
+		[...entities.value, ...addedEntities.value].map((e) => ({
+			...e,
+			suppressed: suppressed.value.has(e.id),
+		})),
+	);
 
 	// Assemble the reviewer edits into the redaction EditSet: a `suppress` edit
 	// per kept entity (bucketed by modality) and an `add` edit per reviewer-marked

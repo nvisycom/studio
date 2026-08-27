@@ -1228,7 +1228,7 @@
 			"addEntity": "Add",
 			"addedByYou": "Added by you",
 			"removeAdded": "Remove",
-			"redactThis": "Redact this",
+			"redactThis": "Redact",
 			"redacting": "Applying redaction…",
 			"retryRedaction": "Retry redaction",
 			"redactFailed": "Redaction failed. Please try again.",

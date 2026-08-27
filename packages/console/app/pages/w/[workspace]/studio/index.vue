@@ -191,6 +191,7 @@ function toggleInspector() {
           @focus-entity="focusEntity"
           @clear-entity="clearEntity"
           @add-entity="audit.addEntity($event)"
+          @toggle-suppress="audit.toggleSuppress"
         />
       </ResizablePanel>
 

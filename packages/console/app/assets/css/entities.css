@@ -161,3 +161,13 @@
 	--select: oklch(0.7 0.15 255);
 	background-color: color-mix(in oklab, var(--select) 34%, transparent);
 }
+
+/* Suppressed (kept) entity: the reviewer excluded it from the redaction. Recolor
+   its highlight to a muted gray — overriding the category hue via `--flag`, so
+   the underline (and hover/active) all read as "won't be redacted" — and drop
+   the text to muted so it recedes from the active detections around it. */
+.chip[data-suppressed] {
+	--flag: var(--color-muted-foreground);
+	color: var(--color-muted-foreground);
+	opacity: 0.75;
+}

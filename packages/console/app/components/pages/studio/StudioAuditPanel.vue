@@ -395,17 +395,16 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
                     </span>
                   </button>
 
-                  <!-- Keep toggle, revealed on hover or when already kept. -->
-                  <div
-                    class="mt-0.5 flex shrink-0 items-center opacity-0 transition-opacity focus-within:opacity-100 group-hover/row:opacity-100"
-                    :class="{ 'opacity-100': clusterSuppressed(cluster) }"
-                  >
+                  <!-- Trailing controls, right-aligned as one cluster: the keep
+                       toggle (hover-revealed) sits left of the occurrence stepper
+                       or the confidence %, so it lines up with them. -->
+                  <div class="mt-0.5 flex shrink-0 items-center gap-1">
                     <button
                       type="button"
-                      class="rounded p-1 hover:bg-muted-foreground/10"
+                      class="rounded p-1 opacity-0 transition-opacity hover:bg-muted-foreground/10 focus-visible:opacity-100 group-hover/row:opacity-100"
                       :class="
                         clusterSuppressed(cluster)
-                          ? 'text-muted-foreground'
+                          ? 'text-muted-foreground opacity-100'
                           : 'text-foreground/70'
                       "
                       :aria-label="
@@ -423,41 +422,41 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
                       <Eye v-if="clusterSuppressed(cluster)" :size="14" />
                       <EyeOff v-else :size="14" />
                     </button>
-                  </div>
 
-                  <!-- Occurrence stepper for multi-occurrence clusters. -->
-                  <span
-                    v-if="cluster.items.length > 1"
-                    class="mt-0.5 flex shrink-0 items-center gap-0.5 text-[11px] text-muted-foreground"
-                  >
-                    <button
-                      type="button"
-                      class="rounded p-0.5 enabled:hover:bg-muted-foreground/10 disabled:cursor-default disabled:opacity-40"
-                      :disabled="!clusterLocatable(cluster)"
-                      :aria-label="t('studio.audit.prevOccurrence')"
-                      @click.stop="stepCluster(cluster, -1)"
+                    <!-- Occurrence stepper for multi-occurrence clusters. -->
+                    <span
+                      v-if="cluster.items.length > 1"
+                      class="flex items-center gap-0.5 text-[11px] text-muted-foreground"
                     >
-                      <ChevronLeft :size="13" />
-                    </button>
-                    <span class="tabular-nums">
-                      {{ (clusterIndex[cluster.key] ?? 0) + 1 }}/{{ cluster.items.length }}
+                      <button
+                        type="button"
+                        class="rounded p-0.5 enabled:hover:bg-muted-foreground/10 disabled:cursor-default disabled:opacity-40"
+                        :disabled="!clusterLocatable(cluster)"
+                        :aria-label="t('studio.audit.prevOccurrence')"
+                        @click.stop="stepCluster(cluster, -1)"
+                      >
+                        <ChevronLeft :size="13" />
+                      </button>
+                      <span class="tabular-nums">
+                        {{ (clusterIndex[cluster.key] ?? 0) + 1 }}/{{ cluster.items.length }}
+                      </span>
+                      <button
+                        type="button"
+                        class="rounded p-0.5 enabled:hover:bg-muted-foreground/10 disabled:cursor-default disabled:opacity-40"
+                        :disabled="!clusterLocatable(cluster)"
+                        :aria-label="t('studio.audit.nextOccurrence')"
+                        @click.stop="stepCluster(cluster, 1)"
+                      >
+                        <ChevronRight :size="13" />
+                      </button>
                     </span>
-                    <button
-                      type="button"
-                      class="rounded p-0.5 enabled:hover:bg-muted-foreground/10 disabled:cursor-default disabled:opacity-40"
-                      :disabled="!clusterLocatable(cluster)"
-                      :aria-label="t('studio.audit.nextOccurrence')"
-                      @click.stop="stepCluster(cluster, 1)"
+                    <span
+                      v-else
+                      class="text-[11px] tabular-nums text-muted-foreground/70"
                     >
-                      <ChevronRight :size="13" />
-                    </button>
-                  </span>
-                  <span
-                    v-else
-                    class="mt-0.5 shrink-0 text-[11px] tabular-nums text-muted-foreground/70"
-                  >
-                    {{ confidencePct(cluster.lead.confidence) }}
-                  </span>
+                      {{ confidencePct(cluster.lead.confidence) }}
+                    </span>
+                  </div>
                 </div>
               </template>
 
@@ -526,17 +525,15 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
                   </span>
                 </button>
 
-                <!-- Keep toggle, revealed on hover or when already kept. -->
-                <div
-                  class="mt-0.5 flex shrink-0 items-center opacity-0 transition-opacity focus-within:opacity-100 group-hover/row:opacity-100"
-                  :class="{ 'opacity-100': isSuppressed(entity.id) }"
-                >
+                <!-- Trailing controls: the keep toggle (hover-revealed) lined up
+                     left of the confidence %, as one right-aligned cluster. -->
+                <div class="mt-0.5 flex shrink-0 items-center gap-1">
                   <button
                     type="button"
-                    class="rounded p-1 hover:bg-muted-foreground/10"
+                    class="rounded p-1 opacity-0 transition-opacity hover:bg-muted-foreground/10 focus-visible:opacity-100 group-hover/row:opacity-100"
                     :class="
                       isSuppressed(entity.id)
-                        ? 'text-muted-foreground'
+                        ? 'text-muted-foreground opacity-100'
                         : 'text-foreground/70'
                     "
                     :title="
@@ -549,13 +546,10 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
                     <Eye v-if="isSuppressed(entity.id)" :size="14" />
                     <EyeOff v-else :size="14" />
                   </button>
+                  <span class="text-[11px] tabular-nums text-muted-foreground/70">
+                    {{ confidencePct(entity.confidence) }}
+                  </span>
                 </div>
-
-                <span
-                  class="mt-0.5 shrink-0 text-[11px] tabular-nums text-muted-foreground/70"
-                >
-                  {{ confidencePct(entity.confidence) }}
-                </span>
               </div>
               </template>
             </div>

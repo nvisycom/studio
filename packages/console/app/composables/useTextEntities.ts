@@ -86,6 +86,18 @@ export interface TextEntityView {
 	 * runs via {@link sourceRefs}. Absent when neither is available (image/audio).
 	 */
 	text?: string;
+	/**
+	 * Whether a reviewer has kept (suppressed) this entity out of the redaction.
+	 * Set on the document-highlight views (not the audit list), so the in-document
+	 * chip can dim to show it won't be redacted.
+	 */
+	suppressed?: boolean;
+	/**
+	 * Whether the reviewer added this entity by selecting text (vs. detected). Set
+	 * on the added highlight views so the detail popover can offer the right
+	 * actions (an added entity is removed from its own list, not suppressed here).
+	 */
+	added?: boolean;
 }
 
 /**

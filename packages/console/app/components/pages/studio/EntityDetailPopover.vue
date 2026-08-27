@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Eye, EyeOff } from "@lucide/vue";
 import type { TextEntityView } from "#console/composables/useTextEntities";
 import {
 	Popover,
@@ -22,13 +23,22 @@ const props = defineProps<{
 	withHeaders?: boolean;
 }>();
 
-// Fired when the popover asks to close (outside click / Escape); the parent
-// clears the active entity, which also drops the highlight ring.
-const emit = defineEmits<{ close: [] }>();
+const emit = defineEmits<{
+	/** The popover asks to close (outside click / Escape); the parent clears the
+	 * active entity, which also drops the highlight ring. */
+	close: [];
+	/** Keep/redact toggle for this entity (suppress it from the redaction). */
+	"toggle-suppress": [id: string];
+}>();
 
 const { t } = useI18n();
 
 const open = computed(() => !!props.entity && !!props.reference);
+
+// Keep (suppress) is offered for detected entities only — an entity the reviewer
+// added lives in a separate list and is removed from its own panel section, not
+// suppressed here.
+const canSuppress = computed(() => !!props.entity && !props.entity.added);
 
 function onOpenChange(next: boolean) {
 	if (!next) emit("close");
@@ -82,9 +92,32 @@ const location = computed(() => {
       @open-auto-focus.prevent
     >
       <div v-if="entity" class="p-3">
-        <p class="font-mono text-sm font-medium text-foreground">
-          {{ entity.label }}
-        </p>
+        <div class="flex items-center gap-2">
+          <!-- Keep/redact toggle for a detected entity, leading the title. -->
+          <button
+            v-if="canSuppress"
+            type="button"
+            class="-ml-1 shrink-0 rounded p-1 hover:bg-muted-foreground/10"
+            :class="entity.suppressed ? 'text-muted-foreground' : 'text-foreground/70'"
+            :aria-label="
+              entity.suppressed
+                ? t('studio.audit.redactThis')
+                : t('studio.audit.keep')
+            "
+            :title="
+              entity.suppressed
+                ? t('studio.audit.redactThis')
+                : t('studio.audit.keep')
+            "
+            @click="emit('toggle-suppress', entity.id)"
+          >
+            <Eye v-if="entity.suppressed" :size="15" />
+            <EyeOff v-else :size="15" />
+          </button>
+          <p class="min-w-0 flex-1 truncate font-mono text-sm font-medium text-foreground">
+            {{ entity.label }}
+          </p>
+        </div>
         <dl class="mt-2 space-y-1.5 text-xs">
           <div class="flex justify-between gap-3">
             <dt class="shrink-0 text-muted-foreground">
