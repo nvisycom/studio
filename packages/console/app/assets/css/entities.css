@@ -142,3 +142,19 @@
 	box-shadow: inset 0 -4px 0 -1px var(--flag);
 	background-color: color-mix(in oklab, var(--flag) 18%, transparent);
 }
+
+/* Pending add: the span the reviewer is about to add, while the popover is open.
+   Reads as a text selection — a solid fill, no underline — so it clearly marks
+   what's selected once the native (blue) selection is cleared. A selection-blue
+   tint (the palette is otherwise monochrome) matches the browser convention and
+   stays legible on both themes. Overrides the underline chip treatment above. */
+.chip[data-category="pending"] {
+	--select: oklch(0.62 0.16 255);
+	box-shadow: none;
+	background-color: color-mix(in oklab, var(--select) 28%, transparent);
+	border-radius: 0.15em;
+}
+:global(.dark) .chip[data-category="pending"] {
+	--select: oklch(0.7 0.15 255);
+	background-color: color-mix(in oklab, var(--select) 34%, transparent);
+}

@@ -1224,7 +1224,6 @@
 			"apply": "Schwärzung anwenden",
 			"applyCount": "Schwärzung anwenden ({n} von {total})",
 			"keep": "Behalten (von Schwärzung ausschließen)",
-			"markSensitive": "Als sensibel markieren",
 			"pickLabel": "Label auswählen",
 			"addEntity": "Hinzufügen",
 			"addedByYou": "Von dir hinzugefügt",
@@ -1241,6 +1240,7 @@
 				"confidence": "Konfidenz",
 				"location": "Position",
 				"source": "Erkannt von",
+				"byUser": "Sie",
 				"language": "Sprache",
 				"pattern": "Muster",
 				"model": "Modell"

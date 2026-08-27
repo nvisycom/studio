@@ -1224,7 +1224,6 @@
 			"apply": "Apply redaction",
 			"applyCount": "Apply redaction ({n} of {total})",
 			"keep": "Keep (exclude from redaction)",
-			"markSensitive": "Mark as sensitive",
 			"pickLabel": "Pick a label",
 			"addEntity": "Add",
 			"addedByYou": "Added by you",
@@ -1241,6 +1240,7 @@
 				"confidence": "Confidence",
 				"location": "Location",
 				"source": "Detected by",
+				"byUser": "You",
 				"language": "Language",
 				"pattern": "Pattern",
 				"model": "Model"

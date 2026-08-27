@@ -25,10 +25,12 @@ function offsetOf(node: Node, offsetInNode: number): number | null {
 }
 
 /**
- * Track the user's text selection inside `container` and expose it as document
- * char offsets. Only selections fully inside the container are reported; a
- * collapsed or outside selection clears it. The caller converts the char range
- * to byte offsets (via the document-segments mapper) to build an entity.
+ * Track the user's text selection inside `container` and expose it — as document
+ * char offsets — only once it's *settled* (the pointer/key released), never mid-
+ * drag. This matters because acting on a live selection (e.g. opening a popover)
+ * while it's still being dragged interrupts the drag. Only selections fully
+ * inside the container are reported; collapsing or clicking away clears it. The
+ * caller converts the char range to byte offsets to build an entity.
  */
 export function useSelectionOffset(container: Ref<HTMLElement | null>) {
 	const selection = ref<SelectionRange | null>(null);
@@ -37,35 +39,45 @@ export function useSelectionOffset(container: Ref<HTMLElement | null>) {
 		selection.value = null;
 	}
 
-	function update() {
+	// Read the current selection and resolve it, or null if it isn't a usable
+	// span inside the container.
+	function read(): SelectionRange | null {
 		const root = container.value;
 		const sel = window.getSelection();
-		if (!root || !sel || sel.isCollapsed || sel.rangeCount === 0) {
-			return clear();
-		}
+		if (!root || !sel || sel.isCollapsed || sel.rangeCount === 0) return null;
 		const range = sel.getRangeAt(0);
 		// Both ends must sit inside the container (ignore selections that spill out).
 		if (
 			!root.contains(range.startContainer) ||
 			!root.contains(range.endContainer)
 		) {
-			return clear();
+			return null;
 		}
 		const a = offsetOf(range.startContainer, range.startOffset);
 		const b = offsetOf(range.endContainer, range.endOffset);
-		if (a == null || b == null || a === b) return clear();
-		const start = Math.min(a, b);
-		const end = Math.max(a, b);
-		selection.value = {
-			start,
-			end,
+		if (a == null || b == null || a === b) return null;
+		return {
+			start: Math.min(a, b),
+			end: Math.max(a, b),
 			text: sel.toString(),
 			rect: range.getBoundingClientRect(),
 		};
 	}
 
-	// `selectionchange` fires on the document; filter to our container in update().
-	useEventListener(document, "selectionchange", update);
+	// Publish the selection only when it settles — on pointer/key release — so a
+	// mid-drag change never triggers the consumer.
+	function settle() {
+		selection.value = read();
+	}
+	useEventListener(document, "mouseup", settle);
+	useEventListener(document, "keyup", settle);
+
+	// Clear as soon as the selection collapses (a click elsewhere), so a stale
+	// span doesn't linger after the user dismisses it.
+	useEventListener(document, "selectionchange", () => {
+		const sel = window.getSelection();
+		if (!sel || sel.isCollapsed) clear();
+	});
 
 	return { selection, clear };
 }

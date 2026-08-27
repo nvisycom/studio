@@ -13,6 +13,12 @@ export type StudioAuditPhase =
 /** Lifecycle of applying redactions to a complete detection. */
 export type StudioRedactPhase = "idle" | "redacting" | "done" | "failed";
 
+/** The redacted output file a redaction produced, ready to download. */
+export interface RedactionOutput {
+	fileId: string;
+	fileName: string;
+}
+
 /**
  * An entity the reviewer added by selecting text — a span the detection missed.
  * `id` is a stable client key (for the document highlight + focus); the byte
@@ -32,6 +38,18 @@ export interface AddEntityInput {
 	byteEnd: number;
 	label: string;
 	text: string;
+}
+
+/**
+ * A text selection captured for the "add entity" flow, frozen while its popover
+ * is open (independent of the live browser selection): the byte span to redact,
+ * the selected text (for display), and the viewport rect to anchor the popover.
+ */
+export interface PendingAdd {
+	byteStart: number;
+	byteEnd: number;
+	text: string;
+	rect: DOMRect;
 }
 
 /**
@@ -123,7 +141,7 @@ export function useStudioAudit(
 	// produced (present once done, so the UI can offer a download).
 	const redactPhase = ref<StudioRedactPhase>("idle");
 	const redactError = ref("");
-	const output = ref<{ fileId: string; fileName: string } | null>(null);
+	const output = ref<RedactionOutput | null>(null);
 
 	const { entities, categorizedGroups, count } = useTextEntities(
 		audit,

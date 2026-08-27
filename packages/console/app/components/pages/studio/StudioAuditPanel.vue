@@ -14,6 +14,7 @@ import {
 } from "@lucide/vue";
 import type {
 	AddedEntity,
+	RedactionOutput,
 	StudioAuditPhase,
 	StudioRedactPhase,
 } from "#console/composables/useStudioAudit";
@@ -55,7 +56,7 @@ const props = defineProps<{
 	/** Failure message shown when redaction failed. */
 	redactError?: string;
 	/** The redacted output produced by redaction, once done. */
-	output?: { fileId: string; fileName: string } | null;
+	output?: RedactionOutput | null;
 	/** Ids of entities the reviewer kept (suppressed), for rendering state. */
 	suppressed?: Set<string>;
 	/** Entities the reviewer added by selecting text. */
