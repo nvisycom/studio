@@ -114,33 +114,63 @@
 .chip,
 .docx-chip {
 	/* Marker underline; the text is untouched so it stays readable. Rendered as
-	   a gradient background rather than a border so it never affects layout
-	   (no line-height shift, no reflow of surrounding glyphs). */
-	background-image: linear-gradient(var(--flag), var(--flag));
-	background-repeat: no-repeat;
-	background-position: 0 100%;
-	background-size: 100% 0.12em;
+	   an inset box-shadow rather than a background gradient or a border: it never
+	   affects layout (no line-height shift, no reflow), and — unlike a fractional
+	   `em` background-size — it snaps to whole device pixels, so every chip's line
+	   rasterizes to the same thickness regardless of its subpixel y-position
+	   (which varies line to line with a fractional line-height). */
+	box-shadow: inset 0 -2px 0 -1px var(--flag);
 	border-radius: 0.1em;
-	padding-bottom: 0.04em;
 	color: inherit;
 	font: inherit;
 	cursor: pointer;
 	transition:
-		background-size 0.15s ease,
-		background-color 0.15s ease,
-		box-shadow 0.15s ease;
+		box-shadow 0.15s ease,
+		background-color 0.15s ease;
 }
 
 .chip:hover,
 .docx-chip:hover {
 	/* Thicker line + a whisper of fill on hover. */
-	background-size: 100% 0.16em;
+	box-shadow: inset 0 -3px 0 -1px var(--flag);
 	background-color: color-mix(in oklab, var(--flag) 10%, transparent);
 }
 
-.chip--active,
-.docx-chip--active {
+/* Doubled class so active outranks `.chip:hover` (equal-specificity otherwise,
+   and hover wins by source order) — a focused chip that's also hovered keeps its
+   active styling. */
+.chip.chip--active,
+.docx-chip.docx-chip--active {
 	/* Focused entity: a bold underline and a light fill so it clearly leads. */
-	background-size: 100% 0.24em;
+	box-shadow: inset 0 -4px 0 -1px var(--flag);
 	background-color: color-mix(in oklab, var(--flag) 18%, transparent);
+}
+
+/* Pending add: the span the reviewer is about to add, while the popover is open.
+   Reads as a text selection — a solid fill, no underline — so it clearly marks
+   what's selected once the native (blue) selection is cleared. A selection-blue
+   tint (the palette is otherwise monochrome) matches the browser convention and
+   stays legible on both themes. Overrides the underline chip treatment above. */
+.chip[data-category="pending"],
+.docx-chip[data-category="pending"] {
+	--select: oklch(0.62 0.16 255);
+	box-shadow: none;
+	background-color: color-mix(in oklab, var(--select) 28%, transparent);
+	border-radius: 0.15em;
+}
+.dark .chip[data-category="pending"],
+.dark .docx-chip[data-category="pending"] {
+	--select: oklch(0.7 0.15 255);
+	background-color: color-mix(in oklab, var(--select) 34%, transparent);
+}
+
+/* Suppressed (kept) entity: the reviewer excluded it from the redaction. Recolor
+   its highlight to a muted gray — overriding the category hue via `--flag`, so
+   the underline (and hover/active) all read as "won't be redacted" — and drop
+   the text to muted so it recedes from the active detections around it. */
+.chip[data-suppressed],
+.docx-chip[data-suppressed] {
+	--flag: var(--color-muted-foreground);
+	color: var(--color-muted-foreground);
+	opacity: 0.75;
 }

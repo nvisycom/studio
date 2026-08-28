@@ -7,6 +7,7 @@ import StudioDocxView from "./StudioDocxView.vue";
 import StudioImageView from "./StudioImageView.vue";
 import StudioTextView from "./StudioTextView.vue";
 import type { TextEntityView } from "#console/composables/useTextEntities";
+import type { AddEntityInput } from "#console/composables/useStudioAudit";
 
 const props = withDefaults(
 	defineProps<{
@@ -25,8 +26,10 @@ const props = withDefaults(
 		entities?: TextEntityView[];
 		/** Currently focused entity id, for the ring + scroll-into-view. */
 		activeEntityId?: string | null;
+		/** Whether the reviewer may add entities by selecting text (detection complete). */
+		canAdd?: boolean;
 	}>(),
-	{ entities: () => [], activeEntityId: null },
+	{ entities: () => [], activeEntityId: null, canAdd: false },
 );
 
 // Whether the CSV's first row is a header. Owned by the page so the audit list
@@ -40,6 +43,10 @@ const emit = defineEmits<{
 	"focus-entity": [id: string];
 	/** Clear the current entity selection (popover dismissed). */
 	"clear-entity": [];
+	/** A reviewer marked a text span as a new entity to redact. */
+	"add-entity": [payload: AddEntityInput];
+	/** Keep/redact toggle for an entity (from its detail popover). */
+	"toggle-suppress": [id: string];
 }>();
 
 const { t } = useI18n();
@@ -61,21 +68,40 @@ const activeEntity = computed(
 // preview root.
 const rootEl = ref<HTMLElement | null>(null);
 const activeChipEl = ref<HTMLElement | null>(null);
+
+// Re-resolve the anchor chip for the active entity. Split from the watch so it
+// can run both when the focus changes and when the highlights rebuild: the DOCX
+// view recreates its chip elements on every re-highlight (e.g. after a keep
+// toggle), which detaches the previously-captured node — leaving the popover
+// anchored to a stale element, so it snaps to the top-left corner. Re-querying
+// keeps it pinned to the live chip. `scroll` is only for a focus change.
+function reanchor(scroll: boolean) {
+	const id = props.activeEntityId;
+	if (!id) {
+		activeChipEl.value = null;
+		return;
+	}
+	nextTick(() => {
+		if (props.activeEntityId !== id) return;
+		const el = rootEl.value?.querySelector<HTMLElement>(
+			`[data-entity="${id}"]`,
+		);
+		activeChipEl.value = el ?? null;
+		if (scroll) el?.scrollIntoView({ block: "center", behavior: "smooth" });
+	});
+}
+
+// On focus change: re-anchor and scroll the newly focused chip into view.
 watch(
 	() => props.activeEntityId,
-	(id) => {
-		if (!id) {
-			activeChipEl.value = null;
-			return;
-		}
-		nextTick(() => {
-			const el = rootEl.value?.querySelector<HTMLElement>(
-				`[data-entity="${id}"]`,
-			);
-			activeChipEl.value = el ?? null;
-			el?.scrollIntoView({ block: "center", behavior: "smooth" });
-		});
-	},
+	() => reanchor(true),
+);
+// On highlight rebuild (entity set / suppressed state changed): re-anchor without
+// scrolling, so a keep toggle doesn't leave the popover pinned to a dead node.
+watch(
+	() => props.entities,
+	() => reanchor(false),
+	{ deep: true },
 );
 </script>
 
@@ -86,6 +112,7 @@ watch(
       :reference="activeChipEl"
       :with-headers="withHeaders"
       @close="emit('clear-entity')"
+      @toggle-suppress="emit('toggle-suppress', $event)"
     />
     <div
       class="h-full overflow-y-auto"
@@ -127,8 +154,10 @@ watch(
         :content-url="contentUrl"
         :entities="entities"
         :active-entity-id="activeEntityId"
+        :can-add="canAdd"
         :zoom-level="zoomLevel"
         @focus-entity="emit('focus-entity', $event)"
+        @add-entity="emit('add-entity', $event)"
       />
 
       <!-- Text file preview: the content sits as a "page" (card) centered on the
@@ -150,7 +179,9 @@ watch(
           :file-kind="fileKind"
           :entities="entities"
           :active-entity-id="activeEntityId"
+          :can-add="canAdd"
           @focus-entity="emit('focus-entity', $event)"
+          @add-entity="emit('add-entity', $event)"
         />
       </div>
 

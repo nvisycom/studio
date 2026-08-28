@@ -3,12 +3,18 @@ import {
 	ChevronLeft,
 	ChevronRight,
 	Download,
+	Eye,
+	EyeOff,
 	Layers,
 	Loader2,
+	Plus,
 	ScanSearch,
 	TriangleAlert,
+	X,
 } from "@lucide/vue";
 import type {
+	AddedEntity,
+	RedactionOutput,
 	StudioAuditPhase,
 	StudioRedactPhase,
 } from "#console/composables/useStudioAudit";
@@ -50,8 +56,49 @@ const props = defineProps<{
 	/** Failure message shown when redaction failed. */
 	redactError?: string;
 	/** The redacted output produced by redaction, once done. */
-	output?: { fileId: string; fileName: string } | null;
+	output?: RedactionOutput | null;
+	/** Ids of entities the reviewer kept (suppressed), for rendering state. */
+	suppressed?: Set<string>;
+	/** Entities the reviewer added by selecting text. */
+	added?: AddedEntity[];
+	/** How many entities the redaction will actually redact (total minus kept). */
+	effectiveRedactCount?: number;
 }>();
+
+const emit = defineEmits<{
+	/** A row was clicked — focus its span in the document. */
+	"focus-entity": [id: string];
+	/** Apply redaction to the complete detection. */
+	redact: [];
+	/** Download the redacted output file. */
+	"download-output": [];
+	/** Keep/redact toggle for one entity (suppress). */
+	"toggle-suppress": [id: string];
+	/** Remove a reviewer-added entity by its index. */
+	"remove-added": [index: number];
+}>();
+
+const { labelName } = useLabels();
+
+// Keep/suppress helpers. A cluster groups identical occurrences; its toggle
+// moves the whole cluster to one target state. Occurrences can be suppressed
+// individually in expanded mode, so the cluster reads as suppressed only when
+// *every* occurrence is, and toggling drives all to a single target (suppress
+// unless already fully suppressed) — flipping each independently would leave a
+// mixed cluster inconsistent.
+const isSuppressed = (id: string) => !!props.suppressed?.has(id);
+function clusterSuppressed(cluster: EntityCluster): boolean {
+	return cluster.items.every((e) => isSuppressed(e.id));
+}
+function toggleClusterSuppress(cluster: EntityCluster) {
+	const target = !clusterSuppressed(cluster);
+	for (const e of cluster.items) {
+		if (isSuppressed(e.id) !== target) emit("toggle-suppress", e.id);
+	}
+}
+
+// How many entities the "Apply" button will redact (excludes kept ones).
+const applyCount = computed(() => props.effectiveRedactCount ?? props.count);
 
 /**
  * Label a tabular entity's cell. With headers on, use the column name (when the
@@ -79,15 +126,6 @@ function categoryName(category: string | null): string {
 	const name = t(key);
 	return name === key ? category : name;
 }
-
-const emit = defineEmits<{
-	/** A row was clicked — focus its span in the document. */
-	"focus-entity": [id: string];
-	/** Apply redaction to the complete detection. */
-	redact: [];
-	/** Download the redacted output file. */
-	"download-output": [];
-}>();
 
 const confidencePct = (c: number) => `${Math.round(c * 100)}%`;
 
@@ -186,9 +224,9 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
         </p>
       </div>
 
-      <!-- Empty (complete, nothing found) -->
+      <!-- Empty (complete, nothing detected and nothing added) -->
       <div
-        v-else-if="phase === 'complete' && count === 0"
+        v-else-if="phase === 'complete' && count === 0 && !added?.length"
         class="flex h-full flex-col items-center justify-center px-6 text-center"
       >
         <p class="mb-1 text-sm text-foreground">
@@ -200,8 +238,62 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
       </div>
 
       <!-- Two-tier entity list: category → label → entities. Each category is
-           collapsible, expanded by default. -->
+           collapsible, expanded by default. Plus a band for entities the
+           reviewer added by selecting text. -->
       <template v-else-if="phase === 'complete'">
+        <!-- Added by the reviewer — mirrors a category section so it reads as one
+             of the tiers, with a "+" marker instead of a category dot. -->
+        <section v-if="added?.length">
+          <div
+            class="sticky top-0 z-10 flex w-full items-center gap-1.5 bg-muted/50 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground backdrop-blur-sm"
+          >
+            <Plus :size="12" class="shrink-0 text-emerald-600 dark:text-emerald-500" />
+            <span>{{ t("studio.audit.addedByYou") }}</span>
+            <span
+              class="ml-auto rounded-full bg-foreground/10 px-1.5 text-[10px] font-semibold leading-4 text-foreground/70"
+            >
+              {{ added.length }}
+            </span>
+          </div>
+          <!-- Rows indented under the header like a label group's rows. Clicking
+               focuses the entity's highlight in the document, like detected rows. -->
+          <div class="pl-3">
+            <div
+              v-for="(item, i) in added"
+              :key="item.id"
+              class="group/row flex w-full items-start gap-2 border-l py-1.5 pr-2 pl-3 transition-colors"
+              :class="
+                activeEntityId === item.id
+                  ? 'border-foreground bg-muted'
+                  : 'border-border/60 hover:bg-muted/40'
+              "
+            >
+              <button
+                type="button"
+                class="min-w-0 flex-1 text-left"
+                @click="emit('focus-entity', item.id)"
+              >
+                <span class="block truncate font-mono text-xs text-foreground">
+                  {{ item.text }}
+                </span>
+                <span
+                  class="mt-0.5 flex items-center gap-1 truncate text-[11px] text-muted-foreground"
+                >
+                  <span class="truncate">{{ labelName(item.label) }}</span>
+                </span>
+              </button>
+              <button
+                type="button"
+                class="mt-0.5 shrink-0 rounded p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-muted-foreground/10 hover:text-foreground focus-visible:opacity-100 group-hover/row:opacity-100"
+                :title="t('studio.audit.removeAdded')"
+                @click.stop="emit('remove-added', i)"
+              >
+                <X :size="13" />
+              </button>
+            </div>
+          </div>
+        </section>
+
         <Collapsible
           v-for="section in categorizedGroups"
           :key="section.category ?? '__uncategorized__'"
@@ -249,12 +341,16 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
                 <div
                   v-for="cluster in group.clusters"
                   :key="cluster.key"
-                  class="flex w-full items-start gap-2 border-l py-1.5 pr-2 pl-3 text-left transition-colors"
+                  class="group/row flex w-full items-start gap-2 border-l py-1.5 pr-2 pl-3 text-left transition-colors"
                   :class="[
                     clusterActive(cluster)
                       ? 'border-foreground bg-muted'
                       : 'border-border/60',
-                    clusterLocatable(cluster) ? 'hover:bg-muted/40' : 'opacity-60',
+                    clusterSuppressed(cluster)
+                      ? 'opacity-45'
+                      : clusterLocatable(cluster)
+                        ? 'hover:bg-muted/40'
+                        : 'opacity-60',
                   ]"
                 >
                   <button
@@ -298,61 +394,96 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
                       </span>
                     </span>
                   </button>
-                  <!-- Occurrence stepper for multi-occurrence clusters. -->
-                  <span
-                    v-if="cluster.items.length > 1"
-                    class="mt-0.5 flex shrink-0 items-center gap-0.5 text-[11px] text-muted-foreground"
-                  >
+
+                  <!-- Trailing controls, right-aligned as one cluster: the keep
+                       toggle (hover-revealed) sits left of the occurrence stepper
+                       or the confidence %, so it lines up with them. -->
+                  <div class="mt-0.5 flex shrink-0 items-center gap-1">
                     <button
                       type="button"
-                      class="rounded p-0.5 enabled:hover:bg-muted-foreground/10 disabled:cursor-default disabled:opacity-40"
-                      :disabled="!clusterLocatable(cluster)"
-                      :aria-label="t('studio.audit.prevOccurrence')"
-                      @click.stop="stepCluster(cluster, -1)"
+                      class="rounded p-1 opacity-0 transition-opacity hover:bg-muted-foreground/10 focus-visible:opacity-100 group-hover/row:opacity-100"
+                      :class="
+                        clusterSuppressed(cluster)
+                          ? 'text-muted-foreground opacity-100'
+                          : 'text-foreground/70'
+                      "
+                      :aria-label="
+                        clusterSuppressed(cluster)
+                          ? t('studio.audit.redactThis')
+                          : t('studio.audit.keep')
+                      "
+                      :title="
+                        clusterSuppressed(cluster)
+                          ? t('studio.audit.redactThis')
+                          : t('studio.audit.keep')
+                      "
+                      @click.stop="toggleClusterSuppress(cluster)"
                     >
-                      <ChevronLeft :size="13" />
+                      <Eye v-if="clusterSuppressed(cluster)" :size="14" />
+                      <EyeOff v-else :size="14" />
                     </button>
-                    <span class="tabular-nums">
-                      {{ (clusterIndex[cluster.key] ?? 0) + 1 }}/{{ cluster.items.length }}
+
+                    <!-- Occurrence stepper for multi-occurrence clusters. -->
+                    <span
+                      v-if="cluster.items.length > 1"
+                      class="flex items-center gap-0.5 text-[11px] text-muted-foreground"
+                    >
+                      <button
+                        type="button"
+                        class="rounded p-0.5 enabled:hover:bg-muted-foreground/10 disabled:cursor-default disabled:opacity-40"
+                        :disabled="!clusterLocatable(cluster)"
+                        :aria-label="t('studio.audit.prevOccurrence')"
+                        @click.stop="stepCluster(cluster, -1)"
+                      >
+                        <ChevronLeft :size="13" />
+                      </button>
+                      <span class="tabular-nums">
+                        {{ (clusterIndex[cluster.key] ?? 0) + 1 }}/{{ cluster.items.length }}
+                      </span>
+                      <button
+                        type="button"
+                        class="rounded p-0.5 enabled:hover:bg-muted-foreground/10 disabled:cursor-default disabled:opacity-40"
+                        :disabled="!clusterLocatable(cluster)"
+                        :aria-label="t('studio.audit.nextOccurrence')"
+                        @click.stop="stepCluster(cluster, 1)"
+                      >
+                        <ChevronRight :size="13" />
+                      </button>
                     </span>
-                    <button
-                      type="button"
-                      class="rounded p-0.5 enabled:hover:bg-muted-foreground/10 disabled:cursor-default disabled:opacity-40"
-                      :disabled="!clusterLocatable(cluster)"
-                      :aria-label="t('studio.audit.nextOccurrence')"
-                      @click.stop="stepCluster(cluster, 1)"
+                    <span
+                      v-else
+                      class="text-[11px] tabular-nums text-muted-foreground/70"
                     >
-                      <ChevronRight :size="13" />
-                    </button>
-                  </span>
-                  <span
-                    v-else
-                    class="mt-0.5 shrink-0 text-[11px] tabular-nums text-muted-foreground/70"
-                  >
-                    {{ confidencePct(cluster.lead.confidence) }}
-                  </span>
+                      {{ confidencePct(cluster.lead.confidence) }}
+                    </span>
+                  </div>
                 </div>
               </template>
 
               <!-- Expanded: one row per occurrence. -->
               <template v-else>
-              <button
+              <div
                 v-for="entity in group.items"
                 :key="entity.id"
-                type="button"
-                :disabled="!isLocatable(entity)"
-                class="flex w-full items-start gap-2 border-l py-1.5 pr-2 pl-3 text-left transition-colors"
+                class="group/row flex w-full items-start gap-2 border-l py-1.5 pr-2 pl-3 text-left transition-colors"
                 :class="[
                   activeEntityId === entity.id
                     ? 'border-foreground bg-muted'
                     : 'border-border/60',
-                  isLocatable(entity)
-                    ? 'hover:bg-muted/40'
-                    : 'cursor-default opacity-60',
+                  isSuppressed(entity.id)
+                    ? 'opacity-45'
+                    : isLocatable(entity)
+                      ? 'hover:bg-muted/40'
+                      : 'opacity-60',
                 ]"
-                @click="isLocatable(entity) && emit('focus-entity', entity.id)"
               >
-                <span class="min-w-0 flex-1">
+                <button
+                  type="button"
+                  class="min-w-0 flex-1 text-left"
+                  :class="isLocatable(entity) ? '' : 'cursor-default'"
+                  :disabled="!isLocatable(entity)"
+                  @click="isLocatable(entity) && emit('focus-entity', entity.id)"
+                >
                   <!-- The matched value, when we could slice it from the doc. -->
                   <span
                     v-if="entity.text"
@@ -392,13 +523,34 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
                       </template>
                     </span>
                   </span>
-                </span>
-                <span
-                  class="mt-0.5 shrink-0 text-[11px] tabular-nums text-muted-foreground/70"
-                >
-                  {{ confidencePct(entity.confidence) }}
-                </span>
-              </button>
+                </button>
+
+                <!-- Trailing controls: the keep toggle (hover-revealed) lined up
+                     left of the confidence %, as one right-aligned cluster. -->
+                <div class="mt-0.5 flex shrink-0 items-center gap-1">
+                  <button
+                    type="button"
+                    class="rounded p-1 opacity-0 transition-opacity hover:bg-muted-foreground/10 focus-visible:opacity-100 group-hover/row:opacity-100"
+                    :class="
+                      isSuppressed(entity.id)
+                        ? 'text-muted-foreground opacity-100'
+                        : 'text-foreground/70'
+                    "
+                    :title="
+                      isSuppressed(entity.id)
+                        ? t('studio.audit.redactThis')
+                        : t('studio.audit.keep')
+                    "
+                    @click.stop="emit('toggle-suppress', entity.id)"
+                  >
+                    <Eye v-if="isSuppressed(entity.id)" :size="14" />
+                    <EyeOff v-else :size="14" />
+                  </button>
+                  <span class="text-[11px] tabular-nums text-muted-foreground/70">
+                    {{ confidencePct(entity.confidence) }}
+                  </span>
+                </div>
+              </div>
               </template>
             </div>
           </CollapsibleContent>
@@ -407,9 +559,10 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
     </div>
 
     <!-- Redaction footer: apply redaction to the complete detection, then download the
-         redacted output it produces. -->
+         redacted output it produces. Shown whenever there's something to redact —
+         detected entities, or ones the reviewer added even if none were detected. -->
     <div
-      v-if="phase === 'complete' && count > 0"
+      v-if="phase === 'complete' && (count > 0 || !!added?.length)"
       class="border-t border-border/50 bg-muted/30 p-3"
     >
       <!-- Redaction failed: show why, keep the button available to retry. -->
@@ -436,13 +589,14 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
         </p>
       </template>
 
-      <!-- Idle / redacting / failed: apply (or retry) redaction. -->
+      <!-- Idle / redacting / failed: apply (or retry) redaction. The count
+           reflects reviewer edits — kept (suppressed) entities are excluded. -->
       <Button
         v-else
         variant="outline"
         size="sm"
         class="w-full"
-        :disabled="!canRedact"
+        :disabled="!canRedact || applyCount === 0"
         @click="emit('redact')"
       >
         <Loader2
@@ -455,7 +609,9 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
             ? t("studio.audit.redacting")
             : redactPhase === "failed"
               ? t("studio.audit.retryRedaction")
-              : t("studio.audit.apply")
+              : applyCount < count
+                ? t("studio.audit.applyCount", { n: applyCount, total: count })
+                : t("studio.audit.apply")
         }}
       </Button>
     </div>

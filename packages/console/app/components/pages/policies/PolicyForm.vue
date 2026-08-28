@@ -282,7 +282,14 @@ const definitionValid = computed(() => {
 						scopeNames.value.includes((p.values ?? "").trim()),
 				),
 	);
-	return rulesNamed && doesSomething && scopeRefsResolve;
+	// A scope with labels but no name is dropped on serialize (buildScopes), so
+	// saving would silently discard the reviewer's labels. Require a name whenever
+	// a scope carries labels; a freshly-added empty scope stays valid so it doesn't
+	// block saving mid-edit.
+	const scopesNamed = scopes.value.every(
+		(s) => s.labels.length === 0 || s.name.trim().length > 0,
+	);
+	return rulesNamed && doesSomething && scopeRefsResolve && scopesNamed;
 });
 const isValid = computed(() => metaValid.value && definitionValid.value);
 
@@ -612,7 +619,10 @@ function ruleSummary(rule: EditablePredicatedRule): string {
             <Input
               v-model="scope.name"
               :placeholder="t('policies.editor.scopes.namePlaceholder')"
-              class="h-9 flex-1 border-0 bg-transparent px-1 font-mono text-sm shadow-none focus-visible:ring-0"
+              :aria-invalid="
+                scope.labels.length > 0 && !scope.name.trim() ? 'true' : undefined
+              "
+              class="h-9 flex-1 border-0 bg-transparent px-1 font-mono text-sm shadow-none focus-visible:ring-0 aria-invalid:text-destructive aria-invalid:placeholder:text-destructive/70"
             />
             <span
               v-if="scope.labels.length"

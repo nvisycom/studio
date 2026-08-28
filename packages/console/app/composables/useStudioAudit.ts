@@ -1,5 +1,11 @@
-import type { Audit, Detection } from "@nvisy/sdk/datatypes";
+import type {
+	Audit,
+	Detection,
+	EditSet,
+	TextLocation,
+} from "@nvisy/sdk/datatypes";
 import type { MaybeRefOrGetter } from "vue";
+import type { TextEntityView } from "#console/composables/useTextEntities";
 
 /** Lifecycle phase of the studio's detection. `complete` = analysis ready. */
 export type StudioAuditPhase =
@@ -11,6 +17,64 @@ export type StudioAuditPhase =
 
 /** Lifecycle of applying redactions to a complete detection. */
 export type StudioRedactPhase = "idle" | "redacting" | "done" | "failed";
+
+/** The redacted output file a redaction produced, ready to download. */
+export interface RedactionOutput {
+	fileId: string;
+	fileName: string;
+}
+
+/**
+ * The raw-source part byte span a DOCX add carries (`TextLocation.source`).
+ * DOCX has no flat decoded stream on the client, so a reviewer's selection is
+ * located by the exact raw bytes it covers in its container part (usually
+ * `word/document.xml`). Absent for flat-text adds, whose {@link AddedEntity}
+ * `byteStart`/`byteEnd` already index the shown file (→ `location.range`).
+ */
+export interface AddedSource {
+	part: string;
+	start: number;
+	end: number;
+}
+
+/**
+ * An entity the reviewer added by selecting text — a span the detection missed.
+ * `id` is a stable client key (for the document highlight + focus); the byte
+ * offsets locate it in the source; `text` is the selected value, for display.
+ * For DOCX, `source` carries the raw part byte span the redaction targets.
+ */
+export interface AddedEntity {
+	id: string;
+	label: string;
+	byteStart: number;
+	byteEnd: number;
+	text: string;
+	source?: AddedSource;
+}
+
+/** The document-selection payload the reviewer confirms into an {@link AddedEntity}. */
+export interface AddEntityInput {
+	byteStart: number;
+	byteEnd: number;
+	label: string;
+	text: string;
+	/** Raw part byte span, for a DOCX add (see {@link AddedSource}). */
+	source?: AddedSource;
+}
+
+/**
+ * A text selection captured for the "add entity" flow, frozen while its popover
+ * is open (independent of the live browser selection): the byte span to redact,
+ * the selected text (for display), and the viewport rect to anchor the popover.
+ * `source` is the raw part byte span for a DOCX selection (see {@link AddedSource}).
+ */
+export interface PendingAdd {
+	byteStart: number;
+	byteEnd: number;
+	text: string;
+	rect: DOMRect;
+	source?: AddedSource;
+}
 
 /**
  * Owns the studio's detection + audit lifecycle for the active file: the
@@ -29,14 +93,13 @@ export function useStudioAudit(
 ) {
 	const { t } = useI18n();
 	const { pipelines } = usePipelines();
+	const { resolveLabel } = useLabels();
+	const { runDetection, findLatestForFile, getAnalysis } = useDetections();
 	const {
-		runDetection,
-		findLatestForFile,
-		getAnalysis,
 		createRedaction,
-		findLatestRedaction,
+		findLatestForDetection: findLatestRedaction,
 		downloadOutput,
-	} = useDetections();
+	} = useRedactions();
 
 	const selectedPipeline = ref<string>("");
 	// The last value we set on `selectedPipeline` programmatically (default or
@@ -102,13 +165,141 @@ export function useStudioAudit(
 	// produced (present once done, so the UI can offer a download).
 	const redactPhase = ref<StudioRedactPhase>("idle");
 	const redactError = ref("");
-	const output = ref<{ fileId: string; fileName: string } | null>(null);
+	const output = ref<RedactionOutput | null>(null);
 
 	const { entities, categorizedGroups, count } = useTextEntities(
 		audit,
 		documentText,
 		docxParts,
 	);
+
+	// Ids of entities the reviewer chose to keep (suppress from redaction).
+	// Cleared whenever a new audit is shown (a fresh run or a restore), so edits
+	// never leak across files or detections.
+	const suppressed = ref<Set<string>>(new Set());
+	// Entities the reviewer added by selecting text — a stable id (for the
+	// document highlight + focus), a label + byte span, and the selected text for
+	// display, to redact what the detection missed. Text-modality only (plain
+	// text) for now.
+	let nextAddedId = 0;
+	const added = ref<AddedEntity[]>([]);
+
+	function resetEdits() {
+		suppressed.value = new Set();
+		added.value = [];
+		nextAddedId = 0;
+	}
+
+	/** Whether an entity is kept (excluded from redaction). */
+	function isSuppressed(id: string): boolean {
+		return suppressed.value.has(id);
+	}
+
+	// Reassign a fresh Set so computeds re-evaluate (Vue doesn't track Set adds).
+	function toggleSuppress(id: string) {
+		const next = new Set(suppressed.value);
+		if (next.has(id)) next.delete(id);
+		else next.add(id);
+		suppressed.value = next;
+	}
+
+	/** Add a reviewer-marked entity (a byte span + label + shown text) to redact. */
+	function addEntity(input: AddEntityInput) {
+		added.value = [...added.value, { id: `added:${nextAddedId++}`, ...input }];
+	}
+
+	/** Drop a previously added entity by its index. */
+	function removeAdded(index: number) {
+		added.value = added.value.filter((_, i) => i !== index);
+	}
+
+	const suppressedCount = computed(
+		() => entities.value.filter((e) => suppressed.value.has(e.id)).length,
+	);
+	/**
+	 * How many entities the redaction will actually redact: detected entities
+	 * (minus kept ones) plus the ones the reviewer added.
+	 */
+	const effectiveRedactCount = computed(
+		() => count.value - suppressedCount.value + added.value.length,
+	);
+
+	// Reviewer-added entities as highlight-ready views, so the document preview
+	// marks them with the same chip treatment as detected ones (colored by the
+	// label's category). Their id is a stable synthetic key, not a server id.
+	const addedEntities = computed<TextEntityView[]>(() =>
+		added.value.map((a) => ({
+			id: a.id,
+			modality: "text",
+			label: a.label,
+			category: resolveLabel(a.label)?.category ?? null,
+			start: a.byteStart,
+			end: a.byteEnd,
+			confidence: 1,
+			text: a.text,
+			added: true,
+			// A DOCX add carries its raw part byte span; expose it as a source ref so
+			// the DOCX preview highlights it through the same run resolver as detected
+			// entities (flat-text adds highlight off start/end and need none).
+			...(a.source
+				? {
+						sourceRefs: [
+							{ part: a.source.part, start: a.source.start, end: a.source.end },
+						],
+					}
+				: {}),
+		})),
+	);
+
+	// Entities the document highlights: everything detected plus the reviewer's
+	// additions, each flagged with its suppressed state so a kept entity's chip
+	// dims (it won't be redacted). The audit panel keeps its own detected-vs-added
+	// split; this is only for the in-document overlay.
+	const highlightEntities = computed<TextEntityView[]>(() =>
+		[...entities.value, ...addedEntities.value].map((e) => ({
+			...e,
+			suppressed: suppressed.value.has(e.id),
+		})),
+	);
+
+	// Assemble the reviewer edits into the redaction EditSet: a `suppress` edit
+	// per kept entity (bucketed by modality) and an `add` edit per reviewer-marked
+	// span (text-modality). Returns undefined when there are no edits, so the
+	// redact call omits `edits` (redact exactly as detected).
+	function buildEditSet(): EditSet | undefined {
+		if (suppressed.value.size === 0 && added.value.length === 0)
+			return undefined;
+		const text: NonNullable<EditSet["text"]> = [];
+		const tabular: NonNullable<EditSet["tabular"]> = [];
+		for (const entity of entities.value) {
+			if (!suppressed.value.has(entity.id)) continue;
+			const bucket = entity.modality === "tabular" ? tabular : text;
+			bucket.push({ op: "suppress", id: entity.id });
+		}
+		for (const a of added.value) {
+			// `range` carries the add's byte span. For a flat-text add (plain text /
+			// JSON) that's the document byte offset, exactly as detected entities
+			// carry it. For a DOCX add there's no flat decoded stream to offset into,
+			// so `source` carries the raw part byte span the apply path reads; the
+			// span's raw bytes double as `range` (byteStart/byteEnd are set from it).
+			const location: TextLocation = {
+				range: { start: a.byteStart, end: a.byteEnd },
+			};
+			if (a.source) {
+				location.source = [
+					{
+						part: a.source.part,
+						range: { start: a.source.start, end: a.source.end },
+					},
+				];
+			}
+			text.push({ op: "add", label: a.label, location });
+		}
+		const set: EditSet = {};
+		if (text.length) set.text = text;
+		if (tabular.length) set.tabular = tabular;
+		return text.length || tabular.length ? set : undefined;
+	}
 
 	const canRun = computed(
 		() =>
@@ -156,7 +347,7 @@ export function useStudioAudit(
 		redactPhase.value = "redacting";
 		redactError.value = "";
 		try {
-			const result = await createRedaction(target);
+			const result = await createRedaction(target, buildEditSet());
 			if (token !== restoreToken) return;
 			if (!result.outputFileId)
 				throw new Error("The redaction produced no output file.");
@@ -192,6 +383,7 @@ export function useStudioAudit(
 		detectionId.value = null;
 		detectionFileName.value = toValue(fileName) ?? null;
 		resetRedaction();
+		resetEdits();
 		try {
 			const result = await runDetection(
 				selectedPipeline.value,
@@ -229,6 +421,7 @@ export function useStudioAudit(
 		detectionId.value = null;
 		detectionFileName.value = toValue(fileName) ?? null;
 		resetRedaction();
+		resetEdits();
 		try {
 			const latest = await findLatestForFile(file, opts.pipelineSlug);
 			// Bail if a newer restore started (file or pipeline changed) meanwhile.
@@ -302,6 +495,7 @@ export function useStudioAudit(
 				detectionId.value = null;
 				detectionFileName.value = null;
 				resetRedaction();
+				resetEdits();
 				return;
 			}
 			// Wait for this file's restore before defaulting, so the picker doesn't
@@ -347,5 +541,15 @@ export function useStudioAudit(
 		canRedact,
 		redact,
 		downloadRedacted,
+		// Reviewer edits
+		suppressed,
+		isSuppressed,
+		toggleSuppress,
+		added,
+		addEntity,
+		removeAdded,
+		highlightEntities,
+		suppressedCount,
+		effectiveRedactCount,
 	};
 }

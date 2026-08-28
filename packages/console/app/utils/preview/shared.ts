@@ -23,6 +23,17 @@ export interface FormattedText {
 	 * of formatting is not needed — callers only map raw → formatted.
 	 */
 	map: number[];
+	/**
+	 * The reverse map: `inverseMap[formattedCharIndex]` = the raw char index it
+	 * came from, for turning a formatted-text selection back into a raw offset
+	 * (the add-entity flow). Optional — supplied only by a formatter whose token
+	 * lengths change (JSON, where a number is canonicalized: `1e3`→`1000`), so a
+	 * boundary inside such a token snaps to the token's raw edge rather than the
+	 * wrong char a naive inversion of {@link map} would pick. When absent, the
+	 * caller inverts {@link map} heuristically, which is exact for whitespace-only
+	 * transforms (XML) where non-whitespace chars pair 1:1 in order.
+	 */
+	inverseMap?: number[];
 }
 
 /** Syntax-token kinds for restrained JSON coloring. */

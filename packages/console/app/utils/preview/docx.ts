@@ -238,6 +238,64 @@ export function docxMatchedText(
 }
 
 /**
+ * Convert a char offset within a run's decoded text to a byte offset within the
+ * run's *raw* `<w:t>` bytes — the inverse of {@link runByteToChar}, for turning a
+ * reviewer's selection (a char position in the rendered run) into a raw source
+ * byte position. For entity-free runs (the common case) raw and decoded text
+ * coincide, so this is the standard UTF-16 char -> UTF-8 byte conversion. A run
+ * carrying `&amp;`-style entities is atomic in the source model, so a selection
+ * boundary inside such a run is snapped to the nearest run edge.
+ */
+function runCharToByte(run: DocxRun, charInRun: number): number {
+	const rawLen = run.byteEnd - run.byteStart;
+	if (charInRun <= 0) return 0;
+	if (charInRun >= run.text.length) return rawLen;
+	const encoder = new TextEncoder();
+	// A run with entities decodes shorter than its raw bytes; a mid-run char
+	// offset can't be mapped precisely (the SourceRef model treats `&amp;` as
+	// atomic), so snap such a run to its full raw span rather than drift.
+	if (encoder.encode(run.text).length !== rawLen) {
+		return charInRun >= run.text.length / 2 ? rawLen : 0;
+	}
+	// Entity-free: exact UTF-16 char prefix -> UTF-8 byte length.
+	return encoder.encode(run.text.slice(0, charInRun)).length;
+}
+
+/**
+ * A raw-source byte span within a container part, resolved from a reviewer's
+ * selection over the rendered runs — the coordinate a DOCX "add entity" edit
+ * carries (`TextLocation.source`). All runs of a single selection lie in one
+ * part; a selection spanning parts (or matching no run) yields null.
+ */
+export interface DocxByteSpan {
+	part: string;
+	start: number;
+	end: number;
+}
+
+/**
+ * Resolve a selection — a start run + char offset and an end run + char offset,
+ * as located against the parsed runs — to a raw-source byte span in the runs'
+ * shared part. The endpoints must sit in the same part (a selection can't cross
+ * container boundaries meaningfully); returns null otherwise. The span runs from
+ * the start endpoint's raw byte to the end endpoint's raw byte, so it also covers
+ * the inter-run source bytes (tags, other runs) between them — exactly the raw
+ * range the redaction engine overwrites.
+ */
+export function resolveDocxSelection(
+	startRun: DocxRun,
+	startChar: number,
+	endRun: DocxRun,
+	endChar: number,
+): DocxByteSpan | null {
+	if (startRun.part !== endRun.part) return null;
+	const start = startRun.byteStart + runCharToByte(startRun, startChar);
+	const end = endRun.byteStart + runCharToByte(endRun, endChar);
+	if (end <= start) return null;
+	return { part: startRun.part, start, end };
+}
+
+/**
  * Convert a byte offset within a run's *raw* `<w:t>` bytes to a char offset in
  * its decoded text. For entity-free runs the raw and decoded text coincide, so
  * this is the standard UTF-8 byte -> UTF-16 char conversion. Runs containing

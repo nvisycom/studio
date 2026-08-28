@@ -60,14 +60,20 @@ const KIND_CLASS: Record<TokenKind, string> = {
             type="button"
             :data-entity="seg.entity.id"
             :data-category="seg.entity.category ?? undefined"
+            :data-suppressed="seg.entity.suppressed || undefined"
+            :data-start="seg.start"
             :title="seg.entity.label"
             class="chip"
             :class="{ 'chip--active': activeEntityId === seg.entity.id }"
             @click="$emit('focus-entity', seg.entity.id)"
           >{{ seg.text }}</button><span
             v-else-if="seg.kind"
+            :data-start="seg.start"
             :class="KIND_CLASS[seg.kind]"
-          >{{ seg.text }}</span><template v-else>{{ seg.text }}</template></template></code>
+          >{{ seg.text }}</span><span
+            v-else
+            :data-start="seg.start"
+          >{{ seg.text }}</span></template></code>
     </div>
   </div>
 </template>

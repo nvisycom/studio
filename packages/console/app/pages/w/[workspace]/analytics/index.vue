@@ -84,8 +84,7 @@ const kpis = computed(() => {
 const trendData = computed(() =>
 	(timeSeries.value?.points ?? []).map((p) => ({
 		date: new Date(p.date),
-		// The SDK's day-entry count field is still named `runs`.
-		detections: p.runs,
+		detections: p.detections,
 		tokens: p.totalTokens ?? 0,
 		errorPct: (p.errorRate ?? 0) * 100,
 		avgSeconds: (p.avgDurationMs ?? 0) / 1000,

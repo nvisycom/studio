@@ -1222,6 +1222,13 @@
 			"emptyTitle": "Keine Entitäten gefunden",
 			"emptyHint": "Diese Pipeline hat im Dokument nichts erkannt.",
 			"apply": "Schwärzung anwenden",
+			"applyCount": "Schwärzung anwenden ({n} von {total})",
+			"keep": "Behalten (von Schwärzung ausschließen)",
+			"pickLabel": "Label auswählen",
+			"addEntity": "Hinzufügen",
+			"addedByYou": "Von dir hinzugefügt",
+			"removeAdded": "Entfernen",
+			"redactThis": "Schwärzen",
 			"redacting": "Schwärzung wird angewendet…",
 			"retryRedaction": "Schwärzung erneut versuchen",
 			"redactFailed": "Schwärzung fehlgeschlagen. Bitte erneut versuchen.",
@@ -1233,6 +1240,7 @@
 				"confidence": "Konfidenz",
 				"location": "Position",
 				"source": "Erkannt von",
+				"byUser": "Sie",
 				"language": "Sprache",
 				"pattern": "Muster",
 				"model": "Modell"
@@ -1299,6 +1307,7 @@
 		"title": "Richtlinien",
 		"count": "{count} Richtlinie | {count} Richtlinien",
 		"create": "Neue Richtlinie",
+		"viewTemplates": "Vorlagen ansehen",
 		"empty": {
 			"title": "Noch keine Richtlinien",
 			"description": "Erstellen Sie eine, um Schwärzungsregeln zu definieren."

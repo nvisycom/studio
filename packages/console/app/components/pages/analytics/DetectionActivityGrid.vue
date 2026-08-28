@@ -17,21 +17,21 @@ const { t, locale } = useI18n();
 const WEEKS = 53;
 const DAYS = WEEKS * 7;
 
-// date (YYYY-MM-DD) -> run count, from the server points.
+// date (YYYY-MM-DD) -> detection count, from the server points.
 const countByDate = computed(() => {
 	const map = new Map<string, number>();
-	for (const p of props.timeSeries?.points ?? []) map.set(p.date, p.runs);
+	for (const p of props.timeSeries?.points ?? []) map.set(p.date, p.detections);
 	return map;
 });
 
-const totalRuns = computed(() =>
-	(props.timeSeries?.points ?? []).reduce((sum, p) => sum + p.runs, 0),
+const totalDetections = computed(() =>
+	(props.timeSeries?.points ?? []).reduce((sum, p) => sum + p.detections, 0),
 );
 
 // Level thresholds derived from the busiest day, so the ramp adapts to the
 // workspace's own scale (a quiet workspace still shows contrast).
 const maxCount = computed(() =>
-	Math.max(0, ...(props.timeSeries?.points ?? []).map((p) => p.runs)),
+	Math.max(0, ...(props.timeSeries?.points ?? []).map((p) => p.detections)),
 );
 function levelFor(count: number): 0 | 1 | 2 | 3 | 4 {
 	if (count <= 0) return 0;
@@ -156,7 +156,7 @@ const weekdayLabels = computed(() => {
       </span>
       <span class="text-sm text-muted-foreground">
         <b class="font-semibold tabular-nums text-foreground">{{
-          totalRuns.toLocaleString()
+          totalDetections.toLocaleString()
         }}</b>
         {{ t("analytics.activity.totalSuffix") }}
       </span>
