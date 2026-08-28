@@ -151,13 +151,15 @@
    what's selected once the native (blue) selection is cleared. A selection-blue
    tint (the palette is otherwise monochrome) matches the browser convention and
    stays legible on both themes. Overrides the underline chip treatment above. */
-.chip[data-category="pending"] {
+.chip[data-category="pending"],
+.docx-chip[data-category="pending"] {
 	--select: oklch(0.62 0.16 255);
 	box-shadow: none;
 	background-color: color-mix(in oklab, var(--select) 28%, transparent);
 	border-radius: 0.15em;
 }
-:global(.dark) .chip[data-category="pending"] {
+.dark .chip[data-category="pending"],
+.dark .docx-chip[data-category="pending"] {
 	--select: oklch(0.7 0.15 255);
 	background-color: color-mix(in oklab, var(--select) 34%, transparent);
 }
@@ -166,7 +168,8 @@
    its highlight to a muted gray — overriding the category hue via `--flag`, so
    the underline (and hover/active) all read as "won't be redacted" — and drop
    the text to muted so it recedes from the active detections around it. */
-.chip[data-suppressed] {
+.chip[data-suppressed],
+.docx-chip[data-suppressed] {
 	--flag: var(--color-muted-foreground);
 	color: var(--color-muted-foreground);
 	opacity: 0.75;

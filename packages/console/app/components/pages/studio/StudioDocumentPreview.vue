@@ -68,21 +68,40 @@ const activeEntity = computed(
 // preview root.
 const rootEl = ref<HTMLElement | null>(null);
 const activeChipEl = ref<HTMLElement | null>(null);
+
+// Re-resolve the anchor chip for the active entity. Split from the watch so it
+// can run both when the focus changes and when the highlights rebuild: the DOCX
+// view recreates its chip elements on every re-highlight (e.g. after a keep
+// toggle), which detaches the previously-captured node — leaving the popover
+// anchored to a stale element, so it snaps to the top-left corner. Re-querying
+// keeps it pinned to the live chip. `scroll` is only for a focus change.
+function reanchor(scroll: boolean) {
+	const id = props.activeEntityId;
+	if (!id) {
+		activeChipEl.value = null;
+		return;
+	}
+	nextTick(() => {
+		if (props.activeEntityId !== id) return;
+		const el = rootEl.value?.querySelector<HTMLElement>(
+			`[data-entity="${id}"]`,
+		);
+		activeChipEl.value = el ?? null;
+		if (scroll) el?.scrollIntoView({ block: "center", behavior: "smooth" });
+	});
+}
+
+// On focus change: re-anchor and scroll the newly focused chip into view.
 watch(
 	() => props.activeEntityId,
-	(id) => {
-		if (!id) {
-			activeChipEl.value = null;
-			return;
-		}
-		nextTick(() => {
-			const el = rootEl.value?.querySelector<HTMLElement>(
-				`[data-entity="${id}"]`,
-			);
-			activeChipEl.value = el ?? null;
-			el?.scrollIntoView({ block: "center", behavior: "smooth" });
-		});
-	},
+	() => reanchor(true),
+);
+// On highlight rebuild (entity set / suppressed state changed): re-anchor without
+// scrolling, so a keep toggle doesn't leave the popover pinned to a dead node.
+watch(
+	() => props.entities,
+	() => reanchor(false),
+	{ deep: true },
 );
 </script>
 
@@ -135,8 +154,10 @@ watch(
         :content-url="contentUrl"
         :entities="entities"
         :active-entity-id="activeEntityId"
+        :can-add="canAdd"
         :zoom-level="zoomLevel"
         @focus-entity="emit('focus-entity', $event)"
+        @add-entity="emit('add-entity', $event)"
       />
 
       <!-- Text file preview: the content sits as a "page" (card) centered on the

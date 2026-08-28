@@ -20,9 +20,23 @@ export interface RedactionOutput {
 }
 
 /**
+ * The raw-source part byte span a DOCX add carries (`TextLocation.source`).
+ * DOCX has no flat decoded stream on the client, so a reviewer's selection is
+ * located by the exact raw bytes it covers in its container part (usually
+ * `word/document.xml`). Absent for flat-text adds, whose {@link AddedEntity}
+ * `byteStart`/`byteEnd` already index the shown file (→ `location.range`).
+ */
+export interface AddedSource {
+	part: string;
+	start: number;
+	end: number;
+}
+
+/**
  * An entity the reviewer added by selecting text — a span the detection missed.
  * `id` is a stable client key (for the document highlight + focus); the byte
  * offsets locate it in the source; `text` is the selected value, for display.
+ * For DOCX, `source` carries the raw part byte span the redaction targets.
  */
 export interface AddedEntity {
 	id: string;
@@ -30,6 +44,7 @@ export interface AddedEntity {
 	byteStart: number;
 	byteEnd: number;
 	text: string;
+	source?: AddedSource;
 }
 
 /** The document-selection payload the reviewer confirms into an {@link AddedEntity}. */
@@ -38,18 +53,22 @@ export interface AddEntityInput {
 	byteEnd: number;
 	label: string;
 	text: string;
+	/** Raw part byte span, for a DOCX add (see {@link AddedSource}). */
+	source?: AddedSource;
 }
 
 /**
  * A text selection captured for the "add entity" flow, frozen while its popover
  * is open (independent of the live browser selection): the byte span to redact,
  * the selected text (for display), and the viewport rect to anchor the popover.
+ * `source` is the raw part byte span for a DOCX selection (see {@link AddedSource}).
  */
 export interface PendingAdd {
 	byteStart: number;
 	byteEnd: number;
 	text: string;
 	rect: DOMRect;
+	source?: AddedSource;
 }
 
 /**
@@ -214,6 +233,16 @@ export function useStudioAudit(
 			confidence: 1,
 			text: a.text,
 			added: true,
+			// A DOCX add carries its raw part byte span; expose it as a source ref so
+			// the DOCX preview highlights it through the same run resolver as detected
+			// entities (flat-text adds highlight off start/end and need none).
+			...(a.source
+				? {
+						sourceRefs: [
+							{ part: a.source.part, start: a.source.start, end: a.source.end },
+						],
+					}
+				: {}),
 		})),
 	);
 
@@ -243,11 +272,24 @@ export function useStudioAudit(
 			bucket.push({ op: "suppress", id: entity.id });
 		}
 		for (const a of added.value) {
-			text.push({
-				op: "add",
-				label: a.label,
-				location: { range: { start: a.byteStart, end: a.byteEnd } },
-			});
+			// A DOCX add is located by its raw part byte span (`source`) — DOCX has
+			// no flat decoded stream the client can offset into. `range` is required
+			// by the type, so carry the same raw span there as a placeholder; the
+			// apply path reads `source` for a multi-part container. A flat-text add
+			// (plain text / JSON) has no `source`: its `range` is the document byte
+			// span, exactly as detected entities carry it.
+			const location = a.source
+				? {
+						range: { start: a.source.start, end: a.source.end },
+						source: [
+							{
+								part: a.source.part,
+								range: { start: a.source.start, end: a.source.end },
+							},
+						],
+					}
+				: { range: { start: a.byteStart, end: a.byteEnd } };
+			text.push({ op: "add", label: a.label, location });
 		}
 		const set: EditSet = {};
 		if (text.length) set.text = text;

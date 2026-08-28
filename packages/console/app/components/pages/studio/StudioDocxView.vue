@@ -1,14 +1,21 @@
 <script setup lang="ts">
 import { renderAsync } from "docx-preview";
 import JSZip from "jszip";
+import { useEventListener } from "@vueuse/core";
 import { Loader2, TriangleAlert } from "@lucide/vue";
+import AddEntityPopover from "./AddEntityPopover.vue";
 import type { TextEntityView } from "#console/composables/useTextEntities";
+import type {
+	AddEntityInput,
+	PendingAdd,
+} from "#console/composables/useStudioAudit";
 import {
 	type DocxPartCategory,
 	type DocxRun,
 	docxPartCategory,
 	isRenderedDocxPart,
 	parseDocxParts,
+	resolveDocxSelection,
 	resolveDocxSpan,
 } from "#console/utils/preview";
 
@@ -31,10 +38,12 @@ const props = withDefaults(
 		entities?: TextEntityView[];
 		/** Currently focused entity id, for the ring + scroll-into-view. */
 		activeEntityId?: string | null;
+		/** Whether the reviewer may add entities by selecting text (detection complete). */
+		canAdd?: boolean;
 		/** Zoom percentage (100 = actual size) applied to the rendered pages. */
 		zoomLevel?: number;
 	}>(),
-	{ entities: () => [], activeEntityId: null, zoomLevel: 100 },
+	{ entities: () => [], activeEntityId: null, canAdd: false, zoomLevel: 100 },
 );
 
 // Scale the rendered pages to the zoom level. `zoom` (not `transform: scale`)
@@ -43,13 +52,49 @@ const props = withDefaults(
 // letting you scroll past the shrunk document into empty space.
 const zoomStyle = computed(() => ({ zoom: props.zoomLevel / 100 }));
 
-const emit = defineEmits<{ "focus-entity": [id: string] }>();
+const emit = defineEmits<{
+	"focus-entity": [id: string];
+	/** Mark a selected span as a new entity to redact (raw part byte span + label). */
+	"add-entity": [payload: AddEntityInput];
+}>();
 
 const { t } = useI18n();
+const { resolveLabel } = useLabels();
+
+// The catalog's generic "unresolved entity" label — the default for a
+// reviewer-added span, matching the text view. Only used when the catalog has it.
+const DEFAULT_ADD_LABEL = "unresolved";
 
 const container = ref<HTMLElement | null>(null);
 const isLoading = ref(false);
 const hasError = ref(false);
+
+// The pending add: the reviewer's selection frozen when the popover opened — its
+// raw part byte span (for the redaction edit + the document highlight), its text
+// and rect (for the popover). Frozen so the popover survives the browser
+// selection collapsing when the reviewer clicks the label picker.
+const pending = ref<PendingAdd | null>(null);
+const pendingLabel = ref("");
+
+// The pending span as a synthetic highlight entity, resolved through the same run
+// mapping as detected ones (via its raw part `sourceRefs`), tagged `pending` for
+// the selection-style chip. Null when nothing is pending.
+const pendingEntity = computed<TextEntityView | null>(() => {
+	const p = pending.value;
+	if (!p?.source) return null;
+	return {
+		id: "__pending__",
+		modality: "text",
+		label: "",
+		category: "pending",
+		start: 0,
+		end: 0,
+		confidence: 1,
+		sourceRefs: [
+			{ part: p.source.part, start: p.source.start, end: p.source.end },
+		],
+	};
+});
 
 // The parsed <w:t> runs of the rendered doc, each paired with the DOM element
 // that holds its text (filled after a successful render + alignment). We store
@@ -206,7 +251,13 @@ function applyHighlights() {
 		{ start: number; end: number; entity: TextEntityView }[]
 	>();
 	const runs = runNodes.map((p) => p.run);
-	for (const entity of props.entities) {
+	// Detected + added entities, plus the pending add (while its popover is open)
+	// so the reviewer keeps seeing the span they're about to add after the native
+	// selection clears — the same `pending` chip treatment as the text view.
+	const highlighted = pendingEntity.value
+		? [...props.entities, pendingEntity.value]
+		: props.entities;
+	for (const entity of highlighted) {
 		for (const ref of entity.sourceRefs ?? []) {
 			// Resolve within the ref's own part (document body, header, footer, …);
 			// spans in non-rendered parts (e.g. a .rels hyperlink target) match no
@@ -279,6 +330,8 @@ function wrapRun(
 		chip.className = "docx-chip";
 		chip.dataset.entity = s.entity.id;
 		if (s.entity.category) chip.dataset.category = s.entity.category;
+		// Kept (suppressed) entities dim to muted gray — they won't be redacted.
+		if (s.entity.suppressed) chip.dataset.suppressed = "";
 		chip.title = s.entity.label;
 		chip.textContent = text.slice(start, end);
 		frag.append(chip);
@@ -301,13 +354,9 @@ function clearHighlights() {
 	for (const { parent } of runNodes) parent.normalize();
 }
 
-// Re-apply highlights when the entity set changes (a new run finished). A full
-// re-render isn't needed — the runs are already located.
-watch(
-	() => props.entities,
-	() => applyHighlights(),
-	{ deep: true },
-);
+// Re-apply highlights when the entity set changes (a new run finished) or the
+// pending add appears/clears. A full re-render isn't needed — runs are located.
+watch([() => props.entities, pending], () => applyHighlights(), { deep: true });
 
 // Reflect the active entity when the focus changes: ring the chip and scroll it
 // into view.
@@ -321,6 +370,104 @@ watch(
 function onClick(e: MouseEvent) {
 	const chip = (e.target as HTMLElement).closest<HTMLElement>(".docx-chip");
 	if (chip?.dataset.entity) emit("focus-entity", chip.dataset.entity);
+}
+
+// Whether the reviewer may add entities: detection complete, and the runs are
+// aligned so a selection can resolve to source bytes.
+const addEnabled = computed(() => props.canAdd && runNodes.length > 0);
+
+/**
+ * Locate a DOM selection boundary — a node + offset within it — against the
+ * aligned runs: the run whose element contains the node, and the char offset of
+ * the boundary within that run's text. Walks the run element's text (chips split
+ * it into several text nodes) to accumulate the offset up to the boundary node.
+ * Returns null when the boundary isn't inside an aligned run.
+ */
+function locateBoundary(
+	node: Node,
+	offsetInNode: number,
+): { run: DocxRun; char: number } | null {
+	const el =
+		node.nodeType === Node.TEXT_NODE ? node.parentElement : (node as Element);
+	for (const { run, parent } of runNodes) {
+		if (!parent.contains(node)) continue;
+		// Accumulate text length across the run element's descendant text nodes up to
+		// the boundary node, so a chip-split run still yields the right char offset.
+		let char = 0;
+		const walker = document.createTreeWalker(parent, NodeFilter.SHOW_TEXT);
+		for (
+			let text = walker.nextNode() as Text | null;
+			text;
+			text = walker.nextNode() as Text | null
+		) {
+			if (text === node) return { run, char: char + offsetInNode };
+			char += text.nodeValue?.length ?? 0;
+		}
+		// The boundary landed on the element (not a text node) — clamp to its start
+		// or end depending on whether it precedes the element's content.
+		if (el === parent) return { run, char: offsetInNode > 0 ? char : 0 };
+	}
+	return null;
+}
+
+// Publish a settled selection as a pending add: resolve both boundaries to runs,
+// map to a raw part byte span, freeze it, then clear the native selection so our
+// own `pending` chip marks the span. Only on mouseup/keyup (settled), so a
+// mid-drag change never interrupts the drag — matching the text view.
+function onSelectionSettle() {
+	if (!addEnabled.value || pending.value) return;
+	const root = container.value;
+	const sel = window.getSelection();
+	if (!root || !sel || sel.isCollapsed || sel.rangeCount === 0) return;
+	const range = sel.getRangeAt(0);
+	if (
+		!root.contains(range.startContainer) ||
+		!root.contains(range.endContainer)
+	) {
+		return;
+	}
+	const a = locateBoundary(range.startContainer, range.startOffset);
+	const b = locateBoundary(range.endContainer, range.endOffset);
+	if (!a || !b) return;
+	// Order the endpoints by run then char, so a right-to-left drag resolves the
+	// same span (the run ordinal is document order).
+	const [from, to] =
+		a.run.index < b.run.index ||
+		(a.run.index === b.run.index && a.char <= b.char)
+			? [a, b]
+			: [b, a];
+	const span = resolveDocxSelection(from.run, from.char, to.run, to.char);
+	if (!span) return;
+	pending.value = {
+		byteStart: span.start,
+		byteEnd: span.end,
+		text: sel.toString(),
+		rect: range.getBoundingClientRect(),
+		source: span,
+	};
+	pendingLabel.value = resolveLabel(DEFAULT_ADD_LABEL) ? DEFAULT_ADD_LABEL : "";
+	window.getSelection()?.removeAllRanges();
+}
+useEventListener(document, "mouseup", onSelectionSettle);
+useEventListener(document, "keyup", onSelectionSettle);
+
+function cancelAdd() {
+	pending.value = null;
+	pendingLabel.value = "";
+	window.getSelection()?.removeAllRanges();
+}
+
+function confirmAdd() {
+	const p = pending.value;
+	if (!p?.source || !pendingLabel.value) return;
+	emit("add-entity", {
+		byteStart: p.byteStart,
+		byteEnd: p.byteEnd,
+		label: pendingLabel.value,
+		text: p.text,
+		source: p.source,
+	});
+	cancelAdd();
 }
 
 // Render whenever the file (or the container, after mount) changes.
@@ -366,6 +513,14 @@ watch(
       :style="zoomStyle"
       @click="onClick"
     />
+
+    <!-- Add a missed entity: a detail-style card below the text selection. -->
+    <AddEntityPopover
+      v-model:label="pendingLabel"
+      :pending="pending"
+      @confirm="confirmAdd"
+      @cancel="cancelAdd"
+    />
   </div>
 </template>
 
@@ -383,6 +538,21 @@ watch(
    which interfered with docx-preview's rendered canvas). */
 :global(.dark) .studio-docx-canvas {
 	scrollbar-color: var(--border) transparent;
+}
+
+/* Hyperlinks: this preview is read-only (we strip href on render), so drop
+   Word's live-link chrome — the blue color and underline. The color/underline
+   isn't on the <a> itself but on the run <span> inside it, which docx-preview
+   styles via an injected class for Word's "Hyperlink" character style; so target
+   the link *and its descendants*, and use !important to beat that injected rule
+   (its class selector + source order would otherwise win). Otherwise a link's
+   underline stays link-blue and ignores our chip color, so a suppressed (kept)
+   entity inside a link would dim its text to gray but keep a stray blue
+   underline. Neutralized here, our own chip underline is the only marker. */
+.studio-docx :deep(a),
+.studio-docx :deep(a *:not(.docx-chip)) {
+	color: inherit !important;
+	text-decoration: none !important;
 }
 
 /* Entity-chip styling (the `.docx-chip` marker underline) is shared and lives
