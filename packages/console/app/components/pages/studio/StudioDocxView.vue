@@ -473,8 +473,16 @@ function confirmAdd() {
 // Render whenever the file (or the container, after mount) changes.
 watch(
 	[() => props.contentUrl, container],
-	([url, target]) => {
+	([url, target], prev) => {
 		if (!target) return;
+		// On a file switch, drop any pending add from the previous document — its
+		// frozen `source` span indexes the old file's bytes, so confirming it after
+		// the new doc loaded would redact the wrong span. (`prev` is undefined on the
+		// immediate run, where there's nothing pending yet.)
+		if (prev && url !== prev[0]) {
+			pending.value = null;
+			pendingLabel.value = "";
+		}
 		if (!url) {
 			target.replaceChildren();
 			runNodes = [];

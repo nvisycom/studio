@@ -1,4 +1,9 @@
-import type { Audit, Detection, EditSet } from "@nvisy/sdk/datatypes";
+import type {
+	Audit,
+	Detection,
+	EditSet,
+	TextLocation,
+} from "@nvisy/sdk/datatypes";
 import type { MaybeRefOrGetter } from "vue";
 import type { TextEntityView } from "#console/composables/useTextEntities";
 
@@ -272,23 +277,22 @@ export function useStudioAudit(
 			bucket.push({ op: "suppress", id: entity.id });
 		}
 		for (const a of added.value) {
-			// A DOCX add is located by its raw part byte span (`source`) — DOCX has
-			// no flat decoded stream the client can offset into. `range` is required
-			// by the type, so carry the same raw span there as a placeholder; the
-			// apply path reads `source` for a multi-part container. A flat-text add
-			// (plain text / JSON) has no `source`: its `range` is the document byte
-			// span, exactly as detected entities carry it.
-			const location = a.source
-				? {
+			// `range` carries the add's byte span. For a flat-text add (plain text /
+			// JSON) that's the document byte offset, exactly as detected entities
+			// carry it. For a DOCX add there's no flat decoded stream to offset into,
+			// so `source` carries the raw part byte span the apply path reads; the
+			// span's raw bytes double as `range` (byteStart/byteEnd are set from it).
+			const location: TextLocation = {
+				range: { start: a.byteStart, end: a.byteEnd },
+			};
+			if (a.source) {
+				location.source = [
+					{
+						part: a.source.part,
 						range: { start: a.source.start, end: a.source.end },
-						source: [
-							{
-								part: a.source.part,
-								range: { start: a.source.start, end: a.source.end },
-							},
-						],
-					}
-				: { range: { start: a.byteStart, end: a.byteEnd } };
+					},
+				];
+			}
 			text.push({ op: "add", label: a.label, location });
 		}
 		const set: EditSet = {};

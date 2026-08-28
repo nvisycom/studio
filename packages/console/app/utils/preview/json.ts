@@ -9,6 +9,24 @@ function escapeLength(s: string, i: number): number {
 	return s[i + 1] === "u" ? 6 : 2;
 }
 
+/** Whether `ch` can start a JSON number literal (a digit or a leading minus). */
+const startsNumber = (ch: string) => ch === "-" || (ch >= "0" && ch <= "9");
+/** Whether `ch` can appear inside a JSON number literal. */
+const isNumberChar = (ch: string) =>
+	(ch >= "0" && ch <= "9") ||
+	ch === "-" ||
+	ch === "+" ||
+	ch === "." ||
+	ch === "e" ||
+	ch === "E";
+
+/** Length of the number literal starting at `s[i]` (which must start one). */
+function numberLength(s: string, i: number): number {
+	let j = i;
+	while (j < s.length && isNumberChar(s[j]!)) j++;
+	return j - i;
+}
+
 /**
  * Build the raw→formatted char-index map by walking both JSON strings in
  * lockstep. They encode the same value in the same order, differing only in
@@ -34,6 +52,19 @@ function buildJsonMap(raw: string, formatted: string): number[] {
 				continue;
 			}
 			while (f < formatted.length && isWhitespace(formatted[f]!)) f++;
+			// A number is canonicalized by JSON.stringify (1.0 -> 1, 1e3 -> 1000), so
+			// its raw and formatted lengths differ and a char walk would drift after
+			// it. Pair the whole literal atomically — mapping every raw number char to
+			// the formatted number's start — so following offsets realign. (An entity
+			// span never begins mid-number, so a coarse map inside is fine.)
+			if (startsNumber(raw[r]!)) {
+				const rl = numberLength(raw, r);
+				const fl = numberLength(formatted, f);
+				for (let k = 0; k < rl; k++) map[r + k] = f;
+				r += rl;
+				f += fl;
+				continue;
+			}
 		}
 		if (raw[r] === '"') {
 			inString = !inString;
