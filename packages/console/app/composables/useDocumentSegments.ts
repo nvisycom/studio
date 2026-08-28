@@ -231,13 +231,19 @@ export function useDocumentSegments(inputs: {
 	const canAddEntities = computed(() => fileKind.value !== "csv");
 
 	// Inverse of the formatter's raw→formatted char map: for each formatted char
-	// index, the raw char index it came from. Built by walking the raw→formatted
-	// map (monotonic) and filling every formatted position with the latest raw
-	// index at or before it. Empty map (plain text) means identity.
+	// index, the raw char index it came from. A formatter whose token lengths
+	// change (JSON, where numbers are canonicalized) supplies an exact `inverseMap`
+	// — use it directly, so a selection inside a `1e3`→`1000` token snaps to the
+	// token's raw start rather than a stray inner char. Otherwise (whitespace-only
+	// transforms like XML) invert the forward map: non-whitespace chars pair 1:1 in
+	// order, so filling each formatted position with the latest raw index at or
+	// before it is exact. Empty map (plain text) means identity.
 	const formattedToRaw = computed<number[] | null>(() => {
-		const map = formatted.value.map; // raw index → formatted index
+		const fmt = formatted.value;
+		if (fmt.inverseMap) return fmt.inverseMap;
+		const map = fmt.map; // raw index → formatted index
 		if (map.length === 0) return null; // identity: formatted === raw
-		const fmtLen = formatted.value.text.length;
+		const fmtLen = fmt.text.length;
 		const inverse: number[] = new Array(fmtLen + 1);
 		let raw = 0;
 		for (let f = 0; f <= fmtLen; f++) {

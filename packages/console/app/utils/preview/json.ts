@@ -28,17 +28,34 @@ function numberLength(s: string, i: number): number {
 }
 
 /**
- * Build the raw→formatted char-index map by walking both JSON strings in
- * lockstep. They encode the same value in the same order, differing only in
- * (a) whitespace *between* tokens and (b) how string contents are escaped —
- * `JSON.stringify` resolves `\uXXXX`/`\/` (e.g. `A`→`A`, `\/`→`/`) but
- * preserves `\"`, `\\`, `\n`, … as-is. So a whitespace-only {@link buildMap}
- * drifts on escapes; instead, pair one logical character from each side at a
- * time — an escape sequence on the raw side pairs with its formatted
- * counterpart (an escape or a single char), whatever their differing lengths.
+ * Both direction maps between a JSON file's raw text and its prettified form,
+ * built in one lockstep walk. They encode the same value in the same order,
+ * differing only in (a) whitespace *between* tokens, (b) how string contents are
+ * escaped — `JSON.stringify` resolves `\uXXXX`/`\/` (e.g. `A`→`A`, `\/`→`/`) but
+ * preserves `\"`, `\\`, `\n`, … — and (c) canonicalized numbers (`1e3`→`1000`,
+ * `1.0`→`1`, `1e999`→`null`), whose length changes. So a whitespace-only
+ * {@link buildMap} drifts on (b)/(c); instead, pair one logical token from each
+ * side at a time, whatever their differing lengths.
+ *
+ * - `map[rawIndex]` → formatted index (highlighting raw entity spans).
+ * - `inverse[formattedIndex]` → raw index (turning a formatted-text selection
+ *   back into a raw offset). A canonicalized number is atomic in both maps: its
+ *   raw chars all point at the formatted token start, and every formatted char of
+ *   the token points back at the raw token *start* — so a selection boundary
+ *   inside it snaps to the token's raw start, never a stray inner char (which a
+ *   naive inversion of `map` would pick, since several raw chars collapse there).
  */
-function buildJsonMap(raw: string, formatted: string): number[] {
+function buildJsonMaps(
+	raw: string,
+	formatted: string,
+): { map: number[]; inverse: number[] } {
 	const map: number[] = new Array(raw.length + 1);
+	const inverse: number[] = new Array(formatted.length + 1);
+	// Fill inverse[from, to) with a single raw index (a token whose formatted span
+	// maps back to one raw position — a number token, or padding whitespace).
+	const fillInverse = (from: number, to: number, rawIndex: number) => {
+		for (let k = from; k < to; k++) inverse[k] = rawIndex;
+	};
 	let r = 0;
 	let f = 0;
 	let inString = false;
@@ -46,17 +63,23 @@ function buildJsonMap(raw: string, formatted: string): number[] {
 		// Between tokens, each side has its own whitespace — advance independently.
 		if (!inString) {
 			if (isWhitespace(raw[r]!)) {
+				const fromF = f;
 				while (f < formatted.length && isWhitespace(formatted[f]!)) f++;
 				map[r] = f;
+				// Any formatted whitespace consumed here belongs to this raw ws char.
+				fillInverse(fromF, f, r);
 				r++;
 				continue;
 			}
+			const fromF = f;
 			while (f < formatted.length && isWhitespace(formatted[f]!)) f++;
+			// Formatted indentation before a token maps back to the token's raw start.
+			fillInverse(fromF, f, r);
 			// A number is canonicalized by JSON.stringify (1.0 -> 1, 1e3 -> 1000), so
 			// its raw and formatted lengths differ and a char walk would drift after
-			// it. Pair the whole literal atomically — mapping every raw number char to
-			// the formatted number's start — so following offsets realign. (An entity
-			// span never begins mid-number, so a coarse map inside is fine.)
+			// it. Pair the whole literal atomically — every raw number char -> the
+			// formatted number's start, and every formatted number char -> the raw
+			// number's start — so a boundary inside it snaps to the raw token start.
 			if (startsNumber(raw[r]!)) {
 				const rl = numberLength(raw, r);
 				// A non-finite value (e.g. `1e999`) stringifies to `null`, not a number
@@ -64,6 +87,7 @@ function buildJsonMap(raw: string, formatted: string): number[] {
 				// 4-char `null` instead of stalling f (which would drift the rest).
 				const fl = startsNumber(formatted[f]!) ? numberLength(formatted, f) : 4;
 				for (let k = 0; k < rl; k++) map[r + k] = f;
+				fillInverse(f, f + fl, r);
 				r += rl;
 				f += fl;
 				continue;
@@ -72,6 +96,7 @@ function buildJsonMap(raw: string, formatted: string): number[] {
 		if (raw[r] === '"') {
 			inString = !inString;
 			map[r] = f;
+			inverse[f] = r;
 			r++;
 			f++;
 			continue;
@@ -82,26 +107,31 @@ function buildJsonMap(raw: string, formatted: string): number[] {
 			const rl = escapeLength(raw, r);
 			const fl = formatted[f] === "\\" ? escapeLength(formatted, f) : 1;
 			for (let k = 0; k < rl; k++) map[r + k] = f;
+			fillInverse(f, f + fl, r);
 			r += rl;
 			f += fl;
 			continue;
 		}
 		map[r] = f;
+		inverse[f] = r;
 		r++;
 		f++;
 	}
-	while (f < formatted.length && isWhitespace(formatted[f]!)) f++;
-	map[raw.length] = formatted.length; // end sentinel
-	return map;
+	// Trailing formatted whitespace + both end sentinels point past the raw end.
+	while (f < formatted.length) inverse[f++] = raw.length;
+	inverse[formatted.length] = raw.length;
+	map[raw.length] = formatted.length;
+	return { map, inverse };
 }
 
 /**
  * Pretty-print JSON with 2-space indentation. Falls back to the raw text
  * (identity map) when it doesn't parse, so a malformed file still shows.
  *
- * The raw→formatted char map ({@link buildJsonMap}) accounts for both the
- * whitespace reflow and JSON's escape re-encoding, so highlight/add-entity
- * offsets stay correct even when the source uses `\uXXXX` / `\"` / `\n` escapes
+ * The direction maps ({@link buildJsonMaps}) account for the whitespace reflow,
+ * JSON's escape re-encoding, and number canonicalization, so highlight offsets
+ * (raw → formatted) and add-entity selections (formatted → raw) both stay correct
+ * even when the source uses `\uXXXX` / `\"` / `\n` escapes or numbers like `1e3`
  * that differ from the shown text.
  */
 export function formatJson(raw: string): FormattedText {
@@ -111,7 +141,8 @@ export function formatJson(raw: string): FormattedText {
 	} catch {
 		return identity(raw);
 	}
-	return { text: formatted, map: buildJsonMap(raw, formatted) };
+	const { map, inverse } = buildJsonMaps(raw, formatted);
+	return { text: formatted, map, inverseMap: inverse };
 }
 
 /**
