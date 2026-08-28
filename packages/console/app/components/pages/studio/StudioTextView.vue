@@ -86,7 +86,7 @@ const pendingEntity = computed<TextEntityView[]>(() =>
 
 // Formatting + highlight pipeline: prettify (JSON), syntax tokens, byte→char and
 // span reconciliation — yields the per-line coloured/flagged runs.
-const { lines, canAddEntities, charToByte } = useDocumentSegments({
+const { lines, canAddEntities, charRangeToBytes } = useDocumentSegments({
 	text: textContent,
 	entities: () => [...props.entities, ...pendingEntity.value],
 	fileKind: () => props.fileKind,
@@ -108,8 +108,7 @@ const { selection, clear: clearSelection } = useSelectionOffset(codeContainer);
 watch(selection, (sel) => {
 	if (!addEnabled.value || !sel) return;
 	pending.value = {
-		byteStart: charToByte(sel.start),
-		byteEnd: charToByte(sel.end),
+		...charRangeToBytes(sel.start, sel.end),
 		text: sel.text,
 		rect: sel.rect,
 	};

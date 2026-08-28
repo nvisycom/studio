@@ -255,19 +255,55 @@ export function useDocumentSegments(inputs: {
 	});
 
 	// A formatted-char offset (from a document selection over the shown text) →
-	// UTF-8 byte offset into the RAW file, which is what the API's entity
-	// locations use. Resolves formatted → raw char (identity for plain text),
-	// then encodes the raw prefix. Gated by {@link canAddEntities}.
-	function charToByte(formattedOffset: number): number {
+	// raw-char index. Identity for plain text; otherwise via the reverse map.
+	function charToRaw(formattedOffset: number): number {
 		const raw = rawText.value ?? "";
 		const inverse = formattedToRaw.value;
 		const rawChar = inverse
 			? (inverse[Math.max(0, Math.min(formattedOffset, inverse.length - 1))] ??
 				0)
 			: formattedOffset;
-		const clamped = Math.max(0, Math.min(rawChar, raw.length));
-		return new TextEncoder().encode(raw.slice(0, clamped)).length;
+		return Math.max(0, Math.min(rawChar, raw.length));
 	}
 
-	return { formatted, lines, canAddEntities, charToByte };
+	// UTF-8 byte offset of a raw-char index (the API's entity locations are byte
+	// offsets; JS strings are UTF-16, so encode the prefix).
+	function rawToByte(rawChar: number): number {
+		const raw = rawText.value ?? "";
+		return new TextEncoder().encode(raw.slice(0, rawChar)).length;
+	}
+
+	// Map a formatted-text selection to a raw *byte* range. Both endpoints resolve
+	// through the reverse map, but a formatted token whose raw source is shorter
+	// (a canonicalized number: `1e3` shown as `1000`) collapses every interior
+	// formatted position onto the token's single raw start — so a selection *inside*
+	// such a token would yield an empty raw range and drop a valid add. When the
+	// raw range collapses but the formatted selection wasn't empty, expand it to the
+	// whole raw token (a number is redacted whole anyway) so the range stays useful.
+	function charRangeToBytes(
+		startFmt: number,
+		endFmt: number,
+	): { byteStart: number; byteEnd: number } {
+		let rawStart = charToRaw(startFmt);
+		let rawEnd = charToRaw(endFmt);
+		if (rawEnd <= rawStart && endFmt > startFmt) {
+			// Expand to the enclosing raw token: walk out while the raw chars share the
+			// same formatted position (the hallmark of a collapsed token like a number).
+			// Stop at whitespace — the space before a token collapses onto the same
+			// formatted position, but isn't part of the token.
+			const map = formatted.value.map;
+			const raw = rawText.value ?? "";
+			if (map.length) {
+				const at = map[rawStart];
+				const isWs = (i: number) => /\s/.test(raw[i] ?? "");
+				while (rawStart > 0 && map[rawStart - 1] === at && !isWs(rawStart - 1))
+					rawStart--;
+				while (rawEnd < map.length - 1 && map[rawEnd] === at && !isWs(rawEnd))
+					rawEnd++;
+			}
+		}
+		return { byteStart: rawToByte(rawStart), byteEnd: rawToByte(rawEnd) };
+	}
+
+	return { formatted, lines, canAddEntities, charRangeToBytes };
 }
