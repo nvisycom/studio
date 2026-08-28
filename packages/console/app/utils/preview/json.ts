@@ -59,7 +59,10 @@ function buildJsonMap(raw: string, formatted: string): number[] {
 			// span never begins mid-number, so a coarse map inside is fine.)
 			if (startsNumber(raw[r]!)) {
 				const rl = numberLength(raw, r);
-				const fl = numberLength(formatted, f);
+				// A non-finite value (e.g. `1e999`) stringifies to `null`, not a number
+				// literal, so its formatted token has no number chars — advance past the
+				// 4-char `null` instead of stalling f (which would drift the rest).
+				const fl = startsNumber(formatted[f]!) ? numberLength(formatted, f) : 4;
 				for (let k = 0; k < rl; k++) map[r + k] = f;
 				r += rl;
 				f += fl;
