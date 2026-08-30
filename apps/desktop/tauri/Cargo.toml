@@ -2,7 +2,7 @@
 
 [package]
 name = "nvisy-desktop"
-description = "Nvisy Desktop"
+description = "Nvisy"
 version = "0.1.0"
 rust-version = "1.97"
 edition = "2021"

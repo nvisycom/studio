@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "Nvisy Desktop",
+  "productName": "Nvisy",
   "version": "0.1.0",
   "identifier": "com.nvisy.desktop",
   "build": {
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Nvisy Desktop",
+        "title": "Nvisy",
         "width": 800,
         "height": 600,
         "resizable": true,
@@ -22,7 +22,7 @@
       {
         "label": "spotlight",
         "url": "/spotlight",
-        "title": "Nvisy Quick Command",
+        "title": "Nvisy",
         "width": 640,
         "height": 104,
         "resizable": false,

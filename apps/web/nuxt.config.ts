@@ -13,8 +13,8 @@ export default defineNuxtConfig({
 
 	app: {
 		head: {
-			title: "Nvisy App",
-			titleTemplate: "%s · Nvisy App",
+			title: "Nvisy",
+			titleTemplate: "%s · Nvisy",
 			link: [
 				{ rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
 				{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
