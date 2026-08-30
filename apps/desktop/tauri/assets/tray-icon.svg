@@ -1,0 +1,19 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!--
+    Nvisy tray icon — "redacted lines" (mark A), monochrome template.
+    Black shape on transparent: macOS treats it as a template image and tints it
+    to the menu bar (light/dark). No tile, no gradient — solid bars that stay
+    razor-sharp at tray size. Two full lines + a short last line.
+
+    The mark fills the central ~400×400 (≈11% margin each side) so it carries the
+    same visual weight as neighboring menu-bar icons, which nearly fill their
+    bounds — a smaller inset would render noticeably tinier than its neighbors.
+    Full bars: width 400, x 56→456; height 100, gap 50, ys 56/206/356. Short bar
+    62% width (248). Radius = half the bar height (fully rounded caps).
+  -->
+  <g fill="#000000">
+    <rect x="56" y="56" width="400" height="100" rx="50"/>
+    <rect x="56" y="206" width="400" height="100" rx="50"/>
+    <rect x="56" y="356" width="248" height="100" rx="50"/>
+  </g>
+</svg>

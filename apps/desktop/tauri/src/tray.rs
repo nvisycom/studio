@@ -127,12 +127,15 @@ pub fn create<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
         labels: Mutex::new(labels),
     });
 
+    // The tray gets its own monochrome mark (the "redacted lines" glyph), not the
+    // full app icon: at menu-bar size a shrunk color-tile icon looks off. As a
+    // macOS template image (black shape + alpha) the system tints it to match the
+    // menu bar, light or dark. Embedded at build time so it's always present.
+    let tray_icon = tauri::image::Image::from_bytes(include_bytes!("../icons/trayTemplate.png"))?;
+
     TrayIconBuilder::with_id("main")
-        .icon(
-            app.default_window_icon().cloned().ok_or_else(|| {
-                tauri::Error::AssetNotFound("no default window icon for tray".into())
-            })?,
-        )
+        .icon(tray_icon)
+        .icon_as_template(true)
         // The menu is shown on right-click only, so left-click reaches our
         // handler below rather than opening the menu.
         .menu(&menu)
