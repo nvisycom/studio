@@ -15,6 +15,19 @@ export default defineNuxtConfig({
 		"#console": `${layerDir}app`,
 	},
 
+	// Brand favicon shipped by the layer (from its `public/`, merged into every
+	// app) so web and the desktop dev shell share one source of truth. The flat,
+	// solid-fill SVG is the primary; the multi-size .ico is the raster fallback
+	// for engines that skip SVG favicons.
+	app: {
+		head: {
+			link: [
+				{ rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+				{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+			],
+		},
+	},
+
 	css: [
 		`${layerDir}app/assets/css/fonts.css`,
 		`${layerDir}app/assets/css/tailwind.css`,

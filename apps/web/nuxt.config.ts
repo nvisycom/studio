@@ -13,12 +13,9 @@ export default defineNuxtConfig({
 
 	app: {
 		head: {
-			title: "Nvisy App",
-			titleTemplate: "%s · Nvisy App",
-			link: [
-				{ rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
-				{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
-			],
+			title: "Nvisy",
+			titleTemplate: "%s · Nvisy",
+			// Favicon links come from the shared layer (see its nuxt.config).
 		},
 	},
 

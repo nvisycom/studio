@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ThemeToggle from "#console/components/layout/footer/ThemeToggle.vue";
 import LanguageSwitcher from "#console/components/layout/footer/LanguageSwitcher.vue";
+import { NvisyWordmark } from "#console/components/brand";
 import AuroraGlow from "@/components/auth/AuroraGlow.vue";
 
 const { t } = useI18n();
@@ -12,16 +13,13 @@ const { t } = useI18n();
     <div class="relative flex min-h-screen flex-col lg:min-h-0">
       <!-- Header -->
       <header class="flex items-center justify-between px-6 py-4">
-        <NuxtLink to="/" class="group flex items-center gap-2">
-          <span
-            class="text-xl font-semibold tracking-tight transition-opacity group-hover:opacity-80"
-            >nvisy</span
-          >
+        <NuxtLink
+          to="/"
+          class="text-foreground transition-opacity hover:opacity-80"
+        >
+          <NvisyWordmark :size="24" />
         </NuxtLink>
-        <div class="flex items-center gap-2">
-          <LanguageSwitcher />
-          <ThemeToggle />
-        </div>
+        <LanguageSwitcher />
       </header>
 
       <!-- Form -->
@@ -31,9 +29,11 @@ const { t } = useI18n();
         </div>
       </main>
 
-      <!-- Footer -->
+      <!-- Footer: legal links centered, theme toggle pinned bottom-right. -->
+      <!-- Legal links centered. The theme toggle lives in the right brand panel
+           on desktop; on mobile (panel hidden) it sits at the right here. -->
       <footer
-        class="flex items-center justify-center px-6 py-4 text-xs text-muted-foreground"
+        class="relative flex items-center justify-center px-6 py-4 text-xs text-muted-foreground"
       >
         <div class="flex items-center gap-4">
           <a
@@ -59,6 +59,9 @@ const { t } = useI18n();
             class="transition-colors hover:text-foreground"
             >Docs</a
           >
+        </div>
+        <div class="absolute right-4 top-1/2 -translate-y-1/2 lg:hidden">
+          <ThemeToggle />
         </div>
       </footer>
     </div>
@@ -86,6 +89,11 @@ const { t } = useI18n();
             {{ t("auth.panel.subline") }}
           </p>
         </div>
+      </div>
+
+      <!-- Theme toggle in the brand panel (desktop; mobile has it in the footer). -->
+      <div class="absolute bottom-4 right-6 z-10">
+        <ThemeToggle />
       </div>
     </aside>
   </div>

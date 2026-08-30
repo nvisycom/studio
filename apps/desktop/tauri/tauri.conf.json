@@ -1,8 +1,8 @@
 {
   "$schema": "../../../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "Nvisy Desktop",
+  "productName": "Nvisy",
   "version": "0.1.0",
-  "identifier": "com.nvisy.desktop",
+  "identifier": "com.nvisy.studio",
   "build": {
     "frontendDist": "../.output/public",
     "devUrl": "http://127.0.0.1:1420",
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Nvisy Desktop",
+        "title": "Nvisy",
         "width": 800,
         "height": 600,
         "resizable": true,
@@ -22,7 +22,7 @@
       {
         "label": "spotlight",
         "url": "/spotlight",
-        "title": "Nvisy Quick Command",
+        "title": "Nvisy",
         "width": 640,
         "height": 104,
         "resizable": false,
@@ -41,16 +41,13 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": ["app", "dmg", "nsis", "deb", "appimage"],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ],
-    "android": {
-      "debugApplicationIdSuffix": ".debug"
-    }
+    ]
   }
 }

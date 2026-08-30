@@ -2,7 +2,7 @@
 
 [package]
 name = "nvisy-desktop"
-description = "Nvisy Desktop"
+description = "Nvisy"
 version = "0.1.0"
 rust-version = "1.97"
 edition = "2021"
@@ -22,8 +22,6 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri = { version = "2.11.3", features = ["macos-private-api", "tray-icon", "image-png"] }
 tauri-plugin-log = { version = "2" }
 tauri-plugin-store = { version = "2" }
-# Native HTTP: lets the frontend make API requests through the Rust process,
-# bypassing the webview's CORS (the desktop origin isn't on the API allowlist).
 tauri-plugin-http = { version = "2" }
 tauri-plugin-global-shortcut = { version = "2" }
 
@@ -36,3 +34,10 @@ log = { version = "0.4" }
 [build-dependencies]
 # Tauri
 tauri-build = { version = "2.6.3", features = [] }
+
+# Rasterization (for icons)
+resvg = { version = "0.48", features = [] }
+tiny-skia = { version = "0.12", features = [] }
+
+# Error context in the build script
+anyhow = { version = "1", features = [] }

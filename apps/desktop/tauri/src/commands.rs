@@ -1,7 +1,8 @@
 //! Commands the web layer invokes on the Rust shell.
 
-use tauri::{AppHandle, Runtime};
+use tauri::{AppHandle, Manager, Runtime};
 
+use crate::auth::AuthState;
 use crate::spotlight;
 use crate::tray::{self, TrayLabels};
 
@@ -11,6 +12,14 @@ use crate::tray::{self, TrayLabels};
 #[tauri::command]
 pub fn set_tray_labels<R: Runtime>(app: AppHandle<R>, labels: TrayLabels) {
     tray::apply_labels(&app, labels);
+}
+
+/// Report whether the user is signed in, so the shell can make window decisions
+/// (chiefly: don't summon the auth-only spotlight launcher when signed out).
+/// Pushed by the web layer whenever auth state changes.
+#[tauri::command]
+pub fn set_authed<R: Runtime>(app: AppHandle<R>, authed: bool) {
+    app.state::<AuthState>().set(authed);
 }
 
 /// Toggle the spotlight launcher. Exposed so the frontend can offer an in-app

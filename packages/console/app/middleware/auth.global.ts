@@ -15,6 +15,10 @@ export default defineNuxtRouteMiddleware((to) => {
 		...authRoutes,
 		"/auth/forgot-password",
 		"/auth/reset-password",
+		// The desktop spotlight is a chrome overlay window, not a data view — it
+		// must always render its launcher, never redirect to login (which would
+		// otherwise show "Welcome back" inside the quick-command window).
+		"/spotlight",
 	];
 
 	const isAuthRoute = authRoutes.some(

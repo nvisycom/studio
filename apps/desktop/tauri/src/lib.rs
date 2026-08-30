@@ -1,3 +1,4 @@
+mod auth;
 mod commands;
 mod settings;
 mod spotlight;
@@ -11,8 +12,10 @@ pub fn run() {
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_http::init())
         .plugin(global_shortcut_plugin())
+        .manage(auth::AuthState::default())
         .invoke_handler(tauri::generate_handler![
             commands::set_tray_labels,
+            commands::set_authed,
             commands::toggle_spotlight,
             commands::hide_spotlight,
             commands::open_main_window,

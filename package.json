@@ -18,6 +18,7 @@
 		"build:desktop": "npm run generate -w @nvisy/desktop",
 		"tauri": "npm run tauri -w @nvisy/desktop",
 		"tauri:dev": "npm run tauri:dev -w @nvisy/desktop",
+		"tauri:icons": "npm run icons -w @nvisy/desktop",
 		"typecheck": "npm run typecheck --workspaces --if-present",
 		"test": "npm run test --workspaces --if-present",
 		"fmt": "npm run fmt:biome && npm run fmt:cargo",

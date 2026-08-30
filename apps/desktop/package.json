@@ -10,6 +10,7 @@
 		"postinstall": "nuxt prepare",
 		"tauri": "tauri",
 		"tauri:dev": "cross-env NVISY_DEV=1 tauri dev",
+		"icons": "tauri icon tauri/assets/app-icon.svg -o tauri/icons",
 		"typecheck": "npm run typecheck:biome && npm run typecheck:cargo",
 		"typecheck:biome": "nuxt typecheck .",
 		"typecheck:cargo": "cd tauri && cargo check --all-features",

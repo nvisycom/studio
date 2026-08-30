@@ -27,7 +27,15 @@ export default defineNuxtConfig({
 	// Tauri serves the frontend over a fixed dev server port and expects a
 	// fully static, relative-path build.
 	devServer: { host: "127.0.0.1", port: 1420 },
-	app: { baseURL: "./" },
+	// Favicon links are inherited from the shared layer; the title names the dev
+	// shell tab (the packaged window uses the Rust-side window title instead).
+	app: {
+		baseURL: "./",
+		head: {
+			title: "Nvisy",
+			titleTemplate: "%s · Nvisy",
+		},
+	},
 
 	runtimeConfig: {
 		public: {

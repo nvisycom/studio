@@ -1,0 +1,36 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!--
+    Nvisy app icon — "bars fading out", frosted-light finish.
+    Three equal redaction bars dissolving left to right: the visible becoming
+    hidden. Monochrome; the tile is a light tonal (frosted) ground, the bars are
+    dark ink fading to transparent. Vector master — `tauri icon` generates the
+    full platform set from this.
+  -->
+  <defs>
+    <!-- Frosted-light tile: a clean top-lit tonal gradient, no photo texture. -->
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fcfcfd"/>
+      <stop offset="1" stop-color="#d4d6da"/>
+    </linearGradient>
+    <!-- The dissolve: ink solid through the first ~58%, then fading to nothing.
+         Kept mostly-solid so the mark still reads at small sizes / in the .ico. -->
+    <linearGradient id="fade" x1="0.12" y1="0" x2="0.94" y2="0">
+      <stop offset="0" stop-color="#191a1c"/>
+      <stop offset="0.58" stop-color="#191a1c"/>
+      <stop offset="1" stop-color="#191a1c" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Full-bleed tile ground. tauri icon applies the platform mask (squircle on
+       macOS), so the artwork fills the square; the OS rounds it. -->
+  <rect width="1024" height="1024" fill="url(#tile)"/>
+
+  <!-- Three bars, dissolving, vertically centered: height 87, gap 57 (block 375),
+       so y = (1024 - 375) / 2 = 324.5, then 468.5, 612.5 (block center = 512).
+       Width 512, x 256→768. -->
+  <g fill="url(#fade)">
+    <rect x="256" y="324.5" width="512" height="87" rx="43.5"/>
+    <rect x="256" y="468.5" width="512" height="87" rx="43.5"/>
+    <rect x="256" y="612.5" width="512" height="87" rx="43.5"/>
+  </g>
+</svg>

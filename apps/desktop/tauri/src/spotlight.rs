@@ -12,6 +12,8 @@
 
 use tauri::{AppHandle, Manager, Runtime, WindowEvent};
 
+use crate::{auth, tray};
+
 /// Label of the spotlight window (matches `tauri.conf.json`).
 pub const SPOTLIGHT_WINDOW: &str = "spotlight";
 
@@ -27,7 +29,14 @@ const VERTICAL_ANCHOR: f64 = 0.72;
 /// Show, focus, and raise the launcher. Recreates nothing — the window is only
 /// hidden, never destroyed, so it always exists to reveal. Positioned centered
 /// horizontally and low on the current monitor before showing.
+///
+/// Signed out, the launcher is useless — everything it does needs auth — so we
+/// summon the main window (which shows login) instead of a dead overlay.
 pub fn show<R: Runtime>(app: &AppHandle<R>) {
+    if !auth::is_authed(app) {
+        tray::show_main_window(app);
+        return;
+    }
     if let Some(window) = app.get_webview_window(SPOTLIGHT_WINDOW) {
         position(&window);
         let _ = window.show();
