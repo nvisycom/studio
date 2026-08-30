@@ -16,6 +16,10 @@ const defaultApiUrl = devServerFlag ? API_URL_DEV : API_URL_PROD;
 export default defineNuxtConfig({
 	extends: ["@nvisy/console"],
 
+	// Desktop-only chrome: the macOS Overlay title-bar layout (see AppTitlebar
+	// + the `titlebar` plugin). The shared layer stays free of desktop chrome.
+	css: ["~/assets/css/titlebar.css"],
+
 	compatibilityDate: "2025-07-15",
 	// The desktop app is a product shell, not a browser dev surface — the
 	// DevTools toolbar overlays the (chromeless) spotlight window and its own

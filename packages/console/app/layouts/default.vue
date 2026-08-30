@@ -2,7 +2,11 @@
 import AppSidebar from "#console/components/layout/sidebar/AppSidebar.vue";
 import AppHeader from "#console/components/layout/AppHeader.vue";
 import { Loader2 } from "@lucide/vue";
-import { SidebarInset, SidebarProvider } from "#console/components/ui/sidebar";
+import {
+	SidebarInset,
+	SidebarProvider,
+	SidebarRail,
+} from "#console/components/ui/sidebar";
 import { Toaster } from "#console/components/ui/sonner";
 import "vue-sonner/style.css";
 
@@ -39,7 +43,10 @@ const showPage = computed(
 
 <template>
   <SidebarProvider>
+    <!-- The three grid tracks of the shell: sidebar, the toggle rail (in the
+         gap), and the content card. See SidebarProvider for the grid. -->
     <AppSidebar />
+    <SidebarRail />
     <SidebarInset>
       <AppHeader />
       <div class="relative flex flex-1 flex-col min-h-0 overflow-y-auto">

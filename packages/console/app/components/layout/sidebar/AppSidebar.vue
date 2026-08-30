@@ -26,7 +26,6 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
-	SidebarRail,
 	SidebarSeparator,
 	useSidebar,
 } from "#console/components/ui/sidebar";
@@ -109,11 +108,14 @@ const navObservability = computed(() => [
 </script>
 
 <template>
-  <Sidebar collapsible="icon">
+  <Sidebar collapsible="icon" variant="inset">
     <SidebarHeader class="h-[calc(2.75rem-1px)] p-2 justify-center">
       <WorkspaceSwitcher />
     </SidebarHeader>
-    <SidebarSeparator />
+    <!-- Match the content header's `border-b border-border/50` weight so the two
+         top dividers read as one continuous line across the sidebar/content
+         seam (the default separator is full-opacity, a touch heavier). -->
+    <SidebarSeparator class="bg-border/50" />
     <SidebarContent>
       <!-- Overview - always visible -->
       <SidebarMenu v-if="state === 'expanded'" class="px-2">
@@ -197,7 +199,6 @@ const navObservability = computed(() => [
         <NavUser />
       </div>
     </SidebarFooter>
-    <SidebarRail />
   </Sidebar>
 
   <!-- Help Chat Popup -->

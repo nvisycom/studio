@@ -156,7 +156,7 @@ function toggleInspector() {
 </script>
 
 <template>
-  <div class="absolute inset-0 overflow-hidden bg-muted/30 flex">
+  <div class="absolute inset-0 overflow-hidden bg-background flex">
     <!-- Open-file tabs live in the app header via the socket. -->
     <HeaderSocket>
       <StudioFileTabs />

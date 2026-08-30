@@ -45,7 +45,7 @@ function openFeedbackModal() {
        every zone is in normal flow, the middle shrinks to fit between the others
        and can never overlap the chrome at any width or sidebar state. -->
   <header
-    class="sticky top-0 z-10 flex h-11 shrink-0 items-center gap-2 border-b border-border/50 bg-background/80 px-3 backdrop-blur-sm"
+    class="sticky top-0 z-10 flex h-11 shrink-0 items-center gap-2 border-b border-border/50 bg-background/80 px-3 backdrop-blur-sm rounded-t-xl"
   >
     <!-- Left: sidebar trigger. -->
     <div class="flex shrink-0 items-center gap-2">

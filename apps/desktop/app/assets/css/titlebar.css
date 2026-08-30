@@ -1,0 +1,61 @@
+/* Desktop title bar (Tauri, macOS "Overlay" style).
+ *
+ * The main window runs the webview full-height behind the traffic-light buttons,
+ * so the shell reserves a real title-bar strip at the very top (see
+ * AppTitlebar.vue) and offsets the app below it. These rules are gated on the
+ * `.tauri` root class (set by the desktop-only `titlebar` plugin), so they exist
+ * only in the desktop app — the shared layer stays free of desktop chrome.
+ *
+ * Uses the design tokens defined by the shared theme (@nvisy/console).
+ */
+
+:root {
+  /* Height of the reserved title-bar strip. It absorbs what would be the shell's
+     top inset, so the content card and sidebar meet it directly with no dead
+     grey band — and clears the traffic lights on its own. */
+  --titlebar-height: 2.25rem;
+}
+
+/* Paint the window ground with the chrome tone so nothing white shows behind the
+   strip or in the offset above the app. */
+html.tauri,
+html.tauri body {
+  background-color: var(--sidebar);
+}
+
+/* The title-bar strip is the window's drag region; the WebKit app region is what
+   the OS reads, and it must not be overridden by a descendant. */
+html.tauri [data-tauri-drag-region] {
+  -webkit-app-region: drag;
+}
+
+/* Drop the whole app shell below the strip and shrink it to fit. The sidebar's
+   inner panel is `position: fixed` with `inset-y-0 h-svh` utilities, so these
+   overrides are unlayered (an unlayered rule beats a layered utility), letting
+   `top`/`height` actually move the panel below the strip. */
+html.tauri [data-slot="sidebar-wrapper"] {
+  height: calc(100svh - var(--titlebar-height));
+  margin-top: var(--titlebar-height);
+}
+
+/* The sidebar's fixed panel: pin its top below the strip, stretch to the bottom,
+   and drop the panel's `p-2` top so its content meets the title bar directly. */
+html.tauri [data-slot="sidebar"] > div:last-child {
+  top: var(--titlebar-height);
+  bottom: 0;
+  height: auto;
+  padding-top: 0;
+}
+
+/* Content card: remove the top inset so it meets the title bar directly — no
+   dead grey band between them. Left/right/bottom insets stay. */
+html.tauri [data-slot="sidebar-inset"] {
+  margin-top: 0;
+}
+
+/* Toggle rail: its `inset-y-0` resolves to the full window height, so the hover
+   line would run up behind the title bar. Pin its top below the strip so it
+   spans only the sidebar, matching the panel — same extent in both states. */
+html.tauri [data-slot="sidebar-rail"] {
+  top: var(--titlebar-height);
+}
