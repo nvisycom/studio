@@ -1,5 +1,6 @@
 mod auth;
 mod commands;
+mod files;
 mod settings;
 mod spotlight;
 mod tray;
@@ -11,6 +12,9 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_http::init())
+        // Drives the native Finder open/save panels; the file commands read and
+        // write the chosen paths in Rust so the webview never needs fs scope.
+        .plugin(tauri_plugin_dialog::init())
         .plugin(global_shortcut_plugin())
         .manage(auth::AuthState::default())
         .invoke_handler(tauri::generate_handler![
@@ -19,6 +23,9 @@ pub fn run() {
             commands::toggle_spotlight,
             commands::hide_spotlight,
             commands::open_main_window,
+            commands::open_files,
+            commands::read_files,
+            commands::save_file,
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {

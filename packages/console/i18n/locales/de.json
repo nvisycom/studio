@@ -128,20 +128,16 @@
 					"label": "Automatische Bereinigung",
 					"description": "Verarbeitete Dateien nach Ablauf automatisch löschen."
 				},
-				"requireApproval": {
-					"label": "Genehmigung erforderlich",
-					"description": "Verarbeitete Dateien müssen genehmigt werden, bevor sie für Teammitglieder sichtbar sind."
-				},
 				"enableComments": {
 					"label": "Kommentare aktivieren",
 					"description": "Teammitgliedern erlauben, Kommentare zu Dokumenten hinzuzufügen."
 				},
-				"ocr": {
+				"raster": {
 					"label": "OCR",
 					"description": "Text aus gescannten Dokumenten und Bildern extrahieren.",
 					"policies": {
 						"auto": "Automatisch",
-						"force": "Immer",
+						"always": "Immer",
 						"never": "Nie"
 					}
 				},
@@ -413,8 +409,6 @@
 			"descriptionPlaceholder": "Kurze Beschreibung Ihres Arbeitsbereichs...",
 			"advancedSettings": "Erweitert",
 			"error": "Arbeitsbereich konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
-			"requireApprovalLabel": "Genehmigung Erforderlich",
-			"requireApprovalDescription": "Verarbeitete Dateien erfordern Genehmigung, bevor sie sichtbar sind",
 			"cancelButton": "Abbrechen",
 			"submitButton": "Arbeitsbereich Erstellen"
 		}
@@ -482,6 +476,7 @@
 			"upload": {
 				"title": "Dateien hochladen",
 				"subtitle": "Fügen Sie Dokumente zu Ihrem Workspace hinzu. Bis zu {max} pro Datei.",
+				"subtitleNoLimit": "Fügen Sie Dokumente zu Ihrem Workspace hinzu.",
 				"description": "Dateien hierher ziehen",
 				"browseHint": "oder zum Durchsuchen klicken",
 				"dropHint": "Dateien zum Hochladen ablegen",
@@ -494,13 +489,16 @@
 				"errors": {
 					"unsupported": "Nicht unterstützter Dateityp",
 					"tooLarge": "Überschreitet das Limit von {max}",
-					"failed": "Hochladen fehlgeschlagen"
+					"serverTooLarge": "Der Server hat diese Datei als zu groß abgelehnt",
+					"failed": "Hochladen fehlgeschlagen",
+					"openFailed": "Die ausgewählte Datei konnte nicht geöffnet werden"
 				}
 			}
 		},
 		"messages": {
 			"fileDeleted": "Datei erfolgreich gelöscht",
 			"filesDeleted": "Dateien erfolgreich gelöscht",
+			"filesDeletedPartial": "Einige Dateien konnten nicht gelöscht werden ({count} übersprungen).",
 			"fileUpdated": "Datei erfolgreich aktualisiert",
 			"filesUploaded": "Dateien erfolgreich hochgeladen",
 			"downloadStarted": "Download gestartet"
@@ -1233,6 +1231,7 @@
 			"retryRedaction": "Schwärzung erneut versuchen",
 			"redactFailed": "Schwärzung fehlgeschlagen. Bitte erneut versuchen.",
 			"downloadRedacted": "Geschwärzte Datei herunterladen",
+			"downloadFailed": "Die redigierte Datei konnte nicht heruntergeladen werden",
 			"noPipelines": "Noch keine Pipelines. Erstellen Sie zuerst eine.",
 			"cell": "{column} · Zeile {row}",
 			"colN": "Sp. {n}",

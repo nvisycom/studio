@@ -5,6 +5,7 @@ import type {
 	TextLocation,
 } from "@nvisy/sdk/datatypes";
 import type { MaybeRefOrGetter } from "vue";
+import { toast } from "vue-sonner";
 import type { TextEntityView } from "#console/composables/useTextEntities";
 
 /** Lifecycle phase of the studio's detection. `complete` = analysis ready. */
@@ -366,7 +367,15 @@ export function useStudioAudit(
 	/** Download the redacted output file produced by {@link redact}. */
 	async function downloadRedacted() {
 		if (!output.value) return;
-		await downloadOutput(output.value.fileId, output.value.fileName);
+		try {
+			await downloadOutput(output.value.fileId, output.value.fileName);
+		} catch (err) {
+			// On desktop the native save can fail after the panel closes (e.g. the
+			// target dir is unwritable); surface it instead of an unhandled reject.
+			toast.error(t("studio.audit.downloadFailed"), {
+				description: getErrorMessage(err, t("common.errors.tryAgain")),
+			});
+		}
 	}
 
 	async function run() {

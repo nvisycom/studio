@@ -3,6 +3,7 @@
 use tauri::{AppHandle, Manager, Runtime};
 
 use crate::auth::AuthState;
+use crate::files::{self, FileFilter, PickedFile};
 use crate::spotlight;
 use crate::tray::{self, TrayLabels};
 
@@ -43,4 +44,37 @@ pub fn hide_spotlight<R: Runtime>(app: AppHandle<R>) {
 pub fn open_main_window<R: Runtime>(app: AppHandle<R>) {
     tray::show_main_window(&app);
     spotlight::hide(&app);
+}
+
+/// Open a native file picker and return the chosen files' names and bytes. The
+/// frontend's file bridge wraps them back into `File`s for the upload pipeline.
+/// An empty result means the user cancelled.
+#[tauri::command]
+pub async fn open_files<R: Runtime>(
+    app: AppHandle<R>,
+    filters: Vec<FileFilter>,
+) -> Result<Vec<PickedFile>, String> {
+    files::open_files(&app, filters).await
+}
+
+/// Read dropped file paths into their names and bytes. Used by the drag-drop
+/// bridge: Tauri hands the frontend real paths (the drop is the grant), which
+/// this reads in the Rust process for the upload pipeline. Unreadable paths
+/// (folders, vanished files) are skipped, so a bad path never fails the drop.
+/// `maxBytes` is the workspace's effective upload cap: an oversized file is
+/// skipped by its metadata, before its bytes are read.
+#[tauri::command]
+pub fn read_files(paths: Vec<std::path::PathBuf>, max_bytes: Option<u64>) -> Vec<PickedFile> {
+    files::read_files(paths, max_bytes)
+}
+
+/// Save bytes to a path chosen via a native save panel, seeded with
+/// `suggested_name`. Returns `false` if the user cancelled.
+#[tauri::command]
+pub async fn save_file<R: Runtime>(
+    app: AppHandle<R>,
+    suggested_name: String,
+    data: Vec<u8>,
+) -> Result<bool, String> {
+    files::save_file(&app, suggested_name, data).await
 }

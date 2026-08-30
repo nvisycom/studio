@@ -25,6 +25,7 @@ export function useActivities(options?: {
 	filters?: MaybeRefOrGetter<ActivityFilters>;
 }) {
 	const { requireContext, currentWorkspaceSlug } = useWorkspaceContext();
+	const { saveBlob } = useFileDownload();
 	const pageSize = options?.pageSize ?? 20;
 
 	const filters = () => toValue(options?.filters) ?? {};
@@ -89,8 +90,7 @@ export function useActivities(options?: {
 			...(exportOptions.from && { from: exportOptions.from }),
 			...(exportOptions.to && { to: exportOptions.to }),
 		});
-		const url = URL.createObjectURL(await response.blob());
-		triggerBrowserDownload(url, fileName);
+		await saveBlob(await response.blob(), fileName);
 	}
 
 	return {

@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import type { OcrPolicy, Retention } from "@nvisy/sdk/datatypes";
+import type { RasterPolicy, Retention } from "@nvisy/sdk/datatypes";
 import { Loader2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { Button } from "#console/components/ui/button";
 import { Label } from "#console/components/ui/label";
-import { Switch } from "#console/components/ui/switch";
 import {
 	Select,
 	SelectContent,
@@ -21,7 +20,7 @@ import {
 	CardTitle,
 } from "#console/components/ui/card";
 import { RetentionFields } from "#console/components/common";
-import { OCR_POLICIES } from "#console/utils/ocr";
+import { RASTER_POLICIES } from "#console/utils/raster";
 import {
 	RETENTION_TARGETS,
 	defaultRetentionForm,
@@ -49,8 +48,7 @@ const {
 	isUpdating,
 } = useWorkspaces();
 
-const requireApproval = ref<boolean | undefined>(undefined);
-const ocr = ref<OcrPolicy>("auto");
+const raster = ref<RasterPolicy>("auto");
 
 // Retention state (shared model in utils/retention).
 const retention = ref(defaultRetentionForm());
@@ -68,10 +66,9 @@ watch(
 	() => currentWorkspace.value,
 	(workspace) => {
 		if (!workspace) return;
-		requireApproval.value = workspace.settings.requireApproval;
-		// `ocr` and `retention` are optional in the SDK; fall back to the SDK's
-		// own defaults (ocr "auto"; retention "forever" per scope, in the helper).
-		ocr.value = workspace.settings.ocr ?? "auto";
+		// `raster` and `retention` are optional in the SDK; fall back to the
+		// SDK's own defaults (raster "auto"; retention "forever" per scope).
+		raster.value = workspace.settings.raster ?? "auto";
 		retention.value = retentionToForm(workspace.settings.retention);
 		formInitialized.value = true;
 	},
@@ -81,23 +78,19 @@ watch(
 // The full WorkspaceSettings the form currently represents, used both for change
 // detection and for the save payload.
 const editedSettings = computed(() => ({
-	ocr: ocr.value,
-	requireApproval: requireApproval.value ?? false,
+	raster: raster.value,
 	retention: formToRetention(retention.value),
 }));
 
-// The Options card (approval + OCR) and the Retention card each enable their own
+// The Options card (raster policy) and the Retention card each enable their own
 // Save when their fields changed; both save the whole settings object.
 const hasOptionsChanges = computed(() => {
 	const ws = currentWorkspace.value;
 	if (!ws || !formInitialized.value) return false;
-	return (
-		editedSettings.value.requireApproval !== ws.settings.requireApproval ||
-		// `ocr` is optional in the SDK and defaults to "auto"; normalize the saved
-		// value the same way the form does, so an absent value isn't seen as a
-		// change against the form's "auto" default.
-		editedSettings.value.ocr !== (ws.settings.ocr ?? "auto")
-	);
+	// `raster` is optional in the SDK and defaults to "auto"; normalize the saved
+	// value the same way the form does, so an absent value isn't seen as a change
+	// against the form's "auto" default.
+	return editedSettings.value.raster !== (ws.settings.raster ?? "auto");
 });
 const hasRetentionChanges = computed(() => {
 	const ws = currentWorkspace.value;
@@ -159,41 +152,23 @@ async function saveWorkspaceSettings() {
             }}</CardDescription>
           </CardHeader>
           <CardContent class="space-y-6">
-            <!-- Require Approval -->
-            <div class="flex items-center justify-between">
-              <div class="space-y-0.5">
-                <Label >{{
-                  t("settings.workspace.options.requireApproval.label")
-                }}</Label>
-                <p class="text-xs text-muted-foreground">
-                  {{
-                    t("settings.workspace.options.requireApproval.description")
-                  }}
-                </p>
-              </div>
-              <Switch
-                :model-value="requireApproval ?? false"
-                @update:model-value="requireApproval = $event"
-              />
-            </div>
-
-            <!-- OCR policy -->
+            <!-- Raster policy -->
             <div class="flex items-center justify-between gap-4">
               <div class="space-y-0.5">
-                <Label >{{
-                  t("settings.workspace.options.ocr.label")
+                <Label>{{
+                  t("settings.workspace.options.raster.label")
                 }}</Label>
                 <p class="text-xs text-muted-foreground">
-                  {{ t("settings.workspace.options.ocr.description") }}
+                  {{ t("settings.workspace.options.raster.description") }}
                 </p>
               </div>
-              <Select v-model="ocr">
+              <Select v-model="raster">
                 <SelectTrigger class="h-9 w-[160px] shrink-0">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem v-for="p in OCR_POLICIES" :key="p" :value="p">
-                    {{ t(`settings.workspace.options.ocr.policies.${p}`) }}
+                  <SelectItem v-for="p in RASTER_POLICIES" :key="p" :value="p">
+                    {{ t(`settings.workspace.options.raster.policies.${p}`) }}
                   </SelectItem>
                 </SelectContent>
               </Select>

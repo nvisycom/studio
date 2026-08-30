@@ -16,6 +16,8 @@
         { "url": "http://localhost:*" },
         { "url": "http://127.0.0.1:*" }
       ]
-    }
+    },
+    "dialog:allow-open",
+    "dialog:allow-save"
   ]
 }

@@ -13,3 +13,12 @@ export function getErrorMessage(err: unknown, fallback: string): string {
 	}
 	return fallback;
 }
+
+/**
+ * Whether a thrown value is the API's "payload too large" (HTTP 413) — the
+ * server rejecting an upload over its size cap. The authoritative check behind
+ * the client's own soft pre-check, which can be stale or absent.
+ */
+export function isPayloadTooLarge(err: unknown): boolean {
+	return err instanceof NvisyApiError && err.statusCode === 413;
+}
