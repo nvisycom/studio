@@ -57,7 +57,7 @@ function isLoopbackHost(hostname: string): boolean {
  * local dev API), which default to `http://` since they don't have TLS. The host
  * is resolved with `URL` parsing so bracketed IPv6 (`[::1]:8080`) is handled.
  */
-function normalize(url: string): string | null {
+export function normalize(url: string): string | null {
 	const value = url.trim();
 	if (!value) return null;
 
@@ -108,12 +108,25 @@ export function useApiBaseUrl(): {
 	function setOverride(url: string): boolean {
 		// Empty input clears the override (back to the default) — a valid outcome.
 		if (!url.trim()) {
+			if (override.value === null) return true; // already default; no-op
 			override.value = null;
 			if (import.meta.client) localStorage.removeItem(STORAGE_KEY);
 			return true;
 		}
 		const value = normalize(url);
 		if (!value) return false;
+		// A URL that resolves to the build-time default isn't a real override —
+		// clear it, so the app stays in its "using the default server" state rather
+		// than persisting a redundant override that happens to equal the default.
+		if (value === defaultUrl) {
+			if (override.value === null) return true; // already default; no-op
+			override.value = null;
+			if (import.meta.client) localStorage.removeItem(STORAGE_KEY);
+			return true;
+		}
+		// No-op when unchanged, so re-applying the same URL (e.g. blur then a
+		// "Check server" click) doesn't churn the ref and rebuild the SDK client.
+		if (value === override.value) return true;
 		override.value = value;
 		if (import.meta.client) localStorage.setItem(STORAGE_KEY, value);
 		return true;

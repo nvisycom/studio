@@ -2,12 +2,68 @@
 	"auth": {
 		"server": {
 			"label": "Server URL",
-			"placeholder": "https://api.nvisy.com",
+			"placeholder": "https://api.nvisy.com/",
 			"description": "The Nvisy server to connect to. Leave blank for the default.",
-			"advanced": "Server settings",
 			"reset": "Use default",
+			"check": "Check",
+			"status": {
+				"default": "Connected to",
+				"custom": "Using",
+				"connected": "Connected to",
+				"checking": "Checking the server…",
+				"unreachable": "Can't reach",
+				"notNvisy": "Not an Nvisy server"
+			},
 			"connectionError": "Couldn't reach the server. Check the Server URL and that the server is running.",
-			"invalid": "Enter a valid server URL (e.g. https://api.example.com)."
+			"invalid": "Enter a valid server URL (e.g. https://api.example.com).",
+			"probe": {
+				"checking": "Checking the server…",
+				"reachable": {
+					"healthy": "Reachable. The server is healthy.",
+					"degraded": "Reachable. The server reports degraded health.",
+					"unhealthy": "Reachable. The server reports it's unhealthy."
+				},
+				"unreachable": "Can't reach this server. Is it running at this address?",
+				"notNvisy": "Something answered, but it isn't an Nvisy server."
+			},
+			"hints": {
+				"title": "If your server won't connect",
+				"port": "Check the port matches the one your server listens on.",
+				"scheme": "Use http:// for a local address, https:// for a remote one.",
+				"booting": "A server that just started may still be running migrations. Give it a moment."
+			}
+		}
+	},
+	"error": {
+		"unreachable": {
+			"title": "Can't reach your server",
+			"description": "The app couldn't connect to your Nvisy server. It may be offline, still starting, or reachable at a different address."
+		},
+		"notFound": {
+			"title": "Page not found",
+			"description": "This page doesn't exist or has been moved."
+		},
+		"forbidden": {
+			"title": "Access denied",
+			"description": "You don't have permission to access this page."
+		},
+		"unauthorized": {
+			"title": "Unauthorized",
+			"description": "Please sign in to access this page."
+		},
+		"server": {
+			"title": "Something went wrong",
+			"description": "We're having trouble loading this. Please try again."
+		},
+		"generic": {
+			"title": "An error occurred",
+			"description": "Something unexpected happened."
+		},
+		"actions": {
+			"goBack": "Go back",
+			"retry": "Try again",
+			"home": "Home",
+			"serverSettings": "Server settings"
 		}
 	},
 	"tray": {
@@ -31,7 +87,7 @@
 		},
 		"hint": {
 			"message": "Press Enter to send to the assistant",
-			"file": "Looks like a file — press Enter to attach"
+			"file": "Looks like a file. Press Enter to attach"
 		},
 		"submit": "Send",
 		"dismiss": "Close",
