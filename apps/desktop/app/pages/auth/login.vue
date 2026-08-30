@@ -135,14 +135,17 @@ const STATUS_STYLE: Record<StatusTone, { dot: string; text: string }> = {
 	muted: { dot: "bg-muted-foreground/50", text: "text-muted-foreground" },
 };
 
-// Commit the entered URL, then probe it — the "Check" action. Commits first so a
-// successful check leaves the app pointed at the server just verified. Probes the
-// *effective* URL: the field when filled, else the default — so the hosted
-// default can be checked too (it's just another server that can be down), not
-// only a typed-in override.
+// The "Check" action. Commit the entered URL first, so a successful check leaves
+// the app pointed at the server just verified. Committing a *changed* URL updates
+// `override`, whose watcher already re-probes — so only probe here when the value
+// didn't change (re-checking the same server), to avoid a duplicate request. The
+// effective URL (field, else the default) is probed, so the hosted default can be
+// checked too, not only a typed-in override.
 function runCheck() {
+	const before = override.value;
 	applyServer();
-	checkServer(serverUrl.value.trim() || defaultUrl);
+	if (override.value === before)
+		checkServer(serverUrl.value.trim() || defaultUrl);
 }
 
 // The probe result as a rendered line: an icon tint (reusing the health palette

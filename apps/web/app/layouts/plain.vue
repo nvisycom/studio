@@ -43,9 +43,13 @@ import { NvisyWordmark } from "#console/components/brand";
     </main>
 
     <!-- Footer: legal links centered, theme toggle pinned bottom-right. -->
+    <!-- Legal links centered; theme toggle at the right. The left spacer and the
+         toggle share equal flex-basis, so the links stay centered whatever the
+         toggle's width and nothing overlaps on narrow screens. -->
     <footer
-      class="relative z-10 flex items-center justify-center px-6 py-4 text-xs text-muted-foreground"
+      class="relative z-10 flex items-center gap-4 px-6 py-4 text-xs text-muted-foreground"
     >
+      <div class="flex-1" aria-hidden="true"></div>
       <div class="flex items-center gap-4">
         <a
           href="https://nvisy.com/legal/privacy-policy"
@@ -71,7 +75,7 @@ import { NvisyWordmark } from "#console/components/brand";
           >Docs</a
         >
       </div>
-      <div class="absolute right-4 top-1/2 -translate-y-1/2">
+      <div class="flex flex-1 justify-end">
         <ThemeToggle />
       </div>
     </footer>

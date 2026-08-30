@@ -25,11 +25,12 @@
        macOS), so the artwork fills the square; the OS rounds it. -->
   <rect width="1024" height="1024" fill="url(#tile)"/>
 
-  <!-- Three bars, dissolving. Geometry scaled from the 100-unit mock:
-       x 25→75, bar height 8.5, ys 34/48/62, radius 4.25  ×10.24 -->
+  <!-- Three bars, dissolving, vertically centered: height 87, gap 57 (block 375),
+       so y = (1024 - 375) / 2 = 324.5, then 468.5, 612.5 (block center = 512).
+       Width 512, x 256→768. -->
   <g fill="url(#fade)">
-    <rect x="256" y="348" width="512" height="87" rx="43.5"/>
-    <rect x="256" y="492" width="512" height="87" rx="43.5"/>
-    <rect x="256" y="636" width="512" height="87" rx="43.5"/>
+    <rect x="256" y="324.5" width="512" height="87" rx="43.5"/>
+    <rect x="256" y="468.5" width="512" height="87" rx="43.5"/>
+    <rect x="256" y="612.5" width="512" height="87" rx="43.5"/>
   </g>
 </svg>

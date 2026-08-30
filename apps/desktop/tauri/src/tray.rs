@@ -127,15 +127,11 @@ pub fn create<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
         labels: Mutex::new(labels),
     });
 
-    // The tray gets its own monochrome mark (the "redacted lines" glyph), not the
-    // full app icon: at menu-bar size a shrunk color-tile icon looks off. As a
-    // macOS template image (black shape + alpha) the system tints it to match the
-    // menu bar, light or dark. Embedded at build time so it's always present.
-    let tray_icon = tauri::image::Image::from_bytes(include_bytes!("../icons/trayTemplate.png"))?;
+    let tray = tray_icon(app)?;
 
     TrayIconBuilder::with_id("main")
-        .icon(tray_icon)
-        .icon_as_template(true)
+        .icon(tray.image)
+        .icon_as_template(tray.template)
         // The menu is shown on right-click only, so left-click reaches our
         // handler below rather than opening the menu.
         .menu(&menu)
@@ -154,6 +150,36 @@ pub fn create<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
         .build(app)?;
 
     Ok(())
+}
+
+/// A tray icon and whether it's a template image (system-tinted).
+struct TrayIcon<'a> {
+    image: tauri::image::Image<'a>,
+    template: bool,
+}
+
+/// The tray icon for the current platform. macOS gets the monochrome "redacted
+/// lines" glyph as a template image (the system tints it to the menu bar, light
+/// or dark) — a shrunk color tile looks off at menu-bar size. Windows and Linux
+/// don't tint templates (a black-on-transparent glyph would vanish on a dark
+/// taskbar), so they reuse the colored app window icon.
+fn tray_icon<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<TrayIcon<'_>> {
+    if cfg!(target_os = "macos") {
+        let image = tauri::image::Image::from_bytes(include_bytes!("../icons/trayTemplate.png"))?;
+        Ok(TrayIcon {
+            image,
+            template: true,
+        })
+    } else {
+        let image = app
+            .default_window_icon()
+            .cloned()
+            .ok_or_else(|| tauri::Error::AssetNotFound("no default window icon for tray".into()))?;
+        Ok(TrayIcon {
+            image,
+            template: false,
+        })
+    }
 }
 
 /// Apply a freshly pushed label set: cache it and relabel every item to the

@@ -18,8 +18,6 @@ dashboard through a Nuxt layer.
 
 </div>
 
----
-
 The dashboard (design system, feature views, and the data layer) lives in a
 shared Nuxt layer, so both apps present the same experience. The web app is a
 Nuxt SPA; the desktop app wraps the same frontend in a

@@ -22,7 +22,9 @@ withDefaults(
 
 <template>
   <span class="inline-flex items-center gap-2">
-    <NvisyLogo :size="size" class="mark" />
+    <!-- The visible "nvisy" text names the brand; the mark is decorative here,
+         so hide it from the accessible name to avoid announcing "Nvisy" twice. -->
+    <NvisyLogo :size="size" class="mark" aria-hidden="true" />
     <span
       class="font-semibold leading-none tracking-tight"
       :style="{ fontSize: `${size * 0.92}px` }"

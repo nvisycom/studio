@@ -30,6 +30,8 @@ const { t } = useI18n();
       </main>
 
       <!-- Footer: legal links centered, theme toggle pinned bottom-right. -->
+      <!-- Legal links centered. The theme toggle lives in the right brand panel
+           on desktop; on mobile (panel hidden) it sits at the right here. -->
       <footer
         class="relative flex items-center justify-center px-6 py-4 text-xs text-muted-foreground"
       >
@@ -58,7 +60,7 @@ const { t } = useI18n();
             >Docs</a
           >
         </div>
-        <div class="absolute right-4 top-1/2 -translate-y-1/2">
+        <div class="absolute right-4 top-1/2 -translate-y-1/2 lg:hidden">
           <ThemeToggle />
         </div>
       </footer>
@@ -87,6 +89,11 @@ const { t } = useI18n();
             {{ t("auth.panel.subline") }}
           </p>
         </div>
+      </div>
+
+      <!-- Theme toggle in the brand panel (desktop; mobile has it in the footer). -->
+      <div class="absolute bottom-4 right-6 z-10">
+        <ThemeToggle />
       </div>
     </aside>
   </div>

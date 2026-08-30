@@ -18,3 +18,5 @@ rustc-ice-*.txt
 
 # Tauri
 gen/schemas/
+icons/ios/
+icons/android/
