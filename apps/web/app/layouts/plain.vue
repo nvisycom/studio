@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ThemeToggle from "#console/components/layout/footer/ThemeToggle.vue";
+import { NvisyWordmark } from "#console/components/brand";
 </script>
 
 <!--
@@ -26,13 +27,12 @@ import ThemeToggle from "#console/components/layout/footer/ThemeToggle.vue";
 
     <!-- Header -->
     <header class="relative z-10 flex items-center justify-between px-6 py-4">
-      <NuxtLink to="/" class="group flex items-center gap-2">
-        <span
-          class="text-xl font-semibold tracking-tight transition-opacity group-hover:opacity-80"
-          >nvisy</span
-        >
+      <NuxtLink
+        to="/"
+        class="text-foreground transition-opacity hover:opacity-80"
+      >
+        <NvisyWordmark :size="24" />
       </NuxtLink>
-      <ThemeToggle />
     </header>
 
     <!-- Main Content -->
@@ -42,7 +42,7 @@ import ThemeToggle from "#console/components/layout/footer/ThemeToggle.vue";
       <slot />
     </main>
 
-    <!-- Footer -->
+    <!-- Footer: legal links centered, theme toggle pinned bottom-right. -->
     <footer
       class="relative z-10 flex items-center justify-center px-6 py-4 text-xs text-muted-foreground"
     >
@@ -70,6 +70,9 @@ import ThemeToggle from "#console/components/layout/footer/ThemeToggle.vue";
           class="transition-colors hover:text-foreground"
           >Docs</a
         >
+      </div>
+      <div class="absolute right-4 top-1/2 -translate-y-1/2">
+        <ThemeToggle />
       </div>
     </footer>
   </div>

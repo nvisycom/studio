@@ -4,7 +4,9 @@ import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
 import { Checkbox } from "#console/components/ui/checkbox";
+import { NvisyLogo } from "#console/components/brand";
 import ThemeToggle from "#console/components/layout/footer/ThemeToggle.vue";
+import LanguageSwitcher from "#console/components/layout/footer/LanguageSwitcher.vue";
 import { getHealthVisual } from "#console/composables/useHealth";
 import { NvisyApiError } from "@nvisy/sdk";
 
@@ -52,13 +54,22 @@ function onServerInput() {
 }
 
 // Clear the override back to the build-time default (the hosted server). The
-// field empties, the override is dropped, and any probe result is cleared.
+// field empties and the override is dropped; the `override` watch re-probes the
+// default. If it was already the default (no override to clear), probe directly.
 function useDefaultServer() {
 	serverUrl.value = "";
 	serverError.value = null;
-	setOverride("");
-	resetProbe();
+	if (override.value === null) checkServer(defaultUrl);
+	else setOverride("");
 }
+
+// Probe the server the app will actually use, so the status reflects live
+// reachability instead of an unverified assumption — the hosted default can be
+// down like any other. Runs on mount and whenever the committed server changes
+// (a switch, or "Use default"); a manual edit clears it to idle via
+// `onServerInput`, and blur / "Check" re-probe what the user typed.
+onMounted(() => checkServer(override.value ?? defaultUrl));
+watch(override, (value) => checkServer(value ?? defaultUrl));
 
 // Whether a custom server is configured — gates the "Use default" affordance.
 const hasOverride = computed(() => override.value != null);
@@ -77,11 +88,12 @@ const serverHost = computed(() => {
 	}
 });
 
-// The always-visible connection status: the hero of the section. It leads with a
-// state dot + plain status, so the connection is legible before the editor is
-// even opened. A run probe wins (it's the freshest truth); otherwise the state is
-// which server is configured — the trusted default, or a not-yet-checked custom
-// one. `tone` maps to a dot color + text color in the template.
+// The always-visible connection status: the hero of the section. A state dot +
+// plain status makes the server legible before the editor is opened. The status
+// reflects only what's actually known: green/reachable is earned by a successful
+// probe — never assumed. Until one runs, the state is neutral ("will connect
+// to"), because an unchecked server (the hosted default included) may be down.
+// `tone` maps to a dot color + text color in the template.
 type StatusTone = "ok" | "warn" | "bad" | "muted";
 const connectionStatus = computed<{
 	tone: StatusTone;
@@ -98,7 +110,7 @@ const connectionStatus = computed<{
 					: probe.value.status === "degraded"
 						? "warn"
 						: "bad";
-			return { tone, key: "auth.server.status.connected", host: true };
+			return { tone, key: "auth.server.status.reachable", host: true };
 		}
 		case "unreachable":
 			return {
@@ -109,11 +121,9 @@ const connectionStatus = computed<{
 		case "not-nvisy":
 			return { tone: "bad", key: "auth.server.status.notNvisy", host: false };
 		default:
-			// Idle: no probe yet. The hosted default is trusted (green); a custom
-			// server that hasn't been checked reads neutral until verified.
-			return hasOverride.value
-				? { tone: "muted", key: "auth.server.status.custom", host: true }
-				: { tone: "ok", key: "auth.server.status.default", host: true };
+			// Idle: no probe has confirmed reachability. Stay neutral and just name
+			// the server the app will connect to — don't claim a connection.
+			return { tone: "muted", key: "auth.server.status.idle", host: true };
 	}
 });
 
@@ -125,21 +135,14 @@ const STATUS_STYLE: Record<StatusTone, { dot: string; text: string }> = {
 	muted: { dot: "bg-muted-foreground/50", text: "text-muted-foreground" },
 };
 
-// Show the connect hints when a probe couldn't reach an Nvisy server — the
-// first-run misses (wrong port, http vs https, server still booting) are exactly
-// what fixes those two outcomes.
-const showConnectHints = computed(
-	() => probe.value.kind === "unreachable" || probe.value.kind === "not-nvisy",
-);
-
-// Commit the entered URL, then probe it — the "Check server" action. Committing
-// first means a successful check leaves the app pointed at the server the user
-// just verified. Probing reads the field directly (not the committed override),
-// so it works even when the value didn't change.
+// Commit the entered URL, then probe it — the "Check" action. Commits first so a
+// successful check leaves the app pointed at the server just verified. Probes the
+// *effective* URL: the field when filled, else the default — so the hosted
+// default can be checked too (it's just another server that can be down), not
+// only a typed-in override.
 function runCheck() {
-	if (!serverUrl.value.trim()) return;
 	applyServer();
-	checkServer(serverUrl.value);
+	checkServer(serverUrl.value.trim() || defaultUrl);
 }
 
 // The probe result as a rendered line: an icon tint (reusing the health palette
@@ -207,19 +210,23 @@ async function handleLogin(): Promise<void> {
 
 <template>
   <div class="relative flex min-h-screen flex-col bg-background">
-    <header class="flex items-center justify-end px-6 py-4">
+    <header class="flex items-center justify-end gap-2 px-6 py-4">
+      <LanguageSwitcher />
       <ThemeToggle />
     </header>
 
     <main class="flex flex-1 items-center justify-center px-4">
       <div class="w-full max-w-sm space-y-6">
-        <div class="space-y-2 text-center">
-          <h1 class="text-2xl font-semibold tracking-tight">
-            {{ t("auth.login.heading") }}
-          </h1>
-          <p class="text-sm text-muted-foreground">
-            {{ t("auth.login.subtitle") }}
-          </p>
+        <div class="flex flex-col items-center space-y-3 text-center">
+          <NvisyLogo :size="34" class="text-foreground" />
+          <div class="space-y-1.5">
+            <h1 class="text-2xl font-semibold tracking-tight">
+              {{ t("auth.login.heading") }}
+            </h1>
+            <p class="text-sm text-muted-foreground">
+              {{ t("auth.login.subtitle") }}
+            </p>
+          </div>
         </div>
 
         <!-- Server connection. Status-forward: the always-visible row leads with a
@@ -329,22 +336,6 @@ async function handleLogin(): Promise<void> {
               {{ serverError ?? t("auth.server.description") }}
             </p>
 
-            <!-- First-run guidance: on a failed probe the misses are almost always
-                 the port, the scheme, or a server still booting. Shown only then,
-                 so it appears when it helps rather than cluttering the default. -->
-            <div
-              v-if="showConnectHints"
-              class="rounded-md border border-border/60 bg-background/60 p-2.5 text-xs text-muted-foreground"
-            >
-              <p class="mb-1 font-medium text-foreground">
-                {{ t("auth.server.hints.title") }}
-              </p>
-              <ul class="list-inside list-disc space-y-0.5">
-                <li>{{ t("auth.server.hints.port") }}</li>
-                <li>{{ t("auth.server.hints.scheme") }}</li>
-                <li>{{ t("auth.server.hints.booting") }}</li>
-              </ul>
-            </div>
           </div>
         </div>
 

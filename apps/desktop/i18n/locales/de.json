@@ -7,9 +7,8 @@
 			"reset": "Standard verwenden",
 			"check": "Prüfen",
 			"status": {
-				"default": "Verbunden mit",
-				"custom": "Verwendet",
-				"connected": "Verbunden mit",
+				"idle": "Server:",
+				"reachable": "Erreichbar:",
 				"checking": "Server wird geprüft…",
 				"unreachable": "Nicht erreichbar:",
 				"notNvisy": "Kein Nvisy-Server"
@@ -25,12 +24,6 @@
 				},
 				"unreachable": "Dieser Server ist nicht erreichbar. Läuft er unter dieser Adresse?",
 				"notNvisy": "Es hat etwas geantwortet, aber es ist kein Nvisy-Server."
-			},
-			"hints": {
-				"title": "Wenn die Verbindung nicht klappt",
-				"port": "Prüfen Sie, ob der Port dem entspricht, auf dem Ihr Server lauscht.",
-				"scheme": "Verwenden Sie http:// für eine lokale Adresse, https:// für eine entfernte.",
-				"booting": "Ein gerade gestarteter Server führt eventuell noch Migrationen aus. Warten Sie einen Moment."
 			}
 		}
 	},
