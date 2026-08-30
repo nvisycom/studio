@@ -17,6 +17,38 @@ import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 
 useHead({ title: "Notifications" });
 
+// Native desktop notifications: a device-scoped channel, desktop-only. The Tauri
+// store access is behind useNativeNotifications, so this page imports no Tauri.
+const { isDesktop } = usePlatform();
+const { notifications: nativeBridge } = useNativeNotifications();
+const nativeEnabled = ref(true);
+
+onMounted(async () => {
+	const get = nativeBridge.value.getEnabled;
+	if (get) {
+		try {
+			nativeEnabled.value = await get();
+		} catch {
+			// Leave the default (on); toggling still works.
+		}
+	}
+});
+
+async function toggleNative(enabled: boolean) {
+	const set = nativeBridge.value.setEnabled;
+	if (!set) return;
+	const previous = nativeEnabled.value;
+	nativeEnabled.value = enabled;
+	try {
+		await set(enabled);
+	} catch (err) {
+		nativeEnabled.value = previous; // revert on failure
+		toast.error(t("settings.notifications.errors.saveFailed"), {
+			description: getErrorMessage(err, t("common.errors.tryAgain")),
+		});
+	}
+}
+
 definePageMeta({
 	pageCategory: "header.category.settings",
 	hideCategory: true,
@@ -256,6 +288,22 @@ async function saveEventSettings() {
                   :model-value="notifyViaEmail"
                   :disabled="isUpdating"
                   @update:model-value="toggleEmailNotifications"
+                />
+              </div>
+              <!-- Native desktop notifications: a device-scoped channel, shown
+                   only in the desktop shell. -->
+              <div v-if="isDesktop" class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-medium text-foreground">
+                    {{ t("settings.notifications.channels.desktop.label") }}
+                  </p>
+                  <p class="text-xs text-muted-foreground">
+                    {{ t("settings.notifications.channels.desktop.description") }}
+                  </p>
+                </div>
+                <Switch
+                  :model-value="nativeEnabled"
+                  @update:model-value="toggleNative"
                 />
               </div>
             </div>

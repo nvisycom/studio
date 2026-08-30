@@ -65,7 +65,8 @@
 		"spotlight": "Quick command",
 		"enableNotifications": "Enable notifications",
 		"disableNotifications": "Disable notifications",
-		"quit": "Quit"
+		"quit": "Quit",
+		"unread": "{count} unread notification | {count} unread notifications"
 	},
 	"spotlight": {
 		"label": "Ask Nvisy or attach a file",

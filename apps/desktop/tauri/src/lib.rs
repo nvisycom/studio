@@ -15,6 +15,8 @@ pub fn run() {
         // Drives the native Finder open/save panels; the file commands read and
         // write the chosen paths in Rust so the webview never needs fs scope.
         .plugin(tauri_plugin_dialog::init())
+        // Native completion notifications for long detection jobs.
+        .plugin(tauri_plugin_notification::init())
         .plugin(global_shortcut_plugin())
         .manage(auth::AuthState::default())
         .manage(files::DropLimit::default())
@@ -27,6 +29,10 @@ pub fn run() {
             commands::open_files,
             commands::set_drop_limit,
             commands::save_file,
+            commands::set_badge_count,
+            commands::notify,
+            commands::notifications_enabled,
+            commands::set_notifications_enabled,
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {

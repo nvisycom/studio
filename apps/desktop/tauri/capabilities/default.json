@@ -20,6 +20,7 @@
     "dialog:allow-open",
     "dialog:allow-save",
     "core:window:allow-start-dragging",
-    "core:window:allow-toggle-maximize"
+    "core:window:allow-toggle-maximize",
+    "notification:default"
   ]
 }

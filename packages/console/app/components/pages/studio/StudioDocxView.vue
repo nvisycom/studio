@@ -534,10 +534,11 @@ watch(
 
 <style scoped>
 /* docx-preview ships its own layout (grey backdrop, centered white pages).
-   Only re-tint the backdrop to the app's muted surface so it fits the theme;
-   the page sizing, margins and shadow are left to the library. */
+   Re-tint the backdrop to the app's content surface so the canvas matches the
+   rest of the studio (no grey frame); page sizing, margins and shadow are left
+   to the library. */
 .studio-docx :deep(.docx-wrapper) {
-	background: var(--muted);
+	background: var(--background);
 	min-height: 100%;
 }
 

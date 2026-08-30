@@ -210,6 +210,10 @@
 				"email": {
 					"label": "Email Notifications",
 					"description": "Receive notifications via email"
+				},
+				"desktop": {
+					"label": "Desktop",
+					"description": "Native notifications on this device."
 				}
 			},
 			"events": {

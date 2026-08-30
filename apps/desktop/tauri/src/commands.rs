@@ -1,11 +1,12 @@
 //! Commands the web layer invokes on the Rust shell.
 
 use tauri::{AppHandle, Manager, Runtime};
+use tauri_plugin_notification::NotificationExt;
 
 use crate::auth::AuthState;
 use crate::files::{self, FileFilter, PickedFile};
-use crate::spotlight;
 use crate::tray::{self, TrayLabels};
+use crate::{settings, spotlight};
 
 /// Push localized tray-menu labels resolved from the web layer's i18n catalog.
 /// Called once the frontend boots and again whenever the user switches language,
@@ -73,4 +74,41 @@ pub async fn save_file<R: Runtime>(
     data: Vec<u8>,
 ) -> Result<bool, String> {
     files::save_file(&app, suggested_name, data).await
+}
+
+/// Reflect the number of in-flight background jobs on the tray (a count next to
+/// the menu-bar icon, plus a localized `tooltip` on hover). Pushed by the web
+/// layer as detections start and finish.
+/// Reflect the account's unread-notification count on the tray (a badge next to
+/// the menu-bar icon, plus a localized `tooltip` on hover). Pushed by the web
+/// layer from the live notification stream.
+#[tauri::command]
+pub fn set_badge_count<R: Runtime>(app: AppHandle<R>, count: u32, tooltip: Option<String>) {
+    tray::set_badge_count(&app, count, tooltip);
+}
+
+/// Whether native notifications are enabled (the device-scoped preference behind
+/// the tray toggle and the Desktop notification channel).
+#[tauri::command]
+pub fn notifications_enabled<R: Runtime>(app: AppHandle<R>) -> bool {
+    settings::notifications_enabled(&app)
+}
+
+/// Set the notifications preference. Persists it and keeps the tray menu item in
+/// sync (via `tray`), so the settings toggle and the tray toggle agree.
+#[tauri::command]
+pub fn set_notifications_enabled<R: Runtime>(app: AppHandle<R>, enabled: bool) {
+    tray::set_notifications_enabled(&app, enabled);
+}
+
+/// Fire a native notification, mirroring an in-app one. A no-op when
+/// notifications are disabled, or when the main window is focused (the user is
+/// already looking at the in-app notification) — so the web layer can always
+/// call it.
+#[tauri::command]
+pub fn notify<R: Runtime>(app: AppHandle<R>, title: String, body: String) {
+    if !settings::notifications_enabled(&app) || tray::main_window_focused(&app) {
+        return;
+    }
+    let _ = app.notification().builder().title(title).body(body).show();
 }
