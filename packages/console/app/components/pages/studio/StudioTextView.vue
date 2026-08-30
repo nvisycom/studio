@@ -6,7 +6,7 @@ import type { TextEntityView } from "#console/composables/useTextEntities";
 import type {
 	AddEntityInput,
 	PendingAdd,
-} from "#console/composables/useStudioAudit";
+} from "#console/composables/useStudioRedaction";
 import { useDocumentSegments } from "#console/composables/useDocumentSegments";
 import { useSelectionOffset } from "#console/composables/useSelectionOffset";
 

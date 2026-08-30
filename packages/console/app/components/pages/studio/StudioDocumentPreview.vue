@@ -7,7 +7,7 @@ import StudioDocxView from "./StudioDocxView.vue";
 import StudioImageView from "./StudioImageView.vue";
 import StudioTextView from "./StudioTextView.vue";
 import type { TextEntityView } from "#console/composables/useTextEntities";
-import type { AddEntityInput } from "#console/composables/useStudioAudit";
+import type { AddEntityInput } from "#console/composables/useStudioRedaction";
 
 const props = withDefaults(
 	defineProps<{
@@ -114,10 +114,7 @@ watch(
       @close="emit('clear-entity')"
       @toggle-suppress="emit('toggle-suppress', $event)"
     />
-    <div
-      class="h-full overflow-y-auto"
-      :class="{ 'bg-muted': isText }"
-    >
+    <div class="h-full overflow-y-auto">
       <!-- Loading state -->
       <div v-if="isLoading" class="h-full flex items-center justify-center">
         <div class="text-center text-muted-foreground">

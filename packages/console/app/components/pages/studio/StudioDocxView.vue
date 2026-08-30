@@ -8,7 +8,7 @@ import type { TextEntityView } from "#console/composables/useTextEntities";
 import type {
 	AddEntityInput,
 	PendingAdd,
-} from "#console/composables/useStudioAudit";
+} from "#console/composables/useStudioRedaction";
 import {
 	type DocxPartCategory,
 	type DocxRun,

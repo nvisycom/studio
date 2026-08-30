@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PendingAdd } from "#console/composables/useStudioAudit";
+import type { PendingAdd } from "#console/composables/useStudioRedaction";
 import { LabelSelect } from "#console/components/common";
 import { Button } from "#console/components/ui/button";
 import {
