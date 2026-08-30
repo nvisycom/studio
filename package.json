@@ -17,6 +17,7 @@
 		"build:web:cloud": "npm run build:cloud -w @nvisy/webapp",
 		"build:desktop": "npm run generate -w @nvisy/desktop",
 		"tauri": "npm run tauri -w @nvisy/desktop",
+		"tauri:dev": "npm run tauri:dev -w @nvisy/desktop",
 		"typecheck": "npm run typecheck --workspaces --if-present",
 		"test": "npm run test --workspaces --if-present",
 		"fmt": "npm run fmt:biome && npm run fmt:cargo",
@@ -34,12 +35,13 @@
 		"i18n:unused": "node scripts/i18n-unused.mjs",
 		"e2e": "playwright test",
 		"e2e:ui": "playwright test --ui",
-		"e2e:headed": "SLOWMO=800 playwright test --headed"
+		"e2e:headed": "cross-env SLOWMO=800 playwright test --headed"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.10",
 		"@playwright/test": "^1.50.0",
 		"@types/node": "^26.1.2",
+		"cross-env": "^10.1.0",
 		"typescript": "^6.0.3",
 		"vue-tsc": "^3.3.11"
 	},

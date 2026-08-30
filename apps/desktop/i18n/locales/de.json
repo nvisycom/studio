@@ -2,12 +2,68 @@
 	"auth": {
 		"server": {
 			"label": "Server-URL",
-			"placeholder": "https://api.nvisy.com",
+			"placeholder": "https://api.nvisy.com/",
 			"description": "Der Nvisy-Server, mit dem verbunden werden soll. Leer lassen für den Standard.",
-			"advanced": "Servereinstellungen",
 			"reset": "Standard verwenden",
+			"check": "Prüfen",
+			"status": {
+				"default": "Verbunden mit",
+				"custom": "Verwendet",
+				"connected": "Verbunden mit",
+				"checking": "Server wird geprüft…",
+				"unreachable": "Nicht erreichbar:",
+				"notNvisy": "Kein Nvisy-Server"
+			},
 			"connectionError": "Server nicht erreichbar. Prüfen Sie die Server-URL und ob der Server läuft.",
-			"invalid": "Geben Sie eine gültige Server-URL ein (z. B. https://api.example.com)."
+			"invalid": "Geben Sie eine gültige Server-URL ein (z. B. https://api.example.com).",
+			"probe": {
+				"checking": "Server wird geprüft…",
+				"reachable": {
+					"healthy": "Erreichbar. Der Server ist fehlerfrei.",
+					"degraded": "Erreichbar. Der Server meldet eingeschränkte Funktion.",
+					"unhealthy": "Erreichbar. Der Server meldet einen Fehlerzustand."
+				},
+				"unreachable": "Dieser Server ist nicht erreichbar. Läuft er unter dieser Adresse?",
+				"notNvisy": "Es hat etwas geantwortet, aber es ist kein Nvisy-Server."
+			},
+			"hints": {
+				"title": "Wenn die Verbindung nicht klappt",
+				"port": "Prüfen Sie, ob der Port dem entspricht, auf dem Ihr Server lauscht.",
+				"scheme": "Verwenden Sie http:// für eine lokale Adresse, https:// für eine entfernte.",
+				"booting": "Ein gerade gestarteter Server führt eventuell noch Migrationen aus. Warten Sie einen Moment."
+			}
+		}
+	},
+	"error": {
+		"unreachable": {
+			"title": "Server nicht erreichbar",
+			"description": "Die App konnte keine Verbindung zu Ihrem Nvisy-Server herstellen. Er ist möglicherweise offline, startet noch oder ist unter einer anderen Adresse erreichbar."
+		},
+		"notFound": {
+			"title": "Seite nicht gefunden",
+			"description": "Diese Seite existiert nicht oder wurde verschoben."
+		},
+		"forbidden": {
+			"title": "Zugriff verweigert",
+			"description": "Sie haben keine Berechtigung, auf diese Seite zuzugreifen."
+		},
+		"unauthorized": {
+			"title": "Nicht angemeldet",
+			"description": "Bitte melden Sie sich an, um auf diese Seite zuzugreifen."
+		},
+		"server": {
+			"title": "Etwas ist schiefgelaufen",
+			"description": "Beim Laden ist ein Problem aufgetreten. Bitte versuchen Sie es erneut."
+		},
+		"generic": {
+			"title": "Ein Fehler ist aufgetreten",
+			"description": "Etwas Unerwartetes ist passiert."
+		},
+		"actions": {
+			"goBack": "Zurück",
+			"retry": "Erneut versuchen",
+			"home": "Startseite",
+			"serverSettings": "Servereinstellungen"
 		}
 	},
 	"tray": {
@@ -31,7 +87,7 @@
 		},
 		"hint": {
 			"message": "Zum Senden an den Assistenten Enter drücken",
-			"file": "Sieht nach einer Datei aus – zum Anhängen Enter drücken"
+			"file": "Sieht nach einer Datei aus. Zum Anhängen Enter drücken"
 		},
 		"submit": "Senden",
 		"dismiss": "Schließen",

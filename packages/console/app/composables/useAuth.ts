@@ -1,4 +1,4 @@
-import { login as sdkLogin, signup as sdkSignup } from "@nvisy/sdk/auth";
+import { login as sdkLogin, signup as sdkSignup } from "@nvisy/sdk/standalone";
 import type { Login, Signup, AuthToken } from "@nvisy/sdk/datatypes";
 
 const AUTH_STORAGE_KEY = "auth";

@@ -1587,7 +1587,7 @@
 				"tags": "Tags",
 				"downloadJson": "JSON herunterladen",
 				"downloadCsv": "CSV herunterladen",
-				"none": "—",
+				"none": "-",
 				"copyFailed": "Erkennungs-ID konnte nicht kopiert werden"
 			},
 			"openInStudioFailed": "Die Datei konnte nicht im Studio geöffnet werden."
@@ -1827,7 +1827,7 @@
 		"description": "Wir freuen uns über Ihre Gedanken, Vorschläge oder Probleme, die Sie haben.",
 		"cancel": "Abbrechen",
 		"submit": "Feedback senden",
-		"comingSoon": "Diese Funktion ist noch nicht verfügbar — bald verfügbar.",
+		"comingSoon": "Diese Funktion ist noch nicht verfügbar. Bald verfügbar.",
 		"contact": "In der Zwischenzeit erreichen Sie uns unter"
 	},
 	"account": {

@@ -9,6 +9,7 @@
 		"preview": "nuxt preview",
 		"postinstall": "nuxt prepare",
 		"tauri": "tauri",
+		"tauri:dev": "cross-env NVISY_DEV=1 tauri dev",
 		"typecheck": "npm run typecheck:biome && npm run typecheck:cargo",
 		"typecheck:biome": "nuxt typecheck .",
 		"typecheck:cargo": "cd tauri && cargo check --all-features",
@@ -28,7 +29,7 @@
 	"dependencies": {
 		"@lucide/vue": "^1.33.0",
 		"@nvisy/console": "*",
-		"@nvisy/sdk": "^0.37.0",
+		"@nvisy/sdk": "^0.38.0",
 		"@tauri-apps/api": "^2",
 		"@tauri-apps/plugin-http": "^2",
 		"nuxt": "^4.5.2",

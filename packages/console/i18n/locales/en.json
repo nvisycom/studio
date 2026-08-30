@@ -1587,7 +1587,7 @@
 				"tags": "Tags",
 				"downloadJson": "Download JSON",
 				"downloadCsv": "Download CSV",
-				"none": "—",
+				"none": "-",
 				"copyFailed": "Couldn't copy the detection id"
 			},
 			"openInStudioFailed": "Couldn't open the file in the studio."
@@ -1827,7 +1827,7 @@
 		"description": "We'd love to hear your thoughts, suggestions, or issues you're experiencing.",
 		"cancel": "Cancel",
 		"submit": "Submit Feedback",
-		"comingSoon": "This feature isn't available yet — check back soon.",
+		"comingSoon": "This feature isn't available yet. Check back soon.",
 		"contact": "In the meantime, reach us at"
 	},
 	"account": {

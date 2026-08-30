@@ -5,6 +5,14 @@ const isDev = process.env.NODE_ENV === "development";
 const API_URL_DEV = "http://127.0.0.1:8080/";
 const API_URL_PROD = "https://api.nvisy.com/";
 
+// The default server the app connects to. Always the hosted API, so every build
+// points at production out of the box. To develop against a local server, set
+// `NVISY_DEV=1` (or point `NUXT_PUBLIC_NVISY_API_URL` straight at any URL) — the
+// dev default is opt-in, never the silent fallback of a dev build.
+const devServerFlag =
+	process.env.NVISY_DEV === "1" || process.env.NVISY_DEV === "true";
+const defaultApiUrl = devServerFlag ? API_URL_DEV : API_URL_PROD;
+
 export default defineNuxtConfig({
 	extends: ["@nvisy/console"],
 
@@ -23,7 +31,7 @@ export default defineNuxtConfig({
 
 	runtimeConfig: {
 		public: {
-			nvisyApiUrl: isDev ? API_URL_DEV : API_URL_PROD,
+			nvisyApiUrl: defaultApiUrl,
 			nvisySdkLogging: isDev,
 			// The desktop origin is `tauri://`, so user-facing links (invite links)
 			// must point at the hosted web app instead of the current origin.

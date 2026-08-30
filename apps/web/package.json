@@ -4,9 +4,9 @@
 	"private": true,
 	"scripts": {
 		"build": "nuxt build",
-		"build:cloud": "NUXT_PUBLIC_DEPLOYMENT=cloud nuxt build",
+		"build:cloud": "cross-env NUXT_PUBLIC_DEPLOYMENT=cloud nuxt build",
 		"dev": "nuxt dev",
-		"dev:cloud": "NUXT_PUBLIC_DEPLOYMENT=cloud nuxt dev",
+		"dev:cloud": "cross-env NUXT_PUBLIC_DEPLOYMENT=cloud nuxt dev",
 		"generate": "nuxt generate",
 		"preview": "nuxt preview",
 		"postinstall": "nuxt prepare",
@@ -19,7 +19,7 @@
 	"dependencies": {
 		"@nuxtjs/device": "^4.0.0",
 		"@nvisy/console": "*",
-		"@nvisy/sdk": "^0.37.0",
+		"@nvisy/sdk": "^0.38.0",
 		"jszip": "^3.10.1",
 		"nuxt": "^4.5.2",
 		"vue": "^3.5.41",

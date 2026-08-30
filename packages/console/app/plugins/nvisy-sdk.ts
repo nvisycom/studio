@@ -12,7 +12,7 @@ export default defineNuxtPlugin(() => {
 	const { authToken, clearAuth } = useAuth();
 	// The base URL is user-overridable (desktop connects to a self-hosted
 	// server); rebuild the client when it changes, not just on token change.
-	const { baseUrl } = useApiBaseUrl();
+	const { baseUrl, override } = useApiBaseUrl();
 	// A custom fetch (desktop injects Tauri's native fetch to bypass CORS); the
 	// SDK falls back to the global fetch when this is undefined (web).
 	const { apiFetch } = useApiFetch();
@@ -34,6 +34,36 @@ export default defineNuxtPlugin(() => {
 		}
 	}
 
+	// When a request fails at the transport level — the fetch rejects, so there's
+	// no HTTP response — the configured server is unreachable (down, moved, asleep,
+	// network gone). For a signed-in user on a self-hosted server that's a
+	// session-breaking event that today surfaces as a raw "Failed to fetch" buried
+	// in a component; route it to the full-screen, server-aware error page instead.
+	// Kept deliberately narrow so it never hijacks a request the UI handles inline:
+	// only when authenticated, only with a custom server set, only off the error/
+	// auth screens, and only once (guarded) until navigation clears it.
+	let unreachableShown = false;
+	function handleUnreachable() {
+		if (!authToken.value) return; // pre-login flows handle their own errors
+		if (!override.value) return; // hosted default: not the self-hosted story
+		const path = router.currentRoute.value.path;
+		if (path.startsWith("/auth/")) return; // login shows its own connection copy
+		if (unreachableShown) return;
+		unreachableShown = true;
+		showError(
+			createError({
+				statusCode: 0,
+				statusMessage: "server-unreachable",
+				fatal: true,
+			}),
+		);
+	}
+	// Reset the guard on navigation, so a later retry that succeeds and then fails
+	// again can surface the screen once more.
+	router.afterEach(() => {
+		unreachableShown = false;
+	});
+
 	function makeClient(token: string): Nvisy {
 		const client = new Nvisy({
 			apiToken: token,
@@ -41,11 +71,18 @@ export default defineNuxtPlugin(() => {
 			fetch: apiFetch.value,
 			withLogging: config.public.nvisySdkLogging as boolean,
 		});
-		// Intercept auth failures globally on every request.
+		// Intercept auth failures (a response arrived) and transport failures (the
+		// fetch rejected — no response) globally on every request.
 		client.api.use({
 			onResponse({ response }) {
 				handleUnauthorized(response.status);
 				return response;
+			},
+			onError({ error }) {
+				handleUnreachable();
+				// Don't swallow it — callers still see the original error and their
+				// own reactive handling continues.
+				return error as Error;
 			},
 		});
 		return client;
