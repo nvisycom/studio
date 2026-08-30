@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import type { RasterPolicy, Retention } from "@nvisy/sdk/datatypes";
+import type {
+	RasterPolicy,
+	Retention,
+	WorkspaceSettings,
+} from "@nvisy/sdk/datatypes";
 import { Loader2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { Button } from "#console/components/ui/button";
@@ -76,8 +80,11 @@ watch(
 );
 
 // The full WorkspaceSettings the form currently represents, used both for change
-// detection and for the save payload.
-const editedSettings = computed(() => ({
+// detection and for the save payload. `settings` on update is a *replacement*,
+// so carry through fields this form doesn't edit (e.g. the upload cap) rather
+// than dropping them.
+const editedSettings = computed<WorkspaceSettings>(() => ({
+	...currentWorkspace.value?.settings,
 	raster: raster.value,
 	retention: formToRetention(retention.value),
 }));
@@ -95,9 +102,9 @@ const hasOptionsChanges = computed(() => {
 const hasRetentionChanges = computed(() => {
 	const ws = currentWorkspace.value;
 	if (!ws || !formInitialized.value) return false;
-	const edited = editedSettings.value.retention;
-	// Normalize the saved retention the same way the form is loaded, so missing
-	// (SDK-defaulted) scopes compare against the form's "forever" defaults.
+	// Compare the form's retention against the saved value, normalizing both the
+	// same way so missing (SDK-defaulted) scopes compare against "forever".
+	const edited = formToRetention(retention.value);
 	const saved = formToRetention(retentionToForm(ws.settings.retention));
 	return RETENTION_TARGETS.some(
 		(target) => !retentionEquals(edited[target], saved[target]),

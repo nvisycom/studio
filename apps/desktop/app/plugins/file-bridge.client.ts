@@ -1,20 +1,27 @@
 import { invoke, isTauri } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 
 /**
- * Fill the shared file bridge with native Finder open/save panels.
+ * Fill the shared file bridge with native Finder open/save panels and OS
+ * drag-drop.
  *
  * The shared UI ingests and saves files through `useFileBridge`; on the web the
  * seam stays unset and the browser's `<input>` / anchor-download handle it. Here
- * we invoke the Rust `open_files` / `save_file` commands, which run the OS panel
- * and read/write the chosen path in the Rust process — so the webview needs no
- * filesystem scope, only the user's explicit pick.
+ * everything filesystem-touching runs in the Rust process, so the webview needs
+ * no filesystem scope:
+ *
+ * - `open_files` / `save_file` run the native panel and read/write the chosen
+ *   path in Rust; the user's pick is the only grant.
+ * - Drops are read entirely in Rust (which emits `files-dropped`); the webview
+ *   never supplies a path to read. We only listen for the emitted files here and
+ *   use the webview drag events for the drop affordance.
  *
  * On a plain browser (or the web app) `isTauri()` is false and we leave the
  * bridge untouched.
  */
 
-/** One `PickedFile` from the Rust `open_files` command: name plus raw bytes. */
+/** One `PickedFile` from Rust: name plus raw bytes. */
 interface PickedFile {
 	name: string;
 	data: number[];
@@ -42,7 +49,7 @@ function acceptToFilters(accept: string): FileFilter[] {
 	return [{ name: "Supported files", extensions }];
 }
 
-/** Wrap the Rust command's name+bytes payloads into `File`s. */
+/** Wrap Rust's name+bytes payloads into `File`s. */
 function toFiles(picked: PickedFile[]): File[] {
 	return picked.map((file) => new File([new Uint8Array(file.data)], file.name));
 }
@@ -71,45 +78,39 @@ export default defineNuxtPlugin({
 			},
 		});
 
-		// Tauri intercepts OS file drops before the DOM, so a page's `drop`
-		// handler never sees them. Read the dropped paths' bytes in Rust and
-		// dispatch them to whichever page registered via `onFilesDropped`.
-		// The listener lives for the app's lifetime (no teardown needed); we drop
-		// the unlisten handle but log a registration failure rather than swallow it.
+		// Push the current workspace's upload cap to Rust so its drop handler can
+		// skip an oversized file before reading it. The page keeps this updated
+		// via the bridge; mirror every change to the Rust side.
+		watch(
+			() => getDropSizeLimit(),
+			(maxBytes) => {
+				invoke("set_drop_limit", { maxBytes: maxBytes ?? null }).catch(
+					(error) => console.error("failed to set drop limit", error),
+				);
+			},
+			{ immediate: true },
+		);
+
+		// The files themselves are read in Rust and arrive as a `files-dropped`
+		// event — the webview never reads a path. Dispatch them to whichever page
+		// registered via `onFilesDropped`.
+		listen<PickedFile[]>("files-dropped", (event) => {
+			if (event.payload.length > 0) emitFilesDropped(toFiles(event.payload));
+		}).catch((error) =>
+			console.error("failed to listen for dropped files", error),
+		);
+
+		// The webview drag events drive only the drop affordance (enter/over show
+		// it, leave/drop clear it); DOM drag events don't fire under Tauri.
 		const webview = getCurrentWebviewWindow();
 		webview
-			.onDragDropEvent(async (event) => {
-				// Enter/over light the page's drop affordance; leave clears it. (DOM
-				// drag events don't fire under Tauri, so pages rely on these.)
-				if (event.payload.type === "enter" || event.payload.type === "over") {
-					emitDragStateChanged(true);
-					return;
-				}
-				if (event.payload.type === "leave") {
-					emitDragStateChanged(false);
-					return;
-				}
-
-				// type === "drop"
-				emitDragStateChanged(false);
-				const paths = event.payload.paths;
-				if (paths.length === 0) return;
-				try {
-					const picked = await invoke<PickedFile[]>("read_files", {
-						paths,
-						// Skip an oversized file by its metadata before reading its
-						// bytes; the page publishes the workspace's effective cap.
-						maxBytes: getDropSizeLimit() ?? null,
-					});
-					if (picked.length > 0) emitFilesDropped(toFiles(picked));
-				} catch (error) {
-					// A drop that can't be read shouldn't crash the handler — the
-					// page's validation and the upload flow surface what the user needs.
-					console.error("failed to read dropped files", error);
-				}
+			.onDragDropEvent((event) => {
+				const over =
+					event.payload.type === "enter" || event.payload.type === "over";
+				emitDragStateChanged(over);
 			})
-			.catch((error) => {
-				console.error("failed to register drag-drop listener", error);
-			});
+			.catch((error) =>
+				console.error("failed to register drag-drop listener", error),
+			);
 	},
 });

@@ -17,6 +17,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(global_shortcut_plugin())
         .manage(auth::AuthState::default())
+        .manage(files::DropLimit::default())
         .invoke_handler(tauri::generate_handler![
             commands::set_tray_labels,
             commands::set_authed,
@@ -24,7 +25,7 @@ pub fn run() {
             commands::hide_spotlight,
             commands::open_main_window,
             commands::open_files,
-            commands::read_files,
+            commands::set_drop_limit,
             commands::save_file,
         ])
         .setup(|app| {
@@ -41,10 +42,15 @@ pub fn run() {
             tray::create(app.handle())?;
 
             // Tray-first: closing the main window hides it (keeps the app alive
-            // in the tray) instead of destroying the last window.
+            // in the tray) instead of destroying the last window. The same
+            // handler reads OS file drops on the window (in Rust) and emits them
+            // to the frontend.
             if let Some(window) = app.get_webview_window(tray::MAIN_WINDOW) {
                 let handle = window.clone();
-                window.on_window_event(move |event| tray::on_window_event(&handle, event));
+                window.on_window_event(move |event| {
+                    tray::on_window_event(&handle, event);
+                    files::on_window_event(&handle, event);
+                });
             }
 
             // The launcher dismisses itself on blur (spotlight-style) and hides

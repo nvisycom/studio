@@ -57,15 +57,11 @@ pub async fn open_files<R: Runtime>(
     files::open_files(&app, filters).await
 }
 
-/// Read dropped file paths into their names and bytes. Used by the drag-drop
-/// bridge: Tauri hands the frontend real paths (the drop is the grant), which
-/// this reads in the Rust process for the upload pipeline. Unreadable paths
-/// (folders, vanished files) are skipped, so a bad path never fails the drop.
-/// `maxBytes` is the workspace's effective upload cap: an oversized file is
-/// skipped by its metadata, before its bytes are read.
+/// Publish the workspace's effective upload cap so the Rust drop handler can
+/// skip an oversized file by its metadata before reading it. `None` = no cap.
 #[tauri::command]
-pub fn read_files(paths: Vec<std::path::PathBuf>, max_bytes: Option<u64>) -> Vec<PickedFile> {
-    files::read_files(paths, max_bytes)
+pub fn set_drop_limit<R: Runtime>(app: AppHandle<R>, max_bytes: Option<u64>) {
+    files::set_drop_limit(&app, max_bytes);
 }
 
 /// Save bytes to a path chosen via a native save panel, seeded with
