@@ -79,7 +79,12 @@ export default defineNuxtPlugin(() => {
 				return response;
 			},
 			onError({ error }) {
-				handleUnreachable();
+				// A cancelled request (navigation aborting an in-flight fetch, a stale
+				// query being dropped) rejects with an AbortError — that's not the
+				// server being unreachable, so don't surface the full-screen error.
+				const aborted =
+					error instanceof DOMException && error.name === "AbortError";
+				if (!aborted) handleUnreachable();
 				// Don't swallow it — callers still see the original error and their
 				// own reactive handling continues.
 				return error as Error;

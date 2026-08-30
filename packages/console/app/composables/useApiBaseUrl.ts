@@ -115,6 +115,15 @@ export function useApiBaseUrl(): {
 		}
 		const value = normalize(url);
 		if (!value) return false;
+		// A URL that resolves to the build-time default isn't a real override —
+		// clear it, so the app stays in its "using the default server" state rather
+		// than persisting a redundant override that happens to equal the default.
+		if (value === defaultUrl) {
+			if (override.value === null) return true; // already default; no-op
+			override.value = null;
+			if (import.meta.client) localStorage.removeItem(STORAGE_KEY);
+			return true;
+		}
 		// No-op when unchanged, so re-applying the same URL (e.g. blur then a
 		// "Check server" click) doesn't churn the ref and rebuild the SDK client.
 		if (value === override.value) return true;

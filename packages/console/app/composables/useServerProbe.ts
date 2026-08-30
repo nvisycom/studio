@@ -58,12 +58,14 @@ export function useServerProbe() {
 	 * Never throws — every failure maps to a {@link ProbeResult}.
 	 */
 	async function check(url: string): Promise<ProbeResult> {
+		// Bump the supersede token first, so even an invalid URL invalidates any
+		// earlier in-flight probe (whose late result would otherwise overwrite this).
+		const mine = ++token;
 		const base = normalize(url);
 		if (!base) {
 			result.value = { kind: "invalid" };
 			return result.value;
 		}
-		const mine = ++token;
 		result.value = { kind: "checking" };
 
 		let next: ProbeResult;
