@@ -35,6 +35,13 @@ interface FolderFile {
 	workspaceSlug: string;
 }
 
+/** A file ready to upload, paired with its source event so a failed upload can
+ * requeue exactly the files that still need sending. */
+interface PreparedUpload {
+	file: File;
+	source: FolderFile;
+}
+
 /** Files sent to the server per upload call. */
 const UPLOAD_BATCH = 8;
 /** Pause between successful batches, so we never saturate the connection pool. */
@@ -70,14 +77,18 @@ export default defineNuxtPlugin((nuxtApp) => {
 	const queue: FolderFile[] = [];
 	let draining = false;
 
+	/** Delay before retrying a batch the server was too busy to accept. */
+	const REQUEUE_DELAY = 5_000;
+
 	/** Drop files whose content the workspace already holds (no bytes sent), and
-	 * return the rest as ready-to-upload `File`s. */
+	 * return the rest as ready-to-upload `File`s (paired with the source event, so
+	 * a failed upload can requeue exactly the files that still need sending). */
 	async function newFiles(
 		sdk: Nvisy,
 		items: FolderFile[],
 		workspaceSlug: string,
-	): Promise<File[]> {
-		const files: File[] = [];
+	): Promise<PreparedUpload[]> {
+		const out: PreparedUpload[] = [];
 		for (const item of items) {
 			const bytes = new Uint8Array(item.data);
 			const hash = await sha256Hex(bytes);
@@ -86,35 +97,39 @@ export default defineNuxtPlugin((nuxtApp) => {
 				limit: 1,
 			});
 			if (existing.items.length === 0) {
-				files.push(new File([bytes], item.name));
+				out.push({ file: new File([bytes], item.name), source: item });
 			}
 		}
-		return files;
+		return out;
 	}
 
 	/** Upload one batch, retrying with backoff while the server is busy. Returns
-	 * false only if it gave up (exhausted retries or a client error). */
+	 * `"ok"` on success, `"retry"` when the server stayed busy through every
+	 * attempt (the caller should requeue), or `"drop"` for a client error (4xx)
+	 * that retrying can't fix. */
 	async function uploadBatch(
 		sdk: Nvisy,
 		files: File[],
 		workspaceSlug: string,
-	): Promise<boolean> {
+	): Promise<"ok" | "retry" | "drop"> {
 		let backoff = BASE_BACKOFF;
 		for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
 			try {
 				await sdk.files.uploadFiles(workspaceSlug, files);
-				return true;
+				return "ok";
 			} catch (error) {
-				if (isRetryable(error) && attempt < MAX_ATTEMPTS) {
+				if (!isRetryable(error)) {
+					console.error("[watch] dropping batch (client error)", error);
+					return "drop";
+				}
+				if (attempt < MAX_ATTEMPTS) {
 					await sleep(backoff);
 					backoff = Math.min(backoff * 2, MAX_BACKOFF);
-					continue;
 				}
-				console.error("[watch] failed to auto-upload batch", error);
-				return false;
 			}
 		}
-		return false;
+		// Server stayed busy through every attempt — worth trying again later.
+		return "retry";
 	}
 
 	async function drain() {
@@ -124,16 +139,38 @@ export default defineNuxtPlugin((nuxtApp) => {
 		while (queue.length > 0) {
 			const sdk = client.value;
 			if (!sdk) break; // signed out; the next scan re-enqueues after auth
-			const batch = queue.splice(0, UPLOAD_BATCH);
-			// All events carry the folder's single workspace binding.
-			const workspaceSlug = batch[0]?.workspaceSlug;
-			if (!workspaceSlug) continue;
+			// Take a run of files for a single workspace: the folder is bound to one
+			// workspace, but a rebind can leave events for the previous one still
+			// queued, so never mix workspaces in one upload call.
+			const workspaceSlug = queue[0]?.workspaceSlug;
+			if (!workspaceSlug) {
+				queue.shift();
+				continue;
+			}
+			const batch: FolderFile[] = [];
+			while (
+				batch.length < UPLOAD_BATCH &&
+				queue[0]?.workspaceSlug === workspaceSlug
+			) {
+				const item = queue.shift();
+				if (item) batch.push(item);
+			}
 			try {
-				const files = await newFiles(sdk, batch, workspaceSlug);
-				if (files.length > 0) {
+				const prepared = await newFiles(sdk, batch, workspaceSlug);
+				if (prepared.length > 0) {
 					if (!first) await sleep(BATCH_GAP);
 					first = false;
-					await uploadBatch(sdk, files, workspaceSlug);
+					const result = await uploadBatch(
+						sdk,
+						prepared.map((p) => p.file),
+						workspaceSlug,
+					);
+					if (result === "retry") {
+						// Transient server outage — requeue these files (not the ones
+						// already on the server) and back off, so nothing is lost.
+						queue.push(...prepared.map((p) => p.source));
+						await sleep(REQUEUE_DELAY);
+					}
 				}
 			} catch (error) {
 				// A failure while hashing/checking existence — log and move on.
@@ -159,7 +196,12 @@ export default defineNuxtPlugin((nuxtApp) => {
 	until(client)
 		.toBeTruthy()
 		.then(() => {
-			invoke("scan_watch_folder").catch(() => {});
+			// Re-supply the accepted-extension allowlist on scan (as on set) so Rust
+			// can skip disallowed files before reading them — the frontend stays the
+			// single source of truth; Rust never persists the list.
+			invoke("scan_watch_folder", {
+				extensions: [...ACCEPTED_EXTENSIONS],
+			}).catch(() => {});
 			void drain();
 		});
 

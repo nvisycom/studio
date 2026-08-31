@@ -142,12 +142,14 @@ pub async fn set_watch_folder<R: Runtime>(
     }))
 }
 
-/// Re-emit the watched folder's current backlog. The frontend calls this once
-/// authenticated, to upload files that were present before it could receive them
-/// (a restored watch on startup arms before login).
+/// Re-emit the watched folder's current backlog and re-arm the watcher with the
+/// accepted-extension allowlist (`extensions`, lower-case, no dot). The frontend
+/// calls this once authenticated, to upload files that were present before it
+/// could receive them (a restored watch on startup arms before login), and
+/// supplies the allowlist so disallowed files are skipped before being read.
 #[tauri::command]
-pub fn scan_watch_folder<R: Runtime>(app: AppHandle<R>) {
-    watch::scan(&app);
+pub fn scan_watch_folder<R: Runtime>(app: AppHandle<R>, extensions: Vec<String>) {
+    watch::scan(&app, extensions);
 }
 
 /// The current watched-folder config, or null if none is set.

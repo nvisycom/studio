@@ -131,23 +131,38 @@ pub fn config<R: Runtime>(app: &AppHandle<R>) -> Option<WatchConfig> {
     settings::watch(app)
 }
 
-/// Re-emit the current backlog of the watched folder. The frontend calls this
-/// once it's authenticated (the restore below only re-arms the watcher — it
-/// can't upload the backlog itself, since the client isn't ready at boot).
-pub fn scan<R: Runtime>(app: &AppHandle<R>) {
+/// Re-emit the current backlog of the watched folder, and re-arm the live
+/// watcher to filter by `extensions` too. The frontend calls this once it's
+/// authenticated (the restore below only re-arms the watcher — it can't upload
+/// the backlog itself, since the client isn't ready at boot). The frontend
+/// supplies the accepted-extension allowlist (its own source of truth) so a
+/// disallowed file is skipped before it's ever read; nothing is persisted here.
+pub fn scan<R: Runtime>(app: &AppHandle<R>, extensions: Vec<String>) {
     let Some(config) = settings::watch(app) else {
         return;
     };
     let path = PathBuf::from(&config.folder);
-    // No extension allowlist here (the frontend filters on receive), matching how
-    // the restored watcher was armed.
-    emit_backlog(app, &path, &config.workspace_slug, &HashSet::new());
+    let accepted: HashSet<String> = extensions.into_iter().collect();
+    // Re-arm the watcher with the allowlist so future arrivals filter too (the
+    // boot-time `restore` armed it with none, since the frontend wasn't ready).
+    if let Err(error) = set_folder(
+        app,
+        config.folder,
+        config.workspace_slug.clone(),
+        accepted.iter().cloned().collect(),
+        false,
+    ) {
+        log::warn!("failed to re-arm watched folder on scan: {error}");
+    }
+    emit_backlog(app, &path, &config.workspace_slug, &accepted);
 }
 
 /// Restore the watcher from the persisted config on startup (best-effort). Only
 /// re-arms the watcher for *new* arrivals; the existing backlog is left for the
 /// frontend to request via `scan` once it can upload (the client isn't ready at
-/// boot). Accepts every extension — the frontend's allowlist filters on receive.
+/// boot). Armed with no allowlist because the frontend — which owns it — isn't
+/// ready yet; the frontend's `scan` re-arms it with the allowlist, and its own
+/// `isAcceptedFileName` filters anything emitted before then.
 pub fn restore<R: Runtime>(app: &AppHandle<R>) {
     let Some(config) = settings::watch(app) else {
         return;
@@ -157,7 +172,7 @@ pub fn restore<R: Runtime>(app: &AppHandle<R>) {
     }
 }
 
-/// Read and emit one file if it's a supported, readable regular file.
+/// Read and emit one file if it's a supported, readable, in-limit regular file.
 fn emit_file<R: Runtime>(
     app: &AppHandle<R>,
     path: &Path,
@@ -165,6 +180,13 @@ fn emit_file<R: Runtime>(
     accepted: &HashSet<String>,
 ) {
     if !path.is_file() || !is_accepted(path, accepted) {
+        return;
+    }
+    // Apply the same effective upload cap as native drops, by metadata, before
+    // reading the file into memory — so an oversized file is never read or
+    // emitted just for the server to reject it.
+    let max_bytes = app.state::<crate::files::DropLimit>().get();
+    if !crate::files::within_limit(path, max_bytes) {
         return;
     }
     match read_file(path) {

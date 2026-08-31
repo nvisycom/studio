@@ -31,7 +31,9 @@ pub const FILES_DROPPED_EVENT: &str = "files-dropped";
 pub struct DropLimit(Mutex<Option<u64>>);
 
 impl DropLimit {
-    fn get(&self) -> Option<u64> {
+    /// The current effective per-file upload cap in bytes, if any. Shared with
+    /// the watched-folder path so it applies the same limit as native drops.
+    pub(crate) fn get(&self) -> Option<u64> {
         self.0.lock().ok().and_then(|guard| *guard)
     }
 
@@ -146,15 +148,16 @@ fn read_files(paths: Vec<PathBuf>, max_bytes: Option<u64>) -> Vec<PickedFile> {
 
 /// Whether a path is within the cap. A file whose size can't be read is let
 /// through (the read step handles a genuine failure); only a known-too-large
-/// file is skipped here.
-fn within_limit(path: &Path, max_bytes: Option<u64>) -> bool {
+/// file is skipped here. Shared by the native-drop and watched-folder paths, so
+/// an oversized file is rejected by its metadata before it's read into memory.
+pub(crate) fn within_limit(path: &Path, max_bytes: Option<u64>) -> bool {
     let Some(max) = max_bytes else {
         return true;
     };
     match std::fs::metadata(path) {
         Ok(meta) if meta.len() > max => {
             log::warn!(
-                "skipping dropped file {}: {} bytes exceeds cap {max}",
+                "skipping file {}: {} bytes exceeds cap {max}",
                 path.display(),
                 meta.len(),
             );

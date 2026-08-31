@@ -5,7 +5,7 @@ import { Sheet, SheetContent } from "#console/components/ui/sheet";
 import SheetDescription from "#console/components/ui/sheet/SheetDescription.vue";
 import SheetHeader from "#console/components/ui/sheet/SheetHeader.vue";
 import SheetTitle from "#console/components/ui/sheet/SheetTitle.vue";
-import { SIDEBAR_WIDTH_MOBILE, useSidebar } from "./utils";
+import { SIDEBAR_WIDTH, SIDEBAR_WIDTH_MOBILE, useSidebar } from "./utils";
 
 defineOptions({
 	inheritAttrs: false,
@@ -21,9 +21,13 @@ const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
 </script>
 
 <template>
+  <!-- Non-collapsible: always the expanded width, independent of the provider's
+       collapse state/track (which only drives the collapsible modes). Its own
+       fixed `--sidebar-width` (not the provider's animated `--sidebar-w`). -->
   <div
     v-if="collapsible === 'none'"
     data-slot="sidebar"
+    :style="{ '--sidebar-width': SIDEBAR_WIDTH }"
     :class="cn('bg-sidebar text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col', props.class)"
     v-bind="$attrs"
   >
