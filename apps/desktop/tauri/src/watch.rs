@@ -166,10 +166,11 @@ pub fn scan<R: Runtime>(app: &AppHandle<R>, extensions: Vec<String>) {
 /// calls `scan` as soon as its client is ready, which both arms the watcher and
 /// emits the existing backlog.
 pub fn restore<R: Runtime>(app: &AppHandle<R>) {
-    if settings::watch(app).is_none() {
-        return;
+    // Intentionally does not arm a watcher — see the doc comment. Just note
+    // whether a folder is configured (the frontend's `scan` does the arming).
+    if settings::watch(app).is_some() {
+        log::debug!("watched folder configured; awaiting frontend scan to arm it");
     }
-    // Intentionally no watcher armed here — see the doc comment. `scan` arms it.
 }
 
 /// Read and emit one file if it's a supported, readable, in-limit regular file.

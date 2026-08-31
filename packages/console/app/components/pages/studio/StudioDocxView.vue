@@ -74,6 +74,14 @@ let applyActive: (() => void) | null = null;
 // Pending repaint timers, cleared on teardown so a torn-down instance is never
 // invalidated (which would throw uncaught in the timer callback).
 let repaintTimers: ReturnType<typeof setTimeout>[] = [];
+// Generation guard for the async highlight rebuild. `rebuild` awaits several
+// times (story enumeration + one `query.match` per entity per story), so two
+// rebuilds can overlap — a new entity set arriving mid-rebuild, or the entity
+// watcher racing `onReady`. Each rebuild captures the generation at its start;
+// a newer rebuild (or teardown) bumps it, and the older one bails after its next
+// `await` instead of replacing anchors with stale matches or scheduling repaints
+// against a torn-down instance.
+let highlightGeneration = 0;
 let desiredEntities: TextEntityView[] = [];
 let desiredActiveId: string | null = null;
 
@@ -184,10 +192,17 @@ async function render(url: string, target: HTMLElement) {
 
 				// Locate each desired entity's text across all stories and anchor every
 				// match (all matches of an entity share its styling), then repaint.
+				// Async and re-entrant: a newer rebuild (or teardown) bumps
+				// `highlightGeneration`, so this one bails after its next `await` rather
+				// than replacing anchors with stale matches or scheduling repaints against
+				// a torn-down instance.
 				const rebuild = async () => {
-					byAnchor.clear();
+					const generation = ++highlightGeneration;
+					const isCurrent = () => generation === highlightGeneration;
 					const next: any[] = [];
+					const nextByAnchor = new Map<string, TextEntityView>();
 					const stories = await storiesToSearch();
+					if (!isCurrent()) return;
 					for (const entity of desiredEntities) {
 						if (!entity.text) continue;
 						for (const story of stories) {
@@ -196,9 +211,12 @@ async function render(url: string, target: HTMLElement) {
 									select: { type: "text", pattern: entity.text },
 									...(story ?? {}),
 								});
+								// A rebuild that started later has superseded us; drop these
+								// (now stale) matches instead of racing it to `anchors.replace`.
+								if (!isCurrent()) return;
 								for (const item of result?.items ?? []) {
 									const anchor = ctx.anchors.from(item.target);
-									byAnchor.set(anchor.id, entity);
+									nextByAnchor.set(anchor.id, entity);
 									next.push(anchor);
 								}
 							} catch {
@@ -206,19 +224,26 @@ async function render(url: string, target: HTMLElement) {
 							}
 						}
 					}
+					// Publish atomically: the anchor->entity map and the anchor set are
+					// swapped together only once we know this rebuild is still current, so
+					// the decoration provider never sees a half-updated pair.
+					byAnchor.clear();
+					for (const [id, entity] of nextByAnchor) byAnchor.set(id, entity);
 					anchors.replace(next);
 					ctx.decorations.invalidate("studio.entities");
 					// A decoration only paints for anchors in the currently-visible range,
 					// and right after a rebuild that range is often still empty (pages
 					// paginate asynchronously). Re-invalidate a few times over the next
 					// moment so `provide` re-runs once the pages have painted — bounded, so
-					// it can't loop. Tracked so teardown can cancel them.
+					// it can't loop. Each fire re-checks the generation, so a timer that
+					// outlives its rebuild (a newer one, or teardown) is a no-op; teardown
+					// also clears them.
 					for (const delay of [50, 200, 500, 1000]) {
 						repaintTimers.push(
-							setTimeout(
-								() => ctx.decorations.invalidate("studio.entities"),
-								delay,
-							),
+							setTimeout(() => {
+								if (generation === highlightGeneration)
+									ctx.decorations.invalidate("studio.entities");
+							}, delay),
 						);
 					}
 				};
@@ -293,6 +318,10 @@ async function render(url: string, target: HTMLElement) {
 }
 
 function teardown() {
+	// Invalidate any in-flight rebuild: bumping the generation makes it bail at its
+	// next `await` (before touching the destroyed instance) and turns any repaint
+	// timer that outlives this teardown into a no-op.
+	highlightGeneration++;
 	// Cancel any pending repaint timers before dropping the instance — a fired
 	// timer would call `invalidate` on a destroyed SuperDoc and throw uncaught.
 	for (const id of repaintTimers) clearTimeout(id);
