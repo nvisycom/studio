@@ -12,7 +12,7 @@
 		"ci": "biome ci ."
 	},
 	"dependencies": {
-		"@lucide/vue": "^1.33.0",
+		"@lucide/vue": "^1.35.0",
 		"@nuxtjs/color-mode": "^4.0.0",
 		"@nuxtjs/i18n": "^10.6.0",
 		"@nvisy/sdk": "^0.40.0",
@@ -20,7 +20,7 @@
 		"@pinia/colada-nuxt": "^1.0.2",
 		"@pinia/nuxt": "^1.0.2",
 		"@tailwindcss/vite": "^4.3.3",
-		"@tanstack/vue-table": "^9.0.1",
+		"@tanstack/vue-table": "^9.2.4",
 		"@tanstack/vue-virtual": "^3.13.36",
 		"@unhead/vue": "^3.4.0",
 		"@unovis/ts": "^1.6.7",
@@ -31,7 +31,7 @@
 		"curtainsjs": "^8.1.6",
 		"jszip": "^3.10.1",
 		"pinia": "^4.0.2",
-		"reka-ui": "^2.10.1",
+		"reka-ui": "^2.10.4",
 		"superdoc": "^2.10.0",
 		"tailwind-merge": "^3.6.0",
 		"tailwindcss": "^4.3.0",
@@ -40,6 +40,6 @@
 	},
 	"peerDependencies": {
 		"nuxt": "^4.5.2",
-		"vue": "^3.5.41"
+		"vue": "^3.5.42"
 	}
 }
