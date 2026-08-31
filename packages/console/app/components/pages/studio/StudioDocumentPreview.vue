@@ -84,12 +84,18 @@ const asyncView = computed(() => {
 	return defineAsyncComponent({
 		loader: active.component,
 		onError(error, _retry, fail) {
-			viewPhase.value = {
-				status: "error",
-				message: getErrorMessage(error, t("studio.preview.textFailed")),
-			};
-			// Record the failure as an error phase (host shows it) and stop here —
-			// don't retry or rethrow, which would bubble as an unhandled render error.
+			// A loader promise isn't cancelled when its component unmounts, so an old
+			// renderer's chunk can still reject after a different file has opened —
+			// only surface the failure if this loader's renderer is still the active
+			// one, or a stale error would clobber the new view's phase.
+			if (renderer.value === active) {
+				viewPhase.value = {
+					status: "error",
+					message: getErrorMessage(error, t("studio.preview.textFailed")),
+				};
+			}
+			// Stop here regardless — don't retry or rethrow, which would bubble as an
+			// unhandled render error.
 			fail();
 		},
 	});
