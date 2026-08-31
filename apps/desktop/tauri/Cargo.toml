@@ -24,9 +24,19 @@ tauri-plugin-log = { version = "2" }
 tauri-plugin-store = { version = "2" }
 tauri-plugin-http = { version = "2" }
 tauri-plugin-global-shortcut = { version = "2" }
+tauri-plugin-dialog = { version = "2" }
+tauri-plugin-notification = { version = "2" }
+
+# Async runtime
+tokio = { version = "1", features = ["sync"] }
+
+# Filesystem watching
+notify = { version = "8" }
+notify-debouncer-full = { version = "0.5" }
 
 # Serialization
 serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
 
 # Observability
 log = { version = "0.4" }

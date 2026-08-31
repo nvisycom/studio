@@ -1,8 +1,10 @@
 mod auth;
 mod commands;
+mod files;
 mod settings;
 mod spotlight;
 mod tray;
+mod watch;
 
 use tauri::Manager;
 
@@ -11,14 +13,32 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_http::init())
+        // Drives the native Finder open/save panels; the file commands read and
+        // write the chosen paths in Rust so the webview never needs fs scope.
+        .plugin(tauri_plugin_dialog::init())
+        // Native completion notifications for long detection jobs.
+        .plugin(tauri_plugin_notification::init())
         .plugin(global_shortcut_plugin())
         .manage(auth::AuthState::default())
+        .manage(files::DropLimit::default())
+        .manage(watch::WatchState::default())
         .invoke_handler(tauri::generate_handler![
             commands::set_tray_labels,
             commands::set_authed,
             commands::toggle_spotlight,
             commands::hide_spotlight,
             commands::open_main_window,
+            commands::open_files,
+            commands::set_drop_limit,
+            commands::save_file,
+            commands::set_badge_count,
+            commands::notify,
+            commands::notifications_enabled,
+            commands::set_notifications_enabled,
+            commands::set_watch_folder,
+            commands::watch_folder,
+            commands::clear_watch_folder,
+            commands::scan_watch_folder,
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {
@@ -34,10 +54,15 @@ pub fn run() {
             tray::create(app.handle())?;
 
             // Tray-first: closing the main window hides it (keeps the app alive
-            // in the tray) instead of destroying the last window.
+            // in the tray) instead of destroying the last window. The same
+            // handler reads OS file drops on the window (in Rust) and emits them
+            // to the frontend.
             if let Some(window) = app.get_webview_window(tray::MAIN_WINDOW) {
                 let handle = window.clone();
-                window.on_window_event(move |event| tray::on_window_event(&handle, event));
+                window.on_window_event(move |event| {
+                    tray::on_window_event(&handle, event);
+                    files::on_window_event(&handle, event);
+                });
             }
 
             // The launcher dismisses itself on blur (spotlight-style) and hides
@@ -49,6 +74,9 @@ pub fn run() {
 
             // Register the global hotkey that toggles the launcher from anywhere.
             register_spotlight_shortcut(app.handle());
+
+            // Resume watching a previously configured folder (auto-upload).
+            watch::restore(app.handle());
 
             Ok(())
         })

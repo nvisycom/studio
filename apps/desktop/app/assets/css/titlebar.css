@@ -1,0 +1,44 @@
+/* Desktop title bar (Tauri, macOS "Overlay" style).
+ *
+ * The main window runs the webview full-height behind the traffic-light buttons,
+ * so the shell reserves a real title-bar band at the very top (the drag region,
+ * see AppTitlebar.vue) and starts the app below it. These rules are gated on the
+ * `.tauri` root class (set by the desktop-only `titlebar` plugin), so they exist
+ * only in the desktop app — the shared layer stays free of desktop chrome.
+ *
+ * The shell is a CSS grid with a uniform `--shell-inset` of padding all round
+ * (see SidebarProvider). On desktop we grow only its *top* padding to the
+ * title-bar height, so the whole top band is shell chrome and the drag strip can
+ * overlay the entire band — every grey pixel up there is grabbable. The sidebar
+ * and content card sit in the grid below it and need no per-element offset.
+ *
+ * Uses the design tokens defined by the shared theme (@nvisy/console).
+ */
+
+:root {
+  /* Height of the reserved title-bar band. Clears the traffic lights and gives
+     the top chrome enough room to be an obvious drag handle. */
+  --titlebar-height: 2.25rem;
+}
+
+/* Paint the window ground with the chrome tone so nothing white shows behind the
+   strip or in the band above the app. */
+html.tauri,
+html.tauri body {
+  background-color: var(--sidebar);
+}
+
+/* Reserve the title-bar band as the shell's top padding, so the sidebar and
+   content card begin below it while the band stays chrome-colored and part of
+   the shell. The shell is `height: 100svh`, so `box-sizing: border-box` (Tailwind's
+   default) keeps it fitting the window with the larger top padding. Unlayered so
+   it beats the layer's `padding: var(--shell-inset)`. */
+html.tauri [data-slot="sidebar-wrapper"] {
+  padding-top: var(--titlebar-height);
+}
+
+/* The title-bar strip is the window's drag region; the WebKit app region is what
+   the OS reads, and it must not be overridden by a descendant. */
+html.tauri [data-tauri-drag-region] {
+  -webkit-app-region: drag;
+}

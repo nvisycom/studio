@@ -25,7 +25,7 @@ The app runs in SPA mode (no SSR); the build output is a static bundle in
 
 ## License
 
-Apache 2.0 License, see [LICENSE.txt](../../LICENSE.txt)
+GNU Affero General Public License v3.0 (AGPL-3.0), see [LICENSE.txt](../../LICENSE.txt)
 
 ## Support
 

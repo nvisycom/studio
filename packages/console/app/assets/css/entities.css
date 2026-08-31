@@ -101,6 +101,50 @@
 	--flag: var(--flag-contextual);
 }
 
+/* Same category -> hue mapping via class, for the DOCX preview (SuperDoc): its
+   decorations paint the `className` reliably but don't surface `data-category`
+   as a DOM attribute, so the `.docx-cat-*` class carries the hue there. Keep in
+   sync with the `[data-category]` rules above. */
+.docx-cat-identity {
+	--flag: var(--flag-identity);
+}
+.docx-cat-contact {
+	--flag: var(--flag-contact);
+}
+.docx-cat-geographic {
+	--flag: var(--flag-geographic);
+}
+.docx-cat-demographic {
+	--flag: var(--flag-demographic);
+}
+.docx-cat-protected_characteristic {
+	--flag: var(--flag-protected_characteristic);
+}
+.docx-cat-financial {
+	--flag: var(--flag-financial);
+}
+.docx-cat-health {
+	--flag: var(--flag-health);
+}
+.docx-cat-biometric {
+	--flag: var(--flag-biometric);
+}
+.docx-cat-judicial {
+	--flag: var(--flag-judicial);
+}
+.docx-cat-credentials {
+	--flag: var(--flag-credentials);
+}
+.docx-cat-network {
+	--flag: var(--flag-network);
+}
+.docx-cat-organization {
+	--flag: var(--flag-organization);
+}
+.docx-cat-contextual {
+	--flag: var(--flag-contextual);
+}
+
 /* Audit-list category swatch: a small dot in the category's hue, tying the
    grouped list to the in-document highlights. */
 .category-dot {
@@ -169,7 +213,8 @@
    the underline (and hover/active) all read as "won't be redacted" — and drop
    the text to muted so it recedes from the active detections around it. */
 .chip[data-suppressed],
-.docx-chip[data-suppressed] {
+.docx-chip[data-suppressed],
+.docx-chip--suppressed {
 	--flag: var(--color-muted-foreground);
 	color: var(--color-muted-foreground);
 	opacity: 0.75;

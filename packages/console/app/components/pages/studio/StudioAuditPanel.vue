@@ -12,12 +12,12 @@ import {
 	TriangleAlert,
 	X,
 } from "@lucide/vue";
+import type { StudioDetectionPhase } from "#console/composables/useStudioDetection";
 import type {
 	AddedEntity,
 	RedactionOutput,
-	StudioAuditPhase,
 	StudioRedactPhase,
-} from "#console/composables/useStudioAudit";
+} from "#console/composables/useStudioRedaction";
 import type {
 	CategorizedGroup,
 	EntityCluster,
@@ -36,7 +36,7 @@ const props = defineProps<{
 	/** The active file's id, or null when nothing is open. */
 	fileId: string | null;
 	/** Detection lifecycle phase, driving which state the list shows. */
-	phase: StudioAuditPhase;
+	phase: StudioDetectionPhase;
 	/** Detected entities, in document order. */
 	entities: TextEntityView[];
 	/** Entities grouped into category → label → clusters. */

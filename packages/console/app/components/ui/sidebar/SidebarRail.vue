@@ -11,23 +11,49 @@ const { toggleSidebar } = useSidebar();
 </script>
 
 <template>
+  <!-- The toggle rail lives in the shell's `[rail]` grid track, so it's centered
+       in the sidebar/content gap and spans the full row height by construction —
+       no positioning. Its hover line is a centered pseudo-element that lights up
+       on hover. -->
   <button
-    data-sidebar="rail"
     data-slot="sidebar-rail"
+    data-sidebar="rail"
     aria-label="Toggle Sidebar"
-    :tabindex="-1"
     title="Toggle Sidebar"
-    :class="cn(
-      'hover:after:bg-sidebar-border absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] sm:flex',
-      'in-data-[side=left]:cursor-w-resize in-data-[side=right]:cursor-e-resize',
-      '[[data-side=left][data-state=collapsed]_&]:cursor-e-resize [[data-side=right][data-state=collapsed]_&]:cursor-w-resize',
-      'hover:group-data-[collapsible=offcanvas]:bg-sidebar group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full',
-      '[[data-side=left][data-collapsible=offcanvas]_&]:-right-2',
-      '[[data-side=right][data-collapsible=offcanvas]_&]:-left-2',
-      props.class,
-    )"
+    :tabindex="-1"
+    :class="cn('sidebar-rail group/rail', props.class)"
     @click="toggleSidebar"
   >
-    <slot />
+    <span class="sidebar-rail-line" />
   </button>
 </template>
+
+<style scoped>
+.sidebar-rail {
+  grid-column: rail / content;
+  align-self: stretch;
+  display: none;
+  /* Line hugs the content side of the gap (right), inset from the very top and
+     bottom so it doesn't reach the card's rounded corners. */
+  align-items: stretch;
+  justify-content: flex-end;
+  padding-block: 0.5rem;
+  cursor: col-resize;
+}
+/* Above the provider's mobile breakpoint (max-width: 768px). Exclusive of 768px
+   so the rail never shows in mobile mode, which has no `rail` grid track. */
+@media (min-width: 769px) {
+  .sidebar-rail {
+    display: flex;
+  }
+}
+.sidebar-rail-line {
+  width: 2px;
+  border-radius: 9999px;
+  background-color: transparent;
+  transition: background-color 150ms ease;
+}
+.sidebar-rail:hover .sidebar-rail-line {
+  background-color: var(--sidebar-border);
+}
+</style>

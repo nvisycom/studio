@@ -30,7 +30,7 @@
 	"dependencies": {
 		"@lucide/vue": "^1.33.0",
 		"@nvisy/console": "*",
-		"@nvisy/sdk": "^0.38.0",
+		"@nvisy/sdk": "^0.40.0",
 		"@tauri-apps/api": "^2",
 		"@tauri-apps/plugin-http": "^2",
 		"nuxt": "^4.5.2",

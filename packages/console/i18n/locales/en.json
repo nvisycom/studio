@@ -128,20 +128,16 @@
 					"label": "Auto Cleanup",
 					"description": "Automatically delete processed files after their expiration period."
 				},
-				"requireApproval": {
-					"label": "Require Approval",
-					"description": "Processed files must be approved before they become visible to team members."
-				},
 				"enableComments": {
 					"label": "Enable Comments",
 					"description": "Allow team members to add comments on documents."
 				},
-				"ocr": {
+				"raster": {
 					"label": "OCR",
 					"description": "Extract text from scanned documents and images.",
 					"policies": {
 						"auto": "Automatic",
-						"force": "Always",
+						"always": "Always",
 						"never": "Never"
 					}
 				},
@@ -214,6 +210,10 @@
 				"email": {
 					"label": "Email Notifications",
 					"description": "Receive notifications via email"
+				},
+				"desktop": {
+					"label": "Desktop",
+					"description": "Native notifications on this device."
 				}
 			},
 			"events": {
@@ -269,6 +269,20 @@
 			},
 			"errors": {
 				"saveFailed": "Failed to save notification settings"
+			}
+		},
+		"watchedFolder": {
+			"title": "Watched folder",
+			"description": "Files added to a local folder upload to this workspace automatically.",
+			"none": "No folder is being watched.",
+			"hint": "Choose a folder to watch on this device.",
+			"boundElsewhere": "A folder is watched for another workspace. Choosing one here will move it to this workspace.",
+			"choose": "Choose folder",
+			"change": "Change",
+			"stop": "Stop",
+			"errors": {
+				"setFailed": "Could not start watching the folder",
+				"clearFailed": "Could not stop watching"
 			}
 		}
 	},
@@ -413,8 +427,6 @@
 			"descriptionPlaceholder": "Brief description of your workspace...",
 			"advancedSettings": "Advanced",
 			"error": "Failed to create workspace. Please try again.",
-			"requireApprovalLabel": "Require Approval",
-			"requireApprovalDescription": "Processed files require approval before being visible",
 			"cancelButton": "Cancel",
 			"submitButton": "Create Workspace"
 		}
@@ -482,6 +494,7 @@
 			"upload": {
 				"title": "Upload Files",
 				"subtitle": "Add documents to your workspace. Up to {max} per file.",
+				"subtitleNoLimit": "Add documents to your workspace.",
 				"description": "Drag and drop files here",
 				"browseHint": "or click to browse",
 				"dropHint": "Drop files to upload",
@@ -494,13 +507,16 @@
 				"errors": {
 					"unsupported": "Unsupported file type",
 					"tooLarge": "Exceeds the {max} limit",
-					"failed": "Upload failed"
+					"serverTooLarge": "The server rejected this file as too large",
+					"failed": "Upload failed",
+					"openFailed": "Could not open the selected file"
 				}
 			}
 		},
 		"messages": {
 			"fileDeleted": "File deleted successfully",
 			"filesDeleted": "Files deleted successfully",
+			"filesDeletedPartial": "Some files couldn't be deleted ({count} skipped).",
 			"fileUpdated": "File updated successfully",
 			"filesUploaded": "Files uploaded successfully",
 			"downloadStarted": "Download started"
@@ -1233,6 +1249,7 @@
 			"retryRedaction": "Retry redaction",
 			"redactFailed": "Redaction failed. Please try again.",
 			"downloadRedacted": "Download redacted file",
+			"downloadFailed": "Could not download the redacted file",
 			"noPipelines": "No pipelines yet. Create one first.",
 			"cell": "{column} · row {row}",
 			"colN": "col {n}",
@@ -1270,6 +1287,9 @@
 			}
 		},
 		"preview": {
+			"loading": "Loading document...",
+			"parsing": "Parsing document...",
+			"rendering": "Rendering document...",
 			"emptyTitle": "No document selected",
 			"emptyDescription": "Select a file from the Files page to preview",
 			"table": "Table",

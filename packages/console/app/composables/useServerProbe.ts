@@ -3,6 +3,15 @@ import type { Health } from "@nvisy/sdk/datatypes";
 import { checkHealth } from "@nvisy/sdk/standalone";
 import { normalize } from "#console/composables/useApiBaseUrl";
 
+/** The health levels a genuine Nvisy `/health/` response reports. Used to tell a
+ * real (even degraded) Nvisy server from a non-Nvisy endpoint whose non-2xx body
+ * `checkHealth` returns without a valid `status`. */
+const HEALTH_STATUSES = new Set<Health["status"]>([
+	"healthy",
+	"degraded",
+	"unhealthy",
+]);
+
 /**
  * Result of a pre-flight server check — a reachability probe against a candidate
  * server URL, run *before* login so "can I reach this server?" is answered
@@ -74,11 +83,19 @@ export function useServerProbe() {
 				baseUrl: base,
 				fetch: apiFetch.value,
 			});
-			next = { kind: "reachable", status: health.status };
+			// `checkHealth` disables error handling (a `503` degraded status is a
+			// valid health body, not an error), so a non-2xx from a *non-Nvisy*
+			// endpoint — e.g. a 404 from a proxy or another service — comes back as a
+			// parsed error payload cast to `Health`, with no real `status`. Treat a
+			// response whose `status` isn't a known health level as not-Nvisy, so a
+			// wrong-but-reachable address isn't reported as a live Nvisy server.
+			next = HEALTH_STATUSES.has(health.status)
+				? { kind: "reachable", status: health.status }
+				: { kind: "not-nvisy" };
 		} catch (error) {
-			// A response arrived but wasn't a healthy Nvisy reply (a 404, a proxy, some
-			// other service on that address) surfaces as an API error. No response at
-			// all — the fetch itself rejected — means the server is unreachable.
+			// A response arrived but wasn't a healthy Nvisy reply surfaces as an API
+			// error; no response at all — the fetch itself rejected — means the server
+			// is unreachable.
 			next =
 				error instanceof NvisyApiError
 					? { kind: "not-nvisy" }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Upload, X, Check, Loader2, CloudUpload } from "@lucide/vue";
+import { toast } from "vue-sonner";
 import { Button } from "#console/components/ui/button";
 import {
 	Dialog,
@@ -16,7 +17,14 @@ import {
 	isAcceptedFileName,
 } from "#console/utils/file";
 
-const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100 MB
+// The effective per-file upload cap, published by the server on the workspace
+// (the smaller of the workspace's own cap and the server-wide hard limit). It's
+// optional: an absent value means no client-side pre-check — the server's 413
+// on upload is then the only limit. See `validate`.
+const { currentWorkspace } = useWorkspaces();
+const maxUploadBytes = computed(
+	() => currentWorkspace.value?.settings.maxUploadBytes,
+);
 
 type UploadStatus = "pending" | "uploading" | "success" | "error";
 
@@ -77,9 +85,10 @@ function validate(file: File): string | null {
 	if (!isAcceptedFileName(file.name)) {
 		return t("files.dialogs.upload.errors.unsupported");
 	}
-	if (file.size > MAX_FILE_SIZE) {
+	const max = maxUploadBytes.value;
+	if (max !== undefined && file.size > max) {
 		return t("files.dialogs.upload.errors.tooLarge", {
-			max: formatFileSize(MAX_FILE_SIZE),
+			max: formatFileSize(max),
 		});
 	}
 	return null;
@@ -150,12 +159,17 @@ async function startUpload() {
 		for (const file of pending) file.status = "success";
 		emit("uploaded");
 	} catch (error) {
+		// The server's 413 is the authoritative size limit — the soft pre-check
+		// can be stale (or absent). Surface it as a clear "too large" rather than
+		// the raw message.
+		const message = isPayloadTooLarge(error)
+			? t("files.dialogs.upload.errors.serverTooLarge")
+			: error instanceof Error
+				? error.message
+				: t("files.dialogs.upload.errors.failed");
 		for (const file of pending) {
 			file.status = "error";
-			file.error =
-				error instanceof Error
-					? error.message
-					: t("files.dialogs.upload.errors.failed");
+			file.error = message;
 		}
 	}
 }
@@ -166,8 +180,27 @@ function handleClose() {
 	emit("update:open", false);
 }
 
-function handleBrowseClick() {
-	fileInputRef.value?.click();
+// On desktop the file bridge opens a native Finder panel; on the web it stays
+// unset and we fall back to the hidden <input>'s picker. Either way the chosen
+// files flow through the same validation via addFiles.
+const { bridge } = useFileBridge();
+
+async function handleBrowseClick() {
+	const openFiles = bridge.value.openFiles;
+	if (!openFiles) {
+		fileInputRef.value?.click();
+		return;
+	}
+	try {
+		const files = await openFiles(ACCEPTED_ACCEPT_ATTR);
+		if (files?.length) addFiles(files);
+	} catch (error) {
+		// A native picker that fails to read a chosen file (e.g. it vanished
+		// between pick and read) shouldn't silently no-op the button.
+		toast.error(t("files.dialogs.upload.errors.openFailed"), {
+			description: error instanceof Error ? error.message : undefined,
+		});
+	}
 }
 </script>
 
@@ -177,7 +210,13 @@ function handleBrowseClick() {
       <DialogHeader>
         <DialogTitle>{{ t("files.dialogs.upload.title") }}</DialogTitle>
         <DialogDescription>
-          {{ t("files.dialogs.upload.subtitle", { max: formatFileSize(MAX_FILE_SIZE) }) }}
+          {{
+            maxUploadBytes !== undefined
+              ? t("files.dialogs.upload.subtitle", {
+                  max: formatFileSize(maxUploadBytes),
+                })
+              : t("files.dialogs.upload.subtitleNoLimit")
+          }}
         </DialogDescription>
       </DialogHeader>
 

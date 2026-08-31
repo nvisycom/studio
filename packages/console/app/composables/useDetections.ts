@@ -21,6 +21,7 @@ export interface DetectionsFilter extends WorkspaceDetectionsQuery {
  */
 export function useDetections(filter?: MaybeRefOrGetter<DetectionsFilter>) {
 	const { requireContext, currentWorkspaceSlug } = useWorkspaceContext();
+	const { saveBlob } = useFileDownload();
 
 	const activeFilter = computed<DetectionsFilter>(() => toValue(filter ?? {}));
 
@@ -66,8 +67,7 @@ export function useDetections(filter?: MaybeRefOrGetter<DetectionsFilter>) {
 			detectionId,
 			{ format },
 		);
-		const url = URL.createObjectURL(await response.blob());
-		triggerBrowserDownload(url, fileName);
+		await saveBlob(await response.blob(), fileName);
 	}
 
 	/**

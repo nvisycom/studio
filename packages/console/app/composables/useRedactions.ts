@@ -9,6 +9,7 @@ import type { Audit, EditSet, RedactionResult } from "@nvisy/sdk/datatypes";
  */
 export function useRedactions() {
 	const { requireContext } = useWorkspaceContext();
+	const { saveBlob } = useFileDownload();
 
 	/**
 	 * Redact a complete detection, producing its redacted output file. Pass
@@ -60,8 +61,7 @@ export function useRedactions() {
 			workspaceSlug,
 			outputFileId,
 		);
-		const url = URL.createObjectURL(await response.blob());
-		triggerBrowserDownload(url, fileName);
+		await saveBlob(await response.blob(), fileName);
 	}
 
 	return {

@@ -22,6 +22,9 @@ use crate::{settings, spotlight};
 /// Label of the main window (matches `tauri.conf.json`).
 pub const MAIN_WINDOW: &str = "main";
 
+/// Id of the system tray icon, so state updates can look it up.
+const TRAY_ID: &str = "main";
+
 /// Menu item ids.
 const MENU_WINDOW: &str = "window";
 const MENU_SPOTLIGHT: &str = "spotlight";
@@ -129,7 +132,7 @@ pub fn create<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
 
     let tray = tray_icon(app)?;
 
-    TrayIconBuilder::with_id("main")
+    TrayIconBuilder::with_id(TRAY_ID)
         .icon(tray.image)
         .icon_as_template(tray.template)
         // The menu is shown on right-click only, so left-click reaches our
@@ -150,6 +153,25 @@ pub fn create<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
         .build(app)?;
 
     Ok(())
+}
+
+/// Reflect the account's unread-notification count on the tray: the number as a
+/// short title next to the menu-bar icon (cleared at zero) and `tooltip` on
+/// hover. The tooltip text is localized by the web layer and passed through, so
+/// it stays in the app's chosen language.
+pub fn set_badge_count<R: Runtime>(app: &AppHandle<R>, count: u32, tooltip: Option<String>) {
+    let Some(tray) = app.tray_by_id(TRAY_ID) else {
+        return;
+    };
+    // Clear with an empty string rather than `None`: on macOS the tray-icon
+    // backend doesn't reliably repaint a `None` title, leaving a stale count.
+    let title = if count > 0 {
+        count.to_string()
+    } else {
+        String::new()
+    };
+    let _ = tray.set_title(Some(title));
+    let _ = tray.set_tooltip(tooltip);
 }
 
 /// A tray icon and whether it's a template image (system-tinted).
@@ -219,9 +241,7 @@ fn on_menu_event<R: Runtime>(app: &AppHandle<R>, id: &str) {
         }
         MENU_SPOTLIGHT => spotlight::toggle(app),
         MENU_NOTIFICATIONS => {
-            let enabled = !settings::notifications_enabled(app);
-            settings::set_notifications_enabled(app, enabled);
-            refresh_notifications_item(app, enabled);
+            set_notifications_enabled(app, !settings::notifications_enabled(app));
         }
         MENU_QUIT => app.exit(0),
         _ => {}
@@ -232,6 +252,15 @@ fn on_menu_event<R: Runtime>(app: &AppHandle<R>, id: &str) {
 fn window_visible<R: Runtime>(app: &AppHandle<R>) -> bool {
     app.get_webview_window(MAIN_WINDOW)
         .and_then(|w| w.is_visible().ok())
+        .unwrap_or(false)
+}
+
+/// Whether the main window is currently focused (the foreground window the user
+/// is looking at). Used to suppress a native notification the user would already
+/// be seeing in-app.
+pub fn main_window_focused<R: Runtime>(app: &AppHandle<R>) -> bool {
+    app.get_webview_window(MAIN_WINDOW)
+        .and_then(|w| w.is_focused().ok())
         .unwrap_or(false)
 }
 
@@ -253,6 +282,14 @@ fn refresh_notifications_item<R: Runtime>(app: &AppHandle<R>, enabled: bool) {
             let _ = menu.notifications.set_text(labels.notifications(enabled));
         }
     }
+}
+
+/// Set the notifications preference and keep the tray menu item in sync. The
+/// single place the setting is changed, so the tray toggle and the desktop
+/// settings page (via a command) can't drift apart.
+pub fn set_notifications_enabled<R: Runtime>(app: &AppHandle<R>, enabled: bool) {
+    settings::set_notifications_enabled(app, enabled);
+    refresh_notifications_item(app, enabled);
 }
 
 /// Show, unminimize, and focus the main window, recreating nothing — the window

@@ -5,7 +5,7 @@ import { Sheet, SheetContent } from "#console/components/ui/sheet";
 import SheetDescription from "#console/components/ui/sheet/SheetDescription.vue";
 import SheetHeader from "#console/components/ui/sheet/SheetHeader.vue";
 import SheetTitle from "#console/components/ui/sheet/SheetTitle.vue";
-import { SIDEBAR_WIDTH_MOBILE, useSidebar } from "./utils";
+import { SIDEBAR_WIDTH, SIDEBAR_WIDTH_MOBILE, useSidebar } from "./utils";
 
 defineOptions({
 	inheritAttrs: false,
@@ -21,9 +21,13 @@ const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
 </script>
 
 <template>
+  <!-- Non-collapsible: always the expanded width, independent of the provider's
+       collapse state/track (which only drives the collapsible modes). Its own
+       fixed `--sidebar-width` (not the provider's animated `--sidebar-w`). -->
   <div
     v-if="collapsible === 'none'"
     data-slot="sidebar"
+    :style="{ '--sidebar-width': SIDEBAR_WIDTH }"
     :class="cn('bg-sidebar text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col', props.class)"
     v-bind="$attrs"
   >
@@ -51,46 +55,53 @@ const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
     </SheetContent>
   </Sheet>
 
+  <!-- Desktop: the sidebar is the shell's `[sidebar]` grid track (see
+       SidebarProvider). A plain in-flow flex column — its width is driven by the
+       grid track, so there's no fixed positioning or per-state width math. The
+       `group` + `data-collapsible` carry the collapse state to the sidebar's
+       content, which keys off `group-data-[collapsible=icon]` to hide labels and
+       center icons; the width animation makes that reflow smoothly.
+
+       NOTE: the desktop grid places the sidebar in the *leading* track, so only
+       `side="left"` (the default) is supported here — the shell's
+       grid-template-columns is `[sidebar] [rail] [content]`, which the provider
+       owns and doesn't mirror per-Sidebar. `data-side` is still forwarded (the
+       shared content components read it), but a desktop `side="right"` would
+       render in the left track; use the mobile sheet or a left sidebar instead. -->
   <div
     v-else
-    class="group peer text-sidebar-foreground hidden md:block"
     data-slot="sidebar"
+    data-sidebar="sidebar"
     :data-state="state"
     :data-collapsible="state === 'collapsed' ? collapsible : ''"
-    :data-variant="variant"
     :data-side="side"
+    class="sidebar-column group bg-sidebar hidden h-full min-h-0 flex-col overflow-hidden md:flex"
+    :class="cn(props.class)"
+    v-bind="$attrs"
   >
-    <!-- This is what handles the sidebar gap on desktop  -->
-    <div
-      :class="cn(
-        'relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-linear',
-        'group-data-[collapsible=offcanvas]:w-0',
-        'group-data-[side=right]:rotate-180',
-        variant === 'floating' || variant === 'inset'
-          ? 'group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4)))]'
-          : 'group-data-[collapsible=icon]:w-(--sidebar-width-icon)',
-      )"
-    />
-    <div
-      :class="cn(
-        'fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex',
-        side === 'left'
-          ? 'left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
-          : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',
-        // Adjust the padding for floating and inset variants.
-        variant === 'floating' || variant === 'inset'
-          ? 'p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]'
-          : 'group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l',
-        props.class,
-      )"
-      v-bind="$attrs"
-    >
-      <div
-        data-sidebar="sidebar"
-        class="bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm"
-      >
-        <slot />
-      </div>
-    </div>
+    <slot />
   </div>
 </template>
+
+<style scoped>
+.sidebar-column {
+  grid-column: sidebar / rail;
+  /* The column just fills the animated `sidebar` track (see SidebarProvider);
+     the width motion lives on the track itself. Labels fade in step (below) so
+     the contents don't clip as the column shrinks. */
+  width: 100%;
+  min-width: 0;
+}
+
+/* Fade the menu-item labels out as the sidebar collapses (and in as it expands)
+   in step with the width, instead of letting `overflow-hidden` clip them. The
+   menu button carries the `peer/menu-button` marker class whether it renders as
+   a <button> or an <a> (as-child), so match that. */
+.sidebar-column :deep(.peer\/menu-button > span:last-child) {
+  transition: opacity 150ms ease;
+}
+.sidebar-column[data-state="collapsed"]
+  :deep(.peer\/menu-button > span:last-child) {
+  opacity: 0;
+}
+</style>

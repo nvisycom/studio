@@ -8,16 +8,21 @@ const props = defineProps<{
 </script>
 
 <template>
+  <!-- The content card: the shell's `[content]` grid track. It floats on the
+       chrome-colored shell — the surrounding inset comes from the shell's grid
+       tracks and padding, so no margins here. `min-w-0` lets it shrink instead of
+       overflowing its track. -->
   <main
     data-slot="sidebar-inset"
-    :class="
-      cn(
-        'bg-background relative flex w-full min-w-0 flex-1 flex-col min-h-0',
-        'md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2',
-        props.class,
-      )
-    "
+    class="sidebar-content bg-background relative flex min-h-0 min-w-0 flex-col overflow-hidden md:rounded-xl md:shadow-sm"
+    :class="cn(props.class)"
   >
     <slot />
   </main>
 </template>
+
+<style scoped>
+.sidebar-content {
+  grid-column: content / -1;
+}
+</style>

@@ -5,11 +5,20 @@ export interface UseFilesOptions {
 	pageSize?: number;
 }
 
+/** Outcome of a bulk download: how many saved vs failed, and whether the user
+ * cancelled partway (desktop) so the caller can report accurately. */
+export interface BulkDownloadResult {
+	saved: number;
+	failed: number;
+	cancelled: boolean;
+}
+
 /**
  * Composable for file operations with infinite scroll support.
  */
 export function useFiles(options: UseFilesOptions = {}) {
 	const { requireContext, currentWorkspaceSlug } = useWorkspaceContext();
+	const { saveBlob } = useFileDownload();
 
 	const pageSize = options.pageSize ?? 50;
 	const queryParams = computed<ListFiles>(() => ({
@@ -60,24 +69,54 @@ export function useFiles(options: UseFilesOptions = {}) {
 		{ invalidates: "files" },
 	);
 
+	// Batch delete in one request, returning which ids were deleted vs skipped
+	// (unknown, already gone, or held by an in-progress detection). Preferred for
+	// bulk deletes over looping the single-delete mutation.
+	const deleteFilesMutation = workspaceMutation(
+		({ client, workspaceSlug }, fileIds: string[]) =>
+			client.files.deleteFiles(workspaceSlug, fileIds),
+		{ invalidates: "files" },
+	);
+
 	const uploadFilesMutation = workspaceMutation(
 		({ client, workspaceSlug }, files: File[]) =>
 			client.files.uploadFiles(workspaceSlug, files),
 		{ invalidates: "files" },
 	);
 
+	// Returns whether the file was saved (always true on the web; false if the
+	// user cancelled a native save panel on desktop). A fetch or write failure
+	// throws — the caller decides how to surface it.
 	async function downloadFile(fileId: string, fileName: string) {
 		const { client, workspaceSlug } = requireContext();
-		const url = await fetchFileContentUrl(client, workspaceSlug, fileId);
-		triggerBrowserDownload(url, fileName);
+		const response = await client.files.downloadFile(workspaceSlug, fileId);
+		return saveBlob(await response.blob(), fileName);
 	}
 
-	// Bulk download fetches each file individually.
-	async function downloadMultiple(fileIds: string[]) {
+	// Bulk download fetches and saves each file individually. A single file's
+	// failure doesn't abort the rest (they're independent); we tally failures so
+	// the caller can report them. A user cancel (desktop) does stop the batch —
+	// once they dismiss the panel they don't want the remaining files' panels
+	// popping up one after another.
+	async function downloadMultiple(
+		fileIds: string[],
+	): Promise<BulkDownloadResult> {
+		let saved = 0;
+		let failed = 0;
 		for (const fileId of fileIds) {
 			const file = files.value.find((f) => f.id === fileId);
-			await downloadFile(fileId, file?.displayName ?? fileId);
+			try {
+				const wasSaved = await downloadFile(
+					fileId,
+					file?.displayName ?? fileId,
+				);
+				if (!wasSaved) return { saved, failed, cancelled: true };
+				saved++;
+			} catch {
+				failed++;
+			}
 		}
+		return { saved, failed, cancelled: false };
 	}
 
 	/** Fetch a single file's metadata by id (e.g. to name a preselected file). */
@@ -111,6 +150,9 @@ export function useFiles(options: UseFilesOptions = {}) {
 		deleteFileAsync: deleteFileMutation.mutateAsync,
 		isDeleting: deleteFileMutation.isLoading,
 		deleteError: deleteFileMutation.error,
+
+		deleteFilesAsync: deleteFilesMutation.mutateAsync,
+		isDeletingBatch: deleteFilesMutation.isLoading,
 
 		uploadFiles: uploadFilesMutation.mutate,
 		uploadFilesAsync: uploadFilesMutation.mutateAsync,

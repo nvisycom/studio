@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ErrorPage from "~/error.vue";
+import AppTitlebar from "~/components/AppTitlebar.vue";
 
 const error = useError();
 </script>
@@ -7,6 +8,7 @@ const error = useError();
 <template>
   <div>
     <NuxtRouteAnnouncer />
+    <AppTitlebar />
     <ErrorPage v-if="error" :error="error" />
     <NuxtLayout v-else>
       <NuxtPage />

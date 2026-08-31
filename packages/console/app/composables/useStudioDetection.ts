@@ -1,0 +1,255 @@
+import type { Audit, Detection } from "@nvisy/sdk/datatypes";
+import type { MaybeRefOrGetter } from "vue";
+
+/** Lifecycle phase of the studio's detection. `complete` = analysis ready. */
+export type StudioDetectionPhase =
+	| "idle"
+	| "restoring"
+	| "running"
+	| "complete"
+	| "failed";
+
+/**
+ * Owns the studio's detection lifecycle for the active file: the pipeline
+ * choice, running a detection, restoring the file's most recent detection, and
+ * the flattened entities the document + audit panel render. This is the studio's
+ * long-running "job" — a detection can take seconds to minutes — so it's the
+ * surface the desktop tray/notifications observe.
+ *
+ * Redaction (reviewer edits + applying them) is a separate concern; see
+ * {@link useStudioRedaction}, which takes this composable's outputs as input.
+ *
+ * Call this once per studio page and share its result — the detection bar drives
+ * the pipeline/detection controls while the audit panel and document overlay read
+ * the entities, so both must observe the same state.
+ */
+export function useStudioDetection(
+	fileId: MaybeRefOrGetter<string | null>,
+	documentText: MaybeRefOrGetter<string | null>,
+	docxParts?: MaybeRefOrGetter<Map<string, Uint8Array> | null>,
+	fileName?: MaybeRefOrGetter<string | null>,
+) {
+	const { t } = useI18n();
+	const { pipelines } = usePipelines();
+	const { runDetection, findLatestForFile, getAnalysis } = useDetections();
+
+	const selectedPipeline = ref<string>("");
+	// The last value we set on `selectedPipeline` programmatically (default or
+	// adoption). The pipeline watcher runs asynchronously — after the sync block
+	// that set the value — so a boolean flag reset synchronously wouldn't span it.
+	// Instead we record the value and have the watcher skip a restore when the new
+	// selection equals it (i.e. it wasn't a user switch).
+	let programmaticPipeline: string | null = null;
+
+	// The pipeline of the file's most recent detection, to adopt into the picker. Held
+	// separately because the detection can resolve before the pipeline list loads; once
+	// the list is present, this wins over the "first pipeline" default so a
+	// refresh restores the file's own pipeline rather than resetting to the first.
+	const pendingAdoptPipeline = ref<string | null>(null);
+	// Whether the file-open restore has decided on adoption yet. We hold off the
+	// "first pipeline" default until it has, so the picker doesn't briefly show
+	// the wrong pipeline and then flicker to the adopted one. With no file open,
+	// there's nothing to adopt, so it's resolved immediately.
+	const adoptResolved = ref(!toValue(fileId));
+
+	// Pick the selected pipeline once the list loads (or the pending adoption
+	// arrives): the file's latest-detection pipeline when known and still valid, else —
+	// only once adoption has resolved — the first pipeline. Only sets a default
+	// when nothing is selected yet.
+	watch(
+		[pipelines, pendingAdoptPipeline, adoptResolved],
+		([list, adopt, resolved]) => {
+			if (!list?.length) return;
+			const target =
+				adopt && list.some((p) => p.slug === adopt)
+					? adopt
+					: resolved && !selectedPipeline.value
+						? list[0]!.slug
+						: null;
+			if (target && target !== selectedPipeline.value) {
+				// Mark as programmatic so the pipeline watcher doesn't treat it as a
+				// user switch (which would start a competing/wrong restore).
+				programmaticPipeline = target;
+				selectedPipeline.value = target;
+			}
+		},
+		{ immediate: true },
+	);
+
+	const phase = ref<StudioDetectionPhase>("idle");
+	// Restore token: bumped whenever a restore starts so an in-flight restore can
+	// tell it has been superseded (file or pipeline changed) and bail.
+	let restoreToken = 0;
+	// True when the shown audit came from a prior detection (restored on file
+	// open) rather than one started in this session.
+	const restored = ref(false);
+	const detectionStatus = ref<Detection["status"] | null>(null);
+	const audit = ref<Audit | null>(null);
+	const errorMessage = ref("");
+
+	// The detection backing the shown audit — the target for redaction. Set
+	// whenever an audit is shown (fresh or restored); cleared when there's none.
+	const detectionId = ref<string | null>(null);
+	// The active file's display name, so a redacted download gets a sensible name.
+	const detectionFileName = ref<string | null>(null);
+
+	const { entities, categorizedGroups, count } = useTextEntities(
+		audit,
+		documentText,
+		docxParts,
+	);
+
+	const canRun = computed(
+		() =>
+			!!toValue(fileId) &&
+			!!selectedPipeline.value &&
+			phase.value !== "running" &&
+			phase.value !== "restoring",
+	);
+
+	async function run() {
+		const file = toValue(fileId);
+		if (!file || !selectedPipeline.value) return;
+		// Supersede any in-flight restore, and capture the token so a detection
+		// that finishes after the active file changed can't overwrite new state.
+		const token = ++restoreToken;
+		phase.value = "running";
+		detectionStatus.value = "pending";
+		restored.value = false;
+		errorMessage.value = "";
+		audit.value = null;
+		detectionId.value = null;
+		detectionFileName.value = toValue(fileName) ?? null;
+		try {
+			const result = await runDetection(
+				selectedPipeline.value,
+				{ fileId: file },
+				(status) => {
+					if (token === restoreToken) detectionStatus.value = status;
+				},
+			);
+			if (token !== restoreToken) return;
+			audit.value = result.audit;
+			detectionId.value = result.detectionId;
+			phase.value = "complete";
+		} catch (err) {
+			if (token !== restoreToken) return;
+			phase.value = "failed";
+			errorMessage.value = getErrorMessage(err, t("studio.audit.runFailed"));
+		}
+	}
+
+	// Restore the most recent detection for a file — it still lives on the server
+	// even if the tab was closed. When `pipelineSlug` is given, restore that
+	// pipeline's latest detection; otherwise the file's latest of any pipeline,
+	// adopting its pipeline into the picker (`adopt`). Best-effort: falls back to
+	// idle when nothing is found or the request is superseded.
+	async function restoreLatest(
+		file: string,
+		opts: { pipelineSlug?: string; adopt?: boolean } = {},
+	) {
+		const token = ++restoreToken;
+		phase.value = "restoring";
+		detectionStatus.value = null;
+		restored.value = false;
+		errorMessage.value = "";
+		audit.value = null;
+		detectionId.value = null;
+		detectionFileName.value = toValue(fileName) ?? null;
+		try {
+			const latest = await findLatestForFile(file, opts.pipelineSlug);
+			// Bail if a newer restore started (file or pipeline changed) meanwhile.
+			if (token !== restoreToken) return;
+			if (!latest) {
+				// Adoption decided: no detection for this file, so the default may apply.
+				if (opts.adopt) adoptResolved.value = true;
+				phase.value = "idle";
+				return;
+			}
+			// Record the detection's pipeline to adopt into the picker, and mark
+			// adoption resolved so the selection watcher applies it (never the default).
+			if (opts.adopt) {
+				pendingAdoptPipeline.value = latest.pipelineSlug;
+				adoptResolved.value = true;
+			}
+			const restoredAudit = await getAnalysis(latest.id);
+			if (token !== restoreToken) return;
+			audit.value = restoredAudit;
+			detectionId.value = latest.id;
+			detectionStatus.value = latest.status;
+			restored.value = true;
+			phase.value = "complete";
+		} catch {
+			if (token === restoreToken) {
+				if (opts.adopt) adoptResolved.value = true; // don't block the default
+				phase.value = "idle";
+			}
+		}
+	}
+
+	// On file open, restore the file's most recent detection and adopt its pipeline, so
+	// opening a file shows its latest audit under the pipeline that produced it.
+	watch(
+		() => toValue(fileId),
+		(file) => {
+			// Reset per-file pipeline state so the prior file's choice can't leak:
+			// clear the pending adoption, and clear the selection (programmatically,
+			// so the pipeline watcher doesn't treat it as a user switch) so the
+			// selection watcher can re-pick this file's adopted or default pipeline.
+			pendingAdoptPipeline.value = null;
+			if (selectedPipeline.value) {
+				programmaticPipeline = "";
+				selectedPipeline.value = "";
+			}
+			if (!file) {
+				++restoreToken; // supersede any in-flight restore
+				adoptResolved.value = true; // nothing to adopt → default may apply
+				phase.value = "idle";
+				detectionStatus.value = null;
+				restored.value = false;
+				errorMessage.value = "";
+				audit.value = null;
+				detectionId.value = null;
+				detectionFileName.value = null;
+				return;
+			}
+			// Wait for this file's restore before defaulting, so the picker doesn't
+			// flicker through the wrong pipeline.
+			adoptResolved.value = false;
+			restoreLatest(file, { adopt: true });
+		},
+		{ immediate: true },
+	);
+
+	// When the user switches the pipeline, restore that pipeline's latest audit
+	// for the current file. A programmatic selection (default or adoption) sets
+	// `programmaticPipeline` to the same value and is skipped — the file-open flow
+	// already handles its restore, so we don't start a competing/wrong one.
+	watch(selectedPipeline, (pipeline) => {
+		if (pipeline === programmaticPipeline) {
+			programmaticPipeline = null; // consume; further changes are user switches
+			return;
+		}
+		// A manual switch overrides any pending adoption for this file.
+		pendingAdoptPipeline.value = null;
+		const file = toValue(fileId);
+		if (file && pipeline) restoreLatest(file, { pipelineSlug: pipeline });
+	});
+
+	return {
+		pipelines,
+		selectedPipeline,
+		phase,
+		restored,
+		detectionStatus,
+		audit,
+		detectionId,
+		detectionFileName,
+		errorMessage,
+		entities,
+		categorizedGroups,
+		count,
+		canRun,
+		run,
+	};
+}

@@ -90,21 +90,68 @@ provideSidebarContext({
 
 <template>
   <TooltipProvider :delay-duration="0">
+    <!-- Grid shell laid out as three named tracks: the sidebar, a gap the toggle
+         rail lives in, and the content card. Because the rail occupies its own
+         track it is centered and full-height by construction — no positioning
+         math, which was the whole source of the old fixed-panel fragility. The
+         `--sidebar-track` var animates between expanded and collapsed; the
+         `group` + data-state carry the collapse state to the sidebar's content
+         components. On mobile the sidebar is an overlay sheet and takes no
+         track. -->
     <div
       data-slot="sidebar-wrapper"
-      :style="{
-        '--sidebar-width': SIDEBAR_WIDTH,
-        '--sidebar-width-icon': SIDEBAR_WIDTH_ICON,
-      }"
-      :class="
-        cn(
-          'group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex h-svh w-full overflow-hidden',
-          props.class,
-        )
-      "
+      class="sidebar-shell group/sidebar-wrapper text-sidebar-foreground bg-sidebar"
+      :data-state="state"
+      :data-collapsible="state === 'collapsed' ? 'icon' : ''"
+      :data-mobile="isMobile ? 'true' : undefined"
+      :style="{ '--sidebar-w': state === 'collapsed' ? SIDEBAR_WIDTH_ICON : SIDEBAR_WIDTH }"
       v-bind="$attrs"
+      :class="cn(props.class)"
     >
       <slot />
     </div>
   </TooltipProvider>
 </template>
+
+<!-- Register the sidebar-track width as an animatable custom property. Must be a
+     *non-scoped* block: `@property` is a global at-rule, and scoping would mangle
+     the name so it never registers. `inherits: false` is essential — an
+     inheriting registered property referenced down the tree can loop the cascade
+     and freeze the main thread. As a typed <length> it transitions smoothly, so
+     the whole grid track (and the grey chrome edge) animates from one source;
+     the column just fills it (see Sidebar.vue). -->
+<style>
+@property --sidebar-w {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+</style>
+
+<style scoped>
+/* One spacing token drives the shell's uniform inset: the gap around the
+   floating card, the sidebar's inset from the window, and the rail-track width.
+   The sidebar track (--sidebar-w) is a *fixed* length per collapse state, but
+   registered (above) so it can transition — animating the track itself, not the
+   column inside it. A fixed (non-`auto`) track means no per-frame grid
+   intrinsic-size recalc, which is what locked the main thread when it was
+   `auto`. */
+.sidebar-shell {
+  --shell-inset: 0.5rem;
+  display: grid;
+  grid-template-columns: [sidebar] var(--sidebar-w) [rail] var(--shell-inset) [content] minmax(0, 1fr);
+  grid-template-rows: 100%;
+  height: 100svh;
+  width: 100%;
+  overflow: hidden;
+  padding: var(--shell-inset);
+  /* Smooth, decelerating collapse/expand of the whole track. */
+  transition: --sidebar-w 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* Mobile: no sidebar/rail tracks — the sidebar is an overlay sheet, content
+   fills the shell with no floating inset. */
+.sidebar-shell[data-mobile="true"] {
+  grid-template-columns: [content] minmax(0, 1fr);
+  padding: 0;
+}
+</style>

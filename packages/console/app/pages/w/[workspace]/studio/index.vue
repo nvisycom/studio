@@ -109,15 +109,25 @@ watch(
 	{ immediate: true },
 );
 
-// Detection run + audit state for the active file, shared between the detection bar
-// (pipeline + detection controls), the audit panel (results list), and the document
-// preview (inline highlights).
-const audit = useStudioAudit(
+// Detection run + audit state for the active file (the long-running "job"),
+// shared between the detection bar (pipeline + controls), the audit panel
+// (results list), and the document preview (inline highlights).
+const detection = useStudioDetection(
 	() => activeFile.value?.fileId ?? null,
 	() => documentText.value,
 	() => docxParts.value,
 	() => activeFile.value?.displayName ?? null,
 );
+
+// Reviewer edits + applying redactions to the complete detection. Takes the
+// detection's state as input; resets itself whenever the detection changes.
+const redaction = useStudioRedaction({
+	phase: detection.phase,
+	detectionId: detection.detectionId,
+	detectionFileName: detection.detectionFileName,
+	entities: detection.entities,
+	count: detection.count,
+});
 
 function focusEntity(id: string) {
 	activeEntityId.value = activeEntityId.value === id ? null : id;
@@ -156,7 +166,7 @@ function toggleInspector() {
 </script>
 
 <template>
-  <div class="absolute inset-0 overflow-hidden bg-muted/30 flex">
+  <div class="absolute inset-0 overflow-hidden bg-background flex">
     <!-- Open-file tabs live in the app header via the socket. -->
     <HeaderSocket>
       <StudioFileTabs />
@@ -181,17 +191,17 @@ function toggleInspector() {
           :is-docx="isDocxFile"
           :zoom-level="zoomLevel"
           :chat-visible="!inspectorCollapsed"
-          :entities="audit.highlightEntities.value"
+          :entities="redaction.highlightEntities.value"
           :active-entity-id="activeEntityId"
-          :can-add="audit.phase.value === 'complete'"
+          :can-add="detection.phase.value === 'complete'"
           v-model:with-headers="withHeaders"
           @zoom-in="zoomIn"
           @zoom-out="zoomOut"
           @toggle-chat="toggleInspector"
           @focus-entity="focusEntity"
           @clear-entity="clearEntity"
-          @add-entity="audit.addEntity($event)"
-          @toggle-suppress="audit.toggleSuppress"
+          @add-entity="redaction.addEntity($event)"
+          @toggle-suppress="redaction.toggleSuppress"
         />
       </ResizablePanel>
 
@@ -212,11 +222,11 @@ function toggleInspector() {
       >
         <div class="flex h-full min-w-0 flex-col overflow-hidden">
           <StudioDetectionBar
-            v-model:selected-pipeline="audit.selectedPipeline.value"
-            :pipelines="audit.pipelines.value"
-            :phase="audit.phase.value"
-            :can-run="audit.canRun.value"
-            @run="audit.run"
+            v-model:selected-pipeline="detection.selectedPipeline.value"
+            :pipelines="detection.pipelines.value"
+            :phase="detection.phase.value"
+            :can-run="detection.canRun.value"
+            @run="detection.run"
           />
           <Tabs v-model="panelTab" class="border-b border-border/50 p-2">
             <TabsList class="w-full">
@@ -224,10 +234,10 @@ function toggleInspector() {
                 <ScanSearch :size="14" />
                 {{ t("studio.audit.tabAudit") }}
                 <span
-                  v-if="audit.count.value"
+                  v-if="detection.count.value"
                   class="rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground tabular-nums"
                 >
-                  {{ audit.count.value }}
+                  {{ detection.count.value }}
                 </span>
               </TabsTrigger>
               <TabsTrigger value="chat" class="flex-1 gap-1.5">
@@ -249,25 +259,25 @@ function toggleInspector() {
           >
             <StudioAuditPanel
               :file-id="activeFile?.fileId || null"
-              :phase="audit.phase.value"
-              :entities="audit.entities.value"
-              :categorized-groups="audit.categorizedGroups.value"
-              :count="audit.count.value"
-              :error-message="audit.errorMessage.value"
+              :phase="detection.phase.value"
+              :entities="detection.entities.value"
+              :categorized-groups="detection.categorizedGroups.value"
+              :count="detection.count.value"
+              :error-message="detection.errorMessage.value"
               :active-entity-id="activeEntityId"
               :with-headers="withHeaders"
-              :redact-phase="audit.redactPhase.value"
-              :can-redact="audit.canRedact.value"
-              :redact-error="audit.redactError.value"
-              :output="audit.output.value"
-              :suppressed="audit.suppressed.value"
-              :added="audit.added.value"
-              :effective-redact-count="audit.effectiveRedactCount.value"
+              :redact-phase="redaction.redactPhase.value"
+              :can-redact="redaction.canRedact.value"
+              :redact-error="redaction.redactError.value"
+              :output="redaction.output.value"
+              :suppressed="redaction.suppressed.value"
+              :added="redaction.added.value"
+              :effective-redact-count="redaction.effectiveRedactCount.value"
               @focus-entity="focusEntity"
-              @redact="audit.redact"
-              @download-output="audit.downloadRedacted"
-              @toggle-suppress="audit.toggleSuppress"
-              @remove-added="audit.removeAdded"
+              @redact="redaction.redact"
+              @download-output="redaction.downloadRedacted"
+              @toggle-suppress="redaction.toggleSuppress"
+              @remove-added="redaction.removeAdded"
             />
           </div>
         </div>

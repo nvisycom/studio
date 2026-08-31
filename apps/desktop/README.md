@@ -33,7 +33,7 @@ npm run build -w @nvisy/desktop       # Build the frontend
 
 ## License
 
-Apache 2.0 License, see [LICENSE.txt](../../LICENSE.txt)
+GNU Affero General Public License v3.0 (AGPL-3.0), see [LICENSE.txt](../../LICENSE.txt)
 
 ## Support
 

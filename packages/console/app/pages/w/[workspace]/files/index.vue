@@ -44,6 +44,7 @@ const {
 	isLoading,
 	error,
 	deleteFileAsync,
+	deleteFilesAsync,
 	isDeleting,
 	updateFileAsync,
 	isUpdating,
@@ -98,8 +99,9 @@ function handleBulkOpen() {
 
 async function handleDownloadFile(file: NvisyFile) {
 	try {
-		await downloadFile(file.id, file.displayName);
-		toast.success(t("files.messages.downloadStarted"));
+		// On desktop a save can be cancelled (returns false) — don't claim success.
+		const saved = await downloadFile(file.id, file.displayName);
+		if (saved) toast.success(t("files.messages.downloadStarted"));
 	} catch {
 		toast.error(t("files.errors.downloadFailed"));
 	}
@@ -107,11 +109,16 @@ async function handleDownloadFile(file: NvisyFile) {
 
 async function handleBulkDownload() {
 	if (!hasSelection.value) return;
-	try {
-		await downloadMultiple(Array.from(selectedFiles.value));
-		toast.success(t("files.messages.downloadStarted"));
-	} catch {
+	const { saved, failed } = await downloadMultiple(
+		Array.from(selectedFiles.value),
+	);
+	// downloadMultiple never throws (per-file errors are tallied). Report by
+	// outcome: any failures -> error, otherwise success if anything saved. A
+	// pure cancel (nothing saved, nothing failed) stays silent.
+	if (failed > 0) {
 		toast.error(t("files.errors.downloadFailed"));
+	} else if (saved > 0) {
+		toast.success(t("files.messages.downloadStarted"));
 	}
 }
 
@@ -131,10 +138,18 @@ async function confirmDelete() {
 			await deleteFileAsync(fileToDelete.value.id);
 			toast.success(t("files.messages.fileDeleted"));
 		} else if (hasSelection.value) {
-			for (const fileId of Array.from(selectedFiles.value)) {
-				await deleteFileAsync(fileId);
+			// One batch request; the server reports which ids it skipped (unknown,
+			// already gone, or held by an in-progress detection).
+			const { skipped } = await deleteFilesAsync(
+				Array.from(selectedFiles.value),
+			);
+			if (skipped.length > 0) {
+				toast.warning(
+					t("files.messages.filesDeletedPartial", { count: skipped.length }),
+				);
+			} else {
+				toast.success(t("files.messages.filesDeleted"));
 			}
-			toast.success(t("files.messages.filesDeleted"));
 			clearSelection();
 		}
 	} catch {
@@ -202,18 +217,37 @@ function handleDragLeave(e: DragEvent) {
 	}
 }
 
+// Route dropped files through the upload dialog so a drop is validated and
+// reviewed the same as a browse — one unified upload flow.
+function ingestDropped(files: File[]) {
+	if (files.length === 0) return;
+	droppedFiles.value = files;
+	uploadDialogOpen.value = true;
+}
+
 function handleDrop(e: DragEvent) {
 	e.preventDefault();
 	isDraggingOver.value = false;
 
 	const files = e.dataTransfer?.files;
-	if (files && files.length > 0) {
-		// Route the drop through the upload dialog so it's validated and reviewed
-		// the same as a browse — one unified upload flow.
-		droppedFiles.value = Array.from(files);
-		uploadDialogOpen.value = true;
-	}
+	if (files) ingestDropped(Array.from(files));
 }
+
+// On desktop, Tauri intercepts OS file drops before the DOM (so the handlers
+// above never see them); the bridge delivers the files and the drag-over state
+// here instead. On the web neither fires and the DOM path above is used.
+const { onFilesDropped, onDragStateChanged } = useFileBridge();
+onFilesDropped(ingestDropped);
+onDragStateChanged((over) => {
+	isDraggingOver.value = over;
+});
+
+// Publish the workspace's effective upload cap so the desktop host can skip an
+// oversized OS drop by its size before reading it over IPC. No-op on the web.
+const { currentWorkspace } = useWorkspaces();
+watchEffect(() => {
+	setDropSizeLimit(currentWorkspace.value?.settings.maxUploadBytes);
+});
 
 function handleLoadMore() {
 	if (hasMore.value && !isLoadingMore.value) {

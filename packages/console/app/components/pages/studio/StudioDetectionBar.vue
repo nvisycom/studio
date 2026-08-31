@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PipelineSummary } from "@nvisy/sdk/datatypes";
 import { Loader2, Play, RotateCcw } from "@lucide/vue";
-import type { StudioAuditPhase } from "#console/composables/useStudioAudit";
+import type { StudioDetectionPhase } from "#console/composables/useStudioDetection";
 import { Button } from "#console/components/ui/button";
 import {
 	Select,
@@ -15,7 +15,7 @@ const { t } = useI18n();
 
 defineProps<{
 	pipelines: PipelineSummary[] | undefined;
-	phase: StudioAuditPhase;
+	phase: StudioDetectionPhase;
 	canRun: boolean;
 }>();
 

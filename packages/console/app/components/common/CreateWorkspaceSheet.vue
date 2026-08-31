@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Loader2, ChevronDown } from "@lucide/vue";
-import type { CreateWorkspace, OcrPolicy } from "@nvisy/sdk/datatypes";
+import type { CreateWorkspace, RasterPolicy } from "@nvisy/sdk/datatypes";
 import {
 	Sheet,
 	SheetContent,
@@ -18,7 +18,6 @@ import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
 import { Textarea } from "#console/components/ui/textarea";
-import { Switch } from "#console/components/ui/switch";
 import {
 	Select,
 	SelectContent,
@@ -28,7 +27,7 @@ import {
 } from "#console/components/ui/select";
 import { Alert, AlertDescription } from "#console/components/ui/alert";
 import { RetentionFields } from "#console/components/common";
-import { OCR_POLICIES } from "#console/utils/ocr";
+import { RASTER_POLICIES } from "#console/utils/raster";
 import {
 	defaultRetentionForm,
 	formToRetention,
@@ -44,8 +43,7 @@ const { createWorkspaceAsync, isCreating, createError } = useWorkspaces();
 const displayName = ref("");
 const slug = ref("");
 const description = ref("");
-const requireApproval = ref(false);
-const ocr = ref<OcrPolicy>("auto");
+const raster = ref<RasterPolicy>("auto");
 const retention = ref(defaultRetentionForm());
 
 // The slug is immutable and always derived from the workspace name.
@@ -65,8 +63,7 @@ function resetForm() {
 	displayName.value = "";
 	slug.value = "";
 	description.value = "";
-	requireApproval.value = false;
-	ocr.value = "auto";
+	raster.value = "auto";
 	retention.value = defaultRetentionForm();
 	advancedOpen.value = false;
 	retentionOpen.value = false;
@@ -85,8 +82,7 @@ async function createWorkspace() {
 		...(slug.value && { slug: slug.value }),
 		description: description.value.trim() || undefined,
 		settings: {
-			ocr: ocr.value,
-			requireApproval: requireApproval.value,
+			raster: raster.value,
 			retention: formToRetention(retention.value),
 		},
 	};
@@ -188,31 +184,18 @@ async function createWorkspace() {
               </button>
             </CollapsibleTrigger>
             <CollapsibleContent class="space-y-5">
-              <!-- Require Approval -->
-              <div class="flex items-center justify-between gap-4">
-                <div class="space-y-0.5">
-                  <Label for="require-approval">{{
-                    t("workspace.create.requireApprovalLabel")
-                  }}</Label>
-                  <p class="text-xs font-normal text-muted-foreground">
-                    {{ t("workspace.create.requireApprovalDescription") }}
-                  </p>
-                </div>
-                <Switch id="require-approval" v-model="requireApproval" />
-              </div>
-
-              <!-- OCR policy -->
+              <!-- Raster policy -->
               <div class="flex items-center justify-between gap-4">
                 <Label class="font-normal">{{
-                  t("settings.workspace.options.ocr.label")
+                  t("settings.workspace.options.raster.label")
                 }}</Label>
-                <Select v-model="ocr">
+                <Select v-model="raster">
                   <SelectTrigger class="h-9 w-[200px] shrink-0">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem v-for="p in OCR_POLICIES" :key="p" :value="p">
-                      {{ t(`settings.workspace.options.ocr.policies.${p}`) }}
+                    <SelectItem v-for="p in RASTER_POLICIES" :key="p" :value="p">
+                      {{ t(`settings.workspace.options.raster.policies.${p}`) }}
                     </SelectItem>
                   </SelectContent>
                 </Select>

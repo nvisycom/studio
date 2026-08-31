@@ -65,7 +65,8 @@
 		"spotlight": "Schnellbefehl",
 		"enableNotifications": "Benachrichtigungen aktivieren",
 		"disableNotifications": "Benachrichtigungen deaktivieren",
-		"quit": "Beenden"
+		"quit": "Beenden",
+		"unread": "{count} ungelesene Benachrichtigung | {count} ungelesene Benachrichtigungen"
 	},
 	"spotlight": {
 		"label": "Nvisy fragen oder Datei anhängen",
