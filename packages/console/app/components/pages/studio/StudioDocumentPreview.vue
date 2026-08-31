@@ -2,10 +2,7 @@
 import { FileText, Loader2 } from "@lucide/vue";
 import { ZoomControls } from "#console/components/pages/documents";
 import { EntityDetailPopover } from "#console/components/pages/studio";
-import StudioCsvView from "./StudioCsvView.vue";
-import StudioDocxView from "./StudioDocxView.vue";
-import StudioImageView from "./StudioImageView.vue";
-import StudioTextView from "./StudioTextView.vue";
+import { rendererFor } from "./renderers";
 import type { TextEntityView } from "#console/composables/useTextEntities";
 import type { AddEntityInput } from "#console/composables/useStudioRedaction";
 import {
@@ -21,9 +18,6 @@ const props = withDefaults(
 		 * which sub-view renders — not parsed from the display name. */
 		fileExtension: string;
 		isLoading: boolean;
-		isImage: boolean;
-		isText: boolean;
-		isDocx: boolean;
 		zoomLevel: number;
 		chatVisible: boolean;
 		/** Detected entities to highlight in the text (byte-offset spans). */
@@ -55,12 +49,14 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 
-// File kind drives which preview renders. Each kind has its own self-contained
-// component (CSV, text/JSON, DOCX); this component dispatches between them. Keyed
-// off the API's real extension, so a redacted `report.csv.redacted` still reads
-// as CSV.
+// File kind drives which preview renders. Each format family has a self-contained
+// view component, registered in the renderer registry (the single source of truth
+// for extension -> handler); this component looks the renderer up by the API's
+// real extension and dispatches to its lazily-loaded component via `<component
+// :is>`. Keyed off `fileExtension`, so a redacted `report.csv.redacted` (whose
+// `fileExtension` stays `csv`) still resolves to the CSV renderer.
 const fileKind = computed(() => props.fileExtension.toLowerCase());
-const isCsv = computed(() => fileKind.value === "csv");
+const renderer = computed(() => rendererFor(props.fileExtension) ?? null);
 
 // The active view reports its own loading phase (download -> parse/render ->
 // ready | error), so the host shows ONE loader/error for every file kind instead
@@ -74,6 +70,69 @@ watch(
 	},
 	{ immediate: true },
 );
+
+// The renderer's view as an async component, rebuilt when the resolved renderer
+// changes (a different format opened). Wrapping the registry's lazy loader here
+// (rather than in the registry) lets a *chunk load failure* — a network blip
+// fetching the code-split view — surface through the same error phase as any
+// other load failure, instead of leaving the host loader spinning forever. The
+// host already shows its single loader while the chunk fetches (viewPhase starts
+// `downloading`), so no per-renderer loading component is needed.
+const asyncView = computed(() => {
+	const active = renderer.value;
+	if (!active) return null;
+	return defineAsyncComponent({
+		loader: active.component,
+		onError(error, _retry, fail) {
+			viewPhase.value = {
+				status: "error",
+				message: getErrorMessage(error, t("studio.preview.textFailed")),
+			};
+			// Record the failure as an error phase (host shows it) and stop here —
+			// don't retry or rethrow, which would bubble as an unhandled render error.
+			fail();
+		},
+	});
+});
+
+// The common contract every renderer accepts (a superset — a view ignores the
+// props it doesn't declare). View-specific extras (`displayName`, `zoomLevel`,
+// `fileKind`, and the CSV `withHeaders` v-model pair) are folded in per renderer
+// below.
+const commonProps = computed(() => ({
+	contentUrl: props.contentUrl,
+	entities: props.entities,
+	activeEntityId: props.activeEntityId,
+	canAdd: props.canAdd,
+}));
+// Per-kind extra props, keyed by the resolved renderer. Only the handful of views
+// that need more than the common set appear here; everything else gets the common
+// set alone. The CSV view's `with-headers` v-model is threaded as an explicit
+// prop + `onUpdate` here (rather than a template `v-model`) so the generic
+// `<component :is>` doesn't leak a stray `with-headers` attr onto other views.
+const rendererProps = computed<Record<string, unknown>>(() => {
+	const base = commonProps.value;
+	switch (renderer.value?.kind) {
+		case "image":
+			return {
+				...base,
+				displayName: props.displayName,
+				zoomLevel: props.zoomLevel,
+			};
+		case "csv":
+			return {
+				...base,
+				withHeaders: withHeaders.value,
+				"onUpdate:withHeaders": (v: boolean) => {
+					withHeaders.value = v;
+				},
+			};
+		case "text":
+			return { ...base, fileKind: fileKind.value };
+		default:
+			return base;
+	}
+});
 
 // Show the single loader while the file is fetching (`isLoading` from the page)
 // or the active view is still working. Its copy follows the phase.
@@ -191,75 +250,49 @@ watch(
         </div>
       </div>
 
-      <!-- Image file preview -->
-      <StudioImageView
-        v-else-if="!isLoading && isImage"
-        :content-url="contentUrl"
-        :display-name="displayName"
-        :zoom-level="zoomLevel"
-        @phase="viewPhase = $event"
-      />
-
-      <!-- Word document preview (read-only, rendered client-side). Rendered as
-           soon as the bytes are available (behind the loading overlay), so
-           SuperDoc's own loader is never seen — the overlay clears when the view
-           reports `ready`. -->
-      <StudioDocxView
-        v-else-if="!isLoading && isDocx"
-        :content-url="contentUrl"
-        :entities="entities"
-        :active-entity-id="activeEntityId"
-        :can-add="canAdd"
-        @focus-entity="emit('focus-entity', $event)"
-        @add-entity="emit('add-entity', $event)"
-        @phase="viewPhase = $event"
-      />
-
-      <!-- Text file preview: the content sits as a "page" (card) centered on the
-           muted canvas (painted on the scroll container above), matching the DOCX
-           preview's paper-on-canvas look. CSV has its own component (full width
-           so its table can spread); other text/JSON renders in the code view. -->
-      <div v-else-if="!isLoading && isText" class="flex min-h-full flex-col p-6">
-        <StudioCsvView
-          v-if="isCsv"
-          :content-url="contentUrl"
-          :entities="entities"
-          :active-entity-id="activeEntityId"
-          v-model:with-headers="withHeaders"
-          @focus-entity="emit('focus-entity', $event)"
-          @phase="viewPhase = $event"
-        />
-        <StudioTextView
-          v-else
-          :content-url="contentUrl"
-          :file-kind="fileKind"
-          :entities="entities"
-          :active-entity-id="activeEntityId"
-          :can-add="canAdd"
+      <!-- The active file's preview: the registry resolves its renderer by the
+           file's real extension and this dispatches to that renderer's lazily
+           loaded component. Every view takes the shared contentUrl + entity/phase
+           contract (bound via `rendererProps` + the common emit listeners); the
+           per-kind wrapper class supplies the "paper on canvas" padding the
+           text/CSV views expect (image/DOCX lay out edge-to-edge). Rendered behind
+           the loading overlay so a view can initialize underneath it (e.g.
+           SuperDoc) and the overlay clears when the view reports `ready`. -->
+      <div
+        v-else-if="!isLoading && contentUrl && renderer && asyncView"
+        :class="renderer.wrapperClass"
+      >
+        <component
+          :is="asyncView"
+          v-bind="rendererProps"
           @focus-entity="emit('focus-entity', $event)"
           @add-entity="emit('add-entity', $event)"
           @phase="viewPhase = $event"
         />
       </div>
 
-      <!-- Unsupported file type -->
-      <div v-else class="h-full flex items-center justify-center">
+      <!-- Unsupported file type: a file whose extension no renderer handles. -->
+      <div
+        v-else-if="!isLoading && contentUrl"
+        class="h-full flex items-center justify-center"
+      >
         <div class="text-center text-muted-foreground">
           <FileText :size="64" class="mx-auto mb-4 opacity-20" />
           <p class="text-sm font-normal">{{ displayName }}</p>
           <p class="text-xs mt-2">
-            This file type is not supported for preview
+            {{ t("studio.preview.unsupported") }}
           </p>
         </div>
       </div>
     </div>
 
-    <!-- Zoom Controls. DOCX manages its own zoom (SuperDoc), so hide the zoom
-         pill for it — the chat toggle stays. -->
+    <!-- Zoom Controls. A renderer with its own zoom (DOCX/SuperDoc) opts out via
+         the registry, so the generic zoom pill is hidden for it — the chat toggle
+         stays. -->
     <ZoomControls
       :zoom-level="zoomLevel"
       :chat-visible="chatVisible"
-      :show-zoom="!isDocx"
+      :show-zoom="renderer?.supportsZoom ?? false"
       @zoom-in="emit('zoom-in')"
       @zoom-out="emit('zoom-out')"
       @toggle-chat="emit('toggle-chat')"

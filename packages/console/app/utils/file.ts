@@ -56,72 +56,13 @@ export function isAcceptedFileName(fileName: string): boolean {
 	);
 }
 
-/**
- * Extensions rendered as images / as text in the studio preview. These are a
- * *rendering* concern, broader than {@link ACCEPTED_EXTENSIONS} (e.g. `bmp`,
- * `yaml`) — a file's preview mode, not whether it may be uploaded.
- */
-export const IMAGE_EXTENSIONS = [
-	"png",
-	"jpg",
-	"jpeg",
-	"gif",
-	"webp",
-	"bmp",
-	"svg",
-] as const;
-export const TEXT_EXTENSIONS = [
-	"txt",
-	"md",
-	"log",
-	"csv",
-	"json",
-	"xml",
-	"yaml",
-	"yml",
-] as const;
-/**
- * Word documents rendered client-side (SuperDoc). Kept out of
- * {@link TEXT_EXTENSIONS} so they are never read as raw text — the download is
- * the original OOXML zip, not extracted text.
- */
-export const DOCX_EXTENSIONS = ["docx"] as const;
-
-// Extension-first predicates. Prefer these when the API gives you a file's real
-// `fileExtension` — a redacted file's display name (e.g. `report.csv.redacted`)
-// ends in `.redacted`, so deriving the type from the name misreads it, while the
-// `fileExtension` field stays `csv`. The `*FileName` variants below are for
-// local files (a browser `File.name`) that carry no separate extension.
-
-/** Whether an extension is previewed as an image. */
-export function isImageExtension(ext: string): boolean {
-	return (IMAGE_EXTENSIONS as readonly string[]).includes(ext.toLowerCase());
-}
-
-/** Whether an extension is previewed as text. */
-export function isTextExtension(ext: string): boolean {
-	return (TEXT_EXTENSIONS as readonly string[]).includes(ext.toLowerCase());
-}
-
-/** Whether an extension is previewed as a Word document. */
-export function isDocxExtension(ext: string): boolean {
-	return (DOCX_EXTENSIONS as readonly string[]).includes(ext.toLowerCase());
-}
-
-/** Whether a file name should be previewed as an image. */
-export function isImageFileName(fileName: string): boolean {
-	return isImageExtension(getFileExtension(fileName));
-}
-
-/** Whether a file name should be previewed as text. */
-export function isTextFileName(fileName: string): boolean {
-	return isTextExtension(getFileExtension(fileName));
-}
-
-/** Whether a file name should be previewed as a Word document. */
-export function isDocxFileName(fileName: string): boolean {
-	return isDocxExtension(getFileExtension(fileName));
-}
+// NOTE: how a file is *previewed* (image / text / DOCX / …) is no longer decided
+// here. That classification now lives in the studio renderer registry
+// (`components/pages/studio/renderers.ts`), which maps an extension to its view
+// component, detection source, and preview options in one place — so a new format
+// is one registry entry, not a set of predicates + arrays to keep in sync. This
+// file keeps only the *upload* allowlist (`ACCEPTED_EXTENSIONS`) and generic file
+// helpers (extension, size, icon), which aren't preview-specific.
 
 /**
  * Fetch a file's content and expose it as an object URL (e.g. for an <img>/
