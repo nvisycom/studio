@@ -88,7 +88,9 @@ pub async fn open_files<R: Runtime>(
 
     let mut files = Vec::with_capacity(paths.len());
     for path in paths {
-        files.push(read_file(&into_path(path)?)?);
+        // The open picker applies no explicit cap (the upload pipeline enforces
+        // the workspace/server limits); read unbounded.
+        files.push(read_file(&into_path(path)?, None)?);
     }
     Ok(files)
 }
@@ -135,8 +137,10 @@ fn read_files(paths: Vec<PathBuf>, max_bytes: Option<u64>) -> Vec<PickedFile> {
     paths
         .iter()
         .filter(|path| path.is_file())
+        // Cheap metadata pre-check to skip obviously-oversized files; the read
+        // itself also enforces the cap, closing the metadata->read race.
         .filter(|path| within_limit(path, max_bytes))
-        .filter_map(|path| match read_file(path) {
+        .filter_map(|path| match read_file(path, max_bytes) {
             Ok(file) => Some(file),
             Err(error) => {
                 log::warn!("skipping dropped file {}: {error}", path.display());
@@ -227,8 +231,36 @@ fn into_path(path: FilePath) -> Result<PathBuf, String> {
 
 /// Read one file into a `PickedFile`, naming it by its base name. Shared with
 /// the watched-folder module, which reads newly-seen files the same way.
-pub(crate) fn read_file(path: &Path) -> Result<PickedFile, String> {
-    let data = std::fs::read(path).map_err(|error| error.to_string())?;
+///
+/// `max_bytes` bounds the read itself (not just a prior metadata check): the file
+/// is streamed through a limited reader and the read fails if it would exceed the
+/// cap, so a file that grew or was replaced after its size was checked can't load
+/// more than the cap into memory. `None` reads without a bound.
+pub(crate) fn read_file(path: &Path, max_bytes: Option<u64>) -> Result<PickedFile, String> {
+    use std::io::Read;
+
+    let file = std::fs::File::open(path).map_err(|error| error.to_string())?;
+    let data = match max_bytes {
+        // Read one byte past the cap so an at-limit file passes but a larger one
+        // is caught, without trusting the (racy) metadata size.
+        Some(max) => {
+            let mut buf = Vec::new();
+            file.take(max.saturating_add(1))
+                .read_to_end(&mut buf)
+                .map_err(|error| error.to_string())?;
+            if buf.len() as u64 > max {
+                return Err(format!("{} exceeds cap {max} bytes", path.display()));
+            }
+            buf
+        }
+        None => {
+            let mut buf = Vec::new();
+            let mut file = file;
+            file.read_to_end(&mut buf)
+                .map_err(|error| error.to_string())?;
+            buf
+        }
+    };
     let name = path
         .file_name()
         .and_then(|name| name.to_str())

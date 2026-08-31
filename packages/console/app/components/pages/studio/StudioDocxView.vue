@@ -38,8 +38,6 @@ interface Props {
 	activeEntityId?: string | null;
 	/** Whether the reviewer may add entities by selecting text (deferred). */
 	canAdd?: boolean;
-	/** Zoom percentage (100 = actual size). */
-	zoomLevel?: number;
 }
 interface Emits {
 	"focus-entity": [id: string];
@@ -51,7 +49,6 @@ const props = withDefaults(defineProps<Props>(), {
 	entities: () => [],
 	activeEntityId: null,
 	canAdd: false,
-	zoomLevel: 100,
 });
 
 const emit = defineEmits<Emits>();
@@ -68,7 +65,15 @@ const container = ref<HTMLElement | null>(null);
 // paint on the first `onReady`. SuperDoc's public types are broad, so the
 // instance is narrowly typed.
 let superdoc: { destroy?: () => void } | null = null;
+// Rebuild all highlights (re-run the entity->anchor matching). Costly, so only
+// called when the entity set or the file changes.
 let refreshHighlights: (() => void) | null = null;
+// Re-apply just the active-entity state (repaint the `--active` class + scroll),
+// without re-matching. Called when only `activeEntityId` changes.
+let applyActive: (() => void) | null = null;
+// Pending repaint timers, cleared on teardown so a torn-down instance is never
+// invalidated (which would throw uncaught in the timer callback).
+let repaintTimers: ReturnType<typeof setTimeout>[] = [];
 let desiredEntities: TextEntityView[] = [];
 let desiredActiveId: string | null = null;
 
@@ -207,28 +212,38 @@ async function render(url: string, target: HTMLElement) {
 					// and right after a rebuild that range is often still empty (pages
 					// paginate asynchronously). Re-invalidate a few times over the next
 					// moment so `provide` re-runs once the pages have painted — bounded, so
-					// it can't loop.
+					// it can't loop. Tracked so teardown can cancel them.
 					for (const delay of [50, 200, 500, 1000]) {
-						setTimeout(
-							() => ctx.decorations.invalidate("studio.entities"),
-							delay,
+						repaintTimers.push(
+							setTimeout(
+								() => ctx.decorations.invalidate("studio.entities"),
+								delay,
+							),
 						);
 					}
 				};
 
-				// Expose the refresh hook the component calls when props change. It
-				// rebuilds from the current desired state and scrolls the active match
-				// into view.
-				refreshHighlights = () => {
-					void rebuild().then(() => {
-						if (desiredActiveId) {
-							requestAnimationFrame(() => {
-								target
-									.querySelector(`.${CHIP_CLASS}--active`)
-									?.scrollIntoView({ block: "center", behavior: "smooth" });
-							});
-						}
+				// Scroll the active entity's first match into view (after a repaint).
+				const scrollToActive = () => {
+					if (!desiredActiveId) return;
+					requestAnimationFrame(() => {
+						target
+							.querySelector(`.${CHIP_CLASS}--active`)
+							?.scrollIntoView({ block: "center", behavior: "smooth" });
 					});
+				};
+
+				// Full rebuild (re-match every entity) — for entity-set / file changes.
+				refreshHighlights = () => {
+					void rebuild().then(scrollToActive);
+				};
+
+				// Active-only update — the anchor set doesn't depend on the focused
+				// entity, only the `--active` class does, so just repaint + scroll
+				// instead of re-matching the whole document on every focus step.
+				applyActive = () => {
+					ctx.decorations.invalidate("studio.entities");
+					scrollToActive();
 				};
 
 				// Paint once the document is ready — reads whatever desired state has
@@ -278,6 +293,10 @@ async function render(url: string, target: HTMLElement) {
 }
 
 function teardown() {
+	// Cancel any pending repaint timers before dropping the instance — a fired
+	// timer would call `invalidate` on a destroyed SuperDoc and throw uncaught.
+	for (const id of repaintTimers) clearTimeout(id);
+	repaintTimers = [];
 	try {
 		superdoc?.destroy?.();
 	} catch {
@@ -285,6 +304,7 @@ function teardown() {
 	}
 	superdoc = null;
 	refreshHighlights = null;
+	applyActive = null;
 }
 
 // Keep the desired highlight state in sync with props, and repaint if the
@@ -302,7 +322,8 @@ watch(
 	() => props.activeEntityId,
 	(id) => {
 		desiredActiveId = id ?? null;
-		refreshHighlights?.();
+		// Only the active class + scroll change — no need to re-match every entity.
+		applyActive?.();
 	},
 	{ immediate: true },
 );

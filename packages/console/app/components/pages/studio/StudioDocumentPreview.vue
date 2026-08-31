@@ -210,7 +210,6 @@ watch(
         :entities="entities"
         :active-entity-id="activeEntityId"
         :can-add="canAdd"
-        :zoom-level="zoomLevel"
         @focus-entity="emit('focus-entity', $event)"
         @add-entity="emit('add-entity', $event)"
         @phase="viewPhase = $event"
@@ -255,10 +254,12 @@ watch(
       </div>
     </div>
 
-    <!-- Zoom Controls -->
+    <!-- Zoom Controls. DOCX manages its own zoom (SuperDoc), so hide the zoom
+         pill for it — the chat toggle stays. -->
     <ZoomControls
       :zoom-level="zoomLevel"
       :chat-visible="chatVisible"
+      :show-zoom="!isDocx"
       @zoom-in="emit('zoom-in')"
       @zoom-out="emit('zoom-out')"
       @toggle-chat="emit('toggle-chat')"

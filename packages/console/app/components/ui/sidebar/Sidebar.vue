@@ -60,7 +60,14 @@ const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
        grid track, so there's no fixed positioning or per-state width math. The
        `group` + `data-collapsible` carry the collapse state to the sidebar's
        content, which keys off `group-data-[collapsible=icon]` to hide labels and
-       center icons; the width animation makes that reflow smoothly. -->
+       center icons; the width animation makes that reflow smoothly.
+
+       NOTE: the desktop grid places the sidebar in the *leading* track, so only
+       `side="left"` (the default) is supported here — the shell's
+       grid-template-columns is `[sidebar] [rail] [content]`, which the provider
+       owns and doesn't mirror per-Sidebar. `data-side` is still forwarded (the
+       shared content components read it), but a desktop `side="right"` would
+       render in the left track; use the mobile sheet or a left sidebar instead. -->
   <div
     v-else
     data-slot="sidebar"

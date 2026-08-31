@@ -157,19 +157,19 @@ pub fn scan<R: Runtime>(app: &AppHandle<R>, extensions: Vec<String>) {
     emit_backlog(app, &path, &config.workspace_slug, &accepted);
 }
 
-/// Restore the watcher from the persisted config on startup (best-effort). Only
-/// re-arms the watcher for *new* arrivals; the existing backlog is left for the
-/// frontend to request via `scan` once it can upload (the client isn't ready at
-/// boot). Armed with no allowlist because the frontend — which owns it — isn't
-/// ready yet; the frontend's `scan` re-arms it with the allowlist, and its own
-/// `isAcceptedFileName` filters anything emitted before then.
+/// On startup, the watched folder is left *disarmed*: the persisted config is
+/// kept, but no watcher runs until the frontend's `scan` arms it with the
+/// accepted-extension allowlist (which the frontend owns and isn't available at
+/// boot). This deliberately does nothing beyond confirming a config exists —
+/// arming with an empty (accept-all) allowlist would let the watcher read and
+/// emit a disallowed file before `scan`, which we want to avoid. The frontend
+/// calls `scan` as soon as its client is ready, which both arms the watcher and
+/// emits the existing backlog.
 pub fn restore<R: Runtime>(app: &AppHandle<R>) {
-    let Some(config) = settings::watch(app) else {
+    if settings::watch(app).is_none() {
         return;
-    };
-    if let Err(error) = set_folder(app, config.folder, config.workspace_slug, Vec::new(), false) {
-        log::warn!("failed to restore watched folder: {error}");
     }
+    // Intentionally no watcher armed here — see the doc comment. `scan` arms it.
 }
 
 /// Read and emit one file if it's a supported, readable, in-limit regular file.
@@ -182,14 +182,15 @@ fn emit_file<R: Runtime>(
     if !path.is_file() || !is_accepted(path, accepted) {
         return;
     }
-    // Apply the same effective upload cap as native drops, by metadata, before
-    // reading the file into memory — so an oversized file is never read or
-    // emitted just for the server to reject it.
+    // Apply the same effective upload cap as native drops: a cheap metadata
+    // pre-check, plus the bounded read below, so an oversized file is never read
+    // into memory or emitted just for the server to reject it (and a file that
+    // grows after the metadata check still can't exceed the cap).
     let max_bytes = app.state::<crate::files::DropLimit>().get();
     if !crate::files::within_limit(path, max_bytes) {
         return;
     }
-    match read_file(path) {
+    match read_file(path, max_bytes) {
         Ok(PickedFile { name, data }) => {
             let file = FolderFile {
                 name,

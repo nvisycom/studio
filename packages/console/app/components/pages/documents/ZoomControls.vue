@@ -5,6 +5,8 @@ import { Button } from "#console/components/ui/button";
 interface Props {
 	zoomLevel?: number;
 	chatVisible?: boolean;
+	/** Show the zoom pill. Off for views that manage their own zoom (DOCX). */
+	showZoom?: boolean;
 }
 
 interface Emits {
@@ -16,6 +18,7 @@ interface Emits {
 const props = withDefaults(defineProps<Props>(), {
 	zoomLevel: 100,
 	chatVisible: true,
+	showZoom: true,
 });
 
 const emit = defineEmits<Emits>();
@@ -36,8 +39,9 @@ function toggleChat() {
 <template>
   <div class="absolute bottom-6 left-0 right-0 z-20 px-6">
     <div class="flex items-center justify-center">
-      <!-- Zoom Controls (centered) -->
+      <!-- Zoom Controls (centered). Hidden for views with their own zoom. -->
       <div
+        v-if="showZoom"
         class="flex items-center gap-1 bg-white dark:bg-neutral-900 px-2 py-1.5 rounded-md shadow-lg border border-neutral-200 dark:border-neutral-800"
       >
         <Button variant="ghost" size="sm" class="h-6 w-6 p-0" @click="zoomOut">
