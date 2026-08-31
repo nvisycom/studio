@@ -29,7 +29,7 @@ merges the layer's `components/`, `composables/`, `utils/`, `plugins/`, and
 
 ## License
 
-Apache 2.0 License, see [LICENSE.txt](../../LICENSE.txt)
+GNU Affero General Public License v3.0 (AGPL-3.0), see [LICENSE.txt](../../LICENSE.txt)
 
 ## Support
 
