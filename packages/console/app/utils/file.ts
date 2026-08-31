@@ -81,7 +81,7 @@ export const TEXT_EXTENSIONS = [
 	"yml",
 ] as const;
 /**
- * Word documents rendered client-side (docx-preview). Kept out of
+ * Word documents rendered client-side (SuperDoc). Kept out of
  * {@link TEXT_EXTENSIONS} so they are never read as raw text — the download is
  * the original OOXML zip, not extracted text.
  */

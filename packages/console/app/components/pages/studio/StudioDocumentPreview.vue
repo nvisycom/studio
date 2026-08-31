@@ -8,6 +8,10 @@ import StudioImageView from "./StudioImageView.vue";
 import StudioTextView from "./StudioTextView.vue";
 import type { TextEntityView } from "#console/composables/useTextEntities";
 import type { AddEntityInput } from "#console/composables/useStudioRedaction";
+import {
+	type StudioViewPhase,
+	isViewLoading,
+} from "#console/composables/useStudioView";
 
 const props = withDefaults(
 	defineProps<{
@@ -57,6 +61,41 @@ const { t } = useI18n();
 // as CSV.
 const fileKind = computed(() => props.fileExtension.toLowerCase());
 const isCsv = computed(() => fileKind.value === "csv");
+
+// The active view reports its own loading phase (download -> parse/render ->
+// ready | error), so the host shows ONE loader/error for every file kind instead
+// of each view drawing its own. It starts optimistic (`downloading`) whenever a
+// file opens, so the loader shows immediately before the view has mounted/emitted.
+const viewPhase = ref<StudioViewPhase>({ status: "idle" });
+watch(
+	() => props.contentUrl,
+	(url) => {
+		viewPhase.value = { status: url ? "downloading" : "idle" };
+	},
+	{ immediate: true },
+);
+
+// Show the single loader while the file is fetching (`isLoading` from the page)
+// or the active view is still working. Its copy follows the phase.
+const showLoading = computed(
+	() => props.isLoading || isViewLoading(viewPhase.value),
+);
+const loadingMessage = computed(() => {
+	switch (viewPhase.value.status) {
+		case "parsing":
+			return t("studio.preview.parsing");
+		case "rendering":
+			return t("studio.preview.rendering");
+		default:
+			return t("studio.preview.loading");
+	}
+});
+// A view that failed to load — the host shows the error in place of the content.
+const viewError = computed(() =>
+	!props.isLoading && viewPhase.value.status === "error"
+		? (viewPhase.value.message ?? t("studio.preview.textFailed"))
+		: null,
+);
 
 // The focused entity object, for the detail popover.
 const activeEntity = computed(
@@ -115,17 +154,32 @@ watch(
       @toggle-suppress="emit('toggle-suppress', $event)"
     />
     <div class="h-full overflow-y-auto">
-      <!-- Loading state -->
-      <div v-if="isLoading" class="h-full flex items-center justify-center">
+      <!-- Single loading overlay for every file kind, driven by the active
+           view's reported phase. Rendered as an overlay (not v-if against the
+           views) so a view can mount and work *underneath* it (e.g. SuperDoc
+           initializing), and it stays until the view reports `ready`. -->
+      <div
+        v-if="showLoading"
+        class="absolute inset-0 z-20 flex items-center justify-center bg-background"
+      >
         <div class="text-center text-muted-foreground">
           <Loader2 :size="32" class="mx-auto mb-3 animate-spin" />
-          <p class="text-sm font-normal">Loading document...</p>
+          <p class="text-sm font-normal">{{ loadingMessage }}</p>
         </div>
+      </div>
+
+      <!-- Single error overlay, driven by the active view's `error` phase. -->
+      <div
+        v-else-if="viewError"
+        class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-2 px-6 text-center bg-background"
+      >
+        <FileText :size="32" class="text-muted-foreground opacity-40" />
+        <p class="text-sm text-muted-foreground">{{ viewError }}</p>
       </div>
 
       <!-- No file selected state -->
       <div
-        v-else-if="!contentUrl"
+        v-if="!isLoading && !contentUrl"
         class="h-full flex items-center justify-center"
       >
         <div class="text-center text-muted-foreground">
@@ -139,15 +193,19 @@ watch(
 
       <!-- Image file preview -->
       <StudioImageView
-        v-else-if="isImage"
+        v-else-if="!isLoading && isImage"
         :content-url="contentUrl"
         :display-name="displayName"
         :zoom-level="zoomLevel"
+        @phase="viewPhase = $event"
       />
 
-      <!-- Word document preview (read-only, rendered client-side) -->
+      <!-- Word document preview (read-only, rendered client-side). Rendered as
+           soon as the bytes are available (behind the loading overlay), so
+           SuperDoc's own loader is never seen — the overlay clears when the view
+           reports `ready`. -->
       <StudioDocxView
-        v-else-if="isDocx"
+        v-else-if="!isLoading && isDocx"
         :content-url="contentUrl"
         :entities="entities"
         :active-entity-id="activeEntityId"
@@ -155,13 +213,14 @@ watch(
         :zoom-level="zoomLevel"
         @focus-entity="emit('focus-entity', $event)"
         @add-entity="emit('add-entity', $event)"
+        @phase="viewPhase = $event"
       />
 
       <!-- Text file preview: the content sits as a "page" (card) centered on the
            muted canvas (painted on the scroll container above), matching the DOCX
            preview's paper-on-canvas look. CSV has its own component (full width
            so its table can spread); other text/JSON renders in the code view. -->
-      <div v-else-if="isText" class="flex min-h-full flex-col p-6">
+      <div v-else-if="!isLoading && isText" class="flex min-h-full flex-col p-6">
         <StudioCsvView
           v-if="isCsv"
           :content-url="contentUrl"
@@ -169,6 +228,7 @@ watch(
           :active-entity-id="activeEntityId"
           v-model:with-headers="withHeaders"
           @focus-entity="emit('focus-entity', $event)"
+          @phase="viewPhase = $event"
         />
         <StudioTextView
           v-else
@@ -179,6 +239,7 @@ watch(
           :can-add="canAdd"
           @focus-entity="emit('focus-entity', $event)"
           @add-entity="emit('add-entity', $event)"
+          @phase="viewPhase = $event"
         />
       </div>
 

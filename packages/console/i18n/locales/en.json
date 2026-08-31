@@ -1287,6 +1287,9 @@
 			}
 		},
 		"preview": {
+			"loading": "Loading document...",
+			"parsing": "Parsing document...",
+			"rendering": "Rendering document...",
 			"emptyTitle": "No document selected",
 			"emptyDescription": "Select a file from the Files page to preview",
 			"table": "Table",

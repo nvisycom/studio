@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Loader2 } from "@lucide/vue";
 import StudioCodeView from "./StudioCodeView.vue";
 import AddEntityPopover from "./AddEntityPopover.vue";
 import type { TextEntityView } from "#console/composables/useTextEntities";
@@ -9,39 +8,47 @@ import type {
 } from "#console/composables/useStudioRedaction";
 import { useDocumentSegments } from "#console/composables/useDocumentSegments";
 import { useSelectionOffset } from "#console/composables/useSelectionOffset";
+import type { StudioViewPhase } from "#console/composables/useStudioView";
 
 /**
  * Preview for non-tabular text files (plain text, JSON, …) in the code view:
- * numbered gutter, syntax highlighting, and entity chips. Fetches its own
- * content and runs the formatting/highlight pipeline, so the parent just
- * branches on the file kind (parallel to StudioCsvView / StudioDocxView).
+ * numbered gutter, syntax highlighting, and entity chips. A studio view (see the
+ * shared contract in `useStudioView`); it fetches its own content, runs the
+ * formatting/highlight pipeline, and reports its loading `phase` to the host.
  * JSON is prettified + syntax-coloured; other text passes through highlighted.
  *
  * On a complete detection it also lets a reviewer select text and add it as a
  * new entity to redact (a detail-style popover), emitting the byte-offset span
  * + chosen label to the parent.
  */
-const props = withDefaults(
-	defineProps<{
-		/** Blob object URL of the file, or null when nothing is open. */
-		contentUrl: string | null;
-		/** File extension (e.g. "json", "txt"), driving formatting. */
-		fileKind: string;
-		/** Detected entities to highlight (byte-offset spans). */
-		entities?: TextEntityView[];
-		/** Currently focused entity id, for the ring + scroll-into-view. */
-		activeEntityId?: string | null;
-		/** Whether the reviewer may add entities (the detection is complete). */
-		canAdd?: boolean;
-	}>(),
-	{ entities: () => [], activeEntityId: null, canAdd: false },
-);
-
-const emit = defineEmits<{
+// Local interfaces (see the note in StudioDocxView on why the view contract is
+// declared locally). Mirrors the shared StudioViewProps/Emits, plus `fileKind`.
+interface Props {
+	/** Blob object URL of the file, or null when nothing is open. */
+	contentUrl: string | null;
+	/** File extension (e.g. "json", "txt"), driving formatting. */
+	fileKind: string;
+	/** Detected entities to highlight (byte-offset spans). */
+	entities?: TextEntityView[];
+	/** Currently focused entity id, for the ring + scroll-into-view. */
+	activeEntityId?: string | null;
+	/** Whether the reviewer may add entities (the detection is complete). */
+	canAdd?: boolean;
+}
+interface Emits {
 	"focus-entity": [id: string];
 	/** Mark a selected span as a new entity to redact (byte offsets + label). */
 	"add-entity": [payload: AddEntityInput];
-}>();
+	/** Loading phase, so the host shows the single loader/error. */
+	phase: [phase: StudioViewPhase];
+}
+const props = withDefaults(defineProps<Props>(), {
+	entities: () => [],
+	activeEntityId: null,
+	canAdd: false,
+});
+
+const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
 const { resolveLabel } = useLabels();
@@ -57,6 +64,23 @@ const {
 	isLoading: isLoadingText,
 	error: textError,
 } = useBlobText(() => props.contentUrl);
+
+// Report the loading phase to the host (which owns the single loader/error UI):
+// downloading -> ready, or error.
+watch(
+	[() => props.contentUrl, isLoadingText, textError, textContent],
+	([url, loading, error, text]) => {
+		if (!url) emit("phase", { status: "idle" });
+		else if (loading) emit("phase", { status: "downloading" });
+		else if (error)
+			emit("phase", {
+				status: "error",
+				message: t("studio.preview.textFailed"),
+			});
+		else if (text != null) emit("phase", { status: "ready" });
+	},
+	{ immediate: true },
+);
 
 // The pending add: the selection frozen when the popover opened — its byte span
 // (for the redaction edit + the document highlight), its text and rect (for the
@@ -138,20 +162,13 @@ function confirmAdd() {
 </script>
 
 <template>
+  <!-- Loading and error are shown by the host, driven by the `phase` events; the
+       readable page width keeps long code/prose lines from running edge to edge. -->
   <div
-    v-if="isLoadingText"
-    class="flex flex-1 items-center justify-center text-muted-foreground"
+    v-if="!isLoadingText && !textError"
+    ref="codeContainer"
+    class="mx-auto w-full max-w-[850px]"
   >
-    <Loader2 :size="24" class="animate-spin" />
-  </div>
-  <div
-    v-else-if="textError"
-    class="flex flex-1 items-center justify-center text-center text-muted-foreground"
-  >
-    <p class="text-sm">{{ t("studio.preview.textFailed") }}</p>
-  </div>
-  <!-- Readable page width: long code/prose lines shouldn't run edge to edge. -->
-  <div v-else ref="codeContainer" class="mx-auto w-full max-w-[850px]">
     <StudioCodeView
       :lines="lines"
       :active-entity-id="activeEntityId"

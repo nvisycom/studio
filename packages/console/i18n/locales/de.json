@@ -1287,6 +1287,9 @@
 			}
 		},
 		"preview": {
+			"loading": "Dokument wird geladen …",
+			"parsing": "Dokument wird verarbeitet …",
+			"rendering": "Dokument wird gerendert …",
 			"emptyTitle": "Kein Dokument ausgewählt",
 			"emptyDescription": "Wählen Sie auf der Seite „Dateien“ eine Datei zur Vorschau aus",
 			"table": "Tabelle",

@@ -1,35 +1,46 @@
 <script setup lang="ts">
-import { Loader2, Table, WrapText } from "@lucide/vue";
+import { Table, WrapText } from "@lucide/vue";
 import StudioCodeView from "./StudioCodeView.vue";
 import StudioCsvTable from "./StudioCsvTable.vue";
 import { Checkbox } from "#console/components/ui/checkbox";
 import { Label } from "#console/components/ui/label";
 import type { TextEntityView } from "#console/composables/useTextEntities";
 import { useDocumentSegments } from "#console/composables/useDocumentSegments";
+import type { StudioViewPhase } from "#console/composables/useStudioView";
 
 /**
  * CSV preview: a table (default) or the raw syntax-highlighted text, with a
- * toggle and a header-row option. Fetches its own content and runs the
- * formatting/highlight pipeline, so the parent just branches on the file kind
- * (parallel to StudioDocxView). Detected entities highlight in both views.
+ * toggle and a header-row option. A studio view (see the shared contract in
+ * `useStudioView`); it fetches its own content, runs the formatting/highlight
+ * pipeline, and reports its loading `phase` to the host. Entities highlight in
+ * both views.
  */
-const props = withDefaults(
-	defineProps<{
-		/** Blob object URL of the .csv file, or null when nothing is open. */
-		contentUrl: string | null;
-		/** Detected entities to highlight (byte-offset spans). */
-		entities?: TextEntityView[];
-		/** Currently focused entity id, for the ring + scroll-into-view. */
-		activeEntityId?: string | null;
-	}>(),
-	{ entities: () => [], activeEntityId: null },
-);
+// Local interfaces (see the note in StudioDocxView on why the view contract is
+// declared locally rather than imported as a macro generic). Mirrors the shared
+// StudioViewProps/Emits in `useStudioView`.
+interface Props {
+	/** Blob object URL of the .csv file, or null when nothing is open. */
+	contentUrl: string | null;
+	/** Detected entities to highlight (byte-offset spans). */
+	entities?: TextEntityView[];
+	/** Currently focused entity id, for the ring + scroll-into-view. */
+	activeEntityId?: string | null;
+}
+interface Emits {
+	"focus-entity": [id: string];
+	/** Loading phase, so the host shows the single loader/error. */
+	phase: [phase: StudioViewPhase];
+}
+const props = withDefaults(defineProps<Props>(), {
+	entities: () => [],
+	activeEntityId: null,
+});
 
 // Whether the first row is a header. Owned by the page (shared with the audit
 // list so it labels rows the same way), so it's a two-way model.
 const withHeaders = defineModel<boolean>("withHeaders", { default: true });
 
-const emit = defineEmits<{ "focus-entity": [id: string] }>();
+const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
 
@@ -51,22 +62,30 @@ const { formatted, lines } = useDocumentSegments({
 	entities: () => props.entities,
 	fileKind: () => "csv",
 });
+
+// Report the loading phase to the host (which shows the single loader/error):
+// downloading -> parsing -> ready, or error. The fetch + parse are synchronous
+// enough here that `parsing` is brief; the phase still keeps the contract uniform.
+watch(
+	[() => props.contentUrl, isLoadingText, textError, textContent],
+	([url, loading, error, text]) => {
+		if (!url) emit("phase", { status: "idle" });
+		else if (loading) emit("phase", { status: "downloading" });
+		else if (error)
+			emit("phase", {
+				status: "error",
+				message: t("studio.preview.textFailed"),
+			});
+		else if (text != null) emit("phase", { status: "ready" });
+	},
+	{ immediate: true },
+);
 </script>
 
 <template>
-  <div
-    v-if="isLoadingText"
-    class="flex flex-1 items-center justify-center text-muted-foreground"
-  >
-    <Loader2 :size="24" class="animate-spin" />
-  </div>
-  <div
-    v-else-if="textError"
-    class="flex flex-1 items-center justify-center text-center text-muted-foreground"
-  >
-    <p class="text-sm">{{ t("studio.preview.textFailed") }}</p>
-  </div>
-  <div v-else class="mx-auto w-full space-y-3">
+  <!-- Loading and error are shown by the host, driven by the `phase` events
+       above; render content once it's ready. -->
+  <div v-if="!isLoadingText && !textError" class="mx-auto w-full space-y-3">
     <!-- Controls: table/raw toggle + header-row option -->
     <div class="flex items-center justify-between gap-3">
       <div class="inline-flex rounded-md border border-border/50 p-0.5">
