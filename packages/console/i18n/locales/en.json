@@ -1292,6 +1292,7 @@
 			"rendering": "Rendering document...",
 			"emptyTitle": "No document selected",
 			"emptyDescription": "Select a file from the Files page to preview",
+			"unsupported": "This file type is not supported for preview",
 			"table": "Table",
 			"raw": "Raw",
 			"withHeaders": "With headers",

@@ -1,10 +1,7 @@
 export { default as StudioDocumentPreview } from "./StudioDocumentPreview.vue";
-export { default as StudioCsvTable } from "./StudioCsvTable.vue";
-export { default as StudioCsvView } from "./StudioCsvView.vue";
-export { default as StudioTextView } from "./StudioTextView.vue";
-export { default as StudioImageView } from "./StudioImageView.vue";
-export { default as StudioDocxView } from "./StudioDocxView.vue";
-export { default as StudioCodeView } from "./StudioCodeView.vue";
+// The per-format view components (image/CSV/text/DOCX) are not exported here:
+// they're internal to the renderer registry (see `renderers.ts`), which is the
+// only thing that mounts them, and the CSV table / code view they compose from.
 export { default as EntityDetailPopover } from "./EntityDetailPopover.vue";
 export { default as StudioChatPanel } from "./StudioChatPanel.vue";
 export { default as StudioAuditPanel } from "./StudioAuditPanel.vue";

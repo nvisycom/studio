@@ -9,6 +9,7 @@ import {
 	StudioAuditPanel,
 	StudioDetectionBar,
 } from "#console/components/pages/studio";
+import { rendererFor } from "#console/components/pages/studio/renderers";
 import {
 	ResizablePanelGroup,
 	ResizablePanel,
@@ -38,13 +39,19 @@ onMounted(() => {
 	restoreSession();
 });
 
-// File type detection (drives which preview renderer to show). Keyed off the
-// file's real `fileExtension` from the API, not its display name — a redacted
-// file is named `report.csv.redacted`, so the name's suffix would misread it.
+// The renderer for the active file, resolved from the registry by the file's real
+// `fileExtension` from the API (not its display name — a redacted file is named
+// `report.csv.redacted`, so the name's suffix would misread it). This is the
+// single source of truth for how the file is handled; the detection-source below
+// keys off it, so a new format is one registry entry, not edits here.
 const fileExtension = computed(() => activeFile.value?.fileExtension ?? "");
-const isImageFile = computed(() => isImageExtension(fileExtension.value));
-const isTextFile = computed(() => isTextExtension(fileExtension.value));
-const isDocxFile = computed(() => isDocxExtension(fileExtension.value));
+const renderer = computed(() => rendererFor(fileExtension.value) ?? null);
+// Which content form detection needs for the active file (see the registry). The
+// two fetches below arm off this, so adding a text-backed format needs no change
+// here — its registry entry declaring `detectionSource: "text"` is enough.
+const detectionSource = computed(
+	() => renderer.value?.detectionSource ?? "none",
+);
 
 const zoomLevel = ref(100);
 
@@ -65,7 +72,7 @@ const withHeaders = ref(true);
 // files have usable content; others leave this null.
 const documentText = ref<string | null>(null);
 watch(
-	[() => activeFile.value?.contentUrl, isTextFile],
+	[() => activeFile.value?.contentUrl, () => detectionSource.value === "text"],
 	async ([url, isText]) => {
 		documentText.value = null;
 		if (!url || !isText) return;
@@ -87,7 +94,10 @@ watch(
 // has no flat text, so `documentText` stays null for it.
 const docxParts = ref<Map<string, Uint8Array> | null>(null);
 watch(
-	[() => activeFile.value?.contentUrl, isDocxFile],
+	[
+		() => activeFile.value?.contentUrl,
+		() => detectionSource.value === "docx-parts",
+	],
 	async ([url, isDocx]) => {
 		docxParts.value = null;
 		if (!url || !isDocx) return;
@@ -186,9 +196,6 @@ function toggleInspector() {
           :display-name="activeFile?.displayName || ''"
           :file-extension="fileExtension"
           :is-loading="activeFile?.isLoading || false"
-          :is-image="isImageFile"
-          :is-text="isTextFile"
-          :is-docx="isDocxFile"
           :zoom-level="zoomLevel"
           :chat-visible="!inspectorCollapsed"
           :entities="redaction.highlightEntities.value"

@@ -1292,6 +1292,7 @@
 			"rendering": "Dokument wird gerendert …",
 			"emptyTitle": "Kein Dokument ausgewählt",
 			"emptyDescription": "Wählen Sie auf der Seite „Dateien“ eine Datei zur Vorschau aus",
+			"unsupported": "Dieser Dateityp wird in der Vorschau nicht unterstützt",
 			"table": "Tabelle",
 			"raw": "Roh",
 			"withHeaders": "Mit Kopfzeile",
