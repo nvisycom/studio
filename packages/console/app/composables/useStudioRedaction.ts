@@ -108,17 +108,34 @@ export function useStudioRedaction(target: RedactionTarget) {
 	// text) for now.
 	let nextAddedId = 0;
 	const added = ref<AddedEntity[]>([]);
+	// Bumped whenever the edit set changes. A redaction captures it at the start
+	// and only publishes its output if it still matches — so an edit made while a
+	// redaction is in flight can't be overwritten by that now-stale result.
+	let editRevision = 0;
 
 	function resetEdits() {
 		suppressed.value = new Set();
 		added.value = [];
 		nextAddedId = 0;
+		editRevision++;
 	}
 
 	function resetRedaction() {
 		redactPhase.value = "idle";
 		redactError.value = "";
 		output.value = null;
+	}
+
+	// An edit makes any existing or in-flight redaction stale: its output no
+	// longer matches the displayed edit set. Bump the revision (so `redact`'s
+	// guard discards a result already in flight) and drop the phase back to
+	// not-yet-applied, so the reviewer re-runs rather than downloading — or waiting
+	// on — a redaction that doesn't match. "idle" needs no reset.
+	function invalidateOutput() {
+		editRevision++;
+		if (redactPhase.value !== "idle") {
+			resetRedaction();
+		}
 	}
 
 	/** Whether an entity is kept (excluded from redaction). */
@@ -132,16 +149,19 @@ export function useStudioRedaction(target: RedactionTarget) {
 		if (next.has(id)) next.delete(id);
 		else next.add(id);
 		suppressed.value = next;
+		invalidateOutput();
 	}
 
 	/** Add a reviewer-marked entity (a byte span + label + shown text) to redact. */
 	function addEntity(input: AddEntityInput) {
 		added.value = [...added.value, { id: `added:${nextAddedId++}`, ...input }];
+		invalidateOutput();
 	}
 
 	/** Drop a previously added entity by its index. */
 	function removeAdded(index: number) {
 		added.value = added.value.filter((_, i) => i !== index);
+		invalidateOutput();
 	}
 
 	const suppressedCount = computed(
@@ -260,12 +280,16 @@ export function useStudioRedaction(target: RedactionTarget) {
 	async function redact() {
 		const detection = detectionId.value;
 		if (!detection || redactPhase.value === "redacting") return;
+		// Capture the edit set this run is for; if the reviewer edits mid-request,
+		// the revision moves and we drop the now-stale result.
+		const revision = editRevision;
 		redactPhase.value = "redacting";
 		redactError.value = "";
 		try {
 			const result = await createRedaction(detection, buildEditSet());
-			// The target detection changed mid-request — drop this stale result.
-			if (detectionId.value !== detection) return;
+			// The target detection changed, or the edits moved on — drop this stale
+			// result rather than publishing output that doesn't match the panel.
+			if (detectionId.value !== detection || editRevision !== revision) return;
 			if (!result.outputFileId)
 				throw new Error("The redaction produced no output file.");
 			output.value = {
@@ -274,7 +298,7 @@ export function useStudioRedaction(target: RedactionTarget) {
 			};
 			redactPhase.value = "done";
 		} catch (err) {
-			if (detectionId.value !== detection) return;
+			if (detectionId.value !== detection || editRevision !== revision) return;
 			redactPhase.value = "failed";
 			redactError.value = getErrorMessage(err, t("studio.audit.redactFailed"));
 		}

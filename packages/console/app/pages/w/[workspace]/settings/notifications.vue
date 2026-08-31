@@ -22,6 +22,10 @@ useHead({ title: "Notifications" });
 const { isDesktop } = usePlatform();
 const { notifications: nativeBridge } = useNativeNotifications();
 const nativeEnabled = ref(true);
+// True while a set request is in flight; disables the switch so rapid toggles
+// can't fire overlapping invokes (Tauri gives no ordering guarantee, so the last
+// to *complete* — not the last clicked — would otherwise win).
+const nativePending = ref(false);
 
 onMounted(async () => {
 	const get = nativeBridge.value.getEnabled;
@@ -36,9 +40,10 @@ onMounted(async () => {
 
 async function toggleNative(enabled: boolean) {
 	const set = nativeBridge.value.setEnabled;
-	if (!set) return;
+	if (!set || nativePending.value) return;
 	const previous = nativeEnabled.value;
 	nativeEnabled.value = enabled;
+	nativePending.value = true;
 	try {
 		await set(enabled);
 	} catch (err) {
@@ -46,6 +51,8 @@ async function toggleNative(enabled: boolean) {
 		toast.error(t("settings.notifications.errors.saveFailed"), {
 			description: getErrorMessage(err, t("common.errors.tryAgain")),
 		});
+	} finally {
+		nativePending.value = false;
 	}
 }
 
@@ -303,6 +310,7 @@ async function saveEventSettings() {
                 </div>
                 <Switch
                   :model-value="nativeEnabled"
+                  :disabled="nativePending"
                   @update:model-value="toggleNative"
                 />
               </div>

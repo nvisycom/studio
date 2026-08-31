@@ -43,8 +43,26 @@ export function useNotifications() {
 		return client;
 	}
 
+	// Record the current newest notification as the baseline, so the existing
+	// backlog on a fresh stream connection isn't replayed as "just arrived". Runs
+	// once per connection, on connect — *before* any rise is processed. An empty
+	// inbox leaves the baseline null, so the very first real arrival still emits
+	// (rather than being consumed as the baseline).
+	async function seedBaseline() {
+		if (seededArrivals) return;
+		try {
+			const items = (await requireClient().notifications.listNotifications())
+				.items;
+			lastEmittedId = items[0]?.id ?? null;
+			seededArrivals = true;
+		} catch {
+			// Best-effort; if it fails we retry seeding on the next connection.
+		}
+	}
+
 	// Fetch the latest notifications and emit any newer than the last we emitted,
-	// oldest-first so subscribers see them in arrival order. Runs on a count rise.
+	// oldest-first so subscribers see them in arrival order. Runs on a count rise,
+	// after the baseline has been seeded.
 	async function emitNewArrivals() {
 		if (arrivalHandlers.size === 0) return;
 		let items: Notification[];
@@ -52,13 +70,6 @@ export function useNotifications() {
 			items = (await requireClient().notifications.listNotifications()).items;
 		} catch {
 			return; // best-effort; the badge count is still correct
-		}
-		// The list is newest-first. On the first run just record the head as the
-		// baseline, so we don't replay the backlog as "just arrived".
-		if (!seededArrivals) {
-			seededArrivals = true;
-			lastEmittedId = items[0]?.id ?? null;
-			return;
 		}
 		const fresh: Notification[] = [];
 		for (const n of items) {
@@ -77,14 +88,20 @@ export function useNotifications() {
 		if (streamStarted) return;
 		streamStarted = true;
 		let stopped = false;
+		// Incremented on every token change; a subscribe loop stops as soon as it
+		// sees a newer generation, so a new account never runs two loops at once.
+		let generation = 0;
 		let retryTimer: ReturnType<typeof setTimeout> | undefined;
 
-		async function subscribe() {
-			while (!stopped) {
+		async function subscribe(gen: number) {
+			while (!stopped && gen === generation) {
 				if (!isAuthenticated()) break;
 				try {
+					// Baseline the existing backlog before processing any rise, so the
+					// first genuine arrival (even from an empty inbox) still emits.
+					await seedBaseline();
 					for await (const event of requireClient().notifications.streamEvents()) {
-						if (stopped) break;
+						if (stopped || gen !== generation) break;
 						const rose = event.unreadCount > unreadCount.value;
 						unreadCount.value = event.unreadCount;
 						if (rose) void emitNewArrivals();
@@ -92,7 +109,7 @@ export function useNotifications() {
 				} catch {
 					// Swallow — a dropped/failed stream is retried below.
 				}
-				if (stopped) break;
+				if (stopped || gen !== generation) break;
 				await new Promise<void>((resolve) => {
 					retryTimer = setTimeout(resolve, STREAM_RETRY_MS);
 				});
@@ -102,7 +119,14 @@ export function useNotifications() {
 		watch(
 			() => authToken.value?.apiToken,
 			(token) => {
-				if (token) subscribe();
+				// A token change means a (possibly different) account: retire the old
+				// loop's generation and reset the per-account arrival state so stale
+				// stream updates can't leak into the next account.
+				generation++;
+				unreadCount.value = 0;
+				lastEmittedId = null;
+				seededArrivals = false;
+				if (token) subscribe(generation);
 			},
 			{ immediate: true },
 		);

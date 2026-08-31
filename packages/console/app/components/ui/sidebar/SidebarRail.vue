@@ -40,7 +40,9 @@ const { toggleSidebar } = useSidebar();
   padding-block: 0.5rem;
   cursor: col-resize;
 }
-@media (min-width: 768px) {
+/* Above the provider's mobile breakpoint (max-width: 768px). Exclusive of 768px
+   so the rail never shows in mobile mode, which has no `rail` grid track. */
+@media (min-width: 769px) {
   .sidebar-rail {
     display: flex;
   }
