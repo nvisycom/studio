@@ -5,8 +5,9 @@ use tauri_plugin_notification::NotificationExt;
 
 use crate::auth::AuthState;
 use crate::files::{self, FileFilter, PickedFile};
+use crate::settings::{self, WatchConfig};
 use crate::tray::{self, TrayLabels};
-use crate::{settings, spotlight};
+use crate::{spotlight, watch};
 
 /// Push localized tray-menu labels resolved from the web layer's i18n catalog.
 /// Called once the frontend boots and again whenever the user switches language,
@@ -111,4 +112,52 @@ pub fn notify<R: Runtime>(app: AppHandle<R>, title: String, body: String) {
         return;
     }
     let _ = app.notification().builder().title(title).body(body).show();
+}
+
+/// Prompt for a folder to watch, auto-uploading its files to `workspace_slug`
+/// (accepting only the given extensions, lower-case, no dot). Emits the existing
+/// backlog and then new arrivals as `folder-file` events; persists the config.
+/// Returns the chosen config, or null if the user cancelled the picker.
+#[tauri::command]
+pub async fn set_watch_folder<R: Runtime>(
+    app: AppHandle<R>,
+    workspace_slug: String,
+    extensions: Vec<String>,
+) -> Result<Option<WatchConfig>, String> {
+    let Some(folder) = files::pick_folder(&app).await? else {
+        return Ok(None);
+    };
+    let folder = folder.to_string_lossy().into_owned();
+    // Fresh pick: emit the backlog now — the frontend is authed and listening.
+    watch::set_folder(
+        &app,
+        folder.clone(),
+        workspace_slug.clone(),
+        extensions,
+        true,
+    )?;
+    Ok(Some(WatchConfig {
+        folder,
+        workspace_slug,
+    }))
+}
+
+/// Re-emit the watched folder's current backlog. The frontend calls this once
+/// authenticated, to upload files that were present before it could receive them
+/// (a restored watch on startup arms before login).
+#[tauri::command]
+pub fn scan_watch_folder<R: Runtime>(app: AppHandle<R>) {
+    watch::scan(&app);
+}
+
+/// The current watched-folder config, or null if none is set.
+#[tauri::command]
+pub fn watch_folder<R: Runtime>(app: AppHandle<R>) -> Option<WatchConfig> {
+    watch::config(&app)
+}
+
+/// Stop watching and clear the persisted watched-folder config.
+#[tauri::command]
+pub fn clear_watch_folder<R: Runtime>(app: AppHandle<R>) {
+    watch::clear(&app);
 }

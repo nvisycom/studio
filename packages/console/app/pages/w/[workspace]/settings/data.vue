@@ -23,7 +23,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#console/components/ui/card";
-import { RetentionFields } from "#console/components/common";
+import { RetentionFields, WatchedFolderCard } from "#console/components/common";
 import { RASTER_POLICIES } from "#console/utils/raster";
 import {
 	RETENTION_TARGETS,
@@ -43,6 +43,8 @@ definePageMeta({
 
 const { t } = useI18n();
 const sectionTabs = useSectionTabs();
+// The watched-folder card is a desktop-only, device-scoped ingestion setting.
+const { isDesktop } = usePlatform();
 
 const {
 	currentWorkspace,
@@ -228,6 +230,13 @@ async function saveWorkspaceSettings() {
             </Button>
           </CardFooter>
         </Card>
+
+        <!-- Watched folder (desktop only): auto-upload files from a local folder
+             into this workspace. -->
+        <WatchedFolderCard
+          v-if="isDesktop"
+          :workspace-slug="currentWorkspaceSlug ?? ''"
+        />
       </div>
     </div>
   </div>

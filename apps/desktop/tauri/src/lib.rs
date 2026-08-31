@@ -4,6 +4,7 @@ mod files;
 mod settings;
 mod spotlight;
 mod tray;
+mod watch;
 
 use tauri::Manager;
 
@@ -20,6 +21,7 @@ pub fn run() {
         .plugin(global_shortcut_plugin())
         .manage(auth::AuthState::default())
         .manage(files::DropLimit::default())
+        .manage(watch::WatchState::default())
         .invoke_handler(tauri::generate_handler![
             commands::set_tray_labels,
             commands::set_authed,
@@ -33,6 +35,10 @@ pub fn run() {
             commands::notify,
             commands::notifications_enabled,
             commands::set_notifications_enabled,
+            commands::set_watch_folder,
+            commands::watch_folder,
+            commands::clear_watch_folder,
+            commands::scan_watch_folder,
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {
@@ -68,6 +74,9 @@ pub fn run() {
 
             // Register the global hotkey that toggles the launcher from anywhere.
             register_spotlight_shortcut(app.handle());
+
+            // Resume watching a previously configured folder (auto-upload).
+            watch::restore(app.handle());
 
             Ok(())
         })

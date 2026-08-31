@@ -270,6 +270,20 @@
 			"errors": {
 				"saveFailed": "Failed to save notification settings"
 			}
+		},
+		"watchedFolder": {
+			"title": "Watched folder",
+			"description": "Files added to a local folder upload to this workspace automatically.",
+			"none": "No folder is being watched.",
+			"hint": "Choose a folder to watch on this device.",
+			"boundElsewhere": "A folder is watched for another workspace. Choosing one here will move it to this workspace.",
+			"choose": "Choose folder",
+			"change": "Change",
+			"stop": "Stop",
+			"errors": {
+				"setFailed": "Could not start watching the folder",
+				"clearFailed": "Could not stop watching"
+			}
 		}
 	},
 	"overview": {

@@ -8,6 +8,7 @@ export { default as TagInput } from "./TagInput.vue";
 export { default as AvatarUploadCard } from "./AvatarUploadCard.vue";
 export { default as ConfirmDialog } from "./ConfirmDialog.vue";
 export { default as DangerZoneCard } from "./DangerZoneCard.vue";
+export { default as WatchedFolderCard } from "./WatchedFolderCard.vue";
 export { default as EnabledSwitch } from "./EnabledSwitch.vue";
 export { default as PasswordInput } from "./PasswordInput.vue";
 export { default as FeatureGate } from "./FeatureGate.vue";

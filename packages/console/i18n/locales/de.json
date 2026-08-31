@@ -270,6 +270,20 @@
 			"errors": {
 				"saveFailed": "Fehler beim Speichern der Benachrichtigungseinstellungen"
 			}
+		},
+		"watchedFolder": {
+			"title": "Überwachter Ordner",
+			"description": "Dateien in einem lokalen Ordner werden automatisch in diesen Workspace hochgeladen.",
+			"none": "Es wird kein Ordner überwacht.",
+			"hint": "Wählen Sie einen Ordner auf diesem Gerät zur Überwachung.",
+			"boundElsewhere": "Ein Ordner wird für einen anderen Workspace überwacht. Eine Auswahl hier verschiebt ihn in diesen Workspace.",
+			"choose": "Ordner wählen",
+			"change": "Ändern",
+			"stop": "Stopp",
+			"errors": {
+				"setFailed": "Ordnerüberwachung konnte nicht gestartet werden",
+				"clearFailed": "Überwachung konnte nicht beendet werden"
+			}
 		}
 	},
 	"overview": {

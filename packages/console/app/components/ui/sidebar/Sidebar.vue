@@ -5,12 +5,7 @@ import { Sheet, SheetContent } from "#console/components/ui/sheet";
 import SheetDescription from "#console/components/ui/sheet/SheetDescription.vue";
 import SheetHeader from "#console/components/ui/sheet/SheetHeader.vue";
 import SheetTitle from "#console/components/ui/sheet/SheetTitle.vue";
-import {
-	SIDEBAR_WIDTH,
-	SIDEBAR_WIDTH_ICON,
-	SIDEBAR_WIDTH_MOBILE,
-	useSidebar,
-} from "./utils";
+import { SIDEBAR_WIDTH_MOBILE, useSidebar } from "./utils";
 
 defineOptions({
 	inheritAttrs: false,
@@ -71,7 +66,6 @@ const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
     :data-side="side"
     class="sidebar-column group bg-sidebar hidden h-full min-h-0 flex-col overflow-hidden md:flex"
     :class="cn(props.class)"
-    :style="{ width: state === 'collapsed' ? SIDEBAR_WIDTH_ICON : SIDEBAR_WIDTH }"
     v-bind="$attrs"
   >
     <slot />
@@ -81,9 +75,11 @@ const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
 <style scoped>
 .sidebar-column {
   grid-column: sidebar / rail;
-  /* Smooth, decelerating width change. The nav labels fade with it (below) so
-     the contents don't just clip as the column shrinks. */
-  transition: width 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  /* The column just fills the animated `sidebar` track (see SidebarProvider);
+     the width motion lives on the track itself. Labels fade in step (below) so
+     the contents don't clip as the column shrinks. */
+  width: 100%;
+  min-width: 0;
 }
 
 /* Fade the menu-item labels out as the sidebar collapses (and in as it expands)

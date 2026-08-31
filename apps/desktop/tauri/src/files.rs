@@ -202,6 +202,19 @@ async fn pick_save_path<R: Runtime>(
     rx.await.ok().flatten()
 }
 
+/// Show a native folder picker and return the chosen directory, or `None` if the
+/// user cancelled. Used to choose the watched folder.
+pub async fn pick_folder<R: Runtime>(app: &AppHandle<R>) -> Result<Option<PathBuf>, String> {
+    let (tx, rx) = oneshot::channel();
+    app.dialog().file().pick_folder(move |path| {
+        let _ = tx.send(path);
+    });
+    match rx.await.ok().flatten() {
+        Some(path) => Ok(Some(into_path(path)?)),
+        None => Ok(None),
+    }
+}
+
 /// Resolve a dialog `FilePath` to a real path. The panels always return a path
 /// (never a bare URI), so a missing path is an internal error, not a user one.
 fn into_path(path: FilePath) -> Result<PathBuf, String> {
@@ -209,8 +222,9 @@ fn into_path(path: FilePath) -> Result<PathBuf, String> {
         .map_err(|error| format!("unexpected non-path file selection: {error}"))
 }
 
-/// Read one picked file into a `PickedFile`, naming it by its base name.
-fn read_file(path: &Path) -> Result<PickedFile, String> {
+/// Read one file into a `PickedFile`, naming it by its base name. Shared with
+/// the watched-folder module, which reads newly-seen files the same way.
+pub(crate) fn read_file(path: &Path) -> Result<PickedFile, String> {
     let data = std::fs::read(path).map_err(|error| error.to_string())?;
     let name = path
         .file_name()

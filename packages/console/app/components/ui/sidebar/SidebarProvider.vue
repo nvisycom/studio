@@ -113,14 +113,29 @@ provideSidebarContext({
   </TooltipProvider>
 </template>
 
+<!-- Register the sidebar-track width as an animatable custom property. Must be a
+     *non-scoped* block: `@property` is a global at-rule, and scoping would mangle
+     the name so it never registers. `inherits: false` is essential — an
+     inheriting registered property referenced down the tree can loop the cascade
+     and freeze the main thread. As a typed <length> it transitions smoothly, so
+     the whole grid track (and the grey chrome edge) animates from one source;
+     the column just fills it (see Sidebar.vue). -->
+<style>
+@property --sidebar-w {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+</style>
+
 <style scoped>
 /* One spacing token drives the shell's uniform inset: the gap around the
    floating card, the sidebar's inset from the window, and the rail-track width.
-   The sidebar track is a *fixed* length (--sidebar-w), switched instantly by
-   collapse state. The smooth width animation lives on the sidebar column itself
-   (see Sidebar.vue); because the track is fixed rather than content-sized, the
-   column animating inside it never forces a per-frame grid intrinsic-size
-   recalc — which is what locked the main thread when the track was `auto`. */
+   The sidebar track (--sidebar-w) is a *fixed* length per collapse state, but
+   registered (above) so it can transition — animating the track itself, not the
+   column inside it. A fixed (non-`auto`) track means no per-frame grid
+   intrinsic-size recalc, which is what locked the main thread when it was
+   `auto`. */
 .sidebar-shell {
   --shell-inset: 0.5rem;
   display: grid;
@@ -130,6 +145,8 @@ provideSidebarContext({
   width: 100%;
   overflow: hidden;
   padding: var(--shell-inset);
+  /* Smooth, decelerating collapse/expand of the whole track. */
+  transition: --sidebar-w 220ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* Mobile: no sidebar/rail tracks — the sidebar is an overlay sheet, content
    fills the shell with no floating inset. */
