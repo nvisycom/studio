@@ -31,6 +31,15 @@ function handleSend() {
 	emit("send");
 	value.value = "";
 }
+
+// Enter submits, but not mid-IME composition — pressing Enter to pick a CJK
+// candidate must not send (and clear) the draft. Guard before preventing the
+// default so the composition keystroke still reaches the textarea.
+function onEnter(event: KeyboardEvent) {
+	if (event.isComposing) return;
+	event.preventDefault();
+	handleSend();
+}
 </script>
 
 <template>
@@ -41,7 +50,7 @@ function handleSend() {
       v-model="value"
       :placeholder="t('studio.chat.inputPlaceholder')"
       class="min-h-[120px] border-0 focus-visible:ring-0 resize-none pl-3 pr-12 pb-12"
-      @keydown.enter.exact.prevent="handleSend"
+      @keydown.enter.exact="onEnter"
     />
     <!-- Buttons inside textarea -->
     <div

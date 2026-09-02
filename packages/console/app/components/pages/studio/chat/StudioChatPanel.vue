@@ -138,6 +138,15 @@ function sendMessage() {
 	chatMessage.value = "";
 }
 
+// Enter sends, except mid-IME composition — pressing Enter to pick a CJK
+// candidate must not send (and clear) the draft. Guard before preventing the
+// default so the composition keystroke still reaches the textarea.
+function onEnter(event: KeyboardEvent) {
+	if (event.isComposing) return;
+	event.preventDefault();
+	sendMessage();
+}
+
 // Resize handling. useEventListener auto-removes on scope dispose, so a
 // mid-drag unmount can't leak document listeners.
 function startResize(e: MouseEvent) {
@@ -322,7 +331,7 @@ function startResize(e: MouseEvent) {
           v-model="chatMessage"
           :placeholder="t('studio.chat.placeholder')"
           class="h-full w-full rounded-none border-0 border-t focus-visible:ring-0 resize-none break-words pb-12 text-sm font-normal"
-          @keydown.enter.exact.prevent="sendMessage"
+          @keydown.enter.exact="onEnter"
         />
 
         <!-- Action bar inside textarea area -->
