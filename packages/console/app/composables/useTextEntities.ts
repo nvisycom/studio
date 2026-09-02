@@ -213,10 +213,14 @@ export function useTextEntities(
 
 	// Text cluster key: body vs metadata-only occurrences never merge (the `group`,
 	// so a row's clickability is unambiguous and the stepper never lands off-page);
-	// the byte span only breaks a tie when there's no matched value.
+	// the location only breaks a tie when there's no matched value. For tabular it
+	// must carry the cell (row/column) too — the byte offsets are *within* the cell,
+	// so two cells' entities can share them.
 	const textClusterKey = (item: TextEntityView) => ({
 		group: item.locatable === false ? "meta" : "body",
-		location: `${item.start}:${item.end}`,
+		location: item.cell
+			? `${item.cell.row}:${item.cell.column}:${item.start}:${item.end}`
+			: `${item.start}:${item.end}`,
 	});
 
 	/**

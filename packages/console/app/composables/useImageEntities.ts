@@ -69,9 +69,10 @@ export function useImageEntities(audit: MaybeRefOrGetter<Audit | null>) {
 
 	const count = computed(() => entities.value.length);
 
-	// Image cluster key: distinct boxes only break a tie when there's no value.
+	// Image cluster key: distinct boxes only break a tie when there's no value; the
+	// page is part of the identity (a multi-page doc can repeat a box across pages).
 	const imageClusterKey = (item: ImageEntityView) => ({
-		location: `${item.box.minX},${item.box.minY},${item.box.maxX},${item.box.maxY}`,
+		location: `${item.page ?? 0}:${item.box.minX},${item.box.minY},${item.box.maxX},${item.box.maxY}`,
 	});
 
 	const categorizedGroups = computed<ImageCategorizedGroup[]>(() =>
