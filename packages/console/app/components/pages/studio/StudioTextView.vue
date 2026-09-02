@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import StudioCodeView from "./StudioCodeView.vue";
+import AddEntityHint from "./AddEntityHint.vue";
 import AddEntityPopover from "./AddEntityPopover.vue";
 import type { TextEntityView } from "#console/composables/useTextEntities";
 import type {
-	AddEntityInput,
+	AddTextEntityInput,
 	PendingAdd,
 } from "#console/composables/useStudioRedaction";
 import { useDocumentSegments } from "#console/composables/useDocumentSegments";
@@ -38,7 +39,7 @@ interface Props {
 interface Emits {
 	"focus-entity": [id: string];
 	/** Mark a selected span as a new entity to redact (byte offsets + label). */
-	"add-entity": [payload: AddEntityInput];
+	"add-text-entity": [payload: AddTextEntityInput];
 	/** Loading phase, so the host shows the single loader/error. */
 	phase: [phase: StudioViewPhase];
 }
@@ -87,7 +88,21 @@ watch(
 // popover). Frozen so the popover survives the browser selection collapsing when
 // the reviewer clicks the label picker.
 const pending = ref<PendingAdd | null>(null);
+// When a selection is made before detection completes (adding disabled), a hint
+// anchors here instead of the add popover — the selection itself stays untouched.
+const hintRect = ref<DOMRect | null>(null);
 const pendingLabel = ref("");
+
+// The location descriptor shown in the add-entity popover: the selection's byte
+// range (the popover is modality-agnostic, so the caller supplies this).
+const pendingLocation = computed(() =>
+	pending.value
+		? t("studio.audit.bytes", {
+				start: pending.value.byteStart,
+				end: pending.value.byteEnd,
+			})
+		: "",
+);
 
 // While the popover is open, highlight the pending span with the same chip
 // treatment (a distinct `pending` category) so the reviewer keeps seeing what
@@ -130,7 +145,18 @@ const { selection, clear: clearSelection } = useSelectionOffset(codeContainer);
 // selection: our own `pending` chip marks the span, so the blue selection doesn't
 // linger and compete with it.
 watch(selection, (sel) => {
-	if (!addEnabled.value || !sel) return;
+	if (!sel) {
+		hintRect.value = null;
+		return;
+	}
+	// Adding needs a completed detection. Before that, don't hijack the selection:
+	// leave the native selection intact (so copy/read works) and just show a hint
+	// anchored to it, so the reviewer learns why nothing happened.
+	if (!addEnabled.value) {
+		hintRect.value = sel.rect;
+		return;
+	}
+	hintRect.value = null;
 	pending.value = {
 		...charRangeToBytes(sel.start, sel.end),
 		text: sel.text,
@@ -151,7 +177,7 @@ function cancelAdd() {
 function confirmAdd() {
 	const p = pending.value;
 	if (!p || !pendingLabel.value) return;
-	emit("add-entity", {
+	emit("add-text-entity", {
 		byteStart: p.byteStart,
 		byteEnd: p.byteEnd,
 		label: pendingLabel.value,
@@ -178,9 +204,17 @@ function confirmAdd() {
     <!-- Add a missed entity: a detail-style card below the text selection. -->
     <AddEntityPopover
       v-model:label="pendingLabel"
-      :pending="pending"
+      :rect="pending?.rect ?? null"
+      :location="pendingLocation"
       @confirm="confirmAdd"
       @cancel="cancelAdd"
+    />
+
+    <!-- Hint when text is selected before detection completes. -->
+    <AddEntityHint
+      :rect="hintRect"
+      :message="t('studio.preview.addNeedsDetection')"
+      @dismiss="hintRect = null"
     />
   </div>
 </template>

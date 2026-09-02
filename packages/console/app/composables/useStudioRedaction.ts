@@ -1,7 +1,13 @@
-import type { EditSet, TextLocation } from "@nvisy/sdk/datatypes";
+import type {
+	EditSet,
+	ImageLocation,
+	TextLocation,
+} from "@nvisy/sdk/datatypes";
 import type { Ref } from "vue";
 import { toast } from "vue-sonner";
 import type { TextEntityView } from "#console/composables/useTextEntities";
+import type { ImageEntityView } from "#console/composables/useImageEntities";
+import type { StudioEntityView } from "#console/composables/useStudioEntities";
 import type { StudioDetectionPhase } from "#console/composables/useStudioDetection";
 
 /** Lifecycle of applying redactions to a complete detection. */
@@ -17,7 +23,7 @@ export interface RedactionOutput {
  * The raw-source part byte span a DOCX add carries (`TextLocation.source`).
  * DOCX has no flat decoded stream on the client, so a reviewer's selection is
  * located by the exact raw bytes it covers in its container part (usually
- * `word/document.xml`). Absent for flat-text adds, whose {@link AddedEntity}
+ * `word/document.xml`). Absent for flat-text adds, whose {@link AddedTextEntity}
  * `byteStart`/`byteEnd` already index the shown file (→ `location.range`).
  */
 export interface AddedSource {
@@ -32,7 +38,7 @@ export interface AddedSource {
  * offsets locate it in the source; `text` is the selected value, for display.
  * For DOCX, `source` carries the raw part byte span the redaction targets.
  */
-export interface AddedEntity {
+export interface AddedTextEntity {
 	id: string;
 	label: string;
 	byteStart: number;
@@ -41,14 +47,39 @@ export interface AddedEntity {
 	source?: AddedSource;
 }
 
-/** The document-selection payload the reviewer confirms into an {@link AddedEntity}. */
-export interface AddEntityInput {
+/** The document-selection payload the reviewer confirms into an {@link AddedTextEntity}. */
+export interface AddTextEntityInput {
 	byteStart: number;
 	byteEnd: number;
 	label: string;
 	text: string;
 	/** Raw part byte span, for a DOCX add (see {@link AddedSource}). */
 	source?: AddedSource;
+}
+
+/** A bounding box in an image's natural pixel coordinates. */
+export interface AddImageBox {
+	minX: number;
+	minY: number;
+	maxX: number;
+	maxY: number;
+}
+
+/**
+ * An image entity the reviewer added by drawing a box — a region the detection
+ * missed. `id` is a stable client key (for the overlay + focus); `box` locates it
+ * in the image's natural pixel coordinates; `label` is what the reviewer marked it.
+ */
+export interface AddedImageEntity {
+	id: string;
+	label: string;
+	box: AddImageBox;
+}
+
+/** The drawn-box payload the reviewer confirms into an {@link AddedImageEntity}. */
+export interface AddImageEntityInput {
+	label: string;
+	box: AddImageBox;
 }
 
 /**
@@ -70,7 +101,8 @@ export interface RedactionTarget {
 	phase: Ref<StudioDetectionPhase>;
 	detectionId: Ref<string | null>;
 	detectionFileName: Ref<string | null>;
-	entities: Ref<TextEntityView[]>;
+	/** Detected entities of the audit's modality (text/tabular or image). */
+	entities: Ref<StudioEntityView[]>;
 	count: Ref<number>;
 }
 
@@ -107,7 +139,10 @@ export function useStudioRedaction(target: RedactionTarget) {
 	// display, to redact what the detection missed. Text-modality only (plain
 	// text) for now.
 	let nextAddedId = 0;
-	const added = ref<AddedEntity[]>([]);
+	const addedTexts = ref<AddedTextEntity[]>([]);
+	// Image entities the reviewer added by drawing a box (region the detection
+	// missed) — image-modality adds, kept separate from the text-shaped `added`.
+	const addedImages = ref<AddedImageEntity[]>([]);
 	// Bumped whenever the edit set changes. A redaction captures it at the start
 	// and only publishes its output if it still matches — so an edit made while a
 	// redaction is in flight can't be overwritten by that now-stale result.
@@ -115,7 +150,8 @@ export function useStudioRedaction(target: RedactionTarget) {
 
 	function resetEdits() {
 		suppressed.value = new Set();
-		added.value = [];
+		addedTexts.value = [];
+		addedImages.value = [];
 		nextAddedId = 0;
 		editRevision++;
 	}
@@ -152,15 +188,35 @@ export function useStudioRedaction(target: RedactionTarget) {
 		invalidateOutput();
 	}
 
-	/** Add a reviewer-marked entity (a byte span + label + shown text) to redact. */
-	function addEntity(input: AddEntityInput) {
-		added.value = [...added.value, { id: `added:${nextAddedId++}`, ...input }];
+	// Added-entity ids are prefixed so a single `removeAdded(id)` can route to the
+	// right list (image adds carry the `added:img:` prefix; text adds `added:`).
+	const IMAGE_ADD_PREFIX = "added:img:";
+
+	/** Add a reviewer-marked text entity (a byte span + label + shown text). */
+	function addTextEntity(input: AddTextEntityInput) {
+		addedTexts.value = [
+			...addedTexts.value,
+			{ id: `added:${nextAddedId++}`, ...input },
+		];
 		invalidateOutput();
 	}
 
-	/** Drop a previously added entity by its index. */
-	function removeAdded(index: number) {
-		added.value = added.value.filter((_, i) => i !== index);
+	/** Add a reviewer-drawn image region (a box + label) to redact. */
+	function addImageEntity(input: AddImageEntityInput) {
+		addedImages.value = [
+			...addedImages.value,
+			{ id: `${IMAGE_ADD_PREFIX}${nextAddedId++}`, ...input },
+		];
+		invalidateOutput();
+	}
+
+	/** Drop a previously added entity by its id (text or image). */
+	function removeAdded(id: string) {
+		if (id.startsWith(IMAGE_ADD_PREFIX)) {
+			addedImages.value = addedImages.value.filter((a) => a.id !== id);
+		} else {
+			addedTexts.value = addedTexts.value.filter((a) => a.id !== id);
+		}
 		invalidateOutput();
 	}
 
@@ -169,17 +225,21 @@ export function useStudioRedaction(target: RedactionTarget) {
 	);
 	/**
 	 * How many entities the redaction will actually redact: detected entities
-	 * (minus kept ones) plus the ones the reviewer added.
+	 * (minus kept ones) plus the ones the reviewer added (text spans + image boxes).
 	 */
 	const effectiveRedactCount = computed(
-		() => count.value - suppressedCount.value + added.value.length,
+		() =>
+			count.value -
+			suppressedCount.value +
+			addedTexts.value.length +
+			addedImages.value.length,
 	);
 
 	// Reviewer-added entities as highlight-ready views, so the document preview
 	// marks them with the same chip treatment as detected ones (colored by the
 	// label's category). Their id is a stable synthetic key, not a server id.
-	const addedEntities = computed<TextEntityView[]>(() =>
-		added.value.map((a) => ({
+	const addedTextEntities = computed<TextEntityView[]>(() =>
+		addedTexts.value.map((a) => ({
 			id: a.id,
 			modality: "text",
 			label: a.label,
@@ -202,32 +262,83 @@ export function useStudioRedaction(target: RedactionTarget) {
 		})),
 	);
 
-	// Entities the document highlights: everything detected plus the reviewer's
-	// additions, each flagged with its suppressed state so a kept entity's chip
-	// dims (it won't be redacted). The audit panel keeps its own detected-vs-added
-	// split; this is only for the in-document overlay.
+	// Detected text/tabular entities (the audit is one modality; image entities go
+	// to the image overlay below). Narrowed off the union.
+	const detectedTextEntities = computed<TextEntityView[]>(() =>
+		entities.value.filter((e): e is TextEntityView => e.modality !== "image"),
+	);
+
+	// Text entities the document highlights: the detected text/tabular ones plus the
+	// reviewer's text additions, each flagged with its suppressed state so a kept
+	// entity's chip dims (it won't be redacted). This drives the text/DOCX/CSV
+	// overlay; the audit panel keeps its own detected-vs-added split.
 	const highlightEntities = computed<TextEntityView[]>(() =>
-		[...entities.value, ...addedEntities.value].map((e) => ({
+		[...detectedTextEntities.value, ...addedTextEntities.value].map((e) => ({
 			...e,
 			suppressed: suppressed.value.has(e.id),
 		})),
 	);
 
-	// Assemble the reviewer edits into the redaction EditSet: a `suppress` edit
-	// per kept entity (bucketed by modality) and an `add` edit per reviewer-marked
-	// span (text-modality). Returns undefined when there are no edits, so the
+	// Reviewer-added image regions as overlay-ready views, so the image preview
+	// draws them with the same box treatment as detected image entities.
+	const addedImageEntities = computed<ImageEntityView[]>(() =>
+		addedImages.value.map((a) => ({
+			id: a.id,
+			modality: "image",
+			label: a.label,
+			category: resolveLabel(a.label)?.category ?? null,
+			confidence: 1,
+			box: a.box,
+			added: true,
+		})),
+	);
+
+	// Image entities the preview overlays: detected image boxes (from the audit)
+	// plus the reviewer's drawn boxes, each flagged with its suppressed state so a
+	// kept box dims. Detected image entities are narrowed off the union.
+	const highlightImageEntities = computed<ImageEntityView[]>(() => {
+		const detected = entities.value.filter(
+			(e): e is ImageEntityView => e.modality === "image",
+		);
+		return [...detected, ...addedImageEntities.value].map((e) => ({
+			...e,
+			suppressed: suppressed.value.has(e.id),
+		}));
+	});
+
+	// All reviewer-added entities (any modality) as views, for the audit list's
+	// "added by you" band — so a drawn image box shows there like an added text span.
+	const addedEntities = computed<StudioEntityView[]>(() => [
+		...addedTextEntities.value,
+		...addedImageEntities.value,
+	]);
+
+	// Assemble the reviewer edits into the redaction EditSet: a `suppress` edit per
+	// kept entity (bucketed by modality) and an `add` edit per reviewer-marked span
+	// (text) or drawn box (image). Returns undefined when there are no edits, so the
 	// redact call omits `edits` (redact exactly as detected).
 	function buildEditSet(): EditSet | undefined {
-		if (suppressed.value.size === 0 && added.value.length === 0)
+		if (
+			suppressed.value.size === 0 &&
+			addedTexts.value.length === 0 &&
+			addedImages.value.length === 0
+		)
 			return undefined;
 		const text: NonNullable<EditSet["text"]> = [];
 		const tabular: NonNullable<EditSet["tabular"]> = [];
+		const image: NonNullable<EditSet["image"]> = [];
+		// A kept entity's suppress edit goes to its own modality's bucket.
 		for (const entity of entities.value) {
 			if (!suppressed.value.has(entity.id)) continue;
-			const bucket = entity.modality === "tabular" ? tabular : text;
+			const bucket =
+				entity.modality === "tabular"
+					? tabular
+					: entity.modality === "image"
+						? image
+						: text;
 			bucket.push({ op: "suppress", id: entity.id });
 		}
-		for (const a of added.value) {
+		for (const a of addedTexts.value) {
 			// `range` carries the add's byte span. For a flat-text add (plain text /
 			// JSON) that's the document byte offset, exactly as detected entities
 			// carry it. For a DOCX add there's no flat decoded stream to offset into,
@@ -246,10 +357,22 @@ export function useStudioRedaction(target: RedactionTarget) {
 			}
 			text.push({ op: "add", label: a.label, location });
 		}
+		for (const a of addedImages.value) {
+			// A drawn box is an image `add` located by its bounding box in the image's
+			// natural pixel coordinates.
+			const location: ImageLocation = {
+				bounding_box: {
+					min: { x: a.box.minX, y: a.box.minY },
+					max: { x: a.box.maxX, y: a.box.maxY },
+				},
+			};
+			image.push({ op: "add", label: a.label, location });
+		}
 		const set: EditSet = {};
 		if (text.length) set.text = text;
 		if (tabular.length) set.tabular = tabular;
-		return text.length || tabular.length ? set : undefined;
+		if (image.length) set.image = image;
+		return text.length || tabular.length || image.length ? set : undefined;
 	}
 
 	// Redaction is offered once a detection is complete (and isn't already
@@ -355,10 +478,12 @@ export function useStudioRedaction(target: RedactionTarget) {
 		suppressed,
 		isSuppressed,
 		toggleSuppress,
-		added,
-		addEntity,
+		addTextEntity,
+		addImageEntity,
 		removeAdded,
+		addedEntities,
 		highlightEntities,
+		highlightImageEntities,
 		suppressedCount,
 		effectiveRedactCount,
 	};

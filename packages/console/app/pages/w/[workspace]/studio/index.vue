@@ -173,6 +173,32 @@ watch(
 	{ immediate: true },
 );
 
+// OCR layout for the image preview's optional overlay, fetched from the same
+// intermediates endpoint once a detection completes for an image file. Optional,
+// like the audio transcript: null when there are no intermediates.
+const imageOcr = ref<ImageLayout | null>(null);
+watch(
+	[
+		() => detection.detectionId.value,
+		() => detection.phase.value,
+		() => detectionSource.value === "image-ocr",
+	],
+	async ([detectionId, phase, isImage]) => {
+		imageOcr.value = null;
+		if (!detectionId || phase !== "complete" || !isImage) return;
+		try {
+			const set = await getIntermediates(detectionId);
+			if (detection.detectionId.value !== detectionId) return;
+			const body = set?.body;
+			imageOcr.value =
+				body?.modality === "image" ? toImageLayout(body.artifact) : null;
+		} catch {
+			if (detection.detectionId.value === detectionId) imageOcr.value = null;
+		}
+	},
+	{ immediate: true },
+);
+
 // Reviewer edits + applying redactions to the complete detection. Takes the
 // detection's state as input; resets itself whenever the detection changes.
 const redaction = useStudioRedaction({
@@ -238,11 +264,14 @@ function toggleInspector() {
           :active-entity-id="activeEntityId"
           :can-add="detection.phase.value === 'complete'"
           :audio-transcript-state="audioTranscriptState"
+          :image-entities="redaction.highlightImageEntities.value"
+          :image-ocr="imageOcr"
           v-model:with-headers="withHeaders"
           @toggle-chat="toggleInspector"
           @focus-entity="focusEntity"
           @clear-entity="clearEntity"
-          @add-entity="redaction.addEntity($event)"
+          @add-text-entity="redaction.addTextEntity($event)"
+          @add-image-entity="redaction.addImageEntity($event)"
           @toggle-suppress="redaction.toggleSuppress"
         />
       </ResizablePanel>
@@ -313,7 +342,7 @@ function toggleInspector() {
               :redact-error="redaction.redactError.value"
               :output="redaction.output.value"
               :suppressed="redaction.suppressed.value"
-              :added="redaction.added.value"
+              :added="redaction.addedEntities.value"
               :effective-redact-count="redaction.effectiveRedactCount.value"
               @focus-entity="focusEntity"
               @redact="redaction.redact"

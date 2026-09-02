@@ -5,7 +5,12 @@ import { EntityDetailPopover } from "#console/components/pages/studio";
 import { rendererFor } from "./renderers";
 import type { AudioTranscriptState } from "./StudioAudioView.vue";
 import type { TextEntityView } from "#console/composables/useTextEntities";
-import type { AddEntityInput } from "#console/composables/useStudioRedaction";
+import type { ImageEntityView } from "#console/composables/useImageEntities";
+import type { ImageLayout } from "#console/composables/useImageLayout";
+import type {
+	AddTextEntityInput,
+	AddImageEntityInput,
+} from "#console/composables/useStudioRedaction";
 import {
 	type StudioViewPhase,
 	isViewLoading,
@@ -29,12 +34,18 @@ const props = withDefaults(
 		/** The active audio file's transcript state (from detection intermediates),
 		 * forwarded to the audio view. Defaults to hidden (no completed detection). */
 		audioTranscriptState?: AudioTranscriptState;
+		/** Detected image entities (bounding boxes), forwarded to the image view. */
+		imageEntities?: ImageEntityView[];
+		/** OCR layout for the image view's optional overlay, when available. */
+		imageOcr?: ImageLayout | null;
 	}>(),
 	{
 		entities: () => [],
 		activeEntityId: null,
 		canAdd: false,
 		audioTranscriptState: () => ({ kind: "hidden" }),
+		imageEntities: () => [],
+		imageOcr: null,
 	},
 );
 
@@ -47,8 +58,10 @@ const emit = defineEmits<{
 	"focus-entity": [id: string];
 	/** Clear the current entity selection (popover dismissed). */
 	"clear-entity": [];
-	/** A reviewer marked a text span as a new entity to redact. */
-	"add-entity": [payload: AddEntityInput];
+	/** A reviewer marked a text span as a new entity to redact (text/DOCX/CSV). */
+	"add-text-entity": [payload: AddTextEntityInput];
+	/** A reviewer drew a box marking a new image region to redact. */
+	"add-image-entity": [payload: AddImageEntityInput];
 	/** Keep/redact toggle for an entity (from its detail popover). */
 	"toggle-suppress": [id: string];
 }>();
@@ -126,7 +139,12 @@ const rendererProps = computed<Record<string, unknown>>(() => {
 	const base = commonProps.value;
 	switch (renderer.value?.kind) {
 		case "image":
-			return { ...base, displayName: props.displayName };
+			return {
+				...base,
+				displayName: props.displayName,
+				entities: props.imageEntities,
+				ocr: props.imageOcr,
+			};
 		case "audio":
 			return {
 				...base,
@@ -280,7 +298,8 @@ watch(
           :is="asyncView"
           v-bind="rendererProps"
           @focus-entity="emit('focus-entity', $event)"
-          @add-entity="emit('add-entity', $event)"
+          @add-text-entity="emit('add-text-entity', $event)"
+          @add-image-entity="emit('add-image-entity', $event)"
           @phase="viewPhase = $event"
         />
       </div>

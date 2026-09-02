@@ -32,10 +32,17 @@ import type { Component } from "vue";
  *   enrichment intermediates (audio: there's no client-side text; the transcript
  *   is the searchable content, with timings for the timeline). Optional — a
  *   detection may have none.
- * - `none` — nothing to scan client-side (images: detection is server/OCR-side,
- *   not from a text blob).
+ * - `image-ocr` — the server's OCR layout for an image, fetched from the
+ *   detection's intermediates (for the optional overlay). Entity boxes come from
+ *   the audit directly. Optional — a detection may have no OCR.
+ * - `none` — nothing to scan/fetch client-side.
  */
-export type DetectionSource = "text" | "docx-parts" | "transcript" | "none";
+export type DetectionSource =
+	| "text"
+	| "docx-parts"
+	| "transcript"
+	| "image-ocr"
+	| "none";
 
 /** One registered file-format family and how the studio previews it. */
 export interface StudioRenderer {
@@ -76,7 +83,12 @@ export const STUDIO_RENDERERS: readonly StudioRenderer[] = [
 		kind: "image",
 		extensions: ["png", "jpg", "jpeg", "gif", "webp", "bmp", "svg"],
 		component: () => import("./StudioImageView.vue"),
-		detectionSource: "none",
+		// Detection runs server-side; the OCR layout (for the optional overlay) comes
+		// from the detection's intermediates once it completes. Entity boxes come from
+		// the audit directly. Both optional.
+		detectionSource: "image-ocr",
+		// Fill the preview height so the floating controls pin to the viewport bottom.
+		wrapperClass: "h-full",
 	},
 	{
 		kind: "audio",
