@@ -4,7 +4,7 @@ import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
 import { Checkbox } from "#console/components/ui/checkbox";
-import { FeatureGate } from "#console/components/common";
+import { FeatureGate } from "#console/components/shared";
 import { NvisyApiError } from "@nvisy/sdk";
 
 const { t } = useI18n();

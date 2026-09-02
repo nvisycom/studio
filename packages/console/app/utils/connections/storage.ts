@@ -1,4 +1,4 @@
-import type { ConnectionConfig } from "@nvisy/sdk/datatypes";
+import type { ConnectionConfig, StorageConfig } from "@nvisy/sdk/datatypes";
 import type { CredentialField } from "./shared";
 
 /**
@@ -53,6 +53,67 @@ export const STORAGE_PROVIDERS: Record<StorageProvider, CredentialField[]> = {
 		{ key: "endpoint", labelKey: "endpoint", required: false },
 	],
 };
+
+/**
+ * Assembles a typed `StorageConfig` from the raw credential values the connect
+ * form collected (keyed by `CredentialField.key`, which mirrors each provider's
+ * credential shape) plus an optional root path.
+ *
+ * The per-provider switch narrows `provider` to a literal so each arm is checked
+ * against the matching `StorageConfig` credential shape — no unsafe cast. Empty
+ * optional fields are dropped so they don't override server-side defaults.
+ */
+export function buildStorageConfig(
+	provider: StorageProvider,
+	values: Record<string, string>,
+	rootPath?: string,
+): StorageConfig {
+	const root = rootPath?.trim();
+	const withRoot = root ? { rootPath: root } : {};
+	const val = (key: string) => values[key]?.trim();
+	const optional = (key: string) => {
+		const v = val(key);
+		return v ? { [key]: v } : {};
+	};
+
+	switch (provider) {
+		case "s3":
+			return {
+				provider,
+				credentials: {
+					bucket: val("bucket") ?? "",
+					accessKeyId: val("accessKeyId") ?? "",
+					secretAccessKey: val("secretAccessKey") ?? "",
+					...optional("region"),
+					...optional("endpoint"),
+					...optional("sessionToken"),
+				},
+				...withRoot,
+			};
+		case "azure":
+			return {
+				provider,
+				credentials: {
+					accountName: val("accountName") ?? "",
+					container: val("container") ?? "",
+					...optional("accessKey"),
+					...optional("sasToken"),
+					...optional("endpoint"),
+				},
+				...withRoot,
+			};
+		case "gcs":
+			return {
+				provider,
+				credentials: {
+					bucket: val("bucket") ?? "",
+					...optional("serviceAccountKeyJson"),
+					...optional("endpoint"),
+				},
+				...withRoot,
+			};
+	}
+}
 
 /**
  * Maps an explore-page provider card id to the SDK storage provider it creates

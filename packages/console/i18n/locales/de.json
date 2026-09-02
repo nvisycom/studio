@@ -1211,6 +1211,23 @@
 	"studio": {
 		"chat": {
 			"placeholder": "Änderungen beschreiben...",
+			"inputPlaceholder": "Geben Sie hier Ihre Nachricht ein.",
+			"send": "Nachricht senden",
+			"saveEdit": "Änderung speichern",
+			"attach": "Anhängen",
+			"upload": "Hochladen",
+			"generate": "Generieren",
+			"summarize": "Zusammenfassen",
+			"greeting": "Hallo! Ich kann Ihnen helfen, dieses Dokument zu prüfen und zu redigieren. Fragen Sie mich etwas oder nutzen Sie die Werkzeuge unten.",
+			"processing": "Ich arbeite daran…",
+			"copy": "Kopieren",
+			"copied": "Kopiert",
+			"edit": "Bearbeiten",
+			"thumbsUp": "Gute Antwort",
+			"thumbsDown": "Schlechte Antwort",
+			"retry": "Wiederholen",
+			"you": "Sie",
+			"assistant": "Assistent",
 			"tools": {
 				"highlight": "Hervorheben",
 				"annotate": "Annotieren"

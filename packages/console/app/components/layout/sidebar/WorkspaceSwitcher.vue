@@ -14,9 +14,9 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "#console/components/ui/sidebar";
-import { EntityAvatar } from "#console/components/common";
+import { EntityAvatar } from "#console/components/avatar";
 import { truncate } from "#console/utils/naming";
-import CreateWorkspaceSheet from "#console/components/common/CreateWorkspaceSheet.vue";
+import CreateWorkspaceSheet from "#console/components/shared/CreateWorkspaceSheet.vue";
 
 const { t } = useI18n();
 const { isMobile } = useSidebar();

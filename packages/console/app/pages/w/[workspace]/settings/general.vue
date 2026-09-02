@@ -5,7 +5,8 @@ import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
 import { Textarea } from "#console/components/ui/textarea";
-import { AvatarUploadCard, DangerZoneCard } from "#console/components/common";
+import { AvatarUploadCard } from "#console/components/avatar";
+import { DangerZoneCard } from "#console/components/pages/settings";
 import { Card, CardContent, CardFooter } from "#console/components/ui/card";
 import {
 	AlertDialog,

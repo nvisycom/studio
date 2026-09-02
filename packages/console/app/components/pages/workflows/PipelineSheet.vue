@@ -12,7 +12,7 @@ import { Label } from "#console/components/ui/label";
 import { Button } from "#console/components/ui/button";
 import { Badge } from "#console/components/ui/badge";
 import { Textarea } from "#console/components/ui/textarea";
-import { EnabledSwitch } from "#console/components/common";
+import { EnabledSwitch } from "#console/components/shared";
 import { MultiSelect } from "#console/components/ui/multi-select";
 import {
 	Select,

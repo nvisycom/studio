@@ -13,7 +13,7 @@ import {
 	User,
 	Key,
 } from "@lucide/vue";
-import { EntityAvatar } from "#console/components/common";
+import { EntityAvatar } from "#console/components/avatar";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -36,7 +36,7 @@ import {
 import { Kbd } from "#console/components/ui/kbd";
 import { personLabel } from "#console/utils/naming";
 import CommandMenu from "#console/components/layout/CommandMenu.vue";
-import CreateWorkspaceSheet from "#console/components/common/CreateWorkspaceSheet.vue";
+import CreateWorkspaceSheet from "#console/components/shared/CreateWorkspaceSheet.vue";
 
 const { t, locale, locales, setLocale } = useI18n();
 const { wLink } = useWorkspaceLink();

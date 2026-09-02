@@ -15,8 +15,9 @@ import {
 } from "@lucide/vue";
 import type { RowAction } from "#console/components/pages/RowActions.vue";
 import type { VirtualColumn } from "#console/components/ui/virtual-table";
-import { EntityAvatar, FilePicker } from "#console/components/common";
-import { DetectionDetailSheet } from "#console/components/pages/detections";
+import { EntityAvatar } from "#console/components/avatar";
+import { FilePicker } from "#console/components/shared";
+import { DetectionDetailSheet } from "#console/components/pages/workflows";
 import { personLabel } from "#console/utils/naming";
 import { toast } from "vue-sonner";
 import { Button } from "#console/components/ui/button";

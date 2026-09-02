@@ -1,7 +1,7 @@
 import { h } from "vue";
 import type { VNodeChild } from "vue";
 import { Badge } from "#console/components/ui/badge";
-import { EntityAvatar } from "#console/components/common";
+import { EntityAvatar } from "#console/components/avatar";
 import type { VirtualCell } from "./columns";
 
 /** Resolves a `#cell-<key>` slot for the "custom" cell type. */

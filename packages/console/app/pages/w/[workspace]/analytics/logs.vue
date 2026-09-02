@@ -21,7 +21,7 @@ import {
 import { Button } from "#console/components/ui/button";
 import { personLabel } from "#console/utils/naming";
 import { activityContent } from "#console/utils/activities";
-import { ActivityIcon } from "#console/components/common";
+import { ActivityIcon } from "#console/components/shared";
 import { VirtualTable } from "#console/components/ui/virtual-table";
 import {
 	Select,

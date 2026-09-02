@@ -23,7 +23,10 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#console/components/ui/card";
-import { RetentionFields, WatchedFolderCard } from "#console/components/common";
+import {
+	RetentionFields,
+	WatchedFolderCard,
+} from "#console/components/pages/settings";
 import { RASTER_POLICIES } from "#console/utils/raster";
 import {
 	RETENTION_TARGETS,
