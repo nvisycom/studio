@@ -19,7 +19,7 @@ import {
 import { personLabel } from "#console/utils/naming";
 import { VirtualTable } from "#console/components/ui/virtual-table";
 import { Button } from "#console/components/ui/button";
-import { ConfirmDialog } from "#console/components/common";
+import { ConfirmDialog } from "#console/components/shared";
 import { toast } from "vue-sonner";
 
 const { t } = useI18n();

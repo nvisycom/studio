@@ -26,7 +26,7 @@ import type WaveSurfer from "wavesurfer.js";
 import type RegionsPlugin from "wavesurfer.js/dist/plugins/regions.js";
 import type { Region } from "wavesurfer.js/dist/plugins/regions.js";
 import type { Transcription } from "@nvisy/sdk/datatypes";
-import AddEntityPopover from "./AddEntityPopover.vue";
+import AddEntityPopover from "../entities/AddEntityPopover.vue";
 import type { AddAudioEntityInput } from "#console/composables/useStudioRedaction";
 import type { AudioEntityView } from "#console/composables/useAudioEntities";
 import type { StudioViewPhase } from "#console/composables/useStudioView";

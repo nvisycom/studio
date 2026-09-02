@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import StudioCodeView from "./StudioCodeView.vue";
-import AddEntityHint from "./AddEntityHint.vue";
-import AddEntityPopover from "./AddEntityPopover.vue";
+import AddEntityHint from "../entities/AddEntityHint.vue";
+import AddEntityPopover from "../entities/AddEntityPopover.vue";
 import type { TextEntityView } from "#console/composables/useTextEntities";
 import type {
 	AddTextEntityInput,

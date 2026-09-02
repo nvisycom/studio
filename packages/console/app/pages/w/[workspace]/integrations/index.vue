@@ -6,9 +6,9 @@ import { Button } from "#console/components/ui/button";
 import {
 	ConfigureConnectionDialog,
 	ConnectionsTable,
-} from "#console/components/pages/connections";
+} from "#console/components/pages/integrations";
 import { providerIcon, providerLabel } from "#console/utils/connections";
-import { ConfirmDialog } from "#console/components/common";
+import { ConfirmDialog } from "#console/components/shared";
 import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 
 const { t } = useI18n();

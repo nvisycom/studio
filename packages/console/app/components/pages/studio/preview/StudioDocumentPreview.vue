@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { FileText, Loader2 } from "@lucide/vue";
-import { PreviewChatToggle } from "#console/components/pages/documents";
-import { EntityDetailPopover } from "#console/components/pages/studio";
+import PreviewChatToggle from "./PreviewChatToggle.vue";
+import EntityDetailPopover from "../entities/EntityDetailPopover.vue";
 import { rendererFor } from "./renderers";
 import type { AudioTranscriptState } from "./StudioAudioView.vue";
 import type { TextEntityView } from "#console/composables/useTextEntities";

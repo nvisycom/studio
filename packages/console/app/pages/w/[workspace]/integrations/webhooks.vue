@@ -9,8 +9,8 @@ import type {
 import {
 	WebhooksTable,
 	WebhookSheet,
-} from "#console/components/pages/webhooks";
-import { ConfirmDialog } from "#console/components/common";
+} from "#console/components/pages/integrations";
+import { ConfirmDialog } from "#console/components/shared";
 import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 
 const { t } = useI18n();

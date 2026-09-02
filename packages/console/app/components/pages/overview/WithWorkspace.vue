@@ -27,7 +27,8 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#console/components/ui/card";
-import { ActivityIcon, EntityAvatar } from "#console/components/common";
+import { EntityAvatar } from "#console/components/avatar";
+import { ActivityIcon } from "#console/components/shared";
 import { personLabel } from "#console/utils/naming";
 import { getFileIcon, getFileIconForExtension } from "#console/utils/file";
 import { activityContent } from "#console/utils/activities";

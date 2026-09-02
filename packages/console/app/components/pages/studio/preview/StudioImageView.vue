@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ScanText, ZoomIn } from "@lucide/vue";
-import AddEntityHint from "./AddEntityHint.vue";
-import AddEntityPopover from "./AddEntityPopover.vue";
+import AddEntityHint from "../entities/AddEntityHint.vue";
+import AddEntityPopover from "../entities/AddEntityPopover.vue";
 import type { ImageEntityView } from "#console/composables/useImageEntities";
 import type { ImageLayout } from "#console/composables/useImageLayout";
 import type { AddImageEntityInput } from "#console/composables/useStudioRedaction";

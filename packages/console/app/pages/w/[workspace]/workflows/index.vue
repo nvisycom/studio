@@ -13,7 +13,7 @@ import { Button } from "#console/components/ui/button";
 import { VirtualTable } from "#console/components/ui/virtual-table";
 import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 import { personLabel } from "#console/utils/naming";
-import { ConfirmDialog } from "#console/components/common";
+import { ConfirmDialog } from "#console/components/shared";
 import { PipelineSheet } from "#console/components/pages/workflows";
 
 const { t } = useI18n();

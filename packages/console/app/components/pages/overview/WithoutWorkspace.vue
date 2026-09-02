@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Layers, User } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
-import CreateWorkspaceSheet from "#console/components/common/CreateWorkspaceSheet.vue";
+import CreateWorkspaceSheet from "#console/components/shared/CreateWorkspaceSheet.vue";
 
 const { t } = useI18n();
 const { firstName } = useAccount();

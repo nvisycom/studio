@@ -17,7 +17,7 @@ import {
 	InviteMembersModal,
 	TeamListCard,
 } from "#console/components/pages/team";
-import { ConfirmDialog } from "#console/components/common";
+import { ConfirmDialog } from "#console/components/shared";
 
 useHead({ title: "Team" });
 

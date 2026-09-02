@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LabelSelect } from "#console/components/common";
+import { LabelSelect } from "#console/components/label";
 import { Button } from "#console/components/ui/button";
 import {
 	Popover,

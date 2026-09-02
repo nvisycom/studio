@@ -9,7 +9,7 @@ import {
 	CardTitle,
 	CardDescription,
 } from "#console/components/ui/card";
-import { EntityAvatar } from "#console/components/common";
+import { EntityAvatar } from "#console/components/avatar";
 import type { InvitePreview, WorkspaceRole } from "@nvisy/sdk/datatypes";
 
 useHead({ title: "Join Workspace" });

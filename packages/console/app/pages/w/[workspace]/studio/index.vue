@@ -9,8 +9,8 @@ import {
 	StudioAuditPanel,
 	StudioDetectionBar,
 } from "#console/components/pages/studio";
-import type { AudioTranscriptState } from "#console/components/pages/studio/StudioAudioView.vue";
-import { rendererFor } from "#console/components/pages/studio/renderers";
+import type { AudioTranscriptState } from "#console/components/pages/studio/preview/StudioAudioView.vue";
+import { rendererFor } from "#console/components/pages/studio/preview/renderers";
 import {
 	ResizablePanelGroup,
 	ResizablePanel,

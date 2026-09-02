@@ -3,7 +3,7 @@ import { Upload, Loader2, Trash2 } from "@lucide/vue";
 import { Label } from "#console/components/ui/label";
 import { Button } from "#console/components/ui/button";
 import { Card, CardContent, CardFooter } from "#console/components/ui/card";
-import EntityAvatar from "#console/components/common/EntityAvatar.vue";
+import EntityAvatar from "./EntityAvatar.vue";
 
 defineProps<{
 	/** Name the avatar derives its initials/gradient from. */

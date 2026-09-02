@@ -6,7 +6,7 @@ import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
 import { Button } from "#console/components/ui/button";
 import { Checkbox } from "#console/components/ui/checkbox";
-import { EnabledSwitch } from "#console/components/common";
+import { EnabledSwitch } from "#console/components/shared";
 import {
 	Sheet,
 	SheetContent,

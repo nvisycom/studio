@@ -25,7 +25,7 @@ import {
 	ProviderCard,
 	ConnectConnectionDialog,
 	ConnectLlmDialog,
-} from "#console/components/pages/connections";
+} from "#console/components/pages/integrations";
 import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 import type { StorageProvider, LlmProvider } from "#console/utils/connections";
 import {

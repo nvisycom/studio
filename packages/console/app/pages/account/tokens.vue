@@ -8,7 +8,7 @@ import {
 	TokenCreatedModal,
 	TokensTable,
 } from "#console/components/pages/tokens";
-import { ConfirmDialog } from "#console/components/common";
+import { ConfirmDialog } from "#console/components/shared";
 import { Button } from "#console/components/ui/button";
 import {
 	Card,

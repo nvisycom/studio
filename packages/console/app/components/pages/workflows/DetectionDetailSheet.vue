@@ -13,7 +13,7 @@ import {
 import { toast } from "vue-sonner";
 import { Badge } from "#console/components/ui/badge";
 import { Button } from "#console/components/ui/button";
-import { EntityAvatar } from "#console/components/common";
+import { EntityAvatar } from "#console/components/avatar";
 import {
 	Sheet,
 	SheetContent,

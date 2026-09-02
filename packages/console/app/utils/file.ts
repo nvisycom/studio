@@ -60,7 +60,7 @@ export function isAcceptedFileName(fileName: string): boolean {
 
 // NOTE: how a file is *previewed* (image / text / DOCX / …) is no longer decided
 // here. That classification now lives in the studio renderer registry
-// (`components/pages/studio/renderers.ts`), which maps an extension to its view
+// (`components/pages/studio/preview/renderers.ts`), which maps an extension to its view
 // component, detection source, and preview options in one place — so a new format
 // is one registry entry, not a set of predicates + arrays to keep in sync. This
 // file keeps only the *upload* allowlist (`ACCEPTED_EXTENSIONS`) and generic file

@@ -19,7 +19,7 @@ import {
 	labelsFromDefinition,
 	scopesFromDefinition,
 } from "#console/utils/policies";
-import { LabelPicker, LabelSelect, TagInput } from "#console/components/common";
+import { LabelPicker, LabelSelect, TagInput } from "#console/components/label";
 import { slugify } from "#console/utils/naming";
 import {
 	Plus,

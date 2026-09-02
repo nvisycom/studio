@@ -26,7 +26,7 @@ import {
 	SelectValue,
 } from "#console/components/ui/select";
 import { Alert, AlertDescription } from "#console/components/ui/alert";
-import { RetentionFields } from "#console/components/common";
+import { RetentionFields } from "#console/components/pages/settings";
 import { RASTER_POLICIES } from "#console/utils/raster";
 import {
 	defaultRetentionForm,
