@@ -256,7 +256,10 @@ function cancelAdd() {
     <!-- Scroll canvas: fills the available width; zoom sizes the image within it
          (100% = fit width), so higher zoom genuinely widens the image and the
          canvas scrolls. -->
-    <div class="flex h-full justify-center overflow-auto p-6">
+    <!-- `justify-center-safe`: center while it fits, but fall back to start
+         alignment once the image overflows, so the left edge stays scrollable at
+         high zoom (plain `justify-center` clips the overflow past the start edge). -->
+    <div class="flex h-full justify-center-safe overflow-auto p-6">
       <!-- The image + overlays share one positioned, zoom-sized box, so overlay
            coordinates (percent of natural size) line up with the rendered image at
            any zoom. `width` (not a scale transform) drives zoom so the layout

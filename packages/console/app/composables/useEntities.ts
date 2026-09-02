@@ -132,23 +132,39 @@ export function groupByLabel<T extends BaseEntityView>(
 }
 
 /**
+ * The two modality-specific parts of a cluster key:
+ * - `group` is *always* part of the key: two occurrences never merge unless they
+ *   share it (text uses it for the body-vs-metadata split, so a clickable row and
+ *   a metadata-only one stay in separate clusters).
+ * - `location` breaks a tie *only when there's no matched value* — so distinct
+ *   spans/boxes of an untitled entity stay distinct, while repeated values still
+ *   aggregate into one row.
+ */
+export interface ClusterKeyParts {
+	group?: string;
+	location: string;
+}
+
+/**
  * Cluster a label group's entities by identical value + detector, preserving
  * order. Entities that differ only by location (the same value found many times)
  * collapse into one cluster carrying every occurrence, so the UI can show one row
- * with a count + prev/next. `clusterKey` supplies the modality-specific tail of
- * the dedup key (a byte span for text, a box for image) so distinct locations of
- * the same value stay distinct when the value alone would collide.
+ * with a count + prev/next. `clusterKey` supplies the modality-specific key parts
+ * (see {@link ClusterKeyParts}).
  */
 export function clusterItems<T extends BaseEntityView>(
 	items: T[],
-	clusterKey: (item: T) => string,
+	clusterKey: (item: T) => ClusterKeyParts,
 ): EntityCluster<T>[] {
 	const map = new Map<string, EntityCluster<T>>();
 	const order: string[] = [];
 	for (const item of items) {
 		const value = item.text ?? "";
 		const detector = item.detector ?? item.source ?? "";
-		const key = `${value} ${detector} ${clusterKey(item)}`;
+		const { group = "", location } = clusterKey(item);
+		// `location` only enters the key when there's no value to aggregate on.
+		const tieBreak = item.text === undefined ? location : "";
+		const key = JSON.stringify([value, detector, group, tieBreak]);
 		const existing = map.get(key);
 		if (existing) existing.items.push(item);
 		else {
@@ -171,7 +187,7 @@ export function clusterItems<T extends BaseEntityView>(
 export function categorize<T extends BaseEntityView>(
 	entities: T[],
 	labelName: (label: string) => string,
-	clusterKey: (item: T) => string,
+	clusterKey: (item: T) => ClusterKeyParts,
 ): CategorizedGroup<T>[] {
 	const byCategory = new Map<string | null, LabelGroup<T>[]>();
 

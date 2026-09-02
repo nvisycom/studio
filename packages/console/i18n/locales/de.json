@@ -1315,6 +1315,8 @@
 			"audioZoomReset": "Einpassen",
 			"audioClearSelection": "Auswahl aufheben",
 			"audioAddEntity": "Entität hinzufügen",
+			"showInspector": "Inspektor einblenden",
+			"hideInspector": "Inspektor ausblenden",
 			"ocr": "OCR",
 			"imageRegion": "Bereich",
 			"addNeedsDetection": "Führen Sie zuerst die Erkennung aus, um Entitäten hinzuzufügen.",

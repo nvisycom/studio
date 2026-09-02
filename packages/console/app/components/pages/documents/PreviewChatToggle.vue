@@ -13,11 +13,13 @@ interface Props {
 
 type Emits = (e: "toggleChat") => void;
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
 	chatVisible: true,
 });
 
 const emit = defineEmits<Emits>();
+
+const { t } = useI18n();
 
 function toggleChat() {
 	emit("toggleChat");
@@ -31,6 +33,9 @@ function toggleChat() {
       variant="ghost"
       size="sm"
       class="h-7 w-7 p-0 bg-white dark:bg-neutral-900 shadow-lg border border-neutral-200 dark:border-neutral-800 rounded-md"
+      :aria-label="props.chatVisible
+        ? t('studio.preview.hideInspector')
+        : t('studio.preview.showInspector')"
       @click="toggleChat"
     >
       <PanelRightClose v-if="chatVisible" :size="14" />

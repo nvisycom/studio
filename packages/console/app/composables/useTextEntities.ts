@@ -211,12 +211,13 @@ export function useTextEntities(
 
 	const count = computed(() => entities.value.length);
 
-	// Text cluster key: two occurrences of the same value collapse into one row,
-	// but distinct byte spans (when there's no matched value) stay distinct, and
-	// body vs metadata-only occurrences never merge — so a row's clickability is
-	// unambiguous and the stepper never lands off-page.
-	const textClusterKey = (item: TextEntityView) =>
-		`${item.start}:${item.end} ${item.locatable === false ? "meta" : "body"}`;
+	// Text cluster key: body vs metadata-only occurrences never merge (the `group`,
+	// so a row's clickability is unambiguous and the stepper never lands off-page);
+	// the byte span only breaks a tie when there's no matched value.
+	const textClusterKey = (item: TextEntityView) => ({
+		group: item.locatable === false ? "meta" : "body",
+		location: `${item.start}:${item.end}`,
+	});
 
 	/**
 	 * Two-tier grouping for the audit list: entities grouped by label, then those

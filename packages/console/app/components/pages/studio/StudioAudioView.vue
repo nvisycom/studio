@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useEventListener } from "@vueuse/core";
 import {
 	FileText,
 	MicOff,
@@ -557,6 +558,21 @@ watch(
 		if (entity) seekTo(entity.span.start);
 	},
 );
+
+// The selection toolbar is `position: fixed`, positioned from the region's
+// viewport rect — keep it pinned when an ancestor scrolls (capture phase, so the
+// host's scroll container fires it) or the window resizes.
+useEventListener(
+	window,
+	"scroll",
+	() => {
+		if (selection) refreshSelectionRect();
+	},
+	{ capture: true, passive: true },
+);
+useEventListener(window, "resize", () => {
+	if (selection) refreshSelectionRect();
+});
 
 onBeforeUnmount(teardown);
 </script>

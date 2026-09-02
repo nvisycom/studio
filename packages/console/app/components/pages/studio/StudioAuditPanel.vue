@@ -146,6 +146,21 @@ function locationLabel(entity: StudioEntityView): string {
 	return t("studio.audit.bytes", { start: entity.start, end: entity.end });
 }
 
+/** The entity's metadata line — location, detector/source, language — joined with
+ * " · " so a separator only sits between two present fields (no leading "·" when,
+ * e.g., an image entity has no location). */
+function entityMetaLine(entity: StudioEntityView): string {
+	const detector =
+		entity.detectorKind === "pattern"
+			? t("studio.audit.detectorPattern", { name: entity.detector })
+			: entity.detectorKind === "model"
+				? t("studio.audit.detectorModel", { name: entity.detector })
+				: entity.source;
+	return [locationLabel(entity), detector, entity.language]
+		.filter(Boolean)
+		.join(" · ");
+}
+
 /** The primary label for an added-entity row: its matched text when it has one
  * (text spans), else a modality descriptor (a drawn image region / an audio span
  * carry no text value). */
@@ -537,22 +552,11 @@ const clusterLocatable = (cluster: EntityCluster<StudioEntityView>) =>
                     >
                       {{ t("studio.audit.metadata") }}
                     </span>
+                    <!-- Location · detector/source · language, joined so a
+                         separator only appears between two present fields (an
+                         image entity has no location, so no leading "·"). -->
                     <span class="truncate">
-                      <template v-if="locationLabel(entity)">
-                        {{ locationLabel(entity) }}
-                      </template>
-                      <template v-if="entity.detectorKind === 'pattern'">
-                        · {{ t("studio.audit.detectorPattern", { name: entity.detector }) }}
-                      </template>
-                      <template v-else-if="entity.detectorKind === 'model'">
-                        · {{ t("studio.audit.detectorModel", { name: entity.detector }) }}
-                      </template>
-                      <template v-else-if="entity.source">
-                        · {{ entity.source }}
-                      </template>
-                      <template v-if="entity.language">
-                        · {{ entity.language }}
-                      </template>
+                      {{ entityMetaLine(entity) }}
                     </span>
                   </span>
                 </button>

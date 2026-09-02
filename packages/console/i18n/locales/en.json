@@ -1315,6 +1315,8 @@
 			"audioZoomReset": "Fit",
 			"audioClearSelection": "Clear selection",
 			"audioAddEntity": "Add entity",
+			"showInspector": "Show inspector",
+			"hideInspector": "Hide inspector",
 			"ocr": "OCR",
 			"imageRegion": "Region",
 			"addNeedsDetection": "Run detection first to add entities.",

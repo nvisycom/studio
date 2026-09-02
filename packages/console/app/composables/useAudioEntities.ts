@@ -63,9 +63,10 @@ export function useAudioEntities(audit: MaybeRefOrGetter<Audit | null>) {
 
 	const count = computed(() => entities.value.length);
 
-	// Audio cluster key: distinct spans of the same value stay distinct.
-	const audioClusterKey = (item: AudioEntityView) =>
-		`${item.span.start},${item.span.end}`;
+	// Audio cluster key: distinct spans only break a tie when there's no value.
+	const audioClusterKey = (item: AudioEntityView) => ({
+		location: `${item.span.start},${item.span.end}`,
+	});
 
 	const categorizedGroups = computed<AudioCategorizedGroup[]>(() =>
 		categorize(entities.value, labelName, audioClusterKey),

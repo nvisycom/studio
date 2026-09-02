@@ -69,9 +69,10 @@ export function useImageEntities(audit: MaybeRefOrGetter<Audit | null>) {
 
 	const count = computed(() => entities.value.length);
 
-	// Image cluster key: distinct boxes of the same value stay distinct.
-	const imageClusterKey = (item: ImageEntityView) =>
-		`${item.box.minX},${item.box.minY},${item.box.maxX},${item.box.maxY}`;
+	// Image cluster key: distinct boxes only break a tie when there's no value.
+	const imageClusterKey = (item: ImageEntityView) => ({
+		location: `${item.box.minX},${item.box.minY},${item.box.maxX},${item.box.maxY}`,
+	});
 
 	const categorizedGroups = computed<ImageCategorizedGroup[]>(() =>
 		categorize(entities.value, labelName, imageClusterKey),
