@@ -1310,7 +1310,12 @@
 			"volume": "Volume",
 			"zoom": "Zoom",
 			"audioZoomHint": "Drag across the waveform to select and zoom",
-			"audioZoomReset": "Clear selection"
+			"audioZoomReset": "Clear selection",
+			"transcript": "Transcript",
+			"transcriptUnavailableTitle": "No transcript available",
+			"transcriptUnavailableDescription": "This file has no transcript. It was never generated, or it has been removed.",
+			"transcriptEmptyTitle": "No speech detected",
+			"transcriptEmptyDescription": "The detection found no speech in this audio."
 		}
 	},
 	"commandMenu": {

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import {
+	FileText,
+	MicOff,
 	Pause,
 	Play,
 	RotateCcw,
@@ -7,14 +9,35 @@ import {
 	Volume1,
 	Volume2,
 	VolumeX,
-	ZoomOut,
+	X,
 } from "@lucide/vue";
+import {
+	Empty,
+	EmptyDescription,
+	EmptyHeader,
+	EmptyTitle,
+} from "#console/components/ui/empty";
 // Type-only imports: give the instances real types without pulling wavesurfer into
 // the bundle — the runtime load stays the dynamic `import()` in `build()`.
 import type WaveSurfer from "wavesurfer.js";
 import type RegionsPlugin from "wavesurfer.js/dist/plugins/regions.js";
 import type { Region } from "wavesurfer.js/dist/plugins/regions.js";
+import type { Transcription } from "@nvisy/sdk/datatypes";
 import type { StudioViewPhase } from "#console/composables/useStudioView";
+
+/**
+ * The transcript panel's state, resolved by the page once a detection settles:
+ * - `hidden` — no completed detection yet; the panel isn't shown.
+ * - `unavailable` — the detection produced no intermediates (never generated, or
+ *   removed): the endpoint 404'd.
+ * - `empty` — a transcript exists but has no speech segments (no speech detected).
+ * - `ready` — the transcript, with segments.
+ */
+export type AudioTranscriptState =
+	| { kind: "hidden" }
+	| { kind: "unavailable" }
+	| { kind: "empty" }
+	| { kind: "ready"; transcript: Transcription };
 
 /**
  * Audio preview: a waveform player for accepted audio files (WAV / MP3 / OGG).
@@ -37,8 +60,17 @@ interface Props {
 	contentUrl: string | null;
 	/** File name (for the accessible label). */
 	displayName?: string;
+	/**
+	 * The detection's transcript state, once a detection has completed. Only shown
+	 * then; before that it's `hidden`. `unavailable` = the detection produced no
+	 * intermediates (never generated or removed — the endpoint 404s); `empty` = a
+	 * transcript exists but has no speech segments; `ready` carries the transcript.
+	 */
+	transcriptState?: AudioTranscriptState;
 }
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+	transcriptState: () => ({ kind: "hidden" }),
+});
 
 const emit = defineEmits<{
 	/** Loading phase, so the host shows the single loader/error. */
@@ -115,6 +147,33 @@ watch(speed, (s) => writeStored(SPEED_KEY, s));
 // The selection zooms to fill this fraction of the container width (not 100%), so
 // there's headroom to drag a *wider* selection and zoom back out.
 const ZOOM_FILL = 0.8;
+
+// Whether the transcript panel shows at all (any state past a completed
+// detection). `hidden` keeps it out entirely.
+const showTranscriptPanel = computed(
+	() => props.transcriptState.kind !== "hidden",
+);
+
+// Transcript segments, each with its start time (seconds) precomputed for
+// click-to-seek + display. Only the `ready` state has any; timings are
+// microseconds from the stream start.
+const segments = computed(() => {
+	const state = props.transcriptState;
+	if (state.kind !== "ready") return [];
+	return state.transcript.segments
+		.filter((s) => s.text.trim().length > 0)
+		.map((s, index) => ({
+			index,
+			text: s.text,
+			start: s.span.start_us / 1e6,
+		}));
+});
+
+/** Seek playback to a time (seconds) and reflect it immediately. */
+function seekTo(seconds: number) {
+	if (!ws || !duration.value) return;
+	ws.setTime(Math.max(0, Math.min(duration.value, seconds)));
+}
 
 /** `m:ss` for a time in seconds (audio clips are short; no hours needed). */
 function formatTime(seconds: number): string {
@@ -330,9 +389,9 @@ onBeforeUnmount(teardown);
 </script>
 
 <template>
-  <div class="flex min-h-full flex-col items-center justify-center gap-6 p-6">
+  <div class="flex h-full min-h-full flex-col items-center gap-6 p-6">
     <div
-      class="w-full max-w-5xl rounded-lg border border-border bg-card p-6 shadow-sm"
+      class="w-full max-w-5xl flex-shrink-0 rounded-lg border border-border bg-card p-6 shadow-sm"
     >
       <!-- Zoom affordance: a hint to drag-select, and a Reset once zoomed in. -->
       <div class="mb-2 flex h-6 items-center justify-between">
@@ -340,12 +399,12 @@ onBeforeUnmount(teardown);
           {{ t("studio.preview.audioZoomHint") }}
         </span>
         <button
-          v-if="hasSelection"
           type="button"
-          class="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+          class="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+          :disabled="!hasSelection"
           @click="resetZoom"
         >
-          <ZoomOut :size="13" />
+          <X :size="13" />
           {{ t("studio.preview.audioZoomReset") }}
         </button>
       </div>
@@ -442,6 +501,69 @@ onBeforeUnmount(teardown);
             <Volume2 v-else :size="18" />
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- Transcript: shown once a detection has completed, filling the remaining
+         height. Three states: the segment list (click-to-seek by start time), or a
+         centered empty state when it's unavailable (no intermediates) or empty (no
+         speech). Word-level highlighting + entity spans build on this later. -->
+    <div
+      v-if="showTranscriptPanel"
+      class="flex w-full max-w-5xl min-h-0 flex-1 flex-col rounded-lg border border-border bg-card shadow-sm"
+    >
+      <p
+        class="flex-shrink-0 border-b border-border px-6 py-3 text-xs font-medium text-muted-foreground"
+      >
+        {{ t("studio.preview.transcript") }}
+      </p>
+
+      <ul
+        v-if="transcriptState.kind === 'ready'"
+        class="min-h-0 flex-1 divide-y divide-border overflow-y-auto"
+      >
+        <li v-for="segment in segments" :key="segment.index">
+          <button
+            type="button"
+            class="flex w-full items-baseline gap-3 px-6 py-2 text-left transition-colors hover:bg-muted/50"
+            @click="seekTo(segment.start)"
+          >
+            <span
+              class="flex-shrink-0 font-mono text-xs tabular-nums text-muted-foreground"
+            >
+              {{ formatTime(segment.start) }}
+            </span>
+            <span class="text-sm text-foreground">{{ segment.text }}</span>
+          </button>
+        </li>
+      </ul>
+
+      <!-- Empty states, centered: unavailable (404) vs. present-but-no-speech. -->
+      <div v-else class="flex min-h-0 flex-1 items-center justify-center p-6">
+        <Empty>
+          <EmptyHeader>
+            <MicOff
+              v-if="transcriptState.kind === 'empty'"
+              :size="32"
+              class="mx-auto mb-3 text-muted-foreground"
+            />
+            <FileText v-else :size="32" class="mx-auto mb-3 text-muted-foreground" />
+            <EmptyTitle>
+              {{
+                transcriptState.kind === "empty"
+                  ? t("studio.preview.transcriptEmptyTitle")
+                  : t("studio.preview.transcriptUnavailableTitle")
+              }}
+            </EmptyTitle>
+            <EmptyDescription>
+              {{
+                transcriptState.kind === "empty"
+                  ? t("studio.preview.transcriptEmptyDescription")
+                  : t("studio.preview.transcriptUnavailableDescription")
+              }}
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
       </div>
     </div>
   </div>

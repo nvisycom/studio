@@ -3,6 +3,7 @@ import { FileText, Loader2 } from "@lucide/vue";
 import { PreviewChatToggle } from "#console/components/pages/documents";
 import { EntityDetailPopover } from "#console/components/pages/studio";
 import { rendererFor } from "./renderers";
+import type { AudioTranscriptState } from "./StudioAudioView.vue";
 import type { TextEntityView } from "#console/composables/useTextEntities";
 import type { AddEntityInput } from "#console/composables/useStudioRedaction";
 import {
@@ -25,8 +26,16 @@ const props = withDefaults(
 		activeEntityId?: string | null;
 		/** Whether the reviewer may add entities by selecting text (detection complete). */
 		canAdd?: boolean;
+		/** The active audio file's transcript state (from detection intermediates),
+		 * forwarded to the audio view. Defaults to hidden (no completed detection). */
+		audioTranscriptState?: AudioTranscriptState;
 	}>(),
-	{ entities: () => [], activeEntityId: null, canAdd: false },
+	{
+		entities: () => [],
+		activeEntityId: null,
+		canAdd: false,
+		audioTranscriptState: () => ({ kind: "hidden" }),
+	},
 );
 
 // Whether the CSV's first row is a header. Owned by the page so the audit list
@@ -117,8 +126,13 @@ const rendererProps = computed<Record<string, unknown>>(() => {
 	const base = commonProps.value;
 	switch (renderer.value?.kind) {
 		case "image":
-		case "audio":
 			return { ...base, displayName: props.displayName };
+		case "audio":
+			return {
+				...base,
+				displayName: props.displayName,
+				transcriptState: props.audioTranscriptState,
+			};
 		case "csv":
 			return {
 				...base,

@@ -28,10 +28,14 @@ import type { Component } from "vue";
  *   plain text, and most future text-backed formats).
  * - `docx-parts` — the OOXML zip's entries (DOCX has no flat text; matches are
  *   sliced from raw part byte spans, incl. parts outside the visible body).
+ * - `transcript` — a server-produced transcript fetched from the detection's
+ *   enrichment intermediates (audio: there's no client-side text; the transcript
+ *   is the searchable content, with timings for the timeline). Optional — a
+ *   detection may have none.
  * - `none` — nothing to scan client-side (images: detection is server/OCR-side,
  *   not from a text blob).
  */
-export type DetectionSource = "text" | "docx-parts" | "none";
+export type DetectionSource = "text" | "docx-parts" | "transcript" | "none";
 
 /** One registered file-format family and how the studio previews it. */
 export interface StudioRenderer {
@@ -79,10 +83,13 @@ export const STUDIO_RENDERERS: readonly StudioRenderer[] = [
 		// The backend-supported, browser-playable audio formats.
 		extensions: ["wav", "mp3", "ogg"],
 		component: () => import("./StudioAudioView.vue"),
-		// Detection for audio runs server-side (by file id); there's no client-side
-		// text/parts to slice matched values from — transcript-backed highlighting
-		// lands in a follow-up stage.
-		detectionSource: "none",
+		// Detection runs server-side; the searchable content is the transcript from
+		// the detection's intermediates (fetched once detection completes). Optional:
+		// a detection may have no transcript, in which case the player has none.
+		detectionSource: "transcript",
+		// Fill the preview height so the transcript panel can flex to fill the space
+		// below the player.
+		wrapperClass: "h-full",
 	},
 	{
 		kind: "csv",
