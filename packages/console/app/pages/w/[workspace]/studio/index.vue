@@ -53,8 +53,6 @@ const detectionSource = computed(
 	() => renderer.value?.detectionSource ?? "none",
 );
 
-const zoomLevel = ref(100);
-
 // Right-panel tabs: Chat (existing) and Audit (detection results).
 const panelTab = ref<"chat" | "audit">("audit");
 
@@ -151,13 +149,6 @@ useEventListener(document, "keydown", (e: KeyboardEvent) => {
 	if (e.key === "Escape" && activeEntityId.value) clearEntity();
 });
 
-function zoomIn() {
-	if (zoomLevel.value < 200) zoomLevel.value += 10;
-}
-function zoomOut() {
-	if (zoomLevel.value > 50) zoomLevel.value -= 10;
-}
-
 // The right-hand inspector (Audit / Chat) is a resizable, collapsible split
 // panel. The Splitter owns sizing (percent-based), keyboard resize, and — via
 // `auto-save-id` — persisting the layout across reloads; we only hold a ref to
@@ -196,14 +187,11 @@ function toggleInspector() {
           :display-name="activeFile?.displayName || ''"
           :file-extension="fileExtension"
           :is-loading="activeFile?.isLoading || false"
-          :zoom-level="zoomLevel"
           :chat-visible="!inspectorCollapsed"
           :entities="redaction.highlightEntities.value"
           :active-entity-id="activeEntityId"
           :can-add="detection.phase.value === 'complete'"
           v-model:with-headers="withHeaders"
-          @zoom-in="zoomIn"
-          @zoom-out="zoomOut"
           @toggle-chat="toggleInspector"
           @focus-entity="focusEntity"
           @clear-entity="clearEntity"

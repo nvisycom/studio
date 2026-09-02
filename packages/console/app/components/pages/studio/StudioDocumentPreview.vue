@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { FileText, Loader2 } from "@lucide/vue";
-import { ZoomControls } from "#console/components/pages/documents";
+import { PreviewChatToggle } from "#console/components/pages/documents";
 import { EntityDetailPopover } from "#console/components/pages/studio";
 import { rendererFor } from "./renderers";
 import type { TextEntityView } from "#console/composables/useTextEntities";
@@ -18,7 +18,6 @@ const props = withDefaults(
 		 * which sub-view renders — not parsed from the display name. */
 		fileExtension: string;
 		isLoading: boolean;
-		zoomLevel: number;
 		chatVisible: boolean;
 		/** Detected entities to highlight in the text (byte-offset spans). */
 		entities?: TextEntityView[];
@@ -35,8 +34,6 @@ const props = withDefaults(
 const withHeaders = defineModel<boolean>("withHeaders", { default: true });
 
 const emit = defineEmits<{
-	"zoom-in": [];
-	"zoom-out": [];
 	"toggle-chat": [];
 	"focus-entity": [id: string];
 	/** Clear the current entity selection (popover dismissed). */
@@ -102,9 +99,9 @@ const asyncView = computed(() => {
 });
 
 // The common contract every renderer accepts (a superset — a view ignores the
-// props it doesn't declare). View-specific extras (`displayName`, `zoomLevel`,
-// `fileKind`, and the CSV `withHeaders` v-model pair) are folded in per renderer
-// below.
+// props it doesn't declare). View-specific extras (`displayName`, `fileKind`, and
+// the CSV `withHeaders` v-model pair) are folded in per renderer below. Zoom is
+// each zooming view's own concern (image, audio) — there's no shared zoom prop.
 const commonProps = computed(() => ({
 	contentUrl: props.contentUrl,
 	entities: props.entities,
@@ -120,11 +117,8 @@ const rendererProps = computed<Record<string, unknown>>(() => {
 	const base = commonProps.value;
 	switch (renderer.value?.kind) {
 		case "image":
-			return {
-				...base,
-				displayName: props.displayName,
-				zoomLevel: props.zoomLevel,
-			};
+		case "audio":
+			return { ...base, displayName: props.displayName };
 		case "csv":
 			return {
 				...base,
@@ -292,15 +286,10 @@ watch(
       </div>
     </div>
 
-    <!-- Zoom Controls. A renderer with its own zoom (DOCX/SuperDoc) opts out via
-         the registry, so the generic zoom pill is hidden for it — the chat toggle
-         stays. -->
-    <ZoomControls
-      :zoom-level="zoomLevel"
+    <!-- Chat/inspector toggle. Zoom is each zooming view's own concern (image,
+         audio), so there's no shared zoom control here anymore. -->
+    <PreviewChatToggle
       :chat-visible="chatVisible"
-      :show-zoom="renderer?.supportsZoom ?? false"
-      @zoom-in="emit('zoom-in')"
-      @zoom-out="emit('zoom-out')"
       @toggle-chat="emit('toggle-chat')"
     />
   </div>

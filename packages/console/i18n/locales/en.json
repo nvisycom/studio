@@ -531,7 +531,8 @@
 			"original": "Original",
 			"redacted": "Redacted",
 			"audit": "Audit",
-			"review": "Review"
+			"review": "Review",
+			"intermediate": "Intermediate"
 		},
 		"view": {
 			"list": "List view",
@@ -1297,7 +1298,19 @@
 			"raw": "Raw",
 			"withHeaders": "With headers",
 			"docxFailed": "Couldn't render this Word document.",
-			"textFailed": "Unable to load this file."
+			"textFailed": "Unable to load this file.",
+			"audioFailed": "Couldn't play this audio file.",
+			"play": "Play",
+			"pause": "Pause",
+			"skipBack": "Skip back {seconds} seconds",
+			"skipForward": "Skip forward {seconds} seconds",
+			"speed": "Playback speed",
+			"mute": "Mute",
+			"unmute": "Unmute",
+			"volume": "Volume",
+			"zoom": "Zoom",
+			"audioZoomHint": "Drag across the waveform to select and zoom",
+			"audioZoomReset": "Clear selection"
 		}
 	},
 	"commandMenu": {

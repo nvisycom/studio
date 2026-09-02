@@ -54,12 +54,10 @@ export interface StudioRenderer {
 	component: () => Promise<Component | { default: Component }>;
 	/** Which content form detection needs for this kind (drives the page fetch). */
 	detectionSource: DetectionSource;
-	/** Whether the zoom pill applies (a renderer with its own zoom — DOCX — opts out). */
-	supportsZoom: boolean;
 	/**
 	 * Optional wrapper class the dispatcher puts around the view — the "paper on
 	 * canvas" padding the text/CSV views expect (`flex min-h-full flex-col p-6`).
-	 * Views that lay out edge-to-edge (image, DOCX) omit it.
+	 * Views that lay out edge-to-edge (image, DOCX, audio) omit it.
 	 */
 	wrapperClass?: string;
 }
@@ -75,14 +73,22 @@ export const STUDIO_RENDERERS: readonly StudioRenderer[] = [
 		extensions: ["png", "jpg", "jpeg", "gif", "webp", "bmp", "svg"],
 		component: () => import("./StudioImageView.vue"),
 		detectionSource: "none",
-		supportsZoom: true,
+	},
+	{
+		kind: "audio",
+		// The backend-supported, browser-playable audio formats.
+		extensions: ["wav", "mp3", "ogg"],
+		component: () => import("./StudioAudioView.vue"),
+		// Detection for audio runs server-side (by file id); there's no client-side
+		// text/parts to slice matched values from — transcript-backed highlighting
+		// lands in a follow-up stage.
+		detectionSource: "none",
 	},
 	{
 		kind: "csv",
 		extensions: ["csv"],
 		component: () => import("./StudioCsvView.vue"),
 		detectionSource: "text",
-		supportsZoom: true,
 		wrapperClass: "flex min-h-full flex-col p-6",
 	},
 	{
@@ -90,7 +96,6 @@ export const STUDIO_RENDERERS: readonly StudioRenderer[] = [
 		extensions: ["txt", "md", "log", "json", "xml", "yaml", "yml"],
 		component: () => import("./StudioTextView.vue"),
 		detectionSource: "text",
-		supportsZoom: true,
 		wrapperClass: "flex min-h-full flex-col p-6",
 	},
 	{
@@ -98,8 +103,6 @@ export const STUDIO_RENDERERS: readonly StudioRenderer[] = [
 		extensions: ["docx"],
 		component: () => import("./StudioDocxView.vue"),
 		detectionSource: "docx-parts",
-		// SuperDoc manages its own zoom, so the generic zoom pill is hidden for it.
-		supportsZoom: false,
 	},
 ];
 
