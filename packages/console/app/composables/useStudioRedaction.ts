@@ -170,6 +170,10 @@ export function useStudioRedaction(target: RedactionTarget) {
 	const addedImages = ref<AddedImageEntity[]>([]);
 	// Audio entities the reviewer added by selecting a waveform time span.
 	const addedAudios = ref<AddedAudioEntity[]>([]);
+	// Span overrides for *detected* audio entities the reviewer adjusted (dragged a
+	// region edge): entity id -> corrected span (seconds). Emitted as `retag` edits.
+	// Added entities aren't here — their own span is mutated in place.
+	const audioSpanOverrides = ref<Map<string, AddAudioSpan>>(new Map());
 	// Bumped whenever the edit set changes. A redaction captures it at the start
 	// and only publishes its output if it still matches — so an edit made while a
 	// redaction is in flight can't be overwritten by that now-stale result.
@@ -180,6 +184,7 @@ export function useStudioRedaction(target: RedactionTarget) {
 		addedTexts.value = [];
 		addedImages.value = [];
 		addedAudios.value = [];
+		audioSpanOverrides.value = new Map();
 		nextAddedId = 0;
 		editRevision++;
 	}
@@ -257,6 +262,24 @@ export function useStudioRedaction(target: RedactionTarget) {
 			addedAudios.value = addedAudios.value.filter((a) => a.id !== id);
 		} else {
 			addedTexts.value = addedTexts.value.filter((a) => a.id !== id);
+		}
+		invalidateOutput();
+	}
+
+	/**
+	 * Adjust an audio entity's span (the reviewer dragged a region edge). An added
+	 * entity's own span is mutated in place; a detected entity's corrected span is
+	 * recorded as an override that `buildEditSet` emits as a `retag` edit.
+	 */
+	function retagAudioSpan(id: string, span: AddAudioSpan) {
+		if (id.startsWith(AUDIO_ADD_PREFIX)) {
+			addedAudios.value = addedAudios.value.map((a) =>
+				a.id === id ? { ...a, span } : a,
+			);
+		} else {
+			const next = new Map(audioSpanOverrides.value);
+			next.set(id, span);
+			audioSpanOverrides.value = next;
 		}
 		invalidateOutput();
 	}
@@ -368,16 +391,21 @@ export function useStudioRedaction(target: RedactionTarget) {
 	);
 
 	// Audio entities the waveform overlays: detected spans (from the audit) plus the
-	// reviewer's added spans, suppress-flagged. Detected audio entities are narrowed
-	// off the union.
+	// reviewer's added spans, suppress-flagged, with any span override applied so the
+	// region shows the adjusted bounds. Detected audio entities are narrowed off the
+	// union.
 	const highlightAudioEntities = computed<AudioEntityView[]>(() => {
 		const detected = entities.value.filter(
 			(e): e is AudioEntityView => e.modality === "audio",
 		);
-		return [...detected, ...addedAudioEntities.value].map((e) => ({
-			...e,
-			suppressed: suppressed.value.has(e.id),
-		}));
+		return [...detected, ...addedAudioEntities.value].map((e) => {
+			const override = audioSpanOverrides.value.get(e.id);
+			return {
+				...e,
+				span: override ?? e.span,
+				suppressed: suppressed.value.has(e.id),
+			};
+		});
 	});
 
 	// All reviewer-added entities (any modality) as views, for the audit list's
@@ -398,7 +426,8 @@ export function useStudioRedaction(target: RedactionTarget) {
 			suppressed.value.size === 0 &&
 			addedTexts.value.length === 0 &&
 			addedImages.value.length === 0 &&
-			addedAudios.value.length === 0
+			addedAudios.value.length === 0 &&
+			audioSpanOverrides.value.size === 0
 		)
 			return undefined;
 		const text: NonNullable<EditSet["text"]> = [];
@@ -448,16 +477,24 @@ export function useStudioRedaction(target: RedactionTarget) {
 			};
 			image.push({ op: "add", label: a.label, location });
 		}
+		// The API's TimeSpan is microseconds; the reviewer's spans are in seconds.
+		const audioLocation = (span: AddAudioSpan): AudioLocation => ({
+			span: {
+				start_us: Math.round(span.start * 1e6),
+				end_us: Math.round(span.end * 1e6),
+			},
+		});
 		for (const a of addedAudios.value) {
-			// A selected span is an audio `add` located by its time span. The API's
-			// TimeSpan is microseconds; the reviewer's span is in seconds.
-			const location: AudioLocation = {
-				span: {
-					start_us: Math.round(a.span.start * 1e6),
-					end_us: Math.round(a.span.end * 1e6),
-				},
-			};
-			audio.push({ op: "add", label: a.label, location });
+			// A selected span is an audio `add` located by its time span.
+			audio.push({
+				op: "add",
+				label: a.label,
+				location: audioLocation(a.span),
+			});
+		}
+		for (const [id, span] of audioSpanOverrides.value) {
+			// A dragged edge on a *detected* entity is a `retag` correcting its location.
+			audio.push({ op: "retag", id, location: audioLocation(span) });
 		}
 		const set: EditSet = {};
 		if (text.length) set.text = text;
@@ -575,6 +612,7 @@ export function useStudioRedaction(target: RedactionTarget) {
 		addTextEntity,
 		addImageEntity,
 		addAudioEntity,
+		retagAudioSpan,
 		removeAdded,
 		addedEntities,
 		highlightTextEntities,

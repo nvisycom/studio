@@ -2,6 +2,7 @@
 import {
 	FileText,
 	MicOff,
+	Minimize2,
 	Pause,
 	Play,
 	Plus,
@@ -93,6 +94,8 @@ const emit = defineEmits<{
 	"focus-entity": [id: string];
 	/** A reviewer marked the selected span as a new audio entity to redact. */
 	"add-audio-entity": [payload: AddAudioEntityInput];
+	/** A reviewer dragged an entity region's edge — correct its span (seconds). */
+	"retag-audio-span": [id: string, span: { start: number; end: number }];
 }>();
 
 const { t } = useI18n();
@@ -110,9 +113,15 @@ const isPlaying = ref(false);
 const isMuted = ref(false);
 const currentTime = ref(0);
 const duration = ref(0);
-// Whether a span is selected (drives the Reset button + scoped playback + the
-// "Add entity" action). The view is zoomed to the selection while one exists.
-const hasSelection = ref(false);
+// The current selection region's on-screen rect, for anchoring the floating
+// selection toolbar (its presence = "a span is selected"). Refreshed on select /
+// resize / zoom / scroll. Scoped playback keys off the `selection` region itself.
+const selectionRect = ref<DOMRect | null>(null);
+
+/** Recompute the selection region's on-screen rect (for the floating toolbar). */
+function refreshSelectionRect() {
+	selectionRect.value = selection?.element?.getBoundingClientRect() ?? null;
+}
 
 // The label popover for turning the current selection into a custom entity: the
 // span + anchor rect frozen when it opens, plus the chosen label. Frozen so a
@@ -180,10 +189,6 @@ const speed = ref<number>(
 watch(volume, (v) => writeStored(VOLUME_KEY, v));
 watch(speed, (s) => writeStored(SPEED_KEY, s));
 
-// The selection zooms to fill this fraction of the container width (not 100%), so
-// there's headroom to drag a *wider* selection and zoom back out.
-const ZOOM_FILL = 0.8;
-
 // Whether the transcript panel shows at all (any state past a completed
 // detection). `hidden` keeps it out entirely.
 const showTranscriptPanel = computed(
@@ -246,8 +251,9 @@ function renderEntityRegions() {
 			start: e.span.start,
 			end: e.span.end,
 			color: categoryFill(e.category),
+			// Not movable, but resizable — drag an edge to correct the span (retag).
 			drag: false,
-			resize: false,
+			resize: true,
 		});
 		// Dim a suppressed (kept) entity so it reads as "won't be redacted".
 		if (e.suppressed && region.element) region.element.style.opacity = "0.4";
@@ -294,6 +300,8 @@ async function build(url: string, target: HTMLElement) {
 		// persists (translucent highlight), the view zooms to fit it, and playback is
 		// scoped to it (see `togglePlay` / `resetZoom`). Only one selection at a time:
 		// a new drag replaces the previous.
+		// Drag empty waveform → create a selection (zoom is decoupled, on the wheel).
+		// The selection is resizable (drag its edges to refine) but not movable.
 		regions.enableDragSelection({ color: "rgba(37, 99, 235, 0.18)" });
 		regions.on("region-created", (region) => {
 			// Entity regions are added programmatically (not a drag-select) — leave them.
@@ -305,24 +313,34 @@ async function build(url: string, target: HTMLElement) {
 			}
 			if (selection && selection !== region) selection.remove();
 			selection = region;
-			hasSelection.value = true;
 			// A fresh selection supersedes any open add popover (its anchor + frozen
 			// span pointed at the previous selection).
 			cancelAdd();
-			// The selection is a passive highlight, not a draggable object. Once zoomed,
-			// it fills the view; if it stayed draggable/resizable it would swallow the
-			// pointer, so a drag *over* it couldn't start a new selection. Making it
-			// non-interactive lets you re-select (refine the zoom) while zoomed in.
-			region.setOptions({ drag: false, resize: false });
-			zoomToRange(region.start, region.end);
+			region.setOptions({ drag: false, resize: true });
+			refreshSelectionRect();
 		});
 
-		// Click an entity region → focus that entity (cross-highlight with the audit
-		// list). Only entity regions map to an id; the drag-selection isn't clickable.
 		regions.on("region-clicked", (region, event) => {
-			if (!region.id.startsWith(ENTITY_REGION_PREFIX)) return;
-			event.stopPropagation();
-			emit("focus-entity", region.id.slice(ENTITY_REGION_PREFIX.length));
+			// Click an entity region → focus that entity (cross-highlight the audit
+			// list). Only entity regions map to an id.
+			if (region.id.startsWith(ENTITY_REGION_PREFIX)) {
+				event.stopPropagation();
+				emit("focus-entity", region.id.slice(ENTITY_REGION_PREFIX.length));
+			}
+		});
+
+		// Resizing a region: for the selection, keep its toolbar anchored; for an
+		// entity region, commit the new span as a span override (a `retag`).
+		regions.on("region-updated", (region) => {
+			if (region === selection) {
+				refreshSelectionRect();
+				cancelAdd();
+			} else if (region.id.startsWith(ENTITY_REGION_PREFIX)) {
+				emit("retag-audio-span", region.id.slice(ENTITY_REGION_PREFIX.length), {
+					start: region.start,
+					end: region.end,
+				});
+			}
 		});
 
 		ws.on("ready", (dur) => {
@@ -336,6 +354,11 @@ async function build(url: string, target: HTMLElement) {
 		});
 		ws.on("timeupdate", (time) => {
 			currentTime.value = time;
+		});
+		// Keep the selection toolbar pinned to its region while the view scrolls
+		// (e.g. dragging the scrollbar of a zoomed waveform).
+		ws.on("scroll", () => {
+			if (selection) refreshSelectionRect();
 		});
 		ws.on("play", () => {
 			isPlaying.value = true;
@@ -375,7 +398,7 @@ function teardown() {
 	isPlaying.value = false;
 	currentTime.value = 0;
 	duration.value = 0;
-	hasSelection.value = false;
+	selectionRect.value = null;
 	cancelAdd();
 	// Note: volume and speed are persisted preferences — deliberately not reset
 	// here, so they carry to the next file.
@@ -428,32 +451,57 @@ function onVolumeInput(event: Event) {
 	ws?.setVolume(next);
 }
 
-/** Zoom the waveform so the [start, end] span (seconds) fills ZOOM_FILL of the
- * container, centered — the remaining (1 - ZOOM_FILL) width is split as equal
- * margins on each side. A wider span yields fewer px/sec (zoom out), a narrower
- * one more (zoom in). */
-function zoomToRange(start: number, end: number) {
-	const span = end - start;
-	if (!ws || span <= 0) return;
-	const width = waveform.value?.clientWidth ?? 0;
-	if (width <= 0) return;
-	ws.zoom((width * ZOOM_FILL) / span);
-	// Center the span: the leading margin is half the leftover width, which in
-	// seconds is `span * (1 - ZOOM_FILL) / (2 * ZOOM_FILL)`. Scroll that far before
-	// the span's start (clamped to the clip start).
-	const marginSeconds = (span * (1 - ZOOM_FILL)) / (2 * ZOOM_FILL);
-	ws.setScrollTime(Math.max(0, start - marginSeconds));
+// Current horizontal zoom in px/sec; 0 means "fit the clip to the container"
+// (wavesurfer's default). Zoom is driven by the wheel (decoupled from selection),
+// so selecting a span never yanks the view.
+let pxPerSec = 0;
+const ZOOM_STEP = 1.2; // multiplicative per wheel notch
+const ZOOM_MAX_PX = 2000;
+
+/** Zoom the waveform in/out on a wheel gesture, keeping the time under the cursor
+ * stationary so zooming feels anchored to where you point. */
+function onWheel(event: WheelEvent) {
+	if (!ws || !duration.value) return;
+	event.preventDefault();
+	const el = waveform.value;
+	if (!el) return;
+	const width = el.clientWidth || 1;
+	// px/sec that exactly fits the clip — the floor (can't zoom out past it).
+	const fitPxPerSec = width / duration.value;
+	const current = pxPerSec || fitPxPerSec;
+	// The clip time currently under the cursor (before the zoom changes scale).
+	const rect = el.getBoundingClientRect();
+	const cursorTime =
+		ws.getScroll() / current + (event.clientX - rect.left) / current;
+
+	const next = event.deltaY < 0 ? current * ZOOM_STEP : current / ZOOM_STEP;
+	const clamped = Math.min(ZOOM_MAX_PX, Math.max(fitPxPerSec, next));
+	// At the fit level, use 0 so wavesurfer stays responsive to container resizes.
+	pxPerSec = clamped <= fitPxPerSec + 0.01 ? 0 : clamped;
+	ws.zoom(pxPerSec);
+
+	// Re-scroll so the same clip time sits back under the cursor at the new scale.
+	const scale = pxPerSec || fitPxPerSec;
+	ws.setScrollTime(
+		Math.max(0, cursorTime - (event.clientX - rect.left) / scale),
+	);
+	refreshSelectionRect();
 }
 
-/** Clear the selection and return to the fit-to-container view (wavesurfer treats
- * minPxPerSec 0 as fit). */
-function resetZoom() {
+/** Clear the current selection (its region + toolbar + any open add popover). */
+function clearSelection() {
 	selection?.remove();
 	selection = null;
-	hasSelection.value = false;
+	selectionRect.value = null;
 	cancelAdd();
+}
+
+/** Reset zoom to fit the whole clip. */
+function resetZoom() {
+	pxPerSec = 0;
 	ws?.zoom(0);
 	ws?.setScrollTime(0);
+	refreshSelectionRect();
 }
 
 /** Open the label popover to add the current selection as a custom entity. Freezes
@@ -518,45 +566,31 @@ onBeforeUnmount(teardown);
     <div
       class="w-full max-w-5xl flex-shrink-0 rounded-lg border border-border bg-card p-6 shadow-sm"
     >
-      <!-- Selection affordances: a drag-select hint, plus (once a span is
-           selected) an "Add entity" action and a Clear. -->
+      <!-- Hint + zoom reset. Drag selects a span; scroll zooms (decoupled). -->
       <div class="mb-2 flex h-6 items-center justify-between">
         <span class="text-xs text-muted-foreground">
-          {{ t("studio.preview.audioZoomHint") }}
+          {{ t("studio.preview.audioHint") }}
         </span>
-        <div class="flex items-center gap-1">
-          <!-- Add the selected span as a custom entity — only when a span is
-               selected and detection is complete. -->
-          <button
-            v-if="canAdd && hasSelection"
-            type="button"
-            class="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-primary transition-colors hover:bg-primary/10"
-            @click="startAdd"
-          >
-            <Plus :size="13" />
-            {{ t("studio.preview.audioAddEntity") }}
-          </button>
-          <button
-            type="button"
-            class="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
-            :disabled="!hasSelection"
-            @click="resetZoom"
-          >
-            <X :size="13" />
-            {{ t("studio.preview.audioZoomReset") }}
-          </button>
-        </div>
+        <button
+          type="button"
+          class="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+          :title="t('studio.preview.audioZoomReset')"
+          @click="resetZoom"
+        >
+          <Minimize2 :size="13" />
+          {{ t("studio.preview.audioZoomReset") }}
+        </button>
       </div>
 
-      <!-- Waveform canvas (wavesurfer renders into it). wavesurfer owns its own
-           horizontal scroll when zoomed (don't wrap it in another overflow, or a
-           second scrollbar overlaps the waveform); double-click resets the zoom. -->
-      <div class="w-full">
+      <!-- Waveform canvas (wavesurfer renders into it). Scroll to zoom; drag to
+           select. wavesurfer owns its own horizontal scroll when zoomed (don't
+           wrap it in another overflow, or a second scrollbar overlaps it). -->
+      <div class="relative w-full">
         <div
           ref="waveform"
           class="w-full"
           :aria-label="displayName"
-          @dblclick="resetZoom"
+          @wheel="onWheel"
         />
       </div>
 
@@ -705,6 +739,38 @@ onBeforeUnmount(teardown);
         </Empty>
       </div>
     </div>
+
+    <!-- Floating selection toolbar: pinned above the selection region, so the
+         actions are prominent and land where the reviewer is looking. Hidden while
+         the add popover is open (it takes over). -->
+    <Teleport to="body">
+      <div
+        v-if="selectionRect && !addRect"
+        class="fixed z-40 flex -translate-x-1/2 -translate-y-full items-center gap-1 rounded-md border border-border bg-card px-1 py-0.5 shadow-lg"
+        :style="{
+          left: `${selectionRect.left + selectionRect.width / 2}px`,
+          top: `${selectionRect.top - 6}px`,
+        }"
+      >
+        <button
+          v-if="canAdd"
+          type="button"
+          class="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
+          @click="startAdd"
+        >
+          <Plus :size="14" />
+          {{ t("studio.preview.audioAddEntity") }}
+        </button>
+        <button
+          type="button"
+          class="flex size-6 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          :title="t('studio.preview.audioClearSelection')"
+          @click="clearSelection"
+        >
+          <X :size="14" />
+        </button>
+      </div>
+    </Teleport>
 
     <!-- Label picker for adding the selected span as a custom entity, anchored to
          the selection region on the waveform. -->

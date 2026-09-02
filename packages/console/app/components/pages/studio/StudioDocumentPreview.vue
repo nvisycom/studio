@@ -70,6 +70,8 @@ const emit = defineEmits<{
 	"add-image-entity": [payload: AddImageEntityInput];
 	/** A reviewer selected a waveform span marking a new audio entity to redact. */
 	"add-audio-entity": [payload: AddAudioEntityInput];
+	/** A reviewer dragged an audio entity region's edge — correct its span. */
+	"retag-audio-span": [id: string, span: { start: number; end: number }];
 	/** Keep/redact toggle for an entity (from its detail popover). */
 	"toggle-suppress": [id: string];
 }>();
@@ -314,6 +316,10 @@ watch(
           @add-text-entity="emit('add-text-entity', $event)"
           @add-image-entity="emit('add-image-entity', $event)"
           @add-audio-entity="emit('add-audio-entity', $event)"
+          @retag-audio-span="
+            (id: string, span: { start: number; end: number }) =>
+              emit('retag-audio-span', id, span)
+          "
           @phase="viewPhase = $event"
         />
       </div>

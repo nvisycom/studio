@@ -274,6 +274,7 @@ function toggleInspector() {
           @add-text-entity="redaction.addTextEntity($event)"
           @add-image-entity="redaction.addImageEntity($event)"
           @add-audio-entity="redaction.addAudioEntity($event)"
+          @retag-audio-span="redaction.retagAudioSpan"
           @toggle-suppress="redaction.toggleSuppress"
         />
       </ResizablePanel>
