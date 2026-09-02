@@ -131,12 +131,32 @@ const confidencePct = (c: number) => `${Math.round(c * 100)}%`;
 
 /**
  * A short location descriptor for an entity, by modality: a tabular cell, a text
- * byte range, or empty for an image entity (its box has no compact text form).
+ * byte range, an audio time span, or empty for an image entity (its box has no
+ * compact text form).
  */
 function locationLabel(entity: StudioEntityView): string {
 	if (entity.modality === "image") return "";
+	if (entity.modality === "audio") {
+		return t("studio.audit.timeSpan", {
+			start: formatTimecode(entity.span.start),
+			end: formatTimecode(entity.span.end),
+		});
+	}
 	if (entity.cell) return cellLabel(entity.cell);
 	return t("studio.audit.bytes", { start: entity.start, end: entity.end });
+}
+
+/** The primary label for an added-entity row: its matched text when it has one
+ * (text spans), else a modality descriptor (a drawn image region / an audio span
+ * carry no text value). */
+function addedValueLabel(entity: StudioEntityView): string {
+	if (entity.text) return entity.text;
+	if (entity.modality === "audio")
+		return t("studio.audit.timeSpan", {
+			start: formatTimecode(entity.span.start),
+			end: formatTimecode(entity.span.end),
+		});
+	return t("studio.audit.imageRegion");
 }
 
 // Collapse identical occurrences (same value + detector) into one row. On by
@@ -170,12 +190,12 @@ function clusterActive(cluster: EntityCluster<StudioEntityView>): boolean {
 	return cluster.items.some((e) => e.id === props.activeEntityId);
 }
 
-// Whether an entity can be located in the document/image (highlighted + focused).
-// Text entities detected only in metadata (e.g. a DOCX hyperlink target) can't;
-// their value still shows but the row isn't clickable. Image entities always have
-// a box, so they're always locatable.
+// Whether an entity can be located in the document/image/audio (highlighted +
+// focused). Text entities detected only in metadata (e.g. a DOCX hyperlink target)
+// can't; their value still shows but the row isn't clickable. Image and audio
+// entities always have a box/span, so they're always locatable.
 const isLocatable = (e: StudioEntityView) =>
-	e.modality === "image" || e.locatable !== false;
+	e.modality === "image" || e.modality === "audio" || e.locatable !== false;
 // A cluster is locatable when its representative occurrence is.
 const clusterLocatable = (cluster: EntityCluster<StudioEntityView>) =>
 	isLocatable(cluster.lead);
@@ -289,7 +309,7 @@ const clusterLocatable = (cluster: EntityCluster<StudioEntityView>) =>
                 <!-- Value: the matched text for a text add, or the type for an image
                      region (a drawn box has no text value). -->
                 <span class="block truncate font-mono text-xs text-foreground">
-                  {{ item.text || t("studio.audit.imageRegion") }}
+                  {{ addedValueLabel(item) }}
                 </span>
                 <span
                   class="mt-0.5 flex items-center gap-1 truncate text-[11px] text-muted-foreground"

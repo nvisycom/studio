@@ -1,4 +1,5 @@
 import type {
+	AudioEntity,
 	ImageEntity,
 	TabularEntity,
 	TextEntity,
@@ -10,13 +11,14 @@ import type {
  * reviewer state — plus a modality-specific *location* (byte offsets for text, a
  * cell for tabular, a bounding box for image). This module holds the common core
  * and the grouping/clustering the audit list builds, parameterized so each
- * modality's view type (see {@link useTextEntities}, {@link useImageEntities})
- * reuses them without duplicating the logic.
+ * modality's view type (see {@link useTextEntities}, {@link useImageEntities},
+ * {@link useAudioEntities}) reuses them without duplicating the logic.
  */
 
 /**
  * The modality-agnostic fields every entity view carries. Each modality's view
- * extends this with its own location shape (text: byte offsets; image: a box).
+ * extends this with its own location shape (text: byte offsets; image: a box;
+ * audio: a time span).
  */
 export interface BaseEntityView {
 	/** Stable entity id (UUIDv7 from recognition). */
@@ -47,7 +49,7 @@ export interface BaseEntityView {
 }
 
 /** Any SDK entity that carries the shared provenance fields (`audit`, `language`). */
-type ProvenancedEntity = TextEntity | TabularEntity | ImageEntity;
+type ProvenancedEntity = TextEntity | TabularEntity | ImageEntity | AudioEntity;
 
 /**
  * Provenance/language shared by every modality's entities: the birth event's

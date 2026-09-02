@@ -6,10 +6,12 @@ import { rendererFor } from "./renderers";
 import type { AudioTranscriptState } from "./StudioAudioView.vue";
 import type { TextEntityView } from "#console/composables/useTextEntities";
 import type { ImageEntityView } from "#console/composables/useImageEntities";
+import type { AudioEntityView } from "#console/composables/useAudioEntities";
 import type { ImageLayout } from "#console/composables/useImageLayout";
 import type {
 	AddTextEntityInput,
 	AddImageEntityInput,
+	AddAudioEntityInput,
 } from "#console/composables/useStudioRedaction";
 import {
 	type StudioViewPhase,
@@ -25,8 +27,9 @@ const props = withDefaults(
 		fileExtension: string;
 		isLoading: boolean;
 		chatVisible: boolean;
-		/** Detected entities to highlight in the text (byte-offset spans). */
-		entities?: TextEntityView[];
+		/** Detected + added text/tabular entities, forwarded to the text/DOCX/CSV
+		 * views. Named by modality to match `imageEntities` / `audioEntities`. */
+		textEntities?: TextEntityView[];
 		/** Currently focused entity id, for the ring + scroll-into-view. */
 		activeEntityId?: string | null;
 		/** Whether the reviewer may add entities by selecting text (detection complete). */
@@ -38,14 +41,17 @@ const props = withDefaults(
 		imageEntities?: ImageEntityView[];
 		/** OCR layout for the image view's optional overlay, when available. */
 		imageOcr?: ImageLayout | null;
+		/** Detected + added audio entities (time spans), forwarded to the audio view. */
+		audioEntities?: AudioEntityView[];
 	}>(),
 	{
-		entities: () => [],
+		textEntities: () => [],
 		activeEntityId: null,
 		canAdd: false,
 		audioTranscriptState: () => ({ kind: "hidden" }),
 		imageEntities: () => [],
 		imageOcr: null,
+		audioEntities: () => [],
 	},
 );
 
@@ -62,6 +68,8 @@ const emit = defineEmits<{
 	"add-text-entity": [payload: AddTextEntityInput];
 	/** A reviewer drew a box marking a new image region to redact. */
 	"add-image-entity": [payload: AddImageEntityInput];
+	/** A reviewer selected a waveform span marking a new audio entity to redact. */
+	"add-audio-entity": [payload: AddAudioEntityInput];
 	/** Keep/redact toggle for an entity (from its detail popover). */
 	"toggle-suppress": [id: string];
 }>();
@@ -126,7 +134,9 @@ const asyncView = computed(() => {
 // each zooming view's own concern (image, audio) — there's no shared zoom prop.
 const commonProps = computed(() => ({
 	contentUrl: props.contentUrl,
-	entities: props.entities,
+	// The views' own prop is `entities` (each is single-modality); the image/audio
+	// cases below override it with their modality's entities.
+	entities: props.textEntities,
 	activeEntityId: props.activeEntityId,
 	canAdd: props.canAdd,
 }));
@@ -150,6 +160,7 @@ const rendererProps = computed<Record<string, unknown>>(() => {
 				...base,
 				displayName: props.displayName,
 				transcriptState: props.audioTranscriptState,
+				entities: props.audioEntities,
 			};
 		case "csv":
 			return {
@@ -188,9 +199,11 @@ const viewError = computed(() =>
 		: null,
 );
 
-// The focused entity object, for the detail popover.
+// The focused entity object, for the detail popover. (Text/tabular only — the
+// keep/redact detail card is the text overlay's; image/audio focus is handled in
+// their own views.)
 const activeEntity = computed(
-	() => props.entities.find((e) => e.id === props.activeEntityId) ?? null,
+	() => props.textEntities.find((e) => e.id === props.activeEntityId) ?? null,
 );
 
 // Scroll the focused entity into view and anchor the detail popover to its
@@ -229,7 +242,7 @@ watch(
 // On highlight rebuild (entity set / suppressed state changed): re-anchor without
 // scrolling, so a keep toggle doesn't leave the popover pinned to a dead node.
 watch(
-	() => props.entities,
+	() => props.textEntities,
 	() => reanchor(false),
 	{ deep: true },
 );
@@ -300,6 +313,7 @@ watch(
           @focus-entity="emit('focus-entity', $event)"
           @add-text-entity="emit('add-text-entity', $event)"
           @add-image-entity="emit('add-image-entity', $event)"
+          @add-audio-entity="emit('add-audio-entity', $event)"
           @phase="viewPhase = $event"
         />
       </div>

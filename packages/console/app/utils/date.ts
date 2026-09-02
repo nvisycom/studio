@@ -76,6 +76,17 @@ export function formatDuration(
 }
 
 /**
+ * Format a media time (seconds) as a `m:ss` timecode — e.g. `1:23`, `0:06`. For
+ * the audio player + transcript / entity spans. Non-finite input reads as `0:00`.
+ */
+export function formatTimecode(seconds: number): string {
+	if (!Number.isFinite(seconds)) return "0:00";
+	const m = Math.floor(seconds / 60);
+	const s = Math.floor(seconds % 60);
+	return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
+/**
  * Format a raw millisecond duration compactly: sub-second as "850ms", under a
  * minute as "4.2s", otherwise "2m 5s". For analytics figures (avg/p95 run time).
  */

@@ -3,14 +3,18 @@ import type { MaybeRefOrGetter } from "vue";
 import type { CategorizedGroup } from "#console/composables/useEntities";
 import type { TextEntityView } from "#console/composables/useTextEntities";
 import type { ImageEntityView } from "#console/composables/useImageEntities";
+import type { AudioEntityView } from "#console/composables/useAudioEntities";
 
 /**
  * A detected studio entity of any modality — the union the audit list, the count,
- * and the redaction edit path all work with. Both variants extend
- * {@link BaseEntityView} and carry a `modality` discriminator; the modality-
- * specific location (text byte offsets / image box) lives on each.
+ * and the redaction edit path all work with. Each variant extends
+ * {@link BaseEntityView} and carries a `modality` discriminator; the modality-
+ * specific location (text byte offsets / image box / audio span) lives on each.
  */
-export type StudioEntityView = TextEntityView | ImageEntityView;
+export type StudioEntityView =
+	| TextEntityView
+	| ImageEntityView
+	| AudioEntityView;
 
 /** The category-grouped audit sections over the modality union. */
 export type StudioCategorizedGroup = CategorizedGroup<StudioEntityView>;
@@ -28,16 +32,24 @@ export function useStudioEntities(
 	documentText?: MaybeRefOrGetter<string | null>,
 	docxParts?: MaybeRefOrGetter<Map<string, Uint8Array> | null>,
 ) {
-	// Both run (composables can't be called conditionally); each returns [] for a
+	// All run (composables can't be called conditionally); each returns [] for a
 	// modality that isn't its own, so exactly one is active for a given audit. Pick
-	// that one — image audits flow through `image`, text/tabular through `text` —
-	// and surface its stream, so the branch is expressed once.
+	// that one by the audit's modality and surface its stream, so the branch is
+	// expressed once.
 	const text = useTextEntities(audit, documentText, docxParts);
 	const image = useImageEntities(audit);
+	const audio = useAudioEntities(audit);
 
-	const active = computed(() =>
-		toValue(audit)?.report.body?.modality === "image" ? image : text,
-	);
+	const active = computed(() => {
+		switch (toValue(audit)?.report.body?.modality) {
+			case "image":
+				return image;
+			case "audio":
+				return audio;
+			default:
+				return text;
+		}
+	});
 
 	const entities = computed<StudioEntityView[]>(
 		() => active.value.entities.value,

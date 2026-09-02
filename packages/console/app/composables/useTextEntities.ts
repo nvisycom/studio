@@ -2,9 +2,7 @@ import type { Audit } from "@nvisy/sdk/datatypes";
 import type { MaybeRefOrGetter } from "vue";
 import {
 	type BaseEntityView,
-	type CategorizedGroup as CategorizedGroupBase,
-	type EntityCluster as EntityClusterBase,
-	type LabelGroup as LabelGroupBase,
+	type CategorizedGroup,
 	categorize,
 	provenance,
 } from "#console/composables/useEntities";
@@ -67,12 +65,6 @@ export interface TextEntityView extends BaseEntityView {
 	 */
 	locatable?: boolean;
 }
-
-// The shared grouping types, specialized to text entities and re-exported under
-// their original names so existing importers (the audit panel) are unchanged.
-export type EntityCluster = EntityClusterBase<TextEntityView>;
-export type LabelGroup = LabelGroupBase<TextEntityView>;
-export type CategorizedGroup = CategorizedGroupBase<TextEntityView>;
 
 /**
  * Slice a matched value out of `source` by a UTF-8 byte-offset span. Offsets
@@ -230,7 +222,7 @@ export function useTextEntities(
 	 * Two-tier grouping for the audit list: entities grouped by label, then those
 	 * label groups clustered under their catalog category (see `categorize`).
 	 */
-	const categorizedGroups = computed<CategorizedGroup[]>(() =>
+	const categorizedGroups = computed<CategorizedGroup<TextEntityView>[]>(() =>
 		categorize(entities.value, labelName, textClusterKey),
 	);
 

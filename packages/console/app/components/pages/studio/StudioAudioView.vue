@@ -4,6 +4,7 @@ import {
 	MicOff,
 	Pause,
 	Play,
+	Plus,
 	RotateCcw,
 	RotateCw,
 	Volume1,
@@ -23,6 +24,9 @@ import type WaveSurfer from "wavesurfer.js";
 import type RegionsPlugin from "wavesurfer.js/dist/plugins/regions.js";
 import type { Region } from "wavesurfer.js/dist/plugins/regions.js";
 import type { Transcription } from "@nvisy/sdk/datatypes";
+import AddEntityPopover from "./AddEntityPopover.vue";
+import type { AddAudioEntityInput } from "#console/composables/useStudioRedaction";
+import type { AudioEntityView } from "#console/composables/useAudioEntities";
 import type { StudioViewPhase } from "#console/composables/useStudioView";
 
 /**
@@ -49,9 +53,10 @@ export type AudioTranscriptState =
  * the waveform and owns transport (play/seek). It's dynamically imported the first
  * time an audio file opens so its code stays out of the initial bundle.
  *
- * NOTE: transcript + detected-entity highlighting (entity spans painted on the
- * timeline via wavesurfer's regions plugin, click-to-seek) is a follow-up stage;
- * the `entities` / `focus-entity` contract is kept so the parent stays stable.
+ * Detected + added entities are painted as regions on the waveform (via the
+ * regions plugin), colored by category, click-to-focus; a drag-selected span can
+ * be added as a custom entity. The transcript panel (segment click-to-seek) shows
+ * once a detection produces one.
  */
 // Local interfaces (see the note in StudioDocxView on why the view contract is
 // declared locally rather than via the shared aliased type).
@@ -67,14 +72,27 @@ interface Props {
 	 * transcript exists but has no speech segments; `ready` carries the transcript.
 	 */
 	transcriptState?: AudioTranscriptState;
+	/** Detected + added audio entities to overlay as regions on the waveform. */
+	entities?: AudioEntityView[];
+	/** Currently focused entity id, for the active region + seek. */
+	activeEntityId?: string | null;
+	/** Whether the reviewer may add entities by selecting a span (detection complete). */
+	canAdd?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
 	transcriptState: () => ({ kind: "hidden" }),
+	entities: () => [],
+	activeEntityId: null,
+	canAdd: false,
 });
 
 const emit = defineEmits<{
 	/** Loading phase, so the host shows the single loader/error. */
 	phase: [phase: StudioViewPhase];
+	/** A region was clicked — focus that entity (cross-highlight with the audit list). */
+	"focus-entity": [id: string];
+	/** A reviewer marked the selected span as a new audio entity to redact. */
+	"add-audio-entity": [payload: AddAudioEntityInput];
 }>();
 
 const { t } = useI18n();
@@ -92,9 +110,27 @@ const isPlaying = ref(false);
 const isMuted = ref(false);
 const currentTime = ref(0);
 const duration = ref(0);
-// Whether a span is selected (drives the Reset button + scoped playback). The view
-// is zoomed to the selection while one exists.
+// Whether a span is selected (drives the Reset button + scoped playback + the
+// "Add entity" action). The view is zoomed to the selection while one exists.
 const hasSelection = ref(false);
+
+// The label popover for turning the current selection into a custom entity: the
+// span + anchor rect frozen when it opens, plus the chosen label. Frozen so a
+// later re-selection can't change what gets added. Only offered when a selection
+// exists and adding is enabled (`canAdd`).
+const addSpan = ref<{ start: number; end: number } | null>(null);
+const addRect = ref<DOMRect | null>(null);
+const addLabel = ref("");
+// The span's time range, shown in the popover so the reviewer sees exactly which
+// stretch they're about to redact.
+const addLocation = computed(() =>
+	addSpan.value
+		? t("studio.audit.timeSpan", {
+				start: formatTimecode(addSpan.value.start),
+				end: formatTimecode(addSpan.value.end),
+			})
+		: "",
+);
 
 // How far to skip on the back/forward controls, in seconds (the podcast idiom).
 const SKIP_SECONDS = 10;
@@ -175,20 +211,47 @@ function seekTo(seconds: number) {
 	ws.setTime(Math.max(0, Math.min(duration.value, seconds)));
 }
 
-/** `m:ss` for a time in seconds (audio clips are short; no hours needed). */
-function formatTime(seconds: number): string {
-	if (!Number.isFinite(seconds)) return "0:00";
-	const m = Math.floor(seconds / 60);
-	const s = Math.floor(seconds % 60);
-	return `${m}:${s.toString().padStart(2, "0")}`;
-}
-
 /** Resolve a theme token to a concrete color string (wavesurfer needs a real
  * color, not a CSS `var()`), read live so it matches the current theme. */
 function themeColor(token: string, fallback: string): string {
 	if (!waveform.value) return fallback;
 	const value = getComputedStyle(waveform.value).getPropertyValue(token).trim();
 	return value || fallback;
+}
+
+// Entity regions are added programmatically (not by drag), so they carry this id
+// prefix — used to tell them apart from the drag-selection region in the
+// `region-created` handler, and to map a clicked region back to its entity.
+const ENTITY_REGION_PREFIX = "entity:";
+
+/** A translucent category color for an entity region (theme-aware, from the
+ * `--flag-<category>` tokens in entities.css). */
+function categoryFill(category: string | null): string {
+	const token = category ? `--flag-${category}` : "--flag";
+	const color = themeColor(token, "oklch(0.55 0.03 260)");
+	return `color-mix(in oklch, ${color} 26%, transparent)`;
+}
+
+/** Redraw the detected/added entity regions from `props.entities`. Removes the
+ * previous entity regions (leaving the drag-selection region alone) and adds one
+ * per entity, colored by category and passive (click focuses, no drag/resize). */
+function renderEntityRegions() {
+	if (!regions) return;
+	for (const r of regions.getRegions()) {
+		if (r.id.startsWith(ENTITY_REGION_PREFIX)) r.remove();
+	}
+	for (const e of props.entities) {
+		const region = regions.addRegion({
+			id: `${ENTITY_REGION_PREFIX}${e.id}`,
+			start: e.span.start,
+			end: e.span.end,
+			color: categoryFill(e.category),
+			drag: false,
+			resize: false,
+		});
+		// Dim a suppressed (kept) entity so it reads as "won't be redacted".
+		if (e.suppressed && region.element) region.element.style.opacity = "0.4";
+	}
 }
 
 async function build(url: string, target: HTMLElement) {
@@ -233,6 +296,8 @@ async function build(url: string, target: HTMLElement) {
 		// a new drag replaces the previous.
 		regions.enableDragSelection({ color: "rgba(37, 99, 235, 0.18)" });
 		regions.on("region-created", (region) => {
+			// Entity regions are added programmatically (not a drag-select) — leave them.
+			if (region.id.startsWith(ENTITY_REGION_PREFIX)) return;
 			// A click / tiny drag isn't a selection — drop it and leave the view as is.
 			if (region.end - region.start < 0.02) {
 				region.remove();
@@ -241,6 +306,9 @@ async function build(url: string, target: HTMLElement) {
 			if (selection && selection !== region) selection.remove();
 			selection = region;
 			hasSelection.value = true;
+			// A fresh selection supersedes any open add popover (its anchor + frozen
+			// span pointed at the previous selection).
+			cancelAdd();
 			// The selection is a passive highlight, not a draggable object. Once zoomed,
 			// it fills the view; if it stayed draggable/resizable it would swallow the
 			// pointer, so a drag *over* it couldn't start a new selection. Making it
@@ -249,11 +317,21 @@ async function build(url: string, target: HTMLElement) {
 			zoomToRange(region.start, region.end);
 		});
 
+		// Click an entity region → focus that entity (cross-highlight with the audit
+		// list). Only entity regions map to an id; the drag-selection isn't clickable.
+		regions.on("region-clicked", (region, event) => {
+			if (!region.id.startsWith(ENTITY_REGION_PREFIX)) return;
+			event.stopPropagation();
+			emit("focus-entity", region.id.slice(ENTITY_REGION_PREFIX.length));
+		});
+
 		ws.on("ready", (dur) => {
 			duration.value = dur;
 			// Apply the persisted volume/speed to this fresh instance.
 			ws?.setVolume(volume.value);
 			ws?.setPlaybackRate(speed.value);
+			// Paint the detected/added entity regions now that the waveform exists.
+			renderEntityRegions();
 			emit("phase", { status: "ready" });
 		});
 		ws.on("timeupdate", (time) => {
@@ -298,6 +376,7 @@ function teardown() {
 	currentTime.value = 0;
 	duration.value = 0;
 	hasSelection.value = false;
+	cancelAdd();
 	// Note: volume and speed are persisted preferences — deliberately not reset
 	// here, so they carry to the next file.
 }
@@ -372,8 +451,31 @@ function resetZoom() {
 	selection?.remove();
 	selection = null;
 	hasSelection.value = false;
+	cancelAdd();
 	ws?.zoom(0);
 	ws?.setScrollTime(0);
+}
+
+/** Open the label popover to add the current selection as a custom entity. Freezes
+ * the span + anchor rect so a later re-selection can't change what gets added. */
+function startAdd() {
+	if (!selection || !props.canAdd) return;
+	addSpan.value = { start: selection.start, end: selection.end };
+	addRect.value = selection.element?.getBoundingClientRect() ?? null;
+	addLabel.value = "";
+}
+
+/** Confirm the add: emit the frozen span (seconds) + label. */
+function confirmAdd() {
+	if (!addSpan.value || !addLabel.value) return;
+	emit("add-audio-entity", { label: addLabel.value, span: addSpan.value });
+	cancelAdd();
+}
+
+function cancelAdd() {
+	addSpan.value = null;
+	addRect.value = null;
+	addLabel.value = "";
 }
 
 // (Re)build when the file changes; tear down when it clears or on unmount.
@@ -385,6 +487,29 @@ watch(
 	},
 	{ immediate: true },
 );
+
+// Re-paint entity regions when the entity set changes (detection completes, a
+// keep/add edit) — but only once the instance is ready (regions exist).
+watch(
+	() => props.entities,
+	() => {
+		if (ws) renderEntityRegions();
+	},
+	{ deep: true },
+);
+
+// Focusing an entity (from the audit list) seeks the waveform to its span start,
+// so the reviewer lands on it. The region is already painted; the seek makes it
+// visible even when zoomed elsewhere.
+watch(
+	() => props.activeEntityId,
+	(id) => {
+		if (!id) return;
+		const entity = props.entities.find((e) => e.id === id);
+		if (entity) seekTo(entity.span.start);
+	},
+);
+
 onBeforeUnmount(teardown);
 </script>
 
@@ -393,20 +518,34 @@ onBeforeUnmount(teardown);
     <div
       class="w-full max-w-5xl flex-shrink-0 rounded-lg border border-border bg-card p-6 shadow-sm"
     >
-      <!-- Zoom affordance: a hint to drag-select, and a Reset once zoomed in. -->
+      <!-- Selection affordances: a drag-select hint, plus (once a span is
+           selected) an "Add entity" action and a Clear. -->
       <div class="mb-2 flex h-6 items-center justify-between">
         <span class="text-xs text-muted-foreground">
           {{ t("studio.preview.audioZoomHint") }}
         </span>
-        <button
-          type="button"
-          class="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
-          :disabled="!hasSelection"
-          @click="resetZoom"
-        >
-          <X :size="13" />
-          {{ t("studio.preview.audioZoomReset") }}
-        </button>
+        <div class="flex items-center gap-1">
+          <!-- Add the selected span as a custom entity — only when a span is
+               selected and detection is complete. -->
+          <button
+            v-if="canAdd && hasSelection"
+            type="button"
+            class="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-primary transition-colors hover:bg-primary/10"
+            @click="startAdd"
+          >
+            <Plus :size="13" />
+            {{ t("studio.preview.audioAddEntity") }}
+          </button>
+          <button
+            type="button"
+            class="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+            :disabled="!hasSelection"
+            @click="resetZoom"
+          >
+            <X :size="13" />
+            {{ t("studio.preview.audioZoomReset") }}
+          </button>
+        </div>
       </div>
 
       <!-- Waveform canvas (wavesurfer renders into it). wavesurfer owns its own
@@ -464,7 +603,7 @@ onBeforeUnmount(teardown);
           class="ml-1 font-mono text-xs tabular-nums text-muted-foreground"
           aria-live="off"
         >
-          {{ formatTime(currentTime) }} / {{ formatTime(duration) }}
+          {{ formatTimecode(currentTime) }} / {{ formatTimecode(duration) }}
         </span>
 
         <!-- Playback speed (tap to cycle) -->
@@ -531,7 +670,7 @@ onBeforeUnmount(teardown);
             <span
               class="flex-shrink-0 font-mono text-xs tabular-nums text-muted-foreground"
             >
-              {{ formatTime(segment.start) }}
+              {{ formatTimecode(segment.start) }}
             </span>
             <span class="text-sm text-foreground">{{ segment.text }}</span>
           </button>
@@ -566,5 +705,15 @@ onBeforeUnmount(teardown);
         </Empty>
       </div>
     </div>
+
+    <!-- Label picker for adding the selected span as a custom entity, anchored to
+         the selection region on the waveform. -->
+    <AddEntityPopover
+      v-model:label="addLabel"
+      :rect="addRect"
+      :location="addLocation"
+      @confirm="confirmAdd"
+      @cancel="cancelAdd"
+    />
   </div>
 </template>
