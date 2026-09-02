@@ -31,10 +31,18 @@ const emit = defineEmits<{
 	tryAgain: [id: string];
 }>();
 
+const { t, locale } = useI18n();
+
 const copied = ref(false);
 
 async function handleCopy() {
-	await navigator.clipboard.writeText(props.message.content);
+	try {
+		await navigator.clipboard.writeText(props.message.content);
+	} catch {
+		// Clipboard unavailable (permissions, insecure context) — do nothing rather
+		// than leaving an unhandled rejection or a false "copied" state.
+		return;
+	}
 	copied.value = true;
 	emit("copy", props.message.id);
 	setTimeout(() => {
@@ -72,6 +80,7 @@ async function handleCopy() {
             variant="ghost"
             size="sm"
             class="h-7 w-7 p-0 text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
+            :aria-label="copied ? t('studio.chat.copied') : t('studio.chat.copy')"
             @click="handleCopy"
           >
             <Check v-if="copied" :size="14" />
@@ -86,6 +95,7 @@ async function handleCopy() {
                 ? 'text-neutral-900 dark:text-neutral-100'
                 : 'text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100',
             ]"
+            :aria-label="t('studio.chat.edit')"
             @click="emit('edit', message.id)"
           >
             <Pencil :size="14" />
@@ -98,6 +108,7 @@ async function handleCopy() {
             variant="ghost"
             size="sm"
             class="h-7 w-7 p-0 text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
+            :aria-label="copied ? t('studio.chat.copied') : t('studio.chat.copy')"
             @click="handleCopy"
           >
             <Check v-if="copied" :size="14" />
@@ -112,6 +123,7 @@ async function handleCopy() {
                 ? 'text-neutral-900 dark:text-neutral-100'
                 : 'text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100',
             ]"
+            :aria-label="t('studio.chat.thumbsUp')"
             @click="emit('good', message.id)"
           >
             <ThumbsUp :size="14" />
@@ -125,6 +137,7 @@ async function handleCopy() {
                 ? 'text-neutral-900 dark:text-neutral-100'
                 : 'text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100',
             ]"
+            :aria-label="t('studio.chat.thumbsDown')"
             @click="emit('bad', message.id)"
           >
             <ThumbsDown :size="14" />
@@ -133,6 +146,7 @@ async function handleCopy() {
             variant="ghost"
             size="sm"
             class="h-7 w-7 p-0 text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
+            :aria-label="t('studio.chat.retry')"
             @click="emit('tryAgain', message.id)"
           >
             <RefreshCw :size="14" />
@@ -144,7 +158,7 @@ async function handleCopy() {
       <p
         class="text-xs text-neutral-500 dark:text-neutral-400 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
       >
-        {{ message.timestamp.toLocaleTimeString() }}
+        {{ message.timestamp.toLocaleTimeString(locale) }}
       </p>
     </div>
   </div>

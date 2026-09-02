@@ -1211,6 +1211,23 @@
 	"studio": {
 		"chat": {
 			"placeholder": "Describe changes...",
+			"inputPlaceholder": "Type your message here.",
+			"send": "Send message",
+			"saveEdit": "Save edit",
+			"attach": "Attach",
+			"upload": "Upload",
+			"generate": "Generate",
+			"summarize": "Summarize",
+			"greeting": "Hi! I can help you review and redact this document. Ask me anything or use the tools below.",
+			"processing": "Working on it…",
+			"copy": "Copy",
+			"copied": "Copied",
+			"edit": "Edit",
+			"thumbsUp": "Good response",
+			"thumbsDown": "Bad response",
+			"retry": "Retry",
+			"you": "You",
+			"assistant": "Assistant",
 			"tools": {
 				"highlight": "Highlight",
 				"annotate": "Annotate"

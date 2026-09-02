@@ -91,6 +91,7 @@ watch(
       <div class="inline-flex rounded-md border border-border/50 p-0.5">
         <button
           type="button"
+          :aria-pressed="showTable"
           class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-medium transition-colors"
           :class="
             showTable
@@ -103,6 +104,7 @@ watch(
         </button>
         <button
           type="button"
+          :aria-pressed="!showTable"
           class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-medium transition-colors"
           :class="
             !showTable

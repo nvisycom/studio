@@ -56,6 +56,7 @@ defineEmits<{ run: [] }>();
       class="size-8 shrink-0"
       :disabled="!canRun"
       :title="phase === 'complete' ? t('studio.audit.runAgain') : t('studio.audit.run')"
+      :aria-label="phase === 'complete' ? t('studio.audit.runAgain') : t('studio.audit.run')"
       @click="$emit('run')"
     >
       <Loader2 v-if="phase === 'running'" :size="16" class="animate-spin" />

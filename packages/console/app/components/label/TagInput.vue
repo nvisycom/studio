@@ -42,6 +42,9 @@ function remove(tag: string) {
 }
 
 function onKeydown(event: KeyboardEvent) {
+	// Ignore keystrokes mid-IME composition (e.g. selecting a CJK candidate with
+	// Enter) — committing then would swallow the composition.
+	if (event.isComposing) return;
 	if (event.key === "Enter" || event.key === ",") {
 		event.preventDefault();
 		commit();

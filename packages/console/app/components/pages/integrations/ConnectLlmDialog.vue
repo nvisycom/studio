@@ -88,7 +88,7 @@ function submit() {
 	emit("connect", {
 		displayName: displayName.value.trim(),
 		config,
-	} as CreateConnection);
+	} satisfies CreateConnection);
 }
 </script>
 

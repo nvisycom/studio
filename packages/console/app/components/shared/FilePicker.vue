@@ -63,12 +63,15 @@ watch(
 			selectedLabel.value = match.displayName;
 			return;
 		}
-		// Not on this page — fetch it directly to name the trigger.
+		// Not on this page — clear the (now-stale) label, then fetch it directly to
+		// name the trigger. Clearing first ensures a failed lookup can't leave the
+		// previous selection's label showing for this new id.
+		selectedLabel.value = "";
 		try {
 			const file = await getFile(id);
 			if (model.value === id) selectedLabel.value = file.displayName;
 		} catch {
-			// Best-effort: leave the label as-is if the lookup fails.
+			// Best-effort: the trigger falls back to the placeholder if the lookup fails.
 		}
 	},
 	{ immediate: true },

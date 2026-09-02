@@ -64,7 +64,7 @@ const chatMessages = ref<ChatMessage[]>([
 	{
 		id: "1",
 		role: "assistant",
-		content: "How can I help you with this document?",
+		content: t("studio.chat.greeting"),
 	},
 ]);
 
@@ -80,10 +80,6 @@ const layers = ref<Layer[]>([
 	},
 	{ id: "4", name: "Merge", icon: Merge, page: 4, fileName: "document.pdf" },
 ]);
-
-function selectChange(_layerId: string) {
-	// TODO: wire change selection once studio review is backed by real data
-}
 
 function deleteLayer(layerId: string) {
 	const index = layers.value.findIndex((l) => l.id === layerId);
@@ -135,7 +131,7 @@ function sendMessage() {
 		chatMessages.value.push({
 			id: `${Date.now() + 1}`,
 			role: "assistant",
-			content: "I'm processing your request...",
+			content: t("studio.chat.processing"),
 		});
 	}, 500);
 
@@ -277,8 +273,7 @@ function startResize(e: MouseEvent) {
             <div
               v-for="layer in layers"
               :key="layer.id"
-              class="p-2 bg-muted/50 rounded-md cursor-pointer hover:bg-muted/70 transition-colors"
-              @click="selectChange(layer.id)"
+              class="p-2 bg-muted/50 rounded-md transition-colors"
             >
               <div class="flex items-center gap-2">
                 <component :is="layer.icon" :size="14" class="flex-shrink-0" />
@@ -327,7 +322,7 @@ function startResize(e: MouseEvent) {
           v-model="chatMessage"
           :placeholder="t('studio.chat.placeholder')"
           class="h-full w-full rounded-none border-0 border-t focus-visible:ring-0 resize-none break-words pb-12 text-sm font-normal"
-          @keydown.enter.prevent="sendMessage"
+          @keydown.enter.exact.prevent="sendMessage"
         />
 
         <!-- Action bar inside textarea area -->

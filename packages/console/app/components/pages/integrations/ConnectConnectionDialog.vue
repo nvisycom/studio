@@ -6,6 +6,7 @@ import type {
 } from "@nvisy/sdk/datatypes";
 import type { StorageProvider } from "#console/utils/connections";
 import {
+	buildStorageConfig,
 	DELETION_POLICIES,
 	STORAGE_PROVIDERS,
 	SYNC_MODES,
@@ -90,13 +91,6 @@ function handleOpenChange(open: boolean) {
 function submit() {
 	if (!isValid.value || !props.provider) return;
 
-	// Only send credential fields that were filled in.
-	const creds: Record<string, string> = {};
-	for (const field of fields.value) {
-		const value = credentials.value[field.key]?.trim();
-		if (value) creds[field.key] = value;
-	}
-
 	const connection = {
 		displayName: displayName.value.trim(),
 		sync: {
@@ -106,12 +100,12 @@ function submit() {
 				? { scheduleCron: scheduleCron.value.trim() }
 				: {}),
 		},
-		config: {
-			provider: props.provider,
-			credentials: creds,
-			...(rootPath.value.trim() ? { rootPath: rootPath.value.trim() } : {}),
-		},
-	} as CreateConnection;
+		config: buildStorageConfig(
+			props.provider,
+			credentials.value,
+			rootPath.value,
+		),
+	} satisfies CreateConnection;
 
 	emit("connect", connection);
 }

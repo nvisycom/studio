@@ -336,6 +336,7 @@ const clusterLocatable = (cluster: EntityCluster<StudioEntityView>) =>
                 type="button"
                 class="mt-0.5 shrink-0 rounded p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-muted-foreground/10 hover:text-foreground focus-visible:opacity-100 group-hover/row:opacity-100"
                 :title="t('studio.audit.removeAdded')"
+                :aria-label="t('studio.audit.removeAdded')"
                 @click.stop="emit('remove-added', item.id)"
               >
                 <X :size="13" />
@@ -571,6 +572,11 @@ const clusterLocatable = (cluster: EntityCluster<StudioEntityView>) =>
                       isSuppressed(entity.id)
                         ? 'text-muted-foreground opacity-100'
                         : 'text-foreground/70'
+                    "
+                    :aria-label="
+                      isSuppressed(entity.id)
+                        ? t('studio.audit.redactThis')
+                        : t('studio.audit.keep')
                     "
                     :title="
                       isSuppressed(entity.id)

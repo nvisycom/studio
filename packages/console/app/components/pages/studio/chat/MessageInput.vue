@@ -24,6 +24,8 @@ const emit = defineEmits<{
 	summarize: [];
 }>();
 
+const { t } = useI18n();
+
 function handleSend() {
 	if (!value.value.trim()) return;
 	emit("send");
@@ -37,9 +39,9 @@ function handleSend() {
   >
     <Textarea
       v-model="value"
-      placeholder="Type your message here."
+      :placeholder="t('studio.chat.inputPlaceholder')"
       class="min-h-[120px] border-0 focus-visible:ring-0 resize-none pl-3 pr-12 pb-12"
-      @keydown.enter.prevent="handleSend"
+      @keydown.enter.exact.prevent="handleSend"
     />
     <!-- Buttons inside textarea -->
     <div
@@ -54,7 +56,7 @@ function handleSend() {
           @click="emit('attach')"
         >
           <Paperclip :size="14" class="mr-1.5" />
-          <span class="text-xs">Attach</span>
+          <span class="text-xs">{{ t("studio.chat.attach") }}</span>
         </Button>
         <Button
           variant="outline"
@@ -63,7 +65,7 @@ function handleSend() {
           @click="emit('upload')"
         >
           <Upload :size="14" class="mr-1.5" />
-          <span class="text-xs">Upload</span>
+          <span class="text-xs">{{ t("studio.chat.upload") }}</span>
         </Button>
         <Button
           variant="outline"
@@ -72,7 +74,7 @@ function handleSend() {
           @click="emit('generate')"
         >
           <Sparkles :size="14" class="mr-1.5" />
-          <span class="text-xs">Generate</span>
+          <span class="text-xs">{{ t("studio.chat.generate") }}</span>
         </Button>
         <Button
           variant="outline"
@@ -81,7 +83,7 @@ function handleSend() {
           @click="emit('summarize')"
         >
           <FileText :size="14" class="mr-1.5" />
-          <span class="text-xs">Summarize</span>
+          <span class="text-xs">{{ t("studio.chat.summarize") }}</span>
         </Button>
       </div>
 
@@ -90,6 +92,7 @@ function handleSend() {
         @click="handleSend"
         :disabled="!value.trim()"
         size="sm"
+        :aria-label="isEditing ? t('studio.chat.saveEdit') : t('studio.chat.send')"
         :class="['h-8 w-8 p-0', isEditing && 'bg-blue-600 hover:bg-blue-700']"
       >
         <Pencil v-if="isEditing" :size="16" />
