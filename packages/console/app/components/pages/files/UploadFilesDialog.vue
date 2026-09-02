@@ -220,7 +220,10 @@ async function handleBrowseClick() {
         </DialogDescription>
       </DialogHeader>
 
-      <div class="space-y-4">
+      <!-- min-w-0: this is a grid child of DialogContent, whose default
+           min-width:auto would otherwise let a long unbroken filename below blow
+           the dialog past its max-width instead of truncating. -->
+      <div class="min-w-0 space-y-4">
         <!-- Drop zone -->
         <button
           type="button"
@@ -285,7 +288,7 @@ async function handleBrowseClick() {
             <div
               v-for="item in uploadingFiles"
               :key="item.id"
-              class="flex items-center gap-3 rounded-lg border border-border/50 bg-muted/30 p-2.5"
+              class="flex min-w-0 items-center gap-3 rounded-lg border border-border/50 bg-muted/30 p-2.5"
             >
               <div
                 class="flex size-9 shrink-0 items-center justify-center rounded-md bg-background text-muted-foreground"

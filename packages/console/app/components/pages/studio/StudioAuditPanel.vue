@@ -14,15 +14,15 @@ import {
 } from "@lucide/vue";
 import type { StudioDetectionPhase } from "#console/composables/useStudioDetection";
 import type {
-	AddedEntity,
 	RedactionOutput,
 	StudioRedactPhase,
 } from "#console/composables/useStudioRedaction";
+import type { EntityCluster } from "#console/composables/useEntities";
+import type { TextEntityView } from "#console/composables/useTextEntities";
 import type {
-	CategorizedGroup,
-	EntityCluster,
-	TextEntityView,
-} from "#console/composables/useTextEntities";
+	StudioCategorizedGroup,
+	StudioEntityView,
+} from "#console/composables/useStudioEntities";
 import { Button } from "#console/components/ui/button";
 import {
 	Collapsible,
@@ -37,10 +37,10 @@ const props = defineProps<{
 	fileId: string | null;
 	/** Detection lifecycle phase, driving which state the list shows. */
 	phase: StudioDetectionPhase;
-	/** Detected entities, in document order. */
-	entities: TextEntityView[];
+	/** Detected entities (any modality), in document order. */
+	entities: StudioEntityView[];
 	/** Entities grouped into category → label → clusters. */
-	categorizedGroups: CategorizedGroup[];
+	categorizedGroups: StudioCategorizedGroup[];
 	/** Total entity count. */
 	count: number;
 	/** Failure message shown when the detection failed. */
@@ -59,8 +59,8 @@ const props = defineProps<{
 	output?: RedactionOutput | null;
 	/** Ids of entities the reviewer kept (suppressed), for rendering state. */
 	suppressed?: Set<string>;
-	/** Entities the reviewer added by selecting text. */
-	added?: AddedEntity[];
+	/** Entities the reviewer added (text spans or image boxes), for the "added" band. */
+	added?: StudioEntityView[];
 	/** How many entities the redaction will actually redact (total minus kept). */
 	effectiveRedactCount?: number;
 }>();
@@ -74,8 +74,8 @@ const emit = defineEmits<{
 	"download-output": [];
 	/** Keep/redact toggle for one entity (suppress). */
 	"toggle-suppress": [id: string];
-	/** Remove a reviewer-added entity by its index. */
-	"remove-added": [index: number];
+	/** Remove a reviewer-added entity by its id. */
+	"remove-added": [id: string];
 }>();
 
 const { labelName } = useLabels();
@@ -87,10 +87,10 @@ const { labelName } = useLabels();
 // unless already fully suppressed) — flipping each independently would leave a
 // mixed cluster inconsistent.
 const isSuppressed = (id: string) => !!props.suppressed?.has(id);
-function clusterSuppressed(cluster: EntityCluster): boolean {
+function clusterSuppressed(cluster: EntityCluster<StudioEntityView>): boolean {
 	return cluster.items.every((e) => isSuppressed(e.id));
 }
-function toggleClusterSuppress(cluster: EntityCluster) {
+function toggleClusterSuppress(cluster: EntityCluster<StudioEntityView>) {
 	const target = !clusterSuppressed(cluster);
 	for (const e of cluster.items) {
 		if (isSuppressed(e.id) !== target) emit("toggle-suppress", e.id);
@@ -129,6 +129,51 @@ function categoryName(category: string | null): string {
 
 const confidencePct = (c: number) => `${Math.round(c * 100)}%`;
 
+/**
+ * A short location descriptor for an entity, by modality: a tabular cell, a text
+ * byte range, an audio time span, or empty for an image entity (its box has no
+ * compact text form).
+ */
+function locationLabel(entity: StudioEntityView): string {
+	if (entity.modality === "image") return "";
+	if (entity.modality === "audio") {
+		return t("studio.audit.timeSpan", {
+			start: formatTimecode(entity.span.start),
+			end: formatTimecode(entity.span.end),
+		});
+	}
+	if (entity.cell) return cellLabel(entity.cell);
+	return t("studio.audit.bytes", { start: entity.start, end: entity.end });
+}
+
+/** The entity's metadata line — location, detector/source, language — joined with
+ * " · " so a separator only sits between two present fields (no leading "·" when,
+ * e.g., an image entity has no location). */
+function entityMetaLine(entity: StudioEntityView): string {
+	const detector =
+		entity.detectorKind === "pattern"
+			? t("studio.audit.detectorPattern", { name: entity.detector })
+			: entity.detectorKind === "model"
+				? t("studio.audit.detectorModel", { name: entity.detector })
+				: entity.source;
+	return [locationLabel(entity), detector, entity.language]
+		.filter(Boolean)
+		.join(" · ");
+}
+
+/** The primary label for an added-entity row: its matched text when it has one
+ * (text spans), else a modality descriptor (a drawn image region / an audio span
+ * carry no text value). */
+function addedValueLabel(entity: StudioEntityView): string {
+	if (entity.text) return entity.text;
+	if (entity.modality === "audio")
+		return t("studio.audit.timeSpan", {
+			start: formatTimecode(entity.span.start),
+			end: formatTimecode(entity.span.end),
+		});
+	return t("studio.audit.imageRegion");
+}
+
 // Collapse identical occurrences (same value + detector) into one row. On by
 // default (a document usually repeats the same values); toggled from the
 // header. Only worth offering when a group actually has duplicates.
@@ -145,9 +190,9 @@ const hasDuplicates = computed(() =>
 // the spans of a collapsed row. Keyed by the cluster's stable key.
 const clusterIndex = ref<Record<string, number>>({});
 
-function stepCluster(cluster: EntityCluster, delta: number) {
+function stepCluster(cluster: EntityCluster<StudioEntityView>, delta: number) {
 	// Metadata-only entities have no in-document span to focus.
-	if (cluster.lead.locatable === false) return;
+	if (!isLocatable(cluster.lead)) return;
 	const total = cluster.items.length;
 	const current = clusterIndex.value[cluster.key] ?? 0;
 	const next = (current + delta + total) % total;
@@ -156,16 +201,19 @@ function stepCluster(cluster: EntityCluster, delta: number) {
 }
 
 // A collapsed cluster reads as active when any of its occurrences is focused.
-function clusterActive(cluster: EntityCluster): boolean {
+function clusterActive(cluster: EntityCluster<StudioEntityView>): boolean {
 	return cluster.items.some((e) => e.id === props.activeEntityId);
 }
 
-// Whether an entity can be located in the document (highlighted + scrolled to).
-// Entities detected only in metadata (e.g. a DOCX hyperlink target) can't; their
-// value still shows but the row isn't clickable. Undefined means locatable.
-const isLocatable = (e: TextEntityView) => e.locatable !== false;
+// Whether an entity can be located in the document/image/audio (highlighted +
+// focused). Text entities detected only in metadata (e.g. a DOCX hyperlink target)
+// can't; their value still shows but the row isn't clickable. Image and audio
+// entities always have a box/span, so they're always locatable.
+const isLocatable = (e: StudioEntityView) =>
+	e.modality === "image" || e.modality === "audio" || e.locatable !== false;
 // A cluster is locatable when its representative occurrence is.
-const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
+const clusterLocatable = (cluster: EntityCluster<StudioEntityView>) =>
+	isLocatable(cluster.lead);
 </script>
 
 <template>
@@ -259,7 +307,7 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
                focuses the entity's highlight in the document, like detected rows. -->
           <div class="pl-3">
             <div
-              v-for="(item, i) in added"
+              v-for="item in added"
               :key="item.id"
               class="group/row flex w-full items-start gap-2 border-l py-1.5 pr-2 pl-3 transition-colors"
               :class="
@@ -273,8 +321,10 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
                 class="min-w-0 flex-1 text-left"
                 @click="emit('focus-entity', item.id)"
               >
+                <!-- Value: the matched text for a text add, or the type for an image
+                     region (a drawn box has no text value). -->
                 <span class="block truncate font-mono text-xs text-foreground">
-                  {{ item.text }}
+                  {{ addedValueLabel(item) }}
                 </span>
                 <span
                   class="mt-0.5 flex items-center gap-1 truncate text-[11px] text-muted-foreground"
@@ -286,7 +336,7 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
                 type="button"
                 class="mt-0.5 shrink-0 rounded p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-muted-foreground/10 hover:text-foreground focus-visible:opacity-100 group-hover/row:opacity-100"
                 :title="t('studio.audit.removeAdded')"
-                @click.stop="emit('remove-added', i)"
+                @click.stop="emit('remove-added', item.id)"
               >
                 <X :size="13" />
               </button>
@@ -502,25 +552,11 @@ const clusterLocatable = (cluster: EntityCluster) => isLocatable(cluster.lead);
                     >
                       {{ t("studio.audit.metadata") }}
                     </span>
+                    <!-- Location · detector/source · language, joined so a
+                         separator only appears between two present fields (an
+                         image entity has no location, so no leading "·"). -->
                     <span class="truncate">
-                      <template v-if="entity.cell">
-                        {{ cellLabel(entity.cell) }}
-                      </template>
-                      <template v-else>
-                        {{ t("studio.audit.bytes", { start: entity.start, end: entity.end }) }}
-                      </template>
-                      <template v-if="entity.detectorKind === 'pattern'">
-                        · {{ t("studio.audit.detectorPattern", { name: entity.detector }) }}
-                      </template>
-                      <template v-else-if="entity.detectorKind === 'model'">
-                        · {{ t("studio.audit.detectorModel", { name: entity.detector }) }}
-                      </template>
-                      <template v-else-if="entity.source">
-                        · {{ entity.source }}
-                      </template>
-                      <template v-if="entity.language">
-                        · {{ entity.language }}
-                      </template>
+                      {{ entityMetaLine(entity) }}
                     </span>
                   </span>
                 </button>

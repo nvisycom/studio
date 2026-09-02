@@ -1,1 +1,1 @@
-export { default as ZoomControls } from "./ZoomControls.vue";
+export { default as PreviewChatToggle } from "./PreviewChatToggle.vue";

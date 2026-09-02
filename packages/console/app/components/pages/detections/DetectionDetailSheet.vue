@@ -58,7 +58,9 @@ const audit = ref<Audit | null>(null);
 const auditLoading = ref(false);
 const auditFailed = ref(false);
 
-const { count } = useTextEntities(audit);
+// Count entities of whatever modality the audit is (text/tabular or image), so an
+// image detection shows its real box count, not 0.
+const { count } = useStudioEntities(audit);
 
 /** Fetch the analysis once the sheet opens for a complete detection. */
 watch(

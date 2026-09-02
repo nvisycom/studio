@@ -36,8 +36,9 @@ export default defineNuxtConfig({
 	app: {
 		baseURL: "./",
 		head: {
+			// Fallback title; the function titleTemplate lives in app.vue (nuxt.config
+			// head must be serializable) and avoids the doubled "Nvisy · Nvisy".
 			title: "Nvisy",
-			titleTemplate: "%s · Nvisy",
 		},
 	},
 

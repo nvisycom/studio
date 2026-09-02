@@ -9,6 +9,7 @@ import {
 	StudioAuditPanel,
 	StudioDetectionBar,
 } from "#console/components/pages/studio";
+import type { AudioTranscriptState } from "#console/components/pages/studio/StudioAudioView.vue";
 import { rendererFor } from "#console/components/pages/studio/renderers";
 import {
 	ResizablePanelGroup,
@@ -52,8 +53,6 @@ const renderer = computed(() => rendererFor(fileExtension.value) ?? null);
 const detectionSource = computed(
 	() => renderer.value?.detectionSource ?? "none",
 );
-
-const zoomLevel = ref(100);
 
 // Right-panel tabs: Chat (existing) and Audit (detection results).
 const panelTab = ref<"chat" | "audit">("audit");
@@ -129,6 +128,77 @@ const detection = useStudioDetection(
 	() => activeFile.value?.displayName ?? null,
 );
 
+// Audio transcript state for the audio view. Resolved once a detection completes
+// for an audio file, by fetching its enrichment intermediates:
+//   - hidden      — no completed detection yet (the panel isn't shown).
+//   - unavailable — no intermediates (endpoint 404s, or body is null): the
+//     transcript was never generated or has been removed.
+//   - empty       — a transcript exists but has no speech segments.
+//   - ready       — the transcript, with segments.
+// The panel explains each empty case rather than silently disappearing.
+const { getIntermediates } = useDetections();
+const audioTranscriptState = ref<AudioTranscriptState>({ kind: "hidden" });
+watch(
+	[
+		() => detection.detectionId.value,
+		() => detection.phase.value,
+		() => detectionSource.value === "transcript",
+	],
+	async ([detectionId, phase, isAudio]) => {
+		audioTranscriptState.value = { kind: "hidden" };
+		if (!detectionId || phase !== "complete" || !isAudio) return;
+		try {
+			const set = await getIntermediates(detectionId);
+			// Guard against a stale response (the file/detection may have changed).
+			if (detection.detectionId.value !== detectionId) return;
+			const body = set?.body;
+			if (body?.modality !== "audio") {
+				// 404 -> null set, or a 200 with no audio artifact: not available.
+				audioTranscriptState.value = { kind: "unavailable" };
+				return;
+			}
+			const hasSpeech = body.artifact.segments.some(
+				(s) => s.text.trim().length > 0,
+			);
+			audioTranscriptState.value = hasSpeech
+				? { kind: "ready", transcript: body.artifact }
+				: { kind: "empty" };
+		} catch {
+			// A real error (not a 404 — that's mapped to null): treat as unavailable
+			// rather than surfacing a failure for an optional enhancement.
+			if (detection.detectionId.value === detectionId)
+				audioTranscriptState.value = { kind: "unavailable" };
+		}
+	},
+	{ immediate: true },
+);
+
+// OCR layout for the image preview's optional overlay, fetched from the same
+// intermediates endpoint once a detection completes for an image file. Optional,
+// like the audio transcript: null when there are no intermediates.
+const imageOcr = ref<ImageLayout | null>(null);
+watch(
+	[
+		() => detection.detectionId.value,
+		() => detection.phase.value,
+		() => detectionSource.value === "image-ocr",
+	],
+	async ([detectionId, phase, isImage]) => {
+		imageOcr.value = null;
+		if (!detectionId || phase !== "complete" || !isImage) return;
+		try {
+			const set = await getIntermediates(detectionId);
+			if (detection.detectionId.value !== detectionId) return;
+			const body = set?.body;
+			imageOcr.value =
+				body?.modality === "image" ? toImageLayout(body.artifact) : null;
+		} catch {
+			if (detection.detectionId.value === detectionId) imageOcr.value = null;
+		}
+	},
+	{ immediate: true },
+);
+
 // Reviewer edits + applying redactions to the complete detection. Takes the
 // detection's state as input; resets itself whenever the detection changes.
 const redaction = useStudioRedaction({
@@ -150,13 +220,6 @@ function clearEntity() {
 useEventListener(document, "keydown", (e: KeyboardEvent) => {
 	if (e.key === "Escape" && activeEntityId.value) clearEntity();
 });
-
-function zoomIn() {
-	if (zoomLevel.value < 200) zoomLevel.value += 10;
-}
-function zoomOut() {
-	if (zoomLevel.value > 50) zoomLevel.value -= 10;
-}
 
 // The right-hand inspector (Audit / Chat) is a resizable, collapsible split
 // panel. The Splitter owns sizing (percent-based), keyboard resize, and — via
@@ -196,18 +259,22 @@ function toggleInspector() {
           :display-name="activeFile?.displayName || ''"
           :file-extension="fileExtension"
           :is-loading="activeFile?.isLoading || false"
-          :zoom-level="zoomLevel"
           :chat-visible="!inspectorCollapsed"
-          :entities="redaction.highlightEntities.value"
+          :text-entities="redaction.highlightTextEntities.value"
           :active-entity-id="activeEntityId"
           :can-add="detection.phase.value === 'complete'"
+          :audio-transcript-state="audioTranscriptState"
+          :image-entities="redaction.highlightImageEntities.value"
+          :image-ocr="imageOcr"
+          :audio-entities="redaction.highlightAudioEntities.value"
           v-model:with-headers="withHeaders"
-          @zoom-in="zoomIn"
-          @zoom-out="zoomOut"
           @toggle-chat="toggleInspector"
           @focus-entity="focusEntity"
           @clear-entity="clearEntity"
-          @add-entity="redaction.addEntity($event)"
+          @add-text-entity="redaction.addTextEntity($event)"
+          @add-image-entity="redaction.addImageEntity($event)"
+          @add-audio-entity="redaction.addAudioEntity($event)"
+          @retag-audio-span="redaction.retagAudioSpan"
           @toggle-suppress="redaction.toggleSuppress"
         />
       </ResizablePanel>
@@ -278,7 +345,7 @@ function toggleInspector() {
               :redact-error="redaction.redactError.value"
               :output="redaction.output.value"
               :suppressed="redaction.suppressed.value"
-              :added="redaction.added.value"
+              :added="redaction.addedEntities.value"
               :effective-redact-count="redaction.effectiveRedactCount.value"
               @focus-entity="focusEntity"
               @redact="redaction.redact"

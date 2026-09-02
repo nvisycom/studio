@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // biome-ignore-all lint/suspicious/noExplicitAny: SuperDoc's extension ctx and anchor/decoration surfaces are broadly typed; we touch a narrow, guarded slice.
 import type { TextEntityView } from "#console/composables/useTextEntities";
-import type { AddEntityInput } from "#console/composables/useStudioRedaction";
+import type { AddTextEntityInput } from "#console/composables/useStudioRedaction";
 import type { StudioViewPhase } from "#console/composables/useStudioView";
 
 /**
@@ -22,7 +22,7 @@ import type { StudioViewPhase } from "#console/composables/useStudioView";
  * NOTE: the reviewer "add entity by selecting text" flow is not wired here yet.
  * It needs a mapping from a SuperDoc selection back to a raw `document.xml` byte
  * span (what the redaction apply path consumes); that lands in a follow-up. The
- * `canAdd` prop and `add-entity` emit are kept so the parent contract is stable.
+ * `canAdd` prop and `add-text-entity` emit are kept so the parent contract is stable.
  */
 // The studio-view contract, declared locally (Vue's defineProps/defineEmits
 // macros can't resolve a type imported through the `#console` alias as their
@@ -41,7 +41,7 @@ interface Props {
 }
 interface Emits {
 	"focus-entity": [id: string];
-	"add-entity": [payload: AddEntityInput];
+	"add-text-entity": [payload: AddTextEntityInput];
 	/** Loading phase, so the host shows the single loader/error. */
 	phase: [phase: StudioViewPhase];
 }

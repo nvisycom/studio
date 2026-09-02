@@ -531,7 +531,8 @@
 			"original": "Original",
 			"redacted": "Redacted",
 			"audit": "Audit",
-			"review": "Review"
+			"review": "Review",
+			"intermediate": "Intermediate"
 		},
 		"view": {
 			"list": "List view",
@@ -1231,6 +1232,7 @@
 			"runAgain": "Run again",
 			"runFailed": "Detection failed. Please try again.",
 			"bytes": "bytes {start}–{end}",
+			"timeSpan": "{start}–{end}",
 			"idleTitle": "No detections yet",
 			"idleHint": "Pick a pipeline and run detection to find sensitive entities.",
 			"noFile": "No document open",
@@ -1244,6 +1246,7 @@
 			"addEntity": "Add",
 			"addedByYou": "Added by you",
 			"removeAdded": "Remove",
+			"imageRegion": "Image region",
 			"redactThis": "Redact",
 			"redacting": "Applying redaction…",
 			"retryRedaction": "Retry redaction",
@@ -1297,7 +1300,31 @@
 			"raw": "Raw",
 			"withHeaders": "With headers",
 			"docxFailed": "Couldn't render this Word document.",
-			"textFailed": "Unable to load this file."
+			"textFailed": "Unable to load this file.",
+			"audioFailed": "Couldn't play this audio file.",
+			"play": "Play",
+			"pause": "Pause",
+			"skipBack": "Skip back {seconds} seconds",
+			"skipForward": "Skip forward {seconds} seconds",
+			"speed": "Playback speed",
+			"mute": "Mute",
+			"unmute": "Unmute",
+			"volume": "Volume",
+			"zoom": "Zoom",
+			"audioHint": "Drag to select a span · scroll to zoom",
+			"audioZoomReset": "Fit",
+			"audioClearSelection": "Clear selection",
+			"audioAddEntity": "Add entity",
+			"showInspector": "Show inspector",
+			"hideInspector": "Hide inspector",
+			"ocr": "OCR",
+			"imageRegion": "Region",
+			"addNeedsDetection": "Run detection first to add entities.",
+			"transcript": "Transcript",
+			"transcriptUnavailableTitle": "No transcript available",
+			"transcriptUnavailableDescription": "This file has no transcript. It was never generated, or it has been removed.",
+			"transcriptEmptyTitle": "No speech detected",
+			"transcriptEmptyDescription": "The detection found no speech in this audio."
 		}
 	},
 	"commandMenu": {

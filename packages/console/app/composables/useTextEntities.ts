@@ -1,5 +1,11 @@
-import type { Audit, TextEntity, TabularEntity } from "@nvisy/sdk/datatypes";
+import type { Audit } from "@nvisy/sdk/datatypes";
 import type { MaybeRefOrGetter } from "vue";
+import {
+	type BaseEntityView,
+	type CategorizedGroup,
+	categorize,
+	provenance,
+} from "#console/composables/useEntities";
 import {
 	type DocxSourceRef,
 	byteOffsetToChar,
@@ -20,27 +26,19 @@ export interface CellLocation {
 	columnName?: string;
 }
 
-/** A detected text entity, flattened for the audit list + highlight overlay. */
-export interface TextEntityView {
-	/** Stable entity id (UUIDv7 from recognition). */
-	id: string;
+/**
+ * A detected text entity, flattened for the audit list + highlight overlay. The
+ * modality-agnostic fields (id, label, category, confidence, provenance,
+ * suppressed, added, text) come from {@link BaseEntityView}; this adds the
+ * text/tabular *location*.
+ */
+export interface TextEntityView extends BaseEntityView {
 	/**
 	 * Which modality group this entity came from. Determines the bucket a
 	 * reviewer edit (suppress/retag) lands in when building the redaction
 	 * `EditSet` — text and tabular entities go to different arrays.
 	 */
 	modality: "text" | "tabular";
-	/**
-	 * Raw label id, shown verbatim for now (e.g. "person", "email_address"). A
-	 * workspace label catalog will resolve these to display names + categories
-	 * later; until then the id is the label.
-	 */
-	label: string;
-	/**
-	 * The label's catalog category (e.g. "contact", "financial"), or null when
-	 * the catalog doesn't know the label. Drives the highlight color per category.
-	 */
-	category: string | null;
 	/**
 	 * Byte offsets of the span. For text, offsets into the whole document; for
 	 * tabular, offsets *within the cell* named by {@link cell} (the preview maps
@@ -66,76 +64,6 @@ export interface TextEntityView {
 	 * to true for plain text / tabular, which are always locatable.
 	 */
 	locatable?: boolean;
-	/** Effective confidence, 0..1. */
-	confidence: number;
-	/** Recognizer/source that first found this entity (the birth event). */
-	source?: string;
-	/**
-	 * The specific pattern or model that matched, when the birth event was a
-	 * pattern/model recognition (e.g. `"ssn"`, `"gpt-4"`). More precise than
-	 * {@link source}; absent for other event kinds.
-	 */
-	detector?: string;
-	/** Whether {@link detector} names a regex pattern or an ML model. */
-	detectorKind?: "pattern" | "model";
-	/** Detected language of the surrounding text, when known (e.g. "en"). */
-	language?: string;
-	/**
-	 * The matched text — the actual found value (an email, a name). Sliced from
-	 * the flat document at this entity's offsets, or for DOCX from its rendered
-	 * runs via {@link sourceRefs}. Absent when neither is available (image/audio).
-	 */
-	text?: string;
-	/**
-	 * Whether a reviewer has kept (suppressed) this entity out of the redaction.
-	 * Set on the document-highlight views (not the audit list), so the in-document
-	 * chip can dim to show it won't be redacted.
-	 */
-	suppressed?: boolean;
-	/**
-	 * Whether the reviewer added this entity by selecting text (vs. detected). Set
-	 * on the added highlight views so the detail popover can offer the right
-	 * actions (an added entity is removed from its own list, not suppressed here).
-	 */
-	added?: boolean;
-}
-
-/**
- * A run of identical occurrences within one label group — same matched value +
- * detector, differing only by location. `lead` is the first occurrence (its
- * value/detector represent the cluster); `items` holds every occurrence in
- * document order, so the UI can collapse them to one row with a count and step
- * through the spans.
- */
-export interface EntityCluster {
-	/** Stable identity for the cluster (the dedup key). */
-	key: string;
-	/** The representative occurrence (first in document order). */
-	lead: TextEntityView;
-	/** Every occurrence, in document order. */
-	items: TextEntityView[];
-}
-
-/** One label's entities within a category: its display name, items, clusters. */
-export interface LabelGroup {
-	/** Raw label id. */
-	label: string;
-	/** Catalog display name (falls back to the id). */
-	name: string;
-	/** Every occurrence for this label, in document order. */
-	items: TextEntityView[];
-	/** Occurrences clustered by identical value + detector. */
-	clusters: EntityCluster[];
-}
-
-/** A category section of the audit list: its label groups and total count. */
-export interface CategorizedGroup {
-	/** Catalog category, or null for uncategorized labels. */
-	category: string | null;
-	/** Total entities across the section's label groups. */
-	count: number;
-	/** The label groups under this category. */
-	labels: LabelGroup[];
 }
 
 /**
@@ -149,38 +77,6 @@ function sliceBytes(source: string, start: number, end: number): string {
 		? byteOffsetToChar(source, end)
 		: source.length;
 	return source.slice(from, to);
-}
-
-/**
- * A birth audit event, narrowed to the fields we read. `kind` is the
- * discriminated recognition detail: a `pattern` match names the pattern, a
- * `model` match names the model, any other kind carries neither.
- */
-/** Provenance/language shared by text + tabular entities, for the detail view. */
-function provenance(entity: TextEntity | TabularEntity) {
-	// The birth event is the detection with no parents; fall back to the first.
-	const birth =
-		entity.audit.find((ev) => ev.parents.length === 0) ?? entity.audit[0];
-
-	// Prefer the specific pattern/model name from the birth event's detail. The
-	// detail is typed per kind, so narrow on `kind.kind` before reading it.
-	const kind = birth?.kind;
-	let detector: string | undefined;
-	let detectorKind: "pattern" | "model" | undefined;
-	if (kind?.kind === "pattern") {
-		detector = kind.detail.pattern.name;
-		detectorKind = "pattern";
-	} else if (kind?.kind === "model") {
-		detector = kind.detail.model.name;
-		detectorKind = "model";
-	}
-
-	return {
-		source: birth?.source,
-		detector,
-		detectorKind,
-		language: entity.language,
-	};
 }
 
 /**
@@ -313,80 +209,27 @@ export function useTextEntities(
 		});
 	});
 
-	/** Group by raw label id, for the grouped audit list. */
-	const groups = computed(() => {
-		const map = new Map<string, TextEntityView[]>();
-		for (const entity of entities.value) {
-			const list = map.get(entity.label);
-			if (list) list.push(entity);
-			else map.set(entity.label, [entity]);
-		}
-		return Array.from(map, ([label, items]) => ({ label, items }));
-	});
-
 	const count = computed(() => entities.value.length);
 
-	/**
-	 * Cluster a label group's entities by identical value + detector, preserving
-	 * document order. Entities that differ only by location (the same email found
-	 * many times) collapse into one cluster carrying every occurrence, so the UI
-	 * can show one row with a count + prev/next. The cluster key falls back to the
-	 * byte span when no matched text is available, so distinct spans stay distinct.
-	 */
-	function clusterItems(items: TextEntityView[]): EntityCluster[] {
-		const map = new Map<string, EntityCluster>();
-		const order: string[] = [];
-		for (const item of items) {
-			const value = item.text ?? `${item.start}:${item.end}`;
-			const detector = item.detector ?? item.source ?? "";
-			// Keep body vs metadata-only occurrences in separate clusters, so a row's
-			// clickability is unambiguous and the stepper never lands off-page.
-			const loc = item.locatable === false ? "meta" : "body";
-			const key = `${value} ${detector} ${loc}`;
-			const existing = map.get(key);
-			if (existing) existing.items.push(item);
-			else {
-				map.set(key, { key, lead: item, items: [item] });
-				order.push(key);
-			}
-		}
-		return order.map((k) => map.get(k)!);
-	}
+	// Text cluster key: body vs metadata-only occurrences never merge (the `group`,
+	// so a row's clickability is unambiguous and the stepper never lands off-page);
+	// the location only breaks a tie when there's no matched value. For tabular it
+	// must carry the cell (row/column) too — the byte offsets are *within* the cell,
+	// so two cells' entities can share them.
+	const textClusterKey = (item: TextEntityView) => ({
+		group: item.locatable === false ? "meta" : "body",
+		location: item.cell
+			? `${item.cell.row}:${item.cell.column}:${item.start}:${item.end}`
+			: `${item.start}:${item.end}`,
+	});
 
 	/**
 	 * Two-tier grouping for the audit list: entities grouped by label, then those
-	 * label groups clustered under their catalog category. A label the catalog
-	 * doesn't know (or one with no category) lands under a null category, which
-	 * the UI renders as "Uncategorized". Label groups keep the document order
-	 * established above; categories are sorted by name, with the uncategorized
-	 * bucket last.
+	 * label groups clustered under their catalog category (see `categorize`).
 	 */
-	const categorizedGroups = computed<CategorizedGroup[]>(() => {
-		const byCategory = new Map<string | null, LabelGroup[]>();
+	const categorizedGroups = computed<CategorizedGroup<TextEntityView>[]>(() =>
+		categorize(entities.value, labelName, textClusterKey),
+	);
 
-		for (const group of groups.value) {
-			const category = resolveLabel(group.label)?.category ?? null;
-			const enriched = {
-				label: group.label,
-				name: labelName(group.label),
-				items: group.items,
-				clusters: clusterItems(group.items),
-			};
-			const bucket = byCategory.get(category);
-			if (bucket) bucket.push(enriched);
-			else byCategory.set(category, [enriched]);
-		}
-
-		return Array.from(byCategory, ([category, labels]) => ({
-			category,
-			count: labels.reduce((n, l) => n + l.items.length, 0),
-			labels,
-		})).sort((a, b) => {
-			if (a.category === null) return 1;
-			if (b.category === null) return -1;
-			return a.category.localeCompare(b.category);
-		});
-	});
-
-	return { entities, groups, categorizedGroups, count };
+	return { entities, categorizedGroups, count };
 }

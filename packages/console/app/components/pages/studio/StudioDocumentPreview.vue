@@ -1,10 +1,18 @@
 <script setup lang="ts">
 import { FileText, Loader2 } from "@lucide/vue";
-import { ZoomControls } from "#console/components/pages/documents";
+import { PreviewChatToggle } from "#console/components/pages/documents";
 import { EntityDetailPopover } from "#console/components/pages/studio";
 import { rendererFor } from "./renderers";
+import type { AudioTranscriptState } from "./StudioAudioView.vue";
 import type { TextEntityView } from "#console/composables/useTextEntities";
-import type { AddEntityInput } from "#console/composables/useStudioRedaction";
+import type { ImageEntityView } from "#console/composables/useImageEntities";
+import type { AudioEntityView } from "#console/composables/useAudioEntities";
+import type { ImageLayout } from "#console/composables/useImageLayout";
+import type {
+	AddTextEntityInput,
+	AddImageEntityInput,
+	AddAudioEntityInput,
+} from "#console/composables/useStudioRedaction";
 import {
 	type StudioViewPhase,
 	isViewLoading,
@@ -18,16 +26,33 @@ const props = withDefaults(
 		 * which sub-view renders — not parsed from the display name. */
 		fileExtension: string;
 		isLoading: boolean;
-		zoomLevel: number;
 		chatVisible: boolean;
-		/** Detected entities to highlight in the text (byte-offset spans). */
-		entities?: TextEntityView[];
+		/** Detected + added text/tabular entities, forwarded to the text/DOCX/CSV
+		 * views. Named by modality to match `imageEntities` / `audioEntities`. */
+		textEntities?: TextEntityView[];
 		/** Currently focused entity id, for the ring + scroll-into-view. */
 		activeEntityId?: string | null;
 		/** Whether the reviewer may add entities by selecting text (detection complete). */
 		canAdd?: boolean;
+		/** The active audio file's transcript state (from detection intermediates),
+		 * forwarded to the audio view. Defaults to hidden (no completed detection). */
+		audioTranscriptState?: AudioTranscriptState;
+		/** Detected image entities (bounding boxes), forwarded to the image view. */
+		imageEntities?: ImageEntityView[];
+		/** OCR layout for the image view's optional overlay, when available. */
+		imageOcr?: ImageLayout | null;
+		/** Detected + added audio entities (time spans), forwarded to the audio view. */
+		audioEntities?: AudioEntityView[];
 	}>(),
-	{ entities: () => [], activeEntityId: null, canAdd: false },
+	{
+		textEntities: () => [],
+		activeEntityId: null,
+		canAdd: false,
+		audioTranscriptState: () => ({ kind: "hidden" }),
+		imageEntities: () => [],
+		imageOcr: null,
+		audioEntities: () => [],
+	},
 );
 
 // Whether the CSV's first row is a header. Owned by the page so the audit list
@@ -35,14 +60,18 @@ const props = withDefaults(
 const withHeaders = defineModel<boolean>("withHeaders", { default: true });
 
 const emit = defineEmits<{
-	"zoom-in": [];
-	"zoom-out": [];
 	"toggle-chat": [];
 	"focus-entity": [id: string];
 	/** Clear the current entity selection (popover dismissed). */
 	"clear-entity": [];
-	/** A reviewer marked a text span as a new entity to redact. */
-	"add-entity": [payload: AddEntityInput];
+	/** A reviewer marked a text span as a new entity to redact (text/DOCX/CSV). */
+	"add-text-entity": [payload: AddTextEntityInput];
+	/** A reviewer drew a box marking a new image region to redact. */
+	"add-image-entity": [payload: AddImageEntityInput];
+	/** A reviewer selected a waveform span marking a new audio entity to redact. */
+	"add-audio-entity": [payload: AddAudioEntityInput];
+	/** A reviewer dragged an audio entity region's edge — correct its span. */
+	"retag-audio-span": [id: string, span: { start: number; end: number }];
 	/** Keep/redact toggle for an entity (from its detail popover). */
 	"toggle-suppress": [id: string];
 }>();
@@ -102,12 +131,14 @@ const asyncView = computed(() => {
 });
 
 // The common contract every renderer accepts (a superset — a view ignores the
-// props it doesn't declare). View-specific extras (`displayName`, `zoomLevel`,
-// `fileKind`, and the CSV `withHeaders` v-model pair) are folded in per renderer
-// below.
+// props it doesn't declare). View-specific extras (`displayName`, `fileKind`, and
+// the CSV `withHeaders` v-model pair) are folded in per renderer below. Zoom is
+// each zooming view's own concern (image, audio) — there's no shared zoom prop.
 const commonProps = computed(() => ({
 	contentUrl: props.contentUrl,
-	entities: props.entities,
+	// The views' own prop is `entities` (each is single-modality); the image/audio
+	// cases below override it with their modality's entities.
+	entities: props.textEntities,
 	activeEntityId: props.activeEntityId,
 	canAdd: props.canAdd,
 }));
@@ -123,7 +154,15 @@ const rendererProps = computed<Record<string, unknown>>(() => {
 			return {
 				...base,
 				displayName: props.displayName,
-				zoomLevel: props.zoomLevel,
+				entities: props.imageEntities,
+				ocr: props.imageOcr,
+			};
+		case "audio":
+			return {
+				...base,
+				displayName: props.displayName,
+				transcriptState: props.audioTranscriptState,
+				entities: props.audioEntities,
 			};
 		case "csv":
 			return {
@@ -162,9 +201,11 @@ const viewError = computed(() =>
 		: null,
 );
 
-// The focused entity object, for the detail popover.
+// The focused entity object, for the detail popover. (Text/tabular only — the
+// keep/redact detail card is the text overlay's; image/audio focus is handled in
+// their own views.)
 const activeEntity = computed(
-	() => props.entities.find((e) => e.id === props.activeEntityId) ?? null,
+	() => props.textEntities.find((e) => e.id === props.activeEntityId) ?? null,
 );
 
 // Scroll the focused entity into view and anchor the detail popover to its
@@ -203,7 +244,7 @@ watch(
 // On highlight rebuild (entity set / suppressed state changed): re-anchor without
 // scrolling, so a keep toggle doesn't leave the popover pinned to a dead node.
 watch(
-	() => props.entities,
+	() => props.textEntities,
 	() => reanchor(false),
 	{ deep: true },
 );
@@ -272,7 +313,13 @@ watch(
           :is="asyncView"
           v-bind="rendererProps"
           @focus-entity="emit('focus-entity', $event)"
-          @add-entity="emit('add-entity', $event)"
+          @add-text-entity="emit('add-text-entity', $event)"
+          @add-image-entity="emit('add-image-entity', $event)"
+          @add-audio-entity="emit('add-audio-entity', $event)"
+          @retag-audio-span="
+            (id: string, span: { start: number; end: number }) =>
+              emit('retag-audio-span', id, span)
+          "
           @phase="viewPhase = $event"
         />
       </div>
@@ -292,15 +339,10 @@ watch(
       </div>
     </div>
 
-    <!-- Zoom Controls. A renderer with its own zoom (DOCX/SuperDoc) opts out via
-         the registry, so the generic zoom pill is hidden for it — the chat toggle
-         stays. -->
-    <ZoomControls
-      :zoom-level="zoomLevel"
+    <!-- Chat/inspector toggle. Zoom is each zooming view's own concern (image,
+         audio), so there's no shared zoom control here anymore. -->
+    <PreviewChatToggle
       :chat-visible="chatVisible"
-      :show-zoom="renderer?.supportsZoom ?? false"
-      @zoom-in="emit('zoom-in')"
-      @zoom-out="emit('zoom-out')"
       @toggle-chat="emit('toggle-chat')"
     />
   </div>

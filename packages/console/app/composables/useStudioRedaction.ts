@@ -1,7 +1,15 @@
-import type { EditSet, TextLocation } from "@nvisy/sdk/datatypes";
+import type {
+	AudioLocation,
+	EditSet,
+	ImageLocation,
+	TextLocation,
+} from "@nvisy/sdk/datatypes";
 import type { Ref } from "vue";
 import { toast } from "vue-sonner";
 import type { TextEntityView } from "#console/composables/useTextEntities";
+import type { ImageEntityView } from "#console/composables/useImageEntities";
+import type { AudioEntityView } from "#console/composables/useAudioEntities";
+import type { StudioEntityView } from "#console/composables/useStudioEntities";
 import type { StudioDetectionPhase } from "#console/composables/useStudioDetection";
 
 /** Lifecycle of applying redactions to a complete detection. */
@@ -17,7 +25,7 @@ export interface RedactionOutput {
  * The raw-source part byte span a DOCX add carries (`TextLocation.source`).
  * DOCX has no flat decoded stream on the client, so a reviewer's selection is
  * located by the exact raw bytes it covers in its container part (usually
- * `word/document.xml`). Absent for flat-text adds, whose {@link AddedEntity}
+ * `word/document.xml`). Absent for flat-text adds, whose {@link AddedTextEntity}
  * `byteStart`/`byteEnd` already index the shown file (→ `location.range`).
  */
 export interface AddedSource {
@@ -32,7 +40,7 @@ export interface AddedSource {
  * offsets locate it in the source; `text` is the selected value, for display.
  * For DOCX, `source` carries the raw part byte span the redaction targets.
  */
-export interface AddedEntity {
+export interface AddedTextEntity {
 	id: string;
 	label: string;
 	byteStart: number;
@@ -41,14 +49,62 @@ export interface AddedEntity {
 	source?: AddedSource;
 }
 
-/** The document-selection payload the reviewer confirms into an {@link AddedEntity}. */
-export interface AddEntityInput {
+/** The document-selection payload the reviewer confirms into an {@link AddedTextEntity}. */
+export interface AddTextEntityInput {
 	byteStart: number;
 	byteEnd: number;
 	label: string;
 	text: string;
 	/** Raw part byte span, for a DOCX add (see {@link AddedSource}). */
 	source?: AddedSource;
+}
+
+/** A bounding box in an image's natural pixel coordinates. */
+export interface AddImageBox {
+	minX: number;
+	minY: number;
+	maxX: number;
+	maxY: number;
+}
+
+/**
+ * An image entity the reviewer added by drawing a box — a region the detection
+ * missed. `id` is a stable client key (for the overlay + focus); `box` locates it
+ * in the image's natural pixel coordinates; `label` is what the reviewer marked it.
+ */
+export interface AddedImageEntity {
+	id: string;
+	label: string;
+	box: AddImageBox;
+}
+
+/** The drawn-box payload the reviewer confirms into an {@link AddedImageEntity}. */
+export interface AddImageEntityInput {
+	label: string;
+	box: AddImageBox;
+}
+
+/** A time span in an audio stream, in seconds from the start. */
+export interface AddAudioSpan {
+	start: number;
+	end: number;
+}
+
+/**
+ * An audio entity the reviewer added by selecting a time span — a stretch the
+ * detection missed. `id` is a stable client key; `span` locates it (seconds);
+ * `label` is what the reviewer marked it.
+ */
+export interface AddedAudioEntity {
+	id: string;
+	label: string;
+	span: AddAudioSpan;
+}
+
+/** The selected-span payload the reviewer confirms into an {@link AddedAudioEntity}. */
+export interface AddAudioEntityInput {
+	label: string;
+	span: AddAudioSpan;
 }
 
 /**
@@ -70,7 +126,8 @@ export interface RedactionTarget {
 	phase: Ref<StudioDetectionPhase>;
 	detectionId: Ref<string | null>;
 	detectionFileName: Ref<string | null>;
-	entities: Ref<TextEntityView[]>;
+	/** Detected entities of the audit's modality (text/tabular or image). */
+	entities: Ref<StudioEntityView[]>;
 	count: Ref<number>;
 }
 
@@ -107,7 +164,16 @@ export function useStudioRedaction(target: RedactionTarget) {
 	// display, to redact what the detection missed. Text-modality only (plain
 	// text) for now.
 	let nextAddedId = 0;
-	const added = ref<AddedEntity[]>([]);
+	const addedTexts = ref<AddedTextEntity[]>([]);
+	// Image entities the reviewer added by drawing a box (region the detection
+	// missed) — image-modality adds, kept separate from the text-shaped `added`.
+	const addedImages = ref<AddedImageEntity[]>([]);
+	// Audio entities the reviewer added by selecting a waveform time span.
+	const addedAudios = ref<AddedAudioEntity[]>([]);
+	// Span overrides for *detected* audio entities the reviewer adjusted (dragged a
+	// region edge): entity id -> corrected span (seconds). Emitted as `retag` edits.
+	// Added entities aren't here — their own span is mutated in place.
+	const audioSpanOverrides = ref<Map<string, AddAudioSpan>>(new Map());
 	// Bumped whenever the edit set changes. A redaction captures it at the start
 	// and only publishes its output if it still matches — so an edit made while a
 	// redaction is in flight can't be overwritten by that now-stale result.
@@ -115,7 +181,10 @@ export function useStudioRedaction(target: RedactionTarget) {
 
 	function resetEdits() {
 		suppressed.value = new Set();
-		added.value = [];
+		addedTexts.value = [];
+		addedImages.value = [];
+		addedAudios.value = [];
+		audioSpanOverrides.value = new Map();
 		nextAddedId = 0;
 		editRevision++;
 	}
@@ -152,15 +221,66 @@ export function useStudioRedaction(target: RedactionTarget) {
 		invalidateOutput();
 	}
 
-	/** Add a reviewer-marked entity (a byte span + label + shown text) to redact. */
-	function addEntity(input: AddEntityInput) {
-		added.value = [...added.value, { id: `added:${nextAddedId++}`, ...input }];
+	// Added-entity ids carry a per-modality prefix so a single `removeAdded(id)` can
+	// route to the right list. Text uses the bare `added:` prefix (image/audio add
+	// their tag after it), so match the more specific prefixes first.
+	const IMAGE_ADD_PREFIX = "added:img:";
+	const AUDIO_ADD_PREFIX = "added:aud:";
+
+	/** Add a reviewer-marked text entity (a byte span + label + shown text). */
+	function addTextEntity(input: AddTextEntityInput) {
+		addedTexts.value = [
+			...addedTexts.value,
+			{ id: `added:${nextAddedId++}`, ...input },
+		];
 		invalidateOutput();
 	}
 
-	/** Drop a previously added entity by its index. */
-	function removeAdded(index: number) {
-		added.value = added.value.filter((_, i) => i !== index);
+	/** Add a reviewer-drawn image region (a box + label) to redact. */
+	function addImageEntity(input: AddImageEntityInput) {
+		addedImages.value = [
+			...addedImages.value,
+			{ id: `${IMAGE_ADD_PREFIX}${nextAddedId++}`, ...input },
+		];
+		invalidateOutput();
+	}
+
+	/** Add a reviewer-selected audio span (a time span + label) to redact. */
+	function addAudioEntity(input: AddAudioEntityInput) {
+		addedAudios.value = [
+			...addedAudios.value,
+			{ id: `${AUDIO_ADD_PREFIX}${nextAddedId++}`, ...input },
+		];
+		invalidateOutput();
+	}
+
+	/** Drop a previously added entity by its id (text, image, or audio). */
+	function removeAdded(id: string) {
+		if (id.startsWith(IMAGE_ADD_PREFIX)) {
+			addedImages.value = addedImages.value.filter((a) => a.id !== id);
+		} else if (id.startsWith(AUDIO_ADD_PREFIX)) {
+			addedAudios.value = addedAudios.value.filter((a) => a.id !== id);
+		} else {
+			addedTexts.value = addedTexts.value.filter((a) => a.id !== id);
+		}
+		invalidateOutput();
+	}
+
+	/**
+	 * Adjust an audio entity's span (the reviewer dragged a region edge). An added
+	 * entity's own span is mutated in place; a detected entity's corrected span is
+	 * recorded as an override that `buildEditSet` emits as a `retag` edit.
+	 */
+	function retagAudioSpan(id: string, span: AddAudioSpan) {
+		if (id.startsWith(AUDIO_ADD_PREFIX)) {
+			addedAudios.value = addedAudios.value.map((a) =>
+				a.id === id ? { ...a, span } : a,
+			);
+		} else {
+			const next = new Map(audioSpanOverrides.value);
+			next.set(id, span);
+			audioSpanOverrides.value = next;
+		}
 		invalidateOutput();
 	}
 
@@ -169,17 +289,23 @@ export function useStudioRedaction(target: RedactionTarget) {
 	);
 	/**
 	 * How many entities the redaction will actually redact: detected entities
-	 * (minus kept ones) plus the ones the reviewer added.
+	 * (minus kept ones) plus the ones the reviewer added (text spans, image boxes,
+	 * audio spans).
 	 */
 	const effectiveRedactCount = computed(
-		() => count.value - suppressedCount.value + added.value.length,
+		() =>
+			count.value -
+			suppressedCount.value +
+			addedTexts.value.length +
+			addedImages.value.length +
+			addedAudios.value.length,
 	);
 
 	// Reviewer-added entities as highlight-ready views, so the document preview
 	// marks them with the same chip treatment as detected ones (colored by the
 	// label's category). Their id is a stable synthetic key, not a server id.
-	const addedEntities = computed<TextEntityView[]>(() =>
-		added.value.map((a) => ({
+	const addedTextEntities = computed<TextEntityView[]>(() =>
+		addedTexts.value.map((a) => ({
 			id: a.id,
 			modality: "text",
 			label: a.label,
@@ -202,32 +328,126 @@ export function useStudioRedaction(target: RedactionTarget) {
 		})),
 	);
 
-	// Entities the document highlights: everything detected plus the reviewer's
-	// additions, each flagged with its suppressed state so a kept entity's chip
-	// dims (it won't be redacted). The audit panel keeps its own detected-vs-added
-	// split; this is only for the in-document overlay.
-	const highlightEntities = computed<TextEntityView[]>(() =>
-		[...entities.value, ...addedEntities.value].map((e) => ({
+	// Detected text/tabular entities (the audit is one modality; image/audio go to
+	// their own overlays). Narrowed off the union by the text modalities explicitly
+	// — a `!== "image"` check would wrongly capture audio too.
+	const detectedTextEntities = computed<TextEntityView[]>(() =>
+		entities.value.filter(
+			(e): e is TextEntityView =>
+				e.modality === "text" || e.modality === "tabular",
+		),
+	);
+
+	// Text entities the document highlights: the detected text/tabular ones plus the
+	// reviewer's text additions, each flagged with its suppressed state so a kept
+	// entity's chip dims (it won't be redacted). This drives the text/DOCX/CSV
+	// overlay; the audit panel keeps its own detected-vs-added split.
+	const highlightTextEntities = computed<TextEntityView[]>(() =>
+		[...detectedTextEntities.value, ...addedTextEntities.value].map((e) => ({
 			...e,
 			suppressed: suppressed.value.has(e.id),
 		})),
 	);
 
-	// Assemble the reviewer edits into the redaction EditSet: a `suppress` edit
-	// per kept entity (bucketed by modality) and an `add` edit per reviewer-marked
-	// span (text-modality). Returns undefined when there are no edits, so the
+	// Reviewer-added image regions as overlay-ready views, so the image preview
+	// draws them with the same box treatment as detected image entities.
+	const addedImageEntities = computed<ImageEntityView[]>(() =>
+		addedImages.value.map((a) => ({
+			id: a.id,
+			modality: "image",
+			label: a.label,
+			category: resolveLabel(a.label)?.category ?? null,
+			confidence: 1,
+			box: a.box,
+			added: true,
+		})),
+	);
+
+	// Image entities the preview overlays: detected image boxes (from the audit)
+	// plus the reviewer's drawn boxes, each flagged with its suppressed state so a
+	// kept box dims. Detected image entities are narrowed off the union.
+	const highlightImageEntities = computed<ImageEntityView[]>(() => {
+		const detected = entities.value.filter(
+			(e): e is ImageEntityView => e.modality === "image",
+		);
+		return [...detected, ...addedImageEntities.value].map((e) => ({
+			...e,
+			suppressed: suppressed.value.has(e.id),
+		}));
+	});
+
+	// Reviewer-added audio spans as views, so the waveform overlay + the audit list
+	// treat them like detected audio entities.
+	const addedAudioEntities = computed<AudioEntityView[]>(() =>
+		addedAudios.value.map((a) => ({
+			id: a.id,
+			modality: "audio",
+			label: a.label,
+			category: resolveLabel(a.label)?.category ?? null,
+			confidence: 1,
+			span: a.span,
+			added: true,
+		})),
+	);
+
+	// Audio entities the waveform overlays: detected spans (from the audit) plus the
+	// reviewer's added spans, suppress-flagged, with any span override applied so the
+	// region shows the adjusted bounds. Detected audio entities are narrowed off the
+	// union.
+	const highlightAudioEntities = computed<AudioEntityView[]>(() => {
+		const detected = entities.value.filter(
+			(e): e is AudioEntityView => e.modality === "audio",
+		);
+		return [...detected, ...addedAudioEntities.value].map((e) => {
+			const override = audioSpanOverrides.value.get(e.id);
+			return {
+				...e,
+				span: override ?? e.span,
+				suppressed: suppressed.value.has(e.id),
+			};
+		});
+	});
+
+	// All reviewer-added entities (any modality) as views, for the audit list's
+	// "added by you" band — so a drawn image box / audio span shows there like an
+	// added text span.
+	const addedEntities = computed<StudioEntityView[]>(() => [
+		...addedTextEntities.value,
+		...addedImageEntities.value,
+		...addedAudioEntities.value,
+	]);
+
+	// Assemble the reviewer edits into the redaction EditSet: a `suppress` edit per
+	// kept entity (bucketed by modality) and an `add` edit per reviewer-marked span
+	// (text) or drawn box (image). Returns undefined when there are no edits, so the
 	// redact call omits `edits` (redact exactly as detected).
 	function buildEditSet(): EditSet | undefined {
-		if (suppressed.value.size === 0 && added.value.length === 0)
+		if (
+			suppressed.value.size === 0 &&
+			addedTexts.value.length === 0 &&
+			addedImages.value.length === 0 &&
+			addedAudios.value.length === 0 &&
+			audioSpanOverrides.value.size === 0
+		)
 			return undefined;
 		const text: NonNullable<EditSet["text"]> = [];
 		const tabular: NonNullable<EditSet["tabular"]> = [];
+		const image: NonNullable<EditSet["image"]> = [];
+		const audio: NonNullable<EditSet["audio"]> = [];
+		// A kept entity's suppress edit goes to its own modality's bucket.
 		for (const entity of entities.value) {
 			if (!suppressed.value.has(entity.id)) continue;
-			const bucket = entity.modality === "tabular" ? tabular : text;
+			const bucket =
+				entity.modality === "tabular"
+					? tabular
+					: entity.modality === "image"
+						? image
+						: entity.modality === "audio"
+							? audio
+							: text;
 			bucket.push({ op: "suppress", id: entity.id });
 		}
-		for (const a of added.value) {
+		for (const a of addedTexts.value) {
 			// `range` carries the add's byte span. For a flat-text add (plain text /
 			// JSON) that's the document byte offset, exactly as detected entities
 			// carry it. For a DOCX add there's no flat decoded stream to offset into,
@@ -246,10 +466,44 @@ export function useStudioRedaction(target: RedactionTarget) {
 			}
 			text.push({ op: "add", label: a.label, location });
 		}
+		for (const a of addedImages.value) {
+			// A drawn box is an image `add` located by its bounding box in the image's
+			// natural pixel coordinates.
+			const location: ImageLocation = {
+				bounding_box: {
+					min: { x: a.box.minX, y: a.box.minY },
+					max: { x: a.box.maxX, y: a.box.maxY },
+				},
+			};
+			image.push({ op: "add", label: a.label, location });
+		}
+		// The API's TimeSpan is microseconds; the reviewer's spans are in seconds.
+		const audioLocation = (span: AddAudioSpan): AudioLocation => ({
+			span: {
+				start_us: Math.round(span.start * 1e6),
+				end_us: Math.round(span.end * 1e6),
+			},
+		});
+		for (const a of addedAudios.value) {
+			// A selected span is an audio `add` located by its time span.
+			audio.push({
+				op: "add",
+				label: a.label,
+				location: audioLocation(a.span),
+			});
+		}
+		for (const [id, span] of audioSpanOverrides.value) {
+			// A dragged edge on a *detected* entity is a `retag` correcting its location.
+			audio.push({ op: "retag", id, location: audioLocation(span) });
+		}
 		const set: EditSet = {};
 		if (text.length) set.text = text;
 		if (tabular.length) set.tabular = tabular;
-		return text.length || tabular.length ? set : undefined;
+		if (image.length) set.image = image;
+		if (audio.length) set.audio = audio;
+		return text.length || tabular.length || image.length || audio.length
+			? set
+			: undefined;
 	}
 
 	// Redaction is offered once a detection is complete (and isn't already
@@ -355,10 +609,15 @@ export function useStudioRedaction(target: RedactionTarget) {
 		suppressed,
 		isSuppressed,
 		toggleSuppress,
-		added,
-		addEntity,
+		addTextEntity,
+		addImageEntity,
+		addAudioEntity,
+		retagAudioSpan,
 		removeAdded,
-		highlightEntities,
+		addedEntities,
+		highlightTextEntities,
+		highlightImageEntities,
+		highlightAudioEntities,
 		suppressedCount,
 		effectiveRedactCount,
 	};

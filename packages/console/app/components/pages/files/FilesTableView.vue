@@ -54,6 +54,7 @@ const KIND_RING: Record<NvisyFile["fileKind"], string> = {
 	redacted: "ring-1 ring-amber-400/60 dark:ring-amber-500/50",
 	audit: "ring-1 ring-blue-400/60 dark:ring-blue-500/50",
 	review: "ring-1 ring-violet-400/60 dark:ring-violet-500/50",
+	intermediate: "ring-1 ring-teal-400/60 dark:ring-teal-500/50",
 };
 
 const columns = computed<VirtualColumn<NvisyFile>[]>(() => [

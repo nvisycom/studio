@@ -93,7 +93,10 @@ export function useStudioDetection(
 	// The active file's display name, so a redacted download gets a sensible name.
 	const detectionFileName = ref<string | null>(null);
 
-	const { entities, categorizedGroups, count } = useTextEntities(
+	// Unified entity stream across modalities (text/tabular from the flat text or
+	// DOCX parts; image from the audit's boxes), so the audit list, count, and
+	// redaction work the same whether the file is a document or an image.
+	const { entities, categorizedGroups, count } = useStudioEntities(
 		audit,
 		documentText,
 		docxParts,

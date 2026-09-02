@@ -1,4 +1,6 @@
+import { NvisyApiError } from "@nvisy/sdk";
 import type {
+	ArtifactSet,
 	Audit,
 	CreateDetection,
 	Detection,
@@ -53,6 +55,30 @@ export function useDetections(filter?: MaybeRefOrGetter<DetectionsFilter>) {
 	async function getAnalysis(detectionId: string): Promise<Audit> {
 		const { client, workspaceSlug } = requireContext();
 		return await client.detections.getAnalysis(workspaceSlug, detectionId);
+	}
+
+	/**
+	 * Fetch a detection's enrichment intermediates — the artifacts a recognizer
+	 * produced on the way to entities (an image's OCR layout, an audio clip's
+	 * transcript, tokenized text). Optional by nature: a detection whose analysis
+	 * ran no enricher has none and the endpoint 404s, which we map to `null` rather
+	 * than surfacing an error — callers treat "no intermediates" as an empty state.
+	 */
+	async function getIntermediates(
+		detectionId: string,
+	): Promise<ArtifactSet | null> {
+		const { client, workspaceSlug } = requireContext();
+		try {
+			return await client.detections.getIntermediates(
+				workspaceSlug,
+				detectionId,
+			);
+		} catch (error) {
+			if (error instanceof NvisyApiError && error.statusCode === 404) {
+				return null;
+			}
+			throw error;
+		}
 	}
 
 	/** Download a detection's audit as JSON or CSV, saved under `fileName`. */
@@ -156,6 +182,7 @@ export function useDetections(filter?: MaybeRefOrGetter<DetectionsFilter>) {
 
 		// Single detection + analysis flow
 		getAnalysis,
+		getIntermediates,
 		downloadAudit,
 		findLatestForFile,
 		runDetection,

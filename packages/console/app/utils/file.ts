@@ -33,6 +33,8 @@ export const ACCEPTED_EXTENSIONS = [
 	"jpg",
 	"json",
 	"log",
+	"mp3",
+	"ogg",
 	"pdf",
 	"png",
 	"rtf",
@@ -124,6 +126,8 @@ export function getFileIconForExtension(ext: string): Component {
 		case "webp":
 			return FileImage;
 		case "wav":
+		case "mp3":
+		case "ogg":
 			return FileAudio;
 		case "json":
 		case "xml":

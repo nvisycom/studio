@@ -28,10 +28,21 @@ import type { Component } from "vue";
  *   plain text, and most future text-backed formats).
  * - `docx-parts` — the OOXML zip's entries (DOCX has no flat text; matches are
  *   sliced from raw part byte spans, incl. parts outside the visible body).
- * - `none` — nothing to scan client-side (images: detection is server/OCR-side,
- *   not from a text blob).
+ * - `transcript` — a server-produced transcript fetched from the detection's
+ *   enrichment intermediates (audio: there's no client-side text; the transcript
+ *   is the searchable content, with timings for the timeline). Optional — a
+ *   detection may have none.
+ * - `image-ocr` — the server's OCR layout for an image, fetched from the
+ *   detection's intermediates (for the optional overlay). Entity boxes come from
+ *   the audit directly. Optional — a detection may have no OCR.
+ * - `none` — nothing to scan/fetch client-side.
  */
-export type DetectionSource = "text" | "docx-parts" | "none";
+export type DetectionSource =
+	| "text"
+	| "docx-parts"
+	| "transcript"
+	| "image-ocr"
+	| "none";
 
 /** One registered file-format family and how the studio previews it. */
 export interface StudioRenderer {
@@ -54,12 +65,10 @@ export interface StudioRenderer {
 	component: () => Promise<Component | { default: Component }>;
 	/** Which content form detection needs for this kind (drives the page fetch). */
 	detectionSource: DetectionSource;
-	/** Whether the zoom pill applies (a renderer with its own zoom — DOCX — opts out). */
-	supportsZoom: boolean;
 	/**
 	 * Optional wrapper class the dispatcher puts around the view — the "paper on
 	 * canvas" padding the text/CSV views expect (`flex min-h-full flex-col p-6`).
-	 * Views that lay out edge-to-edge (image, DOCX) omit it.
+	 * Views that lay out edge-to-edge (image, DOCX, audio) omit it.
 	 */
 	wrapperClass?: string;
 }
@@ -74,15 +83,31 @@ export const STUDIO_RENDERERS: readonly StudioRenderer[] = [
 		kind: "image",
 		extensions: ["png", "jpg", "jpeg", "gif", "webp", "bmp", "svg"],
 		component: () => import("./StudioImageView.vue"),
-		detectionSource: "none",
-		supportsZoom: true,
+		// Detection runs server-side; the OCR layout (for the optional overlay) comes
+		// from the detection's intermediates once it completes. Entity boxes come from
+		// the audit directly. Both optional.
+		detectionSource: "image-ocr",
+		// Fill the preview height so the floating controls pin to the viewport bottom.
+		wrapperClass: "h-full",
+	},
+	{
+		kind: "audio",
+		// The backend-supported, browser-playable audio formats.
+		extensions: ["wav", "mp3", "ogg"],
+		component: () => import("./StudioAudioView.vue"),
+		// Detection runs server-side; the searchable content is the transcript from
+		// the detection's intermediates (fetched once detection completes). Optional:
+		// a detection may have no transcript, in which case the player has none.
+		detectionSource: "transcript",
+		// Fill the preview height so the transcript panel can flex to fill the space
+		// below the player.
+		wrapperClass: "h-full",
 	},
 	{
 		kind: "csv",
 		extensions: ["csv"],
 		component: () => import("./StudioCsvView.vue"),
 		detectionSource: "text",
-		supportsZoom: true,
 		wrapperClass: "flex min-h-full flex-col p-6",
 	},
 	{
@@ -90,7 +115,6 @@ export const STUDIO_RENDERERS: readonly StudioRenderer[] = [
 		extensions: ["txt", "md", "log", "json", "xml", "yaml", "yml"],
 		component: () => import("./StudioTextView.vue"),
 		detectionSource: "text",
-		supportsZoom: true,
 		wrapperClass: "flex min-h-full flex-col p-6",
 	},
 	{
@@ -98,8 +122,6 @@ export const STUDIO_RENDERERS: readonly StudioRenderer[] = [
 		extensions: ["docx"],
 		component: () => import("./StudioDocxView.vue"),
 		detectionSource: "docx-parts",
-		// SuperDoc manages its own zoom, so the generic zoom pill is hidden for it.
-		supportsZoom: false,
 	},
 ];
 

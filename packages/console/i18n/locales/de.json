@@ -531,7 +531,8 @@
 			"original": "Original",
 			"redacted": "Geschwärzt",
 			"audit": "Audit",
-			"review": "Prüfung"
+			"review": "Prüfung",
+			"intermediate": "Zwischenergebnis"
 		},
 		"view": {
 			"list": "Listenansicht",
@@ -1231,6 +1232,7 @@
 			"runAgain": "Erneut ausführen",
 			"runFailed": "Erkennung fehlgeschlagen. Bitte erneut versuchen.",
 			"bytes": "Bytes {start}–{end}",
+			"timeSpan": "{start}–{end}",
 			"idleTitle": "Noch keine Erkennungen",
 			"idleHint": "Wähle eine Pipeline und führe die Erkennung aus, um sensible Entitäten zu finden.",
 			"noFile": "Kein Dokument geöffnet",
@@ -1244,6 +1246,7 @@
 			"addEntity": "Hinzufügen",
 			"addedByYou": "Von dir hinzugefügt",
 			"removeAdded": "Entfernen",
+			"imageRegion": "Bildbereich",
 			"redactThis": "Schwärzen",
 			"redacting": "Schwärzung wird angewendet…",
 			"retryRedaction": "Schwärzung erneut versuchen",
@@ -1297,7 +1300,31 @@
 			"raw": "Roh",
 			"withHeaders": "Mit Kopfzeile",
 			"docxFailed": "Dieses Word-Dokument konnte nicht dargestellt werden.",
-			"textFailed": "Diese Datei konnte nicht geladen werden."
+			"textFailed": "Diese Datei konnte nicht geladen werden.",
+			"audioFailed": "Diese Audiodatei konnte nicht abgespielt werden.",
+			"play": "Abspielen",
+			"pause": "Pause",
+			"skipBack": "{seconds} Sekunden zurückspringen",
+			"skipForward": "{seconds} Sekunden vorspringen",
+			"speed": "Wiedergabegeschwindigkeit",
+			"mute": "Stummschalten",
+			"unmute": "Stummschaltung aufheben",
+			"volume": "Lautstärke",
+			"zoom": "Zoom",
+			"audioHint": "Ziehen zum Auswählen · Scrollen zum Zoomen",
+			"audioZoomReset": "Einpassen",
+			"audioClearSelection": "Auswahl aufheben",
+			"audioAddEntity": "Entität hinzufügen",
+			"showInspector": "Inspektor einblenden",
+			"hideInspector": "Inspektor ausblenden",
+			"ocr": "OCR",
+			"imageRegion": "Bereich",
+			"addNeedsDetection": "Führen Sie zuerst die Erkennung aus, um Entitäten hinzuzufügen.",
+			"transcript": "Transkript",
+			"transcriptUnavailableTitle": "Kein Transkript verfügbar",
+			"transcriptUnavailableDescription": "Für diese Datei gibt es kein Transkript. Es wurde nie erstellt oder wurde entfernt.",
+			"transcriptEmptyTitle": "Keine Sprache erkannt",
+			"transcriptEmptyDescription": "Die Erkennung hat in dieser Audiodatei keine Sprache gefunden."
 		}
 	},
 	"commandMenu": {

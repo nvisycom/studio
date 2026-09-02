@@ -13,8 +13,10 @@ export default defineNuxtConfig({
 
 	app: {
 		head: {
+			// Fallback title before a page sets its own. The titleTemplate (a function,
+			// so it lives in app.vue — nuxt.config head must be serializable) turns a
+			// missing or "Nvisy" title into plain "Nvisy" rather than "Nvisy · Nvisy".
 			title: "Nvisy",
-			titleTemplate: "%s · Nvisy",
 			// Favicon links come from the shared layer (see its nuxt.config).
 		},
 	},
