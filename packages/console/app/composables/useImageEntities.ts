@@ -45,7 +45,7 @@ export function useImageEntities(audit: MaybeRefOrGetter<Audit | null>) {
 	const { resolveLabel, labelName } = useLabels();
 
 	const entities = computed<ImageEntityView[]>(() => {
-		const body = toValue(audit)?.report.body;
+		const body = soleReportPart(toValue(audit)?.report);
 		if (body?.modality !== "image") return [];
 		return body.entities.map((e) => {
 			const bbox = e.location.bounding_box;

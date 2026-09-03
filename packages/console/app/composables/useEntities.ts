@@ -1,9 +1,55 @@
 import type {
+	ArtifactSet,
 	AudioEntity,
 	ImageEntity,
+	Report,
 	TabularEntity,
 	TextEntity,
 } from "@nvisy/sdk/datatypes";
+
+/**
+ * The previewed document's own-content part from a detection {@link Report} or
+ * an enrichment {@link ArtifactSet}.
+ *
+ * SDK 0.42 folded the old `body`/`parts` split into one part tree: `parts` is a
+ * tagged array, each entry keyed by its full `id` **path** (`string[]`), one
+ * segment per container level (see elide's `PartId`). A document's own decoded
+ * content is a **depth-1 part** whose single segment is the document's name
+ * (the file name); nested container parts — an image embedded in a `.docx`, a
+ * sheet in a nested `.xlsx` — are depth ≥ 2, prefixed by that same name. (The
+ * empty path is the top-level document node, never a content part.)
+ *
+ * Studio previews one file, so its content is the sole **length-1** part. This
+ * restores the removed `body` "sole-document" convenience without picking up a
+ * nested sub-part. When several length-1 parts exist (a multi-file set — not a
+ * studio case today), the first in wire order wins (parts are sorted by path).
+ */
+export function soleReportPart(
+	report: Report | undefined | null,
+): Report["parts"][number] | undefined {
+	return documentContentPart(report?.parts);
+}
+
+export function soleArtifactPart(
+	set: ArtifactSet | undefined | null,
+): ArtifactSet["parts"][number] | undefined {
+	return documentContentPart(set?.parts);
+}
+
+// The previewed document's own content = the depth-1 part (`[fileName]`); nested
+// container sub-parts are deeper and skipped. Falls back to the shortest path
+// present if — unexpectedly — no length-1 part exists, so a non-empty parts array
+// never yields `undefined` and silently blanks the view.
+function documentContentPart<P extends { id: string[] }>(
+	parts: P[] | undefined,
+): P | undefined {
+	let fallback: P | undefined;
+	for (const part of parts ?? []) {
+		if (part.id.length === 1) return part;
+		if (!fallback || part.id.length < fallback.id.length) fallback = part;
+	}
+	return fallback;
+}
 
 /**
  * Shared entity model across modalities (text, tabular, image, audio). A detected
