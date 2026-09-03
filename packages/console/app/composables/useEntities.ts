@@ -37,14 +37,17 @@ export function soleArtifactPart(
 }
 
 // The previewed document's own content = the depth-1 part (`[fileName]`); nested
-// container sub-parts are deeper and skipped. Falls back to the shortest path
-// present if — unexpectedly — no length-1 part exists, so a non-empty parts array
-// never yields `undefined` and silently blanks the view.
+// container sub-parts are deeper and skipped. Falls back to the shortest nested
+// path present if — unexpectedly — no length-1 part exists, so a parts array with
+// content never yields `undefined` and silently blanks the view. The empty path
+// (`[]`) is the top-level document node, never a content part, so it's excluded
+// from the fallback too.
 function documentContentPart<P extends { id: string[] }>(
 	parts: P[] | undefined,
 ): P | undefined {
 	let fallback: P | undefined;
 	for (const part of parts ?? []) {
+		if (part.id.length === 0) continue;
 		if (part.id.length === 1) return part;
 		if (!fallback || part.id.length < fallback.id.length) fallback = part;
 	}
