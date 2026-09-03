@@ -20,8 +20,9 @@ export type StudioEntityView =
 export type StudioCategorizedGroup = CategorizedGroup<StudioEntityView>;
 
 /**
- * The studio's unified entity view over a detection's audit. An audit is a single
- * modality (`report.body.modality`), so this dispatches to the matching per-
+ * The studio's unified entity view over a detection's audit. An audit previews a
+ * single document, whose sole report part has one modality (see
+ * {@link soleReportPart}), so this dispatches to the matching per-
  * modality composable and exposes one entity stream + grouped list + count,
  * regardless of whether the file is text/tabular or an image. The audit panel,
  * the count badge, and the redaction path consume this without caring which
@@ -41,7 +42,7 @@ export function useStudioEntities(
 	const audio = useAudioEntities(audit);
 
 	const active = computed(() => {
-		switch (toValue(audit)?.report.body?.modality) {
+		switch (soleReportPart(toValue(audit)?.report)?.modality) {
 			case "image":
 				return image;
 			case "audio":

@@ -151,7 +151,7 @@ watch(
 			const set = await getIntermediates(detectionId);
 			// Guard against a stale response (the file/detection may have changed).
 			if (detection.detectionId.value !== detectionId) return;
-			const body = set?.body;
+			const body = soleArtifactPart(set);
 			if (body?.modality !== "audio") {
 				// 404 -> null set, or a 200 with no audio artifact: not available.
 				audioTranscriptState.value = { kind: "unavailable" };
@@ -189,7 +189,7 @@ watch(
 		try {
 			const set = await getIntermediates(detectionId);
 			if (detection.detectionId.value !== detectionId) return;
-			const body = set?.body;
+			const body = soleArtifactPart(set);
 			imageOcr.value =
 				body?.modality === "image" ? toImageLayout(body.artifact) : null;
 		} catch {

@@ -105,7 +105,7 @@ export function useTextEntities(
 	const { resolveLabel, labelName } = useLabels();
 
 	const entities = computed<TextEntityView[]>(() => {
-		const group = toValue(audit)?.report.body;
+		const group = soleReportPart(toValue(audit)?.report);
 		const doc = toValue(text) ?? null;
 		const parts = toValue(docxParts) ?? null;
 

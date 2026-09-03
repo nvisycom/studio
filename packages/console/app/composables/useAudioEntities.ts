@@ -42,7 +42,7 @@ export function useAudioEntities(audit: MaybeRefOrGetter<Audit | null>) {
 	const { resolveLabel, labelName } = useLabels();
 
 	const entities = computed<AudioEntityView[]>(() => {
-		const body = toValue(audit)?.report.body;
+		const body = soleReportPart(toValue(audit)?.report);
 		if (body?.modality !== "audio") return [];
 		return body.entities.map((e) => ({
 			id: e.id,
