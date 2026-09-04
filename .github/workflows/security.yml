@@ -83,6 +83,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     if: github.event_name == 'pull_request'
+    # Requires the repo's Dependency Graph (Settings → Code security) to be on;
+    # non-blocking so a PR isn't hard-failed where it isn't enabled yet. Flip to
+    # a gate once Dependency Graph is enabled for the repository.
+    continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
