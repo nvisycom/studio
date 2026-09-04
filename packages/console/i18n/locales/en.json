@@ -1244,6 +1244,11 @@
 		"audit": {
 			"tabChat": "Chat",
 			"tabAudit": "Audit",
+			"expand": "Expand to full screen",
+			"collapse": "Exit full screen",
+			"revealInDocument": "Reveal in document",
+			"running": "Detecting entities…",
+			"occurrences": "{n} occurrences",
 			"pipelinePlaceholder": "Select a pipeline",
 			"run": "Run detection",
 			"runAgain": "Run again",

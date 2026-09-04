@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { FileText, Loader2 } from "@lucide/vue";
-import PreviewChatToggle from "./PreviewChatToggle.vue";
 import EntityDetailPopover from "../entities/EntityDetailPopover.vue";
 import { rendererFor } from "./renderers";
 import type { AudioTranscriptState } from "./StudioAudioView.vue";
@@ -26,7 +25,6 @@ const props = withDefaults(
 		 * which sub-view renders — not parsed from the display name. */
 		fileExtension: string;
 		isLoading: boolean;
-		chatVisible: boolean;
 		/** Detected + added text/tabular entities, forwarded to the text/DOCX/CSV
 		 * views. Named by modality to match `imageEntities` / `audioEntities`. */
 		textEntities?: TextEntityView[];
@@ -60,7 +58,6 @@ const props = withDefaults(
 const withHeaders = defineModel<boolean>("withHeaders", { default: true });
 
 const emit = defineEmits<{
-	"toggle-chat": [];
 	"focus-entity": [id: string];
 	/** Clear the current entity selection (popover dismissed). */
 	"clear-entity": [];
@@ -338,12 +335,5 @@ watch(
         </div>
       </div>
     </div>
-
-    <!-- Chat/inspector toggle. Zoom is each zooming view's own concern (image,
-         audio), so there's no shared zoom control here anymore. -->
-    <PreviewChatToggle
-      :chat-visible="chatVisible"
-      @toggle-chat="emit('toggle-chat')"
-    />
   </div>
 </template>

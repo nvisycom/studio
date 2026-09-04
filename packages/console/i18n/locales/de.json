@@ -1244,6 +1244,11 @@
 		"audit": {
 			"tabChat": "Chat",
 			"tabAudit": "Audit",
+			"expand": "Auf Vollbild erweitern",
+			"collapse": "Vollbild verlassen",
+			"revealInDocument": "Im Dokument anzeigen",
+			"running": "Entitäten werden erkannt…",
+			"occurrences": "{n} Vorkommen",
 			"pipelinePlaceholder": "Pipeline auswählen",
 			"run": "Erkennung ausführen",
 			"runAgain": "Erneut ausführen",
