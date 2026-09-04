@@ -246,7 +246,7 @@ const quickActions = [
                   {{ personLabel(activity.performedBy) }}
                 </span>
               </div>
-              <span class="shrink-0 text-xs text-muted-foreground">
+              <span class="w-16 shrink-0 text-right text-xs text-muted-foreground">
                 {{ relativeTime(activity.createdAt) }}
               </span>
             </div>
@@ -395,7 +395,7 @@ const quickActions = [
                     {{ personLabel(file.uploadedBy) }}
                   </span>
                 </div>
-                <span class="shrink-0 text-xs text-muted-foreground">
+                <span class="w-16 shrink-0 text-right text-xs text-muted-foreground">
                   {{ relativeTime(file.createdAt) }}
                 </span>
               </NuxtLink>
@@ -486,7 +486,9 @@ const quickActions = [
                     {{ personLabel(detection.triggeredBy) }}
                   </span>
                 </div>
-                <span class="shrink-0 text-xs text-muted-foreground">
+                <!-- Fixed width + right-aligned so a shorter time ("3h ago")
+                     doesn't let the avatar/name drift right of a longer one. -->
+                <span class="w-16 shrink-0 text-right text-xs text-muted-foreground">
                   {{ relativeTime(detection.startedAt) }}
                 </span>
               </NuxtLink>
