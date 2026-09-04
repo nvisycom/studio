@@ -16,7 +16,9 @@ import {
 	StudioAuditPanel,
 	StudioAuditTable,
 	StudioDetectionBar,
+	EntityAuditModal,
 } from "#console/components/pages/studio";
+import type { StudioEntityView } from "#console/composables/useStudioEntities";
 import type { AudioTranscriptState } from "#console/components/pages/studio/preview/StudioAudioView.vue";
 import { rendererFor } from "#console/components/pages/studio/preview/renderers";
 import {
@@ -277,6 +279,9 @@ function revealEntity(id: string) {
 	activeEntityId.value = id;
 }
 
+// The entity whose full audit trail the detail modal is showing, or null.
+const auditModalEntity = ref<StudioEntityView | null>(null);
+
 // The audit panel's props, shared verbatim by the split-view and full-screen
 // renders so the two never drift; only `layout` and the event wiring differ.
 const auditProps = computed(() => ({
@@ -329,6 +334,7 @@ const auditProps = computed(() => ({
               :suppressed="redaction.suppressed.value"
               @reveal-entity="revealEntity"
               @toggle-suppress="redaction.toggleSuppress"
+              @view-details="auditModalEntity = $event"
             />
             <StudioDocumentPreview
               v-else
@@ -454,6 +460,7 @@ const auditProps = computed(() => ({
             <StudioAuditPanel
               v-bind="auditProps"
               @focus-entity="focusEntity"
+              @view-details="auditModalEntity = $event"
               @redact="redaction.redact"
               @download-output="redaction.downloadRedacted"
               @toggle-suppress="redaction.toggleSuppress"
@@ -463,6 +470,12 @@ const auditProps = computed(() => ({
         </div>
       </ResizablePanel>
     </ResizablePanelGroup>
+
+    <!-- The full audit trail for a finding, opened from the review table. -->
+    <EntityAuditModal
+      :entity="auditModalEntity"
+      @close="auditModalEntity = null"
+    />
   </div>
 </template>
 

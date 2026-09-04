@@ -1270,6 +1270,30 @@
 			"removeAdded": "Entfernen",
 			"imageRegion": "Bildbereich",
 			"redactThis": "Schwärzen",
+			"redactCategory": "Alle {name} schwärzen",
+			"viewDetails": "Details anzeigen",
+			"trail": {
+				"kept": "Behalten",
+				"empty": "Kein Prüfprotokoll für diese Entität.",
+				"competing": "vs. {label} ({confidence})",
+				"kind": {
+					"pattern": "Mustertreffer",
+					"model": "Modellerkennung",
+					"deduplication": "Duplikate zusammengeführt",
+					"conflict": "Konflikt gelöst",
+					"contested": "Als strittig markiert",
+					"calibration": "Konfidenz kalibriert",
+					"refinement": "Verfeinert",
+					"redaction": "Geschwärzt",
+					"selection": "Zur Schwärzung ausgewählt",
+					"manual": "Prüfer-Korrektur"
+				},
+				"intent": {
+					"flag": "Übersehene Entität markiert",
+					"suppress": "Behalten (von Schwärzung ausgenommen)",
+					"amend": "Befund geändert"
+				}
+			},
 			"redacting": "Schwärzung wird angewendet…",
 			"retryRedaction": "Schwärzung erneut versuchen",
 			"redactFailed": "Schwärzung fehlgeschlagen. Bitte erneut versuchen.",
@@ -1291,9 +1315,6 @@
 			"uncategorized": "Ohne Kategorie",
 			"detectorPattern": "Muster ({name})",
 			"detectorModel": "Modell ({name})",
-			"collapseDuplicates": "Duplikate zusammenfassen",
-			"prevOccurrence": "Vorheriges Vorkommen",
-			"nextOccurrence": "Nächstes Vorkommen",
 			"metadata": "Metadaten",
 			"categories": {
 				"identity": "Identität",

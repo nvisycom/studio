@@ -1270,6 +1270,30 @@
 			"removeAdded": "Remove",
 			"imageRegion": "Image region",
 			"redactThis": "Redact",
+			"redactCategory": "Redact all {name}",
+			"viewDetails": "View details",
+			"trail": {
+				"kept": "Kept",
+				"empty": "No audit trail for this entity.",
+				"competing": "vs {label} ({confidence})",
+				"kind": {
+					"pattern": "Pattern match",
+					"model": "Model recognition",
+					"deduplication": "Merged duplicates",
+					"conflict": "Conflict resolved",
+					"contested": "Flagged as contested",
+					"calibration": "Confidence calibrated",
+					"refinement": "Refined",
+					"redaction": "Redacted",
+					"selection": "Selected for redaction",
+					"manual": "Reviewer override"
+				},
+				"intent": {
+					"flag": "Flagged a missed entity",
+					"suppress": "Kept (excluded from redaction)",
+					"amend": "Amended the finding"
+				}
+			},
 			"redacting": "Applying redaction…",
 			"retryRedaction": "Retry redaction",
 			"redactFailed": "Redaction failed. Please try again.",
@@ -1291,9 +1315,6 @@
 			"uncategorized": "Uncategorized",
 			"detectorPattern": "pattern ({name})",
 			"detectorModel": "model ({name})",
-			"collapseDuplicates": "Collapse duplicates",
-			"prevOccurrence": "Previous occurrence",
-			"nextOccurrence": "Next occurrence",
 			"metadata": "Metadata",
 			"categories": {
 				"identity": "Identity",

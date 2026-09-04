@@ -58,6 +58,7 @@ export function useAudioEntities(audit: MaybeRefOrGetter<Audit | null>) {
 				? { speaker: e.location.speaker_id }
 				: {}),
 			...provenance(e),
+			audit: e.audit,
 		}));
 	});
 

@@ -172,7 +172,7 @@ function startResize(e: MouseEvent) {
 
 <template>
   <div
-    class="flex flex-col h-full w-full overflow-hidden bg-background border-l"
+    class="flex flex-col h-full w-full overflow-hidden bg-background"
   >
     <!-- Chat Messages -->
     <div
