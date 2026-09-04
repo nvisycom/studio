@@ -18,7 +18,8 @@ on:
       - "package-lock.json"
       - ".github/workflows/security.yml"
   schedule:
-    - cron: "0 0 * * 0"
+    # Weekly, so newly disclosed advisories surface without a push.
+    - cron: "0 6 * * 1"
   workflow_dispatch:
 
 env:
@@ -36,10 +37,12 @@ jobs:
   audit:
     name: Audit
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
@@ -47,11 +50,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
+      # Studio ships a web app + Tauri desktop, so its build/runtime deps matter
+      # beyond the production subset — audit the whole tree. Moderate is the gate.
       - name: Run security audit
         run: npm audit --audit-level=moderate
-
-      - name: Check for outdated dependencies
-        run: npm outdated || true
 
   license:
     name: License Check
@@ -60,6 +62,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
@@ -68,7 +72,50 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
+      # Informational: prints the dependency-license breakdown, does not gate.
       - name: Check licenses
-        run: npx license-checker --summary
+        run: npx --no-install license-checker-rseidelsohn --summary
+
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Review dependency changes
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    # Higher than the rest: CodeQL analysis time scales with the codebase.
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: "javascript-typescript"
+          queries: security-and-quality
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:javascript-typescript"

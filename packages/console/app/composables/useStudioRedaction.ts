@@ -2,6 +2,7 @@ import type {
 	AudioLocation,
 	EditSet,
 	ImageLocation,
+	TextCoord,
 	TextLocation,
 } from "@nvisy/sdk/datatypes";
 import type { Ref } from "vue";
@@ -22,16 +23,38 @@ export interface RedactionOutput {
 }
 
 /**
- * The raw-source part byte span a DOCX add carries (`TextLocation.source`).
+ * The raw-source part byte span a DOCX add carries (a `source`-only text coord).
  * DOCX has no flat decoded stream on the client, so a reviewer's selection is
  * located by the exact raw bytes it covers in its container part (usually
  * `word/document.xml`). Absent for flat-text adds, whose {@link AddedTextEntity}
- * `byteStart`/`byteEnd` already index the shown file (→ `location.range`).
+ * `byteStart`/`byteEnd` already index the shown file (→ a `decoded` coord).
  */
 export interface AddedSource {
 	part: string;
 	start: number;
 	end: number;
+}
+
+/**
+ * A `source`-only text coord for a DOCX add: the reviewer selected rendered
+ * text, so there's no decoded stream to offset into. The apply path
+ * reverse-resolves the entity from this raw part byte range.
+ */
+function sourceCoord(source: AddedSource): TextCoord {
+	return {
+		kind: "source",
+		source: [
+			{ part: source.part, range: { start: source.start, end: source.end } },
+		],
+	};
+}
+
+/**
+ * A `decoded` text coord for a flat-text add (plain text / JSON): the reviewer's
+ * byte offsets index the shown, decoded document directly.
+ */
+function decodedCoord(byteStart: number, byteEnd: number): TextCoord {
+	return { kind: "decoded", range: { start: byteStart, end: byteEnd } };
 }
 
 /**
@@ -312,6 +335,9 @@ export function useStudioRedaction(target: RedactionTarget) {
 			category: resolveLabel(a.label)?.category ?? null,
 			start: a.byteStart,
 			end: a.byteEnd,
+			// A DOCX add is source-only (its byte offsets are raw part bytes, not a
+			// decoded document position); a flat-text add's offsets are decoded.
+			decoded: !a.source,
 			confidence: 1,
 			text: a.text,
 			added: true,
@@ -448,22 +474,13 @@ export function useStudioRedaction(target: RedactionTarget) {
 			bucket.push({ op: "suppress", id: entity.id });
 		}
 		for (const a of addedTexts.value) {
-			// `range` carries the add's byte span. For a flat-text add (plain text /
-			// JSON) that's the document byte offset, exactly as detected entities
-			// carry it. For a DOCX add there's no flat decoded stream to offset into,
-			// so `source` carries the raw part byte span the apply path reads; the
-			// span's raw bytes double as `range` (byteStart/byteEnd are set from it).
+			// A DOCX add carries a source-only coord (no decoded stream on the client);
+			// a flat-text add carries a decoded coord off the shown document's offsets.
 			const location: TextLocation = {
-				range: { start: a.byteStart, end: a.byteEnd },
+				coord: a.source
+					? sourceCoord(a.source)
+					: decodedCoord(a.byteStart, a.byteEnd),
 			};
-			if (a.source) {
-				location.source = [
-					{
-						part: a.source.part,
-						range: { start: a.source.start, end: a.source.end },
-					},
-				];
-			}
 			text.push({ op: "add", label: a.label, location });
 		}
 		for (const a of addedImages.value) {

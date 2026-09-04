@@ -42,10 +42,19 @@ export interface TextEntityView extends BaseEntityView {
 	/**
 	 * Byte offsets of the span. For text, offsets into the whole document; for
 	 * tabular, offsets *within the cell* named by {@link cell} (the preview maps
-	 * those onto the flat text).
+	 * those onto the flat text). Meaningful only when {@link decoded} is true — a
+	 * source-only entity has no decoded position, so these are 0 and ordering /
+	 * clustering fall back to {@link sourceRefs} instead.
 	 */
 	start: number;
 	end: number;
+	/**
+	 * Whether {@link start}/{@link end} are a real decoded-document position.
+	 * False for a source-only entity (raw part bytes, no decoded span), whose
+	 * position lives in {@link sourceRefs}; those offsets are part-local, so
+	 * treating them as document offsets would collide across parts.
+	 */
+	decoded: boolean;
 	/** Cell coordinates for tabular entities; absent for plain text. */
 	cell?: CellLocation;
 	/**
@@ -77,6 +86,18 @@ function sliceBytes(source: string, start: number, end: number): string {
 		? byteOffsetToChar(source, end)
 		: source.length;
 	return source.slice(from, to);
+}
+
+/**
+ * A stable position string for a source-only entity, from its raw source refs
+ * (`part:start:end`, joined). The offsets are part-local, so the part is part of
+ * the key — two parts' identical local ranges must stay distinct. `""` when the
+ * entity has no source refs (shouldn't happen for a source-only coord).
+ */
+function sourcePosition(item: TextEntityView): string {
+	return (item.sourceRefs ?? [])
+		.map((r) => `${r.part ?? ""}:${r.start}:${r.end}`)
+		.join("|");
 }
 
 /**
@@ -114,12 +135,22 @@ export function useTextEntities(
 			// Slice the matched value straight from the flat document by its
 			// byte-offset span (converted to char indices for JS strings).
 			views = group.entities.map((e) => {
-				const start = e.location.range.start;
-				const end = e.location.range.end;
+				// A text location's position is a tagged `coord`: a `decoded` byte range
+				// (with the optional raw `source` it decodes from), or a `source`-only
+				// reference (content with no decoded range). Pipeline detections are
+				// `decoded`; a source-only coord has no document offset, so `start`/`end`
+				// stay 0 and its position is carried by `sourceRefs` (part-local, so it
+				// can't stand in as a document offset).
+				const coord = e.location.coord;
+				const decoded = coord.kind === "decoded";
+				const start = decoded ? coord.range.start : 0;
+				const end = decoded ? coord.range.end : 0;
 				// Raw-source spans (DOCX/XML): the source bytes the decoded span came
 				// from, per container part. The preview maps document-body spans onto
-				// rendered runs; other parts (metadata) provide the value only.
-				const sourceRefs: DocxSourceRef[] | undefined = e.location.source?.map(
+				// rendered runs; other parts (metadata) provide the value only. Both
+				// coord variants carry `source` (required for `source`, optional for
+				// `decoded`), so read it off the union directly.
+				const sourceRefs: DocxSourceRef[] | undefined = coord.source?.map(
 					(ref) => ({
 						part: ref.part,
 						start: ref.range.start,
@@ -153,6 +184,7 @@ export function useTextEntities(
 					category: resolveLabel(e.label)?.category ?? null,
 					start,
 					end,
+					decoded,
 					confidence: e.confidence,
 					locatable,
 					...provenance(e),
@@ -178,6 +210,9 @@ export function useTextEntities(
 					category: resolveLabel(e.label)?.category ?? null,
 					start,
 					end,
+					// In-cell offsets are real (decoded from the cell text); the cell
+					// coords below disambiguate them across cells.
+					decoded: true,
 					cell: {
 						row: loc.row_index,
 						column: loc.column_index,
@@ -196,7 +231,9 @@ export function useTextEntities(
 
 		// Order by document position: for text, the byte offset; for tabular, by
 		// cell (row, then column, then in-cell offset) so the audit list follows
-		// the visual table rather than meaningless in-cell offsets.
+		// the visual table rather than meaningless in-cell offsets. Source-only
+		// entities have no decoded offset, so order them after decoded ones by their
+		// part path — part-local offsets aren't comparable across parts.
 		return views.sort((a, b) => {
 			if (a.cell && b.cell) {
 				return (
@@ -205,7 +242,9 @@ export function useTextEntities(
 					a.start - b.start
 				);
 			}
-			return a.start - b.start;
+			if (a.decoded && b.decoded) return a.start - b.start;
+			if (a.decoded !== b.decoded) return a.decoded ? -1 : 1;
+			return sourcePosition(a).localeCompare(sourcePosition(b));
 		});
 	});
 
@@ -213,14 +252,18 @@ export function useTextEntities(
 
 	// Text cluster key: body vs metadata-only occurrences never merge (the `group`,
 	// so a row's clickability is unambiguous and the stepper never lands off-page);
-	// the location only breaks a tie when there's no matched value. For tabular it
-	// must carry the cell (row/column) too — the byte offsets are *within* the cell,
-	// so two cells' entities can share them.
+	// the location only breaks a tie when there's no matched value. It carries the
+	// coordinates that actually disambiguate a position: the cell (row/column) for
+	// tabular, whose byte offsets are *within* the cell; the source part + range for
+	// a source-only entity, whose offsets are part-local; otherwise the decoded
+	// document offset.
 	const textClusterKey = (item: TextEntityView) => ({
 		group: item.locatable === false ? "meta" : "body",
 		location: item.cell
 			? `${item.cell.row}:${item.cell.column}:${item.start}:${item.end}`
-			: `${item.start}:${item.end}`,
+			: item.decoded
+				? `${item.start}:${item.end}`
+				: sourcePosition(item),
 	});
 
 	/**
