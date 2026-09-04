@@ -42,3 +42,13 @@ html.tauri [data-slot="sidebar-wrapper"] {
 html.tauri [data-tauri-drag-region] {
   -webkit-app-region: drag;
 }
+
+/* Chrome-less full-window pages (auth, error) render without the sidebar shell,
+   so they don't get the shell's top padding above — their top row would sit under
+   the drag strip and the traffic lights. Opt such a top element into the reserved
+   band with `app-titlebar-inset`: it clears the band, then keeps the element's own
+   `py-4` breathing room below it (this padding-top replaces that side of `py-4`).
+   Off-desktop the rule is absent, so the class is a no-op. */
+html.tauri .app-titlebar-inset {
+  padding-top: calc(var(--titlebar-height) + 1rem);
+}

@@ -17,11 +17,6 @@
 			"invalid": "Geben Sie eine gültige Server-URL ein (z. B. https://api.example.com).",
 			"probe": {
 				"checking": "Server wird geprüft…",
-				"reachable": {
-					"healthy": "Erreichbar. Der Server ist fehlerfrei.",
-					"degraded": "Erreichbar. Der Server meldet eingeschränkte Funktion.",
-					"unhealthy": "Erreichbar. Der Server meldet einen Fehlerzustand."
-				},
 				"unreachable": "Dieser Server ist nicht erreichbar. Läuft er unter dieser Adresse?",
 				"notNvisy": "Es hat etwas geantwortet, aber es ist kein Nvisy-Server."
 			}

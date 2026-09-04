@@ -7,7 +7,6 @@ import { Checkbox } from "#console/components/ui/checkbox";
 import { NvisyLogo } from "#console/components/brand";
 import ThemeToggle from "#console/components/layout/footer/ThemeToggle.vue";
 import LanguageSwitcher from "#console/components/layout/footer/LanguageSwitcher.vue";
-import { getHealthVisual } from "#console/composables/useHealth";
 import { NvisyApiError } from "@nvisy/sdk";
 
 const { t } = useI18n();
@@ -148,18 +147,14 @@ function runCheck() {
 		checkServer(serverUrl.value.trim() || defaultUrl);
 }
 
-// The probe result as a rendered line: an icon tint (reusing the health palette
-// for a reachable server's own status) plus a message. Null while idle.
+// The probe result as a rendered line under the field: the "checking" progress
+// note, or a problem (unreachable / not-nvisy / invalid) the user must act on.
+// A reachable server needs no line — its status is already the collapsible's
+// header — so it returns null, like idle.
 const probeView = computed(() => {
 	switch (probe.value.kind) {
 		case "checking":
 			return { tone: "muted", key: "auth.server.probe.checking", spin: true };
-		case "reachable":
-			return {
-				tone: "health",
-				dot: getHealthVisual(probe.value.status).dotColor,
-				key: `auth.server.probe.reachable.${probe.value.status}`,
-			};
 		case "unreachable":
 			return { tone: "bad", key: "auth.server.probe.unreachable" };
 		case "not-nvisy":
@@ -167,6 +162,7 @@ const probeView = computed(() => {
 		case "invalid":
 			return { tone: "bad", key: "auth.server.invalid" };
 		default:
+			// Idle or reachable: no line to show here.
 			return null;
 	}
 });
@@ -213,7 +209,7 @@ async function handleLogin(): Promise<void> {
 
 <template>
   <div class="relative flex min-h-screen flex-col bg-background">
-    <header class="flex items-center justify-end gap-2 px-6 py-4">
+    <header class="app-titlebar-inset flex items-center justify-end gap-2 px-6 py-4">
       <LanguageSwitcher />
       <ThemeToggle />
     </header>
@@ -314,21 +310,17 @@ async function handleLogin(): Promise<void> {
               </div>
             </div>
 
-            <!-- Probe detail, or the field's guidance line when nothing's run. -->
+            <!-- Probe detail for a problem state, or the field's guidance line
+                 when nothing's run. A reachable server shows no line here — its
+                 status already leads the collapsible's header (see probeView). -->
             <p
               v-if="probeView && !probeView.spin"
-              class="flex items-center gap-2 text-xs"
+              class="text-xs"
               :class="{
                 'text-muted-foreground': probeView.tone === 'muted',
                 'text-destructive': probeView.tone === 'bad',
-                'text-foreground': probeView.tone === 'health',
               }"
             >
-              <span
-                v-if="probeView.dot"
-                class="size-2 shrink-0 rounded-full"
-                :class="probeView.dot"
-              />
               {{ t(probeView.key) }}
             </p>
             <p
