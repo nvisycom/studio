@@ -2,6 +2,7 @@ import type {
 	AudioLocation,
 	EditSet,
 	ImageLocation,
+	TextCoord,
 	TextLocation,
 } from "@nvisy/sdk/datatypes";
 import type { Ref } from "vue";
@@ -32,6 +33,28 @@ export interface AddedSource {
 	part: string;
 	start: number;
 	end: number;
+}
+
+/**
+ * A `source`-only text coord for a DOCX add: the reviewer selected rendered
+ * text, so there's no decoded stream to offset into. The apply path
+ * reverse-resolves the entity from this raw part byte range.
+ */
+function sourceCoord(source: AddedSource): TextCoord {
+	return {
+		kind: "source",
+		source: [
+			{ part: source.part, range: { start: source.start, end: source.end } },
+		],
+	};
+}
+
+/**
+ * A `decoded` text coord for a flat-text add (plain text / JSON): the reviewer's
+ * byte offsets index the shown, decoded document directly.
+ */
+function decodedCoord(byteStart: number, byteEnd: number): TextCoord {
+	return { kind: "decoded", range: { start: byteStart, end: byteEnd } };
 }
 
 /**
@@ -448,29 +471,13 @@ export function useStudioRedaction(target: RedactionTarget) {
 			bucket.push({ op: "suppress", id: entity.id });
 		}
 		for (const a of addedTexts.value) {
-			// A text location's position is a tagged `coord`. A flat-text add (plain
-			// text / JSON) has a real decoded byte offset, so it uses a `decoded` span.
-			// A DOCX add has no flat decoded stream — the reviewer selected rendered
-			// text — so it uses a `source`-only span carrying the raw part byte range
-			// the apply path reverse-resolves, with no faked decoded range.
-			const location: TextLocation = a.source
-				? {
-						coord: {
-							kind: "source",
-							source: [
-								{
-									part: a.source.part,
-									range: { start: a.source.start, end: a.source.end },
-								},
-							],
-						},
-					}
-				: {
-						coord: {
-							kind: "decoded",
-							range: { start: a.byteStart, end: a.byteEnd },
-						},
-					};
+			// A DOCX add carries a source-only coord (no decoded stream on the client);
+			// a flat-text add carries a decoded coord off the shown document's offsets.
+			const location: TextLocation = {
+				coord: a.source
+					? sourceCoord(a.source)
+					: decodedCoord(a.byteStart, a.byteEnd),
+			};
 			text.push({ op: "add", label: a.label, location });
 		}
 		for (const a of addedImages.value) {
