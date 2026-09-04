@@ -114,12 +114,22 @@ export function useTextEntities(
 			// Slice the matched value straight from the flat document by its
 			// byte-offset span (converted to char indices for JS strings).
 			views = group.entities.map((e) => {
-				const start = e.location.range.start;
-				const end = e.location.range.end;
+				// A text location's position is a tagged `coord`: a `decoded` byte range
+				// (with the optional raw `source` it decodes from), or a `source`-only
+				// reference (content with no decoded range). Pipeline detections are
+				// `decoded`; a source-only coord has no decoded span, so fall back to
+				// its first source range for the shown-text position.
+				const coord = e.location.coord;
+				const decodedRange =
+					coord.kind === "decoded" ? coord.range : coord.source[0]?.range;
+				const start = decodedRange?.start ?? 0;
+				const end = decodedRange?.end ?? 0;
 				// Raw-source spans (DOCX/XML): the source bytes the decoded span came
 				// from, per container part. The preview maps document-body spans onto
-				// rendered runs; other parts (metadata) provide the value only.
-				const sourceRefs: DocxSourceRef[] | undefined = e.location.source?.map(
+				// rendered runs; other parts (metadata) provide the value only. Both
+				// coord variants carry `source` (required for `source`, optional for
+				// `decoded`), so read it off the union directly.
+				const sourceRefs: DocxSourceRef[] | undefined = coord.source?.map(
 					(ref) => ({
 						part: ref.part,
 						start: ref.range.start,

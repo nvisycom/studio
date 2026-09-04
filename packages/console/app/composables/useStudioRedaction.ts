@@ -22,11 +22,11 @@ export interface RedactionOutput {
 }
 
 /**
- * The raw-source part byte span a DOCX add carries (`TextLocation.source`).
+ * The raw-source part byte span a DOCX add carries (a `source`-only text coord).
  * DOCX has no flat decoded stream on the client, so a reviewer's selection is
  * located by the exact raw bytes it covers in its container part (usually
  * `word/document.xml`). Absent for flat-text adds, whose {@link AddedTextEntity}
- * `byteStart`/`byteEnd` already index the shown file (→ `location.range`).
+ * `byteStart`/`byteEnd` already index the shown file (→ a `decoded` coord).
  */
 export interface AddedSource {
 	part: string;
@@ -448,22 +448,29 @@ export function useStudioRedaction(target: RedactionTarget) {
 			bucket.push({ op: "suppress", id: entity.id });
 		}
 		for (const a of addedTexts.value) {
-			// `range` carries the add's byte span. For a flat-text add (plain text /
-			// JSON) that's the document byte offset, exactly as detected entities
-			// carry it. For a DOCX add there's no flat decoded stream to offset into,
-			// so `source` carries the raw part byte span the apply path reads; the
-			// span's raw bytes double as `range` (byteStart/byteEnd are set from it).
-			const location: TextLocation = {
-				range: { start: a.byteStart, end: a.byteEnd },
-			};
-			if (a.source) {
-				location.source = [
-					{
-						part: a.source.part,
-						range: { start: a.source.start, end: a.source.end },
-					},
-				];
-			}
+			// A text location's position is a tagged `coord`. A flat-text add (plain
+			// text / JSON) has a real decoded byte offset, so it uses a `decoded` span.
+			// A DOCX add has no flat decoded stream — the reviewer selected rendered
+			// text — so it uses a `source`-only span carrying the raw part byte range
+			// the apply path reverse-resolves, with no faked decoded range.
+			const location: TextLocation = a.source
+				? {
+						coord: {
+							kind: "source",
+							source: [
+								{
+									part: a.source.part,
+									range: { start: a.source.start, end: a.source.end },
+								},
+							],
+						},
+					}
+				: {
+						coord: {
+							kind: "decoded",
+							range: { start: a.byteStart, end: a.byteEnd },
+						},
+					};
 			text.push({ op: "add", label: a.label, location });
 		}
 		for (const a of addedImages.value) {
