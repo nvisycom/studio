@@ -335,6 +335,9 @@ export function useStudioRedaction(target: RedactionTarget) {
 			category: resolveLabel(a.label)?.category ?? null,
 			start: a.byteStart,
 			end: a.byteEnd,
+			// A DOCX add is source-only (its byte offsets are raw part bytes, not a
+			// decoded document position); a flat-text add's offsets are decoded.
+			decoded: !a.source,
 			confidence: 1,
 			text: a.text,
 			added: true,

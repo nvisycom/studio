@@ -117,6 +117,7 @@ const pendingEntity = computed<TextEntityView[]>(() =>
 					category: "pending",
 					start: pending.value.byteStart,
 					end: pending.value.byteEnd,
+					decoded: true,
 					confidence: 1,
 				},
 			]
