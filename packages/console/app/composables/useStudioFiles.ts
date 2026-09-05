@@ -169,6 +169,54 @@ export function useStudioFiles() {
 		persist();
 	}
 
+	// Close every open file except the given one (it becomes active).
+	function closeOtherFiles(keepId: string) {
+		if (!openFiles.value.has(keepId)) return;
+		for (const [id, file] of openFiles.value) {
+			if (id === keepId) continue;
+			if (file.contentUrl) URL.revokeObjectURL(file.contentUrl);
+			openFiles.value.delete(id);
+		}
+		activeFileId.value = keepId;
+		persist();
+	}
+
+	// Close every file to the right of the given one (order = insertion order).
+	function closeFilesToRight(fileId: string) {
+		const ids = Array.from(openFiles.value.keys());
+		const index = ids.indexOf(fileId);
+		if (index === -1) return;
+		for (const id of ids.slice(index + 1)) {
+			const file = openFiles.value.get(id);
+			if (file?.contentUrl) URL.revokeObjectURL(file.contentUrl);
+			openFiles.value.delete(id);
+		}
+		// The active tab may have been to the right — fall back to the kept file.
+		if (activeFileId.value && !openFiles.value.has(activeFileId.value)) {
+			activeFileId.value = fileId;
+		}
+		persist();
+	}
+
+	// Move a tab to sit before `toId` (drag-to-reorder), or to the end when `toId`
+	// is undefined (dropped past the last tab). Rebuilds the Map in the new order,
+	// since a Map preserves insertion order and tabs render off it.
+	function reorderFiles(fromId: string, toId?: string) {
+		if (fromId === toId) return;
+		const ids = Array.from(openFiles.value.keys());
+		const from = ids.indexOf(fromId);
+		if (from === -1) return;
+		ids.splice(from, 1);
+		const to = toId ? ids.indexOf(toId) : -1;
+		if (toId && to === -1) return; // target no longer open — leave as-is
+		ids.splice(to === -1 ? ids.length : to, 0, fromId);
+		const reordered = new Map(
+			ids.map((id) => [id, openFiles.value.get(id)!] as const),
+		);
+		openFiles.value = reordered;
+		persist();
+	}
+
 	// Set active file
 	function setActiveFile(fileId: string) {
 		if (openFiles.value.has(fileId)) {
@@ -262,9 +310,12 @@ export function useStudioFiles() {
 		// Actions
 		openFile,
 		closeFile,
+		closeOtherFiles,
+		closeFilesToRight,
+		closeAllFiles,
+		reorderFiles,
 		setActiveFile,
 		isFileOpen,
-		closeAllFiles,
 		restoreSession,
 	};
 }

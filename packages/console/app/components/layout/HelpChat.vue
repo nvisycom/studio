@@ -40,9 +40,9 @@ const { t } = useI18n();
       <p class="text-sm text-muted-foreground">
         {{ t("helpChat.contact") }}
         <a
-          href="mailto:support@nvisy.com"
+          href="mailto:hello@nvisy.com"
           class="text-foreground underline underline-offset-2"
-          >support@nvisy.com</a
+          >hello@nvisy.com</a
         >.
       </p>
     </div>

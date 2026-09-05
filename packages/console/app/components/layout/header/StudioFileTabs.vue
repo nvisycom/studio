@@ -1,11 +1,5 @@
 <script setup lang="ts">
-import { X, Loader2 } from "@lucide/vue";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "#console/components/ui/tooltip";
-import { Button } from "#console/components/ui/button";
+import StudioFileTab from "./StudioFileTab.vue";
 
 const router = useRouter();
 const { wLink } = useWorkspaceLink();
@@ -14,9 +8,65 @@ const { wLink } = useWorkspaceLink();
 // tabs outgrow the header's middle zone — the same pattern VS Code and browsers
 // use — so there's no width measurement, no fit math, and no overflow menu to
 // keep in sync. The active tab is scrolled into view whenever it changes.
-const { openFiles, activeFileId, closeFile, setActiveFile } = useStudioFiles();
+const {
+	openFiles,
+	activeFileId,
+	closeFile,
+	closeOtherFiles,
+	closeFilesToRight,
+	closeAllFiles,
+	reorderFiles,
+	setActiveFile,
+} = useStudioFiles();
 
 const strip = ref<HTMLElement | null>(null);
+
+// Is the given file the rightmost tab? "Close to the right" is a no-op there, so
+// the item is disabled to signal that nothing would happen.
+function isLast(fileId: string) {
+	const files = openFiles.value;
+	return files[files.length - 1]?.fileId === fileId;
+}
+
+// Drag-to-reorder with live motion: rather than draw an insertion marker, we
+// reorder the tabs *as* the pointer moves, so the strip visibly parts and the
+// dragged tab slides into its new slot (the tab is its own preview). The
+// original order is snapshotted at drag start and restored if the drag is
+// cancelled (Escape / dropped outside). Native HTML5 DnD keeps the strip's
+// scroll and auto-scroll intact.
+const draggingId = ref<string | null>(null);
+const dropped = ref(false);
+let originalOrder: string[] = [];
+
+function onDragStart(fileId: string) {
+	draggingId.value = fileId;
+	dropped.value = false;
+	originalOrder = openFiles.value.map((f) => f.fileId);
+}
+
+// Live reorder: move the dragged tab to just before or after the hovered tab,
+// depending on which half the pointer is over. Skipped when it's already there.
+function onDragOver(overId: string, before: boolean) {
+	const dragged = draggingId.value;
+	if (!dragged || dragged === overId) return;
+	const ids = openFiles.value.map((f) => f.fileId);
+	const anchor = before ? overId : ids[ids.indexOf(overId) + 1];
+	// No-op if the dragged tab already sits in that slot.
+	if (anchor === dragged) return;
+	const currentBefore = ids[ids.indexOf(dragged) + 1];
+	if (anchor === undefined ? isLast(dragged) : anchor === currentBefore) return;
+	reorderFiles(dragged, anchor);
+}
+
+function onDragEnd() {
+	// A drag that ends without a drop (Escape, or released off any tab) restores
+	// the order it started from; a completed drop keeps the live reordering.
+	const dragged = draggingId.value;
+	if (dragged && !dropped.value) {
+		for (const id of originalOrder) reorderFiles(id);
+	}
+	draggingId.value = null;
+}
 
 // The edge fade (a clipped tab dissolves instead of hard-cutting, signaling
 // "scroll for more") is pure CSS below — a scroll-driven mask that fades only
@@ -40,15 +90,20 @@ watch(
 
 function handleCloseFile(fileId: string) {
 	closeFile(fileId);
-	// Last tab closed — leave studio for the files list.
+	leaveIfEmpty();
+}
+
+function handleCloseAll() {
+	closeAllFiles();
+	leaveIfEmpty();
+}
+
+// Any action that can empty the strip returns to the files list, since studio
+// has nothing to show without an open file.
+function leaveIfEmpty() {
 	if (openFiles.value.length === 0) {
 		router.push(wLink("/files"));
 	}
-}
-
-function truncate(str: string, maxLength: number): string {
-	if (str.length <= maxLength) return str;
-	return `${str.slice(0, maxLength - 3)}...`;
 }
 </script>
 
@@ -67,44 +122,26 @@ function truncate(str: string, maxLength: number): string {
          reka-ui's slot render (currentRenderingInstance.ce null) on navigation. -->
     <div
       class="inline-flex h-9 items-center gap-1 rounded-lg bg-muted p-1 text-muted-foreground"
+      @dragover.prevent
+      @drop.prevent="dropped = true"
     >
-      <Tooltip v-for="file in openFiles" :key="file.fileId">
-        <TooltipTrigger as-child>
-            <div
-              :data-file-id="file.fileId"
-              :class="[
-                'group inline-flex min-w-[100px] max-w-[180px] shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md border px-3 py-1 text-sm font-normal ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                activeFileId === file.fileId
-                  ? 'border-transparent bg-background text-foreground shadow'
-                  : 'border-border/60 bg-background/40 text-muted-foreground hover:bg-background/70 hover:text-foreground',
-              ]"
-              @click="setActiveFile(file.fileId)"
-            >
-              <div class="relative flex-shrink-0">
-                <Loader2 v-if="file.isLoading" :size="14" class="animate-spin" />
-                <component
-                  :is="getFileIconForExtension(file.fileExtension)"
-                  v-else
-                  :size="14"
-                />
-              </div>
-              <span class="flex-1 truncate text-sm">
-                {{ truncate(file.displayName, 20) }}
-              </span>
-              <Button
-                variant="ghost"
-                size="icon"
-                class="h-5 w-5 flex-shrink-0 p-0 opacity-0 group-hover:opacity-100"
-                @click.stop="handleCloseFile(file.fileId)"
-              >
-                <X :size="12" />
-              </Button>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{{ file.displayName }}</p>
-          </TooltipContent>
-        </Tooltip>
+      <StudioFileTab
+        v-for="file in openFiles"
+        :key="file.fileId"
+        :file="file"
+        :active="activeFileId === file.fileId"
+        :is-last="isLast(file.fileId)"
+        :only="openFiles.length <= 1"
+        :dragging-id="draggingId"
+        @select="setActiveFile(file.fileId)"
+        @close="handleCloseFile(file.fileId)"
+        @close-others="closeOtherFiles(file.fileId)"
+        @close-right="closeFilesToRight(file.fileId)"
+        @close-all="handleCloseAll"
+        @drag-start="onDragStart(file.fileId)"
+        @drag-over="onDragOver(file.fileId, $event)"
+        @drag-end="onDragEnd"
+      />
     </div>
   </div>
   <!-- Nothing is shown in the header when no file is open — the empty preview

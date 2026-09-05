@@ -1368,6 +1368,12 @@
 			"transcriptUnavailableDescription": "Für diese Datei gibt es kein Transkript. Es wurde nie erstellt oder wurde entfernt.",
 			"transcriptEmptyTitle": "Keine Sprache erkannt",
 			"transcriptEmptyDescription": "Die Erkennung hat in dieser Audiodatei keine Sprache gefunden."
+		},
+		"tabs": {
+			"close": "Schließen",
+			"closeOthers": "Andere schließen",
+			"closeToRight": "Rechts schließen",
+			"closeAll": "Alle schließen"
 		}
 	},
 	"commandMenu": {
@@ -1911,15 +1917,6 @@
 			"successSubtitle": "Ihr Passwort wurde erfolgreich aktualisiert",
 			"continueToLogin": "Weiter zur Anmeldung"
 		}
-	},
-	"feedback": {
-		"title": "Feedback",
-		"heading": "Feedback senden",
-		"description": "Wir freuen uns über Ihre Gedanken, Vorschläge oder Probleme, die Sie haben.",
-		"cancel": "Abbrechen",
-		"submit": "Feedback senden",
-		"comingSoon": "Diese Funktion ist noch nicht verfügbar. Bald verfügbar.",
-		"contact": "In der Zwischenzeit erreichen Sie uns unter"
 	},
 	"account": {
 		"avatar": {

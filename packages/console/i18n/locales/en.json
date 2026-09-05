@@ -1368,6 +1368,12 @@
 			"transcriptUnavailableDescription": "This file has no transcript. It was never generated, or it has been removed.",
 			"transcriptEmptyTitle": "No speech detected",
 			"transcriptEmptyDescription": "The detection found no speech in this audio."
+		},
+		"tabs": {
+			"close": "Close",
+			"closeOthers": "Close others",
+			"closeToRight": "Close to the right",
+			"closeAll": "Close all"
 		}
 	},
 	"commandMenu": {
@@ -1911,15 +1917,6 @@
 			"successSubtitle": "Your password has been successfully updated",
 			"continueToLogin": "Continue to login"
 		}
-	},
-	"feedback": {
-		"title": "Feedback",
-		"heading": "Send Feedback",
-		"description": "We'd love to hear your thoughts, suggestions, or issues you're experiencing.",
-		"cancel": "Cancel",
-		"submit": "Submit Feedback",
-		"comingSoon": "This feature isn't available yet. Check back soon.",
-		"contact": "In the meantime, reach us at"
 	},
 	"account": {
 		"avatar": {
