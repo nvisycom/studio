@@ -116,6 +116,7 @@ const kindTitle = (file: NvisyFile) =>
     :selection="selection"
     :row-actions="fileActions"
     @load-more="emit('load-more')"
+    @row-dblclick="emit('view', $event.id)"
   >
     <template #cell-name="{ row }">
       <div class="flex items-center gap-3">

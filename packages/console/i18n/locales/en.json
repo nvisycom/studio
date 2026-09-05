@@ -1244,6 +1244,11 @@
 		"audit": {
 			"tabChat": "Chat",
 			"tabAudit": "Audit",
+			"expand": "Expand to full screen",
+			"collapse": "Exit full screen",
+			"revealInDocument": "Reveal in document",
+			"running": "Detecting entities…",
+			"occurrences": "{n} occurrences",
 			"pipelinePlaceholder": "Select a pipeline",
 			"run": "Run detection",
 			"runAgain": "Run again",
@@ -1265,6 +1270,30 @@
 			"removeAdded": "Remove",
 			"imageRegion": "Image region",
 			"redactThis": "Redact",
+			"redactCategory": "Redact all {name}",
+			"viewDetails": "View details",
+			"trail": {
+				"kept": "Kept",
+				"empty": "No audit trail for this entity.",
+				"competing": "vs {label} ({confidence})",
+				"kind": {
+					"pattern": "Pattern match",
+					"model": "Model recognition",
+					"deduplication": "Merged duplicates",
+					"conflict": "Conflict resolved",
+					"contested": "Flagged as contested",
+					"calibration": "Confidence calibrated",
+					"refinement": "Refined",
+					"redaction": "Redacted",
+					"selection": "Selected for redaction",
+					"manual": "Reviewer override"
+				},
+				"intent": {
+					"flag": "Flagged a missed entity",
+					"suppress": "Kept (excluded from redaction)",
+					"amend": "Amended the finding"
+				}
+			},
 			"redacting": "Applying redaction…",
 			"retryRedaction": "Retry redaction",
 			"redactFailed": "Redaction failed. Please try again.",
@@ -1286,9 +1315,6 @@
 			"uncategorized": "Uncategorized",
 			"detectorPattern": "pattern ({name})",
 			"detectorModel": "model ({name})",
-			"collapseDuplicates": "Collapse duplicates",
-			"prevOccurrence": "Previous occurrence",
-			"nextOccurrence": "Next occurrence",
 			"metadata": "Metadata",
 			"categories": {
 				"identity": "Identity",
@@ -1342,6 +1368,12 @@
 			"transcriptUnavailableDescription": "This file has no transcript. It was never generated, or it has been removed.",
 			"transcriptEmptyTitle": "No speech detected",
 			"transcriptEmptyDescription": "The detection found no speech in this audio."
+		},
+		"tabs": {
+			"close": "Close",
+			"closeOthers": "Close others",
+			"closeToRight": "Close to the right",
+			"closeAll": "Close all"
 		}
 	},
 	"commandMenu": {
@@ -1885,15 +1917,6 @@
 			"successSubtitle": "Your password has been successfully updated",
 			"continueToLogin": "Continue to login"
 		}
-	},
-	"feedback": {
-		"title": "Feedback",
-		"heading": "Send Feedback",
-		"description": "We'd love to hear your thoughts, suggestions, or issues you're experiencing.",
-		"cancel": "Cancel",
-		"submit": "Submit Feedback",
-		"comingSoon": "This feature isn't available yet. Check back soon.",
-		"contact": "In the meantime, reach us at"
 	},
 	"account": {
 		"avatar": {

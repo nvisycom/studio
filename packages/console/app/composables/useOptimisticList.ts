@@ -27,8 +27,6 @@ export function useOptimisticList<T extends object, P = Partial<T>>(
 			.map((item) => ({ ...item, ...overlays.value[getId(item)] }));
 	});
 
-	// --- Optimistic update ---
-
 	/** Apply an optimistic patch to a row (call from `onMutate`). */
 	function apply(id: string, patch: P) {
 		overlays.value = { ...overlays.value, [id]: patch };
@@ -48,8 +46,6 @@ export function useOptimisticList<T extends object, P = Partial<T>>(
 		if (data) apply(id, data);
 		else rollback(id);
 	}
-
-	// --- Optimistic delete ---
 
 	/** Hide one or more rows immediately (call from `onMutate` of a delete). */
 	function remove(ids: string | string[]) {

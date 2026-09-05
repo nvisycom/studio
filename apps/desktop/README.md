@@ -39,4 +39,4 @@ GNU Affero General Public License v3.0 (AGPL-3.0), see [LICENSE.txt](../../LICEN
 
 - **Documentation**: [docs.nvisy.com](https://docs.nvisy.com)
 - **Issues**: [GitHub Issues](https://github.com/nvisycom/studio/issues)
-- **Email**: [support@nvisy.com](mailto:support@nvisy.com)
+- **Email**: [hello@nvisy.com](mailto:hello@nvisy.com)

@@ -188,6 +188,7 @@ export function useTextEntities(
 					confidence: e.confidence,
 					locatable,
 					...provenance(e),
+					audit: e.audit,
 					...(sourceRefs?.length ? { sourceRefs } : {}),
 					...(matched ? { text: matched } : {}),
 				} satisfies TextEntityView;
@@ -220,6 +221,7 @@ export function useTextEntities(
 					},
 					confidence: e.confidence,
 					...provenance(e),
+					audit: e.audit,
 					...(cellValue !== undefined
 						? { text: sliceBytes(cellValue, start, end) }
 						: {}),

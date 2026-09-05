@@ -64,6 +64,8 @@ const emit = defineEmits<{
 	"load-more": [];
 	/** Fired on row click; default behavior toggles selection when present. */
 	"row-click": [row: TRow];
+	/** Fired on row double-click, for a primary "open" action (no default). */
+	"row-dblclick": [row: TRow];
 }>();
 
 const slots = defineSlots<
@@ -281,6 +283,12 @@ function onRowContextMenu(event: MouseEvent, row: TRow) {
             class="group cursor-pointer"
             @click="
               onRowClick(table.getRowModel().rows[virtualRow.index]!.original)
+            "
+            @dblclick="
+              emit(
+                'row-dblclick',
+                table.getRowModel().rows[virtualRow.index]!.original,
+              )
             "
             @contextmenu="
               onRowContextMenu(

@@ -7,7 +7,6 @@ import { Checkbox } from "#console/components/ui/checkbox";
 import { NvisyLogo } from "#console/components/brand";
 import ThemeToggle from "#console/components/layout/footer/ThemeToggle.vue";
 import LanguageSwitcher from "#console/components/layout/footer/LanguageSwitcher.vue";
-import { getHealthVisual } from "#console/composables/useHealth";
 import { NvisyApiError } from "@nvisy/sdk";
 
 const { t } = useI18n();
@@ -148,18 +147,15 @@ function runCheck() {
 		checkServer(serverUrl.value.trim() || defaultUrl);
 }
 
-// The probe result as a rendered line: an icon tint (reusing the health palette
-// for a reachable server's own status) plus a message. Null while idle.
+// The probe result as a rendered line under the field: the "checking" progress
+// note, or a problem (unreachable / not-nvisy / invalid) the user must act on. A
+// reachable server needs no line — its status already leads the collapsible's
+// header — so it returns null. Idle also returns null but shows the field's
+// guidance line instead (see the template), so it's distinguished below.
 const probeView = computed(() => {
 	switch (probe.value.kind) {
 		case "checking":
-			return { tone: "muted", key: "auth.server.probe.checking", spin: true };
-		case "reachable":
-			return {
-				tone: "health",
-				dot: getHealthVisual(probe.value.status).dotColor,
-				key: `auth.server.probe.reachable.${probe.value.status}`,
-			};
+			return { tone: "muted", key: "auth.server.probe.checking" };
 		case "unreachable":
 			return { tone: "bad", key: "auth.server.probe.unreachable" };
 		case "not-nvisy":
@@ -167,9 +163,14 @@ const probeView = computed(() => {
 		case "invalid":
 			return { tone: "bad", key: "auth.server.invalid" };
 		default:
+			// Idle or reachable: no probe line here.
 			return null;
 	}
 });
+
+// Only the idle state shows the field's guidance line; a reachable probe shows
+// nothing (both leave `probeView` null, so distinguish them here).
+const showGuidance = computed(() => probe.value.kind === "idle");
 
 const apiError = computed(() =>
 	loginError.value instanceof NvisyApiError ? loginError.value : null,
@@ -213,7 +214,7 @@ async function handleLogin(): Promise<void> {
 
 <template>
   <div class="relative flex min-h-screen flex-col bg-background">
-    <header class="flex items-center justify-end gap-2 px-6 py-4">
+    <header class="app-titlebar-inset flex items-center justify-end gap-2 px-6 py-4">
       <LanguageSwitcher />
       <ThemeToggle />
     </header>
@@ -314,25 +315,26 @@ async function handleLogin(): Promise<void> {
               </div>
             </div>
 
-            <!-- Probe detail, or the field's guidance line when nothing's run. -->
+            <!-- Probe line: the checking note or a problem the user must act on.
+                 A reachable server shows nothing (its status leads the header);
+                 the idle state shows the field's guidance line instead. -->
             <p
-              v-if="probeView && !probeView.spin"
-              class="flex items-center gap-2 text-xs"
+              v-if="probeView"
+              class="flex items-center gap-1.5 text-xs"
               :class="{
                 'text-muted-foreground': probeView.tone === 'muted',
                 'text-destructive': probeView.tone === 'bad',
-                'text-foreground': probeView.tone === 'health',
               }"
             >
-              <span
-                v-if="probeView.dot"
-                class="size-2 shrink-0 rounded-full"
-                :class="probeView.dot"
+              <Loader2
+                v-if="probe.kind === 'checking'"
+                :size="12"
+                class="animate-spin"
               />
               {{ t(probeView.key) }}
             </p>
             <p
-              v-else-if="!probeView"
+              v-else-if="showGuidance"
               class="text-xs"
               :class="serverError ? 'text-destructive' : 'text-muted-foreground'"
             >

@@ -63,6 +63,7 @@ export function useImageEntities(audit: MaybeRefOrGetter<Audit | null>) {
 				},
 				...(e.location.page !== undefined ? { page: e.location.page } : {}),
 				...provenance(e),
+				audit: e.audit,
 			} satisfies ImageEntityView;
 		});
 	});

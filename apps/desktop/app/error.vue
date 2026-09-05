@@ -73,7 +73,7 @@ function handleServerSettings(): void {
 
 <template>
   <div class="relative flex min-h-screen flex-col bg-background">
-    <header class="flex items-center justify-end px-6 py-4">
+    <header class="app-titlebar-inset flex items-center justify-end px-6 py-4">
       <ThemeToggle />
     </header>
 

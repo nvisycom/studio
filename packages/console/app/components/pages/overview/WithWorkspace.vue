@@ -45,7 +45,6 @@ const { policies } = usePolicies();
 const { activities } = useActivities({ pageSize: 8 });
 const { detections } = useDetections();
 
-// --- Setup progress -----------------------------------------------------
 // Each step's `done` flag is derived from real data. While setup is incomplete
 // (and not dismissed) a "Set up your workspace" card sits among the dashboard
 // cards; it disappears once every step is done or the user hides it.
@@ -104,7 +103,6 @@ function dismissSetup(): void {
 // live dashboard (activity / files / detections) always renders alongside it.
 const showSetupCard = computed(() => !allSetUp.value && !isDismissed.value);
 
-// --- Recent activity ----------------------------------------------------
 // Each activity carries a typed, optional payload; the client localizes it via
 // `activityContent`. Map the resulting category to an icon here.
 const ACTIVITY_ICON: Record<string, Component> = {
@@ -146,7 +144,6 @@ const recentActivities = computed(() =>
 
 const recentFiles = computed(() => (files.value ?? []).slice(0, 5));
 
-// --- Recent detections --------------------------------------------------
 // Most-recent pipeline detections, newest first. Each is shown by the document
 // it analyzes (mirroring the Recent files card): a file-icon tile carrying a
 // small status badge in its corner, the pipeline as secondary detail, and the
@@ -246,7 +243,7 @@ const quickActions = [
                   {{ personLabel(activity.performedBy) }}
                 </span>
               </div>
-              <span class="shrink-0 text-xs text-muted-foreground">
+              <span class="w-16 shrink-0 whitespace-nowrap text-right text-xs text-muted-foreground">
                 {{ relativeTime(activity.createdAt) }}
               </span>
             </div>
@@ -395,7 +392,7 @@ const quickActions = [
                     {{ personLabel(file.uploadedBy) }}
                   </span>
                 </div>
-                <span class="shrink-0 text-xs text-muted-foreground">
+                <span class="w-16 shrink-0 whitespace-nowrap text-right text-xs text-muted-foreground">
                   {{ relativeTime(file.createdAt) }}
                 </span>
               </NuxtLink>
@@ -486,7 +483,9 @@ const quickActions = [
                     {{ personLabel(detection.triggeredBy) }}
                   </span>
                 </div>
-                <span class="shrink-0 text-xs text-muted-foreground">
+                <!-- Fixed width + right-aligned so a shorter time ("3h ago")
+                     doesn't let the avatar/name drift right of a longer one. -->
+                <span class="w-16 shrink-0 whitespace-nowrap text-right text-xs text-muted-foreground">
                   {{ relativeTime(detection.startedAt) }}
                 </span>
               </NuxtLink>

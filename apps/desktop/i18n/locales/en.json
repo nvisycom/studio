@@ -17,11 +17,6 @@
 			"invalid": "Enter a valid server URL (e.g. https://api.example.com).",
 			"probe": {
 				"checking": "Checking the server…",
-				"reachable": {
-					"healthy": "Reachable. The server is healthy.",
-					"degraded": "Reachable. The server reports degraded health.",
-					"unhealthy": "Reachable. The server reports it's unhealthy."
-				},
 				"unreachable": "Can't reach this server. Is it running at this address?",
 				"notNvisy": "Something answered, but it isn't an Nvisy server."
 			}

@@ -22,7 +22,6 @@ const STREAM_RETRY_MS = 5_000;
  * the newest and emit them to `onArrival` subscribers.
  */
 
-// --- Singleton stream state ---
 const unreadCount = ref(0);
 const arrivalHandlers = new Set<(n: Notification) => void>();
 // The newest notification id we've already emitted, so a count rise only emits
@@ -150,7 +149,6 @@ export function useNotifications() {
 		onScopeDispose(() => arrivalHandlers.delete(handler));
 	}
 
-	// --- Notification list (lazy) ---
 	// Fetched when the dropdown opens, so it isn't loaded on every page just to
 	// sit unopened behind the bell.
 	const listQuery = useQuery({

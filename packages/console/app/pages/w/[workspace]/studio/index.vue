@@ -2,13 +2,23 @@
 import { useEventListener } from "@vueuse/core";
 import { SplitterPanel } from "reka-ui";
 import JSZip from "jszip";
-import { MessageSquare, ScanSearch } from "@lucide/vue";
+import {
+	MessageSquare,
+	ScanSearch,
+	Maximize2,
+	Minimize2,
+	PanelRightClose,
+	PanelRightOpen,
+} from "@lucide/vue";
 import {
 	StudioDocumentPreview,
 	StudioChatPanel,
 	StudioAuditPanel,
+	StudioAuditTable,
 	StudioDetectionBar,
+	EntityAuditModal,
 } from "#console/components/pages/studio";
+import type { StudioEntityView } from "#console/composables/useStudioEntities";
 import type { AudioTranscriptState } from "#console/components/pages/studio/preview/StudioAudioView.vue";
 import { rendererFor } from "#console/components/pages/studio/preview/renderers";
 import {
@@ -17,6 +27,7 @@ import {
 	ResizableHandle,
 } from "#console/components/ui/resizable";
 import { Tabs, TabsList, TabsTrigger } from "#console/components/ui/tabs";
+import { Button } from "#console/components/ui/button";
 import {
 	HeaderSocket,
 	StudioFileTabs,
@@ -215,10 +226,34 @@ function focusEntity(id: string) {
 function clearEntity() {
 	activeEntityId.value = null;
 }
-// Escape clears the entity selection — but only when one is active, so it
-// doesn't swallow Escape meant for another open overlay (chat input, dialog).
+
+// The entity whose full audit trail the detail modal is showing, or null.
+const auditModalEntity = ref<StudioEntityView | null>(null);
+
+// Close the modal if its source moves out from under it: switching files or a
+// fresh detection run makes the held entity stale, and its trail would then
+// describe the wrong file or run. The modal's own close event covers the
+// ordinary dismiss.
+watch(
+	[
+		() => activeFile.value?.fileId,
+		() => detection.detectionId.value,
+		() => detection.phase.value,
+	],
+	() => {
+		auditModalEntity.value = null;
+	},
+);
+
+// Escape steps back out one level per press, and only when there's a level to
+// close, so it doesn't swallow Escape meant for another overlay. The modal owns
+// its own Escape (the Dialog closes on it), so skip while it's open — otherwise
+// one press would both close the modal and exit the review beneath it.
 useEventListener(document, "keydown", (e: KeyboardEvent) => {
-	if (e.key === "Escape" && activeEntityId.value) clearEntity();
+	if (e.key !== "Escape") return;
+	if (auditModalEntity.value) return;
+	if (mainSurface.value === "audit") mainSurface.value = "preview";
+	else if (activeEntityId.value) clearEntity();
 });
 
 // The right-hand inspector (Audit / Chat) is a resizable, collapsible split
@@ -236,6 +271,54 @@ function toggleInspector() {
 	if (panel.isCollapsed) panel.expand();
 	else panel.collapse();
 }
+
+// Which surface fills the main (left) area: the file preview, or the wide audit
+// review. Only this pane swaps between modes — the sidebar (detection bar + tabs
+// + chat) is one persistent panel throughout, so chat and its size are never
+// rebuilt. Reviewing the audit big on the left is what "full-screen" means here.
+const mainSurface = ref<"preview" | "audit">("preview");
+// The audit review is only reachable once a detection has completed with findings
+// — otherwise there's nothing to review. This gates the swap control and reverts
+// to the preview if the findings go away (file switch, re-run).
+const canReview = computed(
+	() => detection.phase.value === "complete" && detection.count.value > 0,
+);
+watch(canReview, (ok) => {
+	if (!ok) mainSurface.value = "preview";
+});
+// While the audit is the main surface, the sidebar hides its Audit tab (no point
+// showing audit twice), so move an audit-focused sidebar off to Chat.
+watch(mainSurface, (surface) => {
+	if (surface === "audit" && panelTab.value === "audit")
+		panelTab.value = "chat";
+});
+
+// Revealing an entity from the audit review steps back to the preview, focused on
+// that entity, so the reviewer sees it in the document.
+function revealEntity(id: string) {
+	mainSurface.value = "preview";
+	activeEntityId.value = id;
+}
+
+// The audit panel's props, shared verbatim by the split-view and full-screen
+// renders so the two never drift; only `layout` and the event wiring differ.
+const auditProps = computed(() => ({
+	fileId: activeFile.value?.fileId || null,
+	phase: detection.phase.value,
+	entities: detection.entities.value,
+	categorizedGroups: detection.categorizedGroups.value,
+	count: detection.count.value,
+	errorMessage: detection.errorMessage.value,
+	activeEntityId: activeEntityId.value,
+	withHeaders: withHeaders.value,
+	redactPhase: redaction.redactPhase.value,
+	canRedact: redaction.canRedact.value,
+	redactError: redaction.redactError.value,
+	output: redaction.output.value,
+	suppressed: redaction.suppressed.value,
+	added: redaction.addedEntities.value,
+	effectiveRedactCount: redaction.effectiveRedactCount.value,
+}));
 </script>
 
 <template>
@@ -252,31 +335,85 @@ function toggleInspector() {
       auto-save-id="studio-inspector"
       class="h-full"
     >
-      <!-- Document canvas -->
+      <!-- Main area: the file preview, or — in the full audit review — the wide
+           audit table in its place. Only this pane swaps between the two modes;
+           the sidebar (right) is one persistent panel throughout, so the chat and
+           its size are never rebuilt. The content cross-fades on the swap. -->
       <ResizablePanel :min-size="30" class="min-w-0">
-        <StudioDocumentPreview
-          :content-url="activeFile?.contentUrl || null"
-          :display-name="activeFile?.displayName || ''"
-          :file-extension="fileExtension"
-          :is-loading="activeFile?.isLoading || false"
-          :chat-visible="!inspectorCollapsed"
-          :text-entities="redaction.highlightTextEntities.value"
-          :active-entity-id="activeEntityId"
-          :can-add="detection.phase.value === 'complete'"
-          :audio-transcript-state="audioTranscriptState"
-          :image-entities="redaction.highlightImageEntities.value"
-          :image-ocr="imageOcr"
-          :audio-entities="redaction.highlightAudioEntities.value"
-          v-model:with-headers="withHeaders"
-          @toggle-chat="toggleInspector"
-          @focus-entity="focusEntity"
-          @clear-entity="clearEntity"
-          @add-text-entity="redaction.addTextEntity($event)"
-          @add-image-entity="redaction.addImageEntity($event)"
-          @add-audio-entity="redaction.addAudioEntity($event)"
-          @retag-audio-span="redaction.retagAudioSpan"
-          @toggle-suppress="redaction.toggleSuppress"
-        />
+        <div class="relative h-full">
+          <Transition name="main-fade">
+            <StudioAuditTable
+              v-if="mainSurface === 'audit'"
+              class="absolute inset-0"
+              :phase="detection.phase.value"
+              :categorized-groups="detection.categorizedGroups.value"
+              :count="detection.count.value"
+              :error-message="detection.errorMessage.value"
+              :suppressed="redaction.suppressed.value"
+              @reveal-entity="revealEntity"
+              @toggle-suppress="redaction.toggleSuppress"
+              @view-details="auditModalEntity = $event"
+            />
+            <StudioDocumentPreview
+              v-else
+              class="absolute inset-0"
+              :content-url="activeFile?.contentUrl || null"
+              :display-name="activeFile?.displayName || ''"
+              :file-extension="fileExtension"
+              :is-loading="activeFile?.isLoading || false"
+              :text-entities="redaction.highlightTextEntities.value"
+              :active-entity-id="activeEntityId"
+              :can-add="detection.phase.value === 'complete'"
+              :audio-transcript-state="audioTranscriptState"
+              :image-entities="redaction.highlightImageEntities.value"
+              :image-ocr="imageOcr"
+              :audio-entities="redaction.highlightAudioEntities.value"
+              v-model:with-headers="withHeaders"
+              @focus-entity="focusEntity"
+              @clear-entity="clearEntity"
+              @add-text-entity="redaction.addTextEntity($event)"
+              @add-image-entity="redaction.addImageEntity($event)"
+              @add-audio-entity="redaction.addAudioEntity($event)"
+              @retag-audio-span="redaction.retagAudioSpan"
+              @toggle-suppress="redaction.toggleSuppress"
+            />
+          </Transition>
+
+          <!-- One floating control stack at the main pane's bottom-right, over
+               WHICHEVER surface (preview or audit review): expand/exit the audit
+               review on top, show/hide the sidebar below. -->
+          <div class="absolute bottom-6 right-6 z-20 flex flex-col gap-2">
+            <Button
+              v-if="canReview || mainSurface === 'audit'"
+              variant="ghost"
+              size="sm"
+              class="h-7 w-7 rounded-md border border-neutral-200 bg-white p-0 shadow-lg dark:border-neutral-800 dark:bg-neutral-900"
+              :aria-label="
+                mainSurface === 'audit'
+                  ? t('studio.audit.collapse')
+                  : t('studio.audit.expand')
+              "
+              @click="mainSurface = mainSurface === 'audit' ? 'preview' : 'audit'"
+            >
+              <Minimize2 v-if="mainSurface === 'audit'" :size="14" />
+              <Maximize2 v-else :size="14" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              class="h-7 w-7 rounded-md border border-neutral-200 bg-white p-0 shadow-lg dark:border-neutral-800 dark:bg-neutral-900"
+              :aria-label="
+                inspectorCollapsed
+                  ? t('studio.preview.showInspector')
+                  : t('studio.preview.hideInspector')
+              "
+              @click="toggleInspector"
+            >
+              <PanelRightClose v-if="!inspectorCollapsed" :size="14" />
+              <PanelRightOpen v-else :size="14" />
+            </Button>
+          </div>
+        </div>
       </ResizablePanel>
 
       <ResizableHandle with-handle />
@@ -302,9 +439,16 @@ function toggleInspector() {
             :can-run="detection.canRun.value"
             @run="detection.run"
           />
+          <!-- While the audit is the main surface it's shown there in full, so the
+               sidebar Audit tab is disabled (not removed — the chrome stays put),
+               and the active tab moves to Chat. -->
           <Tabs v-model="panelTab" class="border-b border-border/50 p-2">
             <TabsList class="w-full">
-              <TabsTrigger value="audit" class="flex-1 gap-1.5">
+              <TabsTrigger
+                value="audit"
+                class="flex-1 gap-1.5"
+                :disabled="mainSurface === 'audit'"
+              >
                 <ScanSearch :size="14" />
                 {{ t("studio.audit.tabAudit") }}
                 <span
@@ -332,22 +476,9 @@ function toggleInspector() {
             class="min-h-0 flex-1 overflow-hidden"
           >
             <StudioAuditPanel
-              :file-id="activeFile?.fileId || null"
-              :phase="detection.phase.value"
-              :entities="detection.entities.value"
-              :categorized-groups="detection.categorizedGroups.value"
-              :count="detection.count.value"
-              :error-message="detection.errorMessage.value"
-              :active-entity-id="activeEntityId"
-              :with-headers="withHeaders"
-              :redact-phase="redaction.redactPhase.value"
-              :can-redact="redaction.canRedact.value"
-              :redact-error="redaction.redactError.value"
-              :output="redaction.output.value"
-              :suppressed="redaction.suppressed.value"
-              :added="redaction.addedEntities.value"
-              :effective-redact-count="redaction.effectiveRedactCount.value"
+              v-bind="auditProps"
               @focus-entity="focusEntity"
+              @view-details="auditModalEntity = $event"
               @redact="redaction.redact"
               @download-output="redaction.downloadRedacted"
               @toggle-suppress="redaction.toggleSuppress"
@@ -357,5 +488,31 @@ function toggleInspector() {
         </div>
       </ResizablePanel>
     </ResizablePanelGroup>
+
+    <!-- The full audit trail for a finding, opened from the review table. -->
+    <EntityAuditModal
+      :entity="auditModalEntity"
+      @close="auditModalEntity = null"
+    />
   </div>
 </template>
+
+<style scoped>
+/* The main area cross-fades when it swaps between the file preview and the audit
+   review. Both are absolutely positioned in the pane, so they overlap during the
+   fade rather than one collapsing the layout. */
+.main-fade-enter-active,
+.main-fade-leave-active {
+  transition: opacity 200ms ease;
+}
+.main-fade-enter-from,
+.main-fade-leave-to {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .main-fade-enter-active,
+  .main-fade-leave-active {
+    transition: opacity 80ms ease;
+  }
+}
+</style>

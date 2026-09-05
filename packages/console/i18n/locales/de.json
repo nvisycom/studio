@@ -1244,6 +1244,11 @@
 		"audit": {
 			"tabChat": "Chat",
 			"tabAudit": "Audit",
+			"expand": "Auf Vollbild erweitern",
+			"collapse": "Vollbild verlassen",
+			"revealInDocument": "Im Dokument anzeigen",
+			"running": "Entitäten werden erkannt…",
+			"occurrences": "{n} Vorkommen",
 			"pipelinePlaceholder": "Pipeline auswählen",
 			"run": "Erkennung ausführen",
 			"runAgain": "Erneut ausführen",
@@ -1265,6 +1270,30 @@
 			"removeAdded": "Entfernen",
 			"imageRegion": "Bildbereich",
 			"redactThis": "Schwärzen",
+			"redactCategory": "Alle {name} schwärzen",
+			"viewDetails": "Details anzeigen",
+			"trail": {
+				"kept": "Behalten",
+				"empty": "Kein Prüfprotokoll für diese Entität.",
+				"competing": "vs. {label} ({confidence})",
+				"kind": {
+					"pattern": "Mustertreffer",
+					"model": "Modellerkennung",
+					"deduplication": "Duplikate zusammengeführt",
+					"conflict": "Konflikt gelöst",
+					"contested": "Als strittig markiert",
+					"calibration": "Konfidenz kalibriert",
+					"refinement": "Verfeinert",
+					"redaction": "Geschwärzt",
+					"selection": "Zur Schwärzung ausgewählt",
+					"manual": "Prüfer-Korrektur"
+				},
+				"intent": {
+					"flag": "Übersehene Entität markiert",
+					"suppress": "Behalten (von Schwärzung ausgenommen)",
+					"amend": "Befund geändert"
+				}
+			},
 			"redacting": "Schwärzung wird angewendet…",
 			"retryRedaction": "Schwärzung erneut versuchen",
 			"redactFailed": "Schwärzung fehlgeschlagen. Bitte erneut versuchen.",
@@ -1286,9 +1315,6 @@
 			"uncategorized": "Ohne Kategorie",
 			"detectorPattern": "Muster ({name})",
 			"detectorModel": "Modell ({name})",
-			"collapseDuplicates": "Duplikate zusammenfassen",
-			"prevOccurrence": "Vorheriges Vorkommen",
-			"nextOccurrence": "Nächstes Vorkommen",
 			"metadata": "Metadaten",
 			"categories": {
 				"identity": "Identität",
@@ -1342,6 +1368,12 @@
 			"transcriptUnavailableDescription": "Für diese Datei gibt es kein Transkript. Es wurde nie erstellt oder wurde entfernt.",
 			"transcriptEmptyTitle": "Keine Sprache erkannt",
 			"transcriptEmptyDescription": "Die Erkennung hat in dieser Audiodatei keine Sprache gefunden."
+		},
+		"tabs": {
+			"close": "Schließen",
+			"closeOthers": "Andere schließen",
+			"closeToRight": "Rechts schließen",
+			"closeAll": "Alle schließen"
 		}
 	},
 	"commandMenu": {
@@ -1885,15 +1917,6 @@
 			"successSubtitle": "Ihr Passwort wurde erfolgreich aktualisiert",
 			"continueToLogin": "Weiter zur Anmeldung"
 		}
-	},
-	"feedback": {
-		"title": "Feedback",
-		"heading": "Feedback senden",
-		"description": "Wir freuen uns über Ihre Gedanken, Vorschläge oder Probleme, die Sie haben.",
-		"cancel": "Abbrechen",
-		"submit": "Feedback senden",
-		"comingSoon": "Diese Funktion ist noch nicht verfügbar. Bald verfügbar.",
-		"contact": "In der Zwischenzeit erreichen Sie uns unter"
 	},
 	"account": {
 		"avatar": {

@@ -113,11 +113,13 @@ function onScroll(event: Event) {
               class="group relative flex cursor-pointer flex-col items-center rounded-lg border border-transparent p-4 transition-colors hover:border-border hover:bg-muted/50"
               :class="{ 'bg-muted/50': selectedFiles.has(file.id) }"
               @click="selection.toggle(file.id)"
+              @dblclick="emit('view', file.id)"
             >
               <div
                 class="absolute left-2 top-2 opacity-0 transition-opacity group-hover:opacity-100"
                 :class="{ 'opacity-100': selectedFiles.has(file.id) }"
                 @click.stop
+                @dblclick.stop
               >
                 <Checkbox
                   :model-value="selectedFiles.has(file.id)"

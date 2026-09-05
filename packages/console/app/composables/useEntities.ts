@@ -1,11 +1,28 @@
 import type {
 	ArtifactSet,
+	AudioAuditLog,
 	AudioEntity,
+	ImageAuditLog,
 	ImageEntity,
 	Report,
+	TabularAuditLog,
 	TabularEntity,
+	TextAuditLog,
 	TextEntity,
 } from "@nvisy/sdk/datatypes";
+
+/**
+ * An entity's tamper-evident audit trail (the hash-linked DAG of every event in
+ * its life: recognitions, fusion, refinements, the reviewer's manual overrides,
+ * redaction). One of the four modality logs; they share the per-event shape
+ * (`source`, `timestamp`, `confidence`, `kind`, `parents`, `hash`), so the detail
+ * view reads that common surface.
+ */
+export type EntityAuditLog =
+	| TextAuditLog
+	| TabularAuditLog
+	| ImageAuditLog
+	| AudioAuditLog;
 
 /**
  * The previewed document's own-content part from a detection {@link Report} or
@@ -95,6 +112,9 @@ export interface BaseEntityView {
 	suppressed?: boolean;
 	/** Whether the reviewer added this entity by hand (vs. detected). */
 	added?: boolean;
+	/** The full tamper-evident audit trail, for the detail view. Carried straight
+	 * from the SDK entity; absent for reviewer-added entities (no server trail). */
+	audit?: EntityAuditLog;
 }
 
 /** Any SDK entity that carries the shared provenance fields (`audit`, `language`). */
