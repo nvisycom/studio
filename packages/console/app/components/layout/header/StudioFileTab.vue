@@ -90,6 +90,7 @@ function onDragOver(event: DragEvent) {
               {{ truncate(file.displayName, 20) }}
             </span>
             <Button
+              :aria-label="t('studio.tabs.close')"
               variant="ghost"
               size="icon"
               class="h-5 w-5 flex-shrink-0 p-0 opacity-0 group-hover:opacity-100"

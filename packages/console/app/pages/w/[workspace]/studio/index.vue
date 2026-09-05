@@ -230,6 +230,21 @@ function clearEntity() {
 // The entity whose full audit trail the detail modal is showing, or null.
 const auditModalEntity = ref<StudioEntityView | null>(null);
 
+// Close the modal if its source moves out from under it: switching files or a
+// fresh detection run makes the held entity stale, and its trail would then
+// describe the wrong file or run. The modal's own close event covers the
+// ordinary dismiss.
+watch(
+	[
+		() => activeFile.value?.fileId,
+		() => detection.detectionId.value,
+		() => detection.phase.value,
+	],
+	() => {
+		auditModalEntity.value = null;
+	},
+);
+
 // Escape steps back out one level per press, and only when there's a level to
 // close, so it doesn't swallow Escape meant for another overlay. The modal owns
 // its own Escape (the Dialog closes on it), so skip while it's open — otherwise
