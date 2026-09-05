@@ -52,6 +52,23 @@ const events = computed(() => {
 
 const confidencePct = (c: number) => `${Math.round(c * 100)}%`;
 
+// The dialog title: the finding's value. Text/tabular carry it directly; audio
+// and image have no text value, so name them by their span/region — otherwise the
+// dialog would have a blank title (and no accessible name).
+const title = computed(() => {
+	const e = props.entity;
+	if (!e) return "";
+	if (e.text) return e.text;
+	if (e.modality === "audio") {
+		return t("studio.audit.timeSpan", {
+			start: formatTimecode(e.span.start),
+			end: formatTimecode(e.span.end),
+		});
+	}
+	if (e.modality === "image") return t("studio.audit.imageRegion");
+	return labelName(e.label);
+});
+
 // Per-event kind: an icon + a human label + a one-line detail. The four
 // modalities share this event shape, so this reads the common surface.
 const KIND_ICON: Record<string, Component> = {
@@ -69,16 +86,19 @@ const KIND_ICON: Record<string, Component> = {
 function kindIcon(kind: string): Component {
 	return KIND_ICON[kind] ?? Circle;
 }
-function kindLabel(kind: string): string {
-	const key = `studio.audit.trail.kind.${kind}`;
+// Translate a key, falling back to the raw value when the catalog has no entry
+// (vue-i18n returns the key path for a miss, which would leak into the UI).
+function tOr(key: string, fallback: string): string {
 	const localized = t(key);
-	return localized === key ? kind : localized;
+	return localized === key ? fallback : localized;
+}
+function kindLabel(kind: string): string {
+	return tOr(`studio.audit.trail.kind.${kind}`, kind);
 }
 
 // A one-line detail for an event, by kind — the salient fact (pattern name, model,
-// competing label, operator, the reviewer's rationale). Best-effort: the audit
-// detail is broadly typed, so read narrowly and guarded.
-// biome-ignore lint/suspicious/noExplicitAny: audit detail is a broad tagged union; we read a narrow, guarded slice per kind.
+// competing label, operator, the reviewer's rationale). The audit detail is a
+// broad tagged union, read narrowly and guarded per kind; take it loosely typed.
 function eventDetail(kind: string, detail: any): string {
 	switch (kind) {
 		case "pattern":
@@ -113,7 +133,7 @@ function eventDetail(kind: string, detail: any): string {
 		}
 		case "manual":
 			return detail?.intent
-				? t(`studio.audit.trail.intent.${detail.intent}`)
+				? tOr(`studio.audit.trail.intent.${detail.intent}`, detail.intent)
 				: "";
 		default:
 			return "";
@@ -145,7 +165,7 @@ function eventTime(ts: string): string {
             v-if="entity"
             class="block min-w-0 break-words text-left text-xl font-semibold tracking-tight text-foreground"
           >
-            {{ entity.text }}
+            {{ title }}
           </DialogTitle>
           <span
             v-if="entity?.suppressed"

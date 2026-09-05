@@ -10,10 +10,6 @@ import type {
 	StudioCategorizedGroup,
 	StudioEntityView,
 } from "#console/composables/useStudioEntities";
-import type {
-	EntityCluster,
-	CategorizedGroup,
-} from "#console/composables/useEntities";
 import type { StudioDetectionPhase } from "#console/composables/useStudioDetection";
 import { Checkbox } from "#console/components/ui/checkbox";
 import { formatTimecode } from "#console/utils/date";
@@ -54,69 +50,22 @@ const emit = defineEmits<{
 	"view-details": [entity: StudioEntityView];
 }>();
 
-const isSuppressed = (id: string) => !!props.suppressed?.has(id);
-
-// "Will redact" is the inverse of suppressed (kept). The checkbox reads as the
-// action, so checked = redact.
-const willRedact = (id: string) => !isSuppressed(id);
-
-// Drive a set of entities to one redact/keep target (only toggling those that
-// differ), so a cluster or a whole category moves together without flip-flopping.
-function setRedact(entities: { id: string }[], redact: boolean) {
-	for (const e of entities) {
-		if (willRedact(e.id) !== redact) emit("toggle-suppress", e.id);
-	}
-}
-
-// --- cluster state ------------------------------------------------------------
-function clusterRedact(cluster: EntityCluster<StudioEntityView>): boolean {
-	return cluster.items.some((e) => willRedact(e.id));
-}
-function clusterAllRedact(cluster: EntityCluster<StudioEntityView>): boolean {
-	return cluster.items.every((e) => willRedact(e.id));
-}
-// Checkbox: checked when every occurrence will redact; indeterminate on a mix;
-// toggling drives the whole cluster to redact unless it's already fully redacting.
-function clusterChecked(
-	cluster: EntityCluster<StudioEntityView>,
-): boolean | "indeterminate" {
-	if (clusterAllRedact(cluster)) return true;
-	if (clusterRedact(cluster)) return "indeterminate";
-	return false;
-}
-function toggleCluster(cluster: EntityCluster<StudioEntityView>) {
-	setRedact(cluster.items, !clusterAllRedact(cluster));
-}
-
-// --- category state (bulk) ----------------------------------------------------
-function categoryEntities(
-	group: CategorizedGroup<StudioEntityView>,
-): StudioEntityView[] {
-	return group.labels.flatMap((l) => l.items);
-}
-function categoryChecked(
-	group: CategorizedGroup<StudioEntityView>,
-): boolean | "indeterminate" {
-	const items = categoryEntities(group);
-	const redacting = items.filter((e) => willRedact(e.id)).length;
-	if (redacting === 0) return false;
-	if (redacting === items.length) return true;
-	return "indeterminate";
-}
-function toggleCategory(group: CategorizedGroup<StudioEntityView>) {
-	const items = categoryEntities(group);
-	const allRedact = items.every((e) => willRedact(e.id));
-	setRedact(items, !allRedact);
-}
-
-// --- expand duplicate occurrences --------------------------------------------
-const expanded = ref<Set<string>>(new Set());
-function toggleExpand(key: string) {
-	const next = new Set(expanded.value);
-	if (next.has(key)) next.delete(key);
-	else next.add(key);
-	expanded.value = next;
-}
+// The keep/redact decision model + duplicate-expand state, shared with the
+// compact StudioAuditPanel so the two audit surfaces stay in exact agreement.
+const {
+	willRedact,
+	setRedact,
+	clusterAllRedact,
+	clusterChecked,
+	toggleCluster,
+	categoryChecked,
+	toggleCategory,
+	isExpanded,
+	toggleExpand,
+} = useAuditRedaction(
+	() => props.suppressed,
+	(id) => emit("toggle-suppress", id),
+);
 
 const confidencePct = (c: number) => `${Math.round(c * 100)}%`;
 
@@ -273,14 +222,14 @@ function isLocatable(entity: StudioEntityView): boolean {
                     v-if="cluster.items.length > 1"
                     type="button"
                     class="flex shrink-0 items-center gap-0.5 rounded px-1 text-xs tabular-nums text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                    :aria-expanded="expanded.has(cluster.lead.id)"
+                    :aria-expanded="isExpanded(cluster.lead.id)"
                     :aria-label="t('studio.audit.occurrences', { n: cluster.items.length })"
                     @click="toggleExpand(cluster.lead.id)"
                   >
                     <ChevronRight
                       :size="12"
                       class="transition-transform"
-                      :class="expanded.has(cluster.lead.id) ? 'rotate-90' : ''"
+                      :class="isExpanded(cluster.lead.id) ? 'rotate-90' : ''"
                     />
                     ×{{ cluster.items.length }}
                   </button>
@@ -319,7 +268,7 @@ function isLocatable(entity: StudioEntityView): boolean {
                 </div>
 
                 <!-- Expanded occurrences of this cluster -->
-                <template v-if="expanded.has(cluster.lead.id)">
+                <template v-if="isExpanded(cluster.lead.id)">
                   <div
                     v-for="item in cluster.items"
                     :key="item.id"
@@ -343,7 +292,8 @@ function isLocatable(entity: StudioEntityView): boolean {
                     </span>
                     <button
                       type="button"
-                      class="shrink-0 rounded p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-muted hover:text-foreground focus-visible:opacity-100 group-hover/occ:opacity-100"
+                      class="shrink-0 rounded p-1 text-muted-foreground opacity-0 transition-opacity enabled:hover:bg-muted enabled:hover:text-foreground focus-visible:opacity-100 disabled:opacity-40 group-hover/occ:opacity-100"
+                      :disabled="!isLocatable(item)"
                       :title="t('studio.audit.revealInDocument')"
                       :aria-label="t('studio.audit.revealInDocument')"
                       @click="emit('reveal-entity', item.id)"

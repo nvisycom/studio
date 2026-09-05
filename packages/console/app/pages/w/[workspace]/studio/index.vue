@@ -226,11 +226,17 @@ function focusEntity(id: string) {
 function clearEntity() {
 	activeEntityId.value = null;
 }
-// Escape steps back out: leave full-screen audit, then clear an entity selection
-// — one level per press, and only when there's a level to close, so it doesn't
-// swallow Escape meant for another overlay.
+
+// The entity whose full audit trail the detail modal is showing, or null.
+const auditModalEntity = ref<StudioEntityView | null>(null);
+
+// Escape steps back out one level per press, and only when there's a level to
+// close, so it doesn't swallow Escape meant for another overlay. The modal owns
+// its own Escape (the Dialog closes on it), so skip while it's open — otherwise
+// one press would both close the modal and exit the review beneath it.
 useEventListener(document, "keydown", (e: KeyboardEvent) => {
 	if (e.key !== "Escape") return;
+	if (auditModalEntity.value) return;
 	if (mainSurface.value === "audit") mainSurface.value = "preview";
 	else if (activeEntityId.value) clearEntity();
 });
@@ -278,9 +284,6 @@ function revealEntity(id: string) {
 	mainSurface.value = "preview";
 	activeEntityId.value = id;
 }
-
-// The entity whose full audit trail the detail modal is showing, or null.
-const auditModalEntity = ref<StudioEntityView | null>(null);
 
 // The audit panel's props, shared verbatim by the split-view and full-screen
 // renders so the two never drift; only `layout` and the event wiring differ.
