@@ -40,7 +40,7 @@ const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
 
-const selectedRole = ref<WorkspaceRole>("member");
+const selectedRole = ref<WorkspaceRole>("editor");
 
 // Reset the selected role whenever the member changes or the modal reopens.
 watch(
@@ -53,7 +53,7 @@ watch(
 	{ immediate: true },
 );
 
-const roles: WorkspaceRole[] = ["admin", "member", "guest"];
+const roles: WorkspaceRole[] = ["admin", "editor", "reviewer"];
 
 const hasChanges = computed(() => {
 	return props.member && selectedRole.value !== props.member.memberRole;

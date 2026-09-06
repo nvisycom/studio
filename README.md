@@ -43,7 +43,7 @@ own shell.
 
 ## Requirements
 
-- **Node.js** 22.18+ and **npm** 10+
+- **Node.js** 24+ and **npm** 10+
 - **Rust + Cargo** (desktop app only)
 
 ## Quick start

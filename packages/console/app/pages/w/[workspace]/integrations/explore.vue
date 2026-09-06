@@ -1,17 +1,5 @@
 <script setup lang="ts">
-import type { Component } from "vue";
-import {
-	Search,
-	ArrowLeft,
-	Cloud,
-	MessageSquare,
-	Database,
-	Bot,
-	Filter,
-	ArrowUpDown,
-	Puzzle,
-	Code,
-} from "@lucide/vue";
+import { Search, ArrowLeft, Filter, ArrowUpDown, Puzzle } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import {
@@ -25,20 +13,13 @@ import {
 	ProviderCard,
 	ConnectConnectionDialog,
 	ConnectLlmDialog,
+	ConnectFileServiceDialog,
 } from "#console/components/pages/integrations";
 import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
-import type { StorageProvider, LlmProvider } from "#console/utils/connections";
-import {
-	storageProviderForCard,
-	llmProviderForCard,
-} from "#console/utils/connections";
-import type { CreateConnection } from "@nvisy/sdk/datatypes";
-import { toast } from "vue-sonner";
 
 const { t } = useI18n();
-const sectionTabs = useSectionTabs();
 const { wLink } = useWorkspaceLink();
-const { createConnectionAsync, isCreating } = useConnections();
+const sectionTabs = useSectionTabs();
 
 useHead({ title: "Explore Providers" });
 
@@ -47,449 +28,36 @@ definePageMeta({
 	hideCategory: true,
 });
 
-/**
- * Tag keys that match the i18n keys
- */
-type TagKey =
-	| "fileSync"
-	| "import"
-	| "export"
-	| "notifications"
-	| "messaging"
-	| "collaboration"
-	| "notes"
-	| "database"
-	| "analytics"
-	| "automation"
-	| "noCode"
-	| "ai"
-	| "enterprise"
-	| "developer"
-	| "sdk";
+// Filters, availability, and the mapped card lists.
+const {
+	searchQuery,
+	statusFilter,
+	sortBy,
+	hasActiveFilters,
+	connectableCards,
+	recommendationCards,
+	noResults,
+	pills,
+	isPillActive,
+	togglePill,
+	clearAllFilters,
+} = useExploreProviders();
 
-/**
- * Provider data structure
- */
-interface Provider {
-	id: string;
-	nameKey: string;
-	descriptionKey: string;
-	shortDescriptionKey?: string;
-	icon: string;
-	status: "available" | "unavailable";
-	category: string;
-	tags: TagKey[];
-	isNew?: boolean;
-	isExternal?: boolean;
-	externalUrl?: string;
-}
-
-interface Category {
-	key: string;
-	nameKey: string;
-	icon: Component;
-}
-
-const searchQuery = ref("");
-const selectedCategories = ref<Set<string>>(new Set());
-const statusFilter = ref<"all" | "available" | "unavailable">("all");
-const sortBy = ref<"nameAsc" | "nameDesc">("nameAsc");
-
-// Category definitions for filters
-const categories = ref<Category[]>([
-	{
-		key: "cloud-storage",
-		nameKey: "connections.explore.categories.cloudStorage.name",
-		icon: Cloud,
-	},
-	{
-		key: "productivity",
-		nameKey: "connections.explore.categories.productivity.name",
-		icon: MessageSquare,
-	},
-	{
-		key: "data-analytics",
-		nameKey: "connections.explore.categories.dataAnalytics.name",
-		icon: Database,
-	},
-	{
-		key: "ai-enhancements",
-		nameKey: "connections.explore.categories.ai.name",
-		icon: Bot,
-	},
-	{
-		key: "sdk",
-		nameKey: "connections.explore.categories.sdk.name",
-		icon: Code,
-	},
-]);
-
-// All providers as a flat list (only those with brand icons)
-const providers = ref<Provider[]>([
-	// Cloud Storage
-	{
-		id: "google-drive",
-		nameKey: "connections.explore.items.googleDrive.name",
-		descriptionKey: "connections.explore.items.googleDrive.description",
-		icon: "/integration/google-drive.svg",
-		status: "unavailable",
-		category: "cloud-storage",
-		tags: ["fileSync", "import", "export"],
-	},
-	{
-		id: "onedrive",
-		nameKey: "connections.explore.items.oneDrive.name",
-		descriptionKey: "connections.explore.items.oneDrive.description",
-		icon: "/integration/microsoft-onedrive.svg",
-		status: "unavailable",
-		category: "cloud-storage",
-		tags: ["fileSync", "import", "export", "enterprise"],
-	},
-	{
-		id: "dropbox",
-		nameKey: "connections.explore.items.dropbox.name",
-		descriptionKey: "connections.explore.items.dropbox.description",
-		icon: "/integration/dropbox.svg",
-		status: "unavailable",
-		category: "cloud-storage",
-		tags: ["fileSync", "import", "export"],
-	},
-	{
-		id: "aws-s3",
-		nameKey: "connections.explore.items.awsS3.name",
-		descriptionKey: "connections.explore.items.awsS3.description",
-		shortDescriptionKey: "connections.explore.items.awsS3.shortDescription",
-		icon: "/integration/aws-s3.svg",
-		status: "available",
-		category: "cloud-storage",
-		tags: ["fileSync", "developer", "enterprise"],
-	},
-	{
-		id: "azure",
-		nameKey: "connections.explore.items.azure.name",
-		descriptionKey: "connections.explore.items.azure.description",
-		shortDescriptionKey: "connections.explore.items.azure.shortDescription",
-		icon: "/integration/azure.svg",
-		status: "available",
-		category: "cloud-storage",
-		tags: ["fileSync", "enterprise"],
-	},
-	{
-		id: "gcs",
-		nameKey: "connections.explore.items.gcs.name",
-		descriptionKey: "connections.explore.items.gcs.description",
-		shortDescriptionKey: "connections.explore.items.gcs.shortDescription",
-		icon: "/integration/gcs.svg",
-		status: "available",
-		category: "cloud-storage",
-		tags: ["fileSync", "enterprise"],
-	},
-	// Productivity
-	{
-		id: "slack",
-		nameKey: "connections.explore.items.slack.name",
-		descriptionKey: "connections.explore.items.slack.description",
-		icon: "/integration/slack.svg",
-		status: "unavailable",
-		category: "productivity",
-		tags: ["notifications", "messaging", "collaboration"],
-	},
-	{
-		id: "teams",
-		nameKey: "connections.explore.items.teams.name",
-		descriptionKey: "connections.explore.items.teams.description",
-		icon: "/integration/microsoft-teams.svg",
-		status: "unavailable",
-		category: "productivity",
-		tags: ["notifications", "messaging", "collaboration", "enterprise"],
-	},
-	{
-		id: "notion",
-		nameKey: "connections.explore.items.notion.name",
-		descriptionKey: "connections.explore.items.notion.description",
-		icon: "/integration/notion.svg",
-		status: "unavailable",
-		category: "productivity",
-		tags: ["notes", "collaboration", "export"],
-	},
-	{
-		id: "discord",
-		nameKey: "connections.explore.items.discord.name",
-		descriptionKey: "connections.explore.items.discord.description",
-		icon: "/integration/discord.svg",
-		status: "unavailable",
-		category: "productivity",
-		tags: ["notifications", "messaging", "collaboration"],
-	},
-	// Data & Analytics
-	{
-		id: "zapier",
-		nameKey: "connections.explore.items.zapier.name",
-		descriptionKey: "connections.explore.items.zapier.description",
-		icon: "/integration/zapier.svg",
-		status: "available",
-		category: "data-analytics",
-		tags: ["automation", "noCode", "developer"],
-		isExternal: true,
-		externalUrl: "https://zapier.com",
-	},
-	{
-		id: "make",
-		nameKey: "connections.explore.items.make.name",
-		descriptionKey: "connections.explore.items.make.description",
-		icon: "/integration/make.svg",
-		status: "unavailable",
-		category: "data-analytics",
-		tags: ["automation", "noCode"],
-		isExternal: true,
-		externalUrl: "https://www.make.com",
-	},
-	{
-		id: "n8n",
-		nameKey: "connections.explore.items.n8n.name",
-		descriptionKey: "connections.explore.items.n8n.description",
-		icon: "/integration/n8n.svg",
-		status: "unavailable",
-		category: "data-analytics",
-		tags: ["automation", "noCode", "developer"],
-		isExternal: true,
-		externalUrl: "https://n8n.io",
-	},
-	// AI & Enhancements
-	{
-		id: "chatgpt",
-		nameKey: "connections.explore.items.chatgpt.name",
-		descriptionKey: "connections.explore.items.chatgpt.description",
-		shortDescriptionKey: "connections.explore.items.chatgpt.shortDescription",
-		icon: "/integration/openai.svg",
-		status: "available",
-		category: "ai-enhancements",
-		tags: ["ai", "automation"],
-	},
-	{
-		id: "claude",
-		nameKey: "connections.explore.items.claude.name",
-		descriptionKey: "connections.explore.items.claude.description",
-		shortDescriptionKey: "connections.explore.items.claude.shortDescription",
-		icon: "/integration/anthropic.svg",
-		status: "available",
-		category: "ai-enhancements",
-		tags: ["ai", "automation"],
-	},
-	{
-		id: "ollama",
-		nameKey: "connections.explore.items.ollama.name",
-		descriptionKey: "connections.explore.items.ollama.description",
-		shortDescriptionKey: "connections.explore.items.ollama.shortDescription",
-		icon: "/integration/ollama.svg",
-		status: "available",
-		category: "ai-enhancements",
-		tags: ["ai", "developer"],
-	},
-	// SDKs
-	{
-		id: "javascript-sdk",
-		nameKey: "connections.explore.items.javascriptSdk.name",
-		descriptionKey: "connections.explore.items.javascriptSdk.description",
-		shortDescriptionKey:
-			"connections.explore.items.javascriptSdk.shortDescription",
-		icon: "/integration/javascript.svg",
-		status: "available",
-		category: "sdk",
-		tags: ["sdk", "developer"],
-		isExternal: true,
-		externalUrl: "https://www.npmjs.com/package/@nvisy/sdk",
-	},
-	{
-		id: "python-sdk",
-		nameKey: "connections.explore.items.pythonSdk.name",
-		descriptionKey: "connections.explore.items.pythonSdk.description",
-		shortDescriptionKey: "connections.explore.items.pythonSdk.shortDescription",
-		icon: "/integration/python.svg",
-		status: "available",
-		category: "sdk",
-		tags: ["sdk", "developer"],
-		isExternal: true,
-		externalUrl: "https://pypi.org/project/nvisy-sdk/",
-	},
-	{
-		id: "rust-sdk",
-		nameKey: "connections.explore.items.rustSdk.name",
-		descriptionKey: "connections.explore.items.rustSdk.description",
-		shortDescriptionKey: "connections.explore.items.rustSdk.shortDescription",
-		icon: "/integration/rust.svg",
-		status: "available",
-		category: "sdk",
-		tags: ["sdk", "developer"],
-		isExternal: true,
-		externalUrl: "https://crates.io/crates/nvisy-sdk",
-	},
-]);
-
-// Get localized name for a provider
-function getProviderName(provider: Provider): string {
-	return t(provider.nameKey);
-}
-
-// Get localized description for a provider
-function getProviderDescription(provider: Provider): string {
-	return t(provider.descriptionKey);
-}
-
-// Get localized short description for a provider
-function getProviderShortDescription(provider: Provider): string | undefined {
-	return provider.shortDescriptionKey
-		? t(provider.shortDescriptionKey)
-		: undefined;
-}
-
-// Get localized tag name
-function getTagName(tagKey: TagKey): string {
-	return t(`connections.explore.tags.${tagKey}`);
-}
-
-// Shared status + search predicate (the category filter is applied separately,
-// so the per-category counts and the "All" total can reuse the same test).
-// `query` is expected pre-lowercased and trimmed.
-function matchesStatusAndSearch(provider: Provider, query: string): boolean {
-	if (statusFilter.value === "available" && provider.status !== "available") {
-		return false;
-	}
-	if (
-		statusFilter.value === "unavailable" &&
-		provider.status !== "unavailable"
-	) {
-		return false;
-	}
-	if (!query) return true;
-	const name = getProviderName(provider).toLowerCase();
-	const description = getProviderDescription(provider).toLowerCase();
-	const tagNames = provider.tags
-		.map((tag) => getTagName(tag).toLowerCase())
-		.join(" ");
-	return (
-		name.includes(query) ||
-		description.includes(query) ||
-		tagNames.includes(query)
-	);
-}
-
-// Filter and sort providers
-const filteredProviders = computed(() => {
-	const query = searchQuery.value.toLowerCase().trim();
-
-	const filtered = providers.value.filter((provider) => {
-		// Category filter (multi-select); status + search are shared.
-		if (
-			selectedCategories.value.size > 0 &&
-			!selectedCategories.value.has(provider.category)
-		) {
-			return false;
-		}
-		return matchesStatusAndSearch(provider, query);
-	});
-
-	// Sort providers. Connectable providers always come first (by design — the
-	// name selector orders within each availability group, not globally), so a
-	// user scanning for something to connect sees the actionable ones up top.
-	return filtered.sort((a, b) => {
-		if (a.status !== b.status) {
-			return a.status === "available" ? -1 : 1;
-		}
-
-		switch (sortBy.value) {
-			case "nameAsc":
-				return getProviderName(a).localeCompare(getProviderName(b));
-			case "nameDesc":
-				return getProviderName(b).localeCompare(getProviderName(a));
-			default:
-				return getProviderName(a).localeCompare(getProviderName(b));
-		}
-	});
-});
-
-// Providers filtered by search and status (but not category), used for the
-// per-category counts and the "All" total.
-const baseFilteredProviders = computed(() => {
-	const query = searchQuery.value.toLowerCase().trim();
-	return providers.value.filter((provider) =>
-		matchesStatusAndSearch(provider, query),
-	);
-});
-
-// Count providers per category (respects search and status filters)
-function getCategoryCount(categoryKey: string): number {
-	return baseFilteredProviders.value.filter((i) => i.category === categoryKey)
-		.length;
-}
-
-// Total count for "All" button (respects search and status filters)
-const totalFilteredCount = computed(() => baseFilteredProviders.value.length);
-
-// Toggle category selection (multi-select)
-function toggleCategory(key: string) {
-	const newSet = new Set(selectedCategories.value);
-	if (newSet.has(key)) {
-		newSet.delete(key);
-	} else {
-		newSet.add(key);
-	}
-	selectedCategories.value = newSet;
-}
-
-// Clear all category filters
-function clearCategoryFilters() {
-	selectedCategories.value = new Set();
-}
-
-// Clear all filters
-function clearAllFilters() {
-	searchQuery.value = "";
-	selectedCategories.value = new Set();
-	statusFilter.value = "all";
-}
-
-// Connect dialog state (storage)
-const connectDialogOpen = ref(false);
-const connectProviderTag = ref<StorageProvider | null>(null);
-const connectProviderName = ref("");
-const connectProviderIcon = ref("");
-
-// Connect dialog state (LLM)
-const llmDialogOpen = ref(false);
-const llmProviderTag = ref<LlmProvider | null>(null);
-
-function connectProvider(id: string | number) {
-	const cardId = String(id);
-
-	// LLM providers use their own dialog (different config shape).
-	const llm = llmProviderForCard(cardId);
-	if (llm) {
-		llmProviderTag.value = llm;
-		llmDialogOpen.value = true;
-		return;
-	}
-
-	const provider = storageProviderForCard(cardId);
-	if (!provider) return; // not a connectable provider
-
-	const card = providers.value.find((p) => p.id === cardId);
-	connectProviderTag.value = provider;
-	connectProviderName.value = card ? getProviderName(card) : "";
-	connectProviderIcon.value = card?.icon ?? "";
-	connectDialogOpen.value = true;
-}
-
-async function handleConnect(connection: CreateConnection) {
-	try {
-		await createConnectionAsync(connection);
-		connectDialogOpen.value = false;
-		toast.success(t("connections.dialogs.connect.success"));
-		await navigateTo(wLink("/integrations"));
-	} catch {
-		toast.error(t("connections.dialogs.connect.error"));
-	}
-}
+// Connect flow: dialog state, routing, and the connect submits.
+const {
+	connect,
+	seed,
+	storageOpen,
+	storageProvider,
+	llmOpen,
+	llmProvider,
+	fileServiceOpen,
+	fileServiceProvider,
+	submitCredentials,
+	submitOAuth,
+	isCreating,
+	isStartingOAuth,
+} = useConnectProvider();
 </script>
 
 <template>
@@ -557,45 +125,32 @@ async function handleConnect(connection: CreateConnection) {
         </Select>
       </div>
 
-      <!-- Category Pills (Multi-select) -->
+      <!-- Category Pills (Multi-select). Selected = solid (strongest); hover on
+           an unselected pill is a quiet muted fill that never out-shouts the
+           selected state; focus rings are suppressed so a just-clicked pill
+           doesn't look louder than the selection. The "All" pill clears the
+           selection (an empty set = all). -->
       <div class="flex flex-wrap gap-2 mb-8">
-        <Button
-          variant="outline"
-          size="sm"
+        <button
+          v-for="pill in pills"
+          :key="pill.key"
+          type="button"
           :class="[
-            'transition-colors',
-            selectedCategories.size === 0
-              ? 'bg-foreground text-background border-foreground'
-              : '',
+            'inline-flex h-8 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors focus:outline-none',
+            isPillActive(pill.key)
+              ? 'border-foreground bg-foreground text-background hover:bg-foreground/90'
+              : 'border-border bg-background text-foreground hover:bg-muted',
           ]"
-          @click="clearCategoryFilters"
+          @click="togglePill(pill.key)"
         >
-          {{ t("connections.explore.allCategories") }}
-          <span class="ml-2 text-xs opacity-60">{{ totalFilteredCount }}</span>
-        </Button>
-        <Button
-          v-for="category in categories"
-          :key="category.key"
-          variant="outline"
-          size="sm"
-          :class="[
-            'transition-colors',
-            selectedCategories.has(category.key)
-              ? 'bg-foreground text-background border-foreground'
-              : '',
-          ]"
-          @click="toggleCategory(category.key)"
-        >
-          <component :is="category.icon" :size="14" class="mr-1.5" />
-          {{ t(category.nameKey) }}
-          <span class="ml-2 text-xs opacity-60">{{
-            getCategoryCount(category.key)
-          }}</span>
-        </Button>
+          <component :is="pill.icon" v-if="pill.icon" :size="14" />
+          {{ pill.label }}
+          <span class="text-xs opacity-60">{{ pill.count }}</span>
+        </button>
       </div>
 
-      <!-- No Results -->
-      <div v-if="filteredProviders.length === 0" class="py-12 text-center">
+      <!-- No results in either region. -->
+      <div v-if="noResults" class="py-12 text-center">
         <div
           class="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-muted/50"
         >
@@ -608,9 +163,7 @@ async function handleConnect(connection: CreateConnection) {
           {{ t("connections.explore.noResultsHint") }}
         </p>
         <Button
-          v-if="
-            searchQuery || selectedCategories.size > 0 || statusFilter !== 'all'
-          "
+          v-if="hasActiveFilters"
           variant="outline"
           size="sm"
           @click="clearAllFilters"
@@ -619,43 +172,79 @@ async function handleConnect(connection: CreateConnection) {
         </Button>
       </div>
 
-      <!-- Provider Cards Grid -->
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-        <ProviderCard
-          v-for="provider in filteredProviders"
-          :key="provider.id"
-          :provider="{
-            id: provider.id,
-            name: getProviderName(provider),
-            description: getProviderDescription(provider),
-            shortDescription: getProviderShortDescription(provider),
-            icon: provider.icon,
-            status: provider.status,
-            tags: provider.tags.map((tag) => getTagName(tag)),
-            isNew: provider.isNew,
-            isExternal: provider.isExternal,
-            externalUrl: provider.externalUrl,
-          }"
-          @connect="connectProvider"
-        />
-      </div>
+      <template v-else>
+        <!-- Connectable region: services enabled in the console. -->
+        <section v-if="connectableCards.length > 0" class="mb-10">
+          <div class="mb-4">
+            <h2 class="text-sm font-medium text-foreground">
+              {{ t("connections.explore.sections.connect.title") }}
+            </h2>
+            <p class="mt-0.5 text-xs text-muted-foreground">
+              {{ t("connections.explore.sections.connect.description") }}
+            </p>
+          </div>
+          <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+            <ProviderCard
+              v-for="card in connectableCards"
+              :key="card.id"
+              :provider="card"
+              @connect="connect"
+            />
+          </div>
+        </section>
+
+        <!-- Recommendation region: external routes (SDKs, automation). Set off
+             by a rule + eyebrow so it reads as "these live elsewhere", not more
+             of the same grid. -->
+        <section
+          v-if="recommendationCards.length > 0"
+          class="border-t border-border/60 pt-8"
+        >
+          <div class="mb-4">
+            <h2 class="text-sm font-medium text-foreground">
+              {{ t("connections.explore.sections.build.title") }}
+            </h2>
+            <p class="mt-0.5 text-xs text-muted-foreground">
+              {{ t("connections.explore.sections.build.description") }}
+            </p>
+          </div>
+          <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+            <ProviderCard
+              v-for="card in recommendationCards"
+              :key="card.id"
+              :provider="card"
+              @connect="connect"
+            />
+          </div>
+        </section>
+      </template>
 
       <!-- Connect dialog (storage) -->
       <ConnectConnectionDialog
-        v-model:open="connectDialogOpen"
-        :provider="connectProviderTag"
-        :provider-name="connectProviderName"
-        :provider-icon="connectProviderIcon"
+        v-model:open="storageOpen"
+        :provider="storageProvider"
+        :provider-name="seed.name"
+        :provider-icon="seed.icon"
         :is-loading="isCreating"
-        @connect="handleConnect"
+        @connect="submitCredentials"
       />
 
       <!-- Connect dialog (LLM) -->
       <ConnectLlmDialog
-        v-model:open="llmDialogOpen"
-        :provider="llmProviderTag"
+        v-model:open="llmOpen"
+        :provider="llmProvider"
         :is-loading="isCreating"
-        @connect="handleConnect"
+        @connect="submitCredentials"
+      />
+
+      <!-- Connect dialog (cloud file service / OAuth) -->
+      <ConnectFileServiceDialog
+        v-model:open="fileServiceOpen"
+        :provider="fileServiceProvider"
+        :provider-name="seed.name"
+        :provider-icon="seed.icon"
+        :is-loading="isStartingOAuth"
+        @connect="submitOAuth"
       />
     </div>
   </div>

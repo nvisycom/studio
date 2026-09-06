@@ -1,8 +1,10 @@
 import type {
 	Connection,
 	CreateConnection,
+	StartFileServiceOAuth,
 	UpdateConnection,
 } from "@nvisy/sdk/datatypes";
+import type { FileProvider } from "#console/utils/connections";
 
 /**
  * Composable for connection operations
@@ -82,6 +84,26 @@ export function useConnections() {
 			client.connections.verifyConnection(workspaceSlug, connectionId),
 	);
 
+	// Begin the OAuth flow for a cloud file-service provider (Drive, Dropbox,
+	// OneDrive, Box). Returns the provider's `authorizeUrl`; the caller sends the
+	// browser there, and the server-side callback creates the connection after
+	// the user grants access. No `invalidates` - the new connection appears only
+	// after the redirect round-trip, not when this resolves.
+	const startFileServiceOAuthMutation = workspaceMutation(
+		(
+			{ client, workspaceSlug },
+			{
+				provider,
+				request,
+			}: { provider: FileProvider; request: StartFileServiceOAuth },
+		) =>
+			client.connections.startFileServiceOAuth(
+				workspaceSlug,
+				provider,
+				request,
+			),
+	);
+
 	return {
 		// Query state
 		connections: optimistic.items,
@@ -118,5 +140,11 @@ export function useConnections() {
 		verifyConnectionAsync: verifyConnectionMutation.mutateAsync,
 		isVerifying: verifyConnectionMutation.isLoading,
 		verifyError: verifyConnectionMutation.error,
+
+		// File-service OAuth (Drive, Dropbox, OneDrive, Box)
+		startFileServiceOAuth: startFileServiceOAuthMutation.mutate,
+		startFileServiceOAuthAsync: startFileServiceOAuthMutation.mutateAsync,
+		isStartingOAuth: startFileServiceOAuthMutation.isLoading,
+		oauthError: startFileServiceOAuthMutation.error,
 	};
 }

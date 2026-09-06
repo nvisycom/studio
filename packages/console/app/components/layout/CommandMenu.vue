@@ -236,7 +236,7 @@ async function executeAction(actionId: string) {
 		case "create-invite-code":
 			try {
 				const result = await generateCodeAsync({
-					invitedRole: "member",
+					invitedRole: "editor",
 					expiresIn: "in7Days",
 				});
 				// Invite links must point at the web app, not the current origin —

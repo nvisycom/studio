@@ -629,8 +629,8 @@
 		"roles": {
 			"owner": "Owner",
 			"admin": "Admin",
-			"member": "Member",
-			"guest": "Guest"
+			"editor": "Editor",
+			"reviewer": "Reviewer"
 		},
 		"filters": {
 			"sortBy": "Sort by",
@@ -832,7 +832,8 @@
 			"createWebhook": "Create Webhook",
 			"back": "Back",
 			"backToConnections": "Back to Connections",
-			"viewRuns": "View Runs"
+			"viewRuns": "View Runs",
+			"notConfigured": "Not configured"
 		},
 		"explore": {
 			"allCategories": "All",
@@ -859,88 +860,103 @@
 			"items": {
 				"googleDrive": {
 					"name": "Google Drive",
-					"description": "Import and export documents directly to and from Google Drive"
+					"description": "Sync files from Google Drive",
+					"shortDescription": "Sync and redact Drive files"
 				},
 				"oneDrive": {
 					"name": "OneDrive",
-					"description": "Seamlessly sync files with Microsoft OneDrive"
+					"description": "Sync files from OneDrive",
+					"shortDescription": "Sync and redact OneDrive files"
 				},
 				"dropbox": {
 					"name": "Dropbox",
-					"description": "Connect Dropbox for easy file import and export"
+					"description": "Sync files from Dropbox",
+					"shortDescription": "Sync and redact Dropbox files"
+				},
+				"box": {
+					"name": "Box",
+					"description": "Sync and redact Box files",
+					"shortDescription": "Sync and redact Box files"
 				},
 				"awsS3": {
 					"name": "AWS S3",
-					"shortDescription": "Amazon object storage",
-					"description": "Connect an Amazon S3 bucket"
+					"shortDescription": "Sync from an S3 bucket",
+					"description": "Sync files from an Amazon S3 bucket"
 				},
 				"azure": {
 					"name": "Azure Blob Storage",
-					"shortDescription": "Microsoft object storage",
-					"description": "Connect an Azure Blob Storage container"
+					"shortDescription": "Sync from a Blob container",
+					"description": "Sync files from an Azure Blob Storage container"
 				},
 				"gcs": {
 					"name": "Google Cloud Storage",
-					"shortDescription": "Google object storage",
-					"description": "Connect a Google Cloud Storage bucket"
+					"shortDescription": "Sync from a Cloud Storage bucket",
+					"description": "Sync files from a Google Cloud Storage bucket"
 				},
 				"slack": {
 					"name": "Slack",
-					"description": "Send notifications and share files via Slack"
+					"description": "Redact and share files from Slack",
+					"shortDescription": "Redact files shared in Slack"
 				},
 				"teams": {
 					"name": "Microsoft Teams",
-					"description": "Collaborate with Microsoft Teams integration"
+					"description": "Redact and share files from Microsoft Teams",
+					"shortDescription": "Redact files shared in Teams"
 				},
 				"notion": {
 					"name": "Notion",
-					"description": "Sync documents and data with Notion workspaces"
+					"description": "Redact pages and files from Notion",
+					"shortDescription": "Redact Notion pages and files"
 				},
 				"discord": {
 					"name": "Discord",
-					"description": "Send notifications and updates to Discord channels"
+					"description": "Redact and share files from Discord",
+					"shortDescription": "Redact files shared in Discord"
 				},
 				"zapier": {
 					"name": "Zapier",
-					"description": "Automate workflows with Zapier's no-code platform"
+					"description": "Wire Nvisy into 6,000+ apps with Zapier",
+					"shortDescription": "Connect via Zapier"
 				},
 				"make": {
 					"name": "Make",
-					"description": "Build complex automation scenarios with Make"
+					"description": "Build automation scenarios with Make",
+					"shortDescription": "Connect via Make"
 				},
 				"n8n": {
 					"name": "n8n",
-					"description": "Create custom workflows with n8n's visual editor"
+					"description": "Build workflows with n8n's visual editor",
+					"shortDescription": "Connect via n8n"
 				},
 				"chatgpt": {
 					"name": "ChatGPT",
-					"description": "Connect OpenAI's ChatGPT models.",
-					"shortDescription": "OpenAI"
+					"description": "Detect entities with OpenAI models",
+					"shortDescription": "OpenAI models"
 				},
 				"claude": {
 					"name": "Claude",
-					"description": "Connect Anthropic's Claude models.",
-					"shortDescription": "Anthropic"
+					"description": "Detect entities with Anthropic Claude models",
+					"shortDescription": "Anthropic models"
 				},
 				"javascriptSdk": {
 					"name": "JavaScript SDK",
 					"shortDescription": "{'@'}nvisy/sdk",
-					"description": "Integrate Nvisy into your JavaScript or TypeScript applications"
+					"description": "Integrate Nvisy into JavaScript and TypeScript apps"
 				},
 				"pythonSdk": {
 					"name": "Python SDK",
 					"shortDescription": "nvisy-sdk",
-					"description": "Integrate Nvisy into your Python applications"
+					"description": "Integrate Nvisy into Python apps"
 				},
 				"rustSdk": {
 					"name": "Rust SDK",
 					"shortDescription": "nvisy-sdk",
-					"description": "Integrate Nvisy into your Rust applications"
+					"description": "Integrate Nvisy into Rust apps"
 				},
 				"ollama": {
 					"name": "Ollama",
-					"description": "Connect a self-hosted Ollama server.",
-					"shortDescription": "Self-hosted"
+					"description": "Detect entities with a self-hosted Ollama server",
+					"shortDescription": "Self-hosted models"
 				}
 			},
 			"filters": {
@@ -973,6 +989,16 @@
 				"enterprise": "Enterprise",
 				"developer": "Developer",
 				"sdk": "SDK"
+			},
+			"sections": {
+				"connect": {
+					"title": "Connect a service",
+					"description": "Enable a source Nvisy syncs from: object stores, cloud drives, bots, and AI models."
+				},
+				"build": {
+					"title": "Build your own",
+					"description": "Integrate Nvisy from your own stack. These live outside the console."
+				}
 			}
 		},
 		"table": {
@@ -1107,6 +1133,21 @@
 				"baseUrlPlaceholder": "https://api.example.com",
 				"defaultModel": "Default model",
 				"defaultModelPlaceholder": "e.g. gpt-4o, claude-3-5-sonnet, llama3"
+			},
+			"fileService": {
+				"title": "Connect {name}",
+				"description": "Grant access to sync files. You'll sign in on the provider's site.",
+				"displayNamePlaceholder": "e.g. Marketing Drive",
+				"rootIdPlaceholder": "Folder ID (optional)",
+				"rootPathPlaceholder": "/Team/Reports (optional)",
+				"rootHint": "Leave empty to sync the whole account. Otherwise scope to one folder.",
+				"redirectNote": "Continuing takes you to {name} to sign in and approve access, then back here.",
+				"fields": {
+					"displayName": "Connection name",
+					"root": "Sync folder"
+				},
+				"submit": "Continue to sign in",
+				"cancel": "Cancel"
 			}
 		},
 		"events": {
@@ -1176,6 +1217,10 @@
 		},
 		"errors": {
 			"loadFailed": "Couldn't load connections."
+		},
+		"oauth": {
+			"connected": "Connected {name}",
+			"failed": "Couldn't finish connecting. Please try again."
 		}
 	},
 	"sidebar": {
