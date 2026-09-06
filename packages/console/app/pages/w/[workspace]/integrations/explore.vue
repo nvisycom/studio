@@ -135,8 +135,9 @@ const {
           v-for="pill in pills"
           :key="pill.key"
           type="button"
+          :aria-pressed="isPillActive(pill.key)"
           :class="[
-            'inline-flex h-8 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors focus:outline-none',
+            'inline-flex h-8 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
             isPillActive(pill.key)
               ? 'border-foreground bg-foreground text-background hover:bg-foreground/90'
               : 'border-border bg-background text-foreground hover:bg-muted',
