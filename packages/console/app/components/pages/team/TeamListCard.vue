@@ -61,8 +61,8 @@ const roleFilters = computed(() => [
 	{ value: ANY_ROLE, label: t("members.filters.anyRole") },
 	{ value: "owner" as WorkspaceRole, label: t("members.roles.owner") },
 	{ value: "admin" as WorkspaceRole, label: t("members.roles.admin") },
-	{ value: "member" as WorkspaceRole, label: t("members.roles.member") },
-	{ value: "guest" as WorkspaceRole, label: t("members.roles.guest") },
+	{ value: "editor" as WorkspaceRole, label: t("members.roles.editor") },
+	{ value: "reviewer" as WorkspaceRole, label: t("members.roles.reviewer") },
 ]);
 
 const sortingOptions = computed(() => [

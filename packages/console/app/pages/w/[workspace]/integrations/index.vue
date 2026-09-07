@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Plug, Loader2, Compass, History, HardDrive } from "@lucide/vue";
 import { toast } from "vue-sonner";
+import type { LocationQueryValue } from "vue-router";
 import type { Connection, UpdateConnection } from "@nvisy/sdk/datatypes";
 import { Button } from "#console/components/ui/button";
 import {
@@ -34,6 +35,61 @@ const {
 	isUpdating,
 	isDeleting,
 } = useConnections();
+
+// File-service OAuth return handler.
+//
+// The OAuth callback is handled entirely server-side: after the user grants
+// access on the provider's consent screen, the provider redirects to the
+// server's callback, which creates the connection and then redirects the
+// browser back here. That final redirect is the contract between server and
+// client. The SERVER must send the user to:
+//
+//   {webAppOrigin}/w/{workspaceSlug}/integrations?connected={provider}      // success
+//   {webAppOrigin}/w/{workspaceSlug}/integrations?connect_error={reason}    // failure
+//
+// where {provider} is the SDK tag (google_drive | dropbox | one_drive | box)
+// and {reason} is an optional short slug (e.g. denied, failed). We read those
+// params once on load to toast + refresh the list, then strip them so a reload
+// doesn't re-fire.
+const route = useRoute();
+const router = useRouter();
+
+const PROVIDER_LABELS: Record<string, string> = {
+	google_drive: "Google Drive",
+	dropbox: "Dropbox",
+	one_drive: "OneDrive",
+	box: "Box",
+};
+
+// Route query values are `string | null` (or arrays thereof); normalize to the
+// first non-null string.
+function firstParam(
+	value: LocationQueryValue | LocationQueryValue[] | undefined,
+): string | undefined {
+	const v = Array.isArray(value) ? value[0] : value;
+	return v ?? undefined;
+}
+
+onMounted(() => {
+	const connected = firstParam(route.query.connected);
+	const connectError = firstParam(route.query.connect_error);
+	if (!connected && !connectError) return;
+
+	if (connected) {
+		const name = PROVIDER_LABELS[connected] ?? connected;
+		toast.success(t("connections.oauth.connected", { name }));
+		refresh();
+	} else if (connectError) {
+		toast.error(t("connections.oauth.failed"));
+	}
+
+	// Drop the return params without adding a history entry, so a refresh or
+	// back-navigation doesn't replay the toast.
+	const query = { ...route.query };
+	delete query.connected;
+	delete query.connect_error;
+	router.replace({ query });
+});
 
 // Connection dialogs
 const isConfigureConnectionDialogOpen = ref(false);

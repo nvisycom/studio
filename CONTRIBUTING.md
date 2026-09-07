@@ -4,7 +4,7 @@ Thank you for your interest in contributing to the Nvisy console.
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) 22.18+
+- [Node.js](https://nodejs.org/) 24+
 - [npm](https://www.npmjs.com/) 10+
 - [Make](https://www.gnu.org/software/make/) (included on macOS/Linux)
 - [Rust](https://www.rust-lang.org/) + Cargo (desktop app only)

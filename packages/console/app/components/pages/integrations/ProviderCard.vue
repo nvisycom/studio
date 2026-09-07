@@ -1,17 +1,24 @@
 <script setup lang="ts">
-import { ExternalLink } from "@lucide/vue";
+import { ExternalLink, Plus } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
-import {
-	Card,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "#console/components/ui/card";
+import { Badge } from "#console/components/ui/badge";
 
 const { t } = useI18n();
 
 /**
- * Provider data structure (a third-party service that can be connected)
+ * A provider surfaced on the explore page. `kind` splits two fundamentally
+ * different things the page used to blend together:
+ *  - `connectable`: services you enable here, creating a {@link Connection}
+ *    (cloud storage, object stores, bots, AI models).
+ *  - `recommendation`: routes that live outside the console (SDKs, automation
+ *    tools). These never create a connection; they link out.
+ *
+ * `availability` gives a connectable one of three states:
+ *  - `available`: connect now.
+ *  - `unconfigured`: Nvisy supports it, but this deployment hasn't set it up
+ *    (no OAuth app). Shown as "Not configured", not "Coming soon" - it's real,
+ *    just not wired up here. Common on self-hosted deployments.
+ *  - `comingSoon`: not built yet, genuinely on the roadmap.
  */
 interface Provider {
 	id: string | number;
@@ -19,147 +26,130 @@ interface Provider {
 	description: string;
 	shortDescription?: string;
 	icon: string;
-	status: "available" | "unavailable";
+	kind: "connectable" | "recommendation";
+	availability: "available" | "unconfigured" | "comingSoon";
 	tags?: string[];
 	isNew?: boolean;
-	isPopular?: boolean;
 	isExternal?: boolean;
 	externalUrl?: string;
 }
 
-/**
- * Component props interface
- */
-interface Props {
-	provider: Provider;
-}
+const props = defineProps<{ provider: Provider }>();
+const emit = defineEmits<(e: "connect", id: string | number) => void>();
 
-/** Component emits. */
-type Emits = (e: "connect", id: string | number) => void;
+// Recommendation cards read as "lives elsewhere": a pointer out, not a connect.
+const isRecommendation = computed(
+	() => props.provider.kind === "recommendation",
+);
+const canConnect = computed(
+	() =>
+		props.provider.kind === "connectable" &&
+		props.provider.availability === "available",
+);
+const isUnconfigured = computed(
+	() => props.provider.availability === "unconfigured",
+);
+const isComingSoon = computed(
+	() =>
+		props.provider.kind === "connectable" &&
+		props.provider.availability === "comingSoon",
+);
+// Both non-connectable states gray the icon (nothing to connect right now).
+const dimmed = computed(() => isUnconfigured.value || isComingSoon.value);
 
-const props = defineProps<Props>();
-const emit = defineEmits<Emits>();
-
-/**
- * Extract website domain from URL (e.g., "https://www.npmjs.com/package/..." -> "Npmjs.com")
- */
-function getWebsiteName(url?: string): string {
+/** "https://www.npmjs.com/…" → "npmjs.com" for the Visit label. */
+const websiteName = computed(() => {
+	const url = props.provider.externalUrl;
 	if (!url) return "";
 	try {
-		const hostname = new URL(url).hostname;
-		// Remove www. prefix and capitalize first letter
-		const domain = hostname.replace(/^www\./, "");
-		return domain.charAt(0).toUpperCase() + domain.slice(1);
+		return new URL(url).hostname.replace(/^www\./, "");
 	} catch {
 		return "";
 	}
-}
-
-const websiteName = computed(() => getWebsiteName(props.provider.externalUrl));
+});
 </script>
 
 <template>
-  <Card
+  <div
     :class="[
-      'overflow-hidden border-neutral-200 dark:border-neutral-800 flex flex-col transition-all duration-200',
-      provider.status === 'unavailable'
-        ? 'opacity-50 hover:opacity-70'
-        : 'hover:border-neutral-300 dark:hover:border-neutral-700 hover:shadow-md hover:scale-[1.02]',
+      'group flex items-center gap-3 rounded-lg border border-border p-3 transition-colors',
+      isRecommendation
+        ? 'bg-muted/30 hover:border-foreground/20'
+        : 'bg-card hover:border-foreground/20',
     ]"
   >
-    <CardHeader class="pb-2">
-      <!-- Icon and Name Row -->
-      <div class="flex items-center gap-3">
-        <div
-          :class="[
-            'w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-neutral-100 dark:bg-neutral-800',
-            provider.status === 'unavailable' ? 'grayscale' : '',
-          ]"
-        >
-          <img
-            :src="provider.icon"
-            :alt="provider.name"
-            class="w-6 h-6 object-contain"
-          />
-        </div>
-        <div class="flex-1 min-w-0">
-          <CardTitle class="text-base font-normal truncate">
-            {{ provider.name }}
-          </CardTitle>
-          <p
-            v-if="provider.shortDescription"
-            class="text-xs font-normal text-neutral-500 dark:text-neutral-400 truncate mt-0.5"
-          >
-            {{ provider.shortDescription }}
-          </p>
-        </div>
-      </div>
+    <!-- Bigger icon tile -->
+    <div
+      :class="[
+        'flex size-11 shrink-0 items-center justify-center rounded-lg border border-border/60',
+        dimmed ? 'bg-muted/40' : 'bg-muted/60',
+      ]"
+    >
+      <img
+        :src="provider.icon"
+        :alt="provider.name"
+        :class="['size-6 object-contain', dimmed ? 'opacity-60 grayscale' : '']"
+      />
+    </div>
 
-      <!-- Tags Row (including New and Popular) -->
-      <div class="flex flex-wrap gap-1 mt-2">
-        <!-- New badge -->
-        <span
-          v-if="provider.isNew"
-          class="text-[10px] text-white dark:text-neutral-900 bg-neutral-900 dark:bg-white px-1.5 py-0.5 rounded"
-        >
+    <!-- Name + description stacked to the right of the icon -->
+    <div class="min-w-0 flex-1">
+      <div class="flex items-center gap-1.5">
+        <p class="truncate text-sm font-medium text-foreground">
+          {{ provider.name }}
+        </p>
+        <Badge v-if="provider.isNew" class="h-4 px-1.5 text-[10px]">
           {{ t("connections.explore.badges.new") }}
-        </span>
-        <!-- Popular badge -->
-        <span
-          v-if="provider.isPopular && provider.status === 'available'"
-          class="text-[10px] text-white dark:text-neutral-900 bg-neutral-900 dark:bg-white px-1.5 py-0.5 rounded"
-        >
-          {{ t("connections.explore.badges.popular") }}
-        </span>
-        <!-- Regular tags (max 3) -->
-        <template v-if="provider.tags && provider.tags.length > 0">
-          <span
-            v-for="tag in provider.tags.slice(0, 3)"
-            :key="tag"
-            class="text-[10px] text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded"
-          >
-            {{ tag }}
-          </span>
-        </template>
+        </Badge>
       </div>
-    </CardHeader>
+      <p class="truncate text-xs text-muted-foreground">
+        {{ provider.shortDescription || provider.description }}
+      </p>
+    </div>
 
-    <CardFooter class="pt-2 mt-auto">
-      <!-- Unavailable provider button -->
-      <Button
-        v-if="provider.status === 'unavailable'"
-        variant="outline"
-        class="w-full font-normal"
-        disabled
+    <!-- Action on the far right, centered against the icon -->
+
+    <!-- Supported by Nvisy, but not set up on this deployment. Labeled "Not
+         configured" (not the misleading "Coming soon"). -->
+    <span
+      v-if="isUnconfigured"
+      class="shrink-0 text-[11px] text-muted-foreground"
+    >
+      {{ t("connections.actions.notConfigured") }}
+    </span>
+
+    <span
+      v-else-if="isComingSoon"
+      class="shrink-0 text-[11px] text-muted-foreground"
+    >
+      {{ t("connections.actions.comingSoon") }}
+    </span>
+    <Button
+      v-else-if="isRecommendation && provider.externalUrl"
+      as-child
+      variant="ghost"
+      size="sm"
+      class="h-7 shrink-0 px-2 font-normal text-muted-foreground hover:text-foreground"
+    >
+      <a
+        :href="provider.externalUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex items-center gap-1.5"
       >
-        {{ t("connections.actions.comingSoon") }}
-      </Button>
-      <!-- External provider button -->
-      <Button
-        v-else-if="provider.status === 'available' && provider.isExternal"
-        as-child
-        variant="outline"
-        class="w-full font-normal"
-      >
-        <a
-          :href="provider.externalUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="flex items-center justify-center gap-2"
-        >
-          {{ t("connections.actions.visitName", { name: websiteName }) }}
-          <ExternalLink :size="14" />
-        </a>
-      </Button>
-      <!-- Internal provider button -->
-      <Button
-        v-else-if="provider.status === 'available'"
-        @click="emit('connect', provider.id)"
-        variant="outline"
-        class="w-full font-normal"
-      >
-        {{ t("connections.actions.connect") }}
-      </Button>
-    </CardFooter>
-  </Card>
+        {{ t("connections.actions.visitName", { name: websiteName }) }}
+        <ExternalLink :size="13" />
+      </a>
+    </Button>
+    <Button
+      v-else-if="canConnect"
+      variant="outline"
+      size="sm"
+      class="h-7 shrink-0 px-2.5 font-normal"
+      @click="emit('connect', provider.id)"
+    >
+      <Plus :size="13" />
+      {{ t("connections.actions.connect") }}
+    </Button>
+  </div>
 </template>

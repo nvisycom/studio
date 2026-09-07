@@ -4,7 +4,7 @@
 	"private": true,
 	"license": "AGPL-3.0-only",
 	"engines": {
-		"node": ">=22.18"
+		"node": ">=24.0"
 	},
 	"workspaces": [
 		"packages/*",

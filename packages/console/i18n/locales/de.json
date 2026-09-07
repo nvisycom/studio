@@ -629,8 +629,8 @@
 		"roles": {
 			"owner": "Eigentümer",
 			"admin": "Administrator",
-			"member": "Mitglied",
-			"guest": "Gast"
+			"editor": "Bearbeiter",
+			"reviewer": "Prüfer"
 		},
 		"filters": {
 			"sortBy": "Sortieren nach",
@@ -832,7 +832,8 @@
 			"createWebhook": "Webhook erstellen",
 			"back": "Zurück",
 			"backToConnections": "Zurück zu Verbindungen",
-			"viewRuns": "Ausführungen Anzeigen"
+			"viewRuns": "Ausführungen Anzeigen",
+			"notConfigured": "Nicht eingerichtet"
 		},
 		"explore": {
 			"allCategories": "Alle",
@@ -859,88 +860,103 @@
 			"items": {
 				"googleDrive": {
 					"name": "Google Drive",
-					"description": "Dokumente direkt mit Google Drive importieren und exportieren"
+					"description": "Dateien aus Google Drive synchronisieren",
+					"shortDescription": "Drive-Dateien synchronisieren und redigieren"
 				},
 				"oneDrive": {
 					"name": "OneDrive",
-					"description": "Dateien nahtlos mit Microsoft OneDrive synchronisieren"
+					"description": "Dateien aus OneDrive synchronisieren",
+					"shortDescription": "OneDrive-Dateien synchronisieren und redigieren"
 				},
 				"dropbox": {
 					"name": "Dropbox",
-					"description": "Dropbox für einfachen Dateiimport und -export verbinden"
+					"description": "Dateien aus Dropbox synchronisieren",
+					"shortDescription": "Dropbox-Dateien synchronisieren und redigieren"
+				},
+				"box": {
+					"name": "Box",
+					"description": "Box-Dateien synchronisieren und redigieren",
+					"shortDescription": "Box-Dateien synchronisieren und redigieren"
 				},
 				"awsS3": {
 					"name": "AWS S3",
-					"shortDescription": "Amazon-Objektspeicher",
-					"description": "Einen Amazon-S3-Bucket verbinden"
+					"shortDescription": "Aus einem S3-Bucket synchronisieren",
+					"description": "Dateien aus einem Amazon S3 Bucket synchronisieren"
 				},
 				"azure": {
 					"name": "Azure Blob Storage",
-					"shortDescription": "Microsoft-Objektspeicher",
-					"description": "Einen Azure-Blob-Storage-Container verbinden"
+					"shortDescription": "Aus einem Blob-Container synchronisieren",
+					"description": "Dateien aus einem Azure Blob Storage Container synchronisieren"
 				},
 				"gcs": {
 					"name": "Google Cloud Storage",
-					"shortDescription": "Google-Objektspeicher",
-					"description": "Einen Google-Cloud-Storage-Bucket verbinden"
+					"shortDescription": "Aus einem Cloud-Storage-Bucket synchronisieren",
+					"description": "Dateien aus einem Google Cloud Storage Bucket synchronisieren"
 				},
 				"slack": {
 					"name": "Slack",
-					"description": "Benachrichtigungen senden und Dateien über Slack teilen"
+					"description": "Dateien aus Slack redigieren und teilen",
+					"shortDescription": "In Slack geteilte Dateien redigieren"
 				},
 				"teams": {
 					"name": "Microsoft Teams",
-					"description": "Mit Microsoft Teams Integration zusammenarbeiten"
+					"description": "Dateien aus Microsoft Teams redigieren und teilen",
+					"shortDescription": "In Teams geteilte Dateien redigieren"
 				},
 				"notion": {
 					"name": "Notion",
-					"description": "Dokumente und Daten mit Notion Workspaces synchronisieren"
+					"description": "Seiten und Dateien aus Notion redigieren",
+					"shortDescription": "Notion-Seiten und -Dateien redigieren"
 				},
 				"discord": {
 					"name": "Discord",
-					"description": "Benachrichtigungen und Updates an Discord-Kanäle senden"
+					"description": "Dateien aus Discord redigieren und teilen",
+					"shortDescription": "In Discord geteilte Dateien redigieren"
 				},
 				"zapier": {
 					"name": "Zapier",
-					"description": "Workflows mit Zapiers No-Code-Plattform automatisieren"
+					"description": "Nvisy mit über 6.000 Apps über Zapier verbinden",
+					"shortDescription": "Über Zapier verbinden"
 				},
 				"make": {
 					"name": "Make",
-					"description": "Komplexe Automatisierungsszenarien mit Make erstellen"
+					"description": "Automatisierungsszenarien mit Make erstellen",
+					"shortDescription": "Über Make verbinden"
 				},
 				"n8n": {
 					"name": "n8n",
-					"description": "Benutzerdefinierte Workflows mit n8ns visuellem Editor erstellen"
+					"description": "Workflows mit dem visuellen Editor von n8n erstellen",
+					"shortDescription": "Über n8n verbinden"
 				},
 				"chatgpt": {
 					"name": "ChatGPT",
-					"description": "OpenAIs ChatGPT-Modelle verbinden.",
-					"shortDescription": "OpenAI"
+					"description": "Entitäten mit OpenAI-Modellen erkennen",
+					"shortDescription": "OpenAI-Modelle"
 				},
 				"claude": {
 					"name": "Claude",
-					"description": "Anthropics Claude-Modelle verbinden.",
-					"shortDescription": "Anthropic"
+					"description": "Entitäten mit Anthropic-Claude-Modellen erkennen",
+					"shortDescription": "Anthropic-Modelle"
 				},
 				"javascriptSdk": {
 					"name": "JavaScript SDK",
 					"shortDescription": "{'@'}nvisy/sdk",
-					"description": "Nvisy in Ihre JavaScript- oder TypeScript-Anwendungen integrieren"
+					"description": "Nvisy in JavaScript- und TypeScript-Apps integrieren"
 				},
 				"pythonSdk": {
 					"name": "Python SDK",
 					"shortDescription": "nvisy-sdk",
-					"description": "Nvisy in Ihre Python-Anwendungen integrieren"
+					"description": "Nvisy in Python-Apps integrieren"
 				},
 				"rustSdk": {
 					"name": "Rust SDK",
 					"shortDescription": "nvisy-sdk",
-					"description": "Nvisy in Ihre Rust-Anwendungen integrieren"
+					"description": "Nvisy in Rust-Apps integrieren"
 				},
 				"ollama": {
 					"name": "Ollama",
-					"description": "Einen selbst gehosteten Ollama-Server verbinden.",
-					"shortDescription": "Selbst gehostet"
+					"description": "Entitäten mit einem selbst gehosteten Ollama-Server erkennen",
+					"shortDescription": "Selbst gehostete Modelle"
 				}
 			},
 			"filters": {
@@ -973,6 +989,16 @@
 				"enterprise": "Enterprise",
 				"developer": "Entwickler",
 				"sdk": "SDK"
+			},
+			"sections": {
+				"connect": {
+					"title": "Dienst verbinden",
+					"description": "Aktivieren Sie eine Quelle, mit der Nvisy synchronisiert: Objektspeicher, Cloud-Laufwerke, Bots und KI-Modelle."
+				},
+				"build": {
+					"title": "Selbst integrieren",
+					"description": "Binden Sie Nvisy aus Ihrem eigenen Stack ein. Diese leben außerhalb der Konsole."
+				}
 			}
 		},
 		"table": {
@@ -1107,6 +1133,21 @@
 				"baseUrlPlaceholder": "https://api.example.com",
 				"defaultModel": "Standardmodell",
 				"defaultModelPlaceholder": "z. B. gpt-4o, claude-3-5-sonnet, llama3"
+			},
+			"fileService": {
+				"title": "{name} verbinden",
+				"description": "Zugriff zum Synchronisieren von Dateien gewähren. Sie melden sich auf der Website des Anbieters an.",
+				"displayNamePlaceholder": "z. B. Marketing Drive",
+				"rootIdPlaceholder": "Ordner-ID (optional)",
+				"rootPathPlaceholder": "/Team/Berichte (optional)",
+				"rootHint": "Leer lassen, um das gesamte Konto zu synchronisieren. Andernfalls auf einen Ordner beschränken.",
+				"redirectNote": "Wenn Sie fortfahren, gelangen Sie zu {name}, um sich anzumelden und den Zugriff zu genehmigen, und dann zurück hierher.",
+				"fields": {
+					"displayName": "Verbindungsname",
+					"root": "Synchronisierungsordner"
+				},
+				"submit": "Weiter zur Anmeldung",
+				"cancel": "Abbrechen"
 			}
 		},
 		"events": {
@@ -1176,6 +1217,10 @@
 		},
 		"errors": {
 			"loadFailed": "Verbindungen konnten nicht geladen werden."
+		},
+		"oauth": {
+			"connected": "{name} verbunden",
+			"failed": "Verbindung konnte nicht abgeschlossen werden. Bitte erneut versuchen."
 		}
 	},
 	"sidebar": {

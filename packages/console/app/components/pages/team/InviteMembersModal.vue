@@ -54,13 +54,13 @@ const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
 
-const role = ref<WorkspaceRole>("member");
+const role = ref<WorkspaceRole>("editor");
 const expiry = ref<InviteExpiration>("in7Days");
 const draft = ref(""); // the in-progress email being typed
 const emails = ref<string[]>([]);
 const copied = ref(false);
 
-const roleOptions: WorkspaceRole[] = ["owner", "admin", "member", "guest"];
+const roleOptions: WorkspaceRole[] = ["owner", "admin", "editor", "reviewer"];
 const expiryOptions: InviteExpiration[] = ["in24Hours", "in7Days", "in30Days"];
 
 // InviteExpiration values (`in7Days`) don't match the i18n label keys
@@ -83,7 +83,7 @@ watch(
 		if (open) {
 			emails.value = [];
 			draft.value = "";
-			role.value = "member";
+			role.value = "editor";
 			expiry.value = "in7Days";
 			copied.value = false;
 		}
