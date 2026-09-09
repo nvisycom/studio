@@ -41,7 +41,7 @@ const emit = defineEmits<{
 // can't. Inactive connections are excluded - a paused connection won't sync.
 const targets = computed(() =>
 	props.connections.filter(
-		(c) => c.providerType === "file_service" && c.isActive,
+		(c) => c.connectionType === "file_service" && c.isActive,
 	),
 );
 

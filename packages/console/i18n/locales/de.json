@@ -3,6 +3,7 @@
 		"tabs": {
 			"connections": {
 				"connections": "Verbindungen",
+				"providers": "Anbieter",
 				"webhooks": "Webhooks",
 				"explore": "Erkunden",
 				"runs": "Ausführungen"
@@ -1248,6 +1249,63 @@
 		"oauth": {
 			"connected": "{name} verbunden",
 			"failed": "Verbindung konnte nicht abgeschlossen werden. Bitte erneut versuchen."
+		}
+	},
+	"providers": {
+		"description": "{count} Anbieter konfiguriert | {count} Anbieter konfiguriert",
+		"types": {
+			"llm": "Sprachmodell",
+			"ner": "Entitätserkennung"
+		},
+		"empty": {
+			"title": "Keine Inferenz-Anbieter",
+			"description": "Verbinden Sie ein Sprachmodell (OpenAI, Anthropic, Ollama) für Erkennung und Schwärzung."
+		},
+		"table": {
+			"headers": {
+				"name": "Name",
+				"enabled": "Aktiviert",
+				"type": "Typ",
+				"updated": "Aktualisiert"
+			},
+			"actions": {
+				"menu": "Aktionen",
+				"configure": "Konfigurieren",
+				"test": "Testen",
+				"delete": "Entfernen"
+			}
+		},
+		"dialogs": {
+			"configure": {
+				"title": "{name} konfigurieren",
+				"description": "Aktualisieren Sie die Einstellungen des Anbieters.",
+				"nameLabel": "Anzeigename",
+				"namePlaceholder": "z. B. Produktion OpenAI",
+				"updateCredentials": "Zugangsdaten aktualisieren",
+				"credentialsHint": "Geschlossen lassen, um die gespeicherten Zugangsdaten beizubehalten.",
+				"cancel": "Abbrechen",
+				"save": "Änderungen speichern"
+			},
+			"delete": {
+				"title": "{name} entfernen?",
+				"description": "Dieser Anbieter steht dann nicht mehr für Erkennung und Schwärzung zur Verfügung. Dies kann nicht rückgängig gemacht werden.",
+				"confirm": "Entfernen",
+				"cancel": "Abbrechen"
+			}
+		},
+		"toast": {
+			"updated": "Anbieter aktualisiert",
+			"updateFailed": "Anbieter konnte nicht aktualisiert werden",
+			"deleted": "Anbieter entfernt",
+			"deleteFailed": "Anbieter konnte nicht entfernt werden",
+			"enabled": "Anbieter aktiviert",
+			"disabled": "Anbieter deaktiviert",
+			"testReachable": "Anbieter ist erreichbar",
+			"testUnreachable": "Anbieter ist nicht erreichbar",
+			"testFailed": "Anbieter konnte nicht getestet werden"
+		},
+		"errors": {
+			"loadFailed": "Anbieter konnten nicht geladen werden"
 		}
 	},
 	"sidebar": {

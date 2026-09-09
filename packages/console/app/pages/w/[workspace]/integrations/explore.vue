@@ -53,7 +53,8 @@ const {
 	llmProvider,
 	fileServiceOpen,
 	fileServiceProvider,
-	submitCredentials,
+	submitStorage,
+	submitLlm,
 	submitOAuth,
 	isCreating,
 	isStartingOAuth,
@@ -227,7 +228,7 @@ const {
         :provider-name="seed.name"
         :provider-icon="seed.icon"
         :is-loading="isCreating"
-        @connect="submitCredentials"
+        @connect="submitStorage"
       />
 
       <!-- Connect dialog (LLM) -->
@@ -235,7 +236,7 @@ const {
         v-model:open="llmOpen"
         :provider="llmProvider"
         :is-loading="isCreating"
-        @connect="submitCredentials"
+        @connect="submitLlm"
       />
 
       <!-- Connect dialog (cloud file service / OAuth) -->

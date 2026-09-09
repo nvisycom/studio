@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CreateConnection, LlmConfig } from "@nvisy/sdk/datatypes";
+import type { CreateProvider, LlmConfig } from "@nvisy/sdk/datatypes";
 import type { LlmProvider } from "#console/utils/connections";
 import { LLM_PROVIDERS } from "#console/utils/connections";
 import { Loader2 } from "@lucide/vue";
@@ -22,7 +22,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
 	(e: "update:open", value: boolean): void;
-	(e: "connect", connection: CreateConnection): void;
+	(e: "connect", provider: CreateProvider): void;
 }>();
 
 const meta = computed(() =>
@@ -89,7 +89,7 @@ function submit() {
 	emit("connect", {
 		displayName: displayName.value.trim(),
 		config,
-	} satisfies CreateConnection);
+	} satisfies CreateProvider);
 }
 </script>
 

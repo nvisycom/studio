@@ -3,6 +3,7 @@
 		"tabs": {
 			"connections": {
 				"connections": "Connections",
+				"providers": "Providers",
 				"webhooks": "Webhooks",
 				"explore": "Explore",
 				"runs": "Runs"
@@ -1248,6 +1249,63 @@
 		"oauth": {
 			"connected": "Connected {name}",
 			"failed": "Couldn't finish connecting. Please try again."
+		}
+	},
+	"providers": {
+		"description": "{count} provider configured | {count} providers configured",
+		"types": {
+			"llm": "Language model",
+			"ner": "Entity recognition"
+		},
+		"empty": {
+			"title": "No inference providers",
+			"description": "Connect a language model (OpenAI, Anthropic, Ollama) to power detection and redaction."
+		},
+		"table": {
+			"headers": {
+				"name": "Name",
+				"enabled": "Enabled",
+				"type": "Type",
+				"updated": "Updated"
+			},
+			"actions": {
+				"menu": "Actions",
+				"configure": "Configure",
+				"test": "Test",
+				"delete": "Remove"
+			}
+		},
+		"dialogs": {
+			"configure": {
+				"title": "Configure {name}",
+				"description": "Update the provider's settings.",
+				"nameLabel": "Display name",
+				"namePlaceholder": "e.g. Production OpenAI",
+				"updateCredentials": "Update credentials",
+				"credentialsHint": "Leave closed to keep the stored credentials.",
+				"cancel": "Cancel",
+				"save": "Save changes"
+			},
+			"delete": {
+				"title": "Remove {name}?",
+				"description": "This provider will no longer be available for detection and redaction. This can't be undone.",
+				"confirm": "Remove",
+				"cancel": "Cancel"
+			}
+		},
+		"toast": {
+			"updated": "Provider updated",
+			"updateFailed": "Failed to update provider",
+			"deleted": "Provider removed",
+			"deleteFailed": "Failed to remove provider",
+			"enabled": "Provider enabled",
+			"disabled": "Provider disabled",
+			"testReachable": "Provider is reachable",
+			"testUnreachable": "Provider is not reachable",
+			"testFailed": "Failed to test provider"
+		},
+		"errors": {
+			"loadFailed": "Failed to load providers"
 		}
 	},
 	"sidebar": {

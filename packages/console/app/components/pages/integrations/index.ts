@@ -8,6 +8,10 @@ export { default as ConnectFileServiceDialog } from "./ConnectFileServiceDialog.
 export { default as ExportToConnectionDialog } from "./ExportToConnectionDialog.vue";
 export { default as ImportFromConnectionDialog } from "./ImportFromConnectionDialog.vue";
 
+// Providers (inference)
+export { default as ProvidersTable } from "./ProvidersTable.vue";
+export { default as ConfigureProviderDialog } from "./ConfigureProviderDialog.vue";
+
 // Webhooks
 export { default as WebhooksTable } from "./WebhooksTable.vue";
 export { default as WebhookSheet } from "./WebhookSheet.vue";

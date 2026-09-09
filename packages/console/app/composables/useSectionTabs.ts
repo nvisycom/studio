@@ -1,6 +1,7 @@
 import {
 	Plug,
 	Webhook as WebhookIcon,
+	Bot,
 	Compass,
 	History,
 	Workflow,
@@ -62,6 +63,12 @@ export function useSectionTabs() {
 			label: t("header.tabs.connections.connections"),
 			icon: Plug,
 			to: "/integrations",
+		},
+		{
+			value: "providers",
+			label: t("header.tabs.connections.providers"),
+			icon: Bot,
+			to: "/integrations/providers",
 		},
 		{
 			value: "webhooks",

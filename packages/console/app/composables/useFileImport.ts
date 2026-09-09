@@ -61,7 +61,7 @@ export function isImportableConnection(
 	connection: Connection,
 	config: PickerAvailability,
 ): boolean {
-	if (connection.providerType !== "file_service" || !connection.isActive) {
+	if (connection.connectionType !== "file_service" || !connection.isActive) {
 		return false;
 	}
 	return PICKERS[connection.provider]?.available(config) ?? false;

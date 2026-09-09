@@ -81,8 +81,8 @@ const columns = computed<VirtualColumn<Connection>[]>(() => [
 		width: "160px",
 		cell: (c) => ({
 			type: "text",
-			value: c.sync?.lastSynced
-				? relativeTime(c.sync.lastSynced)
+			value: c.lastSyncedAt
+				? relativeTime(c.lastSyncedAt)
 				: t("common.time.never"),
 			muted: true,
 		}),
@@ -94,7 +94,7 @@ function rowActions(connection: Connection): RowAction[] {
 	// picker nor a redacted-export target). Import needs an active connection with
 	// a wired picker (the shared eligibility rule); export applies to any file
 	// service.
-	const fileService = connection.providerType === "file_service";
+	const fileService = connection.connectionType === "file_service";
 	const importAction: RowAction[] = isImportableConnection(connection, {
 		dropboxAppKey,
 	})

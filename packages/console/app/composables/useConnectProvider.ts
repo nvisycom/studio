@@ -1,5 +1,6 @@
 import type {
 	CreateConnection,
+	CreateProvider,
 	StartFileServiceOAuth,
 } from "@nvisy/sdk/datatypes";
 import type {
@@ -21,7 +22,8 @@ import { toast } from "vue-sonner";
  *
  * Three connectable families connect three different ways:
  *  - object stores (S3, Azure, GCS): a credential dialog -> `createConnection`.
- *  - LLMs (OpenAI, Anthropic, Ollama): a different credential dialog -> same.
+ *  - LLMs (OpenAI, Anthropic, Ollama): a credential dialog -> `createProvider`
+ *    (inference providers are a separate resource from connections).
  *  - cloud file services (Drive, Dropbox, OneDrive, Box): OAuth - a short dialog
  *    collects a name/folder, then we redirect to the provider's consent screen.
  *
@@ -33,10 +35,17 @@ export function useConnectProvider() {
 	const { wLink } = useWorkspaceLink();
 	const {
 		createConnectionAsync,
-		isCreating,
+		isCreating: isCreatingConnection,
 		startFileServiceOAuthAsync,
 		isStartingOAuth,
 	} = useConnections();
+	const { createProviderAsync, isCreating: isCreatingProvider } =
+		useProviders();
+
+	// Either create-path may be in flight; the dialogs share one busy flag.
+	const isCreating = computed(
+		() => isCreatingConnection.value || isCreatingProvider.value,
+	);
 
 	// Shared header for whichever dialog opens (name + icon of the clicked card).
 	const seed = ref({ name: "", icon: "" });
@@ -76,14 +85,26 @@ export function useConnectProvider() {
 		}
 	}
 
-	// Storage + LLM: create the connection from the dialog's payload.
-	async function submitCredentials(connection: CreateConnection) {
+	// Storage: create the object-store connection from the dialog's payload.
+	async function submitStorage(connection: CreateConnection) {
 		try {
 			await createConnectionAsync(connection);
 			storageOpen.value = false;
-			llmOpen.value = false;
 			toast.success(t("connections.dialogs.connect.success"));
 			await navigateTo(wLink("/integrations"));
+		} catch {
+			toast.error(t("connections.dialogs.connect.error"));
+		}
+	}
+
+	// LLM: create the inference provider from the dialog's payload, and land on
+	// the providers tab where it now lives.
+	async function submitLlm(provider: CreateProvider) {
+		try {
+			await createProviderAsync(provider);
+			llmOpen.value = false;
+			toast.success(t("connections.dialogs.connect.success"));
+			await navigateTo(wLink("/integrations/providers"));
 		} catch {
 			toast.error(t("connections.dialogs.connect.error"));
 		}
@@ -121,7 +142,8 @@ export function useConnectProvider() {
 		fileServiceOpen,
 		fileServiceProvider,
 		// Submits + loading
-		submitCredentials,
+		submitStorage,
+		submitLlm,
 		submitOAuth,
 		isCreating,
 		isStartingOAuth,
