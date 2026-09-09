@@ -111,11 +111,18 @@ function onScroll(event: Event) {
           gridTemplateColumns: `repeat(${columnsPerRow}, minmax(0, 1fr))`,
         }"
       >
-        <ContextMenu v-for="file in rows[virtualRow.index]" :key="file.id">
+        <ContextMenu
+          v-for="file in rows[virtualRow.index]"
+          :key="file.id"
+          v-slot="{ open }"
+        >
           <ContextMenuTrigger as-child>
             <div
               class="group relative flex cursor-pointer flex-col items-center rounded-lg border border-transparent p-4 transition-colors hover:border-border hover:bg-muted/50"
-              :class="{ 'bg-muted/50': selectedFiles.has(file.id) }"
+              :class="{
+                'bg-muted/50': selectedFiles.has(file.id),
+                'border-border bg-muted': open,
+              }"
               @click="selection.toggle(file.id)"
               @dblclick="emit('view', file.id)"
             >
