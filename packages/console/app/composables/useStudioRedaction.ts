@@ -533,7 +533,8 @@ export function useStudioRedaction(target: RedactionTarget) {
 	);
 
 	// The download name for a redacted output: the input's name tagged `.redacted`
-	// (keeping its extension so it still opens), falling back to the file id.
+	// (keeping its extension so it still opens), falling back to the file id while
+	// the name isn't known yet.
 	function redactedName(fileId: string): string {
 		const base = detectionFileName.value;
 		if (!base) return fileId;

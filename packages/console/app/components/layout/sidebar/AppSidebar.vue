@@ -12,6 +12,7 @@ import {
 	PenTool,
 	Workflow,
 	ShieldCheck,
+	Webhook as WebhookIcon,
 } from "@lucide/vue";
 import NavMain from "#console/components/layout/sidebar/NavMain.vue";
 import NavUser from "#console/components/layout/sidebar/NavUser.vue";
@@ -92,6 +93,12 @@ const navAutomation = computed(() => [
 ]);
 
 const navObservability = computed(() => [
+	{
+		title: t("sidebar.webhooks"),
+		url: wLink("/webhooks"),
+		icon: WebhookIcon,
+		isActive: false,
+	},
 	{
 		title: t("sidebar.analytics"),
 		url: wLink("/analytics"),

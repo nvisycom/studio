@@ -19,7 +19,7 @@ const sectionTabs = useSectionTabs();
 useHead({ title: "Webhooks" });
 
 definePageMeta({
-	pageCategory: "header.category.integrations",
+	pageCategory: "header.category.analytics",
 	hideCategory: true,
 });
 
@@ -175,7 +175,7 @@ async function testWebhook(webhookId: string) {
     <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 min-h-0">
       <!-- Section tabs in the app-header socket. -->
       <HeaderSocket>
-        <SectionTabs :tabs="sectionTabs.integrations.value" />
+        <SectionTabs :tabs="sectionTabs.analytics.value" />
       </HeaderSocket>
 
       <!-- Action row: count on the left, create on the right. -->

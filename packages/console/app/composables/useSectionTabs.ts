@@ -1,7 +1,7 @@
 import {
 	Plug,
-	Webhook as WebhookIcon,
 	Bot,
+	Webhook as WebhookIcon,
 	Compass,
 	History,
 	Workflow,
@@ -71,22 +71,10 @@ export function useSectionTabs() {
 			to: "/integrations/providers",
 		},
 		{
-			value: "webhooks",
-			label: t("header.tabs.connections.webhooks"),
-			icon: WebhookIcon,
-			to: "/integrations/webhooks",
-		},
-		{
 			value: "explore",
 			label: t("header.tabs.connections.explore"),
 			icon: Compass,
 			to: "/integrations/explore",
-		},
-		{
-			value: "runs",
-			label: t("header.tabs.connections.runs"),
-			icon: History,
-			to: "/integrations/runs",
 		},
 	]);
 
@@ -112,6 +100,12 @@ export function useSectionTabs() {
 	]);
 
 	const analytics = computed<SectionTab[]>(() => [
+		{
+			value: "webhooks",
+			label: t("header.tabs.analytics.webhooks"),
+			icon: WebhookIcon,
+			to: "/webhooks",
+		},
 		{
 			value: "overview",
 			label: t("header.tabs.analytics.overview"),

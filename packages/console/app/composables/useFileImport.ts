@@ -13,8 +13,12 @@ interface PickerAvailability {
 
 /** What a picker needs at open time: the availability config plus a token minter. */
 interface PickerContext extends PickerAvailability {
-	/** Mint a short-lived provider access token for a token-based picker. */
-	getToken: (connectionId: string) => Promise<string>;
+	/**
+	 * Mint a short-lived provider access token for a token-based picker, optionally
+	 * scoped to the resource the picker asked for (its `authenticate` command's
+	 * `resource`); the server uses its default resource when none is given.
+	 */
+	getToken: (connectionId: string, resource?: string) => Promise<string>;
 }
 
 /**
@@ -42,8 +46,8 @@ interface ImportPicker {
 const PICKERS: Record<string, ImportPicker> = {
 	one_drive: {
 		available: () => true,
-		open: async (connection, { getToken }) =>
-			openOneDrivePicker(await getToken(connection.id)),
+		open: (connection, { getToken }) =>
+			openOneDrivePicker((resource) => getToken(connection.id, resource)),
 	},
 	dropbox: {
 		available: (config) => !!config.dropboxAppKey,
@@ -73,8 +77,8 @@ export function useFileImport() {
 
 	const ctx: PickerContext = {
 		dropboxAppKey,
-		getToken: async (connectionId) =>
-			(await getPickerTokenAsync(connectionId)).accessToken,
+		getToken: async (connectionId, resource) =>
+			(await getPickerTokenAsync({ connectionId, resource })).accessToken,
 	};
 
 	/**

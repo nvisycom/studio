@@ -3,10 +3,8 @@
 		"tabs": {
 			"connections": {
 				"connections": "Connections",
-				"providers": "Providers",
-				"webhooks": "Webhooks",
 				"explore": "Explore",
-				"runs": "Runs"
+				"providers": "Providers"
 			},
 			"workflows": {
 				"index": "Pipelines",
@@ -23,7 +21,8 @@
 			},
 			"analytics": {
 				"overview": "Overview",
-				"logs": "Logs"
+				"logs": "Logs",
+				"webhooks": "Webhooks"
 			},
 			"policies": {
 				"index": "Overview",
@@ -40,7 +39,8 @@
 			"integrations": "Integrations",
 			"analytics": "Analytics",
 			"billing": "Billing",
-			"settings": "Settings"
+			"settings": "Settings",
+			"webhooks": "Webhooks"
 		}
 	},
 	"common": {
@@ -535,7 +535,8 @@
 			"importFailed": "Failed to import files",
 			"importUnavailable": "Import isn't available for this connection.",
 			"importPopupBlocked": "The picker was blocked. Allow pop-ups for this site and try again.",
-			"importPickerLoadFailed": "Couldn't load the file picker. Check your connection and try again."
+			"importPickerLoadFailed": "Couldn't load the file picker. Check your connection and try again.",
+			"importAuthFailed": "Couldn't authenticate with the file service. Please reconnect it and try again."
 		},
 		"kind": {
 			"original": "Original",
@@ -1215,6 +1216,8 @@
 			"importFailed": "Failed to import files"
 		},
 		"runs": {
+			"title": "Sync runs",
+			"description": "Every sync run across your connections.",
 			"allStatus": "All Status",
 			"runsFound": "{count} sync | {count} syncs",
 			"statusHeader": "Status",
@@ -1324,7 +1327,8 @@
 		"logs": "Logs",
 		"billing": "Billing",
 		"settings": "Settings",
-		"support": "Support"
+		"support": "Support",
+		"webhooks": "Webhooks"
 	},
 	"health": {
 		"status": {
@@ -1339,41 +1343,7 @@
 		}
 	},
 	"studio": {
-		"chat": {
-			"placeholder": "Describe changes...",
-			"inputPlaceholder": "Type your message here.",
-			"send": "Send message",
-			"saveEdit": "Save edit",
-			"attach": "Attach",
-			"upload": "Upload",
-			"generate": "Generate",
-			"summarize": "Summarize",
-			"greeting": "Hi! I can help you review and redact this document. Ask me anything or use the tools below.",
-			"processing": "Working on it…",
-			"copy": "Copy",
-			"copied": "Copied",
-			"edit": "Edit",
-			"thumbsUp": "Good response",
-			"thumbsDown": "Bad response",
-			"retry": "Retry",
-			"you": "You",
-			"assistant": "Assistant",
-			"tools": {
-				"highlight": "Highlight",
-				"annotate": "Annotate"
-			},
-			"changes": {
-				"title": "Changes",
-				"accept": "Accept",
-				"reject": "Reject",
-				"acceptAll": "Accept All",
-				"rejectAll": "Reject All",
-				"empty": "No pending changes"
-			}
-		},
 		"audit": {
-			"tabChat": "Chat",
-			"tabAudit": "Audit",
 			"expand": "Expand to full screen",
 			"collapse": "Exit full screen",
 			"revealInDocument": "Reveal in document",
@@ -1461,7 +1431,9 @@
 				"organization": "Organization",
 				"contextual": "Contextual"
 			},
-			"exportRedacted": "Export redacted file"
+			"exportRedacted": "Export redacted file",
+			"download": "Download",
+			"export": "Export"
 		},
 		"preview": {
 			"loading": "Loading document...",
@@ -1504,7 +1476,30 @@
 			"close": "Close",
 			"closeOthers": "Close others",
 			"closeToRight": "Close to the right",
-			"closeAll": "Close all"
+			"closeAll": "Close all",
+			"loading": "Loading…"
+		}
+	},
+	"chat": {
+		"title": "Assistant",
+		"description": "The workspace AI assistant.",
+		"toggle": "Toggle assistant",
+		"close": "Close",
+		"newChat": "New chat",
+		"deleteSession": "Delete chat",
+		"placeholder": "Ask the assistant…",
+		"send": "Send",
+		"copy": "Copy",
+		"copied": "Copied",
+		"retry": "Retry",
+		"emptyTitle": "Ask anything",
+		"emptyDescription": "The assistant can answer questions about your workspace and help you get things done.",
+		"needsProviderTitle": "No AI provider connected",
+		"needsProviderDescription": "Connect an inference provider (OpenAI, Anthropic, Ollama…) to chat with the assistant.",
+		"needsProviderCta": "Connect a provider",
+		"error": {
+			"send": "Couldn't send your message. Please try again.",
+			"stream": "The assistant's reply was interrupted. Please try again."
 		}
 	},
 	"commandMenu": {

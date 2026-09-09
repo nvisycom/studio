@@ -12,13 +12,23 @@ import { ImportError } from "#console/utils/connections/pickers/types";
 const ONEDRIVE_BASE = "https://onedrive.live.com/picker";
 
 /**
- * Open the OneDrive picker with a short-lived provider access token and resolve
- * with the chosen files (or `null` if the user cancelled). The token is minted
- * server-side (`getPickerToken`) from the connection's credentials.
+ * Open the OneDrive picker and resolve with the chosen files (or `null` if the
+ * user cancelled).
+ *
+ * The picker authenticates per resource: its `authenticate` command names the
+ * resource it needs a token for (consumer OneDrive asks for
+ * `my.microsoftpersonalcontent.com` and `api.onedrive.com`, which need
+ * differently-scoped tokens), so `getToken` mints a token server-side
+ * (`getPickerToken`) for each requested resource. It's also called once with no
+ * resource to seed the launch form (the server's default picker resource).
  */
-export function openOneDrivePicker(
-	accessToken: string,
+export async function openOneDrivePicker(
+	getToken: (resource?: string) => Promise<string>,
 ): Promise<PickedFile[] | null> {
+	// The launch form needs a token synchronously, so mint the initial one before
+	// opening the popup (a popup opened here stays the user-gesture window).
+	const initialToken = await getToken();
+
 	return new Promise((resolve, reject) => {
 		const opened = window.open("", "onedrive-picker", "width=1080,height=680");
 		if (!opened) {
@@ -56,7 +66,7 @@ export function openOneDrivePicker(
 		const tokenInput = popup.document.createElement("input");
 		tokenInput.setAttribute("type", "hidden");
 		tokenInput.setAttribute("name", "access_token");
-		tokenInput.setAttribute("value", accessToken);
+		tokenInput.setAttribute("value", initialToken);
 		form.appendChild(tokenInput);
 		popup.document.body.appendChild(form);
 		form.submit();
@@ -83,13 +93,21 @@ export function openOneDrivePicker(
 			port?.postMessage({ type: "acknowledge", id });
 
 			if (command === "authenticate") {
-				// The picker asks for a token for a specific resource
-				// (`msg.data.resource`); reply with the access token.
-				port?.postMessage({
-					type: "result",
-					id,
-					data: { result: "token", token: accessToken },
-				});
+				// The picker asks for a token scoped to `msg.data.resource`; mint one
+				// for exactly that resource and reply with it.
+				const resource = msg.data?.resource as string | undefined;
+				getToken(resource)
+					.then((token) => {
+						port?.postMessage({
+							type: "result",
+							id,
+							data: { result: "token", token },
+						});
+					})
+					.catch(() => {
+						cleanup();
+						reject(new ImportError("files.errors.importAuthFailed"));
+					});
 			} else if (command === "close") {
 				cleanup();
 				resolve(null);

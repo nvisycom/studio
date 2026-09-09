@@ -7,6 +7,7 @@ export { default as ConnectLlmDialog } from "./ConnectLlmDialog.vue";
 export { default as ConnectFileServiceDialog } from "./ConnectFileServiceDialog.vue";
 export { default as ExportToConnectionDialog } from "./ExportToConnectionDialog.vue";
 export { default as ImportFromConnectionDialog } from "./ImportFromConnectionDialog.vue";
+export { default as ConnectionRunsPanel } from "./ConnectionRunsPanel.vue";
 
 // Providers (inference)
 export { default as ProvidersTable } from "./ProvidersTable.vue";
