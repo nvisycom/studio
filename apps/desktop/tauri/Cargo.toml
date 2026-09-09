@@ -42,7 +42,7 @@ tokio = { version = "1", features = ["sync"] }
 
 # Filesystem watching
 notify = { version = "8" }
-notify-debouncer-full = { version = "0.5" }
+notify-debouncer-full = { version = "0.7" }
 
 # Serialization
 serde = { version = "1", features = ["derive"] }
