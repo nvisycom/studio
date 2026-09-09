@@ -38,9 +38,6 @@ definePageMeta({
 
 // Search/filter/view state is shared with the header controls via useFilesView.
 const {
-	searchQuery,
-	selectedModalities,
-	selectedFormats,
 	viewMode,
 	uploadOpen: uploadDialogOpen,
 	importOpen: importDialogOpen,

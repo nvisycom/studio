@@ -1,8 +1,4 @@
-import type {
-	FormatToken,
-	ListFiles,
-	ModalityToken,
-} from "@nvisy/sdk/datatypes";
+import type { FormatToken, ListFiles } from "@nvisy/sdk/datatypes";
 
 /**
  * Shared view state for the Files page: search, filters, and the list/grid
@@ -15,7 +11,6 @@ import type {
  */
 
 const searchQuery = ref("");
-const selectedModalities = ref<ModalityToken[]>([]);
 const selectedFormats = ref<FormatToken[]>([]);
 const viewMode = ref<"list" | "grid">("list");
 // Shared upload trigger: the header button flips this; the page binds the
@@ -28,14 +23,6 @@ const importOpen = ref(false);
 // Files afterwards), the timestamp it started. The Files page reads it on mount
 // to poll for the incoming files, then clears it.
 const importStartedAt = ref<number | null>(null);
-
-/** Modality tokens offered in the filter, in display order. */
-export const MODALITY_TOKENS: ModalityToken[] = [
-	"text",
-	"image",
-	"tabular",
-	"audio",
-];
 
 /** Format tokens offered in the filter, in display order. */
 export const FORMAT_TOKENS: FormatToken[] = [
@@ -64,30 +51,18 @@ export function useFilesView() {
 	// Server-side filtering: fold search + filters into the listFiles query.
 	const filesQuery = computed<ListFiles>(() => ({
 		...(searchQuery.value.trim() && { search: searchQuery.value.trim() }),
-		...(selectedModalities.value.length && {
-			modality: selectedModalities.value,
-		}),
 		...(selectedFormats.value.length && { formats: selectedFormats.value }),
 	}));
 
-	const modalityOptions = computed(() =>
-		MODALITY_TOKENS.map((value) => ({
-			value,
-			label: t(`files.filters.modalities.${value}`),
-		})),
-	);
 	const formatOptions = FORMAT_TOKENS.map((value) => ({ value, label: value }));
 
 	const hasFilters = computed(
 		() =>
-			searchQuery.value.trim().length > 0 ||
-			selectedModalities.value.length > 0 ||
-			selectedFormats.value.length > 0,
+			searchQuery.value.trim().length > 0 || selectedFormats.value.length > 0,
 	);
 
 	function clearFilters() {
 		searchQuery.value = "";
-		selectedModalities.value = [];
 		selectedFormats.value = [];
 	}
 
@@ -115,13 +90,11 @@ export function useFilesView() {
 
 	return {
 		searchQuery,
-		selectedModalities,
 		selectedFormats,
 		viewMode,
 		uploadOpen,
 		importOpen,
 		filesQuery,
-		modalityOptions,
 		formatOptions,
 		hasFilters,
 		clearFilters,

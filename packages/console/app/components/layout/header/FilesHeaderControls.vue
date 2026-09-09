@@ -3,7 +3,6 @@ import {
 	ArrowDownToLine,
 	FileType,
 	LayoutGrid,
-	Layers,
 	List,
 	Search,
 	Upload,
@@ -13,18 +12,16 @@ import { Input } from "#console/components/ui/input";
 import { MultiSelect } from "#console/components/ui/multi-select";
 
 /**
- * Files page controls rendered in the app header (upload, search, modality and
- * format filters, list/grid toggle). It reads the shared `useFilesView` state,
- * so the header and the page body stay in sync — the header-content variant for
- * the /files route, alongside the studio's file tabs.
+ * Files page controls rendered in the app header (upload, search, format filter,
+ * list/grid toggle). It reads the shared `useFilesView` state, so the header and
+ * the page body stay in sync — the header-content variant for the /files route,
+ * alongside the studio's file tabs.
  */
 const { t } = useI18n();
 const {
 	searchQuery,
-	selectedModalities,
 	selectedFormats,
 	viewMode,
-	modalityOptions,
 	formatOptions,
 	openUpload,
 	openImport,
@@ -32,14 +29,16 @@ const {
 </script>
 
 <template>
-  <!-- Two groups: upload + search + filters on the left, the view toggle on the
+  <!-- Two groups: upload + search + filter on the left, the view toggle on the
        right. `justify-between` pushes them apart; the search has a capped width
-       so it doesn't sprawl across the whole header. -->
-  <div class="flex w-full min-w-0 items-center justify-between gap-2">
-    <!-- Left group: primary action, search, and filters. -->
+       so it doesn't sprawl across the whole header. The whole bar is a container
+       so the action labels collapse to icon-only when the header itself gets
+       narrow (chat rail open, smaller window) — not just at a viewport width. -->
+  <div class="@container flex w-full min-w-0 items-center justify-between gap-2">
+    <!-- Left group: primary action, search, and filter. -->
     <div class="flex min-w-0 flex-1 items-center gap-2">
-      <!-- Primary action: the single solid accent in the header. Collapses to an
-           icon-only button on small screens to save space. -->
+      <!-- Primary action: the single solid accent in the header. Its label drops
+           to an icon-only button once the bar is too narrow to fit it. -->
       <Button
         variant="default"
         size="sm"
@@ -48,8 +47,8 @@ const {
         :aria-label="t('files.actions.upload')"
         @click="openUpload"
       >
-        <Upload :size="16" class="sm:mr-2" />
-        <span class="hidden sm:inline">{{ t("files.actions.upload") }}</span>
+        <Upload :size="16" class="@2xl:mr-2" />
+        <span class="hidden @2xl:inline">{{ t("files.actions.upload") }}</span>
       </Button>
 
       <!-- Import from a connected file service (OneDrive, Dropbox, ...). A quiet
@@ -62,8 +61,8 @@ const {
         :aria-label="t('files.actions.import')"
         @click="openImport"
       >
-        <ArrowDownToLine :size="16" class="sm:mr-2" />
-        <span class="hidden sm:inline">{{ t("files.actions.import") }}</span>
+        <ArrowDownToLine :size="16" class="@2xl:mr-2" />
+        <span class="hidden @2xl:inline">{{ t("files.actions.import") }}</span>
       </Button>
 
       <!-- Search: quiet filled field (no hard border), capped so it doesn't take
@@ -80,16 +79,7 @@ const {
         />
       </div>
 
-      <!-- Filters: compact icon controls. -->
-      <MultiSelect
-        v-model="selectedModalities"
-        :options="modalityOptions"
-        :label="t('files.filters.modality')"
-        content-class="w-44"
-        item-class="capitalize"
-        compact
-        :icon="Layers"
-      />
+      <!-- Filter: compact icon control. -->
       <MultiSelect
         v-model="selectedFormats"
         :options="formatOptions"
