@@ -7,8 +7,8 @@ mod menu;
 use tauri::{AppHandle, Runtime};
 
 pub use self::menu::{
-    create, main_window_focused, on_window_event, set_notifications_enabled, show_main_window,
-    TrayLabels, MAIN_WINDOW,
+    MAIN_WINDOW, TrayLabels, create, main_window_focused, on_window_event,
+    set_notifications_enabled, show_main_window,
 };
 
 /// Push localized tray-menu labels resolved from the web layer's i18n catalog.

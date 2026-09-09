@@ -268,20 +268,20 @@ pub fn main_window_focused<R: Runtime>(app: &AppHandle<R>) -> bool {
 /// Relabel the window item to match the window's visibility, from the cached
 /// label set. Called after the window shows/hides.
 fn refresh_window_item<R: Runtime>(app: &AppHandle<R>) {
-    if let Some(menu) = app.try_state::<TrayMenu<R>>() {
-        if let Ok(labels) = menu.labels.lock() {
-            let _ = menu.window.set_text(labels.window(window_visible(app)));
-        }
+    if let Some(menu) = app.try_state::<TrayMenu<R>>()
+        && let Ok(labels) = menu.labels.lock()
+    {
+        let _ = menu.window.set_text(labels.window(window_visible(app)));
     }
 }
 
 /// Relabel the notifications item to match the given state, from the cached
 /// label set.
 fn refresh_notifications_item<R: Runtime>(app: &AppHandle<R>, enabled: bool) {
-    if let Some(menu) = app.try_state::<TrayMenu<R>>() {
-        if let Ok(labels) = menu.labels.lock() {
-            let _ = menu.notifications.set_text(labels.notifications(enabled));
-        }
+    if let Some(menu) = app.try_state::<TrayMenu<R>>()
+        && let Ok(labels) = menu.labels.lock()
+    {
+        let _ = menu.notifications.set_text(labels.notifications(enabled));
     }
 }
 

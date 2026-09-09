@@ -8,9 +8,9 @@ mod session;
 // Windows and Linux (macOS delivers the URL in-process instead).
 use tauri::{AppHandle, Runtime};
 
+pub use self::session::{AuthState, is_authed, register_deep_link};
 #[cfg(any(target_os = "windows", target_os = "linux"))]
-pub use self::session::{handle_deep_links, CALLBACK_SCHEME};
-pub use self::session::{is_authed, register_deep_link, AuthState};
+pub use self::session::{CALLBACK_SCHEME, handle_deep_links};
 
 /// The stored session token, for the frontend to build its authed API client.
 #[tauri::command]

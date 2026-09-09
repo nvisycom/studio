@@ -16,12 +16,12 @@ use std::sync::{Mutex, PoisonError};
 use std::time::Duration;
 
 use notify::{EventKind, RecursiveMode};
-use notify_debouncer_full::{new_debouncer, DebounceEventResult, Debouncer, RecommendedCache};
+use notify_debouncer_full::{DebounceEventResult, Debouncer, RecommendedCache, new_debouncer};
 use serde::Serialize;
 use serde_json::json;
 use tauri::{AppHandle, Emitter, Manager, Runtime};
 
-use super::dialog::{read_file, PickedFile};
+use super::dialog::{PickedFile, read_file};
 use crate::store;
 
 /// The persisted watched-folder configuration: the folder to watch and the

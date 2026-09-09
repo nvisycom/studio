@@ -6,7 +6,7 @@ mod window;
 use tauri::{AppHandle, Runtime};
 
 pub use self::window::{
-    on_window_event, register_shortcut, shortcut_plugin, toggle, SPOTLIGHT_WINDOW,
+    SPOTLIGHT_WINDOW, on_window_event, register_shortcut, shortcut_plugin, toggle,
 };
 
 /// Toggle the spotlight launcher. Exposed so the frontend can offer an in-app

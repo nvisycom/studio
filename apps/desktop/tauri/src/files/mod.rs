@@ -14,7 +14,7 @@ pub mod watch;
 use tauri::{AppHandle, Runtime};
 
 use self::dialog::{FileFilter, PickedFile};
-pub use self::drop::{on_window_event, DropLimit};
+pub use self::drop::{DropLimit, on_window_event};
 use self::watch::WatchConfig;
 
 /// Open a native file picker and return the chosen files' names and bytes. The

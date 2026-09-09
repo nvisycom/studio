@@ -10,7 +10,7 @@ use std::sync::Mutex;
 
 use tauri::{AppHandle, DragDropEvent, Emitter, Manager, Runtime, WindowEvent};
 
-use super::dialog::{read_file, within_limit, PickedFile};
+use super::dialog::{PickedFile, read_file, within_limit};
 
 /// Event name the drop handler emits picked files on; the frontend listens for
 /// it instead of invoking a read command.
@@ -63,10 +63,10 @@ pub fn on_window_event<R: Runtime>(window: &tauri::WebviewWindow<R>, event: &Win
 
     tauri::async_runtime::spawn_blocking(move || {
         let files = read_files(paths, max_bytes);
-        if !files.is_empty() {
-            if let Err(error) = app.emit(FILES_DROPPED_EVENT, files) {
-                log::warn!("failed to emit dropped files: {error}");
-            }
+        if !files.is_empty()
+            && let Err(error) = app.emit(FILES_DROPPED_EVENT, files)
+        {
+            log::warn!("failed to emit dropped files: {error}");
         }
     });
 }
