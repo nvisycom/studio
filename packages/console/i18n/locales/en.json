@@ -531,7 +531,10 @@
 			"downloadFailed": "Failed to download file",
 			"loadFailed": "Failed to load files",
 			"exportFailed": "Failed to export files",
-			"importFailed": "Failed to import files"
+			"importFailed": "Failed to import files",
+			"importUnavailable": "Import isn't available for this connection.",
+			"importPopupBlocked": "The picker was blocked. Allow pop-ups for this site and try again.",
+			"importPickerLoadFailed": "Couldn't load the file picker. Check your connection and try again."
 		},
 		"kind": {
 			"original": "Original",
@@ -1629,7 +1632,7 @@
 				},
 				"confidence": "Confidence",
 				"confidenceAuto": "auto",
-				"patternPlaceholder": "Regular expression, e.g. ACME-\\d{6}",
+				"patternPlaceholder": "Regular expression, e.g. ACME-\\d{'{'}6{'}'}",
 				"termsPlaceholder": "Add a term and press Enter",
 				"labelPlaceholder": "Label to apply"
 			}

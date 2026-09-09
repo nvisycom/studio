@@ -1,3 +1,7 @@
+import type { Nvisy } from "@nvisy/sdk";
+import type { ShallowRef } from "vue";
+import { toast } from "vue-sonner";
+
 /**
  * The web side of desktop external-browser sign-in.
  *
@@ -11,59 +15,92 @@
  *
  * The handoff is routed through the `/auth/desktop` page, which fires the deep
  * link and shows a "return to the app" confirmation (the browser tab is left
- * behind once the app takes over). The token-bearing URL is kept in memory here,
- * not put in the browser URL, so it never lands in history.
+ * behind once the app takes over). The token-bearing URL is kept in per-request
+ * state, not put in the browser URL, so it never lands in history.
  *
- * On the plain web (no `redirect_uri`) this does nothing; the caller falls back
- * to its usual post-login navigation.
+ * On the plain web (no `redirect_uri`) this is inert; the caller falls back to
+ * its usual post-login navigation.
  */
 
-// The deep-link URL (with token) to hand off to the desktop app, set by
-// `completeDesktopSignIn` and consumed by the `/auth/desktop` page. Module scope
-// so it survives the in-app navigation without riding in the URL.
-const pendingHandoff = ref<string | null>(null);
+/** How long to wait for the authed client to rebuild after login before failing. */
+const CLIENT_WAIT_MS = 5000;
 
 /** The pending desktop handoff URL, read (once) by the `/auth/desktop` page. */
 export function takeDesktopHandoff(): string | null {
-	const url = pendingHandoff.value;
-	pendingHandoff.value = null;
+	// `useState` gives per-request isolation — a bearer token must never be shared
+	// across requests the way a module-scoped ref would be on the server.
+	const pending = useState<string | null>("desktop-handoff", () => null);
+	const url = pending.value;
+	pending.value = null;
 	return url;
 }
 
 export function useDesktopSignInReturn() {
 	const { $nvisyClient } = useNuxtApp();
+	const { t } = useI18n();
 
 	/** The desktop callback from the current route, or null on a web login. */
 	function callbackFromRoute(): string | null {
 		return desktopCallbackUri(useRoute().query.redirect_uri);
 	}
 
+	// The mint runs on the app client, which login rebuilds reactively; wait for it
+	// to appear (a single tick isn't a guarantee the rebuild has settled) rather
+	// than giving up and silently falling through to a web navigation.
+	function awaitClient(): Promise<Nvisy> {
+		const clientRef = $nvisyClient as ShallowRef<Nvisy | null>;
+		if (clientRef.value) return Promise.resolve(clientRef.value);
+		return new Promise((resolve, reject) => {
+			const stop = watch(clientRef, (client) => {
+				if (!client) return;
+				stop();
+				clearTimeout(timer);
+				resolve(client);
+			});
+			const timer = setTimeout(() => {
+				stop();
+				reject(new Error("The account client was not ready in time"));
+			}, CLIENT_WAIT_MS);
+		});
+	}
+
 	/**
 	 * Mint a token for the just-established session and route to the `/auth/desktop`
-	 * confirmation page, which fires the deep-link handoff to the app. Returns
-	 * `true` once that navigation has been triggered (the caller should not
-	 * navigate further); `false` when this isn't a desktop flow, so the caller
-	 * does its normal navigation. Throws if the mint fails so the caller can
-	 * surface the error.
+	 * confirmation page, which fires the deep-link handoff to the app. The caller
+	 * must not navigate further after this resolves. Throws if the mint (or the
+	 * client wait) fails, so the caller surfaces the error rather than stranding
+	 * the desktop app.
 	 */
-	async function completeDesktopSignIn(redirectUri: string): Promise<boolean> {
-		// The mint is an authenticated POST (needs the fresh session cookie + the
-		// CSRF echo), so it runs on the app client. Login flips `isAuthenticated`,
-		// which rebuilds the client reactively; wait a tick for that to settle.
-		await nextTick();
-		const client = $nvisyClient.value;
-		if (!client) return false;
-
+	async function completeDesktopSignIn(redirectUri: string): Promise<void> {
+		const client = await awaitClient();
 		const { apiToken } = await client.auth.mintDesktopToken({ redirectUri });
 
-		// Build the deep link the app is captured on, stash it in memory (not the
-		// URL), and hand off to the confirmation page.
+		// Build the deep link the app is captured on, stash it in per-request state
+		// (not the URL), and hand off to the confirmation page.
 		const handoff = new URL(redirectUri);
 		handoff.searchParams.set("token", apiToken);
-		pendingHandoff.value = handoff.toString();
+		useState<string | null>("desktop-handoff", () => null).value =
+			handoff.toString();
 		await navigateTo("/auth/desktop");
+	}
+
+	/**
+	 * If this is a desktop sign-in (a `redirect_uri` is present), mint the token,
+	 * hand it off, and return `true` — the caller should stop, not navigate. On a
+	 * plain web login there's no callback and it returns `false`. A mint failure is
+	 * surfaced as a toast and also returns `true`, since the flow was a desktop one
+	 * (the caller still shouldn't run its web navigation).
+	 */
+	async function tryDesktopHandoff(): Promise<boolean> {
+		const callback = callbackFromRoute();
+		if (!callback) return false;
+		try {
+			await completeDesktopSignIn(callback);
+		} catch {
+			toast.error(t("auth.shared.oidcFailed"));
+		}
 		return true;
 	}
 
-	return { callbackFromRoute, completeDesktopSignIn };
+	return { callbackFromRoute, completeDesktopSignIn, tryDesktopHandoff };
 }

@@ -17,6 +17,7 @@ import {
 	ExportToConnectionDialog,
 	ImportFromConnectionDialog,
 } from "#console/components/pages/integrations";
+import { ImportError } from "#console/utils/connections";
 import { Button } from "#console/components/ui/button";
 import {
 	HeaderSocket,
@@ -173,21 +174,35 @@ async function handleExport(connectionId: string) {
 }
 
 // Import from a file-service connection: pick a source in the dialog, open its
-// picker, then import the chosen files. Already on the Files page, so refresh
-// the list to surface the new files as they arrive; a cancelled picker returns
-// 0 and is silent.
+// picker, then import the chosen files. `importFrom` resolves once the server
+// accepts the import; the provider files are then fetched by a background sync,
+// so a single refresh usually shows nothing. Re-poll for a bounded window so the
+// files surface as the sync lands them. A cancelled picker returns 0 (silent).
 const { importFrom } = useFileImport();
+
+// Poll the list a few times after an import starts, giving the background sync
+// time to land the files without waiting on a manual refresh.
+const IMPORT_POLL_INTERVALS_MS = [1500, 3000, 5000, 8000];
+function pollAfterImport() {
+	for (const delay of IMPORT_POLL_INTERVALS_MS) {
+		setTimeout(() => refreshFiles(), delay);
+	}
+}
+
 async function handleImport(connection: Connection) {
 	try {
 		const count = await importFrom(connection);
 		if (count > 0) {
 			toast.success(t("files.messages.importStarted", { count }));
 			refreshFiles();
+			pollAfterImport();
 		}
 	} catch (error) {
-		toast.error(t("files.errors.importFailed"), {
-			description: error instanceof Error ? error.message : undefined,
-		});
+		// Pickers and the import flow throw ImportError with an i18n key; anything
+		// else is unexpected and falls back to the generic failure message.
+		const description =
+			error instanceof ImportError ? t(error.messageKey) : undefined;
+		toast.error(t("files.errors.importFailed"), { description });
 	}
 }
 

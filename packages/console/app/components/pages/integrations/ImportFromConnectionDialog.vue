@@ -29,16 +29,10 @@ const emit = defineEmits<{
 // The Dropbox picker only works where the app key is configured; gate its row.
 const dropboxAppKey = useRuntimeConfig().public.dropboxAppKey as string;
 
-// Only active file-service connections with a wired browser picker can be
-// imported from. A picker not available for a provider (or unconfigured) is
-// excluded rather than shown and failing on click.
+// Only connections that can be imported from right now — the shared eligibility
+// rule (active file service with an available picker) the table action uses too.
 const sources = computed(() =>
-	props.connections.filter(
-		(c) =>
-			c.providerType === "file_service" &&
-			c.isActive &&
-			isImportablePicker(c.provider, { dropboxAppKey }),
-	),
+	props.connections.filter((c) => isImportableConnection(c, { dropboxAppKey })),
 );
 
 // Picking a source launches its picker immediately (this click is the user

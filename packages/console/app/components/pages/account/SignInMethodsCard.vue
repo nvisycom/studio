@@ -35,8 +35,10 @@ const PROVIDER_META: Record<
 	microsoft: { label: "Microsoft", icon: "/brands/microsoft.png" },
 };
 
-const providerLabel = (p: IdentityProvider) => PROVIDER_META[p].label;
-const providerIcon = (p: IdentityProvider) => PROVIDER_META[p].icon;
+// Fall back to the raw provider name for a provider the server returns that this
+// SDK version doesn't know, so an unknown identity never crashes the card.
+const providerLabel = (p: IdentityProvider) => PROVIDER_META[p]?.label ?? p;
+const providerIcon = (p: IdentityProvider) => PROVIDER_META[p]?.icon ?? null;
 
 // Unlinking is refused server-side when it would leave no sign-in method. Mirror
 // that on the client so the button is disabled (with a hint) rather than erroring:

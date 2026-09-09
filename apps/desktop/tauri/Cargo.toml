@@ -26,18 +26,15 @@ tauri-plugin-http = { version = "2" }
 tauri-plugin-global-shortcut = { version = "2" }
 tauri-plugin-dialog = { version = "2" }
 tauri-plugin-notification = { version = "2" }
-# Auth: open the system browser for sign-in, then receive the token back via a
-# `nvisy://auth/callback` deep link.
 tauri-plugin-opener = { version = "2" }
 tauri-plugin-deep-link = { version = "2" }
 
-# OS keychain (macOS Keychain / Windows Credential Manager / Linux Secret
-# Service) for the desktop session token. `apple-native`/`windows-native` use
-# the platform stores directly; `sync-secret-service` is the Linux backend.
+# OS keychain
 keyring = { version = "3", features = [
 	"apple-native",
 	"windows-native",
 	"sync-secret-service",
+	"crypto-rust",
 ] }
 
 # Async runtime
@@ -68,3 +65,10 @@ tiny-skia = { version = "0.12", features = [] }
 
 # Error context in the build script
 anyhow = { version = "1", features = [] }
+
+# On Windows/Linux the OS starts a NEW process for a `nvisy://` deep link; the
+# single-instance plugin forwards its argv to the already-running instance so the
+# token reaches the process that's waiting for it. macOS delivers it in-process
+# via `on_open_url`, so this backend isn't needed there.
+[target."cfg(any(target_os = \"windows\", target_os = \"linux\"))".dependencies]
+tauri-plugin-single-instance = { version = "2", features = ["deep-link"] }

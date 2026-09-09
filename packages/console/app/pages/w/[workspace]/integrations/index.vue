@@ -8,7 +8,11 @@ import {
 	ConfigureConnectionDialog,
 	ConnectionsTable,
 } from "#console/components/pages/integrations";
-import { providerIcon, providerLabel } from "#console/utils/connections";
+import {
+	ImportError,
+	providerIcon,
+	providerLabel,
+} from "#console/utils/connections";
 import { ConfirmDialog } from "#console/components/shared";
 import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 
@@ -175,9 +179,9 @@ async function handleImportFromConnection(connection: Connection) {
 			navigateTo(wLink("/files"));
 		}
 	} catch (error) {
-		toast.error(t("connections.toast.importFailed"), {
-			description: error instanceof Error ? error.message : undefined,
-		});
+		const description =
+			error instanceof ImportError ? t(error.messageKey) : undefined;
+		toast.error(t("connections.toast.importFailed"), { description });
 	}
 }
 

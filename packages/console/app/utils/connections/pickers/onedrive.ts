@@ -1,4 +1,5 @@
 import type { PickedFile } from "#console/utils/connections/pickers/types";
+import { ImportError } from "#console/utils/connections/pickers/types";
 
 // OneDrive File Picker v8: opens the picker in a popup and drives its
 // postMessage protocol over a MessagePort. The launch is a form POST to the
@@ -21,7 +22,7 @@ export function openOneDrivePicker(
 	return new Promise((resolve, reject) => {
 		const opened = window.open("", "onedrive-picker", "width=1080,height=680");
 		if (!opened) {
-			reject(new Error("The picker popup was blocked"));
+			reject(new ImportError("files.errors.importPopupBlocked"));
 			return;
 		}
 		// Non-null alias so the closures below see a `Window`, not `Window | null`.

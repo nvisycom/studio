@@ -531,7 +531,10 @@
 			"downloadFailed": "Datei konnte nicht heruntergeladen werden",
 			"loadFailed": "Dateien konnten nicht geladen werden",
 			"exportFailed": "Dateien konnten nicht exportiert werden",
-			"importFailed": "Import der Dateien fehlgeschlagen"
+			"importFailed": "Import der Dateien fehlgeschlagen",
+			"importUnavailable": "Import ist für diese Verbindung nicht verfügbar.",
+			"importPopupBlocked": "Die Auswahl wurde blockiert. Erlauben Sie Pop-ups für diese Seite und versuchen Sie es erneut.",
+			"importPickerLoadFailed": "Die Dateiauswahl konnte nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
 		},
 		"kind": {
 			"original": "Original",
@@ -1629,7 +1632,7 @@
 				},
 				"confidence": "Konfidenz",
 				"confidenceAuto": "auto",
-				"patternPlaceholder": "Regulärer Ausdruck, z. B. ACME-\\d{6}",
+				"patternPlaceholder": "Regulärer Ausdruck, z. B. ACME-\\d{'{'}6{'}'}",
 				"termsPlaceholder": "Begriff hinzufügen und Enter drücken",
 				"labelPlaceholder": "Anzuwendendes Label"
 			}

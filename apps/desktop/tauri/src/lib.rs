@@ -10,7 +10,31 @@ use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    // `mut` is used only on Windows/Linux (the single-instance block below); on
+    // macOS that block is cfg'd out, leaving the binding unmutated.
+    #[allow(unused_mut)]
+    let mut builder = tauri::Builder::default();
+
+    // Single-instance MUST be the first plugin (Windows/Linux). A `nvisy://` deep
+    // link starts a second process there; this forwards its argv to the running
+    // instance, whose handler pulls the callback URL out and completes sign-in —
+    // otherwise the token would land in the throwaway process. macOS delivers the
+    // URL in-process via `on_open_url`, so it needs neither this plugin nor argv.
+    #[cfg(any(target_os = "windows", target_os = "linux"))]
+    {
+        builder = builder.plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
+            let urls: Vec<url::Url> = argv
+                .iter()
+                .filter_map(|arg| url::Url::parse(arg).ok())
+                .filter(|url| url.scheme() == auth::CALLBACK_SCHEME)
+                .collect();
+            if !urls.is_empty() {
+                auth::handle_deep_links(app, &urls);
+            }
+        }));
+    }
+
+    builder
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_http::init())
         // Drives the native Finder open/save panels; the file commands read and

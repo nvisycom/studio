@@ -21,7 +21,7 @@ import { providerIcon, providerLabel } from "#console/utils/connections";
 const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
 // The Dropbox import picker is only available where the deployment set the app
-// key; passed to `isImportablePicker` so the Import action hides when unset.
+// key; passed to `isImportableConnection` so the Import action hides when unset.
 const dropboxAppKey = useRuntimeConfig().public.dropboxAppKey as string;
 
 defineProps<{
@@ -91,20 +91,22 @@ const columns = computed<VirtualColumn<Connection>[]>(() => [
 
 function rowActions(connection: Connection): RowAction[] {
 	// Import/export are file-service-only (object stores and LLMs have neither a
-	// picker nor a redacted-export target). Import needs a wired browser picker
-	// for the provider; export always applies to a file service.
+	// picker nor a redacted-export target). Import needs an active connection with
+	// a wired picker (the shared eligibility rule); export applies to any file
+	// service.
 	const fileService = connection.providerType === "file_service";
-	const importAction: RowAction[] =
-		fileService && isImportablePicker(connection.provider, { dropboxAppKey })
-			? [
-					{
-						key: "import",
-						label: t("connections.table.actions.import"),
-						icon: ArrowDownToLine,
-						select: () => emit("import", connection),
-					},
-				]
-			: [];
+	const importAction: RowAction[] = isImportableConnection(connection, {
+		dropboxAppKey,
+	})
+		? [
+				{
+					key: "import",
+					label: t("connections.table.actions.import"),
+					icon: ArrowDownToLine,
+					select: () => emit("import", connection),
+				},
+			]
+		: [];
 	const exportAction: RowAction[] = fileService
 		? [
 				{

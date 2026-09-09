@@ -184,6 +184,9 @@ function removeLabel(key: string) {
 			}
 		}
 	}
+	for (const matcher of matchers.value) {
+		if (matcher.label === removed.id) matcher.label = "";
+	}
 }
 
 // Label scopes
@@ -308,13 +311,19 @@ const definitionValid = computed(() => {
 	);
 	// A matcher that's been given a name, a label, or match content must be
 	// complete (name + label + pattern/terms), so a save never silently drops a
-	// half-filled recognizer. A wholly-empty freshly-added row stays valid.
+	// half-filled recognizer. A wholly-empty freshly-added row stays valid. When
+	// set, confidence must be a finite value in [0, 1] (the EditableMatcher
+	// contract) — the input's min/max don't constrain a typed value.
 	const matchersComplete = matchers.value.every((m) => {
 		const name = m.name.trim();
 		const label = m.label.trim();
 		const content =
 			m.kind === "pattern" ? (m.pattern ?? "").trim() : (m.terms ?? "").trim();
-		const touched = !!(name || label || content);
+		const confidenceValid =
+			m.confidence === undefined ||
+			(Number.isFinite(m.confidence) && m.confidence >= 0 && m.confidence <= 1);
+		if (!confidenceValid) return false;
+		const touched = !!(name || label || content || m.confidence !== undefined);
 		return !touched || (!!name && !!label && !!content);
 	});
 	return (

@@ -28,6 +28,20 @@ export default defineNuxtPlugin({
 			invoke("clear_auth_token").catch(() => {});
 		});
 
+		// Register the deep-link token listener BEFORE restoring the stored session,
+		// so a token emitted during startup (a cold launch from the sign-in link)
+		// isn't missed in the gap between restore and registration. `listen` is
+		// async — a registration failure is logged rather than left unhandled.
+		try {
+			await listen<string>("auth://token", (event) => {
+				setDesktopAuthToken(event.payload);
+				// Land the user in the app once signed in.
+				navigateTo("/");
+			});
+		} catch (error) {
+			console.error("Failed to register the desktop auth listener", error);
+		}
+
 		// Restore a stored session on launch.
 		try {
 			const token = await invoke<string | null>("auth_token");
@@ -35,12 +49,5 @@ export default defineNuxtPlugin({
 		} catch {
 			setDesktopAuthToken(null);
 		}
-
-		// The Rust shell captured a token from the sign-in deep link.
-		listen<string>("auth://token", (event) => {
-			setDesktopAuthToken(event.payload);
-			// Land the user in the app once signed in.
-			navigateTo("/");
-		});
 	},
 });

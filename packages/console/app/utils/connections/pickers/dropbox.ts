@@ -1,4 +1,5 @@
 import type { PickedFile } from "#console/utils/connections/pickers/types";
+import { ImportError } from "#console/utils/connections/pickers/types";
 
 // Dropbox Chooser (Drop-ins): a client-side picker keyed by a public app key,
 // loaded from Dropbox's CDN via a script tag carrying `data-app-key`. Unlike the
@@ -37,12 +38,18 @@ function loadDropboxSdk(appKey: string): Promise<DropboxChooser> {
 		script.id = "dropboxjs";
 		script.setAttribute("data-app-key", appKey);
 		script.onload = () => {
-			if (window.Dropbox) resolve(window.Dropbox);
-			else reject(new Error("Dropbox Chooser loaded without a global"));
+			if (window.Dropbox) {
+				resolve(window.Dropbox);
+				return;
+			}
+			// Loaded but no global: clear the cached promise so a later call retries
+			// the load rather than reusing this rejection forever.
+			dropboxSdk = null;
+			reject(new ImportError("files.errors.importPickerLoadFailed"));
 		};
 		script.onerror = () => {
 			dropboxSdk = null; // allow a retry on the next attempt
-			reject(new Error("Failed to load the Dropbox Chooser"));
+			reject(new ImportError("files.errors.importPickerLoadFailed"));
 		};
 		document.head.appendChild(script);
 	});

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Eye, EyeOff } from "@lucide/vue";
+import { Eye, EyeOff, Loader2 } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
@@ -30,7 +30,7 @@ const {
 // system browser, it passed a `redirect_uri` deep link. After login we mint a
 // native-app token and hand it back on that link instead of entering the app
 // here. On the plain web there's no `redirect_uri` and this is inert.
-const { callbackFromRoute, completeDesktopSignIn } = useDesktopSignInReturn();
+const { callbackFromRoute, tryDesktopHandoff } = useDesktopSignInReturn();
 
 const apiError = computed(() =>
 	loginError.value instanceof NvisyApiError ? loginError.value : null,
@@ -50,14 +50,14 @@ async function handleLogin(): Promise<void> {
 			password: password.value,
 			rememberMe: rememberMe.value,
 		});
-		// Desktop flow: hand the token back to the app and stop here.
-		const callback = callbackFromRoute();
-		if (callback && (await completeDesktopSignIn(callback))) return;
-		// Web: return the user to where they were headed before login, if any.
-		navigateTo(safeRedirectPath(useRoute().query.redirect) ?? "/");
 	} catch {
-		// Error is handled by the mutation
+		// A failed login is surfaced via the mutation's error state.
+		return;
 	}
+	// Desktop flow: hand the token back to the app and stop here (owns its own
+	// error toast). Otherwise return the user to where they were headed.
+	if (await tryDesktopHandoff()) return;
+	navigateTo(safeRedirectPath(useRoute().query.redirect) ?? "/");
 }
 
 // Sign in with an OIDC provider: ask the server for the provider's authorize
@@ -102,34 +102,22 @@ onMounted(async () => {
 	// authenticated (the auth middleware let this page render because of the
 	// `redirect_uri`), so there's nothing to log in — mint and hand off the token
 	// straight away instead of making them re-enter credentials.
-	const callback = callbackFromRoute();
-	if (callback && isAuthenticated.value) {
-		try {
-			if (await completeDesktopSignIn(callback)) return;
-		} catch {
-			toast.error(t("auth.shared.oidcFailed"));
-		}
-	}
+	if (isAuthenticated.value && (await tryDesktopHandoff())) return;
 
 	const signin = route.query.signin;
 	if (!signin) return;
 	if (signin === "success") {
 		syncSession();
-		// Desktop flow: mint the token and hand it back to the app on the deep
-		// link carried through the round-trip; otherwise land in the app here.
-		const callback = callbackFromRoute();
-		if (callback) {
-			try {
-				if (await completeDesktopSignIn(callback)) return;
-			} catch {
-				toast.error(t("auth.shared.oidcFailed"));
-			}
-		}
+		// Desktop flow hands the token back on the deep link carried through the
+		// round-trip; otherwise land in the app here.
+		if (await tryDesktopHandoff()) return;
 		navigateTo(safeRedirectPath(route.query.redirect) ?? "/");
 	} else {
 		toast.error(t("auth.shared.oidcFailed"));
-		// Drop the param so a reload doesn't re-toast.
-		navigateTo({ query: {} }, { replace: true });
+		// Drop only `signin` so a reload doesn't re-toast — keep `redirect` and the
+		// desktop `redirect_uri` so a retry still carries the callback.
+		const { signin: _drop, ...rest } = route.query;
+		navigateTo({ query: rest }, { replace: true });
 	}
 });
 </script>
@@ -152,26 +140,38 @@ onMounted(async () => {
         <Button
           type="button"
           variant="outline"
-          @click="handleGoogleLogin"
           class="h-10"
+          :disabled="oidcPending !== null"
+          @click="handleGoogleLogin"
         >
+          <Loader2
+            v-if="oidcPending === 'google'"
+            class="mr-2 h-4 w-4 animate-spin"
+          />
           <img
+            v-else
             src="~/assets/brands/google.png"
             :alt="t('auth.shared.google')"
-            class="w-4 h-4 mr-2"
+            class="mr-2 h-4 w-4"
           />
           {{ t("auth.shared.google") }}
         </Button>
         <Button
           type="button"
           variant="outline"
-          @click="handleMicrosoftLogin"
           class="h-10"
+          :disabled="oidcPending !== null"
+          @click="handleMicrosoftLogin"
         >
+          <Loader2
+            v-if="oidcPending === 'microsoft'"
+            class="mr-2 h-4 w-4 animate-spin"
+          />
           <img
+            v-else
             src="~/assets/brands/microsoft.png"
             :alt="t('auth.shared.microsoft')"
-            class="w-4 h-4 mr-2"
+            class="mr-2 h-4 w-4"
           />
           {{ t("auth.shared.microsoft") }}
         </Button>

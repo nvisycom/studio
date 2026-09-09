@@ -67,9 +67,10 @@ export default defineNuxtPlugin(() => {
 	// SDK falls back to the global fetch when this is undefined (web).
 	const { apiFetch } = useApiFetch();
 	// Desktop authenticates with a bearer token (external-browser sign-in) rather
-	// than cookies; when present, the client sends `Authorization: Bearer` and
-	// skips the cookie/CSRF machinery.
-	const { desktopToken } = useDesktopAuth();
+	// than cookies; a desktop build sends `Authorization: Bearer` and skips the
+	// cookie/CSRF machinery. `isDesktop` (not token presence) selects the transport
+	// so a desktop build never sends cookies over the Tauri fetch, even mid-login.
+	const { desktopToken, isDesktop } = useDesktopAuth();
 	// Capture the router in plugin setup context; the response handler below
 	// runs from a fetch callback where composables like useRoute aren't valid.
 	const router = useRouter();
@@ -120,18 +121,20 @@ export default defineNuxtPlugin(() => {
 		unreachableShown = false;
 	});
 
-	// The auth transport: desktop sends a bearer token over the plain fetch;
-	// the web sends the session cookie (`credentials: "include"`) over a fetch
-	// wrapped to echo the CSRF header. Two modes, never mixed.
+	// The auth transport: a desktop build sends a bearer token over the plain
+	// fetch; the web sends the session cookie (`credentials: "include"`) over a
+	// fetch wrapped to echo the CSRF header. Keyed on `isDesktop`, never on token
+	// presence, so a desktop build never falls back to the cookie path. Two modes,
+	// never mixed.
 	function authTransport(): Pick<
 		ClientConfig,
 		"apiToken" | "credentials" | "fetch"
 	> {
 		const fetch = apiFetch.value ?? globalThis.fetch;
-		const token = desktopToken.value;
-		return token
-			? { apiToken: token, fetch }
-			: { credentials: "include", fetch: withCsrf(fetch) };
+		if (isDesktop.value) {
+			return { apiToken: desktopToken.value ?? "", fetch };
+		}
+		return { credentials: "include", fetch: withCsrf(fetch) };
 	}
 
 	function makeClient(): Nvisy {

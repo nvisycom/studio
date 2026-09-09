@@ -54,13 +54,14 @@ export default defineNuxtConfig({
 			nvisySdkLogging: isDev,
 			// The web console origin. The desktop is `tauri://`, so user-facing links
 			// (invite links) and the browser sign-in flow point here instead of the
-			// current origin. Overridable via `NUXT_PUBLIC_WEB_APP_URL`.
+			// current origin. Baked at BUILD time via `NUXT_PUBLIC_WEB_APP_URL` — the
+			// static SPA has no Nitro server to read env at launch.
 			webAppUrl: defaultWebAppUrl,
 			// Desktop is a self-hosted-style edition (no cloud-only billing/OAuth).
 			deployment: process.env.NUXT_PUBLIC_DEPLOYMENT ?? "self-hosted",
 			// Dropbox Chooser app key (a public, domain-restricted client id — safe
-			// to expose). Enables the Dropbox import picker; blank disables it. Set
-			// via NUXT_PUBLIC_DROPBOX_APP_KEY.
+			// to expose). Enables the Dropbox import picker; blank disables it. Baked
+			// at BUILD time via `NUXT_PUBLIC_DROPBOX_APP_KEY` (no launch-time env).
 			dropboxAppKey: "",
 		},
 	},

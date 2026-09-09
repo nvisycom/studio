@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Eye, EyeOff, ExternalLink } from "@lucide/vue";
+import { Eye, EyeOff, ExternalLink, Loader2 } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
@@ -22,7 +22,7 @@ const { signupAsync, isSigningUp, signupError, startOidcSignIn } = useAuth();
 // system browser, it passed a `redirect_uri` deep link. After sign-up we mint a
 // native-app token and hand it back on that link instead of entering the app
 // here. On the plain web there's no `redirect_uri` and this is inert.
-const { callbackFromRoute, completeDesktopSignIn } = useDesktopSignInReturn();
+const { callbackFromRoute, tryDesktopHandoff } = useDesktopSignInReturn();
 
 const apiError = computed(() =>
 	signupError.value instanceof NvisyApiError ? signupError.value : null,
@@ -60,13 +60,14 @@ async function handleSignup(): Promise<void> {
 			password: password.value,
 			rememberMe: true,
 		});
-		// Desktop flow: hand the token back to the app and stop here.
-		const callback = callbackFromRoute();
-		if (callback && (await completeDesktopSignIn(callback))) return;
-		navigateTo("/");
 	} catch {
-		// Error is handled by the mutation
+		// A failed sign-up is surfaced via the mutation's error state.
+		return;
 	}
+	// Desktop flow: hand the token back to the app and stop here (owns its own
+	// error toast). Otherwise enter the app.
+	if (await tryDesktopHandoff()) return;
+	navigateTo("/");
 }
 
 // OIDC sign-up is the same flow as sign-in (the provider account either exists
@@ -113,26 +114,38 @@ const handleMicrosoftSignup = () => handleOidcSignIn("microsoft");
         <Button
           type="button"
           variant="outline"
-          @click="handleGoogleSignup"
           class="h-10"
+          :disabled="oidcPending !== null"
+          @click="handleGoogleSignup"
         >
+          <Loader2
+            v-if="oidcPending === 'google'"
+            class="mr-2 h-4 w-4 animate-spin"
+          />
           <img
+            v-else
             src="~/assets/brands/google.png"
             :alt="t('auth.shared.google')"
-            class="w-4 h-4 mr-2"
+            class="mr-2 h-4 w-4"
           />
           {{ t("auth.shared.google") }}
         </Button>
         <Button
           type="button"
           variant="outline"
-          @click="handleMicrosoftSignup"
           class="h-10"
+          :disabled="oidcPending !== null"
+          @click="handleMicrosoftSignup"
         >
+          <Loader2
+            v-if="oidcPending === 'microsoft'"
+            class="mr-2 h-4 w-4 animate-spin"
+          />
           <img
+            v-else
             src="~/assets/brands/microsoft.png"
             :alt="t('auth.shared.microsoft')"
-            class="w-4 h-4 mr-2"
+            class="mr-2 h-4 w-4"
           />
           {{ t("auth.shared.microsoft") }}
         </Button>

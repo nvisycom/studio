@@ -194,11 +194,24 @@ const showGuidance = computed(() => probe.value.kind === "idle");
 // auth.rs; the server must allow-list this exact target.
 const CALLBACK_URI = "nvisy://auth/callback";
 
+// The build-time hosted web console origin (used when no self-hosted server is
+// configured). Overridden at build time via `NUXT_PUBLIC_WEB_APP_URL`.
+const webAppUrl = useRuntimeConfig().public.webAppUrl as string;
+
 // Where the browser opens for sign-in: the web console origin, NOT the API (the
 // console is a separate Nuxt app — :3000 in dev, app.nvisy.com in prod). The app
-// runs on `tauri://`, so it can't use its own origin. Configured at build time
-// via `webAppUrl` (NUXT_PUBLIC_WEB_APP_URL).
-const consoleBaseUrl = useRuntimeConfig().public.webAppUrl as string;
+// runs on `tauri://`, so it can't use its own origin. With a self-hosted server
+// (an override), the console is served alongside the API at that same origin, so
+// mint + sign-in happen against the server the app actually talks to; on the
+// hosted default it's the separate `webAppUrl`.
+const consoleBaseUrl = computed(() => {
+	if (!override.value) return webAppUrl;
+	try {
+		return new URL(override.value).origin;
+	} catch {
+		return webAppUrl;
+	}
+});
 
 // True while the system browser is open for sign-in. The actual sign-in
 // completes out-of-process (the deep link lands via the desktop-auth plugin and
@@ -219,12 +232,13 @@ async function beginBrowserSignIn(): Promise<void> {
 		return;
 	}
 
-	// The web console's login page, carrying the deep-link `redirect_uri` so it
-	// mints and hands the token back to the app rather than entering the console.
-	const authorizeUrl = new URL("/auth/login", consoleBaseUrl);
-	authorizeUrl.searchParams.set("redirect_uri", CALLBACK_URI);
-
 	try {
+		// The web console's login page, carrying the deep-link `redirect_uri` so it
+		// mints and hands the token back to the app rather than entering the console.
+		// `new URL` can throw on a malformed base — kept inside the try so a bad
+		// console URL surfaces as an error rather than an unhandled rejection.
+		const authorizeUrl = new URL("/auth/login", consoleBaseUrl.value);
+		authorizeUrl.searchParams.set("redirect_uri", CALLBACK_URI);
 		awaitingBrowser.value = true;
 		await openUrl(authorizeUrl.toString());
 	} catch {
