@@ -29,6 +29,6 @@
 	"devDependencies": {
 		"@vitest/coverage-v8": "^5.0.0",
 		"tsdown": "^0.22.14",
-		"vitest": "^4.1.11"
+		"vitest": "^5.0.0"
 	}
 }
