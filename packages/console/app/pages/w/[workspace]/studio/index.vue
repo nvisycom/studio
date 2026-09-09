@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useEventListener } from "@vueuse/core";
 import { SplitterPanel } from "reka-ui";
+import { toast } from "vue-sonner";
 import JSZip from "jszip";
 import {
 	MessageSquare,
@@ -18,6 +19,7 @@ import {
 	StudioDetectionBar,
 	EntityAuditModal,
 } from "#console/components/pages/studio";
+import { ExportToConnectionDialog } from "#console/components/pages/integrations";
 import type { StudioEntityView } from "#console/composables/useStudioEntities";
 import type { AudioTranscriptState } from "#console/components/pages/studio/preview/StudioAudioView.vue";
 import { rendererFor } from "#console/components/pages/studio/preview/renderers";
@@ -225,6 +227,27 @@ function focusEntity(id: string) {
 }
 function clearEntity() {
 	activeEntityId.value = null;
+}
+
+// Export the redacted output to a file-service connection. The redaction's
+// output carries a real workspace file id, so it exports like any other file.
+const { connections, exportFilesAsync, isExporting } = useConnections();
+const exportDialogOpen = ref(false);
+
+function openExportRedacted() {
+	if (redaction.output.value) exportDialogOpen.value = true;
+}
+
+async function handleExportRedacted(connectionId: string) {
+	const fileId = redaction.output.value?.fileId;
+	if (!fileId) return;
+	try {
+		await exportFilesAsync({ connectionId, fileIds: [fileId] });
+		exportDialogOpen.value = false;
+		toast.success(t("files.messages.exportStarted"));
+	} catch {
+		toast.error(t("files.errors.exportFailed"));
+	}
 }
 
 // The entity whose full audit trail the detail modal is showing, or null.
@@ -481,6 +504,7 @@ const auditProps = computed(() => ({
               @view-details="auditModalEntity = $event"
               @redact="redaction.redact"
               @download-output="redaction.downloadRedacted"
+              @export-output="openExportRedacted"
               @toggle-suppress="redaction.toggleSuppress"
               @remove-added="redaction.removeAdded"
             />
@@ -493,6 +517,15 @@ const auditProps = computed(() => ({
     <EntityAuditModal
       :entity="auditModalEntity"
       @close="auditModalEntity = null"
+    />
+
+    <!-- Export the redacted output to a cloud file-service connection. -->
+    <ExportToConnectionDialog
+      v-model:open="exportDialogOpen"
+      :file-ids="redaction.output.value ? [redaction.output.value.fileId] : []"
+      :connections="connections ?? []"
+      :is-loading="isExporting"
+      @export="handleExportRedacted"
     />
   </div>
 </template>

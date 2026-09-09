@@ -10,7 +10,7 @@ import type {
  */
 export function useApiTokens() {
 	const { $nvisyClient } = useNuxtApp();
-	const { authToken } = useAuth();
+	const { isAuthenticated } = useAuth();
 
 	const tokensQuery = useQuery({
 		key: ["apiTokens"],
@@ -20,7 +20,7 @@ export function useApiTokens() {
 			const result = await client.apiTokens.listApiTokens();
 			return result.items;
 		},
-		enabled: () => !!authToken.value?.apiToken,
+		enabled: () => isAuthenticated.value,
 	});
 
 	// Tokens are keyed by id; a revoke drops the row immediately.

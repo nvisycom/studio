@@ -26,6 +26,19 @@ tauri-plugin-http = { version = "2" }
 tauri-plugin-global-shortcut = { version = "2" }
 tauri-plugin-dialog = { version = "2" }
 tauri-plugin-notification = { version = "2" }
+# Auth: open the system browser for sign-in, then receive the token back via a
+# `nvisy://auth/callback` deep link.
+tauri-plugin-opener = { version = "2" }
+tauri-plugin-deep-link = { version = "2" }
+
+# OS keychain (macOS Keychain / Windows Credential Manager / Linux Secret
+# Service) for the desktop session token. `apple-native`/`windows-native` use
+# the platform stores directly; `sync-secret-service` is the Linux backend.
+keyring = { version = "3", features = [
+	"apple-native",
+	"windows-native",
+	"sync-secret-service",
+] }
 
 # Async runtime
 tokio = { version = "1", features = ["sync"] }
@@ -37,6 +50,10 @@ notify-debouncer-full = { version = "0.5" }
 # Serialization
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
+
+# URL parsing for the auth deep-link callback.
+url = { version = "2" }
+form_urlencoded = { version = "1" }
 
 # Observability
 log = { version = "0.4" }

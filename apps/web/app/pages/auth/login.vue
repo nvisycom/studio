@@ -6,6 +6,8 @@ import { Label } from "#console/components/ui/label";
 import { Checkbox } from "#console/components/ui/checkbox";
 import { FeatureGate } from "#console/components/shared";
 import { NvisyApiError } from "@nvisy/sdk";
+import type { IdentityProvider } from "@nvisy/sdk/datatypes";
+import { toast } from "vue-sonner";
 
 const { t } = useI18n();
 
@@ -15,7 +17,20 @@ definePageMeta({
 	layout: "auth",
 });
 
-const { loginAsync, isLoggingIn, loginError } = useAuth();
+const {
+	loginAsync,
+	isLoggingIn,
+	loginError,
+	startOidcSignIn,
+	syncSession,
+	isAuthenticated,
+} = useAuth();
+
+// Desktop external-browser sign-in: when the desktop app opened this page in the
+// system browser, it passed a `redirect_uri` deep link. After login we mint a
+// native-app token and hand it back on that link instead of entering the app
+// here. On the plain web there's no `redirect_uri` and this is inert.
+const { callbackFromRoute, completeDesktopSignIn } = useDesktopSignInReturn();
 
 const apiError = computed(() =>
 	loginError.value instanceof NvisyApiError ? loginError.value : null,
@@ -35,20 +50,88 @@ async function handleLogin(): Promise<void> {
 			password: password.value,
 			rememberMe: rememberMe.value,
 		});
-		// Return the user to where they were headed before login, if any.
+		// Desktop flow: hand the token back to the app and stop here.
+		const callback = callbackFromRoute();
+		if (callback && (await completeDesktopSignIn(callback))) return;
+		// Web: return the user to where they were headed before login, if any.
 		navigateTo(safeRedirectPath(useRoute().query.redirect) ?? "/");
 	} catch {
 		// Error is handled by the mutation
 	}
 }
 
-async function handleGoogleLogin(): Promise<void> {
-	// TODO: Implement Google OAuth
+// Sign in with an OIDC provider: ask the server for the provider's authorize
+// URL and hand the browser to it. The server's callback signs the user in
+// (setting the session cookies) and redirects back here with `?signin=...`; the
+// return handler below finishes the flow. We come back to this page (carrying
+// the intended `redirect`) rather than straight to the destination, so the
+// return handler runs before the app shell mounts. A full navigation.
+const oidcPending = ref<IdentityProvider | null>(null);
+
+async function handleOidcSignIn(provider: IdentityProvider): Promise<void> {
+	oidcPending.value = provider;
+	try {
+		const returnUrl = new URL("/auth/login", window.location.origin);
+		const dest = safeRedirectPath(useRoute().query.redirect);
+		if (dest) returnUrl.searchParams.set("redirect", dest);
+		// Carry the desktop deep link through the OIDC round-trip so the return
+		// handler can mint and hand off the token after the provider signs us in.
+		const callback = callbackFromRoute();
+		if (callback) returnUrl.searchParams.set("redirect_uri", callback);
+		const { authorizeUrl } = await startOidcSignIn(
+			provider,
+			returnUrl.toString(),
+		);
+		window.location.href = authorizeUrl;
+	} catch {
+		oidcPending.value = null;
+		toast.error(t("auth.shared.oidcFailed"));
+	}
 }
 
-async function handleMicrosoftLogin(): Promise<void> {
-	// TODO: Implement Microsoft OAuth
-}
+const handleGoogleLogin = () => handleOidcSignIn("google");
+const handleMicrosoftLogin = () => handleOidcSignIn("microsoft");
+
+// OIDC return: the server redirected back with `?signin=success|error` after
+// setting (or failing to set) the session cookies. On success, adopt the
+// session and continue to the intended destination; on error, surface it.
+onMounted(async () => {
+	const route = useRoute();
+
+	// Desktop sign-in with an existing web session: the user is already
+	// authenticated (the auth middleware let this page render because of the
+	// `redirect_uri`), so there's nothing to log in — mint and hand off the token
+	// straight away instead of making them re-enter credentials.
+	const callback = callbackFromRoute();
+	if (callback && isAuthenticated.value) {
+		try {
+			if (await completeDesktopSignIn(callback)) return;
+		} catch {
+			toast.error(t("auth.shared.oidcFailed"));
+		}
+	}
+
+	const signin = route.query.signin;
+	if (!signin) return;
+	if (signin === "success") {
+		syncSession();
+		// Desktop flow: mint the token and hand it back to the app on the deep
+		// link carried through the round-trip; otherwise land in the app here.
+		const callback = callbackFromRoute();
+		if (callback) {
+			try {
+				if (await completeDesktopSignIn(callback)) return;
+			} catch {
+				toast.error(t("auth.shared.oidcFailed"));
+			}
+		}
+		navigateTo(safeRedirectPath(route.query.redirect) ?? "/");
+	} else {
+		toast.error(t("auth.shared.oidcFailed"));
+		// Drop the param so a reload doesn't re-toast.
+		navigateTo({ query: {} }, { replace: true });
+	}
+});
 </script>
 
 <template>

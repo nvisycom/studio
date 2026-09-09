@@ -5,13 +5,24 @@ import type {
 	VirtualColumn,
 	VirtualTableEmpty,
 } from "#console/components/ui/virtual-table";
-import { Edit, Trash2, HardDrive, RefreshCw, PlugZap } from "@lucide/vue";
+import {
+	Edit,
+	Trash2,
+	HardDrive,
+	RefreshCw,
+	PlugZap,
+	ArrowUpFromLine,
+	ArrowDownToLine,
+} from "@lucide/vue";
 import { Switch } from "#console/components/ui/switch";
 import { VirtualTable } from "#console/components/ui/virtual-table";
 import { providerIcon, providerLabel } from "#console/utils/connections";
 
 const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
+// The Dropbox import picker is only available where the deployment set the app
+// key; passed to `isImportablePicker` so the Import action hides when unset.
+const dropboxAppKey = useRuntimeConfig().public.dropboxAppKey as string;
 
 defineProps<{
 	connections: Connection[];
@@ -23,6 +34,8 @@ const emit = defineEmits<{
 	(e: "disconnect", connectionId: string): void;
 	(e: "sync", connectionId: string): void;
 	(e: "test", connectionId: string): void;
+	(e: "export", connectionId: string): void;
+	(e: "import", connection: Connection): void;
 	(e: "toggleActive", connection: Connection): void;
 }>();
 
@@ -77,6 +90,31 @@ const columns = computed<VirtualColumn<Connection>[]>(() => [
 ]);
 
 function rowActions(connection: Connection): RowAction[] {
+	// Import/export are file-service-only (object stores and LLMs have neither a
+	// picker nor a redacted-export target). Import needs a wired browser picker
+	// for the provider; export always applies to a file service.
+	const fileService = connection.providerType === "file_service";
+	const importAction: RowAction[] =
+		fileService && isImportablePicker(connection.provider, { dropboxAppKey })
+			? [
+					{
+						key: "import",
+						label: t("connections.table.actions.import"),
+						icon: ArrowDownToLine,
+						select: () => emit("import", connection),
+					},
+				]
+			: [];
+	const exportAction: RowAction[] = fileService
+		? [
+				{
+					key: "export",
+					label: t("connections.table.actions.export"),
+					icon: ArrowUpFromLine,
+					select: () => emit("export", connection.id),
+				},
+			]
+		: [];
 	return [
 		{
 			key: "sync",
@@ -84,6 +122,8 @@ function rowActions(connection: Connection): RowAction[] {
 			icon: RefreshCw,
 			select: () => emit("sync", connection.id),
 		},
+		...importAction,
+		...exportAction,
 		{
 			key: "configure",
 			label: t("connections.table.actions.configure"),

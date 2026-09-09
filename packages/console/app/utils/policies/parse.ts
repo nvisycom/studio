@@ -6,6 +6,7 @@ import type {
 import type {
 	EditableAction,
 	EditableLabel,
+	EditableMatcher,
 	EditableOperator,
 	EditablePredicate,
 	EditableRule,
@@ -177,6 +178,22 @@ export function scopesFromDefinition(
 		name: s.name,
 		description: s.description,
 		labels: s.labels,
+	}));
+}
+
+/** Reconstruct the editable custom matchers from a stored definition. */
+export function matchersFromDefinition(
+	definition: PolicyDefinition,
+): EditableMatcher[] {
+	return (definition.matchers ?? []).map((m) => ({
+		key: crypto.randomUUID(),
+		name: m.name,
+		label: m.label,
+		confidence: m.confidence,
+		// The `kind` discriminant narrows to the matching payload (no cast).
+		...(m.kind === "pattern"
+			? { kind: "pattern" as const, pattern: m.pattern }
+			: { kind: "terms" as const, terms: m.terms.join(", ") }),
 	}));
 }
 

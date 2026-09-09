@@ -68,7 +68,8 @@ function submit() {
 	const model = defaultModel.value.trim();
 	const key = apiKey.value.trim();
 
-	// Assemble the provider-specific LlmConfig arm.
+	// Assemble the provider-specific LlmConfig arm. Ollama is base-URL only; the
+	// hosted providers carry an API key with an optional base-URL override.
 	let config: LlmConfig;
 	if (props.provider === "ollama") {
 		config = {
@@ -79,7 +80,7 @@ function submit() {
 	} else {
 		config = {
 			provider: props.provider,
-			credentials: { apiKey: key },
+			apiKey: key,
 			...(base ? { baseUrl: base } : {}),
 			...(model ? { defaultModel: model } : {}),
 		};

@@ -16,7 +16,7 @@ type LabelRef = string;
  */
 export function useLabels() {
 	const { $nvisyClient } = useNuxtApp();
-	const { authToken } = useAuth();
+	const { isAuthenticated } = useAuth();
 	const { locale } = useI18n();
 
 	const query = useQuery<LabelCatalog>({
@@ -26,7 +26,7 @@ export function useLabels() {
 			if (!client) throw new Error("Not authenticated");
 			return await client.catalog.listLabels();
 		},
-		enabled: () => !!authToken.value?.apiToken,
+		enabled: () => isAuthenticated.value,
 		// The taxonomy is server-immutable; never auto-refetch within a session.
 		staleTime: Number.POSITIVE_INFINITY,
 	});

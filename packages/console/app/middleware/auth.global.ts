@@ -15,6 +15,10 @@ export default defineNuxtRouteMiddleware((to) => {
 		...authRoutes,
 		"/auth/forgot-password",
 		"/auth/reset-password",
+		// Desktop sign-in confirmation: shown in the system browser after the token
+		// handoff to the desktop app. Reached with a live session, but it only fires
+		// the deep link and shows a "return to the app" message — never the shell.
+		"/auth/desktop",
 		// The desktop spotlight is a chrome overlay window, not a data view — it
 		// must always render its launcher, never redirect to login (which would
 		// otherwise show "Welcome back" inside the quick-command window).
@@ -32,8 +36,16 @@ export default defineNuxtRouteMiddleware((to) => {
 	// Check authentication
 	const { isAuthenticated } = useAuth();
 
+	// Desktop external-browser sign-in: the desktop app sends the user here with a
+	// `redirect_uri` deep link to mint and hand back a token. That must run even
+	// when a web session already exists — an already-signed-in browser is the
+	// common case — so never bounce these visits to home; the auth page mints the
+	// token and redirects to the deep link itself.
+	const isDesktopSignIn =
+		isAuthRoute && desktopCallbackUri(to.query.redirect_uri) !== null;
+
 	// Redirect authenticated users away from login/signup
-	if (isAuthRoute && isAuthenticated.value) {
+	if (isAuthRoute && isAuthenticated.value && !isDesktopSignIn) {
 		return navigateTo("/");
 	}
 

@@ -25,7 +25,7 @@ export interface WorkspaceContext {
  */
 export function useWorkspaceContext() {
 	const { $nvisyClient } = useNuxtApp();
-	const { authToken } = useAuth();
+	const { isAuthenticated } = useAuth();
 	const { currentWorkspaceSlug } = useWorkspaces();
 
 	function requireContext(): WorkspaceContext {
@@ -36,9 +36,8 @@ export function useWorkspaceContext() {
 		return { client, workspaceSlug };
 	}
 
-	/** True once both a token and a workspace are available. */
-	const enabled = () =>
-		!!authToken.value?.apiToken && !!currentWorkspaceSlug.value;
+	/** True once there's a session and a selected workspace. */
+	const enabled = () => isAuthenticated.value && !!currentWorkspaceSlug.value;
 
 	/** Query key scoped to the active workspace: `[resource, slug, ...extra]`. */
 	const key =

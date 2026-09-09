@@ -155,6 +155,32 @@ async function handleSyncConnection(connectionId: string) {
 	}
 }
 
+// Export is driven from the Files page (that's where files are selected). The
+// connection row is a shortcut there; the export dialog lets the user pick the
+// destination connection.
+function handleExportToConnection() {
+	navigateTo(wLink("/files"));
+}
+
+// Import: open the provider's picker, then import the chosen files. The picker
+// itself is a provider popup; a cancel returns 0 files and is silent.
+const { importFrom } = useFileImport();
+async function handleImportFromConnection(connection: Connection) {
+	try {
+		const count = await importFrom(connection);
+		if (count > 0) {
+			toast.success(t("connections.toast.importStarted", { count }));
+			// The imported files land on the Files page — take the user there to
+			// watch them arrive.
+			navigateTo(wLink("/files"));
+		}
+	} catch (error) {
+		toast.error(t("connections.toast.importFailed"), {
+			description: error instanceof Error ? error.message : undefined,
+		});
+	}
+}
+
 async function handleToggleActive(connection: Connection) {
 	try {
 		await updateConnectionAsync({
@@ -267,6 +293,8 @@ async function handleTestConnection(connectionId: string) {
           @disconnect="openDisconnectConnectionDialog"
           @sync="handleSyncConnection"
           @test="handleTestConnection"
+          @export="handleExportToConnection"
+          @import="handleImportFromConnection"
           @toggle-active="handleToggleActive"
         />
       </div>

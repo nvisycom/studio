@@ -6,6 +6,8 @@ import { Label } from "#console/components/ui/label";
 import { Checkbox } from "#console/components/ui/checkbox";
 import { FeatureGate } from "#console/components/shared";
 import { NvisyApiError } from "@nvisy/sdk";
+import type { IdentityProvider } from "@nvisy/sdk/datatypes";
+import { toast } from "vue-sonner";
 
 const { t } = useI18n();
 useHead({ title: () => t("auth.signup.title") });
@@ -14,7 +16,13 @@ definePageMeta({
 	layout: "auth",
 });
 
-const { signupAsync, isSigningUp, signupError } = useAuth();
+const { signupAsync, isSigningUp, signupError, startOidcSignIn } = useAuth();
+
+// Desktop external-browser sign-in: when the desktop app opened this page in the
+// system browser, it passed a `redirect_uri` deep link. After sign-up we mint a
+// native-app token and hand it back on that link instead of entering the app
+// here. On the plain web there's no `redirect_uri` and this is inert.
+const { callbackFromRoute, completeDesktopSignIn } = useDesktopSignInReturn();
 
 const apiError = computed(() =>
 	signupError.value instanceof NvisyApiError ? signupError.value : null,
@@ -52,19 +60,41 @@ async function handleSignup(): Promise<void> {
 			password: password.value,
 			rememberMe: true,
 		});
+		// Desktop flow: hand the token back to the app and stop here.
+		const callback = callbackFromRoute();
+		if (callback && (await completeDesktopSignIn(callback))) return;
 		navigateTo("/");
 	} catch {
 		// Error is handled by the mutation
 	}
 }
 
-async function handleGoogleSignup(): Promise<void> {
-	// TODO: Implement Google OAuth
+// OIDC sign-up is the same flow as sign-in (the provider account either exists
+// or is created). Return to the login page, which owns the `?signin=` return
+// handler.
+const oidcPending = ref<IdentityProvider | null>(null);
+
+async function handleOidcSignIn(provider: IdentityProvider): Promise<void> {
+	oidcPending.value = provider;
+	try {
+		const returnUrl = new URL("/auth/login", window.location.origin);
+		// Carry the desktop deep link through the OIDC round-trip so the login
+		// page's return handler can mint and hand off the token.
+		const callback = callbackFromRoute();
+		if (callback) returnUrl.searchParams.set("redirect_uri", callback);
+		const { authorizeUrl } = await startOidcSignIn(
+			provider,
+			returnUrl.toString(),
+		);
+		window.location.href = authorizeUrl;
+	} catch {
+		oidcPending.value = null;
+		toast.error(t("auth.shared.oidcFailed"));
+	}
 }
 
-async function handleMicrosoftSignup(): Promise<void> {
-	// TODO: Implement Microsoft OAuth
-}
+const handleGoogleSignup = () => handleOidcSignIn("google");
+const handleMicrosoftSignup = () => handleOidcSignIn("microsoft");
 </script>
 
 <template>

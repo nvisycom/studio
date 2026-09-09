@@ -1,5 +1,14 @@
 {
 	"auth": {
+		"login": {
+			"browser": {
+				"submit": "Im Browser anmelden",
+				"waiting": "Warten auf Ihren Browser…",
+				"hint": "Sie schließen die Anmeldung im Browser ab und kehren dann automatisch hierher zurück.",
+				"openFailed": "Browser konnte nicht geöffnet werden. Prüfen Sie die Server-URL und versuchen Sie es erneut.",
+				"failed": "Anmeldung nicht abgeschlossen. Bitte versuchen Sie es erneut."
+			}
+		},
 		"server": {
 			"label": "Server-URL",
 			"placeholder": "https://api.nvisy.com/",

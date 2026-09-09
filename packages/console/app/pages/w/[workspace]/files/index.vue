@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import type { File as NvisyFile, UpdateFile } from "@nvisy/sdk/datatypes";
+import type {
+	Connection,
+	File as NvisyFile,
+	UpdateFile,
+} from "@nvisy/sdk/datatypes";
 import { FileText, Loader2, Upload } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import {
@@ -9,6 +13,10 @@ import {
 	FilesTableView,
 	UploadFilesDialog,
 } from "#console/components/pages/files";
+import {
+	ExportToConnectionDialog,
+	ImportFromConnectionDialog,
+} from "#console/components/pages/integrations";
 import { Button } from "#console/components/ui/button";
 import {
 	HeaderSocket,
@@ -34,6 +42,7 @@ const {
 	selectedFormats,
 	viewMode,
 	uploadOpen: uploadDialogOpen,
+	importOpen: importDialogOpen,
 	filesQuery,
 	hasFilters,
 	clearFilters,
@@ -54,6 +63,7 @@ const {
 	loadMore,
 	hasMore,
 	isLoadingMore,
+	refresh: refreshFiles,
 } = useFiles({ query: filesQuery });
 
 const isDraggingOver = ref(false);
@@ -119,6 +129,65 @@ async function handleBulkDownload() {
 		toast.error(t("files.errors.downloadFailed"));
 	} else if (saved > 0) {
 		toast.success(t("files.messages.downloadStarted"));
+	}
+}
+
+// Export to a file-service connection: pick a destination in the dialog, then
+// each selected file's redacted output is written there as a new provider file.
+const { connections, exportFilesAsync, isExporting } = useConnections();
+
+const exportDialogOpen = ref(false);
+const filesToExport = ref<string[]>([]);
+
+// Originals in the export set carry un-redacted contents; the dialog warns
+// before sending them to an external service.
+const unredactedExportCount = computed(() => {
+	const ids = new Set(filesToExport.value);
+	return (files.value ?? []).filter(
+		(f) => ids.has(f.id) && f.fileKind === "original",
+	).length;
+});
+
+function openExportDialog(fileIds: string[]) {
+	if (fileIds.length === 0) return;
+	filesToExport.value = fileIds;
+	exportDialogOpen.value = true;
+}
+
+function handleExportFile(file: NvisyFile) {
+	openExportDialog([file.id]);
+}
+
+function handleBulkExport() {
+	openExportDialog(Array.from(selectedFiles.value));
+}
+
+async function handleExport(connectionId: string) {
+	try {
+		await exportFilesAsync({ connectionId, fileIds: filesToExport.value });
+		exportDialogOpen.value = false;
+		toast.success(t("files.messages.exportStarted"));
+	} catch {
+		toast.error(t("files.errors.exportFailed"));
+	}
+}
+
+// Import from a file-service connection: pick a source in the dialog, open its
+// picker, then import the chosen files. Already on the Files page, so refresh
+// the list to surface the new files as they arrive; a cancelled picker returns
+// 0 and is silent.
+const { importFrom } = useFileImport();
+async function handleImport(connection: Connection) {
+	try {
+		const count = await importFrom(connection);
+		if (count > 0) {
+			toast.success(t("files.messages.importStarted", { count }));
+			refreshFiles();
+		}
+	} catch (error) {
+		toast.error(t("files.errors.importFailed"), {
+			description: error instanceof Error ? error.message : undefined,
+		});
 	}
 }
 
@@ -327,8 +396,10 @@ function handleLoadMore() {
             @edit="openEditDialog"
             @download="handleDownloadFile"
             @delete="openDeleteDialog"
+            @export="handleExportFile"
             @bulk-open="handleBulkOpen"
             @bulk-download="handleBulkDownload"
+            @bulk-export="handleBulkExport"
             @bulk-delete="openBulkDeleteDialog"
             @load-more="handleLoadMore"
           />
@@ -341,11 +412,13 @@ function handleLoadMore() {
             :selection="filesSelection"
             @bulk-open="handleBulkOpen"
             @bulk-download="handleBulkDownload"
+            @bulk-export="handleBulkExport"
             @bulk-delete="openBulkDeleteDialog"
             @view="viewFile"
             @edit="openEditDialog"
             @download="handleDownloadFile"
             @delete="openDeleteDialog"
+            @export="handleExportFile"
             @load-more="handleLoadMore"
           />
         </div>
@@ -406,6 +479,21 @@ function handleLoadMore() {
       :upload-fn="uploadFilesAsync"
       :initial-files="droppedFiles"
       @uploaded="handleUploadComplete"
+    />
+
+    <ExportToConnectionDialog
+      v-model:open="exportDialogOpen"
+      :file-ids="filesToExport"
+      :unredacted-count="unredactedExportCount"
+      :connections="connections ?? []"
+      :is-loading="isExporting"
+      @export="handleExport"
+    />
+
+    <ImportFromConnectionDialog
+      v-model:open="importDialogOpen"
+      :connections="connections ?? []"
+      @import="handleImport"
     />
   </div>
 </template>

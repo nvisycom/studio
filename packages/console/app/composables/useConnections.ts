@@ -71,10 +71,11 @@ export function useConnections() {
 		},
 	);
 
-	// Trigger a manual sync for a connection (syncs everything when no target).
+	// Trigger a manual sync for a connection: an object-store sync runs the
+	// connection's configured direction.
 	const startSyncMutation = workspaceMutation(
 		({ client, workspaceSlug }, connectionId: string) =>
-			client.syncs.startSync(workspaceSlug, connectionId, {}),
+			client.syncs.startSync(workspaceSlug, connectionId),
 		{ invalidates: "connections" },
 	);
 
@@ -102,6 +103,38 @@ export function useConnections() {
 				provider,
 				request,
 			),
+	);
+
+	// Export workspace files to a file-service connection. Each file's redacted
+	// output is written to the connection as a new provider file; the source is
+	// never overwritten. Returns the created sync.
+	const exportFilesMutation = workspaceMutation(
+		(
+			{ client, workspaceSlug },
+			{ connectionId, fileIds }: { connectionId: string; fileIds: string[] },
+		) =>
+			client.connections.exportFiles(workspaceSlug, connectionId, { fileIds }),
+	);
+
+	// Mint a short-lived provider access token for a browser file picker (Google
+	// Drive, OneDrive, Box - the pickers that take a server token; Dropbox's
+	// Chooser uses a client-side app key instead and rejects this).
+	const getPickerTokenMutation = workspaceMutation(
+		({ client, workspaceSlug }, connectionId: string) =>
+			client.connections.getPickerToken(workspaceSlug, connectionId),
+	);
+
+	// Import the files a user picked in a provider's picker (id + name each);
+	// already-imported files are skipped. Returns the created sync.
+	const importFilesMutation = workspaceMutation(
+		(
+			{ client, workspaceSlug },
+			{
+				connectionId,
+				files,
+			}: { connectionId: string; files: { id: string; name: string }[] },
+		) => client.connections.importFiles(workspaceSlug, connectionId, { files }),
+		{ invalidates: "connections" },
 	);
 
 	return {
@@ -146,5 +179,16 @@ export function useConnections() {
 		startFileServiceOAuthAsync: startFileServiceOAuthMutation.mutateAsync,
 		isStartingOAuth: startFileServiceOAuthMutation.isLoading,
 		oauthError: startFileServiceOAuthMutation.error,
+
+		// Export workspace files to a file-service connection
+		exportFiles: exportFilesMutation.mutate,
+		exportFilesAsync: exportFilesMutation.mutateAsync,
+		isExporting: exportFilesMutation.isLoading,
+		exportError: exportFilesMutation.error,
+
+		// Import from a file-service connection (browser picker)
+		getPickerTokenAsync: getPickerTokenMutation.mutateAsync,
+		importFilesAsync: importFilesMutation.mutateAsync,
+		isImporting: importFilesMutation.isLoading,
 	};
 }

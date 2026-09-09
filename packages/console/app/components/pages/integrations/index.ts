@@ -5,6 +5,8 @@ export { default as ConfigureConnectionDialog } from "./ConfigureConnectionDialo
 export { default as ConnectConnectionDialog } from "./ConnectConnectionDialog.vue";
 export { default as ConnectLlmDialog } from "./ConnectLlmDialog.vue";
 export { default as ConnectFileServiceDialog } from "./ConnectFileServiceDialog.vue";
+export { default as ExportToConnectionDialog } from "./ExportToConnectionDialog.vue";
+export { default as ImportFromConnectionDialog } from "./ImportFromConnectionDialog.vue";
 
 // Webhooks
 export { default as WebhooksTable } from "./WebhooksTable.vue";

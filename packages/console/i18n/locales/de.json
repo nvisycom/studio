@@ -472,7 +472,9 @@
 			"open": "Öffnen",
 			"openInStudio": "In Studio öffnen",
 			"delete": "Löschen",
-			"clearFilters": "Filter löschen"
+			"clearFilters": "Filter löschen",
+			"export": "Exportieren",
+			"import": "Importieren"
 		},
 		"dialogs": {
 			"delete": {
@@ -519,13 +521,17 @@
 			"filesDeletedPartial": "Einige Dateien konnten nicht gelöscht werden ({count} übersprungen).",
 			"fileUpdated": "Datei erfolgreich aktualisiert",
 			"filesUploaded": "Dateien erfolgreich hochgeladen",
-			"downloadStarted": "Download gestartet"
+			"downloadStarted": "Download gestartet",
+			"exportStarted": "Export gestartet",
+			"importStarted": "{count} Datei wird importiert | {count} Dateien werden importiert"
 		},
 		"errors": {
 			"deleteFailed": "Datei konnte nicht gelöscht werden",
 			"updateFailed": "Datei konnte nicht aktualisiert werden",
 			"downloadFailed": "Datei konnte nicht heruntergeladen werden",
-			"loadFailed": "Dateien konnten nicht geladen werden"
+			"loadFailed": "Dateien konnten nicht geladen werden",
+			"exportFailed": "Dateien konnten nicht exportiert werden",
+			"importFailed": "Import der Dateien fehlgeschlagen"
 		},
 		"kind": {
 			"original": "Original",
@@ -1026,7 +1032,9 @@
 				"sync": "Jetzt synchronisieren",
 				"configure": "Konfigurieren",
 				"disconnect": "Trennen",
-				"menu": "Menü öffnen"
+				"menu": "Menü öffnen",
+				"export": "Dateien exportieren",
+				"import": "Dateien importieren"
 			},
 			"eventsCount": "{count} Ereignis | {count} Ereignisse",
 			"neverDelivered": "Nie zugestellt",
@@ -1148,6 +1156,20 @@
 				},
 				"submit": "Weiter zur Anmeldung",
 				"cancel": "Abbrechen"
+			},
+			"export": {
+				"title": "In Verbindung exportieren",
+				"description": "{count} Datei an einen Cloud-Dateidienst senden. Die redigierte Ausgabe jeder Datei wird als neue Datei geschrieben. | {count} Dateien an einen Cloud-Dateidienst senden. Die redigierte Ausgabe jeder Datei wird als neue Datei geschrieben.",
+				"emptyTitle": "Keine Dateidienst-Verbindung",
+				"emptyDescription": "Verbinden Sie einen Cloud-Dateidienst (Drive, Dropbox, OneDrive, Box), um Dateien dorthin zu exportieren.",
+				"submit": "{count} Datei exportieren | {count} Dateien exportieren",
+				"unredactedWarning": "{count} dieser Dateien wurde nicht redigiert; ihr Originalinhalt verlässt den Arbeitsbereich. | {count} dieser Dateien wurden nicht redigiert; ihr Originalinhalt verlässt den Arbeitsbereich."
+			},
+			"import": {
+				"title": "Aus Verbindung importieren",
+				"description": "Wählen Sie einen verbundenen Dateidienst, aus dem Sie Dateien auswählen.",
+				"emptyTitle": "Keine importierbare Verbindung",
+				"emptyDescription": "Verbinden Sie einen Cloud-Dateidienst (Drive, Dropbox, OneDrive, Box), um Dateien daraus zu importieren."
 			}
 		},
 		"events": {
@@ -1184,7 +1206,9 @@
 			"webhookTestSuccess": "Webhook-Test erfolgreich",
 			"webhookTestSuccessDescription": "Antwort {statusCode} in {responseTimeMs}ms erhalten",
 			"webhookTestFailed": "Webhook-Test fehlgeschlagen",
-			"webhookTestFailedDescription": "Antwort {statusCode} erhalten"
+			"webhookTestFailedDescription": "Antwort {statusCode} erhalten",
+			"importStarted": "{count} Datei wird importiert | {count} Dateien werden importiert",
+			"importFailed": "Dateien konnten nicht importiert werden"
 		},
 		"runs": {
 			"allStatus": "Alle Status",
@@ -1375,7 +1399,8 @@
 				"network": "Netzwerk",
 				"organization": "Organisation",
 				"contextual": "Kontextbezogen"
-			}
+			},
+			"exportRedacted": "Redigierte Datei exportieren"
 		},
 		"preview": {
 			"loading": "Dokument wird geladen …",
@@ -1592,7 +1617,22 @@
 				"sha256": "SHA-256",
 				"sha512": "SHA-512"
 			},
-			"moreOperators": "Weitere Operatoren"
+			"moreOperators": "Weitere Operatoren",
+			"matchers": {
+				"label": "Eigene Matcher",
+				"hint": "Selbst definierte Erkenner, die Entitäten finden, die die integrierten übersehen, und jede Übereinstimmung mit einem Label versehen.",
+				"add": "Matcher hinzufügen",
+				"namePlaceholder": "internal_id",
+				"kind": {
+					"pattern": "Muster",
+					"terms": "Begriffe"
+				},
+				"confidence": "Konfidenz",
+				"confidenceAuto": "auto",
+				"patternPlaceholder": "Regulärer Ausdruck, z. B. ACME-\\d{6}",
+				"termsPlaceholder": "Begriff hinzufügen und Enter drücken",
+				"labelPlaceholder": "Anzuwendendes Label"
+			}
 		},
 		"delete": {
 			"title": "{name} löschen?",
@@ -1897,7 +1937,8 @@
 			"emailPlaceholder": "name{'@'}example.com",
 			"password": "Passwort",
 			"signIn": "Anmelden",
-			"signUp": "Registrieren"
+			"signUp": "Registrieren",
+			"oidcFailed": "Anmeldung mit diesem Anbieter fehlgeschlagen. Bitte erneut versuchen."
 		},
 		"login": {
 			"title": "Anmelden",
@@ -1961,6 +2002,15 @@
 			"successHeading": "Passwort zurückgesetzt",
 			"successSubtitle": "Ihr Passwort wurde erfolgreich aktualisiert",
 			"continueToLogin": "Weiter zur Anmeldung"
+		},
+		"desktop": {
+			"title": "Angemeldet",
+			"heading": "Sie sind angemeldet",
+			"subtitle": "Kehren Sie zur Nvisy-App zurück, um fortzufahren. Sie können diesen Tab schließen.",
+			"openApp": "Nvisy öffnen",
+			"closeHint": "Nicht zurückgewechselt? Öffnen Sie die App über die Schaltfläche oben.",
+			"expired": "Dieser Anmeldelink ist abgelaufen oder wurde bereits verwendet. Melden Sie sich erneut über die Nvisy-App an.",
+			"backToLogin": "Zurück zur Anmeldung"
 		}
 	},
 	"account": {
@@ -2006,7 +2056,29 @@
 			"saved": "Passwort aktualisiert",
 			"saveFailed": "Passwort konnte nicht aktualisiert werden. Bitte erneut versuchen.",
 			"button": "Passwort aktualisieren",
-			"footer": "Nach der Änderung deines Passworts musst du dich erneut anmelden."
+			"footer": "Nach der Änderung deines Passworts musst du dich erneut anmelden.",
+			"label": "Passwort",
+			"noneHint": "Ihr Konto meldet sich über einen verbundenen Anbieter an. Legen Sie ein Passwort fest, um sich auch per E-Mail anzumelden.",
+			"setButton": "Passwort festlegen",
+			"reauthNeedsProvider": "Verbinden Sie zuerst einen Anbieter, um ein Passwort festzulegen.",
+			"reauthFailed": "Erneute Authentifizierung konnte nicht gestartet werden. Bitte erneut versuchen.",
+			"remove": "Passwort entfernen",
+			"removed": "Passwort entfernt",
+			"removeFailed": "Passwort konnte nicht entfernt werden"
+		},
+		"identities": {
+			"title": "Anmeldemethoden",
+			"description": "Die Anbieter und Passwörter, mit denen Sie sich anmelden können. Verbinden Sie weitere oder entfernen Sie nicht mehr genutzte.",
+			"connected": "Verbunden",
+			"addedOn": "hinzugefügt {when}",
+			"connect": "Verbinden",
+			"unlink": "Trennen",
+			"unlinked": "Anbieter getrennt",
+			"unlinkFailed": "Anbieter konnte nicht getrennt werden",
+			"linked": "Anbieter verbunden",
+			"linkFailed": "Anbieter konnte nicht verbunden werden. Bitte erneut versuchen.",
+			"linkNeedsMethod": "Vor dem Verbinden weiterer ist eine andere Anmeldemethode erforderlich.",
+			"lastMethodHint": "Sie können Ihre einzige Anmeldemethode nicht entfernen."
 		}
 	},
 	"notifications": {

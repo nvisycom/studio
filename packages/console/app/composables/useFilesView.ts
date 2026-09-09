@@ -21,6 +21,9 @@ const viewMode = ref<"list" | "grid">("list");
 // Shared upload trigger: the header button flips this; the page binds the
 // upload dialog's open state to it.
 const uploadOpen = ref(false);
+// Shared import trigger: the header button flips this; the page binds the
+// import-from-connection dialog's open state to it.
+const importOpen = ref(false);
 
 /** Modality tokens offered in the filter, in display order. */
 export const MODALITY_TOKENS: ModalityToken[] = [
@@ -88,17 +91,23 @@ export function useFilesView() {
 		uploadOpen.value = true;
 	}
 
+	function openImport() {
+		importOpen.value = true;
+	}
+
 	return {
 		searchQuery,
 		selectedModalities,
 		selectedFormats,
 		viewMode,
 		uploadOpen,
+		importOpen,
 		filesQuery,
 		modalityOptions,
 		formatOptions,
 		hasFilters,
 		clearFilters,
 		openUpload,
+		openImport,
 	};
 }

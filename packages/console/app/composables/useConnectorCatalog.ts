@@ -20,7 +20,7 @@ import { FILE_PROVIDER_CATALOG_KEY } from "#console/utils/connections";
  */
 export function useConnectorCatalog() {
 	const { $nvisyClient } = useNuxtApp();
-	const { authToken } = useAuth();
+	const { isAuthenticated } = useAuth();
 
 	const query = useQuery<ConnectorCatalog>({
 		key: ["catalog", "connectors"],
@@ -29,7 +29,7 @@ export function useConnectorCatalog() {
 			if (!client) throw new Error("Not authenticated");
 			return await client.catalog.listConnectors();
 		},
-		enabled: () => !!authToken.value?.apiToken,
+		enabled: () => isAuthenticated.value,
 		// Deployment configuration, not per-request data; don't auto-refetch.
 		staleTime: Number.POSITIVE_INFINITY,
 	});

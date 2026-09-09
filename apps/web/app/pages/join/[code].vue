@@ -20,7 +20,7 @@ definePageMeta({
 
 const { t } = useI18n();
 const route = useRoute();
-const { authToken } = useAuth();
+const { isAuthenticated } = useAuth();
 const { $nvisyClient } = useNuxtApp();
 const { refresh: refreshWorkspaces } = useWorkspaces();
 
@@ -34,7 +34,7 @@ const previewQuery = useQuery({
 		if (!client) throw new Error("Not authenticated");
 		return await client.invites.previewInvite(inviteCode.value);
 	},
-	enabled: () => !!inviteCode.value && !!authToken.value?.apiToken,
+	enabled: () => !!inviteCode.value && isAuthenticated.value,
 });
 
 // Accept invite mutation

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+	ArrowDownToLine,
 	FileType,
 	LayoutGrid,
 	Layers,
@@ -26,6 +27,7 @@ const {
 	modalityOptions,
 	formatOptions,
 	openUpload,
+	openImport,
 } = useFilesView();
 </script>
 
@@ -48,6 +50,20 @@ const {
       >
         <Upload :size="16" class="sm:mr-2" />
         <span class="hidden sm:inline">{{ t("files.actions.upload") }}</span>
+      </Button>
+
+      <!-- Import from a connected file service (OneDrive, Dropbox, ...). A quiet
+           secondary next to the solid Upload; opens the source-picker dialog. -->
+      <Button
+        variant="outline"
+        size="sm"
+        class="h-8 shrink-0"
+        data-testid="files-import"
+        :aria-label="t('files.actions.import')"
+        @click="openImport"
+      >
+        <ArrowDownToLine :size="16" class="sm:mr-2" />
+        <span class="hidden sm:inline">{{ t("files.actions.import") }}</span>
       </Button>
 
       <!-- Search: quiet filled field (no hard border), capped so it doesn't take
