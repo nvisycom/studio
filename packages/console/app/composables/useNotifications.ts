@@ -32,9 +32,7 @@ let streamStarted = false;
 
 export function useNotifications() {
 	const { $nvisyClient } = useNuxtApp();
-	const { authToken } = useAuth();
-
-	const isAuthenticated = () => !!authToken.value?.apiToken;
+	const { isAuthenticated } = useAuth();
 
 	function requireClient() {
 		const client = $nvisyClient.value;
@@ -94,7 +92,7 @@ export function useNotifications() {
 
 		async function subscribe(gen: number) {
 			while (!stopped && gen === generation) {
-				if (!isAuthenticated()) break;
+				if (!isAuthenticated.value) break;
 				try {
 					// Baseline the existing backlog before processing any rise, so the
 					// first genuine arrival (even from an empty inbox) still emits.
@@ -116,16 +114,16 @@ export function useNotifications() {
 		}
 
 		watch(
-			() => authToken.value?.apiToken,
-			(token) => {
-				// A token change means a (possibly different) account: retire the old
-				// loop's generation and reset the per-account arrival state so stale
-				// stream updates can't leak into the next account.
+			isAuthenticated,
+			(authed) => {
+				// Session on/off (possibly a different account): retire the old loop's
+				// generation and reset the per-account arrival state so stale stream
+				// updates can't leak into the next account.
 				generation++;
 				unreadCount.value = 0;
 				lastEmittedId = null;
 				seededArrivals = false;
-				if (token) subscribe(generation);
+				if (authed) subscribe(generation);
 			},
 			{ immediate: true },
 		);

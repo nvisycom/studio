@@ -8,7 +8,11 @@ import {
 	ConfigureConnectionDialog,
 	ConnectionsTable,
 } from "#console/components/pages/integrations";
-import { providerIcon, providerLabel } from "#console/utils/connections";
+import {
+	ImportError,
+	providerIcon,
+	providerLabel,
+} from "#console/utils/connections";
 import { ConfirmDialog } from "#console/components/shared";
 import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 
@@ -155,6 +159,34 @@ async function handleSyncConnection(connectionId: string) {
 	}
 }
 
+// Export is driven from the Files page (that's where files are selected). The
+// connection row is a shortcut there; the export dialog lets the user pick the
+// destination connection.
+function handleExportToConnection() {
+	navigateTo(wLink("/files"));
+}
+
+// Import: open the provider's picker, then import the chosen files. The picker
+// itself is a provider popup; a cancel returns 0 files and is silent.
+const { importFrom } = useFileImport();
+const { markImportStarted } = useFilesView();
+async function handleImportFromConnection(connection: Connection) {
+	try {
+		const count = await importFrom(connection);
+		if (count > 0) {
+			toast.success(t("connections.toast.importStarted", { count }));
+			// The imported files land on the Files page via a background sync — flag
+			// the import so that page polls for them, then take the user there.
+			markImportStarted();
+			navigateTo(wLink("/files"));
+		}
+	} catch (error) {
+		const description =
+			error instanceof ImportError ? t(error.messageKey) : undefined;
+		toast.error(t("connections.toast.importFailed"), { description });
+	}
+}
+
 async function handleToggleActive(connection: Connection) {
 	try {
 		await updateConnectionAsync({
@@ -267,6 +299,8 @@ async function handleTestConnection(connectionId: string) {
           @disconnect="openDisconnectConnectionDialog"
           @sync="handleSyncConnection"
           @test="handleTestConnection"
+          @export="handleExportToConnection"
+          @import="handleImportFromConnection"
           @toggle-active="handleToggleActive"
         />
       </div>

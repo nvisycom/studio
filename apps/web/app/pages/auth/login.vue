@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { Eye, EyeOff } from "@lucide/vue";
+import { Eye, EyeOff, Loader2 } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
 import { Checkbox } from "#console/components/ui/checkbox";
 import { FeatureGate } from "#console/components/shared";
 import { NvisyApiError } from "@nvisy/sdk";
+import type { IdentityProvider } from "@nvisy/sdk/datatypes";
+import { toast } from "vue-sonner";
 
 const { t } = useI18n();
 
@@ -15,7 +17,20 @@ definePageMeta({
 	layout: "auth",
 });
 
-const { loginAsync, isLoggingIn, loginError } = useAuth();
+const {
+	loginAsync,
+	isLoggingIn,
+	loginError,
+	startOidcSignIn,
+	syncSession,
+	isAuthenticated,
+} = useAuth();
+
+// Desktop external-browser sign-in: when the desktop app opened this page in the
+// system browser, it passed a `redirect_uri` deep link. After login we mint a
+// native-app token and hand it back on that link instead of entering the app
+// here. On the plain web there's no `redirect_uri` and this is inert.
+const { callbackFromRoute, tryDesktopHandoff } = useDesktopSignInReturn();
 
 const apiError = computed(() =>
 	loginError.value instanceof NvisyApiError ? loginError.value : null,
@@ -35,20 +50,76 @@ async function handleLogin(): Promise<void> {
 			password: password.value,
 			rememberMe: rememberMe.value,
 		});
-		// Return the user to where they were headed before login, if any.
-		navigateTo(safeRedirectPath(useRoute().query.redirect) ?? "/");
 	} catch {
-		// Error is handled by the mutation
+		// A failed login is surfaced via the mutation's error state.
+		return;
+	}
+	// Desktop flow: hand the token back to the app and stop here (owns its own
+	// error toast). Otherwise return the user to where they were headed.
+	if (await tryDesktopHandoff()) return;
+	navigateTo(safeRedirectPath(useRoute().query.redirect) ?? "/");
+}
+
+// Sign in with an OIDC provider: ask the server for the provider's authorize
+// URL and hand the browser to it. The server's callback signs the user in
+// (setting the session cookies) and redirects back here with `?signin=...`; the
+// return handler below finishes the flow. We come back to this page (carrying
+// the intended `redirect`) rather than straight to the destination, so the
+// return handler runs before the app shell mounts. A full navigation.
+const oidcPending = ref<IdentityProvider | null>(null);
+
+async function handleOidcSignIn(provider: IdentityProvider): Promise<void> {
+	oidcPending.value = provider;
+	try {
+		const returnUrl = new URL("/auth/login", window.location.origin);
+		const dest = safeRedirectPath(useRoute().query.redirect);
+		if (dest) returnUrl.searchParams.set("redirect", dest);
+		// Carry the desktop deep link through the OIDC round-trip so the return
+		// handler can mint and hand off the token after the provider signs us in.
+		const callback = callbackFromRoute();
+		if (callback) returnUrl.searchParams.set("redirect_uri", callback);
+		const { authorizeUrl } = await startOidcSignIn(
+			provider,
+			returnUrl.toString(),
+		);
+		window.location.href = authorizeUrl;
+	} catch {
+		oidcPending.value = null;
+		toast.error(t("auth.shared.oidcFailed"));
 	}
 }
 
-async function handleGoogleLogin(): Promise<void> {
-	// TODO: Implement Google OAuth
-}
+const handleGoogleLogin = () => handleOidcSignIn("google");
+const handleMicrosoftLogin = () => handleOidcSignIn("microsoft");
 
-async function handleMicrosoftLogin(): Promise<void> {
-	// TODO: Implement Microsoft OAuth
-}
+// OIDC return: the server redirected back with `?signin=success|error` after
+// setting (or failing to set) the session cookies. On success, adopt the
+// session and continue to the intended destination; on error, surface it.
+onMounted(async () => {
+	const route = useRoute();
+
+	// Desktop sign-in with an existing web session: the user is already
+	// authenticated (the auth middleware let this page render because of the
+	// `redirect_uri`), so there's nothing to log in — mint and hand off the token
+	// straight away instead of making them re-enter credentials.
+	if (isAuthenticated.value && (await tryDesktopHandoff())) return;
+
+	const signin = route.query.signin;
+	if (!signin) return;
+	if (signin === "success") {
+		syncSession();
+		// Desktop flow hands the token back on the deep link carried through the
+		// round-trip; otherwise land in the app here.
+		if (await tryDesktopHandoff()) return;
+		navigateTo(safeRedirectPath(route.query.redirect) ?? "/");
+	} else {
+		toast.error(t("auth.shared.oidcFailed"));
+		// Drop only `signin` so a reload doesn't re-toast — keep `redirect` and the
+		// desktop `redirect_uri` so a retry still carries the callback.
+		const { signin: _drop, ...rest } = route.query;
+		navigateTo({ query: rest }, { replace: true });
+	}
+});
 </script>
 
 <template>
@@ -69,26 +140,38 @@ async function handleMicrosoftLogin(): Promise<void> {
         <Button
           type="button"
           variant="outline"
-          @click="handleGoogleLogin"
           class="h-10"
+          :disabled="oidcPending !== null"
+          @click="handleGoogleLogin"
         >
+          <Loader2
+            v-if="oidcPending === 'google'"
+            class="mr-2 h-4 w-4 animate-spin"
+          />
           <img
+            v-else
             src="~/assets/brands/google.png"
             :alt="t('auth.shared.google')"
-            class="w-4 h-4 mr-2"
+            class="mr-2 h-4 w-4"
           />
           {{ t("auth.shared.google") }}
         </Button>
         <Button
           type="button"
           variant="outline"
-          @click="handleMicrosoftLogin"
           class="h-10"
+          :disabled="oidcPending !== null"
+          @click="handleMicrosoftLogin"
         >
+          <Loader2
+            v-if="oidcPending === 'microsoft'"
+            class="mr-2 h-4 w-4 animate-spin"
+          />
           <img
+            v-else
             src="~/assets/brands/microsoft.png"
             :alt="t('auth.shared.microsoft')"
-            class="w-4 h-4 mr-2"
+            class="mr-2 h-4 w-4"
           />
           {{ t("auth.shared.microsoft") }}
         </Button>

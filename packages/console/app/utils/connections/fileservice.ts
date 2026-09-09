@@ -40,3 +40,19 @@ export const PROVIDER_CARD_TO_FILE_SERVICE: Record<string, FileProvider> = {
 export function fileServiceForCard(cardId: string): FileProvider | null {
 	return PROVIDER_CARD_TO_FILE_SERVICE[cardId] ?? null;
 }
+
+/** Icon path (under `public/integration/`) for each file-service provider. */
+export const FILE_SERVICE_ICONS: Record<FileProvider, string> = {
+	google_drive: "/integration/google-drive.svg",
+	dropbox: "/integration/dropbox.svg",
+	one_drive: "/integration/microsoft-onedrive.svg",
+	box: "/integration/box.svg",
+};
+
+/** Human-readable name for each file-service provider. */
+export const FILE_SERVICE_LABELS: Record<FileProvider, string> = {
+	google_drive: "Google Drive",
+	dropbox: "Dropbox",
+	one_drive: "OneDrive",
+	box: "Box",
+};

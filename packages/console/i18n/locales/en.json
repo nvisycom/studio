@@ -472,7 +472,9 @@
 			"open": "Open",
 			"openInStudio": "Open in Studio",
 			"delete": "Delete",
-			"clearFilters": "Clear Filters"
+			"clearFilters": "Clear Filters",
+			"export": "Export",
+			"import": "Import"
 		},
 		"dialogs": {
 			"delete": {
@@ -519,13 +521,20 @@
 			"filesDeletedPartial": "Some files couldn't be deleted ({count} skipped).",
 			"fileUpdated": "File updated successfully",
 			"filesUploaded": "Files uploaded successfully",
-			"downloadStarted": "Download started"
+			"downloadStarted": "Download started",
+			"exportStarted": "Export started",
+			"importStarted": "Importing {count} file | Importing {count} files"
 		},
 		"errors": {
 			"deleteFailed": "Failed to delete file",
 			"updateFailed": "Failed to update file",
 			"downloadFailed": "Failed to download file",
-			"loadFailed": "Failed to load files"
+			"loadFailed": "Failed to load files",
+			"exportFailed": "Failed to export files",
+			"importFailed": "Failed to import files",
+			"importUnavailable": "Import isn't available for this connection.",
+			"importPopupBlocked": "The picker was blocked. Allow pop-ups for this site and try again.",
+			"importPickerLoadFailed": "Couldn't load the file picker. Check your connection and try again."
 		},
 		"kind": {
 			"original": "Original",
@@ -1026,7 +1035,9 @@
 				"sync": "Sync now",
 				"configure": "Configure",
 				"disconnect": "Disconnect",
-				"menu": "Open menu"
+				"menu": "Open menu",
+				"export": "Export files",
+				"import": "Import files"
 			},
 			"eventsCount": "{count} event | {count} events",
 			"neverDelivered": "Never delivered",
@@ -1148,6 +1159,20 @@
 				},
 				"submit": "Continue to sign in",
 				"cancel": "Cancel"
+			},
+			"export": {
+				"title": "Export to connection",
+				"description": "Send {count} file to a cloud file service. Each file's redacted output is written as a new file. | Send {count} files to a cloud file service. Each file's redacted output is written as a new file.",
+				"emptyTitle": "No file-service connection",
+				"emptyDescription": "Connect a cloud file service (Drive, Dropbox, OneDrive, Box) to export files to it.",
+				"submit": "Export {count} file | Export {count} files",
+				"unredactedWarning": "{count} of these files hasn't been redacted; its original contents will leave the workspace. | {count} of these files haven't been redacted; their original contents will leave the workspace."
+			},
+			"import": {
+				"title": "Import from connection",
+				"description": "Choose a connected file service to pick files from.",
+				"emptyTitle": "No importable connection",
+				"emptyDescription": "Connect a cloud file service (Drive, Dropbox, OneDrive, Box) to import files from it."
 			}
 		},
 		"events": {
@@ -1184,7 +1209,9 @@
 			"webhookTestSuccess": "Webhook test successful",
 			"webhookTestSuccessDescription": "Received {statusCode} response in {responseTimeMs}ms",
 			"webhookTestFailed": "Webhook test failed",
-			"webhookTestFailedDescription": "Received {statusCode} response"
+			"webhookTestFailedDescription": "Received {statusCode} response",
+			"importStarted": "Importing {count} file | Importing {count} files",
+			"importFailed": "Failed to import files"
 		},
 		"runs": {
 			"allStatus": "All Status",
@@ -1375,7 +1402,8 @@
 				"network": "Network",
 				"organization": "Organization",
 				"contextual": "Contextual"
-			}
+			},
+			"exportRedacted": "Export redacted file"
 		},
 		"preview": {
 			"loading": "Loading document...",
@@ -1592,7 +1620,22 @@
 				"sha256": "SHA-256",
 				"sha512": "SHA-512"
 			},
-			"moreOperators": "More operators"
+			"moreOperators": "More operators",
+			"matchers": {
+				"label": "Custom matchers",
+				"hint": "Caller-defined recognizers that detect entities the built-in ones miss, tagging each match with a label.",
+				"add": "Add matcher",
+				"namePlaceholder": "internal_id",
+				"kind": {
+					"pattern": "Pattern",
+					"terms": "Terms"
+				},
+				"confidence": "Confidence",
+				"confidenceAuto": "auto",
+				"patternPlaceholder": "Regular expression, e.g. ACME-\\d{'{'}6{'}'}",
+				"termsPlaceholder": "Add a term and press Enter",
+				"labelPlaceholder": "Label to apply"
+			}
 		},
 		"delete": {
 			"title": "Delete {name}?",
@@ -1897,7 +1940,9 @@
 			"emailPlaceholder": "name{'@'}example.com",
 			"password": "Password",
 			"signIn": "Sign in",
-			"signUp": "Sign up"
+			"signUp": "Sign up",
+			"oidcFailed": "Couldn't sign in with that provider. Please try again.",
+			"desktopHandoffFailed": "Couldn't hand off your sign-in to the app. Please try again."
 		},
 		"login": {
 			"title": "Sign In",
@@ -1961,6 +2006,15 @@
 			"successHeading": "Password reset",
 			"successSubtitle": "Your password has been successfully updated",
 			"continueToLogin": "Continue to login"
+		},
+		"desktop": {
+			"title": "Signed in",
+			"heading": "You're signed in",
+			"subtitle": "Return to the Nvisy app to continue. You can close this tab.",
+			"openApp": "Open Nvisy",
+			"closeHint": "Didn't switch back? Use the button above to open the app.",
+			"expired": "This sign-in link has expired or was already used. Sign in again from the Nvisy app.",
+			"backToLogin": "Back to sign in"
 		}
 	},
 	"account": {
@@ -2006,7 +2060,29 @@
 			"saved": "Password updated",
 			"saveFailed": "Failed to update password. Please try again.",
 			"button": "Update password",
-			"footer": "You'll need to sign in again after changing your password."
+			"footer": "You'll need to sign in again after changing your password.",
+			"label": "Password",
+			"noneHint": "Your account signs in with a connected provider. Set a password to also sign in with email.",
+			"setButton": "Set a password",
+			"reauthNeedsProvider": "Connect a provider first to set a password.",
+			"reauthFailed": "Couldn't start re-authentication. Please try again.",
+			"remove": "Remove password",
+			"removed": "Password removed",
+			"removeFailed": "Failed to remove password"
+		},
+		"identities": {
+			"title": "Sign-in methods",
+			"description": "The providers and passwords you can sign in with. Connect more, or remove ones you no longer use.",
+			"connected": "Connected",
+			"addedOn": "added {when}",
+			"connect": "Connect",
+			"unlink": "Disconnect",
+			"unlinked": "Provider disconnected",
+			"unlinkFailed": "Failed to disconnect the provider",
+			"linked": "Provider connected",
+			"linkFailed": "Couldn't connect that provider. Please try again.",
+			"linkNeedsMethod": "Another sign-in method is required before connecting more.",
+			"lastMethodHint": "You can't remove your only sign-in method."
 		}
 	},
 	"notifications": {

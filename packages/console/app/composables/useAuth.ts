@@ -1,108 +1,121 @@
-import { login as sdkLogin, signup as sdkSignup } from "@nvisy/sdk/standalone";
-import type { Login, Signup, AuthToken } from "@nvisy/sdk/datatypes";
+import {
+	login as sdkLogin,
+	signup as sdkSignup,
+	startOidcSignIn as sdkStartOidcSignIn,
+} from "@nvisy/sdk/standalone";
+import type { Login, Signup, IdentityProvider } from "@nvisy/sdk/datatypes";
 
-const AUTH_STORAGE_KEY = "auth";
-const AUTH_COOKIE_NAME = "nvisy_auth";
-const AUTH_COOKIE_DOMAIN = ".nvisy.com";
-const AUTH_COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
+// The browser session lives in two server-set cookies: an HttpOnly `nvisy.session`
+// (the JWT, unreadable by script) and a readable `nvisy.csrf` echoed back on
+// state-changing requests. Both are set on login and cleared on logout, so the
+// readable one's presence is the client's "signed in" signal — the HttpOnly one
+// can't be read.
+const CSRF_COOKIE_NAME = "nvisy.csrf";
 
-// Global reactive state for auth token
-const authToken = ref<AuthToken | null>(null);
+// Reactive mirror of the CSRF cookie's presence. `useCookie` is reactive to our
+// own writes (login/logout) but not to a value set by a server redirect (the
+// OIDC callback), so it's re-read on app init and after such returns.
+const sessionActive = ref(false);
 let initialized = false;
 
-// Shared cookie for cross-subdomain auth state (nvisy.com <-> app.nvisy.com)
-const authCookie = useCookie(AUTH_COOKIE_NAME, {
-	domain: AUTH_COOKIE_DOMAIN,
-	path: "/",
-	secure: true,
-	sameSite: "lax",
-	maxAge: AUTH_COOKIE_MAX_AGE,
-});
+function readCsrfCookie(): boolean {
+	if (!import.meta.client) return false;
+	return document.cookie
+		.split("; ")
+		.some((c) => c.startsWith(`${CSRF_COOKIE_NAME}=`));
+}
 
 function initializeAuth() {
 	if (initialized || !import.meta.client) return;
 	initialized = true;
-
-	// Initialize from localStorage
-	const stored = localStorage.getItem(AUTH_STORAGE_KEY);
-	if (stored) {
-		try {
-			authToken.value = JSON.parse(stored);
-			// Ensure cookie is set if we have a valid token
-			authCookie.value = "1";
-		} catch {
-			localStorage.removeItem(AUTH_STORAGE_KEY);
-			authCookie.value = null;
-		}
-	}
-
-	// Sync to localStorage and cookie when token changes
-	watch(authToken, (newToken) => {
-		if (newToken) {
-			localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(newToken));
-			authCookie.value = "1";
-		} else {
-			localStorage.removeItem(AUTH_STORAGE_KEY);
-			authCookie.value = null;
-		}
-	});
+	sessionActive.value = readCsrfCookie();
 }
 
 /**
- * Composable for authentication operations
+ * Composable for authentication operations.
+ *
+ * Auth is cookie-based: `login`/`signup`/OIDC set the session cookies
+ * server-side and return nothing. The client tracks only whether a session is
+ * active (the readable CSRF cookie's presence); the sliding session refreshes
+ * on each request, and any 401/403 clears the session (see the SDK plugin).
  */
 export function useAuth() {
 	initializeAuth();
 
 	const queryCache = useQueryCache();
-	// Login/signup run before an authed client exists, so they take the base URL
-	// and fetch directly. Use the effective URL (the user's override on desktop,
-	// else the config default) and the injected fetch (desktop: Tauri's native
-	// fetch, bypassing CORS) so auth reaches the same server the app will talk to.
+	// Login/signup run before the app client is built, so they hit the API
+	// directly with the effective base URL and injected fetch (desktop: Tauri's
+	// native fetch, bypassing CORS) so auth reaches the same server the app uses.
 	const { baseUrl } = useApiBaseUrl();
 	const { apiFetch } = useApiFetch();
+	const { desktopToken, isDesktop } = useDesktopAuth();
 
-	const isAuthenticated = computed(() => {
-		if (!authToken.value) return false;
-		const expiresAt = new Date(authToken.value.expiresAt);
-		return expiresAt > new Date();
-	});
+	// Desktop authenticates with a bearer token (external-browser sign-in), the
+	// web with cookies. On desktop the session marker is the token's presence; on
+	// the web it's the readable CSRF cookie.
+	const isAuthenticated = computed(() =>
+		isDesktop.value ? desktopToken.value !== null : sessionActive.value,
+	);
+
+	// Re-read the session marker from the cookies, e.g. after an OIDC redirect
+	// back set them without going through login().
+	function syncSession() {
+		sessionActive.value = readCsrfCookie();
+	}
 
 	const loginMutation = useMutation({
 		mutation: async (credentials: Login) => {
-			return await sdkLogin(credentials, {
+			await sdkLogin(credentials, {
 				baseUrl: baseUrl.value,
 				fetch: apiFetch.value,
 			});
 		},
-		onSuccess(data) {
-			authToken.value = data;
+		onSuccess() {
+			syncSession();
 		},
 	});
 
 	const signupMutation = useMutation({
 		mutation: async (details: Signup) => {
-			return await sdkSignup(details, {
+			await sdkSignup(details, {
 				baseUrl: baseUrl.value,
 				fetch: apiFetch.value,
 			});
 		},
-		onSuccess(data) {
-			authToken.value = data;
+		onSuccess() {
+			syncSession();
 		},
 	});
 
-	// Clear all local auth/session state without calling the API. Safe to call
-	// from a failed-request handler (won't trigger further requests).
+	// Begin an OIDC sign-in: ask the server for the provider's authorize URL. The
+	// caller sends the browser there; the provider's callback is handled
+	// server-side, which signs the user in (setting the session cookies) and
+	// redirects back to `redirectUri`. Runs before the app client exists, so it
+	// uses the standalone function with the effective base URL and injected fetch.
+	async function startOidcSignIn(
+		provider: IdentityProvider,
+		redirectUri?: string,
+	) {
+		return await sdkStartOidcSignIn(
+			provider,
+			redirectUri ? { redirectUri } : undefined,
+			{ baseUrl: baseUrl.value, fetch: apiFetch.value },
+		);
+	}
+
+	// Drop all local session state without calling the API. Safe to call from a
+	// failed-request handler (won't trigger further requests). The server's
+	// cookies are cleared by the logout endpoint (see logout) or expire; this
+	// clears the client's view and cached data.
 	function clearAuth() {
-		authToken.value = null;
+		sessionActive.value = false;
+		// Desktop: drop the bearer token from the OS keychain (no-op on the web).
+		runDesktopSignOut();
 		if (import.meta.client) {
-			localStorage.removeItem(AUTH_STORAGE_KEY);
 			// Drop the persisted Studio open-files so the next account doesn't
 			// inherit (and fail to load) the previous user's tabs.
 			localStorage.removeItem(STUDIO_OPEN_FILES_KEY);
 		}
-		authCookie.value = null;
 
 		// Clear workspace cookie
 		const workspaceCookie = useCookie("current_workspace_slug");
@@ -121,6 +134,7 @@ export function useAuth() {
 		const client = $nvisyClient.value;
 		if (client) {
 			try {
+				// Clears the server's session + CSRF cookies.
 				await client.auth.logoutAccount();
 			} catch {
 				// Ignore errors - we're logging out anyway
@@ -134,7 +148,7 @@ export function useAuth() {
 	return {
 		// State
 		isAuthenticated,
-		authToken: readonly(authToken),
+		syncSession,
 		clearAuth,
 
 		// Login
@@ -148,6 +162,9 @@ export function useAuth() {
 		signupAsync: signupMutation.mutateAsync,
 		isSigningUp: signupMutation.isLoading,
 		signupError: signupMutation.error,
+
+		// OIDC sign-in
+		startOidcSignIn,
 
 		// Logout
 		logout,

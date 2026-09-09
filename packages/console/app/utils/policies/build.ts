@@ -1,5 +1,6 @@
 import type {
 	CreatePolicy,
+	CustomMatcher,
 	Label,
 	LabelScope,
 	ModalityRedactions,
@@ -223,15 +224,44 @@ function buildScopes(input: PolicyInput): LabelScope[] | undefined {
 }
 
 /**
+ * Build the caller-defined recognizers this policy adds. A matcher needs a name,
+ * a label, and a non-empty pattern (regex) or terms list; incomplete rows are
+ * dropped so a half-filled matcher never reaches the SDK.
+ */
+function buildMatchers(input: PolicyInput): CustomMatcher[] | undefined {
+	const matchers: CustomMatcher[] = [];
+	for (const m of input.matchers ?? []) {
+		const name = m.name.trim();
+		const label = m.label.trim();
+		if (!name || !label) continue;
+
+		const base = {
+			name,
+			label,
+			...(m.confidence !== undefined ? { confidence: m.confidence } : {}),
+		};
+		if (m.kind === "pattern") {
+			const pattern = m.pattern?.trim();
+			if (pattern) matchers.push({ ...base, kind: "pattern", pattern });
+		} else {
+			const terms = csvToList(m.terms);
+			if (terms.length > 0) matchers.push({ ...base, kind: "terms", terms });
+		}
+	}
+	return matchers.length > 0 ? matchers : undefined;
+}
+
+/**
  * Build the SDK policy definition body shared by create and update.
  *
  * The editor fully models predicated and table rules, the fallback, custom
- * labels, and label scopes.
+ * labels, label scopes, and custom matchers.
  */
 export function buildDefinition(input: PolicyInput): PolicyDefinition {
 	const rules = input.rules.map(buildRule);
 	const custom = buildCustomLabels(input);
 	const scopes = buildScopes(input);
+	const matchers = buildMatchers(input);
 
 	return {
 		id: input.id,
@@ -242,6 +272,7 @@ export function buildDefinition(input: PolicyInput): PolicyDefinition {
 		...(input.fallback ? { fallback: buildAction(input.fallback) } : {}),
 		...(custom ? { custom } : {}),
 		...(scopes ? { scopes } : {}),
+		...(matchers ? { matchers } : {}),
 	} as PolicyDefinition;
 }
 

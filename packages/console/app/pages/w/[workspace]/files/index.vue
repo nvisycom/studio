@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import type { File as NvisyFile, UpdateFile } from "@nvisy/sdk/datatypes";
+import type {
+	Connection,
+	File as NvisyFile,
+	UpdateFile,
+} from "@nvisy/sdk/datatypes";
 import { FileText, Loader2, Upload } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import {
@@ -9,6 +13,11 @@ import {
 	FilesTableView,
 	UploadFilesDialog,
 } from "#console/components/pages/files";
+import {
+	ExportToConnectionDialog,
+	ImportFromConnectionDialog,
+} from "#console/components/pages/integrations";
+import { ImportError } from "#console/utils/connections";
 import { Button } from "#console/components/ui/button";
 import {
 	HeaderSocket,
@@ -34,9 +43,11 @@ const {
 	selectedFormats,
 	viewMode,
 	uploadOpen: uploadDialogOpen,
+	importOpen: importDialogOpen,
 	filesQuery,
 	hasFilters,
 	clearFilters,
+	takeImportStarted,
 } = useFilesView();
 
 const {
@@ -54,6 +65,7 @@ const {
 	loadMore,
 	hasMore,
 	isLoadingMore,
+	refresh: refreshFiles,
 } = useFiles({ query: filesQuery });
 
 const isDraggingOver = ref(false);
@@ -121,6 +133,85 @@ async function handleBulkDownload() {
 		toast.success(t("files.messages.downloadStarted"));
 	}
 }
+
+// Export to a file-service connection: pick a destination in the dialog, then
+// each selected file's redacted output is written there as a new provider file.
+const { connections, exportFilesAsync, isExporting } = useConnections();
+
+const exportDialogOpen = ref(false);
+const filesToExport = ref<string[]>([]);
+
+// Originals in the export set carry un-redacted contents; the dialog warns
+// before sending them to an external service.
+const unredactedExportCount = computed(() => {
+	const ids = new Set(filesToExport.value);
+	return (files.value ?? []).filter(
+		(f) => ids.has(f.id) && f.fileKind === "original",
+	).length;
+});
+
+function openExportDialog(fileIds: string[]) {
+	if (fileIds.length === 0) return;
+	filesToExport.value = fileIds;
+	exportDialogOpen.value = true;
+}
+
+function handleExportFile(file: NvisyFile) {
+	openExportDialog([file.id]);
+}
+
+function handleBulkExport() {
+	openExportDialog(Array.from(selectedFiles.value));
+}
+
+async function handleExport(connectionId: string) {
+	try {
+		await exportFilesAsync({ connectionId, fileIds: filesToExport.value });
+		exportDialogOpen.value = false;
+		toast.success(t("files.messages.exportStarted"));
+	} catch {
+		toast.error(t("files.errors.exportFailed"));
+	}
+}
+
+// Import from a file-service connection: pick a source in the dialog, open its
+// picker, then import the chosen files. `importFrom` resolves once the server
+// accepts the import; the provider files are then fetched by a background sync,
+// so a single refresh usually shows nothing. Re-poll for a bounded window so the
+// files surface as the sync lands them. A cancelled picker returns 0 (silent).
+const { importFrom } = useFileImport();
+
+// Poll the list a few times after an import starts, giving the background sync
+// time to land the files without waiting on a manual refresh.
+const IMPORT_POLL_INTERVALS_MS = [1500, 3000, 5000, 8000];
+function pollAfterImport() {
+	for (const delay of IMPORT_POLL_INTERVALS_MS) {
+		setTimeout(() => refreshFiles(), delay);
+	}
+}
+
+async function handleImport(connection: Connection) {
+	try {
+		const count = await importFrom(connection);
+		if (count > 0) {
+			toast.success(t("files.messages.importStarted", { count }));
+			refreshFiles();
+			pollAfterImport();
+		}
+	} catch (error) {
+		// Pickers and the import flow throw ImportError with an i18n key; anything
+		// else is unexpected and falls back to the generic failure message.
+		const description =
+			error instanceof ImportError ? t(error.messageKey) : undefined;
+		toast.error(t("files.errors.importFailed"), { description });
+	}
+}
+
+// An import started on another page (the integrations connection row) then
+// navigated here — poll so its files surface without a manual refresh.
+onMounted(() => {
+	if (takeImportStarted()) pollAfterImport();
+});
 
 function openDeleteDialog(file?: NvisyFile) {
 	fileToDelete.value = file || null;
@@ -327,8 +418,10 @@ function handleLoadMore() {
             @edit="openEditDialog"
             @download="handleDownloadFile"
             @delete="openDeleteDialog"
+            @export="handleExportFile"
             @bulk-open="handleBulkOpen"
             @bulk-download="handleBulkDownload"
+            @bulk-export="handleBulkExport"
             @bulk-delete="openBulkDeleteDialog"
             @load-more="handleLoadMore"
           />
@@ -341,11 +434,13 @@ function handleLoadMore() {
             :selection="filesSelection"
             @bulk-open="handleBulkOpen"
             @bulk-download="handleBulkDownload"
+            @bulk-export="handleBulkExport"
             @bulk-delete="openBulkDeleteDialog"
             @view="viewFile"
             @edit="openEditDialog"
             @download="handleDownloadFile"
             @delete="openDeleteDialog"
+            @export="handleExportFile"
             @load-more="handleLoadMore"
           />
         </div>
@@ -406,6 +501,21 @@ function handleLoadMore() {
       :upload-fn="uploadFilesAsync"
       :initial-files="droppedFiles"
       @uploaded="handleUploadComplete"
+    />
+
+    <ExportToConnectionDialog
+      v-model:open="exportDialogOpen"
+      :file-ids="filesToExport"
+      :unredacted-count="unredactedExportCount"
+      :connections="connections ?? []"
+      :is-loading="isExporting"
+      @export="handleExport"
+    />
+
+    <ImportFromConnectionDialog
+      v-model:open="importDialogOpen"
+      :connections="connections ?? []"
+      @import="handleImport"
     />
   </div>
 </template>

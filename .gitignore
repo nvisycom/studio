@@ -59,6 +59,7 @@ temp/
 
 # Other
 .ignore*/
+.probe/
 LLM.md
 .claude
 CLAUDE.md

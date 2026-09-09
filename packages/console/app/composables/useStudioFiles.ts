@@ -47,7 +47,7 @@ let swapWatcherRegistered = false;
 
 export function useStudioFiles() {
 	const { $nvisyClient } = useNuxtApp();
-	const { authToken } = useAuth();
+	const { isAuthenticated } = useAuth();
 	const { currentWorkspaceSlug } = useWorkspaces();
 
 	// Snapshot the current in-memory tabs into localStorage. Keyed off the
@@ -94,7 +94,7 @@ export function useStudioFiles() {
 		const workspaceSlug = loadedSlug.value ?? currentWorkspaceSlug.value;
 		try {
 			const client = $nvisyClient.value;
-			if (!client || !workspaceSlug || !authToken.value?.apiToken) {
+			if (!client || !workspaceSlug || !isAuthenticated.value) {
 				throw new Error("Not authenticated");
 			}
 

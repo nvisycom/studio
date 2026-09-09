@@ -1,5 +1,14 @@
 {
 	"auth": {
+		"login": {
+			"browser": {
+				"submit": "Sign in with your browser",
+				"waiting": "Waiting for your browser…",
+				"hint": "You'll finish signing in in your browser, then return here automatically.",
+				"openFailed": "Couldn't open your browser. Check the Server URL and try again.",
+				"failed": "Sign in didn't complete. Please try again."
+			}
+		},
 		"server": {
 			"label": "Server URL",
 			"placeholder": "https://api.nvisy.com/",

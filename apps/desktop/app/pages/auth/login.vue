@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { ChevronDown, Eye, EyeOff, Loader2 } from "@lucide/vue";
+import { ChevronDown, ExternalLink, Loader2 } from "@lucide/vue";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
-import { Checkbox } from "#console/components/ui/checkbox";
 import { NvisyLogo } from "#console/components/brand";
 import ThemeToggle from "#console/components/layout/footer/ThemeToggle.vue";
 import LanguageSwitcher from "#console/components/layout/footer/LanguageSwitcher.vue";
-import { NvisyApiError } from "@nvisy/sdk";
 
 const { t } = useI18n();
 
@@ -18,7 +17,15 @@ definePageMeta({
 	layout: false,
 });
 
-const { loginAsync, isLoggingIn, loginError } = useAuth();
+// A user-actionable sign-in error: either the browser flow failed and the
+// server bounced back with `?signin=error`, or launching the browser itself
+// failed (set in `beginBrowserSignIn`). A successful sign-in lands the token via
+// the deep link (handled by the desktop-auth plugin) and never returns here.
+const route = useRoute();
+const signInError = ref<string | null>(null);
+if (route.query.signin === "error") {
+	signInError.value = t("auth.login.browser.failed");
+}
 
 // Server URL: desktop connects to a user-specified (e.g. self-hosted) server.
 // The field edits the persisted override; blank falls back to the default. The
@@ -172,44 +179,85 @@ const probeView = computed(() => {
 // nothing (both leave `probeView` null, so distinguish them here).
 const showGuidance = computed(() => probe.value.kind === "idle");
 
-const apiError = computed(() =>
-	loginError.value instanceof NvisyApiError ? loginError.value : null,
-);
+// The desktop signs in through the system browser (external-browser auth), not
+// an in-app password form: the webview can't reach a self-hosted API origin
+// (CORS) or read the session cookie the web flow sets, and Google/Microsoft
+// block OAuth inside embedded webviews. So we open the real browser to the web
+// console's login page, carrying a `redirect_uri` deep link. The console logs
+// the user in (password or OIDC), mints a native-app token from that session
+// (`mintDesktopToken`), and redirects it back to the deep link with the token in
+// the query; the Rust shell captures it and hands it to the frontend (see the
+// desktop-auth plugin and nvisycom/server#285). This page only launches that.
 
-// A login error that isn't an API error never reached the server — a bad Server
-// URL, the server being down, or a network issue. The raw message ("Load
-// failed" / "Failed to fetch") is useless, so show actionable copy that points
-// at the Server URL instead.
-const isConnectionError = computed(
-	() => !!loginError.value && apiError.value === null,
-);
-const errorMessage = computed(() =>
-	isConnectionError.value
-		? t("auth.server.connectionError")
-		: loginError.value?.message || t("auth.login.genericError"),
-);
+// The deep-link URI the console redirects the token back to. The scheme is
+// registered by the Tauri shell (tauri.conf.json → deep-link) and captured in
+// auth.rs; the server must allow-list this exact target.
+const CALLBACK_URI = "nvisy://auth/callback";
 
-// Accepts an email OR a username — the SDK's Login takes a single `identifier`.
-const identifier = ref("");
-const password = ref("");
-const rememberMe = ref(false);
-const showPassword = ref(false);
+// The build-time hosted web console origin (used when no self-hosted server is
+// configured). Overridden at build time via `NUXT_PUBLIC_WEB_APP_URL`.
+const webAppUrl = useRuntimeConfig().public.webAppUrl as string;
 
-async function handleLogin(): Promise<void> {
+// Where the browser opens for sign-in: the web console origin, NOT the API (the
+// console is a separate Nuxt app — :3000 in dev, app.nvisy.com in prod). The app
+// runs on `tauri://`, so it can't use its own origin. With a self-hosted server
+// (an override), the console is served alongside the API at that same origin, so
+// mint + sign-in happen against the server the app actually talks to; on the
+// hosted default it's the separate `webAppUrl`.
+const consoleBaseUrl = computed(() => {
+	if (!override.value) return webAppUrl;
 	try {
-		await loginAsync({
-			identifier: identifier.value,
-			password: password.value,
-			rememberMe: rememberMe.value,
-		});
-		// Return the user to where they were headed before login, if any.
-		navigateTo(safeRedirectPath(useRoute().query.redirect) ?? "/");
+		return new URL(override.value).origin;
 	} catch {
-		// A connection failure usually means the Server URL is wrong — reveal the
-		// field so the user can correct it. Auth errors surface via `loginError`.
-		if (isConnectionError.value) showServer.value = true;
+		return webAppUrl;
+	}
+});
+
+// True while the system browser is open for sign-in. The actual sign-in
+// completes out-of-process (the deep link lands via the desktop-auth plugin and
+// navigates to the app), so this stays true until then; it disables the button
+// and shows the "continue in your browser" hint. Reset if the launch itself
+// fails or the user comes back to the window without finishing.
+const awaitingBrowser = ref(false);
+
+async function beginBrowserSignIn(): Promise<void> {
+	signInError.value = null;
+
+	// Commit any edited server URL first, so we authorize against the server the
+	// app will actually talk to. An invalid entry blocks the flow and reveals the
+	// field to be corrected.
+	applyServer();
+	if (serverError.value) {
+		showServer.value = true;
+		return;
+	}
+
+	try {
+		// The web console's login page, carrying the deep-link `redirect_uri` so it
+		// mints and hands the token back to the app rather than entering the console.
+		// `new URL` can throw on a malformed base — kept inside the try so a bad
+		// console URL surfaces as an error rather than an unhandled rejection.
+		const authorizeUrl = new URL("/auth/login", consoleBaseUrl.value);
+		authorizeUrl.searchParams.set("redirect_uri", CALLBACK_URI);
+		awaitingBrowser.value = true;
+		await openUrl(authorizeUrl.toString());
+	} catch {
+		// Couldn't hand off to the browser at all — surface it and reveal the
+		// server field, since a bad URL is the likeliest cause.
+		awaitingBrowser.value = false;
+		signInError.value = t("auth.login.browser.openFailed");
+		showServer.value = true;
 	}
 }
+
+// Re-enable the button when the user returns to the window without completing
+// sign-in (they cancelled in the browser, or it failed). A successful sign-in
+// navigates away via the deep link before this matters.
+function onWindowFocus() {
+	if (awaitingBrowser.value) awaitingBrowser.value = false;
+}
+onMounted(() => window.addEventListener("focus", onWindowFocus));
+onBeforeUnmount(() => window.removeEventListener("focus", onWindowFocus));
 </script>
 
 <template>
@@ -344,83 +392,33 @@ async function handleLogin(): Promise<void> {
           </div>
         </div>
 
-        <form class="space-y-4" @submit.prevent="handleLogin">
-          <div class="space-y-2">
-            <Label for="identifier" required>
-              {{ t("auth.login.identifier") }}
-            </Label>
-            <Input
-              id="identifier"
-              v-model="identifier"
-              name="identifier"
-              type="text"
-              :placeholder="t('auth.login.identifierPlaceholder')"
-              class="h-10"
-              required
-              autocomplete="username"
-            />
-          </div>
-
-          <div class="space-y-2">
-            <Label for="password" required>{{ t("auth.shared.password") }}</Label>
-            <div class="relative">
-              <Input
-                id="password"
-                v-model="password"
-                name="password"
-                :type="showPassword ? 'text' : 'password'"
-                :placeholder="t('auth.login.passwordPlaceholder')"
-                class="h-10 pr-10"
-                required
-                autocomplete="current-password"
-              />
-              <button
-                type="button"
-                class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-                :aria-label="
-                  showPassword ? t('common.hidePassword') : t('common.showPassword')
-                "
-                :aria-pressed="showPassword"
-                @click="showPassword = !showPassword"
-              >
-                <Eye v-if="!showPassword" :size="16" />
-                <EyeOff v-else :size="16" />
-              </button>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-2">
-            <Checkbox id="remember" v-model="rememberMe" />
-            <Label
-              for="remember"
-              class="cursor-pointer text-sm font-normal text-muted-foreground"
-            >
-              {{ t("auth.login.rememberMe") }}
-            </Label>
-          </div>
-
+        <div class="space-y-4">
           <div
-            v-if="loginError"
+            v-if="signInError"
             class="rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive"
           >
-            <p>{{ errorMessage }}</p>
-            <p v-if="apiError?.suggestion" class="mt-1 opacity-80">
-              {{ apiError.suggestion }}
-            </p>
-            <ul
-              v-if="apiError?.validation?.length"
-              class="mt-2 list-inside list-disc space-y-1"
-            >
-              <li v-for="err in apiError.validation" :key="err.field">
-                <span class="font-medium">{{ err.field }}:</span> {{ err.message }}
-              </li>
-            </ul>
+            {{ signInError }}
           </div>
 
-          <Button type="submit" class="h-10 w-full" :disabled="isLoggingIn">
-            {{ isLoggingIn ? t("auth.login.submitting") : t("auth.login.submit") }}
+          <Button
+            type="button"
+            class="h-10 w-full"
+            :disabled="awaitingBrowser"
+            @click="beginBrowserSignIn"
+          >
+            <Loader2 v-if="awaitingBrowser" :size="16" class="mr-2 animate-spin" />
+            <ExternalLink v-else :size="16" class="mr-2" />
+            {{
+              awaitingBrowser
+                ? t("auth.login.browser.waiting")
+                : t("auth.login.browser.submit")
+            }}
           </Button>
-        </form>
+
+          <p class="text-center text-xs text-muted-foreground">
+            {{ t("auth.login.browser.hint") }}
+          </p>
+        </div>
       </div>
     </main>
   </div>

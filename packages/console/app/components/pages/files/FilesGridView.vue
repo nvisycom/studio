@@ -22,8 +22,10 @@ interface Emits {
 	(e: "edit", file: NvisyFile): void;
 	(e: "download", file: NvisyFile): void;
 	(e: "delete", file: NvisyFile): void;
+	(e: "export", file: NvisyFile): void;
 	(e: "bulk-open"): void;
 	(e: "bulk-download"): void;
+	(e: "bulk-export"): void;
 	(e: "bulk-delete"): void;
 	(e: "load-more"): void;
 }
@@ -39,8 +41,10 @@ const { fileActions } = useFileActions(props.selection, {
 	edit: (f) => emit("edit", f),
 	download: (f) => emit("download", f),
 	delete: (f) => emit("delete", f),
+	exportFile: (f) => emit("export", f),
 	bulkOpen: () => emit("bulk-open"),
 	bulkDownload: () => emit("bulk-download"),
+	bulkExport: () => emit("bulk-export"),
 	bulkDelete: () => emit("bulk-delete"),
 });
 

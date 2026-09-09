@@ -41,6 +41,13 @@
     },
     "macOSPrivateApi": true
   },
+  "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": ["nvisy"]
+      }
+    }
+  },
   "bundle": {
     "active": true,
     "targets": ["app", "dmg", "nsis", "deb", "appimage"],

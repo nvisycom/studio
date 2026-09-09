@@ -21,6 +21,13 @@ const viewMode = ref<"list" | "grid">("list");
 // Shared upload trigger: the header button flips this; the page binds the
 // upload dialog's open state to it.
 const uploadOpen = ref(false);
+// Shared import trigger: the header button flips this; the page binds the
+// import-from-connection dialog's open state to it.
+const importOpen = ref(false);
+// When an import was started from elsewhere (the integrations page navigates to
+// Files afterwards), the timestamp it started. The Files page reads it on mount
+// to poll for the incoming files, then clears it.
+const importStartedAt = ref<number | null>(null);
 
 /** Modality tokens offered in the filter, in display order. */
 export const MODALITY_TOKENS: ModalityToken[] = [
@@ -88,17 +95,39 @@ export function useFilesView() {
 		uploadOpen.value = true;
 	}
 
+	function openImport() {
+		importOpen.value = true;
+	}
+
+	// Mark that an import just started, for a Files page mounting after a navigation
+	// from elsewhere (the integrations connection row) to pick up.
+	function markImportStarted() {
+		importStartedAt.value = Date.now();
+	}
+
+	// Consume the pending-import marker (returns whether one was set, and clears
+	// it), so the Files page polls exactly once after the navigation.
+	function takeImportStarted(): boolean {
+		const started = importStartedAt.value !== null;
+		importStartedAt.value = null;
+		return started;
+	}
+
 	return {
 		searchQuery,
 		selectedModalities,
 		selectedFormats,
 		viewMode,
 		uploadOpen,
+		importOpen,
 		filesQuery,
 		modalityOptions,
 		formatOptions,
 		hasFilters,
 		clearFilters,
 		openUpload,
+		openImport,
+		markImportStarted,
+		takeImportStarted,
 	};
 }

@@ -8,6 +8,7 @@ import type {
 	EditableOperator,
 	EditableLabel,
 	EditableScope,
+	EditableMatcher,
 	PredicateKind,
 	Modality,
 } from "#console/utils/policies";
@@ -18,6 +19,7 @@ import {
 	fallbackFromDefinition,
 	labelsFromDefinition,
 	scopesFromDefinition,
+	matchersFromDefinition,
 } from "#console/utils/policies";
 import { LabelPicker, LabelSelect, TagInput } from "#console/components/label";
 import { slugify } from "#console/utils/naming";
@@ -28,6 +30,7 @@ import {
 	Sparkles,
 	Hash,
 	Tag as TagIcon,
+	ScanSearch,
 	ChevronUp,
 	ChevronDown,
 } from "@lucide/vue";
@@ -89,12 +92,14 @@ const rules = ref<EditableRule[]>([]);
 const fallback = ref<EditableAction | null>(null);
 const labels = ref<EditableLabel[]>([]);
 const scopes = ref<EditableScope[]>([]);
+const matchers = ref<EditableMatcher[]>([]);
 const policyId = ref("");
 
 // Collapsible sections start collapsed; adding an item auto-expands them.
 const rulesOpen = ref(false);
 const labelsOpen = ref(false);
 const scopesOpen = ref(false);
+const matchersOpen = ref(false);
 const fallbackOpen = ref(false);
 
 // Fallback (a ModalityRedactions, like a rule action)
@@ -179,6 +184,9 @@ function removeLabel(key: string) {
 			}
 		}
 	}
+	for (const matcher of matchers.value) {
+		if (matcher.label === removed.id) matcher.label = "";
+	}
 }
 
 // Label scopes
@@ -191,6 +199,18 @@ function addScope() {
 }
 function removeScope(key: string) {
 	scopes.value = scopes.value.filter((s) => s.key !== key);
+}
+
+// Custom matchers
+function addMatcher() {
+	matchersOpen.value = true;
+	matchers.value = [
+		...matchers.value,
+		{ key: crypto.randomUUID(), name: "", label: "", kind: "pattern" },
+	];
+}
+function removeMatcher(key: string) {
+	matchers.value = matchers.value.filter((m) => m.key !== key);
 }
 
 // On create the slug is immutable and always derived from the name; on edit it
@@ -289,7 +309,30 @@ const definitionValid = computed(() => {
 	const scopesNamed = scopes.value.every(
 		(s) => s.labels.length === 0 || s.name.trim().length > 0,
 	);
-	return rulesNamed && doesSomething && scopeRefsResolve && scopesNamed;
+	// A matcher that's been given a name, a label, or match content must be
+	// complete (name + label + pattern/terms), so a save never silently drops a
+	// half-filled recognizer. A wholly-empty freshly-added row stays valid. When
+	// set, confidence must be a finite value in [0, 1] (the EditableMatcher
+	// contract) — the input's min/max don't constrain a typed value.
+	const matchersComplete = matchers.value.every((m) => {
+		const name = m.name.trim();
+		const label = m.label.trim();
+		const content =
+			m.kind === "pattern" ? (m.pattern ?? "").trim() : (m.terms ?? "").trim();
+		const confidenceValid =
+			m.confidence === undefined ||
+			(Number.isFinite(m.confidence) && m.confidence >= 0 && m.confidence <= 1);
+		if (!confidenceValid) return false;
+		const touched = !!(name || label || content || m.confidence !== undefined);
+		return !touched || (!!name && !!label && !!content);
+	});
+	return (
+		rulesNamed &&
+		doesSomething &&
+		scopeRefsResolve &&
+		scopesNamed &&
+		matchersComplete
+	);
 });
 const isValid = computed(() => metaValid.value && definitionValid.value);
 
@@ -307,6 +350,7 @@ function currentInput() {
 		fallback: fallback.value,
 		labels: labels.value,
 		scopes: scopes.value,
+		matchers: matchers.value,
 	};
 }
 function metaSnapshot(): string {
@@ -348,6 +392,14 @@ function definitionSnapshot(): string {
 			name: s.name.trim(),
 			description: s.description?.trim() ?? "",
 			labels: [...s.labels].sort(),
+		})),
+		matchers: matchers.value.map((m) => ({
+			name: m.name.trim(),
+			label: m.label.trim(),
+			confidence: m.confidence ?? null,
+			kind: m.kind,
+			pattern: m.pattern?.trim() ?? "",
+			terms: m.terms?.trim() ?? "",
 		})),
 	});
 }
@@ -400,6 +452,11 @@ watch(
 			} catch {
 				scopes.value = [];
 			}
+			try {
+				matchers.value = matchersFromDefinition(policy.definition);
+			} catch {
+				matchers.value = [];
+			}
 		} else {
 			policyId.value = crypto.randomUUID();
 			displayName.value = "";
@@ -411,6 +468,7 @@ watch(
 			fallback.value = null;
 			labels.value = [];
 			scopes.value = [];
+			matchers.value = [];
 		}
 		// Capture baselines after populating, so change tracking starts clean.
 		nextTick(() => {
@@ -644,6 +702,100 @@ function ruleSummary(rule: EditablePredicatedRule): string {
               v-model="scope.labels"
               :extra-labels="customLabelOptions"
               borderless
+            />
+          </div>
+        </div>
+    </CollapsibleSection>
+
+    <!-- Custom matchers -->
+    <CollapsibleSection
+      v-model:open="matchersOpen"
+      :title="t('policies.editor.matchers.label')"
+      :hint="t('policies.editor.matchers.hint')"
+      :count="matchers.length"
+    >
+      <template #action>
+        <Button variant="outline" size="sm" @click="addMatcher">
+          <Plus :size="14" class="mr-1.5" />
+          {{ t("policies.editor.matchers.add") }}
+        </Button>
+      </template>
+        <div
+          v-for="matcher in matchers"
+          :key="matcher.key"
+          class="overflow-hidden rounded-lg border border-border/60"
+        >
+          <!-- Matcher header: name (its identity) + delete. -->
+          <div
+            class="flex items-center gap-2 border-b border-border/60 bg-muted/30 pr-1.5 pl-1"
+          >
+            <ScanSearch :size="14" class="ml-1.5 shrink-0 text-muted-foreground" />
+            <Input
+              v-model="matcher.name"
+              :placeholder="t('policies.editor.matchers.namePlaceholder')"
+              :aria-invalid="!matcher.name.trim() ? 'true' : undefined"
+              class="h-9 flex-1 border-0 bg-transparent px-1 font-mono text-sm shadow-none focus-visible:ring-0 aria-invalid:text-destructive aria-invalid:placeholder:text-destructive/70"
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              class="size-8 shrink-0 text-muted-foreground hover:text-destructive"
+              @click="removeMatcher(matcher.key)"
+            >
+              <Trash2 :size="15" />
+            </Button>
+          </div>
+
+          <div class="space-y-3 p-2.5">
+            <!-- Kind + confidence -->
+            <div class="flex items-center gap-2">
+              <Select v-model="matcher.kind">
+                <SelectTrigger class="h-9 w-[140px] text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pattern" class="text-sm">
+                    {{ t("policies.editor.matchers.kind.pattern") }}
+                  </SelectItem>
+                  <SelectItem value="terms" class="text-sm">
+                    {{ t("policies.editor.matchers.kind.terms") }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <div class="flex items-center gap-1.5">
+                <Label class="text-xs text-muted-foreground">
+                  {{ t("policies.editor.matchers.confidence") }}
+                </Label>
+                <Input
+                  v-model.number="matcher.confidence"
+                  type="number"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  :placeholder="t('policies.editor.matchers.confidenceAuto')"
+                  class="h-9 w-24"
+                />
+              </div>
+            </div>
+
+            <!-- The match content, by kind. -->
+            <Input
+              v-if="matcher.kind === 'pattern'"
+              v-model="matcher.pattern"
+              :placeholder="t('policies.editor.matchers.patternPlaceholder')"
+              class="h-9 font-mono text-sm"
+            />
+            <TagInput
+              v-else
+              v-model="matcher.terms"
+              :placeholder="t('policies.editor.matchers.termsPlaceholder')"
+            />
+
+            <!-- The label applied to matches. -->
+            <LabelSelect
+              v-model="matcher.label"
+              :extra-labels="customLabelOptions"
+              :placeholder="t('policies.editor.matchers.labelPlaceholder')"
             />
           </div>
         </div>

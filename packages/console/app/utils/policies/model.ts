@@ -183,6 +183,27 @@ export interface EditableScope {
 	labels: string[];
 }
 
+/**
+ * A caller-defined recognizer: detects entities the built-in recognizers miss,
+ * tagging each match with a chosen `label`. Matches either a regular expression
+ * (`pattern`) or a fixed list of `terms`.
+ */
+export interface EditableMatcher {
+	key: string;
+	/** Recognizer name (its identity in the policy). */
+	name: string;
+	/** The label applied to matches (a LabelRef). */
+	label: string;
+	/** Confidence assigned to matches (0-1); defaults server-side when unset. */
+	confidence?: number;
+	/** How the matcher matches. */
+	kind: "pattern" | "terms";
+	/** Regular expression, when `kind` is `pattern`. */
+	pattern?: string;
+	/** Comma-separated terms, when `kind` is `terms`. */
+	terms?: string;
+}
+
 /** The full editor input for building a create/update policy payload. */
 export interface PolicyInput {
 	id: string;
@@ -196,6 +217,8 @@ export interface PolicyInput {
 	labels?: EditableLabel[];
 	/** Named label sets this policy detects; rules reference them by name. */
 	scopes?: EditableScope[];
+	/** Caller-defined recognizers (pattern / terms) this policy adds. */
+	matchers?: EditableMatcher[];
 }
 
 /** Default text action used whenever an action would otherwise be empty. */

@@ -10,7 +10,31 @@ use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    // `mut` is used only on Windows/Linux (the single-instance block below); on
+    // macOS that block is cfg'd out, leaving the binding unmutated.
+    #[allow(unused_mut)]
+    let mut builder = tauri::Builder::default();
+
+    // Single-instance MUST be the first plugin (Windows/Linux). A `nvisy://` deep
+    // link starts a second process there; this forwards its argv to the running
+    // instance, whose handler pulls the callback URL out and completes sign-in —
+    // otherwise the token would land in the throwaway process. macOS delivers the
+    // URL in-process via `on_open_url`, so it needs neither this plugin nor argv.
+    #[cfg(any(target_os = "windows", target_os = "linux"))]
+    {
+        builder = builder.plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
+            let urls: Vec<url::Url> = argv
+                .iter()
+                .filter_map(|arg| url::Url::parse(arg).ok())
+                .filter(|url| url.scheme() == auth::CALLBACK_SCHEME)
+                .collect();
+            if !urls.is_empty() {
+                auth::handle_deep_links(app, &urls);
+            }
+        }));
+    }
+
+    builder
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_http::init())
         // Drives the native Finder open/save panels; the file commands read and
@@ -18,6 +42,10 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         // Native completion notifications for long detection jobs.
         .plugin(tauri_plugin_notification::init())
+        // Auth: open the system browser for sign-in (opener) and receive the
+        // token back via the `nvisy://auth/callback` deep link.
+        .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_deep_link::init())
         .plugin(global_shortcut_plugin())
         .manage(auth::AuthState::default())
         .manage(files::DropLimit::default())
@@ -39,6 +67,8 @@ pub fn run() {
             commands::watch_folder,
             commands::clear_watch_folder,
             commands::scan_watch_folder,
+            auth::auth_token,
+            auth::clear_auth_token,
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {
@@ -78,6 +108,11 @@ pub fn run() {
             // Resume watching a previously configured folder (auto-upload).
             watch::restore(app.handle());
 
+            // Auth deep link: capture the token the browser sign-in redirects to
+            // (`nvisy://auth/callback?token=…`), whether the app was already
+            // running (on_open_url) or cold-started by the link (current URLs).
+            register_auth_deep_link(app.handle());
+
             Ok(())
         })
         .run(tauri::generate_context!())
@@ -111,4 +146,31 @@ fn register_spotlight_shortcut<R: tauri::Runtime>(app: &tauri::AppHandle<R>) {
     if let Err(error) = app.global_shortcut().register(spotlight::TOGGLE_SHORTCUT) {
         log::warn!("failed to register spotlight shortcut: {error}");
     }
+}
+
+/// Wire the auth callback deep link. `on_open_url` fires while the app is
+/// running (macOS, and the single-instance-forwarded case); the initial
+/// `get_current` handles a cold start launched by the link. On Linux/Windows in
+/// development the scheme also needs a runtime registration (`register_all`),
+/// which is a no-op / handled by the installer in a bundled build.
+fn register_auth_deep_link<R: tauri::Runtime>(app: &tauri::AppHandle<R>) {
+    use tauri_plugin_deep_link::DeepLinkExt;
+
+    let deep_link = app.deep_link();
+
+    #[cfg(any(target_os = "linux", all(debug_assertions, windows)))]
+    if let Err(error) = deep_link.register_all() {
+        log::warn!("failed to register deep-link scheme: {error}");
+    }
+
+    // A link that cold-started the app.
+    if let Ok(Some(urls)) = deep_link.get_current() {
+        auth::handle_deep_links(app, &urls);
+    }
+
+    // Links delivered while the app is already running.
+    let handle = app.clone();
+    deep_link.on_open_url(move |event| {
+        auth::handle_deep_links(&handle, event.urls().as_slice());
+    });
 }

@@ -1,5 +1,5 @@
 import type { File as NvisyFile } from "@nvisy/sdk/datatypes";
-import { Download, Eye, Trash2, Pencil } from "@lucide/vue";
+import { Download, Eye, Trash2, Pencil, ArrowUpFromLine } from "@lucide/vue";
 import type { RowAction } from "#console/components/pages/RowActions.vue";
 import type { Selection } from "#console/composables/useSelection";
 
@@ -9,8 +9,11 @@ export interface FileActionHandlers {
 	edit: (file: NvisyFile) => void;
 	download: (file: NvisyFile) => void;
 	delete: (file: NvisyFile) => void;
+	/** Export one file to a file-service connection (opens the export dialog). */
+	exportFile: (file: NvisyFile) => void;
 	bulkOpen: () => void;
 	bulkDownload: () => void;
+	bulkExport: () => void;
 	bulkDelete: () => void;
 }
 
@@ -44,6 +47,12 @@ export function useFileActions(
 					select: handlers.bulkDownload,
 				},
 				{
+					key: "bulk-export",
+					label: `${t("files.actions.export")} (${n})`,
+					icon: ArrowUpFromLine,
+					select: handlers.bulkExport,
+				},
+				{
 					key: "bulk-delete",
 					label: `${t("files.actions.delete")} (${n})`,
 					icon: Trash2,
@@ -71,6 +80,12 @@ export function useFileActions(
 				label: t("files.actions.download"),
 				icon: Download,
 				select: () => handlers.download(file),
+			},
+			{
+				key: "export",
+				label: t("files.actions.export"),
+				icon: ArrowUpFromLine,
+				select: () => handlers.exportFile(file),
 			},
 			{
 				key: "delete",

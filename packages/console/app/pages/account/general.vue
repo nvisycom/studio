@@ -8,6 +8,8 @@ import { PasswordInput } from "#console/components/shared";
 import { personLabel } from "#console/utils/naming";
 import { Card, CardContent, CardFooter } from "#console/components/ui/card";
 import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
+import SignInMethodsCard from "#console/components/pages/account/SignInMethodsCard.vue";
+import type { IdentityProvider } from "@nvisy/sdk/datatypes";
 import { toast } from "vue-sonner";
 
 useHead({ title: "Account" });
@@ -29,12 +31,28 @@ const {
 	isLoading,
 	updateAccountAsync,
 	isUpdating,
+	setPasswordAsync,
+	removePasswordAsync,
+	isRemovingPassword,
 	uploadAvatarAsync,
 	isUploadingAvatar,
 	deleteAvatarAsync,
 	isDeletingAvatar,
 } = useAccount();
 const { resolveAvatarUrl } = useAvatarUrl();
+
+const {
+	identities,
+	hasPassword,
+	availableProviders,
+	canLink,
+	isLoading: isLoadingIdentities,
+	refresh: refreshIdentities,
+	startLink,
+	startSetPassword,
+	unlinkAsync,
+	handleReturn,
+} = useAccountIdentities();
 
 // Username: lowercase alphanumeric with single internal dashes (matches signup).
 const USERNAME_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -76,6 +94,91 @@ const currentPassword = ref("");
 const newPassword = ref("");
 const confirmPassword = ref("");
 const isUpdatingPassword = ref(false);
+
+// A failed action's toast: the title key plus the error's own message (falling
+// back to a generic retry line) as the description. Collapses the repeated
+// catch-block shape across the account actions.
+function toastError(titleKey: string, err: unknown) {
+	toast.error(t(titleKey), {
+		description: getErrorMessage(err, t("common.errors.tryAgain")),
+	});
+}
+
+// Sign-in methods: the provider mid-action (spinner/disable), a proof captured
+// from a reauth return (unlocks the set-first-password form), and whether the
+// set-first-password form is showing.
+const busyProvider = ref<IdentityProvider | null>(null);
+const firstPasswordProof = ref<string | null>(null);
+const showFirstPasswordForm = computed(() => firstPasswordProof.value !== null);
+
+async function handleLinkProvider(provider: OidcProvider) {
+	busyProvider.value = provider;
+	try {
+		await startLink(provider); // redirects; may not return here
+	} catch {
+		busyProvider.value = null;
+		toast.error(t("account.identities.linkFailed"));
+	}
+}
+
+async function handleUnlinkProvider(provider: IdentityProvider) {
+	busyProvider.value = provider;
+	try {
+		await unlinkAsync(provider);
+		toast.success(t("account.identities.unlinked"));
+	} catch (err) {
+		toastError("account.identities.unlinkFailed", err);
+	} finally {
+		busyProvider.value = null;
+	}
+}
+
+// Start setting a first password (OIDC-only account): step up first, then the
+// return handler reveals the form. Redirects, so may not return here.
+async function beginSetFirstPassword() {
+	try {
+		await startSetPassword();
+	} catch {
+		toast.error(t("account.password.reauthFailed"));
+	}
+}
+
+async function removePassword() {
+	try {
+		await removePasswordAsync();
+		toast.success(t("account.password.removed"));
+		refreshIdentities();
+	} catch (err) {
+		toastError("account.password.removeFailed", err);
+	}
+}
+
+// On return from a reauth/link redirect, resume the pending action.
+onMounted(async () => {
+	const route = useRoute();
+	const hasReturn =
+		window.location.hash.includes("reauthProof") || route.query.signin;
+
+	const signin =
+		typeof route.query.signin === "string" ? route.query.signin : null;
+	// Always run: on a plain load (no return params) this clears any stale
+	// pending reauth intent so a later fragment can't resume an abandoned flow.
+	const result = await handleReturn(window.location.hash, signin);
+
+	// Only rewrite the URL when there were return params to strip.
+	if (hasReturn) history.replaceState(null, "", window.location.pathname);
+
+	if (result.type === "linked") {
+		toast.success(t("account.identities.linked"));
+	} else if (result.type === "link-error") {
+		toast.error(t("account.identities.linkFailed"));
+	} else if (result.type === "await-password") {
+		// Step-up done: reveal the set-first-password form, carrying the proof.
+		firstPasswordProof.value = result.proof;
+		newPassword.value = "";
+		confirmPassword.value = "";
+	}
+});
 
 // Seed the profile form from account data once. `account` refetches on side
 // effects (e.g. an avatar upload); re-seeding would revert fields the user is
@@ -141,14 +244,16 @@ async function saveProfile() {
 		});
 		toast.success(t("account.profile.saved"));
 	} catch (err) {
-		toast.error(t("account.profile.saveFailed"), {
-			description: getErrorMessage(err, t("common.errors.tryAgain")),
-		});
+		toastError("account.profile.saveFailed", err);
 	}
 }
 
 async function savePassword() {
-	if (!currentPassword.value) {
+	// Setting a first password (no existing one) carries the reauth proof from the
+	// step-up; changing an existing one verifies the current password instead.
+	const settingFirst = showFirstPasswordForm.value;
+
+	if (!settingFirst && !currentPassword.value) {
 		toast.error(t("account.password.currentRequired"));
 		return;
 	}
@@ -167,22 +272,30 @@ async function savePassword() {
 
 	isUpdatingPassword.value = true;
 	try {
-		// A password change re-authenticates: the API verifies `currentPassword`
-		// before applying `newPassword`.
-		await updateAccountAsync({
-			password: {
+		if (settingFirst) {
+			await setPasswordAsync({
+				newPassword: newPassword.value,
+				reauthProof: firstPasswordProof.value ?? undefined,
+			});
+			firstPasswordProof.value = null;
+			refreshIdentities();
+		} else {
+			// The API verifies `currentPassword` before applying `newPassword`.
+			await setPasswordAsync({
 				currentPassword: currentPassword.value,
 				newPassword: newPassword.value,
-			},
-		});
+			});
+		}
 		toast.success(t("account.password.saved"));
 		currentPassword.value = "";
 		newPassword.value = "";
 		confirmPassword.value = "";
 	} catch (err) {
-		toast.error(t("account.password.saveFailed"), {
-			description: getErrorMessage(err, t("common.errors.tryAgain")),
-		});
+		// A reauth proof is single-use: once a first-password attempt fails (e.g.
+		// the proof expired), it can't be reused. Drop it so the form reverts to
+		// the "Set a password" prompt rather than retrying with a dead proof.
+		if (settingFirst) firstPasswordProof.value = null;
+		toastError("account.password.saveFailed", err);
 	} finally {
 		isUpdatingPassword.value = false;
 	}
@@ -293,56 +406,130 @@ async function savePassword() {
 
             <!-- Password -->
             <div class="space-y-4 border-t border-border/50 pt-5">
-              <div class="space-y-2">
-                <Label for="currentPassword" required>
-                  {{ t("account.password.currentLabel") }}
-                </Label>
-                <PasswordInput
-                  id="currentPassword"
-                  v-model="currentPassword"
-                  :placeholder="t('account.password.currentPlaceholder')"
-                  autocomplete="current-password"
-                />
-              </div>
+              <!-- No password (OIDC-only) and not yet stepped up: prompt to set
+                   one. Setting a first password needs a fresh re-auth, so this
+                   redirects to the provider first, then reveals the form. -->
+              <template v-if="!hasPassword && !showFirstPasswordForm">
+                <div class="space-y-2">
+                  <Label>{{ t("account.password.label") }}</Label>
+                  <p class="text-xs text-muted-foreground">
+                    {{ t("account.password.noneHint") }}
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  :disabled="!canLink"
+                  :title="
+                    canLink ? undefined : t('account.password.reauthNeedsProvider')
+                  "
+                  @click="beginSetFirstPassword"
+                >
+                  {{ t("account.password.setButton") }}
+                </Button>
+              </template>
 
-              <div class="space-y-2">
-                <Label for="newPassword" required>
-                  {{ t("account.password.newLabel") }}
-                </Label>
-                <PasswordInput
-                  id="newPassword"
-                  v-model="newPassword"
-                  :placeholder="t('account.password.newPlaceholder')"
-                  autocomplete="new-password"
-                />
-                <p class="text-xs text-muted-foreground">
-                  {{ t("account.password.newHint") }}
-                </p>
-              </div>
+              <!-- Change existing password (needs the current one). -->
+              <template v-else-if="hasPassword">
+                <div class="space-y-2">
+                  <Label for="currentPassword" required>
+                    {{ t("account.password.currentLabel") }}
+                  </Label>
+                  <PasswordInput
+                    id="currentPassword"
+                    v-model="currentPassword"
+                    :placeholder="t('account.password.currentPlaceholder')"
+                    autocomplete="current-password"
+                  />
+                </div>
 
-              <div class="space-y-2">
-                <Label for="confirmPassword" required>
-                  {{ t("account.password.confirmLabel") }}
-                </Label>
-                <PasswordInput
-                  id="confirmPassword"
-                  v-model="confirmPassword"
-                  :placeholder="t('account.password.confirmPlaceholder')"
-                  autocomplete="new-password"
-                />
-              </div>
+                <div class="space-y-2">
+                  <Label for="newPassword" required>
+                    {{ t("account.password.newLabel") }}
+                  </Label>
+                  <PasswordInput
+                    id="newPassword"
+                    v-model="newPassword"
+                    :placeholder="t('account.password.newPlaceholder')"
+                    autocomplete="new-password"
+                  />
+                  <p class="text-xs text-muted-foreground">
+                    {{ t("account.password.newHint") }}
+                  </p>
+                </div>
+
+                <div class="space-y-2">
+                  <Label for="confirmPassword" required>
+                    {{ t("account.password.confirmLabel") }}
+                  </Label>
+                  <PasswordInput
+                    id="confirmPassword"
+                    v-model="confirmPassword"
+                    :placeholder="t('account.password.confirmPlaceholder')"
+                    autocomplete="new-password"
+                  />
+                </div>
+              </template>
+
+              <!-- Set a first password after a completed re-auth (no current
+                   password to enter). -->
+              <template v-else>
+                <div class="space-y-2">
+                  <Label for="newPassword" required>
+                    {{ t("account.password.newLabel") }}
+                  </Label>
+                  <PasswordInput
+                    id="newPassword"
+                    v-model="newPassword"
+                    :placeholder="t('account.password.newPlaceholder')"
+                    autocomplete="new-password"
+                  />
+                  <p class="text-xs text-muted-foreground">
+                    {{ t("account.password.newHint") }}
+                  </p>
+                </div>
+
+                <div class="space-y-2">
+                  <Label for="confirmPassword" required>
+                    {{ t("account.password.confirmLabel") }}
+                  </Label>
+                  <PasswordInput
+                    id="confirmPassword"
+                    v-model="confirmPassword"
+                    :placeholder="t('account.password.confirmPlaceholder')"
+                    autocomplete="new-password"
+                  />
+                </div>
+              </template>
             </div>
           </CardContent>
           <CardFooter
+            v-if="hasPassword || showFirstPasswordForm"
             class="flex items-center justify-between rounded-b-xl border-t border-border/50 bg-muted/30 pb-6"
           >
-            <p class="text-xs text-muted-foreground">
+            <!-- Remove-password only when it isn't the account's only method. -->
+            <Button
+              v-if="hasPassword && identities.length > 1"
+              variant="ghost"
+              size="sm"
+              class="text-muted-foreground hover:text-destructive"
+              :disabled="isRemovingPassword"
+              @click="removePassword"
+            >
+              <Loader2
+                v-if="isRemovingPassword"
+                :size="16"
+                class="mr-2 animate-spin"
+              />
+              {{ t("account.password.remove") }}
+            </Button>
+            <p v-else class="text-xs text-muted-foreground">
               {{ t("account.password.footer") }}
             </p>
             <Button
               size="sm"
               @click="savePassword"
-              :disabled="isUpdatingPassword || !currentPassword || !newPassword"
+              :disabled="isUpdatingPassword || !newPassword"
             >
               <Loader2
                 v-if="isUpdatingPassword"
@@ -353,6 +540,17 @@ async function savePassword() {
             </Button>
           </CardFooter>
         </Card>
+
+        <!-- Sign-in methods (connected providers) -->
+        <SignInMethodsCard
+          :identities="identities"
+          :available-providers="availableProviders"
+          :can-link="canLink"
+          :busy-provider="busyProvider"
+          :is-loading="isLoadingIdentities"
+          @link="handleLinkProvider"
+          @unlink="handleUnlinkProvider"
+        />
       </div>
     </div>
   </div>

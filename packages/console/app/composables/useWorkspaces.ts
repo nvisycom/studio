@@ -5,7 +5,7 @@ import type { CreateWorkspace, UpdateWorkspace } from "@nvisy/sdk/datatypes";
  */
 export function useWorkspaces() {
 	const { $nvisyClient } = useNuxtApp();
-	const { authToken } = useAuth();
+	const { isAuthenticated } = useAuth();
 	const route = useRoute();
 
 	// The URL is the source of truth for the active workspace: feature routes
@@ -37,7 +37,7 @@ export function useWorkspaces() {
 			const result = await client.workspaces.listWorkspaces();
 			return result.items;
 		},
-		enabled: () => !!authToken.value?.apiToken,
+		enabled: () => isAuthenticated.value,
 	});
 
 	const currentWorkspace = computed(() => {

@@ -1,11 +1,11 @@
-import type { UpdateAccount } from "@nvisy/sdk/datatypes";
+import type { SetPassword, UpdateAccount } from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for account operations
  */
 export function useAccount() {
 	const { $nvisyClient } = useNuxtApp();
-	const { authToken } = useAuth();
+	const { isAuthenticated } = useAuth();
 
 	const accountQuery = useQuery({
 		key: () => ["account"],
@@ -14,7 +14,7 @@ export function useAccount() {
 			if (!client) throw new Error("Not authenticated");
 			return await client.account.getAccount();
 		},
-		enabled: () => !!authToken.value?.apiToken,
+		enabled: () => isAuthenticated.value,
 	});
 
 	const updateAccountMutation = useMutation({
@@ -25,6 +25,30 @@ export function useAccount() {
 		},
 		onSuccess() {
 			accountQuery.refresh();
+		},
+	});
+
+	// Set (or change) the account password. Changing an existing password passes
+	// `currentPassword`; setting a first password (for an OIDC-only account) omits
+	// it and carries a `reauthProof` from an OIDC step-up instead.
+	const setPasswordMutation = useMutation({
+		mutation: async (request: SetPassword) => {
+			const client = $nvisyClient.value;
+			if (!client) throw new Error("Not authenticated");
+			return await client.account.setPassword(request);
+		},
+		onSuccess() {
+			accountQuery.refresh();
+		},
+	});
+
+	// Remove the account password, leaving OIDC providers as the sign-in methods.
+	// The server refuses if it's the account's only method.
+	const removePasswordMutation = useMutation({
+		mutation: async () => {
+			const client = $nvisyClient.value;
+			if (!client) throw new Error("Not authenticated");
+			return await client.account.removePassword();
 		},
 	});
 
@@ -78,6 +102,12 @@ export function useAccount() {
 		updateAccountAsync: updateAccountMutation.mutateAsync,
 		isUpdating: updateAccountMutation.isLoading,
 		updateError: updateAccountMutation.error,
+
+		// Password
+		setPasswordAsync: setPasswordMutation.mutateAsync,
+		isSettingPassword: setPasswordMutation.isLoading,
+		removePasswordAsync: removePasswordMutation.mutateAsync,
+		isRemovingPassword: removePasswordMutation.isLoading,
 
 		// Avatar
 		uploadAvatarAsync: uploadAvatarMutation.mutateAsync,

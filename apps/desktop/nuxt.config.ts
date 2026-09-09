@@ -4,6 +4,11 @@
 const isDev = process.env.NODE_ENV === "development";
 const API_URL_DEV = "http://127.0.0.1:8080/";
 const API_URL_PROD = "https://api.nvisy.com/";
+// The web console (Nuxt SPA) origin — where desktop opens the browser to sign
+// in. It's separate from the API: in dev the console runs on :3000 while the
+// API is on :8080; in prod they're app.nvisy.com vs api.nvisy.com.
+const WEB_APP_URL_DEV = "http://localhost:3000";
+const WEB_APP_URL_PROD = "https://app.nvisy.com";
 
 // The default server the app connects to. Always the hosted API, so every build
 // points at production out of the box. To develop against a local server, set
@@ -12,6 +17,7 @@ const API_URL_PROD = "https://api.nvisy.com/";
 const devServerFlag =
 	process.env.NVISY_DEV === "1" || process.env.NVISY_DEV === "true";
 const defaultApiUrl = devServerFlag ? API_URL_DEV : API_URL_PROD;
+const defaultWebAppUrl = devServerFlag ? WEB_APP_URL_DEV : WEB_APP_URL_PROD;
 
 export default defineNuxtConfig({
 	extends: ["@nvisy/console"],
@@ -46,11 +52,17 @@ export default defineNuxtConfig({
 		public: {
 			nvisyApiUrl: defaultApiUrl,
 			nvisySdkLogging: isDev,
-			// The desktop origin is `tauri://`, so user-facing links (invite links)
-			// must point at the hosted web app instead of the current origin.
-			webAppUrl: "https://app.nvisy.com",
+			// The web console origin. The desktop is `tauri://`, so user-facing links
+			// (invite links) and the browser sign-in flow point here instead of the
+			// current origin. Baked at BUILD time via `NUXT_PUBLIC_WEB_APP_URL` — the
+			// static SPA has no Nitro server to read env at launch.
+			webAppUrl: defaultWebAppUrl,
 			// Desktop is a self-hosted-style edition (no cloud-only billing/OAuth).
 			deployment: process.env.NUXT_PUBLIC_DEPLOYMENT ?? "self-hosted",
+			// Dropbox Chooser app key (a public, domain-restricted client id — safe
+			// to expose). Enables the Dropbox import picker; blank disables it. Baked
+			// at BUILD time via `NUXT_PUBLIC_DROPBOX_APP_KEY` (no launch-time env).
+			dropboxAppKey: "",
 		},
 	},
 
