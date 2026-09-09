@@ -194,13 +194,14 @@ const usageByModel = computed<BreakdownRow[]>(() =>
         <SectionTabs :tabs="sectionTabs.analytics.value" />
       </HeaderSocket>
 
-      <!-- KPI tiles -->
+      <!-- KPI tiles: the primary metric (detections) leads with the ink accent;
+           storage and usage sit alongside as quieter supporting figures. -->
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <template v-if="isLoading && !analytics">
           <Card
             v-for="i in 3"
             :key="i"
-            class="flex h-[92px] items-center justify-center rounded-xl border-border/50 py-0"
+            class="flex h-[104px] items-center justify-center rounded-xl border-border/50 py-0"
           >
             <div
               class="size-5 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground"
@@ -208,42 +209,57 @@ const usageByModel = computed<BreakdownRow[]>(() =>
           </Card>
         </template>
         <Card
-          v-for="kpi in kpis"
+          v-for="(kpi, i) in kpis"
           v-else
           :key="kpi.key"
-          class="flex flex-row items-center gap-4 rounded-xl border-border/50 px-5 py-4"
+          class="rounded-xl border-border/50 px-4 py-3.5"
+          :class="i === 0 && 'bg-primary/[0.03] ring-1 ring-primary/10'"
         >
-          <div
-            class="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-muted/40 text-muted-foreground"
-          >
-            <component :is="kpi.icon" :size="18" :stroke-width="1.75" />
-          </div>
-          <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <div
+              class="flex size-6 shrink-0 items-center justify-center rounded-md"
+              :class="
+                i === 0
+                  ? 'bg-primary/10 text-primary'
+                  : 'border border-border/60 bg-muted/40 text-muted-foreground'
+              "
+            >
+              <component :is="kpi.icon" :size="14" :stroke-width="1.75" />
+            </div>
             <p
-              class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+              class="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground"
             >
               {{ kpi.label }}
             </p>
-            <p
-              class="mt-0.5 text-2xl font-semibold leading-none tabular-nums text-foreground"
-            >
-              {{ kpi.value }}
-            </p>
-            <p class="mt-1 truncate text-xs text-muted-foreground">
-              {{ kpi.sub }}
-            </p>
           </div>
+          <p
+            class="mt-2 font-mono text-2xl font-semibold leading-none tabular-nums text-foreground"
+          >
+            {{ kpi.value }}
+          </p>
+          <p class="mt-1.5 truncate text-xs text-muted-foreground">
+            {{ kpi.sub }}
+          </p>
         </Card>
       </div>
 
-      <!-- Detection activity heatmap -->
-      <DetectionActivityGrid
-        :time-series="timeSeries"
-        :is-loading="isLoadingTimeSeries"
-      />
+      <!-- Activity -->
+      <section class="flex flex-col gap-3">
+        <h2 class="analytics-section-title">
+          {{ t("analytics.sections.activity") }}
+        </h2>
+        <DetectionActivityGrid
+          :time-series="timeSeries"
+          :is-loading="isLoadingTimeSeries"
+        />
+      </section>
 
-      <!-- Trend charts -->
-      <div class="grid gap-4 md:grid-cols-2">
+      <!-- Trends: detections lead as the hero chart; the rest are supporting. -->
+      <section class="flex flex-col gap-3">
+        <h2 class="analytics-section-title">
+          {{ t("analytics.sections.trends") }}
+        </h2>
+
         <Card class="rounded-xl border-border/50">
           <CardHeader class="pb-2">
             <CardTitle class="text-sm font-medium">
@@ -255,42 +271,48 @@ const usageByModel = computed<BreakdownRow[]>(() =>
           </CardContent>
         </Card>
 
-        <Card class="rounded-xl border-border/50">
-          <CardHeader class="pb-2">
-            <CardTitle class="text-sm font-medium">
-              {{ t("analytics.trends.tokensTitle") }}
-            </CardTitle>
-          </CardHeader>
-          <CardContent class="pt-2">
-            <AnalyticsAreaChart :spec="tokensTrend" />
-          </CardContent>
-        </Card>
+        <div class="grid gap-4 md:grid-cols-3">
+          <Card class="rounded-xl border-border/50">
+            <CardHeader class="pb-2">
+              <CardTitle class="text-sm font-medium">
+                {{ t("analytics.trends.tokensTitle") }}
+              </CardTitle>
+            </CardHeader>
+            <CardContent class="pt-2">
+              <AnalyticsAreaChart :spec="tokensTrend" compact />
+            </CardContent>
+          </Card>
 
-        <Card class="rounded-xl border-border/50">
-          <CardHeader class="pb-2">
-            <CardTitle class="text-sm font-medium">
-              {{ t("analytics.trends.errorRateTitle") }}
-            </CardTitle>
-          </CardHeader>
-          <CardContent class="pt-2">
-            <AnalyticsAreaChart :spec="errorTrend" />
-          </CardContent>
-        </Card>
+          <Card class="rounded-xl border-border/50">
+            <CardHeader class="pb-2">
+              <CardTitle class="text-sm font-medium">
+                {{ t("analytics.trends.errorRateTitle") }}
+              </CardTitle>
+            </CardHeader>
+            <CardContent class="pt-2">
+              <AnalyticsAreaChart :spec="errorTrend" compact />
+            </CardContent>
+          </Card>
 
-        <Card class="rounded-xl border-border/50">
-          <CardHeader class="pb-2">
-            <CardTitle class="text-sm font-medium">
-              {{ t("analytics.trends.avgDurationTitle") }}
-            </CardTitle>
-          </CardHeader>
-          <CardContent class="pt-2">
-            <AnalyticsAreaChart :spec="durationTrend" />
-          </CardContent>
-        </Card>
-      </div>
+          <Card class="rounded-xl border-border/50">
+            <CardHeader class="pb-2">
+              <CardTitle class="text-sm font-medium">
+                {{ t("analytics.trends.avgDurationTitle") }}
+              </CardTitle>
+            </CardHeader>
+            <CardContent class="pt-2">
+              <AnalyticsAreaChart :spec="durationTrend" compact />
+            </CardContent>
+          </Card>
+        </div>
+      </section>
 
       <!-- Breakdowns -->
-      <div class="grid gap-4 md:grid-cols-3">
+      <section class="flex flex-col gap-3">
+        <h2 class="analytics-section-title">
+          {{ t("analytics.sections.breakdowns") }}
+        </h2>
+        <div class="grid gap-4 md:grid-cols-3">
         <AnalyticsBreakdown
           :title="t('analytics.breakdowns.detectionsByStatus')"
           :rows="detectionsByStatus"
@@ -306,7 +328,28 @@ const usageByModel = computed<BreakdownRow[]>(() =>
           :rows="usageByModel"
           :empty-text="t('analytics.breakdowns.noUsage')"
         />
-      </div>
+        </div>
+      </section>
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Section heading: a small ink tick + a quiet label, so the page reads as
+   grouped sections rather than a flat stack of cards. */
+.analytics-section-title {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 0.8125rem;
+	font-weight: 600;
+	color: var(--foreground);
+}
+.analytics-section-title::before {
+	content: "";
+	width: 3px;
+	height: 0.85em;
+	border-radius: 1px;
+	background: var(--primary);
+}
+</style>

@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import {
-	ArrowUpFromLine,
 	ChevronRight,
 	CornerUpRight,
-	Download,
 	Info,
 	Loader2,
 	Plus,
@@ -22,6 +20,7 @@ import type {
 	StudioCategorizedGroup,
 	StudioEntityView,
 } from "#console/composables/useStudioEntities";
+import StudioRedactionFooter from "./StudioRedactionFooter.vue";
 import { Button } from "#console/components/ui/button";
 import { Checkbox } from "#console/components/ui/checkbox";
 import {
@@ -110,9 +109,6 @@ const {
 	() => props.suppressed,
 	(id) => emit("toggle-suppress", id),
 );
-
-// How many entities the "Apply" button will redact (excludes kept ones).
-const applyCount = computed(() => props.effectiveRedactCount ?? props.count);
 
 /**
  * Label a tabular entity's cell. With headers on, use the column name (when the
@@ -508,73 +504,20 @@ function clusterActiveClass(cluster: EntityCluster<StudioEntityView>): string {
       </template>
     </div>
 
-    <!-- Redaction footer: apply redaction to the complete detection, then download the
-         redacted output it produces. Shown whenever there's something to redact —
-         detected entities, or ones the reviewer added even if none were detected. -->
-    <div
+    <!-- Redaction footer: apply then download/export the redacted output. Shown
+         whenever there's something to redact — detected entities, or ones the
+         reviewer added even if none were detected. -->
+    <StudioRedactionFooter
       v-if="phase === 'complete' && (count > 0 || !!added?.length)"
-      class="border-t border-border/50 bg-muted/30 p-3"
-    >
-      <!-- Redaction failed: show why, keep the button available to retry. -->
-      <p
-        v-if="redactPhase === 'failed' && redactError"
-        class="mb-2 flex items-start gap-1.5 text-xs text-destructive"
-      >
-        <TriangleAlert :size="13" class="mt-px shrink-0" />
-        <span>{{ redactError }}</span>
-      </p>
-
-      <!-- Done: the redacted file is ready to download or export. -->
-      <template v-if="redactPhase === 'done' && output">
-        <div class="flex gap-2">
-          <Button
-            size="sm"
-            class="flex-1"
-            @click="emit('download-output')"
-          >
-            <Download :size="15" />
-            {{ t("studio.audit.downloadRedacted") }}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            :title="t('studio.audit.exportRedacted')"
-            :aria-label="t('studio.audit.exportRedacted')"
-            @click="emit('export-output')"
-          >
-            <ArrowUpFromLine :size="15" />
-          </Button>
-        </div>
-        <p class="mt-1.5 truncate text-center text-[11px] text-muted-foreground">
-          {{ output.fileName }}
-        </p>
-      </template>
-
-      <!-- Idle / redacting / failed: apply (or retry) redaction. The count
-           reflects reviewer edits — kept (suppressed) entities are excluded. -->
-      <Button
-        v-else
-        variant="outline"
-        size="sm"
-        class="w-full"
-        :disabled="!canRedact || applyCount === 0"
-        @click="emit('redact')"
-      >
-        <Loader2
-          v-if="redactPhase === 'redacting'"
-          :size="15"
-          class="animate-spin"
-        />
-        {{
-          redactPhase === "redacting"
-            ? t("studio.audit.redacting")
-            : redactPhase === "failed"
-              ? t("studio.audit.retryRedaction")
-              : applyCount < count
-                ? t("studio.audit.applyCount", { n: applyCount, total: count })
-                : t("studio.audit.apply")
-        }}
-      </Button>
-    </div>
+      :redact-phase="redactPhase"
+      :can-redact="canRedact"
+      :redact-error="redactError"
+      :output="output"
+      :count="count"
+      :effective-redact-count="effectiveRedactCount"
+      @redact="emit('redact')"
+      @download-output="emit('download-output')"
+      @export-output="emit('export-output')"
+    />
   </div>
 </template>

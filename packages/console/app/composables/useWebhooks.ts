@@ -10,10 +10,10 @@ import type {
 export function useWebhooks() {
 	const webhooksQuery = workspaceQuery(
 		"webhooks",
-		async ({ client, workspaceSlug }) => {
-			const result = await client.webhooks.listWebhooks(workspaceSlug);
-			return result.items;
-		},
+		({ client, workspaceSlug }) =>
+			fetchAllPages((after) =>
+				client.webhooks.listWebhooks(workspaceSlug, { after }),
+			),
 	);
 
 	// Reflect updates on a row immediately, reconciling once settled.

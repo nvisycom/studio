@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppSidebar from "#console/components/layout/sidebar/AppSidebar.vue";
 import AppHeader from "#console/components/layout/AppHeader.vue";
+import AppChat from "#console/components/layout/AppChat.vue";
 import { Loader2 } from "@lucide/vue";
 import {
 	SidebarInset,
@@ -56,6 +57,11 @@ const showPage = computed(
         </div>
       </div>
     </SidebarInset>
+    <!-- The global chat rail: the shell's `[chat]` grid track on desktop, an
+         overlay sheet on mobile. Mounted once so it's available on every page,
+         but only while a workspace is active — the chat is workspace-scoped and
+         its open watcher fetches sessions for the current workspace. -->
+    <AppChat v-if="currentWorkspaceSlug" />
   </SidebarProvider>
 
   <ClientOnly>

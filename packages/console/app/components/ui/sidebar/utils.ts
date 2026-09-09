@@ -7,6 +7,8 @@ export const SIDEBAR_WIDTH = "14rem";
 export const SIDEBAR_WIDTH_MOBILE = "18rem";
 export const SIDEBAR_WIDTH_ICON = "3rem";
 export const SIDEBAR_KEYBOARD_SHORTCUT = "b";
+/** Width of the global chat rail's grid track when open (see AppChat). */
+export const CHAT_WIDTH = "22rem";
 
 export const [useSidebar, provideSidebarContext] = createContext<{
 	state: ComputedRef<"expanded" | "collapsed">;

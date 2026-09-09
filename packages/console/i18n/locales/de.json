@@ -3,9 +3,8 @@
 		"tabs": {
 			"connections": {
 				"connections": "Verbindungen",
-				"webhooks": "Webhooks",
 				"explore": "Erkunden",
-				"runs": "Ausführungen"
+				"providers": "Anbieter"
 			},
 			"workflows": {
 				"index": "Pipelines",
@@ -22,7 +21,8 @@
 			},
 			"analytics": {
 				"overview": "Übersicht",
-				"logs": "Protokolle"
+				"logs": "Protokolle",
+				"webhooks": "Webhooks"
 			},
 			"policies": {
 				"index": "Übersicht",
@@ -39,7 +39,8 @@
 			"integrations": "Integrationen",
 			"analytics": "Analysen",
 			"billing": "Abrechnung",
-			"settings": "Einstellungen"
+			"settings": "Einstellungen",
+			"webhooks": "Webhooks"
 		}
 	},
 	"common": {
@@ -146,6 +147,7 @@
 					"description": "Wie lange die jeweiligen Daten aufbewahrt werden.",
 					"targets": {
 						"auditLogs": "Audit-Protokolle",
+						"intermediates": "Anreicherungsdaten",
 						"originalDocuments": "Originaldokumente",
 						"redactedDocuments": "Geschwärzte Dokumente"
 					},
@@ -534,7 +536,8 @@
 			"importFailed": "Import der Dateien fehlgeschlagen",
 			"importUnavailable": "Import ist für diese Verbindung nicht verfügbar.",
 			"importPopupBlocked": "Die Auswahl wurde blockiert. Erlauben Sie Pop-ups für diese Seite und versuchen Sie es erneut.",
-			"importPickerLoadFailed": "Die Dateiauswahl konnte nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+			"importPickerLoadFailed": "Die Dateiauswahl konnte nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+			"importAuthFailed": "Authentifizierung beim Dateidienst fehlgeschlagen. Bitte verbinden Sie ihn erneut und versuchen Sie es noch einmal."
 		},
 		"kind": {
 			"original": "Original",
@@ -1214,6 +1217,8 @@
 			"importFailed": "Dateien konnten nicht importiert werden"
 		},
 		"runs": {
+			"title": "Synchronisierungen",
+			"description": "Alle Synchronisierungsläufe Ihrer Verbindungen.",
 			"allStatus": "Alle Status",
 			"runsFound": "{count} Synchronisierung | {count} Synchronisierungen",
 			"statusHeader": "Status",
@@ -1250,6 +1255,63 @@
 			"failed": "Verbindung konnte nicht abgeschlossen werden. Bitte erneut versuchen."
 		}
 	},
+	"providers": {
+		"description": "{count} Anbieter konfiguriert | {count} Anbieter konfiguriert",
+		"types": {
+			"llm": "Sprachmodell",
+			"ner": "Entitätserkennung"
+		},
+		"empty": {
+			"title": "Keine Inferenz-Anbieter",
+			"description": "Verbinden Sie ein Sprachmodell (OpenAI, Anthropic, Ollama) für Erkennung und Schwärzung."
+		},
+		"table": {
+			"headers": {
+				"name": "Name",
+				"enabled": "Aktiviert",
+				"type": "Typ",
+				"updated": "Aktualisiert"
+			},
+			"actions": {
+				"menu": "Aktionen",
+				"configure": "Konfigurieren",
+				"test": "Testen",
+				"delete": "Entfernen"
+			}
+		},
+		"dialogs": {
+			"configure": {
+				"title": "{name} konfigurieren",
+				"description": "Aktualisieren Sie die Einstellungen des Anbieters.",
+				"nameLabel": "Anzeigename",
+				"namePlaceholder": "z. B. Produktion OpenAI",
+				"updateCredentials": "Zugangsdaten aktualisieren",
+				"credentialsHint": "Geschlossen lassen, um die gespeicherten Zugangsdaten beizubehalten.",
+				"cancel": "Abbrechen",
+				"save": "Änderungen speichern"
+			},
+			"delete": {
+				"title": "{name} entfernen?",
+				"description": "Dieser Anbieter steht dann nicht mehr für Erkennung und Schwärzung zur Verfügung. Dies kann nicht rückgängig gemacht werden.",
+				"confirm": "Entfernen",
+				"cancel": "Abbrechen"
+			}
+		},
+		"toast": {
+			"updated": "Anbieter aktualisiert",
+			"updateFailed": "Anbieter konnte nicht aktualisiert werden",
+			"deleted": "Anbieter entfernt",
+			"deleteFailed": "Anbieter konnte nicht entfernt werden",
+			"enabled": "Anbieter aktiviert",
+			"disabled": "Anbieter deaktiviert",
+			"testReachable": "Anbieter ist erreichbar",
+			"testUnreachable": "Anbieter ist nicht erreichbar",
+			"testFailed": "Anbieter konnte nicht getestet werden"
+		},
+		"errors": {
+			"loadFailed": "Anbieter konnten nicht geladen werden"
+		}
+	},
 	"sidebar": {
 		"overview": "Übersicht",
 		"workspace": "Arbeitsbereich",
@@ -1266,7 +1328,8 @@
 		"logs": "Protokolle",
 		"billing": "Abrechnung",
 		"settings": "Einstellungen",
-		"support": "Support"
+		"support": "Support",
+		"webhooks": "Webhooks"
 	},
 	"health": {
 		"status": {
@@ -1281,41 +1344,7 @@
 		}
 	},
 	"studio": {
-		"chat": {
-			"placeholder": "Änderungen beschreiben...",
-			"inputPlaceholder": "Geben Sie hier Ihre Nachricht ein.",
-			"send": "Nachricht senden",
-			"saveEdit": "Änderung speichern",
-			"attach": "Anhängen",
-			"upload": "Hochladen",
-			"generate": "Generieren",
-			"summarize": "Zusammenfassen",
-			"greeting": "Hallo! Ich kann Ihnen helfen, dieses Dokument zu prüfen und zu redigieren. Fragen Sie mich etwas oder nutzen Sie die Werkzeuge unten.",
-			"processing": "Ich arbeite daran…",
-			"copy": "Kopieren",
-			"copied": "Kopiert",
-			"edit": "Bearbeiten",
-			"thumbsUp": "Gute Antwort",
-			"thumbsDown": "Schlechte Antwort",
-			"retry": "Wiederholen",
-			"you": "Sie",
-			"assistant": "Assistent",
-			"tools": {
-				"highlight": "Hervorheben",
-				"annotate": "Annotieren"
-			},
-			"changes": {
-				"title": "Änderungen",
-				"accept": "Annehmen",
-				"reject": "Ablehnen",
-				"acceptAll": "Alle annehmen",
-				"rejectAll": "Alle ablehnen",
-				"empty": "Keine ausstehenden Änderungen"
-			}
-		},
 		"audit": {
-			"tabChat": "Chat",
-			"tabAudit": "Audit",
 			"expand": "Auf Vollbild erweitern",
 			"collapse": "Vollbild verlassen",
 			"revealInDocument": "Im Dokument anzeigen",
@@ -1403,7 +1432,9 @@
 				"organization": "Organisation",
 				"contextual": "Kontextbezogen"
 			},
-			"exportRedacted": "Redigierte Datei exportieren"
+			"exportRedacted": "Redigierte Datei exportieren",
+			"download": "Herunterladen",
+			"export": "Exportieren"
 		},
 		"preview": {
 			"loading": "Dokument wird geladen …",
@@ -1446,7 +1477,31 @@
 			"close": "Schließen",
 			"closeOthers": "Andere schließen",
 			"closeToRight": "Rechts schließen",
-			"closeAll": "Alle schließen"
+			"closeAll": "Alle schließen",
+			"loading": "Wird geladen…"
+		}
+	},
+	"chat": {
+		"title": "Assistent",
+		"description": "Der KI-Assistent des Arbeitsbereichs.",
+		"toggle": "Assistent umschalten",
+		"close": "Schließen",
+		"newChat": "Neuer Chat",
+		"deleteSession": "Chat löschen",
+		"placeholder": "Den Assistenten fragen…",
+		"send": "Senden",
+		"copy": "Kopieren",
+		"copied": "Kopiert",
+		"retry": "Erneut versuchen",
+		"emptyTitle": "Fragen Sie alles",
+		"emptyDescription": "Der Assistent beantwortet Fragen zu Ihrem Arbeitsbereich und hilft Ihnen bei Ihren Aufgaben.",
+		"needsProviderTitle": "Kein KI-Anbieter verbunden",
+		"needsProviderDescription": "Verbinden Sie einen Inferenz-Anbieter (OpenAI, Anthropic, Ollama…), um mit dem Assistenten zu chatten.",
+		"needsProviderCta": "Anbieter verbinden",
+		"error": {
+			"send": "Nachricht konnte nicht gesendet werden. Bitte erneut versuchen.",
+			"stream": "Die Antwort des Assistenten wurde unterbrochen. Bitte erneut versuchen.",
+			"delete": "Diese Unterhaltung konnte nicht gelöscht werden. Bitte erneut versuchen."
 		}
 	},
 	"commandMenu": {
@@ -1916,7 +1971,8 @@
 			"errorRate": "Fehlerrate",
 			"avgDuration": "Ø Dauer",
 			"errorRateTitle": "Fehlerrate pro Tag",
-			"avgDurationTitle": "Ø Erkennungszeit pro Tag"
+			"avgDurationTitle": "Ø Erkennungszeit pro Tag",
+			"noData": "Noch nicht genügend Daten"
 		},
 		"breakdowns": {
 			"detectionsByStatus": "Erkennungen nach Status",
@@ -1925,6 +1981,11 @@
 			"noDetections": "Noch keine Erkennungen.",
 			"noStorage": "Noch keine Dateien gespeichert.",
 			"noUsage": "Noch keine KI-Nutzung."
+		},
+		"sections": {
+			"activity": "Erkennungsaktivität",
+			"trends": "Trends",
+			"breakdowns": "Aufschlüsselungen"
 		}
 	},
 	"auth": {

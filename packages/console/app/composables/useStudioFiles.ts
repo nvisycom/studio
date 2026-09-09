@@ -76,10 +76,13 @@ export function useStudioFiles() {
 	const openFilesList = computed(() => Array.from(openFiles.value.values()));
 
 	// Register a tab in loading state (synchronous, so tabs appear immediately).
+	// The name is left empty until metadata resolves — the UI shows the loading
+	// state from `isLoading`, so a placeholder string never stands in for the real
+	// name (and never leaks into derived names like the redacted-file download).
 	function addLoadingTab(fileId: string, file?: NvisyFile) {
 		openFiles.value.set(fileId, {
 			fileId,
-			displayName: file?.displayName || "Loading...",
+			displayName: file?.displayName ?? "",
 			fileExtension: file?.fileExtension ?? "",
 			contentUrl: null,
 			isLoading: true,

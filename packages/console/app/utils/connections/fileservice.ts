@@ -1,13 +1,13 @@
-import type { FileProviders, Provider } from "@nvisy/sdk/datatypes";
+import type { FileProviders, FileServiceProvider } from "@nvisy/sdk/datatypes";
 
 /**
  * Cloud file-service providers connected over OAuth (Google Drive, Dropbox,
  * OneDrive, Box). These differ from object stores and LLMs: they carry no
  * user-entered credentials, so they are connected by redirecting the user to
  * the provider's `authorizeUrl` (see `startFileServiceOAuth`) rather than
- * through a credential form. Derived from the SDK's `Provider` type.
+ * through a credential form. Derived from the SDK's `FileServiceProvider` type.
  */
-export type FileProvider = Provider;
+export type FileProvider = FileServiceProvider;
 
 /**
  * Maps an OAuth file-service provider to its key on the catalog's

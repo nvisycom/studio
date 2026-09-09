@@ -10,6 +10,7 @@ import { TooltipProvider } from "reka-ui";
 import { computed, ref } from "vue";
 import { cn } from "#console/utils/shadcn";
 import {
+	CHAT_WIDTH,
 	provideSidebarContext,
 	SIDEBAR_COOKIE_MAX_AGE,
 	SIDEBAR_COOKIE_NAME,
@@ -86,6 +87,19 @@ provideSidebarContext({
 	setOpenMobile,
 	toggleSidebar,
 });
+
+// The chat rail is its own feature (see useChatPanel) — the provider only reads
+// its open state to size the `[chat]` grid track, so the rail reflows the
+// content card without owning the chat's state. On desktop only; on mobile the
+// chat is an overlay sheet and takes no track.
+const { isOpen: chatOpen } = useChatPanel();
+const chatVisible = computed(() => !isMobile.value && chatOpen.value);
+const chatWidth = computed(() => (chatVisible.value ? CHAT_WIDTH : "0px"));
+// The inset gap before the chat rail only exists when the rail is open, so a
+// closed chat leaves no dead space on the content card's right edge.
+const chatGap = computed(() =>
+	chatVisible.value ? "var(--shell-inset)" : "0px",
+);
 </script>
 
 <template>
@@ -104,7 +118,11 @@ provideSidebarContext({
       :data-state="state"
       :data-collapsible="state === 'collapsed' ? 'icon' : ''"
       :data-mobile="isMobile ? 'true' : undefined"
-      :style="{ '--sidebar-w': state === 'collapsed' ? SIDEBAR_WIDTH_ICON : SIDEBAR_WIDTH }"
+      :style="{
+        '--sidebar-w': state === 'collapsed' ? SIDEBAR_WIDTH_ICON : SIDEBAR_WIDTH,
+        '--chat-w': chatWidth,
+        '--chat-gap': chatGap,
+      }"
       v-bind="$attrs"
       :class="cn(props.class)"
     >
@@ -126,6 +144,13 @@ provideSidebarContext({
   inherits: false;
   initial-value: 0px;
 }
+/* The chat rail's track width, animated 0 ↔ open like the sidebar track (see the
+   chat-rail track below). Same registration rules apply. */
+@property --chat-w {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
 </style>
 
 <style scoped>
@@ -139,19 +164,29 @@ provideSidebarContext({
 .sidebar-shell {
   --shell-inset: 0.5rem;
   display: grid;
-  grid-template-columns: [sidebar] var(--sidebar-w) [rail] var(--shell-inset) [content] minmax(0, 1fr);
+  grid-template-columns:
+    [sidebar] var(--sidebar-w)
+    [rail] var(--shell-inset)
+    [content] minmax(0, 1fr)
+    [chat-rail] var(--chat-gap, 0px)
+    [chat] var(--chat-w);
   grid-template-rows: 100%;
   height: 100svh;
   width: 100%;
   overflow: hidden;
   padding: var(--shell-inset);
-  /* Smooth, decelerating collapse/expand of the whole track. */
-  transition: --sidebar-w 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  /* Smooth, decelerating collapse/expand of the sidebar and chat tracks. */
+  transition:
+    --sidebar-w 220ms cubic-bezier(0.4, 0, 0.2, 1),
+    --chat-w 220ms cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* Mobile: no sidebar/rail tracks — the sidebar is an overlay sheet, content
-   fills the shell with no floating inset. */
+/* Mobile: no sidebar/rail/chat tracks — the sidebar and chat are overlay sheets,
+   content fills the shell with no floating inset. */
 .sidebar-shell[data-mobile="true"] {
-  grid-template-columns: [content] minmax(0, 1fr);
+  /* `[chat-rail]` closes the content track so SidebarInset's
+     `grid-column: content / chat-rail` resolves to a declared line rather than
+     an implicit one the browser would synthesize. */
+  grid-template-columns: [content] minmax(0, 1fr) [chat-rail];
   padding: 0;
 }
 </style>

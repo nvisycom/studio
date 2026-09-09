@@ -87,7 +87,11 @@ function onDragOver(event: DragEvent) {
               />
             </div>
             <span class="flex-1 truncate text-sm">
-              {{ truncate(file.displayName, 20) }}
+              {{
+                file.displayName
+                  ? truncate(file.displayName, 20)
+                  : t("studio.tabs.loading")
+              }}
             </span>
             <Button
               :aria-label="t('studio.tabs.close')"

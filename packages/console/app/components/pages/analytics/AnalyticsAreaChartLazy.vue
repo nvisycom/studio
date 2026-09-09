@@ -16,14 +16,15 @@ const AnalyticsAreaChart = defineAsyncComponent(
 	() => import("./AnalyticsAreaChart.vue"),
 );
 
-defineProps<{ spec: AreaChartSpec }>();
+/** `compact` shrinks the chart height for the smaller supporting cards. */
+defineProps<{ spec: AreaChartSpec; compact?: boolean }>();
 </script>
 
 <template>
   <Suspense>
-    <AnalyticsAreaChart :spec="spec" />
+    <AnalyticsAreaChart :spec="spec" :compact="compact" />
     <template #fallback>
-      <Skeleton class="h-[250px] w-full" />
+      <Skeleton :class="compact ? 'h-[150px] w-full' : 'h-[200px] w-full'" />
     </template>
   </Suspense>
 </template>

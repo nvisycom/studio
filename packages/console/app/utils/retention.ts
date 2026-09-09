@@ -18,9 +18,10 @@ export interface RetentionField {
 /** Retention mode options, in display order. */
 export const RETENTION_MODES: RetentionMode[] = ["forever", "days", "zeroDays"];
 
-/** The three retention scopes a workspace configures. */
+/** The retention scopes a workspace configures. */
 export const RETENTION_TARGETS = [
 	"auditLogs",
+	"intermediates",
 	"originalDocuments",
 	"redactedDocuments",
 ] as const;
@@ -38,6 +39,7 @@ export function newRetentionField(): RetentionField {
 export function defaultRetentionForm(): RetentionForm {
 	return {
 		auditLogs: newRetentionField(),
+		intermediates: newRetentionField(),
 		originalDocuments: newRetentionField(),
 		redactedDocuments: newRetentionField(),
 	};
@@ -59,6 +61,7 @@ export function fieldToRetention(f: RetentionField): Retention {
 export function formToRetention(form: RetentionForm) {
 	return {
 		auditLogs: fieldToRetention(form.auditLogs),
+		intermediates: fieldToRetention(form.intermediates),
 		originalDocuments: fieldToRetention(form.originalDocuments),
 		redactedDocuments: fieldToRetention(form.redactedDocuments),
 	};
@@ -73,6 +76,7 @@ const FOREVER: Retention = { mode: "forever" };
 export function retentionToForm(r?: RetentionSettings): RetentionForm {
 	return {
 		auditLogs: retentionToField(r?.auditLogs ?? FOREVER),
+		intermediates: retentionToField(r?.intermediates ?? FOREVER),
 		originalDocuments: retentionToField(r?.originalDocuments ?? FOREVER),
 		redactedDocuments: retentionToField(r?.redactedDocuments ?? FOREVER),
 	};

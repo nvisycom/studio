@@ -42,13 +42,13 @@ export function notificationContent(
 			return content(
 				"connectionSyncCompleted",
 				payload.data,
-				"/integrations/runs",
+				"/integrations?runs=1",
 			);
 		case "connection.sync.failed":
 			return content(
 				"connectionSyncFailed",
 				payload.data,
-				"/integrations/runs",
+				"/integrations?runs=1",
 			);
 		case "pipeline.detection.completed":
 			return content(

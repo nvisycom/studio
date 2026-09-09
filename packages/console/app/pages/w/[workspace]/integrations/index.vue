@@ -7,7 +7,15 @@ import { Button } from "#console/components/ui/button";
 import {
 	ConfigureConnectionDialog,
 	ConnectionsTable,
+	ConnectionRunsPanel,
 } from "#console/components/pages/integrations";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "#console/components/ui/dialog";
 import {
 	ImportError,
 	providerIcon,
@@ -98,6 +106,9 @@ onMounted(() => {
 // Connection dialogs
 const isConfigureConnectionDialogOpen = ref(false);
 const isDisconnectConnectionDialogOpen = ref(false);
+// The connection sync runs, shown in a wide dialog from the "View runs" button.
+// Also opened by a `?runs=1` deep link (sync notifications land here).
+const runsOpen = ref(useRoute().query.runs === "1");
 const selectedConnection = ref<Connection | null>(null);
 
 function findConnectionById(connectionId: string): Connection | undefined {
@@ -242,14 +253,14 @@ async function handleTestConnection(connectionId: string) {
           }}
         </p>
         <div class="flex shrink-0 items-center gap-2">
-          <Button as-child variant="outline" size="sm" class="font-normal">
-            <NuxtLink
-              :to="wLink('/integrations/runs')"
-              class="flex items-center gap-2"
-            >
-              <History :size="16" />
-              {{ t("connections.actions.viewRuns") }}
-            </NuxtLink>
+          <Button
+            variant="outline"
+            size="sm"
+            class="font-normal"
+            @click="runsOpen = true"
+          >
+            <History :size="16" />
+            {{ t("connections.actions.viewRuns") }}
           </Button>
           <Button as-child size="sm">
             <NuxtLink
@@ -352,6 +363,22 @@ async function handleTestConnection(connectionId: string) {
           </div>
         </template>
       </ConfirmDialog>
+
+      <!-- Sync runs: a wide dialog so the run table isn't cramped. Mounted only
+           while open so its data query runs on demand. -->
+      <Dialog v-model:open="runsOpen">
+        <DialogContent
+          class="flex h-[80vh] max-w-4xl flex-col gap-4 sm:max-w-4xl"
+        >
+          <DialogHeader>
+            <DialogTitle>{{ t("connections.runs.title") }}</DialogTitle>
+            <DialogDescription>
+              {{ t("connections.runs.description") }}
+            </DialogDescription>
+          </DialogHeader>
+          <ConnectionRunsPanel v-if="runsOpen" />
+        </DialogContent>
+      </Dialog>
     </div>
   </div>
 </template>

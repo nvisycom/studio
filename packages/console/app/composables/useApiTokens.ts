@@ -14,11 +14,12 @@ export function useApiTokens() {
 
 	const tokensQuery = useQuery({
 		key: ["apiTokens"],
-		query: async () => {
+		query: () => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			const result = await client.apiTokens.listApiTokens();
-			return result.items;
+			return fetchAllPages((after) =>
+				client.apiTokens.listApiTokens({ after }),
+			);
 		},
 		enabled: () => isAuthenticated.value,
 	});

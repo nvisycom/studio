@@ -386,7 +386,13 @@ async function savePassword() {
 
         <!-- Email & Password Card -->
         <Card class="rounded-xl border-border/50 py-0 pt-6">
-          <CardContent class="space-y-5">
+          <!-- No footer in the set-a-password state (no existing password, form
+               not yet revealed), so the content needs its own bottom padding —
+               otherwise the "Set a password" button clips the card's edge. -->
+          <CardContent
+            class="space-y-5"
+            :class="!hasPassword && !showFirstPasswordForm && 'pb-6'"
+          >
             <!-- Email Address (read-only) -->
             <div class="space-y-2">
               <Label for="email" required>
@@ -410,23 +416,28 @@ async function savePassword() {
                    one. Setting a first password needs a fresh re-auth, so this
                    redirects to the provider first, then reveals the form. -->
               <template v-if="!hasPassword && !showFirstPasswordForm">
-                <div class="space-y-2">
-                  <Label>{{ t("account.password.label") }}</Label>
-                  <p class="text-xs text-muted-foreground">
-                    {{ t("account.password.noneHint") }}
-                  </p>
+                <div class="flex items-center justify-between gap-4">
+                  <div class="space-y-1">
+                    <Label>{{ t("account.password.label") }}</Label>
+                    <p class="text-xs text-muted-foreground">
+                      {{ t("account.password.noneHint") }}
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    class="shrink-0"
+                    :disabled="!canLink"
+                    :title="
+                      canLink
+                        ? undefined
+                        : t('account.password.reauthNeedsProvider')
+                    "
+                    @click="beginSetFirstPassword"
+                  >
+                    {{ t("account.password.setButton") }}
+                  </Button>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  :disabled="!canLink"
-                  :title="
-                    canLink ? undefined : t('account.password.reauthNeedsProvider')
-                  "
-                  @click="beginSetFirstPassword"
-                >
-                  {{ t("account.password.setButton") }}
-                </Button>
               </template>
 
               <!-- Change existing password (needs the current one). -->

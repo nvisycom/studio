@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { Sparkles } from "@lucide/vue";
 import { Separator } from "#console/components/ui/separator";
 import { SidebarTrigger } from "#console/components/ui/sidebar";
+import { Button } from "#console/components/ui/button";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -8,6 +10,13 @@ import {
 	BreadcrumbPage,
 } from "#console/components/ui/breadcrumb";
 import { NotificationsDropdown } from "#console/components/layout/header";
+
+const { toggle: toggleChat, isOpen: chatOpen } = useChatPanel();
+// The chat is workspace-scoped; hide its toggle until a workspace is resolved so
+// opening the panel can't fire workspace-required calls (loadSessions) with no
+// active workspace.
+const { currentWorkspaceSlug } = useWorkspaces();
+const hasWorkspace = computed(() => !!currentWorkspaceSlug.value);
 
 const route = useRoute();
 
@@ -65,6 +74,18 @@ const pageCategory = computed(() =>
 
     <!-- Right: persistent app chrome. -->
     <div class="flex shrink-0 items-center gap-2">
+      <Button
+        v-if="hasWorkspace"
+        variant="ghost"
+        size="icon-sm"
+        class="size-8 text-muted-foreground hover:text-foreground"
+        :class="chatOpen && 'bg-muted text-foreground'"
+        :aria-label="t('chat.toggle')"
+        :aria-pressed="chatOpen"
+        @click="toggleChat"
+      >
+        <Sparkles :size="18" />
+      </Button>
       <NotificationsDropdown />
     </div>
   </header>

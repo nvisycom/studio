@@ -4,8 +4,6 @@ import { SplitterPanel } from "reka-ui";
 import { toast } from "vue-sonner";
 import JSZip from "jszip";
 import {
-	MessageSquare,
-	ScanSearch,
 	Maximize2,
 	Minimize2,
 	PanelRightClose,
@@ -13,10 +11,10 @@ import {
 } from "@lucide/vue";
 import {
 	StudioDocumentPreview,
-	StudioChatPanel,
 	StudioAuditPanel,
 	StudioAuditTable,
 	StudioDetectionBar,
+	StudioAuditToolbar,
 	EntityAuditModal,
 } from "#console/components/pages/studio";
 import { ExportToConnectionDialog } from "#console/components/pages/integrations";
@@ -28,7 +26,6 @@ import {
 	ResizablePanel,
 	ResizableHandle,
 } from "#console/components/ui/resizable";
-import { Tabs, TabsList, TabsTrigger } from "#console/components/ui/tabs";
 import { Button } from "#console/components/ui/button";
 import {
 	HeaderSocket,
@@ -66,9 +63,6 @@ const renderer = computed(() => rendererFor(fileExtension.value) ?? null);
 const detectionSource = computed(
 	() => renderer.value?.detectionSource ?? "none",
 );
-
-// Right-panel tabs: Chat (existing) and Audit (detection results).
-const panelTab = ref<"chat" | "audit">("audit");
 
 // Cross-focus between the audit panel (list) and the document preview (inline
 // highlights). The detected entities themselves come from the shared audit
@@ -279,8 +273,8 @@ useEventListener(document, "keydown", (e: KeyboardEvent) => {
 	else if (activeEntityId.value) clearEntity();
 });
 
-// The right-hand inspector (Audit / Chat) is a resizable, collapsible split
-// panel. The Splitter owns sizing (percent-based), keyboard resize, and — via
+// The right-hand audit inspector is a resizable, collapsible split panel. The
+// Splitter owns sizing (percent-based), keyboard resize, and — via
 // `auto-save-id` — persisting the layout across reloads; we only hold a ref to
 // drive collapse from the document toolbar's toggle and a flag to flip its icon.
 // Typed against reka-ui's SplitterPanel (our ResizablePanel wrapper forwards its
@@ -296,9 +290,9 @@ function toggleInspector() {
 }
 
 // Which surface fills the main (left) area: the file preview, or the wide audit
-// review. Only this pane swaps between modes — the sidebar (detection bar + tabs
-// + chat) is one persistent panel throughout, so chat and its size are never
-// rebuilt. Reviewing the audit big on the left is what "full-screen" means here.
+// review. Only this pane swaps between modes — the inspector (detection bar +
+// audit) is one persistent panel throughout. Reviewing the audit big on the left
+// is what "full-screen" means here.
 const mainSurface = ref<"preview" | "audit">("preview");
 // The audit review is only reachable once a detection has completed with findings
 // — otherwise there's nothing to review. This gates the swap control and reverts
@@ -309,11 +303,15 @@ const canReview = computed(
 watch(canReview, (ok) => {
 	if (!ok) mainSurface.value = "preview";
 });
-// While the audit is the main surface, the sidebar hides its Audit tab (no point
-// showing audit twice), so move an audit-focused sidebar off to Chat.
+
+// Full-screen audit review shows the wide table on the main pane and carries its
+// own detection + redaction controls, so the inspector would only duplicate the
+// list — collapse it on entering full-screen and restore it on exit.
 watch(mainSurface, (surface) => {
-	if (surface === "audit" && panelTab.value === "audit")
-		panelTab.value = "chat";
+	const panel = inspectorPanel.value;
+	if (!panel) return;
+	if (surface === "audit") panel.collapse();
+	else panel.expand();
 });
 
 // Revealing an entity from the audit review steps back to the preview, focused on
@@ -365,18 +363,44 @@ const auditProps = computed(() => ({
       <ResizablePanel :min-size="30" class="min-w-0">
         <div class="relative h-full">
           <Transition name="main-fade">
-            <StudioAuditTable
-              v-if="mainSurface === 'audit'"
-              class="absolute inset-0"
-              :phase="detection.phase.value"
-              :categorized-groups="detection.categorizedGroups.value"
-              :count="detection.count.value"
-              :error-message="detection.errorMessage.value"
-              :suppressed="redaction.suppressed.value"
-              @reveal-entity="revealEntity"
-              @toggle-suppress="redaction.toggleSuppress"
-              @view-details="auditModalEntity = $event"
-            />
+            <!-- Full-screen audit: the wide table with a floating controls bar,
+                 since the inspector collapses here. -->
+            <div v-if="mainSurface === 'audit'" class="absolute inset-0">
+              <StudioAuditTable
+                class="absolute inset-0"
+                :phase="detection.phase.value"
+                :categorized-groups="detection.categorizedGroups.value"
+                :count="detection.count.value"
+                :error-message="detection.errorMessage.value"
+                :suppressed="redaction.suppressed.value"
+                @reveal-entity="revealEntity"
+                @toggle-suppress="redaction.toggleSuppress"
+                @view-details="auditModalEntity = $event"
+              />
+              <!-- Floating toolbar: detection + redaction controls, centered at
+                   the bottom so they float over the table without a full-width bar. -->
+              <div
+                class="pointer-events-none absolute inset-x-0 bottom-6 flex justify-center px-6"
+              >
+                <StudioAuditToolbar
+                  class="pointer-events-auto"
+                  v-model:selected-pipeline="detection.selectedPipeline.value"
+                  :pipelines="detection.pipelines.value"
+                  :phase="detection.phase.value"
+                  :can-run="detection.canRun.value"
+                  :redact-phase="redaction.redactPhase.value"
+                  :can-redact="redaction.canRedact.value"
+                  :redact-error="redaction.redactError.value"
+                  :output="redaction.output.value"
+                  :count="detection.count.value"
+                  :effective-redact-count="redaction.effectiveRedactCount.value"
+                  @run="detection.run"
+                  @redact="redaction.redact"
+                  @download-output="redaction.downloadRedacted"
+                  @export-output="openExportRedacted"
+                />
+              </div>
+            </div>
             <StudioDocumentPreview
               v-else
               class="absolute inset-0"
@@ -441,8 +465,9 @@ const auditProps = computed(() => ({
 
       <ResizableHandle with-handle />
 
-      <!-- Inspector: Audit / Chat, with shared detection controls above the tabs.
-           Collapses to nothing when the toolbar toggle hides it. -->
+      <!-- Inspector: the detection controls above the audit review. Collapses to
+           nothing when the toolbar toggle hides it. (The assistant chat is the
+           global right rail now, not a tab here.) -->
       <ResizablePanel
         ref="inspectorPanel"
         :default-size="28"
@@ -462,42 +487,7 @@ const auditProps = computed(() => ({
             :can-run="detection.canRun.value"
             @run="detection.run"
           />
-          <!-- While the audit is the main surface it's shown there in full, so the
-               sidebar Audit tab is disabled (not removed — the chrome stays put),
-               and the active tab moves to Chat. -->
-          <Tabs v-model="panelTab" class="border-b border-border/50 p-2">
-            <TabsList class="w-full">
-              <TabsTrigger
-                value="audit"
-                class="flex-1 gap-1.5"
-                :disabled="mainSurface === 'audit'"
-              >
-                <ScanSearch :size="14" />
-                {{ t("studio.audit.tabAudit") }}
-                <span
-                  v-if="detection.count.value"
-                  class="rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground tabular-nums"
-                >
-                  {{ detection.count.value }}
-                </span>
-              </TabsTrigger>
-              <TabsTrigger value="chat" class="flex-1 gap-1.5">
-                <MessageSquare :size="14" />
-                {{ t("studio.audit.tabChat") }}
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          <div
-            v-show="panelTab === 'chat'"
-            class="min-h-0 flex-1 overflow-hidden"
-          >
-            <StudioChatPanel />
-          </div>
-          <div
-            v-show="panelTab === 'audit'"
-            class="min-h-0 flex-1 overflow-hidden"
-          >
+          <div class="min-h-0 flex-1 overflow-hidden">
             <StudioAuditPanel
               v-bind="auditProps"
               @focus-entity="focusEntity"

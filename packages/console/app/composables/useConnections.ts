@@ -12,10 +12,10 @@ import type { FileProvider } from "#console/utils/connections";
 export function useConnections() {
 	const connectionsQuery = workspaceQuery(
 		"connections",
-		async ({ client, workspaceSlug }) => {
-			const result = await client.connections.listConnections(workspaceSlug);
-			return result.items;
-		},
+		({ client, workspaceSlug }) =>
+			fetchAllPages((after) =>
+				client.connections.listConnections(workspaceSlug, { after }),
+			),
 	);
 
 	// Reflect updates on a row immediately, reconciling once settled.
@@ -118,10 +118,19 @@ export function useConnections() {
 
 	// Mint a short-lived provider access token for a browser file picker (Google
 	// Drive, OneDrive, Box - the pickers that take a server token; Dropbox's
-	// Chooser uses a client-side app key instead and rejects this).
+	// Chooser uses a client-side app key instead and rejects this). An optional
+	// `resource` scopes the token to what the picker asked for (OneDrive requests
+	// a token per resource); the server uses its default when omitted.
 	const getPickerTokenMutation = workspaceMutation(
-		({ client, workspaceSlug }, connectionId: string) =>
-			client.connections.getPickerToken(workspaceSlug, connectionId),
+		(
+			{ client, workspaceSlug },
+			{ connectionId, resource }: { connectionId: string; resource?: string },
+		) =>
+			client.connections.getPickerToken(
+				workspaceSlug,
+				connectionId,
+				resource ? { resource } : {},
+			),
 	);
 
 	// Import the files a user picked in a provider's picker (id + name each);

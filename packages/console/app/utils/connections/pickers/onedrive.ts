@@ -12,22 +12,40 @@ import { ImportError } from "#console/utils/connections/pickers/types";
 const ONEDRIVE_BASE = "https://onedrive.live.com/picker";
 
 /**
- * Open the OneDrive picker with a short-lived provider access token and resolve
- * with the chosen files (or `null` if the user cancelled). The token is minted
- * server-side (`getPickerToken`) from the connection's credentials.
+ * Open the OneDrive picker and resolve with the chosen files (or `null` if the
+ * user cancelled).
+ *
+ * The picker authenticates per resource: its `authenticate` command names the
+ * resource it needs a token for (consumer OneDrive asks for
+ * `my.microsoftpersonalcontent.com` and `api.onedrive.com`, which need
+ * differently-scoped tokens), so `getToken` mints a token server-side
+ * (`getPickerToken`) for each requested resource. It's also called once with no
+ * resource to seed the launch form (the server's default picker resource).
  */
-export function openOneDrivePicker(
-	accessToken: string,
+export async function openOneDrivePicker(
+	getToken: (resource?: string) => Promise<string>,
 ): Promise<PickedFile[] | null> {
-	return new Promise((resolve, reject) => {
-		const opened = window.open("", "onedrive-picker", "width=1080,height=680");
-		if (!opened) {
-			reject(new ImportError("files.errors.importPopupBlocked"));
-			return;
-		}
-		// Non-null alias so the closures below see a `Window`, not `Window | null`.
-		const popup: Window = opened;
+	// Open the popup FIRST, synchronously in the click handler, before any await.
+	// Minting the token is async, and awaiting it before `window.open` would spend
+	// the click's transient user activation — some browsers then block the popup
+	// even though the import began from a genuine gesture.
+	const opened = window.open("", "onedrive-picker", "width=1080,height=680");
+	if (!opened) {
+		throw new ImportError("files.errors.importPopupBlocked");
+	}
+	const popup: Window = opened;
 
+	// The launch form needs a token; mint the initial one now that the popup is
+	// already open. If it fails, close the popup so we don't leave a blank window.
+	let initialToken: string;
+	try {
+		initialToken = await getToken();
+	} catch (err) {
+		popup.close();
+		throw err;
+	}
+
+	return new Promise((resolve, reject) => {
 		// A per-instance channel id (a GUID, per the v8 contract) the picker echoes
 		// back on `initialize`, so we only adopt the channel meant for us.
 		const channelId = crypto.randomUUID();
@@ -56,7 +74,7 @@ export function openOneDrivePicker(
 		const tokenInput = popup.document.createElement("input");
 		tokenInput.setAttribute("type", "hidden");
 		tokenInput.setAttribute("name", "access_token");
-		tokenInput.setAttribute("value", accessToken);
+		tokenInput.setAttribute("value", initialToken);
 		form.appendChild(tokenInput);
 		popup.document.body.appendChild(form);
 		form.submit();
@@ -83,13 +101,21 @@ export function openOneDrivePicker(
 			port?.postMessage({ type: "acknowledge", id });
 
 			if (command === "authenticate") {
-				// The picker asks for a token for a specific resource
-				// (`msg.data.resource`); reply with the access token.
-				port?.postMessage({
-					type: "result",
-					id,
-					data: { result: "token", token: accessToken },
-				});
+				// The picker asks for a token scoped to `msg.data.resource`; mint one
+				// for exactly that resource and reply with it.
+				const resource = msg.data?.resource as string | undefined;
+				getToken(resource)
+					.then((token) => {
+						port?.postMessage({
+							type: "result",
+							id,
+							data: { result: "token", token },
+						});
+					})
+					.catch(() => {
+						cleanup();
+						reject(new ImportError("files.errors.importAuthFailed"));
+					});
 			} else if (command === "close") {
 				cleanup();
 				resolve(null);
