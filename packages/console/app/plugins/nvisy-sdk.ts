@@ -57,12 +57,30 @@ function withCsrf(base: typeof globalThis.fetch): typeof globalThis.fetch {
 	};
 }
 
+// Requests that get no response eventually reject instead of hanging forever, so
+// an unreachable/asleep server surfaces the error path (below) rather than
+// leaving the shell on an endless spinner. The timeout signal is merged with any
+// signal the caller already set (navigation aborts, dropped stale queries), so
+// both still cancel; a timeout rejects with a TimeoutError, treated as a
+// transport failure downstream.
+const REQUEST_TIMEOUT_MS = 20_000;
+function withTimeout(base: typeof globalThis.fetch): typeof globalThis.fetch {
+	return (input, init) => {
+		const timeout = AbortSignal.timeout(REQUEST_TIMEOUT_MS);
+		const isRequest = input instanceof Request;
+		const existing = init?.signal ?? (isRequest ? input.signal : undefined);
+		const signal = existing ? AbortSignal.any([existing, timeout]) : timeout;
+		if (isRequest) return base(new Request(input, { signal }), init);
+		return base(input, { ...init, signal });
+	};
+}
+
 export default defineNuxtPlugin(() => {
 	const config = useRuntimeConfig();
 	const { isAuthenticated, clearAuth } = useAuth();
 	// The base URL is user-overridable (desktop connects to a self-hosted
 	// server); rebuild the client when it changes.
-	const { baseUrl, override } = useApiBaseUrl();
+	const { baseUrl } = useApiBaseUrl();
 	// A custom fetch (desktop injects Tauri's native fetch to bypass CORS); the
 	// SDK falls back to the global fetch when this is undefined (web).
 	const { apiFetch } = useApiFetch();
@@ -96,13 +114,16 @@ export default defineNuxtPlugin(() => {
 	// network gone). For a signed-in user on a self-hosted server that's a
 	// session-breaking event that today surfaces as a raw "Failed to fetch" buried
 	// in a component; route it to the full-screen, server-aware error page instead.
-	// Kept deliberately narrow so it never hijacks a request the UI handles inline:
-	// only when authenticated, only with a custom server set, only off the error/
-	// auth screens, and only once (guarded) until navigation clears it.
+	// Desktop only: that error page names the server (the override or the default)
+	// and offers retry + connection settings, and a desktop user with a dead server
+	// would otherwise be stranded on the shell's spinner. The web app has no such
+	// screen and handles request failures inline, so it's left alone. Guarded to
+	// fire only when authenticated, off the error/auth screens, and once until
+	// navigation clears it.
 	let unreachableShown = false;
 	function handleUnreachable() {
+		if (!isDesktop.value) return; // web handles request failures inline
 		if (!isAuthenticated.value) return; // pre-login flows handle their own errors
-		if (!override.value) return; // hosted default: not the self-hosted story
 		const path = router.currentRoute.value.path;
 		if (path.startsWith("/auth/")) return; // login shows its own connection copy
 		if (unreachableShown) return;
@@ -130,7 +151,8 @@ export default defineNuxtPlugin(() => {
 		ClientConfig,
 		"apiToken" | "credentials" | "fetch"
 	> {
-		const fetch = apiFetch.value ?? globalThis.fetch;
+		// Every request gets the timeout wrapper so a hang can't strand the app.
+		const fetch = withTimeout(apiFetch.value ?? globalThis.fetch);
 		if (isDesktop.value) {
 			return { apiToken: desktopToken.value ?? "", fetch };
 		}
@@ -153,7 +175,9 @@ export default defineNuxtPlugin(() => {
 			onError({ error }) {
 				// A cancelled request (navigation aborting an in-flight fetch, a stale
 				// query being dropped) rejects with an AbortError — that's not the
-				// server being unreachable, so don't surface the full-screen error.
+				// server being unreachable, so don't surface the full-screen error. A
+				// request timeout rejects with a TimeoutError instead, which is exactly
+				// the "server not answering" case, so it is NOT filtered here.
 				const aborted =
 					error instanceof DOMException && error.name === "AbortError";
 				if (!aborted) handleUnreachable();

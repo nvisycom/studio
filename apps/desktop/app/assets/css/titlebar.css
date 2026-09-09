@@ -31,16 +31,30 @@ html.tauri body {
 /* Reserve the title-bar band as the shell's top padding, so the sidebar and
    content card begin below it while the band stays chrome-colored and part of
    the shell. The shell is `height: 100svh`, so `box-sizing: border-box` (Tailwind's
-   default) keeps it fitting the window with the larger top padding. Unlayered so
-   it beats the layer's `padding: var(--shell-inset)`. */
+   default) keeps it fitting the window with the larger top padding.
+
+   `!important` on the LONGHAND is deliberate: SidebarProvider's *scoped* style
+   sets `padding: var(--shell-inset)` (a shorthand, on the same element, carrying
+   a `[data-v-…]` attribute — higher specificity than a plain class). Without the
+   longhand override that shorthand resets `padding-top` back to the small inset,
+   and the content card slides up under the title bar when the window is short. */
 html.tauri [data-slot="sidebar-wrapper"] {
-  padding-top: var(--titlebar-height);
+  padding-top: var(--titlebar-height) !important;
 }
 
-/* The title-bar strip is the window's drag region; the WebKit app region is what
-   the OS reads, and it must not be overridden by a descendant. */
+/* The title-bar strip is the window's drag region. `-webkit-app-region: drag`
+   makes macOS treat it as a native title bar, so the OS handles both dragging and
+   double-click-to-zoom (respecting the system "double-click a window's title bar
+   to…" setting). AppTitlebar.vue adds no JS — a JS zoom handler here would run a
+   second zoom on top of the native one and spring the window back. */
 html.tauri [data-tauri-drag-region] {
   -webkit-app-region: drag;
+}
+
+/* Interactive controls inside the drag strip (the back/forward nav) must opt out
+   of the drag region, or the OS swallows the click to move the window. */
+html.tauri .titlebar-control {
+  -webkit-app-region: no-drag;
 }
 
 /* Chrome-less full-window pages (auth, error) render without the sidebar shell,

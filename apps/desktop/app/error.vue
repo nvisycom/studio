@@ -3,6 +3,7 @@ import type { NuxtError } from "#app";
 import { ArrowLeft, Home, RefreshCw, ServerOff } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import ThemeToggle from "#console/components/layout/footer/ThemeToggle.vue";
+import AppTitlebar from "~/components/AppTitlebar.vue";
 
 const props = defineProps<{
 	error: NuxtError;
@@ -73,6 +74,10 @@ function handleServerSettings(): void {
 
 <template>
   <div class="relative flex min-h-screen flex-col bg-background">
+    <!-- The error boundary renders outside app.vue, so it doesn't inherit the
+         title bar from there — mount it here so the window stays draggable and
+         the traffic lights have their band. -->
+    <AppTitlebar />
     <header class="app-titlebar-inset flex items-center justify-end px-6 py-4">
       <ThemeToggle />
     </header>
