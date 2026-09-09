@@ -2,6 +2,10 @@
 import AppSidebar from "#console/components/layout/sidebar/AppSidebar.vue";
 import AppHeader from "#console/components/layout/AppHeader.vue";
 import AppChat from "#console/components/layout/AppChat.vue";
+import CommandMenu from "#console/components/layout/CommandMenu.vue";
+import CreateWorkspaceSheet from "#console/components/shared/CreateWorkspaceSheet.vue";
+import { CreatePolicyDialog } from "#console/components/pages/policies";
+import { CreatePipelineDialog } from "#console/components/pages/workflows";
 import { Loader2 } from "@lucide/vue";
 import {
 	SidebarInset,
@@ -10,6 +14,11 @@ import {
 } from "#console/components/ui/sidebar";
 import { Toaster } from "#console/components/ui/sonner";
 import "vue-sonner/style.css";
+
+// The command palette and the create-workspace sheet are shell-wide singletons
+// (driven by useCommandMenu / useCreateWorkspace), mounted once here rather than
+// inside a sidebar item — any trigger anywhere opens the one instance.
+const { isOpen: createWorkspaceOpen } = useCreateWorkspace();
 
 const { workspaces, currentWorkspaceSlug } = useWorkspaces();
 
@@ -63,6 +72,13 @@ const showPage = computed(
          its open watcher fetches sessions for the current workspace. -->
     <AppChat v-if="currentWorkspaceSlug" />
   </SidebarProvider>
+
+  <!-- Shell-wide singletons: the ⌘K palette and the create dialogs, so any
+       trigger (palette, page button, overview step) opens the one instance. -->
+  <CommandMenu />
+  <CreateWorkspaceSheet v-model:open="createWorkspaceOpen" />
+  <CreatePolicyDialog />
+  <CreatePipelineDialog />
 
   <ClientOnly>
     <Toaster />

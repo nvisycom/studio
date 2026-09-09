@@ -35,11 +35,8 @@ import {
 } from "#console/components/ui/sidebar";
 import { Kbd } from "#console/components/ui/kbd";
 import { personLabel } from "#console/utils/naming";
-import CommandMenu from "#console/components/layout/CommandMenu.vue";
-import CreateWorkspaceSheet from "#console/components/shared/CreateWorkspaceSheet.vue";
 
 const { t, locale, locales, setLocale } = useI18n();
-const { wLink } = useWorkspaceLink();
 
 // Language submenu: show the active locale inline, switch on select.
 type LocaleCode = "en" | "de";
@@ -71,14 +68,8 @@ const secondaryLabel = computed(() =>
 	displayName.value || username.value ? (emailAddress.value ?? "") : "",
 );
 
-const { open: openHelpChat } = useHelpChat();
-const isCommandMenuOpen = ref(false);
-const isCreateWorkspaceOpen = ref(false);
+const { open: openCommandMenu } = useCommandMenu();
 const colorMode = useColorMode();
-
-function openCommandMenu() {
-	isCommandMenuOpen.value = true;
-}
 
 // Theme submenu: a three-way choice (light / dark / system) bound to the
 // color-mode preference.
@@ -102,27 +93,6 @@ const activeThemeLabel = computed(
 function handleLogout() {
 	logout();
 }
-
-// Command menu action handlers
-function handleCreateWorkspace() {
-	isCreateWorkspaceOpen.value = true;
-}
-
-function handleUploadFile() {
-	// Navigate to files page where upload can be triggered
-	navigateTo(wLink("/files"));
-}
-
-function handleOpenSupport() {
-	openHelpChat();
-}
-
-// Global keyboard shortcut for opening command menu
-defineShortcuts({
-	meta_k: () => {
-		isCommandMenuOpen.value = !isCommandMenuOpen.value;
-	},
-});
 </script>
 
 <template>
@@ -278,15 +248,4 @@ defineShortcuts({
       </DropdownMenu>
     </SidebarMenuItem>
   </SidebarMenu>
-
-  <!-- Command Menu -->
-  <CommandMenu
-    v-model:open="isCommandMenuOpen"
-    @create-workspace="handleCreateWorkspace"
-    @upload-file="handleUploadFile"
-    @open-support="handleOpenSupport"
-  />
-
-  <!-- Create Workspace Modal -->
-  <CreateWorkspaceSheet v-model:open="isCreateWorkspaceOpen" />
 </template>

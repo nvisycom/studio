@@ -34,6 +34,9 @@ import { getFileIcon, getFileIconForExtension } from "#console/utils/file";
 import { activityContent } from "#console/utils/activities";
 import OverviewStats from "./OverviewStats.vue";
 
+// Resolved so a setup step can render as either a link or a button via `:is`.
+const NuxtLink = resolveComponent("NuxtLink");
+
 const { t } = useI18n();
 const { wLink } = useWorkspaceLink();
 const { relativeTime } = useRelativeTime();
@@ -48,12 +51,16 @@ const { detections } = useDetections();
 // Each step's `done` flag is derived from real data. While setup is incomplete
 // (and not dismissed) a "Set up your workspace" card sits among the dashboard
 // cards; it disappears once every step is done or the user hides it.
+// A step either navigates (`href`) or runs an action (`run`) — creating a policy
+// opens the shell-wide dialog rather than routing to a page.
 interface SetupStep {
 	key: string;
 	icon: Component;
-	href: string;
+	href?: string;
+	run?: () => void;
 	done: boolean;
 }
+const { open: openCreatePolicy } = useCreatePolicy();
 const setupSteps = computed<SetupStep[]>(() => [
 	{
 		key: "uploadFiles",
@@ -64,7 +71,7 @@ const setupSteps = computed<SetupStep[]>(() => [
 	{
 		key: "createPolicy",
 		icon: ShieldCheck,
-		href: wLink("/policies?create=1"),
+		run: openCreatePolicy,
 		done: (policies.value?.length ?? 0) > 0,
 	},
 	{
@@ -290,11 +297,14 @@ const quickActions = [
         </CardHeader>
         <CardContent class="pb-6">
           <div class="-my-1 flex flex-col">
-            <NuxtLink
+            <component
+              :is="step.href ? NuxtLink : 'button'"
               v-for="(step, i) in setupSteps"
               :key="step.key"
               :to="step.href"
-              class="group flex items-center gap-3 py-2.5"
+              :type="step.href ? undefined : 'button'"
+              class="group flex items-center gap-3 py-2.5 text-left"
+              @click="step.run?.()"
             >
               <div
                 class="flex size-7 shrink-0 items-center justify-center rounded-full border text-xs font-medium transition-colors"
@@ -335,7 +345,7 @@ const quickActions = [
                 v-if="!step.done"
                 class="size-4 shrink-0 -translate-x-1 text-muted-foreground/50 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100"
               />
-            </NuxtLink>
+            </component>
           </div>
         </CardContent>
       </Card>

@@ -29,7 +29,7 @@ defineEmits<{ run: [] }>();
 <template>
   <div class="flex h-11 items-center gap-2 border-b border-border/50 bg-background px-3">
     <Select v-model="selectedPipeline" :disabled="phase === 'running'">
-      <SelectTrigger class="h-8 w-full max-w-xs text-sm">
+      <SelectTrigger class="h-8 min-w-0 flex-1 text-sm">
         <SelectValue :placeholder="t('studio.audit.pipelinePlaceholder')" />
       </SelectTrigger>
       <SelectContent>

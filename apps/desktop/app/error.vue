@@ -3,6 +3,7 @@ import type { NuxtError } from "#app";
 import { ArrowLeft, Home, RefreshCw, ServerOff } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import ThemeToggle from "#console/components/layout/footer/ThemeToggle.vue";
+import AppTitlebar from "~/components/AppTitlebar.vue";
 
 const props = defineProps<{
 	error: NuxtError;
@@ -66,13 +67,25 @@ function handleGoHome(): void {
 
 // Take the user to the login screen, where the Server URL field and the
 // pre-flight "Check server" check live — the place to re-check or change the URL.
+//
+// Clear the session first (locally — no network, the server is unreachable):
+// the user is still authenticated with a token for the old/unreachable server,
+// and the auth guard would otherwise bounce an authenticated visit to /auth/login
+// straight back to "/", re-triggering the same failure. Changing the server means
+// re-authenticating against it anyway, so dropping the stale session is correct.
+const { clearAuth } = useAuth();
 function handleServerSettings(): void {
+	clearAuth();
 	clearError({ redirect: "/auth/login" });
 }
 </script>
 
 <template>
   <div class="relative flex min-h-screen flex-col bg-background">
+    <!-- The error boundary renders outside app.vue, so it doesn't inherit the
+         title bar from there — mount it here so the window stays draggable and
+         the traffic lights have their band. -->
+    <AppTitlebar />
     <header class="app-titlebar-inset flex items-center justify-end px-6 py-4">
       <ThemeToggle />
     </header>

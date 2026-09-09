@@ -169,15 +169,34 @@ const menuOpen = ref(false);
 const menuPosition = ref({ x: 0, y: 0 });
 const menuRow = ref<TRow | null>(null);
 
+// Whether the open context menu acts on a multi-row selection: the clicked row
+// is itself part of a >1 selection. This is about SCOPE — independent of how the
+// actions are produced (a `bulkAction` prop, or `rowActions` returning
+// selection-aware actions, as the files views do) — so it drives the highlight.
+const menuIsMultiSelection = computed(() => {
+	const row = menuRow.value;
+	const selected = props.selection?.selected.value;
+	return !!row && !!selected && selected.has(row.id) && selected.size > 1;
+});
+
+// The rows the open menu will affect, so we can highlight them while it's open:
+// the whole selection when the clicked row is part of a multi-selection, else
+// just the right-clicked row.
+const menuAffectedIds = computed<Set<string>>(() => {
+	if (!menuOpen.value || !menuRow.value) return new Set();
+	if (menuIsMultiSelection.value && props.selection) {
+		return props.selection.selected.value;
+	}
+	return new Set([menuRow.value.id]);
+});
+
 const menuActions = computed<RowAction[]>(() => {
 	const row = menuRow.value;
 	if (!row) return [];
 	const selected = props.selection?.selected.value;
-	const isBulk =
-		!!props.bulkAction &&
-		!!selected &&
-		selected.has(row.id) &&
-		selected.size > 1;
+	// The `bulkAction` prop path is a separate mechanism from `rowActions`; guard
+	// it on the prop being present as before.
+	const isBulk = menuIsMultiSelection.value && !!props.bulkAction;
 	if (isBulk && props.bulkAction && selected) {
 		const bulk = props.bulkAction(selected);
 		return [
@@ -280,7 +299,12 @@ function onRowContextMenu(event: MouseEvent, row: TRow) {
             v-for="virtualRow in virtualRows"
             :key="String(virtualRow.key)"
             :style="{ height: `${virtualRow.size}px` }"
-            class="group cursor-pointer"
+            class="group cursor-pointer transition-colors"
+            :class="
+              menuAffectedIds.has(
+                table.getRowModel().rows[virtualRow.index]!.original.id,
+              ) && 'bg-muted'
+            "
             @click="
               onRowClick(table.getRowModel().rows[virtualRow.index]!.original)
             "

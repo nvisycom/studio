@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronDown, ExternalLink, Loader2 } from "@lucide/vue";
+import { ChevronDown, ExternalLink, Loader2, RotateCw } from "@lucide/vue";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
@@ -154,15 +154,14 @@ function runCheck() {
 		checkServer(serverUrl.value.trim() || defaultUrl);
 }
 
-// The probe result as a rendered line under the field: the "checking" progress
-// note, or a problem (unreachable / not-nvisy / invalid) the user must act on. A
-// reachable server needs no line — its status already leads the collapsible's
-// header — so it returns null. Idle also returns null but shows the field's
-// guidance line instead (see the template), so it's distinguished below.
+// The probe result as a rendered line under the field, shown only for a problem
+// the user must act on (unreachable / not-nvisy / invalid). The "checking" state
+// shows no line — the Check button's in-place spinner already signals it, so the
+// layout doesn't shift while checking. A reachable server needs no line either
+// (its status leads the collapsible's header); idle returns null too but shows
+// the field's guidance line instead (see the template), distinguished below.
 const probeView = computed(() => {
 	switch (probe.value.kind) {
-		case "checking":
-			return { tone: "muted", key: "auth.server.probe.checking" };
 		case "unreachable":
 			return { tone: "bad", key: "auth.server.probe.unreachable" };
 		case "not-nvisy":
@@ -170,7 +169,7 @@ const probeView = computed(() => {
 		case "invalid":
 			return { tone: "bad", key: "auth.server.invalid" };
 		default:
-			// Idle or reachable: no probe line here.
+			// Idle, checking, or reachable: no probe line here.
 			return null;
 	}
 });
@@ -346,19 +345,24 @@ onBeforeUnmount(() => window.removeEventListener("focus", onWindowFocus));
                   @change="applyServer"
                   @blur="applyServer"
                 />
+                <!-- Icon-only so the spinner swaps in place (no width change) and
+                     nothing shifts below while checking. -->
                 <Button
                   type="button"
                   variant="outline"
-                  class="h-10 shrink-0 bg-background"
+                  size="icon"
+                  class="size-10 shrink-0 bg-background"
                   :disabled="probe.kind === 'checking'"
+                  :aria-label="t('auth.server.check')"
+                  :title="t('auth.server.check')"
                   @click="runCheck"
                 >
                   <Loader2
                     v-if="probe.kind === 'checking'"
-                    :size="14"
-                    class="mr-1.5 animate-spin"
+                    :size="16"
+                    class="animate-spin"
                   />
-                  {{ t("auth.server.check") }}
+                  <RotateCw v-else :size="16" />
                 </Button>
               </div>
             </div>
@@ -374,11 +378,6 @@ onBeforeUnmount(() => window.removeEventListener("focus", onWindowFocus));
                 'text-destructive': probeView.tone === 'bad',
               }"
             >
-              <Loader2
-                v-if="probe.kind === 'checking'"
-                :size="12"
-                class="animate-spin"
-              />
               {{ t(probeView.key) }}
             </p>
             <p

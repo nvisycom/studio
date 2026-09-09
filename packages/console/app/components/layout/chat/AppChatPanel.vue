@@ -84,7 +84,6 @@ function handleRetry() {
     <div
       class="flex h-11 shrink-0 items-center gap-1.5 border-b border-border/50 px-3"
     >
-      <Sparkles :size="16" class="shrink-0 text-muted-foreground" />
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
           <button
@@ -101,27 +100,30 @@ function handleRetry() {
           </DropdownMenuItem>
           <template v-if="sessions.length">
             <DropdownMenuSeparator />
-            <div
+            <!-- The whole row is one item so hover highlights it uniformly. The
+                 CURRENT session reads as a persistent state (an ink tick + bolder
+                 text), not a grey fill — otherwise it's indistinguishable from the
+                 transient hover highlight, which is the only grey state. -->
+            <DropdownMenuItem
               v-for="s in sessions"
               :key="s.id"
-              class="group/session flex items-center"
+              class="group/session relative pr-1"
+              :class="
+                s.id === currentSessionId &&
+                'pl-4 font-medium text-foreground before:absolute before:inset-y-1.5 before:left-1.5 before:w-0.5 before:rounded-full before:bg-primary'
+              "
+              @select="selectSession(s.id)"
             >
-              <DropdownMenuItem
-                class="min-w-0 flex-1"
-                :class="s.id === currentSessionId && 'bg-muted'"
-                @select="selectSession(s.id)"
-              >
-                <span class="truncate">{{ s.title }}</span>
-              </DropdownMenuItem>
+              <span class="min-w-0 flex-1 truncate">{{ s.title }}</span>
               <button
                 type="button"
-                class="mr-1 rounded p-1 text-muted-foreground opacity-0 hover:text-destructive group-hover/session:opacity-100"
+                class="rounded p-1 text-muted-foreground opacity-0 hover:text-destructive focus-visible:opacity-100 group-hover/session:opacity-100"
                 :aria-label="t('chat.deleteSession')"
                 @click.stop="deleteSession(s.id)"
               >
                 <Trash2 :size="13" />
               </button>
-            </div>
+            </DropdownMenuItem>
           </template>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -1,4 +1,8 @@
 {
+	"titlebar": {
+		"back": "Zurück",
+		"forward": "Vorwärts"
+	},
 	"header": {
 		"tabs": {
 			"connections": {
@@ -456,14 +460,7 @@
 		},
 		"filters": {
 			"search": "Nach Name suchen...",
-			"modality": "Modalität",
 			"format": "Format",
-			"modalities": {
-				"text": "Text",
-				"image": "Bild",
-				"tabular": "Tabellarisch",
-				"audio": "Audio"
-			},
 			"formatSearch": "Formate suchen…",
 			"noFormats": "Keine Formate gefunden."
 		},
@@ -1508,11 +1505,21 @@
 		"title": "Befehlsmenü",
 		"placeholder": "Befehl eingeben oder suchen...",
 		"noResults": "Keine Ergebnisse gefunden.",
+		"noResultsHint": "Versuchen Sie einen anderen Suchbegriff.",
 		"homePage": "Startseite",
 		"settings": "Einstellungen",
+		"footer": {
+			"navigate": "Navigieren",
+			"select": "Auswählen",
+			"close": "Schließen"
+		},
 		"actions": {
 			"title": "Schnellaktionen",
 			"createWorkspace": "Arbeitsbereich erstellen",
+			"createPolicy": "Neue Richtlinie",
+			"createPipeline": "Neue Pipeline",
+			"createApiToken": "Neues API-Token",
+			"exploreIntegrations": "Integrationen erkunden",
 			"uploadFile": "Datei hochladen",
 			"inviteMember": "Mitglied einladen",
 			"createInviteCode": "Einladungscode erstellen",

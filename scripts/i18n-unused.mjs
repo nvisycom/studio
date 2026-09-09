@@ -20,7 +20,11 @@ import fs from "node:fs";
 import path from "node:path";
 
 const LOCALE_DIR = "packages/console/i18n/locales";
-const SOURCE_ROOTS = ["apps/web/app", "packages/console/app"];
+const SOURCE_ROOTS = [
+	"apps/web/app",
+	"apps/desktop/app",
+	"packages/console/app",
+];
 // The reference locale whose keys define the canonical set.
 const REFERENCE_LOCALE = "en.json";
 
