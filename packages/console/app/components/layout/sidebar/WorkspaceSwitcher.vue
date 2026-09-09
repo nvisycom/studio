@@ -16,7 +16,6 @@ import {
 } from "#console/components/ui/sidebar";
 import { EntityAvatar } from "#console/components/avatar";
 import { truncate } from "#console/utils/naming";
-import CreateWorkspaceSheet from "#console/components/shared/CreateWorkspaceSheet.vue";
 
 const { t } = useI18n();
 const { isMobile } = useSidebar();
@@ -27,8 +26,8 @@ const MAX_NAME_LENGTH = 18;
 const { workspaces, currentWorkspace, currentWorkspaceSlug, selectWorkspace } =
 	useWorkspaces();
 const { resolveAvatarUrl } = useAvatarUrl();
-
-const isCreateWorkspaceSheetOpen = ref(false);
+// The create-workspace sheet is a shell-wide singleton (mounted in the layout).
+const { open: openCreateWorkspace } = useCreateWorkspace();
 </script>
 
 <template>
@@ -110,7 +109,7 @@ const isCreateWorkspaceSheetOpen = ref(false);
           <DropdownMenuSeparator v-if="workspaces && workspaces.length > 0" />
           <DropdownMenuItem
             class="gap-2 px-2 py-1.5"
-            @click="isCreateWorkspaceSheetOpen = true"
+            @click="openCreateWorkspace"
           >
             <div
               class="flex size-5 items-center justify-center rounded border bg-background"
@@ -124,7 +123,5 @@ const isCreateWorkspaceSheetOpen = ref(false);
         </DropdownMenuContent>
       </DropdownMenu>
     </SidebarMenuItem>
-
-    <CreateWorkspaceSheet v-model:open="isCreateWorkspaceSheetOpen" />
   </SidebarMenu>
 </template>

@@ -1,4 +1,8 @@
 {
+	"titlebar": {
+		"back": "Go back",
+		"forward": "Go forward"
+	},
 	"header": {
 		"tabs": {
 			"connections": {
@@ -456,14 +460,7 @@
 		},
 		"filters": {
 			"search": "Search by name...",
-			"modality": "Modality",
 			"format": "Format",
-			"modalities": {
-				"text": "Text",
-				"image": "Image",
-				"tabular": "Tabular",
-				"audio": "Audio"
-			},
 			"formatSearch": "Search formats…",
 			"noFormats": "No formats found."
 		},
@@ -1508,11 +1505,21 @@
 		"title": "Command Menu",
 		"placeholder": "Type a command or search...",
 		"noResults": "No results found.",
+		"noResultsHint": "Try a different search term.",
 		"homePage": "Home Page",
 		"settings": "Settings",
+		"footer": {
+			"navigate": "Navigate",
+			"select": "Select",
+			"close": "Close"
+		},
 		"actions": {
 			"title": "Quick Actions",
 			"createWorkspace": "Create Workspace",
+			"createPolicy": "New Policy",
+			"createPipeline": "New Pipeline",
+			"createApiToken": "New API Token",
+			"exploreIntegrations": "Explore Integrations",
 			"uploadFile": "Upload File",
 			"inviteMember": "Invite Member",
 			"createInviteCode": "Create Invite Code",

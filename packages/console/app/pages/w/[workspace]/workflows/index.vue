@@ -2,7 +2,6 @@
 import { Loader2, Workflow, Pencil, Trash2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import type {
-	CreatePipeline,
 	Pipeline,
 	PipelineSummary,
 	UpdatePipeline,
@@ -14,7 +13,7 @@ import { VirtualTable } from "#console/components/ui/virtual-table";
 import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 import { personLabel } from "#console/utils/naming";
 import { ConfirmDialog } from "#console/components/shared";
-import { PipelineSheet } from "#console/components/pages/workflows";
+import { EditPipelineSheet } from "#console/components/pages/workflows";
 
 const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
@@ -32,37 +31,26 @@ const {
 	pipelines,
 	isLoading,
 	getPipeline,
-	createPipelineAsync,
-	isCreating,
 	updatePipelineAsync,
 	isUpdating,
 	deletePipelineAsync,
 	isDeleting,
 } = usePipelines();
 
-// Policies are linkable at creation (definition.policySlugs).
+// Policies are linkable at edit (definition.policySlugs); the shared edit sheet
+// offers them.
 const { policies } = usePolicies();
 
-const isCreateSheetOpen = ref(false);
+// Creating a pipeline is a shell-wide capability (the dialog is mounted in the
+// layout), so the "New pipeline" button just raises the shared open state.
+const { open: openCreate } = useCreatePipeline();
 
-// One slide-over for both create and edit. `editingPipeline` null → create;
-// a loaded Pipeline → edit. `loadingPipeline` gates the sheet while the full
-// pipeline (with definition + retention) is fetched.
+// Edit is page-local: one slide-over loads the full pipeline for its row.
+// `editingPipeline` null → nothing loaded; `loadingPipeline` gates the sheet
+// while the full pipeline (with definition + retention) is fetched.
 const isEditSheetOpen = ref(false);
 const editingPipeline = ref<Pipeline | null>(null);
 const loadingPipeline = ref(false);
-
-async function handleCreate(pipeline: CreatePipeline) {
-	try {
-		await createPipelineAsync(pipeline);
-		toast.success(t("workflows.toast.created"));
-		isCreateSheetOpen.value = false;
-	} catch (err) {
-		toast.error(t("workflows.toast.createFailed"), {
-			description: getErrorMessage(err, t("common.errors.tryAgain")),
-		});
-	}
-}
 
 async function openEdit(pipeline: PipelineSummary) {
 	// The list holds summaries; fetch the full pipeline before opening the editor.
@@ -195,11 +183,7 @@ function rowActions(pipeline: PipelineRow): RowAction[] {
         <p class="text-sm text-muted-foreground">
           {{ t("workflows.count", { count: pipelines?.length ?? 0 }) }}
         </p>
-        <Button
-          size="sm"
-          data-testid="pipeline-create"
-          @click="isCreateSheetOpen = true"
-        >
+        <Button size="sm" data-testid="pipeline-create" @click="openCreate">
           <Workflow :size="16" class="mr-1.5" />
           {{ t("workflows.actions.create") }}
         </Button>
@@ -228,21 +212,15 @@ function rowActions(pipeline: PipelineRow): RowAction[] {
         />
       </div>
 
-      <PipelineSheet
-          v-model:open="isCreateSheetOpen"
-          :is-loading="isCreating"
-          :policies="policies ?? undefined"
-          @create="handleCreate"
-        />
-
-        <PipelineSheet
-          v-model:open="isEditSheetOpen"
-          :pipeline="editingPipeline"
-          :loading-pipeline="loadingPipeline"
-          :is-loading="isUpdating"
-          :policies="policies ?? undefined"
-          @update="handleUpdate"
-        />
+      <!-- Edit only: creating a pipeline is handled by the shell-wide dialog. -->
+      <EditPipelineSheet
+        v-model:open="isEditSheetOpen"
+        :pipeline="editingPipeline"
+        :loading-pipeline="loadingPipeline"
+        :is-loading="isUpdating"
+        :policies="policies ?? undefined"
+        @update="handleUpdate"
+      />
 
         <ConfirmDialog
           :open="!!pipelineToDelete"

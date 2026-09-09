@@ -1,19 +1,5 @@
 <script setup lang="ts">
-import {
-	Puzzle,
-	Settings,
-	Users,
-	CreditCard,
-	BarChart3,
-	MessagesSquare,
-	LayoutDashboard,
-	FolderOpen,
-	FileSearch,
-	PenTool,
-	Workflow,
-	ShieldCheck,
-	Webhook as WebhookIcon,
-} from "@lucide/vue";
+import { Settings, CreditCard, MessagesSquare } from "@lucide/vue";
 import NavMain from "#console/components/layout/sidebar/NavMain.vue";
 import NavUser from "#console/components/layout/sidebar/NavUser.vue";
 import WorkspaceSwitcher from "#console/components/layout/sidebar/WorkspaceSwitcher.vue";
@@ -41,77 +27,19 @@ const { open: openHelpChat } = useHelpChat();
 const { has } = useFeatures();
 const { wLink } = useWorkspaceLink();
 
-// Check if workspace is selected and get current role
-const { currentWorkspaceSlug, currentWorkspace } = useWorkspaces();
-const hasWorkspace = computed(() => !!currentWorkspaceSlug.value);
-const isAdminOrOwner = computed(() => {
-	const role = currentWorkspace.value?.memberRole;
-	return role === "owner" || role === "admin";
-});
-
-// Navigation data
-const navWorkspace = computed(() => [
-	{
-		title: t("sidebar.files"),
-		url: wLink("/files"),
-		icon: FolderOpen,
-		isActive: false,
-	},
-	{
-		title: t("sidebar.studio"),
-		url: wLink("/studio"),
-		icon: PenTool,
-		isActive: false,
-	},
-	{
-		title: t("sidebar.team"),
-		url: wLink("/team"),
-		icon: Users,
-		isActive: false,
-	},
-]);
-
-const navAutomation = computed(() => [
-	{
-		title: t("sidebar.workflows"),
-		url: wLink("/workflows"),
-		icon: Workflow,
-		isActive: false,
-	},
-	{
-		title: t("sidebar.connections"),
-		url: wLink("/integrations"),
-		icon: Puzzle,
-		isActive: false,
-	},
-	{
-		title: t("sidebar.policies"),
-		url: wLink("/policies"),
-		icon: ShieldCheck,
-		isActive: false,
-	},
-]);
-
-const navObservability = computed(() => [
-	{
-		title: t("sidebar.webhooks"),
-		url: wLink("/webhooks"),
-		icon: WebhookIcon,
-		isActive: false,
-	},
-	{
-		title: t("sidebar.analytics"),
-		url: wLink("/analytics"),
-		icon: BarChart3,
-		isActive: false,
-	},
-	{
-		title: t("sidebar.logs"),
-		url: wLink("/analytics/logs"),
-		icon: FileSearch,
-		isActive: false,
-	},
-]);
+// Navigation is defined once in useNavigation and shared with the command menu,
+// so a route added there appears in both. The sidebar renders the three labeled
+// groups via NavMain; Overview leads on its own, and the settings group (billing
+// / settings) plus support live in the footer below.
+const { overview, groups, hasWorkspace } = useNavigation();
+const navGroup = (id: string) =>
+	computed(() => groups.value.find((g) => g.id === id)?.items ?? []);
+const navWorkspace = navGroup("workspace");
+const navAutomation = navGroup("automation");
+const navObservability = navGroup("observability");
+// A NavMain group is greyed when every item in it is gated off.
+const allDisabled = (items: { disabled?: boolean }[]) =>
+	items.length > 0 && items.every((i) => i.disabled);
 </script>
 
 <template>
@@ -127,10 +55,10 @@ const navObservability = computed(() => [
       <!-- Overview - always visible -->
       <SidebarMenu v-if="state === 'expanded'" class="px-2">
         <SidebarMenuItem>
-          <SidebarMenuButton as-child :tooltip="t('sidebar.overview')">
-            <NuxtLink :to="wLink('/')">
-              <LayoutDashboard />
-              <span>{{ t("sidebar.overview") }}</span>
+          <SidebarMenuButton as-child :tooltip="overview.title">
+            <NuxtLink :to="overview.url">
+              <component :is="overview.icon" />
+              <span>{{ overview.title }}</span>
             </NuxtLink>
           </SidebarMenuButton>
         </SidebarMenuItem>
@@ -138,17 +66,17 @@ const navObservability = computed(() => [
       <NavMain
         :items="navWorkspace"
         :label="t('sidebar.workspace')"
-        :disabled="!hasWorkspace"
+        :disabled="allDisabled(navWorkspace)"
       />
       <NavMain
         :items="navAutomation"
         :label="t('sidebar.automation')"
-        :disabled="!hasWorkspace || !isAdminOrOwner"
+        :disabled="allDisabled(navAutomation)"
       />
       <NavMain
         :items="navObservability"
         :label="t('sidebar.observability')"
-        :disabled="!hasWorkspace"
+        :disabled="allDisabled(navObservability)"
       />
     </SidebarContent>
     <SidebarFooter class="gap-0 p-0">
@@ -202,7 +130,11 @@ const navObservability = computed(() => [
         </SidebarMenu>
       </SidebarGroup>
       <SidebarSeparator />
-      <div class="h-[calc(2.75rem-1px)] px-2 flex items-center">
+      <!-- Vertical padding keeps the account button's hover fill from butting
+           against the separator above it (the fill is a rounded rect spanning
+           the row; flush against the 1px line it read as the line cutting through
+           the highlight). -->
+      <div class="px-2 py-1.5 flex items-center">
         <NavUser />
       </div>
     </SidebarFooter>

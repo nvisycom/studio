@@ -1,13 +1,8 @@
 <script setup lang="ts">
-import type {
-	CreatePolicy,
-	Policy,
-	PolicySummary,
-	UpdatePolicy,
-} from "@nvisy/sdk/datatypes";
+import type { Policy, PolicySummary, UpdatePolicy } from "@nvisy/sdk/datatypes";
 import type { RowAction } from "#console/components/pages/RowActions.vue";
 import type { VirtualColumn } from "#console/components/ui/virtual-table";
-import { PolicySheet } from "#console/components/pages/policies";
+import { EditPolicySheet } from "#console/components/pages/policies";
 import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 import {
 	LayoutTemplate,
@@ -41,8 +36,6 @@ const {
 	policies,
 	isLoading,
 	getPolicy,
-	createPolicyAsync,
-	isCreating,
 	updatePolicyAsync,
 	isUpdating,
 	deletePolicyAsync,
@@ -51,29 +44,27 @@ const {
 
 const policyToDelete = ref<PolicySummary | null>(null);
 
-// One slide-over for both create and edit. `editingPolicy` null → create mode;
-// a loaded Policy → edit mode. `?create=1` (templates "start from scratch",
-// overview setup step) opens it in create mode on load.
-const route = useRoute();
-const isSheetOpen = ref(route.query.create === "1");
+// Creating a policy is a shell-wide capability (the dialog is mounted in the
+// layout), so the "New policy" button just raises the shared open state.
+const { open: openCreate } = useCreatePolicy();
+
+// Edit is page-local: this slide-over loads the full policy for its row.
+// `editingPolicy` holds the loaded policy; `isLoadingPolicy` gates the sheet
+// while it's fetched.
+const isEditSheetOpen = ref(false);
 const editingPolicy = ref<Policy | null>(null);
 const isLoadingPolicy = ref(false);
-
-function openCreate() {
-	editingPolicy.value = null;
-	isSheetOpen.value = true;
-}
 
 async function openEdit(policy: PolicySummary) {
 	// The list only holds summaries; fetch the full policy (with its definition)
 	// before opening the editor.
 	editingPolicy.value = null;
 	isLoadingPolicy.value = true;
-	isSheetOpen.value = true;
+	isEditSheetOpen.value = true;
 	try {
 		editingPolicy.value = await getPolicy(policy.slug);
 	} catch (error) {
-		isSheetOpen.value = false;
+		isEditSheetOpen.value = false;
 		toast.error(t("policies.toast.loadFailed"), {
 			description: error instanceof Error ? error.message : undefined,
 		});
@@ -82,23 +73,11 @@ async function openEdit(policy: PolicySummary) {
 	}
 }
 
-async function handleCreate(policy: CreatePolicy) {
-	try {
-		await createPolicyAsync(policy);
-		toast.success(t("policies.toast.created"));
-		isSheetOpen.value = false;
-	} catch (error) {
-		toast.error(t("policies.toast.createFailed"), {
-			description: error instanceof Error ? error.message : undefined,
-		});
-	}
-}
-
 async function handleUpdate(policySlug: string, updates: UpdatePolicy) {
 	try {
 		await updatePolicyAsync({ policySlug, updates });
 		toast.success(t("policies.toast.updated"));
-		isSheetOpen.value = false;
+		isEditSheetOpen.value = false;
 	} catch (error) {
 		toast.error(t("policies.toast.updateFailed"), {
 			description: error instanceof Error ? error.message : undefined,
@@ -260,12 +239,12 @@ async function confirmDelete() {
         @confirm="confirmDelete"
       />
 
-      <PolicySheet
-        v-model:open="isSheetOpen"
+      <!-- Edit only: creating a policy is handled by the shell-wide dialog. -->
+      <EditPolicySheet
+        v-model:open="isEditSheetOpen"
         :policy="editingPolicy"
-        :is-loading="isCreating || isUpdating"
+        :is-loading="isUpdating"
         :loading-policy="isLoadingPolicy"
-        @create="handleCreate"
         @update="handleUpdate"
       />
     </div>
