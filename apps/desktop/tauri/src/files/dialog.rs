@@ -4,7 +4,7 @@
 //! the webview never needs filesystem scope. The read helpers here are shared
 //! with the drag-drop and watched-folder paths, which read the same way.
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Runtime};
@@ -119,7 +119,7 @@ fn into_path(path: FilePath) -> Result<PathBuf, String> {
 /// through (the read step handles a genuine failure); only a known-too-large
 /// file is skipped here. Shared by the native-drop and watched-folder paths, so
 /// an oversized file is rejected by its metadata before it's read into memory.
-pub(crate) fn within_limit(path: &std::path::Path, max_bytes: Option<u64>) -> bool {
+pub(crate) fn within_limit(path: &Path, max_bytes: Option<u64>) -> bool {
     let Some(max) = max_bytes else {
         return true;
     };
@@ -143,7 +143,7 @@ pub(crate) fn within_limit(path: &std::path::Path, max_bytes: Option<u64>) -> bo
 /// is streamed through a limited reader and the read fails if it would exceed the
 /// cap, so a file that grew or was replaced after its size was checked can't load
 /// more than the cap into memory. `None` reads without a bound.
-pub(crate) fn read_file(path: &std::path::Path, max_bytes: Option<u64>) -> Result<PickedFile, String> {
+pub(crate) fn read_file(path: &Path, max_bytes: Option<u64>) -> Result<PickedFile, String> {
     use std::io::Read;
 
     let file = std::fs::File::open(path).map_err(|error| error.to_string())?;

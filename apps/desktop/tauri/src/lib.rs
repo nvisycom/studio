@@ -5,6 +5,8 @@ mod spotlight;
 mod store;
 mod tray;
 
+use std::error::Error;
+
 use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -81,7 +83,7 @@ fn register_plugins(builder: tauri::Builder<tauri::Wry>) -> tauri::Builder<tauri
 /// One-time app setup once the builder has run: install logging (debug), create
 /// the tray, wire window events, and arm the launcher shortcut / folder watcher /
 /// auth deep link.
-fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
+fn setup(app: &mut tauri::App) -> Result<(), Box<dyn Error>> {
     if cfg!(debug_assertions) {
         app.handle().plugin(
             tauri_plugin_log::Builder::default()

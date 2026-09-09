@@ -4,14 +4,13 @@
 
 mod session;
 
-pub use session::{is_authed, register_deep_link, AuthState};
-
 // Referenced only by the single-instance deep-link filter, which is compiled on
 // Windows and Linux (macOS delivers the URL in-process instead).
-#[cfg(any(target_os = "windows", target_os = "linux"))]
-pub use session::{handle_deep_links, CALLBACK_SCHEME};
-
 use tauri::{AppHandle, Runtime};
+
+#[cfg(any(target_os = "windows", target_os = "linux"))]
+pub use self::session::{handle_deep_links, CALLBACK_SCHEME};
+pub use self::session::{is_authed, register_deep_link, AuthState};
 
 /// The stored session token, for the frontend to build its authed API client.
 #[tauri::command]

@@ -11,12 +11,11 @@ mod dialog;
 mod drop;
 pub mod watch;
 
-pub use drop::{on_window_event, DropLimit};
-
 use tauri::{AppHandle, Runtime};
 
-use dialog::{FileFilter, PickedFile};
-use watch::WatchConfig;
+use self::dialog::{FileFilter, PickedFile};
+pub use self::drop::{on_window_event, DropLimit};
+use self::watch::WatchConfig;
 
 /// Open a native file picker and return the chosen files' names and bytes. The
 /// frontend's file bridge wraps them back into `File`s for the upload pipeline.

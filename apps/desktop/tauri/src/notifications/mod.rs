@@ -4,10 +4,10 @@
 
 mod settings;
 
-pub use settings::{enabled, set_enabled};
-
 use tauri::{AppHandle, Runtime};
 use tauri_plugin_notification::NotificationExt;
+
+pub use self::settings::{enabled, set_enabled};
 
 /// Whether native notifications are enabled (the device-scoped preference behind
 /// the tray toggle and the Desktop notification channel).

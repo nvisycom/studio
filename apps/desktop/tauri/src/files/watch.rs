@@ -12,7 +12,7 @@
 
 use std::collections::HashSet;
 use std::path::{Path, PathBuf};
-use std::sync::Mutex;
+use std::sync::{Mutex, PoisonError};
 use std::time::Duration;
 
 use notify::{EventKind, RecursiveMode};
@@ -293,6 +293,6 @@ fn state<R: Runtime>(app: &AppHandle<R>) -> tauri::State<'_, WatchState> {
     app.state::<WatchState>()
 }
 
-fn lock_err<T>(_: std::sync::PoisonError<T>) -> String {
+fn lock_err<T>(_: PoisonError<T>) -> String {
     "watch state lock poisoned".to_owned()
 }
