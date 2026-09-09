@@ -35,16 +35,21 @@ const isSelectable = (token: ApiToken) => !isCurrentToken(token.id);
 const isTokenExpired = (token: ApiToken): boolean =>
 	!!token.expiredAt && new Date(token.expiredAt) < new Date();
 
-// Session-type accent shown on the token icon overlay.
-const SESSION_TYPE_COLOR: Record<string, string> = {
-	web: "bg-blue-500",
-	api: "bg-purple-500",
-	cli: "bg-orange-500",
+// Session-type badge shown on the token icon overlay, one per ApiTokenType
+// ("web" | "api" | "app"): a browser session, a user-created API token, and a
+// native-app (desktop) session.
+const SESSION_TYPE_BADGE: Record<string, { color: string; initial: string }> = {
+	web: { color: "bg-blue-500", initial: "W" },
+	api: { color: "bg-purple-500", initial: "A" },
+	app: { color: "bg-emerald-500", initial: "D" },
 };
-const sessionColor = (type: string) =>
-	SESSION_TYPE_COLOR[type.toLowerCase()] ?? "bg-muted-foreground";
-const sessionInitial = (type: string) =>
-	({ web: "W", api: "A", cli: "C" })[type.toLowerCase()] ?? "T";
+const sessionBadge = (type: string) =>
+	SESSION_TYPE_BADGE[type.toLowerCase()] ?? {
+		color: "bg-muted-foreground",
+		initial: "?",
+	};
+const sessionColor = (type: string) => sessionBadge(type).color;
+const sessionInitial = (type: string) => sessionBadge(type).initial;
 
 const formatExpiry = (date: string | null | undefined): string => {
 	if (!date) return t("tokens.table.info.never");
