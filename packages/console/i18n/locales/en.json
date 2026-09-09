@@ -1941,7 +1941,8 @@
 			"password": "Password",
 			"signIn": "Sign in",
 			"signUp": "Sign up",
-			"oidcFailed": "Couldn't sign in with that provider. Please try again."
+			"oidcFailed": "Couldn't sign in with that provider. Please try again.",
+			"desktopHandoffFailed": "Couldn't hand off your sign-in to the app. Please try again."
 		},
 		"login": {
 			"title": "Sign In",

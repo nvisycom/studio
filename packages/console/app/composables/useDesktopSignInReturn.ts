@@ -97,7 +97,9 @@ export function useDesktopSignInReturn() {
 		try {
 			await completeDesktopSignIn(callback);
 		} catch {
-			toast.error(t("auth.shared.oidcFailed"));
+			// Runs on the password path too, so the message describes the handoff
+			// itself rather than assuming an OIDC failure.
+			toast.error(t("auth.shared.desktopHandoffFailed"));
 		}
 		return true;
 	}

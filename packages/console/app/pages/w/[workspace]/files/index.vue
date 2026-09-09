@@ -47,6 +47,7 @@ const {
 	filesQuery,
 	hasFilters,
 	clearFilters,
+	takeImportStarted,
 } = useFilesView();
 
 const {
@@ -205,6 +206,12 @@ async function handleImport(connection: Connection) {
 		toast.error(t("files.errors.importFailed"), { description });
 	}
 }
+
+// An import started on another page (the integrations connection row) then
+// navigated here — poll so its files surface without a manual refresh.
+onMounted(() => {
+	if (takeImportStarted()) pollAfterImport();
+});
 
 function openDeleteDialog(file?: NvisyFile) {
 	fileToDelete.value = file || null;

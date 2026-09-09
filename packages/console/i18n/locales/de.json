@@ -1941,7 +1941,8 @@
 			"password": "Passwort",
 			"signIn": "Anmelden",
 			"signUp": "Registrieren",
-			"oidcFailed": "Anmeldung mit diesem Anbieter fehlgeschlagen. Bitte erneut versuchen."
+			"oidcFailed": "Anmeldung mit diesem Anbieter fehlgeschlagen. Bitte erneut versuchen.",
+			"desktopHandoffFailed": "Die Anmeldung konnte nicht an die App übergeben werden. Bitte erneut versuchen."
 		},
 		"login": {
 			"title": "Anmelden",

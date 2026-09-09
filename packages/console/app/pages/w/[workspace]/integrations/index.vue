@@ -169,13 +169,15 @@ function handleExportToConnection() {
 // Import: open the provider's picker, then import the chosen files. The picker
 // itself is a provider popup; a cancel returns 0 files and is silent.
 const { importFrom } = useFileImport();
+const { markImportStarted } = useFilesView();
 async function handleImportFromConnection(connection: Connection) {
 	try {
 		const count = await importFrom(connection);
 		if (count > 0) {
 			toast.success(t("connections.toast.importStarted", { count }));
-			// The imported files land on the Files page — take the user there to
-			// watch them arrive.
+			// The imported files land on the Files page via a background sync — flag
+			// the import so that page polls for them, then take the user there.
+			markImportStarted();
 			navigateTo(wLink("/files"));
 		}
 	} catch (error) {
