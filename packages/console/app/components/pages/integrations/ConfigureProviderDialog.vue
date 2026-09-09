@@ -47,7 +47,18 @@ const meta = computed(() =>
 	providerTag.value ? (LLM_PROVIDERS[providerTag.value] ?? null) : null,
 );
 
-const isValid = computed(() => displayName.value.trim().length > 0);
+// Valid to save when the name is set and — if the user opened "Update
+// credentials" — the re-entered credential fields form a complete config.
+// Without the second check an incomplete credential entry would submit with the
+// config silently dropped, so a key rotation would report success without
+// changing anything. (`buildConfig` is a hoisted function declaration.)
+const isValid = computed(() => {
+	if (displayName.value.trim().length === 0) return false;
+	if (showCredentials.value && providerTag.value) {
+		return buildConfig(providerTag.value) !== null;
+	}
+	return true;
+});
 
 function populate(provider: Provider) {
 	displayName.value = provider.displayName;

@@ -25,19 +25,27 @@ const ONEDRIVE_BASE = "https://onedrive.live.com/picker";
 export async function openOneDrivePicker(
 	getToken: (resource?: string) => Promise<string>,
 ): Promise<PickedFile[] | null> {
-	// The launch form needs a token synchronously, so mint the initial one before
-	// opening the popup (a popup opened here stays the user-gesture window).
-	const initialToken = await getToken();
+	// Open the popup FIRST, synchronously in the click handler, before any await.
+	// Minting the token is async, and awaiting it before `window.open` would spend
+	// the click's transient user activation — some browsers then block the popup
+	// even though the import began from a genuine gesture.
+	const opened = window.open("", "onedrive-picker", "width=1080,height=680");
+	if (!opened) {
+		throw new ImportError("files.errors.importPopupBlocked");
+	}
+	const popup: Window = opened;
+
+	// The launch form needs a token; mint the initial one now that the popup is
+	// already open. If it fails, close the popup so we don't leave a blank window.
+	let initialToken: string;
+	try {
+		initialToken = await getToken();
+	} catch (err) {
+		popup.close();
+		throw err;
+	}
 
 	return new Promise((resolve, reject) => {
-		const opened = window.open("", "onedrive-picker", "width=1080,height=680");
-		if (!opened) {
-			reject(new ImportError("files.errors.importPopupBlocked"));
-			return;
-		}
-		// Non-null alias so the closures below see a `Window`, not `Window | null`.
-		const popup: Window = opened;
-
 		// A per-instance channel id (a GUID, per the v8 contract) the picker echoes
 		// back on `initialize`, so we only adopt the channel meant for us.
 		const channelId = crypto.randomUUID();

@@ -1500,7 +1500,8 @@
 		"needsProviderCta": "Anbieter verbinden",
 		"error": {
 			"send": "Nachricht konnte nicht gesendet werden. Bitte erneut versuchen.",
-			"stream": "Die Antwort des Assistenten wurde unterbrochen. Bitte erneut versuchen."
+			"stream": "Die Antwort des Assistenten wurde unterbrochen. Bitte erneut versuchen.",
+			"delete": "Diese Unterhaltung konnte nicht gelöscht werden. Bitte erneut versuchen."
 		}
 	},
 	"commandMenu": {

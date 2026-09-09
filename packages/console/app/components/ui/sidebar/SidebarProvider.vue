@@ -183,7 +183,10 @@ const chatGap = computed(() =>
 /* Mobile: no sidebar/rail/chat tracks — the sidebar and chat are overlay sheets,
    content fills the shell with no floating inset. */
 .sidebar-shell[data-mobile="true"] {
-  grid-template-columns: [content] minmax(0, 1fr);
+  /* `[chat-rail]` closes the content track so SidebarInset's
+     `grid-column: content / chat-rail` resolves to a declared line rather than
+     an implicit one the browser would synthesize. */
+  grid-template-columns: [content] minmax(0, 1fr) [chat-rail];
   padding: 0;
 }
 </style>

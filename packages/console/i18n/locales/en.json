@@ -1500,7 +1500,8 @@
 		"needsProviderCta": "Connect a provider",
 		"error": {
 			"send": "Couldn't send your message. Please try again.",
-			"stream": "The assistant's reply was interrupted. Please try again."
+			"stream": "The assistant's reply was interrupted. Please try again.",
+			"delete": "Couldn't delete that conversation. Please try again."
 		}
 	},
 	"commandMenu": {

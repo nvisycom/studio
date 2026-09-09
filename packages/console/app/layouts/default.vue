@@ -58,8 +58,10 @@ const showPage = computed(
       </div>
     </SidebarInset>
     <!-- The global chat rail: the shell's `[chat]` grid track on desktop, an
-         overlay sheet on mobile. Mounted once so it's available on every page. -->
-    <AppChat />
+         overlay sheet on mobile. Mounted once so it's available on every page,
+         but only while a workspace is active — the chat is workspace-scoped and
+         its open watcher fetches sessions for the current workspace. -->
+    <AppChat v-if="currentWorkspaceSlug" />
   </SidebarProvider>
 
   <ClientOnly>

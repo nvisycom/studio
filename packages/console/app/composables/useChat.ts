@@ -39,6 +39,11 @@ const isStreaming = ref(false);
 const needsProvider = ref(false);
 const error = ref<string | null>(null);
 let loadedWorkspace: string | null = null;
+// Bumped on every workspace switch. A send captures the current value at start
+// and abandons its stream/reconcile if the value has moved on — so a reply that
+// was in flight when the user switched workspaces can't write into the new
+// workspace's panel or leave `isStreaming` stuck on.
+let generation = 0;
 
 // Reset all chat state when the workspace changes, so one workspace's
 // conversations never bleed into another's. Registered once in a DETACHED effect
@@ -52,6 +57,10 @@ function bindWorkspaceReset(
 	resetWatchBound = true;
 	effectScope(true).run(() => {
 		watch(currentWorkspaceSlug, () => {
+			// Invalidate any in-flight send so its stream/reconcile can't touch the
+			// freshly-cleared state, and release the input.
+			generation++;
+			isStreaming.value = false;
 			loadedWorkspace = null;
 			sessions.value = [];
 			currentSessionId.value = null;
@@ -148,7 +157,14 @@ export function useChat() {
 	}
 
 	async function deleteSession(sessionId: string) {
-		await requireClient().chat.deleteSession(requireWorkspace(), sessionId);
+		try {
+			await requireClient().chat.deleteSession(requireWorkspace(), sessionId);
+		} catch {
+			// The panel fires this without awaiting; surface a failure through the
+			// existing error banner rather than leaving an unhandled rejection.
+			error.value = "delete";
+			return;
+		}
 		sessions.value = sessions.value.filter((s) => s.id !== sessionId);
 		if (currentSessionId.value === sessionId) newSession();
 	}
@@ -163,6 +179,10 @@ export function useChat() {
 		if (!text || isStreaming.value) return;
 
 		const slug = requireWorkspace();
+		// Capture the workspace generation: if it moves on mid-send (the user
+		// switched workspaces), this send's stream and reconcile must not write into
+		// the new workspace's freshly-reset state.
+		const sendGeneration = generation;
 		error.value = null;
 		needsProvider.value = false;
 
@@ -207,9 +227,13 @@ export function useChat() {
 				sessionId,
 				{ content: text, ...(parentId ? { parentId } : {}) },
 			)) {
+				// The workspace changed while streaming: stop writing tokens into the
+				// now-detached assistant bubble and abandon the rest of the send.
+				if (generation !== sendGeneration) return;
 				assistant.content += token.delta;
 			}
 		} catch (err) {
+			if (generation !== sendGeneration) return;
 			// 409: the workspace has no inference provider configured.
 			if (err instanceof NvisyApiError && err.statusCode === 409) {
 				needsProvider.value = true;
@@ -221,11 +245,16 @@ export function useChat() {
 				messages.value = messages.value.filter((m) => m.id !== assistant.id);
 			}
 		} finally {
-			assistant.streaming = false;
-			isStreaming.value = false;
-			// Reconcile ids/tree with the server (the optimistic ids are local), and
-			// refresh the session's updatedAt/currentMessageId for ordering.
-			await reconcile(sessionId);
+			// After a workspace switch the reset watcher already cleared isStreaming
+			// and the message list; don't reconcile the old session against the new
+			// workspace or stomp the new state.
+			if (generation === sendGeneration) {
+				assistant.streaming = false;
+				isStreaming.value = false;
+				// Reconcile ids/tree with the server (the optimistic ids are local),
+				// and refresh the session's updatedAt/currentMessageId for ordering.
+				await reconcile(sessionId);
+			}
 		}
 	}
 

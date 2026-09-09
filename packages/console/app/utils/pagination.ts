@@ -13,7 +13,10 @@ interface CursorPage<T> {
  * providers, policies, …) isn't silently truncated to the first page.
  *
  * A safety cap bounds the loop so a server that always returns a cursor can't
- * spin forever; it's far above any realistic config-list size.
+ * spin forever; it's far above any realistic config-list size. Hitting the cap
+ * with a cursor still pending means the list is larger than we assumed, so we
+ * throw rather than return a silently-truncated list the caller would render as
+ * complete.
  */
 export async function fetchAllPages<T>(
 	fetchPage: (after?: string) => Promise<CursorPage<T>>,
@@ -27,5 +30,7 @@ export async function fetchAllPages<T>(
 		if (!nextCursor) return all;
 		after = nextCursor;
 	}
-	return all;
+	throw new Error(
+		`fetchAllPages exceeded ${maxPages} pages with more results pending`,
+	);
 }
