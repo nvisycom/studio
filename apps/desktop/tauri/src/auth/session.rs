@@ -41,6 +41,11 @@ pub fn is_authed<R: Runtime>(app: &AppHandle<R>) -> bool {
     app.state::<AuthState>().is_authed()
 }
 
+/// Set the last-reported auth state.
+pub fn set_authed<R: Runtime>(app: &AppHandle<R>, authed: bool) {
+    app.state::<AuthState>().set(authed);
+}
+
 // ── Session token (external-browser auth) ────────────────────────────────────
 //
 // The desktop can't use the web's cookie session: its API calls go through the
@@ -91,7 +96,7 @@ fn write_token(token: &str) {
 }
 
 /// Remove the stored session token (sign-out).
-fn delete_token() {
+pub fn delete_token() {
     match keyring_entry().and_then(|e| e.delete_credential()) {
         Ok(()) | Err(keyring::Error::NoEntry) => {}
         Err(error) => log::warn!("keychain delete failed: {error}"),
@@ -132,15 +137,29 @@ pub fn handle_deep_links<R: Runtime>(app: &AppHandle<R>, urls: &[url::Url]) {
     }
 }
 
-/// The stored session token, for the frontend to build its authed API client.
-#[tauri::command]
-pub fn auth_token() -> Option<String> {
-    read_token()
-}
+/// Wire the auth callback deep link. `on_open_url` fires while the app is
+/// running (macOS, and the single-instance-forwarded case); the initial
+/// `get_current` handles a cold start launched by the link. On Linux/Windows in
+/// development the scheme also needs a runtime registration (`register_all`),
+/// which is a no-op / handled by the installer in a bundled build.
+pub fn register_deep_link<R: Runtime>(app: &AppHandle<R>) {
+    use tauri_plugin_deep_link::DeepLinkExt;
 
-/// Clear the session on sign-out: drop the stored token and the authed flag.
-#[tauri::command]
-pub fn clear_auth_token<R: Runtime>(app: AppHandle<R>) {
-    delete_token();
-    app.state::<AuthState>().set(false);
+    let deep_link = app.deep_link();
+
+    #[cfg(any(target_os = "linux", all(debug_assertions, windows)))]
+    if let Err(error) = deep_link.register_all() {
+        log::warn!("failed to register deep-link scheme: {error}");
+    }
+
+    // A link that cold-started the app.
+    if let Ok(Some(urls)) = deep_link.get_current() {
+        handle_deep_links(app, &urls);
+    }
+
+    // Links delivered while the app is already running.
+    let handle = app.clone();
+    deep_link.on_open_url(move |event| {
+        handle_deep_links(&handle, event.urls().as_slice());
+    });
 }

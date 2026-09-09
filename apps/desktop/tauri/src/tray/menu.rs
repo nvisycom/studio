@@ -6,9 +6,9 @@
 //! `lib.rs`), so the tray stays the way back in.
 //!
 //! Menu labels are localized by the web layer: it resolves the strings from the
-//! shared i18n catalog and pushes them via the `set_tray_labels` command (see
-//! `commands`). Until that first push (the brief moment before the webview
-//! boots) the built-in English defaults show.
+//! shared i18n catalog and pushes them via the `set_tray_labels` command. Until
+//! that first push (the brief moment before the webview boots) the built-in
+//! English defaults show.
 
 use std::sync::Mutex;
 
@@ -17,7 +17,7 @@ use tauri::menu::{MenuBuilder, MenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::{AppHandle, Manager, Runtime, WindowEvent};
 
-use crate::{settings, spotlight};
+use crate::{notifications, spotlight};
 
 /// Label of the main window (matches `tauri.conf.json`).
 pub const MAIN_WINDOW: &str = "main";
@@ -109,7 +109,7 @@ pub fn create<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
     let notifications = MenuItem::with_id(
         app,
         MENU_NOTIFICATIONS,
-        labels.notifications(settings::notifications_enabled(app)),
+        labels.notifications(notifications::enabled(app)),
         true,
         None::<&str>,
     )?;
@@ -159,7 +159,7 @@ pub fn create<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
 /// short title next to the menu-bar icon (cleared at zero) and `tooltip` on
 /// hover. The tooltip text is localized by the web layer and passed through, so
 /// it stays in the app's chosen language.
-pub fn set_badge_count<R: Runtime>(app: &AppHandle<R>, count: u32, tooltip: Option<String>) {
+pub fn apply_badge<R: Runtime>(app: &AppHandle<R>, count: u32, tooltip: Option<String>) {
     let Some(tray) = app.tray_by_id(TRAY_ID) else {
         return;
     };
@@ -187,7 +187,8 @@ struct TrayIcon<'a> {
 /// taskbar), so they reuse the colored app window icon.
 fn tray_icon<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<TrayIcon<'_>> {
     if cfg!(target_os = "macos") {
-        let image = tauri::image::Image::from_bytes(include_bytes!("../icons/trayTemplate.png"))?;
+        let image =
+            tauri::image::Image::from_bytes(include_bytes!("../../icons/trayTemplate.png"))?;
         Ok(TrayIcon {
             image,
             template: true,
@@ -215,7 +216,7 @@ pub fn apply_labels<R: Runtime>(app: &AppHandle<R>, labels: TrayLabels) {
     let _ = menu.spotlight.set_text(&labels.spotlight);
     let _ = menu
         .notifications
-        .set_text(labels.notifications(settings::notifications_enabled(app)));
+        .set_text(labels.notifications(notifications::enabled(app)));
     let _ = menu.quit.set_text(&labels.quit);
     // Cache in a helper so the mutex guard's scope is the call — not this
     // function's tail, where its destructor would outlive the `menu` borrow.
@@ -241,7 +242,7 @@ fn on_menu_event<R: Runtime>(app: &AppHandle<R>, id: &str) {
         }
         MENU_SPOTLIGHT => spotlight::toggle(app),
         MENU_NOTIFICATIONS => {
-            set_notifications_enabled(app, !settings::notifications_enabled(app));
+            set_notifications_enabled(app, !notifications::enabled(app));
         }
         MENU_QUIT => app.exit(0),
         _ => {}
@@ -288,7 +289,7 @@ fn refresh_notifications_item<R: Runtime>(app: &AppHandle<R>, enabled: bool) {
 /// single place the setting is changed, so the tray toggle and the desktop
 /// settings page (via a command) can't drift apart.
 pub fn set_notifications_enabled<R: Runtime>(app: &AppHandle<R>, enabled: bool) {
-    settings::set_notifications_enabled(app, enabled);
+    notifications::set_enabled(app, enabled);
     refresh_notifications_item(app, enabled);
 }
 

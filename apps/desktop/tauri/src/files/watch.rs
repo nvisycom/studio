@@ -18,10 +18,52 @@ use std::time::Duration;
 use notify::{EventKind, RecursiveMode};
 use notify_debouncer_full::{new_debouncer, DebounceEventResult, Debouncer, RecommendedCache};
 use serde::Serialize;
+use serde_json::json;
 use tauri::{AppHandle, Emitter, Manager, Runtime};
 
-use crate::files::{read_file, PickedFile};
-use crate::settings::{self, WatchConfig};
+use super::dialog::{read_file, PickedFile};
+use crate::store;
+
+/// The persisted watched-folder configuration: the folder to watch and the
+/// workspace its files auto-upload to.
+#[derive(Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WatchConfig {
+    pub folder: String,
+    pub workspace_slug: String,
+}
+
+/// Key holding the watched-folder config (`{ folder, workspaceSlug }`) or absent.
+const WATCH_KEY: &str = "watch_folder";
+
+/// The watched-folder config, or `None` when no folder is watched (or the store
+/// can't be read).
+fn stored_config<R: Runtime>(app: &AppHandle<R>) -> Option<WatchConfig> {
+    let store = store::open(app)?;
+    let value = store.get(WATCH_KEY)?;
+    let folder = value.get("folder")?.as_str()?.to_owned();
+    let workspace_slug = value.get("workspaceSlug")?.as_str()?.to_owned();
+    Some(WatchConfig {
+        folder,
+        workspace_slug,
+    })
+}
+
+/// Persist (or clear) the watched-folder config.
+fn store_config<R: Runtime>(app: &AppHandle<R>, config: Option<&WatchConfig>) {
+    let Some(store) = store::open(app) else {
+        return;
+    };
+    match config {
+        Some(c) => store.set(
+            WATCH_KEY,
+            json!({ "folder": c.folder, "workspaceSlug": c.workspace_slug }),
+        ),
+        None => {
+            store.delete(WATCH_KEY);
+        }
+    }
+}
 
 /// Event carrying one file found in the watched folder to the frontend.
 pub const FOLDER_FILE_EVENT: &str = "folder-file";
@@ -107,7 +149,7 @@ pub fn set_folder<R: Runtime>(
         folder,
         workspace_slug: workspace_slug.clone(),
     };
-    settings::set_watch(app, Some(&config));
+    store_config(app, Some(&config));
 
     // Emit the existing backlog so a freshly-set folder catches up. (On a fresh
     // pick the frontend is already authed to receive+upload these; the restore
@@ -123,12 +165,12 @@ pub fn clear<R: Runtime>(app: &AppHandle<R>) {
     if let Ok(mut guard) = state(app).0.lock() {
         *guard = None; // dropping the debouncer stops the watch
     }
-    settings::set_watch(app, None);
+    store_config(app, None);
 }
 
 /// The persisted watched-folder config, if any.
 pub fn config<R: Runtime>(app: &AppHandle<R>) -> Option<WatchConfig> {
-    settings::watch(app)
+    stored_config(app)
 }
 
 /// Re-emit the current backlog of the watched folder, and re-arm the live
@@ -138,7 +180,7 @@ pub fn config<R: Runtime>(app: &AppHandle<R>) -> Option<WatchConfig> {
 /// supplies the accepted-extension allowlist (its own source of truth) so a
 /// disallowed file is skipped before it's ever read; nothing is persisted here.
 pub fn scan<R: Runtime>(app: &AppHandle<R>, extensions: Vec<String>) {
-    let Some(config) = settings::watch(app) else {
+    let Some(config) = stored_config(app) else {
         return;
     };
     let path = PathBuf::from(&config.folder);
@@ -168,7 +210,7 @@ pub fn scan<R: Runtime>(app: &AppHandle<R>, extensions: Vec<String>) {
 pub fn restore<R: Runtime>(app: &AppHandle<R>) {
     // Intentionally does not arm a watcher — see the doc comment. Just note
     // whether a folder is configured (the frontend's `scan` does the arming).
-    if settings::watch(app).is_some() {
+    if stored_config(app).is_some() {
         log::debug!("watched folder configured; awaiting frontend scan to arm it");
     }
 }
@@ -187,8 +229,8 @@ fn emit_file<R: Runtime>(
     // pre-check, plus the bounded read below, so an oversized file is never read
     // into memory or emitted just for the server to reject it (and a file that
     // grows after the metadata check still can't exceed the cap).
-    let max_bytes = app.state::<crate::files::DropLimit>().get();
-    if !crate::files::within_limit(path, max_bytes) {
+    let max_bytes = app.state::<super::drop::DropLimit>().get();
+    if !super::dialog::within_limit(path, max_bytes) {
         return;
     }
     match read_file(path, max_bytes) {

@@ -106,3 +106,32 @@ pub fn on_window_event<R: Runtime>(window: &tauri::WebviewWindow<R>, event: &Win
         _ => {}
     }
 }
+
+/// The global-shortcut plugin, with a handler that toggles the launcher when the
+/// spotlight hotkey fires. Firing on key-press only (not release) keeps a single
+/// tap from toggling twice. The target shortcut is parsed once and compared by
+/// value (`Shortcut: PartialEq`).
+pub fn shortcut_plugin<R: Runtime>() -> tauri::plugin::TauriPlugin<R> {
+    use tauri_plugin_global_shortcut::{Shortcut, ShortcutState};
+
+    let hotkey: Option<Shortcut> = TOGGLE_SHORTCUT.parse().ok();
+
+    tauri_plugin_global_shortcut::Builder::new()
+        .with_handler(move |app, shortcut, event| {
+            if event.state() == ShortcutState::Pressed && hotkey.as_ref() == Some(shortcut) {
+                toggle(app);
+            }
+        })
+        .build()
+}
+
+/// Bind the spotlight toggle shortcut once the plugin is initialized. A failure
+/// here (e.g. the combo is already claimed by another app) is logged and
+/// swallowed — the tray item still opens the launcher, so the app stays usable.
+pub fn register_shortcut<R: Runtime>(app: &AppHandle<R>) {
+    use tauri_plugin_global_shortcut::GlobalShortcutExt;
+
+    if let Err(error) = app.global_shortcut().register(TOGGLE_SHORTCUT) {
+        log::warn!("failed to register spotlight shortcut: {error}");
+    }
+}
