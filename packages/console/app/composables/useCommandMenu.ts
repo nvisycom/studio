@@ -187,6 +187,14 @@ export function useCommandMenu() {
 		};
 	}
 
+	// Command entries for a group's ENABLED items only. A disabled destination
+	// (no workspace, insufficient role) would otherwise both list in the palette
+	// and bind its global shortcut — and `wLink` returns "/" with no workspace, so
+	// the shortcut would navigate somewhere wrong.
+	function navEntries(items: NavigationItem[]): CommandEntry[] {
+		return items.filter((item) => !item.disabled).map(navEntry);
+	}
+
 	const { has } = useFeatures();
 
 	const sections = computed<CommandSection[]>(() => {
@@ -202,12 +210,10 @@ export function useCommandMenu() {
 		out.push({
 			id: "overview",
 			label: t("sidebar.workspace"),
-			entries: [
-				navEntry(overview.value),
-				...(groups.value.find((g) => g.id === "workspace")?.items ?? []).map(
-					navEntry,
-				),
-			],
+			entries: navEntries([
+				overview.value,
+				...(groups.value.find((g) => g.id === "workspace")?.items ?? []),
+			]),
 		});
 
 		for (const group of groups.value) {
@@ -215,7 +221,7 @@ export function useCommandMenu() {
 			out.push({
 				id: group.id,
 				label: group.label,
-				entries: group.items.map(navEntry),
+				entries: navEntries(group.items),
 			});
 		}
 
@@ -246,7 +252,8 @@ export function useCommandMenu() {
 			],
 		});
 
-		return out;
+		// Drop any group left empty once disabled items are filtered out.
+		return out.filter((section) => section.entries.length > 0);
 	});
 
 	// Global ⌘/Ctrl + <key> shortcuts, derived from the entries that carry one, so

@@ -21,6 +21,12 @@ import { Button } from "#console/components/ui/button";
 // so they stay clickable islands within the drag strip.
 const isMainWindow = isTauri() && getCurrentWindow().label === "main";
 
+// The 5.25rem left offset reserves space for the macOS traffic lights (the
+// "Overlay" title-bar style is macOS-only). On Windows/Linux there are no
+// traffic lights on the left, so the nav buttons sit at the edge instead.
+const isMac =
+	import.meta.client && /Macintosh;/.test(navigator?.userAgent ?? "");
+
 const { t } = useI18n();
 const { canBack, canForward, back, forward, install } = useNavHistory();
 
@@ -36,9 +42,13 @@ onMounted(() => {
     data-tauri-drag-region
     class="fixed inset-x-0 top-0 z-50 flex h-(--titlebar-height) items-center bg-sidebar"
   >
-    <!-- Nav controls, offset past the macOS traffic lights. `no-drag` (via
-         `.titlebar-control`) keeps them clickable inside the drag strip. -->
-    <div class="titlebar-control flex items-center gap-0.5 pl-[5.25rem]">
+    <!-- Nav controls, offset past the macOS traffic lights (macOS only).
+         `no-drag` (via `.titlebar-control`) keeps them clickable inside the drag
+         strip. -->
+    <div
+      class="titlebar-control flex items-center gap-0.5"
+      :class="isMac ? 'pl-[5.25rem]' : 'pl-2'"
+    >
       <Button
         variant="ghost"
         size="icon-sm"

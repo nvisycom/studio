@@ -67,7 +67,15 @@ function handleGoHome(): void {
 
 // Take the user to the login screen, where the Server URL field and the
 // pre-flight "Check server" check live — the place to re-check or change the URL.
+//
+// Clear the session first (locally — no network, the server is unreachable):
+// the user is still authenticated with a token for the old/unreachable server,
+// and the auth guard would otherwise bounce an authenticated visit to /auth/login
+// straight back to "/", re-triggering the same failure. Changing the server means
+// re-authenticating against it anyway, so dropping the stale session is correct.
+const { clearAuth } = useAuth();
 function handleServerSettings(): void {
+	clearAuth();
 	clearError({ redirect: "/auth/login" });
 }
 </script>

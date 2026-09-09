@@ -166,8 +166,22 @@ function removeLanguage(value: string) {
 	languages.value = languages.value.filter((v) => v !== value);
 }
 
+// A retention target in `days` mode needs a positive day count — the `min="1"`
+// on the input is only a browser hint, and `v-model.number` yields "" (or 0/
+// negative) that would otherwise submit as `{ mode: "days", days: "" }` and be
+// rejected by the API.
+const retentionDaysValid = computed(() =>
+	RETENTION_TARGETS.every((tgt) => {
+		const field = retention.value[tgt];
+		return field.mode !== "days" || Number(field.days) >= 1;
+	}),
+);
+
 const isValid = computed(
-	() => name.value.trim().length >= 3 && slug.value.length > 0,
+	() =>
+		name.value.trim().length >= 3 &&
+		slug.value.length > 0 &&
+		retentionDaysValid.value,
 );
 watch(isValid, (value) => emit("can-submit", value), { immediate: true });
 
