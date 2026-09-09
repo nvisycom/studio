@@ -8,10 +8,10 @@ export function usePolicies() {
 
 	const policiesQuery = workspaceQuery(
 		"policies",
-		async ({ client, workspaceSlug }) => {
-			const result = await client.policies.listPolicies(workspaceSlug);
-			return result.items;
-		},
+		({ client, workspaceSlug }) =>
+			fetchAllPages((after) =>
+				client.policies.listPolicies(workspaceSlug, { after }),
+			),
 	);
 
 	// Policies are keyed by slug; a delete drops the row immediately.

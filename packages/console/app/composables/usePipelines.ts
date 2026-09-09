@@ -8,10 +8,10 @@ export function usePipelines() {
 
 	const pipelinesQuery = workspaceQuery(
 		"pipelines",
-		async ({ client, workspaceSlug }) => {
-			const result = await client.pipelines.listPipelines(workspaceSlug);
-			return result.items;
-		},
+		({ client, workspaceSlug }) =>
+			fetchAllPages((after) =>
+				client.pipelines.listPipelines(workspaceSlug, { after }),
+			),
 	);
 
 	// Pipelines are keyed by slug; a delete drops the row immediately.

@@ -148,12 +148,9 @@ const weekdayLabels = computed(() => {
 
 <template>
   <div class="rounded-xl border border-border/50 bg-card p-5">
-    <div class="mb-4 flex items-baseline justify-between gap-3">
-      <span
-        class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
-      >
-        {{ t("analytics.activity.title") }}
-      </span>
+    <!-- The section header above this card already names it; here we keep only
+         the total, right-aligned, so it isn't double-titled. -->
+    <div class="mb-4 flex items-baseline justify-end">
       <span class="text-sm text-muted-foreground">
         <b class="font-semibold tabular-nums text-foreground">{{
           totalDetections.toLocaleString()

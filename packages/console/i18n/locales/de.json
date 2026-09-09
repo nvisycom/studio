@@ -147,6 +147,7 @@
 					"description": "Wie lange die jeweiligen Daten aufbewahrt werden.",
 					"targets": {
 						"auditLogs": "Audit-Protokolle",
+						"intermediates": "Anreicherungsdaten",
 						"originalDocuments": "Originaldokumente",
 						"redactedDocuments": "Geschwärzte Dokumente"
 					},
@@ -1969,7 +1970,8 @@
 			"errorRate": "Fehlerrate",
 			"avgDuration": "Ø Dauer",
 			"errorRateTitle": "Fehlerrate pro Tag",
-			"avgDurationTitle": "Ø Erkennungszeit pro Tag"
+			"avgDurationTitle": "Ø Erkennungszeit pro Tag",
+			"noData": "Noch nicht genügend Daten"
 		},
 		"breakdowns": {
 			"detectionsByStatus": "Erkennungen nach Status",
@@ -1978,6 +1980,11 @@
 			"noDetections": "Noch keine Erkennungen.",
 			"noStorage": "Noch keine Dateien gespeichert.",
 			"noUsage": "Noch keine KI-Nutzung."
+		},
+		"sections": {
+			"activity": "Erkennungsaktivität",
+			"trends": "Trends",
+			"breakdowns": "Aufschlüsselungen"
 		}
 	},
 	"auth": {

@@ -12,10 +12,10 @@ import type {
 export function useProviders() {
 	const providersQuery = workspaceQuery(
 		"providers",
-		async ({ client, workspaceSlug }) => {
-			const result = await client.providers.listProviders(workspaceSlug);
-			return result.items;
-		},
+		({ client, workspaceSlug }) =>
+			fetchAllPages((after) =>
+				client.providers.listProviders(workspaceSlug, { after }),
+			),
 	);
 
 	// Reflect updates on a row immediately, reconciling once settled.

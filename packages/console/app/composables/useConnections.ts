@@ -12,10 +12,10 @@ import type { FileProvider } from "#console/utils/connections";
 export function useConnections() {
 	const connectionsQuery = workspaceQuery(
 		"connections",
-		async ({ client, workspaceSlug }) => {
-			const result = await client.connections.listConnections(workspaceSlug);
-			return result.items;
-		},
+		({ client, workspaceSlug }) =>
+			fetchAllPages((after) =>
+				client.connections.listConnections(workspaceSlug, { after }),
+			),
 	);
 
 	// Reflect updates on a row immediately, reconciling once settled.

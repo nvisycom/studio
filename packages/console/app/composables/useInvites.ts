@@ -12,13 +12,13 @@ export function useInvites(query?: MaybeRef<ListInvites>) {
 
 	const invitesQuery = workspaceQuery(
 		"invites",
-		async ({ client, workspaceSlug }) => {
-			const result = await client.invites.listInvites(
-				workspaceSlug,
-				toValue(query) ?? { limit: 500 },
-			);
-			return result.items;
-		},
+		({ client, workspaceSlug }) =>
+			fetchAllPages((after) =>
+				client.invites.listInvites(workspaceSlug, {
+					...toValue(query),
+					after,
+				}),
+			),
 		{
 			key: () => [
 				"invites",

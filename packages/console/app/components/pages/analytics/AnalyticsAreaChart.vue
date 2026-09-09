@@ -12,11 +12,25 @@ import {
 } from "#console/components/ui/chart";
 import { formatShortDate } from "#console/utils/date";
 
-const props = defineProps<{ spec: AreaChartSpec }>();
+const props = defineProps<{ spec: AreaChartSpec; compact?: boolean }>();
+
+const { t } = useI18n();
 
 type Row = Record<string, number | Date>;
 
 const series = computed(() => props.spec.series);
+
+/**
+ * Whether the series carry any non-zero value. A window that is all zeros (a
+ * brand-new workspace, or a metric that hasn't fired yet) plots as a flat line
+ * pinned to the axis, which reads as broken rather than "quiet". In that case we
+ * show a quiet placeholder at the chart's height instead of an empty plot.
+ */
+const hasData = computed(() =>
+	props.spec.data.some((row) =>
+		series.value.some((s) => (row[s.key] as number) > 0),
+	),
+);
 
 /** ChartConfig keyed by series key (plus an optional header label entry). */
 const chartConfig = computed<ChartConfig>(() => {
@@ -83,7 +97,18 @@ const crosshair = computed(() =>
 </script>
 
 <template>
-  <ChartContainer :config="chartConfig" class="aspect-auto h-[250px] w-full">
+  <div
+    v-if="!hasData"
+    class="flex w-full items-center justify-center text-xs text-muted-foreground/70"
+    :class="compact ? 'h-[150px]' : 'h-[200px]'"
+  >
+    {{ t("analytics.trends.noData") }}
+  </div>
+  <ChartContainer
+    v-else
+    :config="chartConfig"
+    :class="compact ? 'aspect-auto h-[150px] w-full' : 'aspect-auto h-[200px] w-full'"
+  >
     <VisXYContainer
       :data="spec.data"
       :svg-defs="svgDefs"
