@@ -35,6 +35,16 @@ export default defineNuxtRouteMiddleware((to) => {
 
 	// Check authentication
 	const { isAuthenticated } = useAuth();
+	const { restoringDesktopAuth } = useDesktopAuth();
+
+	// On desktop, the stored token is read from the OS keychain asynchronously at
+	// launch (it can even block on a system prompt). Until that read settles,
+	// "not authenticated" is not yet a real signed-out state — bouncing to login
+	// here would flash the login screen at a returning user and then bounce back
+	// once the token lands. Hold the intended route instead; app.vue shows a
+	// launch splash while restoring, and the guard re-evaluates on the next
+	// navigation once the token has settled.
+	if (restoringDesktopAuth.value) return;
 
 	// Desktop external-browser sign-in: the desktop app sends the user here with a
 	// `redirect_uri` deep link to mint and hand back a token. That must run even

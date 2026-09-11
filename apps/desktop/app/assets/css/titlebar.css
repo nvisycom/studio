@@ -28,6 +28,12 @@ html.tauri body {
   background-color: var(--sidebar);
 }
 
+/* Text selection on desktop is disabled in JS (see the `no-select` client
+   plugin), not with `user-select: none` — on WKWebView `user-select: none` on or
+   above a hover-reveal element sticks its `:hover` after the pointer leaves. The
+   plugin blocks `selectstart` outside inputs / editables / `.select-text`, which
+   has no such side effect. */
+
 /* Reserve the title-bar band as the shell's top padding, so the sidebar and
    content card begin below it while the band stays chrome-colored and part of
    the shell. The shell is `height: 100svh`, so `box-sizing: border-box` (Tailwind's
@@ -49,12 +55,20 @@ html.tauri [data-slot="sidebar-wrapper"] {
    second zoom on top of the native one and spring the window back. */
 html.tauri [data-tauri-drag-region] {
   -webkit-app-region: drag;
+  /* An open dialog/sheet (reka's DismissableLayer) sets `pointer-events: none` on
+     <body>, which the title bar — a body child — inherits, killing both the drag
+     region's hit-test and the nav buttons. The title bar is chrome that sits ABOVE
+     any modal, so it must stay interactive: re-enable pointer events here (and on
+     the controls below). */
+  pointer-events: auto;
 }
 
 /* Interactive controls inside the drag strip (the back/forward nav) must opt out
-   of the drag region, or the OS swallows the click to move the window. */
+   of the drag region, or the OS swallows the click to move the window. They also
+   re-enable pointer events for the same reason as the strip above. */
 html.tauri .titlebar-control {
   -webkit-app-region: no-drag;
+  pointer-events: auto;
 }
 
 /* Chrome-less full-window pages (auth, error) render without the sidebar shell,
@@ -65,4 +79,37 @@ html.tauri .titlebar-control {
    Off-desktop the rule is absent, so the class is a no-op. */
 html.tauri .app-titlebar-inset {
   padding-top: calc(var(--titlebar-height) + 1rem);
+}
+
+/* Portalled full-viewport overlays (dialogs, alert dialogs, sheets) are
+   `position: fixed` and teleported to <body>, so they're positioned against the
+   viewport, NOT the shell — the shell's top padding doesn't reach them and they'd
+   cover the title bar (backdrop dimming the traffic lights, a sheet's close
+   button under them). Below the title bar is reserved chrome, so start these
+   overlays at `--titlebar-height`: the band stays visible and draggable above the
+   dimmed backdrop, and no overlay content lands under the traffic lights. Anchored
+   popovers (dropdown/select/tooltip/context-menu) position against their trigger,
+   never span the band, and are intentionally left alone. */
+
+/* Backdrops: start below the band instead of at the viewport top. */
+html.tauri [data-slot="dialog-overlay"],
+html.tauri [data-slot="alert-dialog-overlay"],
+html.tauri [data-slot="sheet-overlay"] {
+  top: var(--titlebar-height);
+}
+
+/* Right/left sheets fill the height below the band (their `inset-y-0 h-full`
+   otherwise pins them to the viewport top and overflows). */
+html.tauri [data-slot="sheet-content"] {
+  top: var(--titlebar-height);
+  height: calc(100% - var(--titlebar-height));
+}
+
+/* Centered dialogs: nudge the centering origin down by half the band so they
+   center in the visible area below it, and cap their height so a tall dialog
+   never extends up under the title bar. */
+html.tauri [data-slot="dialog-content"],
+html.tauri [data-slot="alert-dialog-content"] {
+  margin-top: calc(var(--titlebar-height) / 2);
+  max-height: calc(100svh - var(--titlebar-height) - 2rem);
 }

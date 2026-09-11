@@ -30,17 +30,45 @@ const isMac =
 const { t } = useI18n();
 const { canBack, canForward, back, forward, install } = useNavHistory();
 
-// Start tracking history once the title bar mounts (only in the main window).
+const bar = ref<HTMLElement | null>(null);
+
+// An open dialog/sheet (reka's DismissableLayer) dismisses on any pointerdown
+// outside its content — which the title bar is. But the title bar is chrome that
+// sits ABOVE the modal (drag, back/forward), so interacting with it must not
+// close the modal. reka dispatches a cancelable `pointerDownOutside` event on the
+// clicked element before dismissing; preventing it on the bar's own events skips
+// the dismiss for title-bar clicks only, leaving backdrop-click dismiss intact.
+function keepModalOpen(event: Event) {
+	event.preventDefault();
+}
+
+// reka dispatches the event on the clicked element (a nav button, an icon, or
+// the strip) with `bubbles: false`, so listen in the CAPTURE phase on the bar to
+// catch it whichever descendant was the target.
 onMounted(() => {
-	if (isMainWindow) install();
+	if (!isMainWindow) return;
+	install();
+	bar.value?.addEventListener(
+		"dismissableLayer.pointerDownOutside",
+		keepModalOpen,
+		true,
+	);
+});
+onBeforeUnmount(() => {
+	bar.value?.removeEventListener(
+		"dismissableLayer.pointerDownOutside",
+		keepModalOpen,
+		true,
+	);
 });
 </script>
 
 <template>
   <div
     v-if="isMainWindow"
+    ref="bar"
     data-tauri-drag-region
-    class="fixed inset-x-0 top-0 z-50 flex h-(--titlebar-height) items-center bg-sidebar"
+    class="fixed inset-x-0 top-0 z-[60] flex h-(--titlebar-height) items-center bg-sidebar"
   >
     <!-- Nav controls, offset past the macOS traffic lights (macOS only).
          `no-drag` (via `.titlebar-control`) keeps them clickable inside the drag
