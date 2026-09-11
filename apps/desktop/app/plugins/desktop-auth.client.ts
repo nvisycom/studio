@@ -28,12 +28,21 @@ export default defineNuxtPlugin({
 			invoke("clear_auth_token").catch(() => {});
 		});
 
+		// A token that arrived via the deep-link listener always wins over the
+		// launch restore: a cold launch from the sign-in link delivers a fresh
+		// token AND kicks off the keychain restore, and Tauri doesn't guarantee the
+		// `auth_token` read resolves before the `auth://token` event — so a late
+		// restore could otherwise clobber the just-signed-in token. This latches
+		// once the deep link has set a token; the restore callback then bails.
+		let signedInViaDeepLink = false;
+
 		// Register the deep-link token listener BEFORE restoring the stored session,
 		// so a token emitted during startup (a cold launch from the sign-in link)
 		// isn't missed in the gap between restore and registration. `listen` is
 		// async — a registration failure is logged rather than left unhandled.
 		try {
 			await listen<string>("auth://token", (event) => {
+				signedInViaDeepLink = true;
 				setDesktopAuthToken(event.payload);
 				// Land the user in the app once signed in.
 				navigateTo("/");
@@ -55,8 +64,16 @@ export default defineNuxtPlugin({
 		// splash until the read settles (to a token or null).
 		const restoreSession = () => {
 			invoke<string | null>("auth_token")
-				.then((token) => setDesktopAuthToken(token ?? null))
-				.catch(() => setDesktopAuthToken(null));
+				.then((token) => {
+					// A deep-link sign-in that landed first wins — don't overwrite its
+					// fresh token with the (possibly older) keychain read.
+					if (signedInViaDeepLink) return;
+					setDesktopAuthToken(token ?? null);
+				})
+				.catch(() => {
+					if (signedInViaDeepLink) return;
+					setDesktopAuthToken(null);
+				});
 		};
 
 		const nuxtApp = useNuxtApp();

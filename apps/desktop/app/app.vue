@@ -26,7 +26,13 @@ watch(restoringDesktopAuth, (restoring) => {
 	if (restoring) return;
 	const onPublicRoute = authRoutePrefixes.some((p) => route.path.startsWith(p));
 	if (!isAuthenticated.value && !onPublicRoute) {
-		navigateTo({ path: "/auth/login" });
+		// Preserve where we held (e.g. a deep-link launch onto /join/[code]) so
+		// login can return the user there, matching the global auth middleware.
+		const redirect = safeRedirectPath(route.fullPath);
+		navigateTo({
+			path: "/auth/login",
+			query: redirect ? { redirect } : undefined,
+		});
 	}
 });
 
