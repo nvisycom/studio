@@ -61,6 +61,13 @@ function handleRefresh(): void {
 	window.location.reload();
 }
 
+// Retry a reachable-server attempt without a full webview reload (which flashes
+// the whole page white). Clearing the error re-mounts the shell, whose workspace
+// query re-runs against the server — the actual thing that failed.
+function handleTryAgain(): void {
+	clearError({ redirect: "/" });
+}
+
 function handleGoHome(): void {
 	clearError({ redirect: "/" });
 }
@@ -119,7 +126,7 @@ function handleServerSettings(): void {
           <Button
             variant="outline"
             class="w-full sm:w-auto"
-            @click="handleRefresh"
+            @click="handleTryAgain"
           >
             <RefreshCw :size="16" class="mr-2" />
             {{ t("error.actions.retry") }}

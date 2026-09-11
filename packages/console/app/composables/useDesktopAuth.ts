@@ -20,15 +20,29 @@ const desktopToken = ref<string | null>(null);
 // the web. Without this, "no token yet" on desktop would wrongly fall back to
 // the cookie path.
 const desktopMode = ref(false);
+// True while the shell is still restoring the stored token from the OS keychain
+// at launch. The read is async (and can block on a keychain prompt), so the app
+// boots before it resolves; during that window "no token" doesn't yet mean
+// "signed out". The auth guard waits on this instead of bouncing a returning,
+// authenticated user to the login screen. Cleared as soon as the read settles
+// (to a token or to null).
+const restoringDesktopAuth = ref(false);
 
 /** Mark this a desktop build (token auth). Called once by the desktop shell. */
 export function enableDesktopAuth() {
 	desktopMode.value = true;
+	// The shell restores the stored token right after this; hold auth decisions
+	// until it does (see `restoringDesktopAuth`).
+	restoringDesktopAuth.value = true;
 }
 
-/** Inject (or clear) the desktop session token. Called by the desktop shell. */
+/**
+ * Inject (or clear) the desktop session token. Called by the desktop shell.
+ * Settling the token — even to null — ends the launch restore window.
+ */
 export function setDesktopAuthToken(token: string | null) {
 	desktopToken.value = token;
+	restoringDesktopAuth.value = false;
 }
 
 // Sign-out hook: the desktop shell registers a callback that clears the token
@@ -52,9 +66,12 @@ export function useDesktopAuth(): {
 	desktopToken: Readonly<Ref<string | null>>;
 	/** Whether this build authenticates with a desktop token (vs. web cookies). */
 	isDesktop: Readonly<Ref<boolean>>;
+	/** True while the launch keychain read is still in flight (desktop only). */
+	restoringDesktopAuth: Readonly<Ref<boolean>>;
 } {
 	return {
 		desktopToken: readonly(desktopToken),
 		isDesktop: readonly(desktopMode),
+		restoringDesktopAuth: readonly(restoringDesktopAuth),
 	};
 }

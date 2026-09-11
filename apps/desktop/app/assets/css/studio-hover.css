@@ -1,0 +1,24 @@
+/* Desktop hover controls (Tauri, WKWebView).
+ *
+ * Several studio controls fade on hover with `transition-opacity`: the audit
+ * rows' reveal/details buttons (revealed from `opacity-0`) and the audio
+ * player's play button (dimmed on hover). On desktop, gated on the `.tauri` root
+ * class, that fade is disabled — the controls change opacity instantly instead
+ * of animating.
+ *
+ * The opacity transition promotes the element to its own GPU compositing layer.
+ * The macOS WKWebView engine caches that layer's rendered bitmap and does not
+ * recomposite it when the opacity changes back, so a revealed control stays
+ * painted after the pointer leaves — visible pixels with a computed opacity of
+ * 0. With no opacity transition there is no promoted layer to cache, and the
+ * controls follow `:hover` correctly. The web build never loads this file and
+ * keeps the fades.
+ */
+
+/* Audit reveal controls (StudioAuditTable, StudioAuditPanel). */
+html.tauri [class~="group-hover/row:opacity-100"],
+html.tauri [class~="group-hover/occ:opacity-100"],
+/* Audio player play button (dims on hover). */
+html.tauri [class~="hover:opacity-90"] {
+	transition: none !important;
+}
