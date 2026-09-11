@@ -34,10 +34,12 @@ export function notificationContent(
 ): NotificationContent {
 	const { type } = payload;
 	switch (type) {
-		case "member.invited":
-			return content("memberInvited", payload.data, "/team");
 		case "member.joined":
 			return content("memberJoined", payload.data, "/team");
+		case "file.assigned":
+			return content("fileAssigned", payload.data, "/files");
+		case "file.unassigned":
+			return content("fileUnassigned", payload.data, "/files");
 		case "connection.sync.completed":
 			return content(
 				"connectionSyncCompleted",

@@ -234,13 +234,20 @@
 			"categories": {
 				"members": {
 					"name": "Teammitglieder",
-					"invited": {
-						"name": "Mitglied eingeladen",
-						"description": "Wenn ein neues Mitglied in den Workspace eingeladen wird"
-					},
 					"joined": {
 						"name": "Mitglied beigetreten",
 						"description": "Wenn ein eingeladenes Mitglied dem Workspace beitritt"
+					}
+				},
+				"files": {
+					"name": "Dateien",
+					"assigned": {
+						"name": "Datei zugewiesen",
+						"description": "Wenn Ihnen eine Datei zur Prüfung zugewiesen wird"
+					},
+					"unassigned": {
+						"name": "Dateizuweisung aufgehoben",
+						"description": "Wenn Ihnen eine Datei nicht mehr zugewiesen ist"
 					}
 				},
 				"connections": {
@@ -2158,13 +2165,17 @@
 		"title": "Benachrichtigungen",
 		"empty": "Keine Benachrichtigungen",
 		"events": {
-			"memberInvited": {
-				"title": "Mitglied eingeladen",
-				"message": "{invitedBy} hat ein neues Mitglied zu {workspaceSlug} eingeladen"
-			},
 			"memberJoined": {
 				"title": "Mitglied beigetreten",
 				"message": "{memberUsername} ist {workspaceSlug} beigetreten"
+			},
+			"fileAssigned": {
+				"title": "Datei zugewiesen",
+				"message": "{fileName} wurde Ihnen zur Prüfung zugewiesen"
+			},
+			"fileUnassigned": {
+				"title": "Dateizuweisung aufgehoben",
+				"message": "{fileName} ist Ihnen nicht mehr zugewiesen"
 			},
 			"connectionSyncCompleted": {
 				"title": "Synchronisierung abgeschlossen",

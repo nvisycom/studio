@@ -106,17 +106,30 @@ const categories = computed<
 		name: t("settings.notifications.categories.members.name"),
 		events: [
 			{
-				event: "member.invited",
-				name: t("settings.notifications.categories.members.invited.name"),
-				description: t(
-					"settings.notifications.categories.members.invited.description",
-				),
-			},
-			{
 				event: "member.joined",
 				name: t("settings.notifications.categories.members.joined.name"),
 				description: t(
 					"settings.notifications.categories.members.joined.description",
+				),
+			},
+		],
+	},
+	{
+		id: "files",
+		name: t("settings.notifications.categories.files.name"),
+		events: [
+			{
+				event: "file.assigned",
+				name: t("settings.notifications.categories.files.assigned.name"),
+				description: t(
+					"settings.notifications.categories.files.assigned.description",
+				),
+			},
+			{
+				event: "file.unassigned",
+				name: t("settings.notifications.categories.files.unassigned.name"),
+				description: t(
+					"settings.notifications.categories.files.unassigned.description",
 				),
 			},
 		],

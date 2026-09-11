@@ -5,7 +5,6 @@ import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
 import { Checkbox } from "#console/components/ui/checkbox";
 import { FeatureGate } from "#console/components/shared";
-import { NvisyApiError } from "@nvisy/sdk";
 import type { IdentityProvider } from "@nvisy/sdk/datatypes";
 import { toast } from "vue-sonner";
 
@@ -23,10 +22,6 @@ const { signupAsync, isSigningUp, signupError, startOidcSignIn } = useAuth();
 // native-app token and hand it back on that link instead of entering the app
 // here. On the plain web there's no `redirect_uri` and this is inert.
 const { callbackFromRoute, tryDesktopHandoff } = useDesktopSignInReturn();
-
-const apiError = computed(() =>
-	signupError.value instanceof NvisyApiError ? signupError.value : null,
-);
 
 // Form state
 const username = ref("");
@@ -267,17 +262,6 @@ const handleMicrosoftSignup = () => handleOidcSignIn("microsoft");
         class="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg"
       >
         <p>{{ signupError.message || t("auth.signup.genericError") }}</p>
-        <p v-if="apiError?.suggestion" class="mt-1 opacity-80">
-          {{ apiError.suggestion }}
-        </p>
-        <ul
-          v-if="apiError?.validation?.length"
-          class="mt-2 list-disc list-inside space-y-1"
-        >
-          <li v-for="err in apiError.validation" :key="err.field">
-            <span class="font-medium">{{ err.field }}:</span> {{ err.message }}
-          </li>
-        </ul>
       </div>
 
       <!-- Submit Button -->

@@ -234,13 +234,20 @@
 			"categories": {
 				"members": {
 					"name": "Team Members",
-					"invited": {
-						"name": "Member Invited",
-						"description": "When a new member is invited to the workspace"
-					},
 					"joined": {
 						"name": "Member Joined",
 						"description": "When an invited member joins the workspace"
+					}
+				},
+				"files": {
+					"name": "Files",
+					"assigned": {
+						"name": "File Assigned",
+						"description": "When a file is assigned to you for review"
+					},
+					"unassigned": {
+						"name": "File Unassigned",
+						"description": "When a file is no longer assigned to you"
 					}
 				},
 				"connections": {
@@ -2158,13 +2165,17 @@
 		"title": "Notifications",
 		"empty": "No notifications",
 		"events": {
-			"memberInvited": {
-				"title": "Member invited",
-				"message": "{invitedBy} invited a new member to {workspaceSlug}"
-			},
 			"memberJoined": {
 				"title": "Member joined",
 				"message": "{memberUsername} joined {workspaceSlug}"
+			},
+			"fileAssigned": {
+				"title": "File assigned",
+				"message": "{fileName} was assigned to you for review"
+			},
+			"fileUnassigned": {
+				"title": "File unassigned",
+				"message": "{fileName} is no longer assigned to you"
 			},
 			"connectionSyncCompleted": {
 				"title": "Sync completed",
