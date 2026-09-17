@@ -2,19 +2,19 @@ import { NvisyApiError } from "@nvisy/sdk";
 import type {
 	ArtifactSet,
 	Audit,
-	CreateDetection,
-	Detection,
+	CreateWorkspaceDetection,
+	WorkspaceDetection,
 	WorkspaceDetectionsQuery,
 } from "@nvisy/sdk/datatypes";
 import type { MaybeRefOrGetter } from "vue";
 
 /** States that settle a detection — its analysis is ready at "complete". */
-const TERMINAL: Detection["status"][] = ["complete", "failed"];
+const TERMINAL: WorkspaceDetection["status"][] = ["complete", "failed"];
 
 /** Detections list filter: the API's query plus a pipeline slug, which routes
  * to the pipeline-scoped list endpoint. */
 export interface DetectionsFilter extends WorkspaceDetectionsQuery {
-	pipelineSlug?: string;
+	pipelineId?: string;
 }
 
 /**
@@ -22,30 +22,30 @@ export interface DetectionsFilter extends WorkspaceDetectionsQuery {
  * `filter` to scope the detections list server-side (status, trigger, pipeline).
  */
 export function useDetections(filter?: MaybeRefOrGetter<DetectionsFilter>) {
-	const { requireContext, currentWorkspaceSlug } = useWorkspaceContext();
+	const { requireContext, currentWorkspaceId } = useWorkspaceContext();
 	const { saveBlob } = useFileDownload();
 
 	const activeFilter = computed<DetectionsFilter>(() => toValue(filter ?? {}));
 
 	const detectionsQuery = workspaceQuery(
 		"detections",
-		async ({ client, workspaceSlug }) => {
-			const { pipelineSlug, ...query } = activeFilter.value;
+		async ({ client, workspaceId }) => {
+			const { pipelineId, ...query } = activeFilter.value;
 			// A pipeline filter uses the pipeline-scoped endpoint (the workspace
 			// list only filters by pipelineId, which isn't exposed on summaries).
-			const result = pipelineSlug
+			const result = pipelineId
 				? await client.detections.listPipelineDetections(
-						workspaceSlug,
-						pipelineSlug,
+						workspaceId,
+						pipelineId,
 						query,
 					)
-				: await client.detections.listDetections(workspaceSlug, query);
+				: await client.detections.listDetections(workspaceId, query);
 			return result.items;
 		},
 		{
 			key: () => [
 				"detections",
-				currentWorkspaceSlug.value,
+				currentWorkspaceId.value,
 				JSON.stringify(activeFilter.value),
 			],
 		},
@@ -53,8 +53,8 @@ export function useDetections(filter?: MaybeRefOrGetter<DetectionsFilter>) {
 
 	/** Fetch a detection's analysis (the audit — detected entities + provenance). */
 	async function getAnalysis(detectionId: string): Promise<Audit> {
-		const { client, workspaceSlug } = requireContext();
-		return await client.detections.getAnalysis(workspaceSlug, detectionId);
+		const { client, workspaceId } = requireContext();
+		return await client.detections.getAnalysis(workspaceId, detectionId);
 	}
 
 	/**
@@ -67,12 +67,9 @@ export function useDetections(filter?: MaybeRefOrGetter<DetectionsFilter>) {
 	async function getIntermediates(
 		detectionId: string,
 	): Promise<ArtifactSet | null> {
-		const { client, workspaceSlug } = requireContext();
+		const { client, workspaceId } = requireContext();
 		try {
-			return await client.detections.getIntermediates(
-				workspaceSlug,
-				detectionId,
-			);
+			return await client.detections.getIntermediates(workspaceId, detectionId);
 		} catch (error) {
 			if (error instanceof NvisyApiError && error.statusCode === 404) {
 				return null;
@@ -87,9 +84,9 @@ export function useDetections(filter?: MaybeRefOrGetter<DetectionsFilter>) {
 		format: "json" | "csv",
 		fileName: string,
 	): Promise<void> {
-		const { client, workspaceSlug } = requireContext();
+		const { client, workspaceId } = requireContext();
 		const response = await client.detections.downloadAudit(
-			workspaceSlug,
+			workspaceId,
 			detectionId,
 			{ format },
 		);
@@ -103,18 +100,18 @@ export function useDetections(filter?: MaybeRefOrGetter<DetectionsFilter>) {
 	 * sort by `startedAt` ourselves.
 	 */
 	async function findLatestForFile(
-		fileId: string,
-		pipelineSlug?: string,
-	): Promise<Detection | null> {
-		const { client, workspaceSlug } = requireContext();
-		const { items } = await client.detections.listDetections(workspaceSlug, {
-			fileId,
+		documentId: string,
+		pipelineId?: string,
+	): Promise<WorkspaceDetection | null> {
+		const { client, workspaceId } = requireContext();
+		const { items } = await client.detections.listDetections(workspaceId, {
+			documentId,
 			limit: 100,
 		});
 		return (
 			items
 				.filter((d) => d.status === "complete")
-				.filter((d) => !pipelineSlug || d.pipelineSlug === pipelineSlug)
+				.filter((d) => !pipelineId || d.pipelineId === pipelineId)
 				.sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0] ?? null
 		);
 	}
@@ -126,12 +123,12 @@ export function useDetections(filter?: MaybeRefOrGetter<DetectionsFilter>) {
 	 */
 	async function waitForDetection(
 		detectionId: string,
-		onStatus?: (status: Detection["status"]) => void,
-	): Promise<Detection["status"]> {
-		const { client, workspaceSlug } = requireContext();
-		let last: Detection["status"] | null = null;
+		onStatus?: (status: WorkspaceDetection["status"]) => void,
+	): Promise<WorkspaceDetection["status"]> {
+		const { client, workspaceId } = requireContext();
+		let last: WorkspaceDetection["status"] | null = null;
 		for await (const event of client.detections.streamEvents(
-			workspaceSlug,
+			workspaceId,
 			detectionId,
 		)) {
 			last = event.status;
@@ -144,19 +141,19 @@ export function useDetections(filter?: MaybeRefOrGetter<DetectionsFilter>) {
 	}
 
 	/**
-	 * Run a detection end-to-end: create it for `fileId` on `pipelineSlug`, stream
+	 * Run a detection end-to-end: create it for `fileId` on `pipelineId`, stream
 	 * its status until it completes, then fetch its analysis. `onStatus` reports
 	 * each transition. Throws if the detection fails.
 	 */
 	async function runDetection(
-		pipelineSlug: string,
-		body: CreateDetection,
-		onStatus?: (status: Detection["status"]) => void,
+		pipelineId: string,
+		body: CreateWorkspaceDetection,
+		onStatus?: (status: WorkspaceDetection["status"]) => void,
 	): Promise<{ detectionId: string; audit: Audit }> {
-		const { client, workspaceSlug } = requireContext();
+		const { client, workspaceId } = requireContext();
 		const created = await client.detections.createDetection(
-			workspaceSlug,
-			pipelineSlug,
+			workspaceId,
+			pipelineId,
 			body,
 		);
 		onStatus?.(created.status);

@@ -15,7 +15,6 @@ import {
 	Workflow,
 } from "@lucide/vue";
 import { toast } from "vue-sonner";
-import type { Feature } from "#console/composables/useFeatures";
 import type { NavigationItem } from "#console/composables/useNavigation";
 
 /**
@@ -29,7 +28,6 @@ export interface CommandEntry {
 	label: string;
 	icon: Component;
 	shortcut?: string;
-	feature?: Feature;
 	danger?: boolean;
 	run: () => void;
 }
@@ -50,7 +48,7 @@ export function useCommandMenu() {
 	const { wLink } = useWorkspaceLink();
 	const colorMode = useColorMode();
 	const { logout } = useAuth();
-	const { openUpload } = useFilesView();
+	const { openUpload } = useDocumentsView();
 	const { open: openHelpChat } = useHelpChat();
 	const { open: openCreateWorkspace } = useCreateWorkspace();
 	const { open: openCreatePolicy } = useCreatePolicy();
@@ -80,7 +78,7 @@ export function useCommandMenu() {
 
 	// ── Actions ────────────────────────────────────────────────────────────────
 	// Each action's `run` calls the composable that OWNS the capability directly
-	// (upload → useFilesView, support → useHelpChat, create workspace →
+	// (upload → useDocumentsView, support → useHelpChat, create workspace →
 	// useCreateWorkspace), so the palette doesn't emit up to a parent that routes
 	// the request back down.
 
@@ -171,7 +169,6 @@ export function useCommandMenu() {
 			id: "open-support",
 			label: t("commandMenu.actions.openSupport"),
 			icon: MessageSquare,
-			feature: "support",
 			run: () => run(openHelpChat),
 		},
 	]);
@@ -195,15 +192,13 @@ export function useCommandMenu() {
 		return items.filter((item) => !item.disabled).map(navEntry);
 	}
 
-	const { has } = useFeatures();
-
 	const sections = computed<CommandSection[]>(() => {
 		const out: CommandSection[] = [];
 
 		out.push({
 			id: "actions",
 			label: t("commandMenu.actions.title"),
-			entries: actions.value.filter((a) => !a.feature || has(a.feature)),
+			entries: actions.value,
 		});
 
 		// Overview leads its own single-item group so it isn't buried.

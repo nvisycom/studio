@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PipelineSummary } from "@nvisy/sdk/datatypes";
+import type { WorkspacePipelineSummary } from "@nvisy/sdk/datatypes";
 import { Loader2, Play, RotateCcw } from "@lucide/vue";
 import type { StudioDetectionPhase } from "#console/composables/useStudioDetection";
 import { Button } from "#console/components/ui/button";
@@ -14,7 +14,7 @@ import {
 const { t } = useI18n();
 
 defineProps<{
-	pipelines: PipelineSummary[] | undefined;
+	pipelines: WorkspacePipelineSummary[] | undefined;
 	phase: StudioDetectionPhase;
 	canRun: boolean;
 }>();
@@ -35,8 +35,8 @@ defineEmits<{ run: [] }>();
       <SelectContent>
         <SelectItem
           v-for="p in pipelines ?? []"
-          :key="p.slug"
-          :value="p.slug"
+          :key="p.id"
+          :value="p.id"
           class="text-sm font-normal"
         >
           {{ p.displayName }}

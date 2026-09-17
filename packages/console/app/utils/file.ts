@@ -74,10 +74,10 @@ export function isAcceptedFileName(fileName: string): boolean {
  */
 export async function fetchFileContentUrl(
 	client: Nvisy,
-	workspaceSlug: string,
+	workspaceId: string,
 	fileId: string,
 ): Promise<string> {
-	const response = await client.files.downloadFile(workspaceSlug, fileId);
+	const response = await client.documents.downloadDocument(workspaceId, fileId);
 	const blob = await response.blob();
 	return URL.createObjectURL(blob);
 }

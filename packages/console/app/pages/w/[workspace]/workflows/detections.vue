@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {
-	Detection,
+	WorkspaceDetection,
 	DetectionStatus,
 	PipelineTriggerType,
 } from "@nvisy/sdk/datatypes";
@@ -16,7 +16,7 @@ import {
 import type { RowAction } from "#console/components/pages/RowActions.vue";
 import type { VirtualColumn } from "#console/components/ui/virtual-table";
 import { EntityAvatar } from "#console/components/avatar";
-import { FilePicker } from "#console/components/shared";
+import { DocumentPicker } from "#console/components/shared";
 import { DetectionDetailSheet } from "#console/components/pages/workflows";
 import { personLabel } from "#console/utils/naming";
 import { toast } from "vue-sonner";
@@ -35,20 +35,20 @@ const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
 const { wLink } = useWorkspaceLink();
 const { resolveAvatarUrl } = useAvatarUrl();
-const { openFile } = useStudioFiles();
+const { openDocument } = useStudioDocuments();
 
 // Detection-detail sheet: opened from a row click or the "See details" action.
-const detailDetection = ref<Detection | null>(null);
+const detailDetection = ref<WorkspaceDetection | null>(null);
 const isDetailOpen = ref(false);
-function openDetails(detection: Detection) {
+function openDetails(detection: WorkspaceDetection) {
 	detailDetection.value = detection;
 	isDetailOpen.value = true;
 }
 
-// Open a detection's source document in the studio for review. `openFile` fetches the
+// Open a detection's source document in the studio for review. `openDocument` fetches the
 // file into a tab; surface a failure rather than let it reject unhandled.
 function openInStudio(fileId: string) {
-	openFile(fileId).catch((error) => {
+	openDocument(fileId).catch((error) => {
 		toast.error(t("workflows.detections.openInStudioFailed"), {
 			description: getErrorMessage(error, t("common.errors.tryAgain")),
 		});
@@ -64,10 +64,9 @@ function auditFileName(
 	detection: (typeof sortedDetections.value)[number],
 	format: "json" | "csv",
 ): string {
-	const base = (detection.inputFileName || detection.inputFileId).replace(
-		/\.[^.]+$/,
-		"",
-	);
+	const base = (
+		detection.inputDocumentName || detection.inputDocumentId
+	).replace(/\.[^.]+$/, "");
 	const ext = format === "csv" ? "zip" : "json";
 	return `${base}-audit-${detection.id.slice(0, 8)}.${ext}`;
 }
@@ -99,7 +98,7 @@ function rowActions(
 			key: "studio",
 			label: t("workflows.detections.openInStudio"),
 			icon: ScanSearch,
-			select: () => openInStudio(detection.inputFileId),
+			select: () => openInStudio(detection.inputDocumentId),
 		},
 		{
 			key: "audit-json",
@@ -167,14 +166,14 @@ const columns = computed<
 	{
 		key: "pipeline",
 		header: t("workflows.detections.pipeline"),
-		cell: (r) => ({ type: "text", value: r.pipelineSlug, mono: true }),
+		cell: (r) => ({ type: "text", value: r.pipelineId ?? "—", mono: true }),
 	},
 	{
 		key: "file",
 		header: t("workflows.detections.file"),
 		cell: (r) => ({
 			type: "primary",
-			title: r.inputFileName || r.inputFileId,
+			title: r.inputDocumentName || r.inputDocumentId,
 			maxWidth: "max-w-xs",
 		}),
 	},
@@ -239,8 +238,8 @@ const columns = computed<
             </SelectItem>
             <SelectItem
               v-for="p in pipelines ?? []"
-              :key="p.slug"
-              :value="p.slug"
+              :key="p.id"
+              :value="p.id"
               class="text-sm font-normal"
             >
               {{ p.displayName }}
@@ -249,7 +248,7 @@ const columns = computed<
         </Select>
 
         <!-- File filter -->
-        <FilePicker v-model="fileFilter" class="w-[190px]" />
+        <DocumentPicker v-model="fileFilter" class="w-[190px]" />
 
         <!-- Trigger filter -->
         <Select v-model="triggerFilter">

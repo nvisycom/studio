@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Webhook } from "@nvisy/sdk/datatypes";
+import type { WorkspaceWebhook } from "@nvisy/sdk/datatypes";
 import type { WebhookFormPayload } from "#console/composables/useWebhookForm";
 import { Webhook as WebhookIcon, Loader2, Plus, X } from "@lucide/vue";
 import { Input } from "#console/components/ui/input";
@@ -25,7 +25,7 @@ const props = withDefaults(
 	defineProps<{
 		/** "create" shows the trigger button; "edit" populates from `webhook`. */
 		mode: "create" | "edit";
-		webhook?: Webhook | null;
+		webhook?: WorkspaceWebhook | null;
 		isLoading?: boolean;
 	}>(),
 	{ webhook: null, isLoading: false },

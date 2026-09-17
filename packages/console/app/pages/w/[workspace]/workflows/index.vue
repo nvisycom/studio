@@ -2,9 +2,9 @@
 import { Loader2, Workflow, Pencil, Trash2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import type {
-	Pipeline,
-	PipelineSummary,
-	UpdatePipeline,
+	WorkspacePipeline,
+	WorkspacePipelineSummary,
+	UpdateWorkspacePipeline,
 } from "@nvisy/sdk/datatypes";
 import type { RowAction } from "#console/components/pages/RowActions.vue";
 import type { VirtualColumn } from "#console/components/ui/virtual-table";
@@ -49,16 +49,16 @@ const { open: openCreate } = useCreatePipeline();
 // `editingPipeline` null → nothing loaded; `loadingPipeline` gates the sheet
 // while the full pipeline (with definition + retention) is fetched.
 const isEditSheetOpen = ref(false);
-const editingPipeline = ref<Pipeline | null>(null);
+const editingPipeline = ref<WorkspacePipeline | null>(null);
 const loadingPipeline = ref(false);
 
-async function openEdit(pipeline: PipelineSummary) {
+async function openEdit(pipeline: WorkspacePipelineSummary) {
 	// The list holds summaries; fetch the full pipeline before opening the editor.
 	editingPipeline.value = null;
 	loadingPipeline.value = true;
 	isEditSheetOpen.value = true;
 	try {
-		editingPipeline.value = await getPipeline(pipeline.slug);
+		editingPipeline.value = await getPipeline(pipeline.id);
 	} catch (err) {
 		isEditSheetOpen.value = false;
 		toast.error(t("workflows.toast.loadFailed"), {
@@ -69,9 +69,9 @@ async function openEdit(pipeline: PipelineSummary) {
 	}
 }
 
-async function handleUpdate(slug: string, updates: UpdatePipeline) {
+async function handleUpdate(slug: string, updates: UpdateWorkspacePipeline) {
 	try {
-		await updatePipelineAsync({ pipelineSlug: slug, updates });
+		await updatePipelineAsync({ pipelineId: slug, updates });
 		toast.success(t("workflows.toast.updated"));
 		isEditSheetOpen.value = false;
 	} catch (err) {
@@ -81,13 +81,13 @@ async function handleUpdate(slug: string, updates: UpdatePipeline) {
 	}
 }
 
-const pipelineToDelete = ref<PipelineSummary | null>(null);
+const pipelineToDelete = ref<WorkspacePipelineSummary | null>(null);
 
 async function confirmDelete() {
 	const pipeline = pipelineToDelete.value;
 	if (!pipeline) return;
 	try {
-		await deletePipelineAsync(pipeline.slug);
+		await deletePipelineAsync(pipeline.id);
 		toast.success(t("workflows.toast.deleted"));
 		pipelineToDelete.value = null;
 	} catch (err) {
@@ -98,9 +98,9 @@ async function confirmDelete() {
 }
 
 // VirtualTable keys rows by id; pipelines are keyed by slug, so expose it as id.
-type PipelineRow = PipelineSummary & { id: string };
+type PipelineRow = WorkspacePipelineSummary & { id: string };
 const pipelineRows = computed<PipelineRow[]>(() =>
-	(pipelines.value ?? []).map((p) => ({ ...p, id: p.slug })),
+	(pipelines.value ?? []).map((p) => ({ ...p, id: p.id })),
 );
 
 const columns = computed<VirtualColumn<PipelineRow>[]>(() => [

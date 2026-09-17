@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ApiToken } from "@nvisy/sdk/datatypes";
+import type { AccountApiToken } from "@nvisy/sdk/datatypes";
 import type {
 	RowAction,
 	BulkAction,
@@ -11,15 +11,15 @@ import { VirtualTable } from "#console/components/ui/virtual-table";
 import { Badge } from "#console/components/ui/badge";
 
 interface Props {
-	tokens: ApiToken[];
+	tokens: AccountApiToken[];
 	selection: Selection;
 	currentTokenId?: string | null;
 }
 
 interface Emits {
-	(e: "deleteToken", token: ApiToken): void;
+	(e: "deleteToken", token: AccountApiToken): void;
 	(e: "deleteSelected"): void;
-	(e: "renameToken", token: ApiToken): void;
+	(e: "renameToken", token: AccountApiToken): void;
 }
 
 const props = defineProps<Props>();
@@ -30,9 +30,9 @@ const { relativeTime } = useRelativeTime();
 
 const truncateId = (id: string) => id.slice(0, 8);
 const isCurrentToken = (id: string) => props.currentTokenId === id;
-const isSelectable = (token: ApiToken) => !isCurrentToken(token.id);
+const isSelectable = (token: AccountApiToken) => !isCurrentToken(token.id);
 
-const isTokenExpired = (token: ApiToken): boolean =>
+const isTokenExpired = (token: AccountApiToken): boolean =>
 	!!token.expiredAt && new Date(token.expiredAt) < new Date();
 
 // Session-type badge shown on the token icon overlay, one per ApiTokenType
@@ -60,7 +60,7 @@ const formatExpiry = (date: string | null | undefined): string => {
 	}).format(new Date(date));
 };
 
-const columns = computed<VirtualColumn<ApiToken>[]>(() => [
+const columns = computed<VirtualColumn<AccountApiToken>[]>(() => [
 	{
 		key: "name",
 		header: t("tokens.table.headers.name"),
@@ -89,7 +89,7 @@ const columns = computed<VirtualColumn<ApiToken>[]>(() => [
 ]);
 
 /** Rename (API tokens only) then revoke (disabled for the current token). */
-function rowActions(token: ApiToken): RowAction[] {
+function rowActions(token: AccountApiToken): RowAction[] {
 	const isApi = token.sessionType === "api";
 	const isCurrent = isCurrentToken(token.id);
 	return [

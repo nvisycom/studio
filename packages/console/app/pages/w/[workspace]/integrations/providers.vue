@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { Bot, Loader2, Compass } from "@lucide/vue";
 import { toast } from "vue-sonner";
-import type { Provider, UpdateProvider } from "@nvisy/sdk/datatypes";
+import type {
+	WorkspaceProvider,
+	UpdateWorkspaceProvider,
+} from "@nvisy/sdk/datatypes";
 import { Button } from "#console/components/ui/button";
 import {
 	ProvidersTable,
@@ -36,9 +39,9 @@ const {
 
 const isConfigureDialogOpen = ref(false);
 const isDeleteDialogOpen = ref(false);
-const selectedProvider = ref<Provider | null>(null);
+const selectedProvider = ref<WorkspaceProvider | null>(null);
 
-function findProviderById(providerId: string): Provider | undefined {
+function findProviderById(providerId: string): WorkspaceProvider | undefined {
 	return providers.value?.find((p) => p.id === providerId);
 }
 
@@ -58,7 +61,7 @@ function openDeleteDialog(providerId: string) {
 	}
 }
 
-async function handleUpdateProvider(updates: UpdateProvider) {
+async function handleUpdateProvider(updates: UpdateWorkspaceProvider) {
 	if (!selectedProvider.value) return;
 	try {
 		await updateProviderAsync({
@@ -86,7 +89,7 @@ async function handleDeleteProvider(providerId: string) {
 	}
 }
 
-async function handleToggleActive(provider: Provider) {
+async function handleToggleActive(provider: WorkspaceProvider) {
 	try {
 		await updateProviderAsync({
 			providerId: provider.id,

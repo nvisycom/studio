@@ -36,10 +36,10 @@ export function notificationContent(
 	switch (type) {
 		case "member.joined":
 			return content("memberJoined", payload.data, "/team");
-		case "file.assigned":
-			return content("fileAssigned", payload.data, "/files");
-		case "file.unassigned":
-			return content("fileUnassigned", payload.data, "/files");
+		case "review.assigned":
+			return content("reviewAssigned", payload.data, "/reviews");
+		case "comment.mentioned":
+			return content("commentMentioned", payload.data, "/reviews");
 		case "connection.sync.completed":
 			return content(
 				"connectionSyncCompleted",

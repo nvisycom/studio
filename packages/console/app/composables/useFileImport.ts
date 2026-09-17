@@ -1,4 +1,4 @@
-import type { Connection } from "@nvisy/sdk/datatypes";
+import type { WorkspaceConnection } from "@nvisy/sdk/datatypes";
 import type { PickedFile } from "#console/utils/connections";
 import {
 	ImportError,
@@ -38,7 +38,7 @@ interface PickerContext extends PickerAvailability {
 interface ImportPicker {
 	available: (config: PickerAvailability) => boolean;
 	open: (
-		connection: Connection,
+		connection: WorkspaceConnection,
 		ctx: PickerContext,
 	) => Promise<PickedFile[] | null>;
 }
@@ -62,7 +62,7 @@ const PICKERS: Record<string, ImportPicker> = {
  * action, the source-picker dialog, and the import flow all share.
  */
 export function isImportableConnection(
-	connection: Connection,
+	connection: WorkspaceConnection,
 	config: PickerAvailability,
 ): boolean {
 	if (connection.connectionType !== "file_service" || !connection.isActive) {
@@ -86,9 +86,9 @@ export function useFileImport() {
 	 * of files handed to the import (0 when cancelled). Throws {@link ImportError}
 	 * with an i18n key when the connection can't be imported from.
 	 */
-	async function importFrom(connection: Connection): Promise<number> {
+	async function importFrom(connection: WorkspaceConnection): Promise<number> {
 		if (!isImportableConnection(connection, { dropboxAppKey })) {
-			throw new ImportError("files.errors.importUnavailable");
+			throw new ImportError("documents.errors.importUnavailable");
 		}
 		const picked = await PICKERS[connection.provider]!.open(connection, ctx);
 		if (!picked || picked.length === 0) return 0;

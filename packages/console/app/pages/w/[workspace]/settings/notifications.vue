@@ -115,21 +115,21 @@ const categories = computed<
 		],
 	},
 	{
-		id: "files",
-		name: t("settings.notifications.categories.files.name"),
+		id: "reviews",
+		name: t("settings.notifications.categories.reviews.name"),
 		events: [
 			{
-				event: "file.assigned",
-				name: t("settings.notifications.categories.files.assigned.name"),
+				event: "review.assigned",
+				name: t("settings.notifications.categories.reviews.assigned.name"),
 				description: t(
-					"settings.notifications.categories.files.assigned.description",
+					"settings.notifications.categories.reviews.assigned.description",
 				),
 			},
 			{
-				event: "file.unassigned",
-				name: t("settings.notifications.categories.files.unassigned.name"),
+				event: "comment.mentioned",
+				name: t("settings.notifications.categories.reviews.mentioned.name"),
 				description: t(
-					"settings.notifications.categories.files.unassigned.description",
+					"settings.notifications.categories.reviews.mentioned.description",
 				),
 			},
 		],

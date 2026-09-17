@@ -1,8 +1,4 @@
-import type {
-	PolicyDefinition,
-	PolicyRule,
-	TextRedaction,
-} from "@nvisy/sdk/datatypes";
+import type { Policy, PolicyRule, TextRedaction } from "@nvisy/sdk/datatypes";
 import type {
 	EditableAction,
 	EditableLabel,
@@ -138,63 +134,30 @@ function actionToEditable(action: SdkAction): EditableAction {
 	return { modalities };
 }
 
-/** Reconstruct the fallback action (or null) from a stored definition. */
-export function fallbackFromDefinition(
-	definition: PolicyDefinition,
-): EditableAction | null {
-	return definition.fallback ? actionToEditable(definition.fallback) : null;
+/** Reconstruct the fallback action (or null) from a stored policy. */
+export function fallbackFromDefinition(policy: Policy): EditableAction | null {
+	return policy.fallback ? actionToEditable(policy.fallback) : null;
 }
 
-/**
- * Reconstruct the editable custom-label list from a stored definition. The
- * editor surfaces one locale (English when present, else the first available);
- * every localization is retained so a save preserves the label's other locales.
- */
-export function labelsFromDefinition(
-	definition: PolicyDefinition,
-): EditableLabel[] {
-	return (definition.custom ?? []).map((l) => {
-		const localizations = l.localizations ?? {};
-		const locale = "en" in localizations ? "en" : Object.keys(localizations)[0];
-		const shown = locale ? localizations[locale] : undefined;
-		return {
-			key: crypto.randomUUID(),
-			id: l.id,
-			locale: locale ?? "en",
-			name: shown?.name ?? "",
-			description: shown?.description,
-			tags: l.tags.join(", "),
-			localizations,
-		};
-	});
+// A stored policy carries its rules and fallback, but not the custom labels,
+// label scopes, or custom matchers used to author it — those are recognition
+// inputs, not part of the returned policy. The editor cannot repopulate them
+// when opening an existing policy, so these readers resolve to empty. They stay
+// to keep the editor's shape stable (see SDK_0.51_MIGRATION_GAPS.md).
+
+/** The editable custom-label list for an existing policy. */
+export function labelsFromDefinition(_policy: Policy): EditableLabel[] {
+	return [];
 }
 
-/** Reconstruct the editable label scopes from a stored definition. */
-export function scopesFromDefinition(
-	definition: PolicyDefinition,
-): EditableScope[] {
-	return (definition.scopes ?? []).map((s) => ({
-		key: crypto.randomUUID(),
-		name: s.name,
-		description: s.description,
-		labels: s.labels,
-	}));
+/** The editable label scopes for an existing policy. */
+export function scopesFromDefinition(_policy: Policy): EditableScope[] {
+	return [];
 }
 
-/** Reconstruct the editable custom matchers from a stored definition. */
-export function matchersFromDefinition(
-	definition: PolicyDefinition,
-): EditableMatcher[] {
-	return (definition.matchers ?? []).map((m) => ({
-		key: crypto.randomUUID(),
-		name: m.name,
-		label: m.label,
-		confidence: m.confidence,
-		// The `kind` discriminant narrows to the matching payload (no cast).
-		...(m.kind === "pattern"
-			? { kind: "pattern" as const, pattern: m.pattern }
-			: { kind: "terms" as const, terms: m.terms.join(", ") }),
-	}));
+/** The editable custom matchers for an existing policy. */
+export function matchersFromDefinition(_policy: Policy): EditableMatcher[] {
+	return [];
 }
 
 /** Narrow a `PolicyRule` to the table arm by its `kind` discriminant. */
@@ -205,14 +168,11 @@ function isTableRule(
 }
 
 /**
- * Reconstruct the editable rule list from a stored policy definition. Both
- * predicated rules (When → Then) and table rules (per-label action lookups) are
- * represented.
+ * Reconstruct the editable rule list from a stored policy. Both predicated rules
+ * (When → Then) and table rules (per-label action lookups) are represented.
  */
-export function rulesFromDefinition(
-	definition: PolicyDefinition,
-): EditableRule[] {
-	return (definition.rules ?? []).map((r): EditableRule => {
+export function rulesFromDefinition(policy: Policy): EditableRule[] {
+	return (policy.rules ?? []).map((r): EditableRule => {
 		if (isTableRule(r)) {
 			return {
 				kind: "table",

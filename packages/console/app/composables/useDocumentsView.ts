@@ -1,8 +1,8 @@
-import type { FormatToken, ListFiles } from "@nvisy/sdk/datatypes";
+import type { FormatToken, ListWorkspaceDocuments } from "@nvisy/sdk/datatypes";
 
 /**
- * Shared view state for the Files page: search, filters, and the list/grid
- * toggle, plus the derived `listFiles` query. Held at module scope so the page
+ * Shared view state for the Documents page: search, filters, and the list/grid
+ * toggle, plus the derived documents query. Held at module scope so the page
  * body and the header controls (rendered separately, in the app header) read
  * and write the same state — the way the studio shares its open-files store.
  *
@@ -21,7 +21,7 @@ const uploadOpen = ref(false);
 const importOpen = ref(false);
 // When an import was started from elsewhere (the integrations page navigates to
 // Files afterwards), the timestamp it started. The Files page reads it on mount
-// to poll for the incoming files, then clears it.
+// to poll for the incoming documents, then clears it.
 const importStartedAt = ref<number | null>(null);
 
 /** Format tokens offered in the filter, in display order. */
@@ -45,11 +45,11 @@ export const FORMAT_TOKENS: FormatToken[] = [
 	"xml",
 ];
 
-export function useFilesView() {
+export function useDocumentsView() {
 	const { t } = useI18n();
 
-	// Server-side filtering: fold search + filters into the listFiles query.
-	const filesQuery = computed<ListFiles>(() => ({
+	// Server-side filtering: fold search + filters into the list query.
+	const documentsQuery = computed<ListWorkspaceDocuments>(() => ({
 		...(searchQuery.value.trim() && { search: searchQuery.value.trim() }),
 		...(selectedFormats.value.length && { formats: selectedFormats.value }),
 	}));
@@ -74,14 +74,14 @@ export function useFilesView() {
 		importOpen.value = true;
 	}
 
-	// Mark that an import just started, for a Files page mounting after a navigation
+	// Mark that an import just started, for a Documents page mounting after a navigation
 	// from elsewhere (the integrations connection row) to pick up.
 	function markImportStarted() {
 		importStartedAt.value = Date.now();
 	}
 
 	// Consume the pending-import marker (returns whether one was set, and clears
-	// it), so the Files page polls exactly once after the navigation.
+	// it), so the Documents page polls exactly once after the navigation.
 	function takeImportStarted(): boolean {
 		const started = importStartedAt.value !== null;
 		importStartedAt.value = null;
@@ -94,7 +94,7 @@ export function useFilesView() {
 		viewMode,
 		uploadOpen,
 		importOpen,
-		filesQuery,
+		documentsQuery,
 		formatOptions,
 		hasFilters,
 		clearFilters,

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { Component } from "vue";
 import type {
-	Connection,
-	ConnectionSync,
+	WorkspaceConnection,
+	WorkspaceConnectionSync,
 	SyncStatus,
 } from "@nvisy/sdk/datatypes";
 import type { VirtualColumn } from "#console/components/ui/virtual-table";
@@ -58,22 +58,22 @@ const { syncs, isLoading, hasMore, loadMore, isLoadingMore, cancelSyncAsync } =
 // Resolve connection id -> connection for name + provider logo.
 const { connections } = useConnections();
 const connectionById = computed(() => {
-	const map = new Map<string, Connection>();
+	const map = new Map<string, WorkspaceConnection>();
 	for (const c of connections.value ?? []) map.set(c.id, c);
 	return map;
 });
 
-function connectionName(sync: ConnectionSync): string {
+function connectionName(sync: WorkspaceConnectionSync): string {
 	return (
 		connectionById.value.get(sync.connectionId)?.displayName ??
 		sync.connectionId
 	);
 }
-function connectionProvider(sync: ConnectionSync): string | undefined {
+function connectionProvider(sync: WorkspaceConnectionSync): string | undefined {
 	return connectionById.value.get(sync.connectionId)?.provider;
 }
 
-async function cancelSync(sync: ConnectionSync) {
+async function cancelSync(sync: WorkspaceConnectionSync) {
 	try {
 		await cancelSyncAsync({
 			connectionId: sync.connectionId,
@@ -87,7 +87,7 @@ async function cancelSync(sync: ConnectionSync) {
 	}
 }
 
-const isCancellable = (sync: ConnectionSync) =>
+const isCancellable = (sync: WorkspaceConnectionSync) =>
 	sync.status === "running" || sync.status === "pending";
 
 function handleLoadMore() {
@@ -117,7 +117,7 @@ function statusMeta(status: SyncStatus) {
 	return STATUS_META[status] ?? FALLBACK_STATUS_META;
 }
 
-const columns = computed<VirtualColumn<ConnectionSync>[]>(() => [
+const columns = computed<VirtualColumn<WorkspaceConnectionSync>[]>(() => [
 	{
 		key: "connection",
 		header: t("connections.runs.connection"),
@@ -226,7 +226,7 @@ const columns = computed<VirtualColumn<ConnectionSync>[]>(() => [
         }"
         @load-more="handleLoadMore"
       >
-        <!-- Connection + provider logo -->
+        <!-- WorkspaceConnection + provider logo -->
         <template #cell-connection="{ row }">
           <div class="flex items-center gap-2.5">
             <div

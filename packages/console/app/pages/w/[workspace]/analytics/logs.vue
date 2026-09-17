@@ -94,7 +94,7 @@ const CATEGORY_TYPES = {
 		"connection.sync.failed",
 	],
 	webhook: ["webhook.created", "webhook.updated", "webhook.deleted"],
-	file: ["file.created", "file.updated", "file.deleted"],
+	file: ["document.created", "document.updated", "document.deleted"],
 	pipeline: [
 		"pipeline.created",
 		"pipeline.updated",

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { DetectionTimeSeries } from "@nvisy/sdk/datatypes";
+import type { WorkspaceDetectionTimeSeries } from "@nvisy/sdk/datatypes";
 
 /**
  * GitHub-style heatmap of daily pipeline-detection volume over the last ~year.
@@ -8,7 +8,7 @@ import type { DetectionTimeSeries } from "@nvisy/sdk/datatypes";
  * as "volume" without colliding with semantic color.
  */
 const props = defineProps<{
-	timeSeries: DetectionTimeSeries | undefined;
+	timeSeries: WorkspaceDetectionTimeSeries | undefined;
 	isLoading: boolean;
 }>();
 

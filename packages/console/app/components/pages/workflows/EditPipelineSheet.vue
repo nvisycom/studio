@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Loader2 } from "@lucide/vue";
 import type {
-	CreatePipeline,
-	Pipeline,
-	PolicySummary,
-	UpdatePipeline,
+	CreateWorkspacePipeline,
+	WorkspacePipeline,
+	WorkspacePolicySummary,
+	UpdateWorkspacePipeline,
 } from "@nvisy/sdk/datatypes";
 import { PipelineForm } from "#console/components/pages/workflows";
 import { Button } from "#console/components/ui/button";
@@ -29,13 +29,13 @@ const open = defineModel<boolean>("open", { default: false });
 const props = defineProps<{
 	isLoading?: boolean;
 	loadingPipeline?: boolean;
-	policies?: PolicySummary[];
-	pipeline?: Pipeline | null;
+	policies?: WorkspacePolicySummary[];
+	pipeline?: WorkspacePipeline | null;
 }>();
 
 const emit = defineEmits<{
-	create: [pipeline: CreatePipeline];
-	update: [slug: string, updates: UpdatePipeline];
+	create: [pipeline: CreateWorkspacePipeline];
+	update: [slug: string, updates: UpdateWorkspacePipeline];
 }>();
 
 const isEdit = computed(() => !!props.pipeline || !!props.loadingPipeline);
@@ -57,10 +57,10 @@ const form = ref<{
 } | null>(null);
 const canSubmit = ref(false);
 
-function onCreate(pipeline: CreatePipeline) {
+function onCreate(pipeline: CreateWorkspacePipeline) {
 	emit("create", pipeline);
 }
-function onUpdate(slug: string, updates: UpdatePipeline) {
+function onUpdate(slug: string, updates: UpdateWorkspacePipeline) {
 	emit("update", slug, updates);
 }
 function cancel() {

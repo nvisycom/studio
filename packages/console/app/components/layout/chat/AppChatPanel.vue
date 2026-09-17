@@ -90,7 +90,7 @@ function handleRetry() {
             type="button"
             class="min-w-0 flex-1 truncate rounded-md px-1.5 py-1 text-left text-sm font-medium outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/50"
           >
-            {{ currentSession?.title ?? t("chat.newChat") }}
+            {{ currentSession?.displayName ?? t("chat.newChat") }}
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" class="w-64">
@@ -114,7 +114,7 @@ function handleRetry() {
               "
               @select="selectSession(s.id)"
             >
-              <span class="min-w-0 flex-1 truncate">{{ s.title }}</span>
+              <span class="min-w-0 flex-1 truncate">{{ s.displayName }}</span>
               <button
                 type="button"
                 class="rounded p-1 text-muted-foreground opacity-0 hover:text-destructive focus-visible:opacity-100 group-hover/session:opacity-100"

@@ -34,6 +34,7 @@ const sectionTabs = useSectionTabs();
 const {
 	currentWorkspace,
 	currentWorkspaceSlug,
+	currentWorkspaceId,
 	isLoading: isLoadingWorkspaces,
 	updateWorkspaceAsync,
 	isUpdating,
@@ -114,12 +115,12 @@ async function copyWorkspaceId() {
 }
 
 async function saveWorkspaceInfo() {
-	const workspaceSlug = currentWorkspaceSlug.value;
-	if (!workspaceSlug) return;
+	const workspaceId = currentWorkspaceId.value;
+	if (!workspaceId) return;
 
 	try {
 		await updateWorkspaceAsync({
-			workspaceSlug,
+			workspaceId,
 			updates: {
 				displayName: workspaceName.value,
 				description: workspaceDescription.value || undefined,
@@ -145,11 +146,11 @@ function pickAvatar() {
 }
 
 async function uploadAvatar(file: File) {
-	const workspaceSlug = currentWorkspaceSlug.value;
-	if (!workspaceSlug) return;
+	const workspaceId = currentWorkspaceId.value;
+	if (!workspaceId) return;
 	avatarPreview.value = URL.createObjectURL(file);
 	try {
-		await uploadAvatarAsync({ workspaceSlug, avatar: file });
+		await uploadAvatarAsync({ workspaceId, avatar: file });
 		toast.success(t("settings.workspace.messages.avatarUploaded"));
 	} catch (error) {
 		toast.error(t("settings.workspace.errors.avatarUploadFailed"), {
@@ -162,10 +163,10 @@ async function uploadAvatar(file: File) {
 }
 
 async function removeAvatar() {
-	const workspaceSlug = currentWorkspaceSlug.value;
-	if (!workspaceSlug) return;
+	const workspaceId = currentWorkspaceId.value;
+	if (!workspaceId) return;
 	try {
-		await deleteAvatarAsync(workspaceSlug);
+		await deleteAvatarAsync(workspaceId);
 		toast.success(t("settings.workspace.messages.avatarRemoved"));
 	} catch (error) {
 		toast.error(t("settings.workspace.errors.avatarRemoveFailed"), {

@@ -1,6 +1,6 @@
 import { NvisyApiError } from "@nvisy/sdk";
+import { NvisyGuest } from "@nvisy/sdk/guest";
 import type { Health } from "@nvisy/sdk/datatypes";
-import { checkHealth } from "@nvisy/sdk/standalone";
 import { normalize } from "#console/composables/useApiBaseUrl";
 
 /** The health levels a genuine Nvisy `/health/` response reports. Used to tell a
@@ -38,11 +38,11 @@ export type ProbeResult =
 
 /**
  * Probe a candidate server URL for reachability, independent of the live SDK
- * client and of any committed override. Uses the SDK's standalone `checkHealth`
- * — the health endpoint is public, so it needs no token, and the SDK owns the
- * route — with the injected fetch (desktop: Tauri's native fetch, which bypasses
- * the webview CORS the same way login does). A user can thus verify a self-hosted
- * server before committing to it.
+ * client and of any committed override. Uses a pre-auth guest client's health
+ * check — the health endpoint is public, so it needs no token, and the SDK owns
+ * the route — with the injected fetch (desktop: Tauri's native fetch, which
+ * bypasses the webview CORS the same way login does). A user can thus verify a
+ * self-hosted server before committing to it.
  *
  * One probe supersedes the last: a stale in-flight check can't overwrite a newer
  * result, and clearing the input resets to `idle`.
@@ -79,10 +79,10 @@ export function useServerProbe() {
 
 		let next: ProbeResult;
 		try {
-			const health = await checkHealth({
-				baseUrl: base,
-				fetch: apiFetch.value,
-			});
+			// A fresh guest client per probe, targeting the CANDIDATE url (not the
+			// committed one), so a user can verify a server before committing to it.
+			const guest = new NvisyGuest({ baseUrl: base, fetch: apiFetch.value });
+			const health = await guest.health.checkHealth();
 			// `checkHealth` disables error handling (a `503` degraded status is a
 			// valid health body, not an error), so a non-2xx from a *non-Nvisy*
 			// endpoint — e.g. a 404 from a proxy or another service — comes back as a

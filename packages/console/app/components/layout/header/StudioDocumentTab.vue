@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { X, Loader2 } from "@lucide/vue";
-import type { OpenFile } from "#console/composables/useStudioFiles";
+import type { OpenDocument } from "#console/composables/useStudioDocuments";
 import {
 	Tooltip,
 	TooltipContent,
@@ -16,7 +16,7 @@ import {
 import { Button } from "#console/components/ui/button";
 
 const props = defineProps<{
-	file: OpenFile;
+	file: OpenDocument;
 	active: boolean;
 	/** True when this is the rightmost tab (disables "Close to the right"). */
 	isLast: boolean;

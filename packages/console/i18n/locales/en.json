@@ -35,7 +35,7 @@
 		},
 		"category": {
 			"overview": "Overview",
-			"files": "Files",
+			"documents": "Documents",
 			"studio": "Studio",
 			"team": "Team",
 			"workflows": "Workflows",
@@ -44,7 +44,8 @@
 			"analytics": "Analytics",
 			"billing": "Billing",
 			"settings": "Settings",
-			"webhooks": "Webhooks"
+			"webhooks": "Webhooks",
+			"reviews": "Reviews"
 		}
 	},
 	"common": {
@@ -156,9 +157,9 @@
 						"redactedDocuments": "Redacted documents"
 					},
 					"modes": {
-						"forever": "Keep forever",
-						"days": "Keep for days",
-						"zeroDays": "Don't keep"
+						"persistent": "Keep forever",
+						"fixed": "Keep for days",
+						"ephemeral": "Don't keep"
 					},
 					"footer": "Applies to all data in this workspace."
 				}
@@ -239,15 +240,15 @@
 						"description": "When an invited member joins the workspace"
 					}
 				},
-				"files": {
-					"name": "Files",
+				"reviews": {
+					"name": "Reviews",
 					"assigned": {
-						"name": "File Assigned",
-						"description": "When a file is assigned to you for review"
+						"name": "Review Assigned",
+						"description": "When a document is assigned to you for review"
 					},
-					"unassigned": {
-						"name": "File Unassigned",
-						"description": "When a file is no longer assigned to you"
+					"mentioned": {
+						"name": "Mentioned in a Comment",
+						"description": "When someone mentions you in a review comment"
 					}
 				},
 				"connections": {
@@ -444,9 +445,9 @@
 			"submitButton": "Create Workspace"
 		}
 	},
-	"files": {
+	"documents": {
 		"page": {
-			"description": "Manage your uploaded files and documents"
+			"description": "Manage your uploaded documents"
 		},
 		"selection": {
 			"delete": "Delete"
@@ -460,8 +461,8 @@
 				"uploadedBy": "Uploaded by"
 			},
 			"empty": {
-				"title": "No files found",
-				"description": "Upload your first file to get started",
+				"title": "No documents found",
+				"description": "Upload your first document to get started",
 				"filterDescription": "Try adjusting your search or filters"
 			}
 		},
@@ -480,27 +481,28 @@
 			"delete": "Delete",
 			"clearFilters": "Clear Filters",
 			"export": "Export",
-			"import": "Import"
+			"import": "Import",
+			"assign": "Assign"
 		},
 		"dialogs": {
 			"delete": {
-				"title": "Delete File",
-				"titleMultiple": "Delete Files",
-				"description": "Are you sure you want to delete this file? This action cannot be undone.",
-				"descriptionMultiple": "Are you sure you want to delete {count} files? This action cannot be undone.",
+				"title": "Delete Document",
+				"titleMultiple": "Delete Documents",
+				"description": "Are you sure you want to delete this document? This action cannot be undone.",
+				"descriptionMultiple": "Are you sure you want to delete {count} documents? This action cannot be undone.",
 				"confirm": "Delete",
 				"cancel": "Cancel"
 			},
 			"edit": {
-				"title": "Edit File",
-				"description": "Update the file name and other properties.",
-				"nameLabel": "File Name",
-				"namePlaceholder": "Enter file name",
+				"title": "Edit Document",
+				"description": "Update the document name and other properties.",
+				"nameLabel": "Document Name",
+				"namePlaceholder": "Enter document name",
 				"save": "Save Changes",
 				"cancel": "Cancel"
 			},
 			"upload": {
-				"title": "Upload Files",
+				"title": "Upload Documents",
 				"subtitle": "Add documents to your workspace. Up to {max} per file.",
 				"subtitleNoLimit": "Add documents to your workspace.",
 				"description": "Drag and drop files here",
@@ -522,22 +524,22 @@
 			}
 		},
 		"messages": {
-			"fileDeleted": "File deleted successfully",
-			"filesDeleted": "Files deleted successfully",
-			"filesDeletedPartial": "Some files couldn't be deleted ({count} skipped).",
-			"fileUpdated": "File updated successfully",
-			"filesUploaded": "Files uploaded successfully",
+			"fileDeleted": "Document deleted successfully",
+			"filesDeleted": "Documents deleted successfully",
+			"filesDeletedPartial": "Some documents couldn't be deleted ({count} skipped).",
+			"fileUpdated": "Document updated successfully",
+			"filesUploaded": "Documents uploaded successfully",
 			"downloadStarted": "Download started",
 			"exportStarted": "Export started",
 			"importStarted": "Importing {count} file | Importing {count} files"
 		},
 		"errors": {
-			"deleteFailed": "Failed to delete file",
-			"updateFailed": "Failed to update file",
-			"downloadFailed": "Failed to download file",
-			"loadFailed": "Failed to load files",
-			"exportFailed": "Failed to export files",
-			"importFailed": "Failed to import files",
+			"deleteFailed": "Failed to delete document",
+			"updateFailed": "Failed to update document",
+			"downloadFailed": "Failed to download document",
+			"loadFailed": "Failed to load documents",
+			"exportFailed": "Failed to export documents",
+			"importFailed": "Failed to import documents",
 			"importUnavailable": "Import isn't available for this connection.",
 			"importPopupBlocked": "The picker was blocked. Allow pop-ups for this site and try again.",
 			"importPickerLoadFailed": "Couldn't load the file picker. Check your connection and try again.",
@@ -1319,7 +1321,7 @@
 	"sidebar": {
 		"overview": "Overview",
 		"workspace": "Workspace",
-		"files": "Files",
+		"documents": "Documents",
 		"studio": "Studio",
 		"team": "Team",
 		"automation": "Automation",
@@ -1333,7 +1335,8 @@
 		"billing": "Billing",
 		"settings": "Settings",
 		"support": "Support",
-		"webhooks": "Webhooks"
+		"webhooks": "Webhooks",
+		"reviews": "Reviews"
 	},
 	"health": {
 		"status": {
@@ -1908,9 +1911,9 @@
 			},
 			"retentionModes": {
 				"inherit": "Inherit default",
-				"forever": "Keep forever",
-				"days": "Keep for days",
-				"zeroDays": "Delete immediately"
+				"persistent": "Keep forever",
+				"fixed": "Keep for days",
+				"ephemeral": "Delete immediately"
 			},
 			"retentionDays": "Days"
 		},
@@ -2169,13 +2172,13 @@
 				"title": "Member joined",
 				"message": "{memberUsername} joined {workspaceSlug}"
 			},
-			"fileAssigned": {
-				"title": "File assigned",
-				"message": "{fileName} was assigned to you for review"
+			"reviewAssigned": {
+				"title": "Review assigned",
+				"message": "{documentName} was assigned to you for review"
 			},
-			"fileUnassigned": {
-				"title": "File unassigned",
-				"message": "{fileName} is no longer assigned to you"
+			"commentMentioned": {
+				"title": "You were mentioned",
+				"message": "You were mentioned in a comment"
 			},
 			"connectionSyncCompleted": {
 				"title": "Sync completed",
@@ -2448,5 +2451,102 @@
 		"title": "Support",
 		"comingSoon": "Live chat is coming soon",
 		"contact": "In the meantime, reach us at"
+	},
+	"reviews": {
+		"title": "Reviews",
+		"assign": "Assign",
+		"detail": {
+			"back": "All reviews",
+			"title": "Review",
+			"comment": "Comment",
+			"commentPlaceholder": "Leave a comment…",
+			"commentFailed": "Couldn't post your comment. Please try again.",
+			"noDetections": "No detections on this document yet.",
+			"redactionsHint": "Redactions will appear here once detections are redacted.",
+			"tabs": {
+				"discussion": "Discussion",
+				"detections": "Detections",
+				"redactions": "Redactions"
+			},
+			"events": {
+				"review": {
+					"opened": "opened this review",
+					"renamed": "renamed this review"
+				},
+				"detection": {
+					"linked": "linked a detection"
+				},
+				"redaction": {
+					"linked": "linked a redaction"
+				},
+				"assigned": "assigned a reviewer",
+				"unassigned": "removed a reviewer",
+				"verified": "verified this review",
+				"reopened": "reopened this review"
+			},
+			"triggerType": {
+				"user": "Manual detection",
+				"system": "Automatic detection"
+			},
+			"sidebar": {
+				"status": "Status",
+				"reviewers": "Reviewers",
+				"noReviewers": "No reviewers assigned.",
+				"removeReviewer": "Remove reviewer",
+				"author": "Opened by",
+				"delete": "Delete review"
+			},
+			"renameFailed": "Couldn't rename the review. Please try again.",
+			"titlePlaceholder": "Review title",
+			"editTitle": "Rename review",
+			"saveTitle": "Save title",
+			"cancelTitle": "Cancel",
+			"documentFallback": "View document"
+		},
+		"actions": {
+			"verify": "Mark verified",
+			"reopen": "Reopen review"
+		},
+		"table": {
+			"reviewer": "Reviewer",
+			"assigned": "Assigned",
+			"status": "Status",
+			"document": "Document"
+		},
+		"status": {
+			"needs_review": "Needs review",
+			"in_review": "In review",
+			"resolved": "Resolved"
+		},
+		"filter": {
+			"all": "All"
+		},
+		"empty": {
+			"title": "No reviews",
+			"hint": "Documents assigned to you for review will show up here."
+		},
+		"picker": {
+			"search": "Search members…",
+			"loading": "Loading members…",
+			"empty": "No members found"
+		},
+		"dialog": {
+			"title": "Reviews",
+			"description": "Manage this document's reviews.",
+			"none": "No reviews yet.",
+			"remove": "Unassign",
+			"unassigned": "Unassigned",
+			"openReview": "Open review",
+			"titleLabel": "Title (optional)",
+			"titlePlaceholder": "Review title",
+			"deleteReview": "Delete review"
+		},
+		"errors": {
+			"assignFailed": "Couldn't assign the review. Please try again.",
+			"unassignFailed": "Couldn't unassign the review. Please try again.",
+			"updateFailed": "Couldn't update the review. Please try again.",
+			"createFailed": "Couldn't open the review. Please try again.",
+			"deleteFailed": "Couldn't delete the review. Please try again."
+		}
 	}
 }

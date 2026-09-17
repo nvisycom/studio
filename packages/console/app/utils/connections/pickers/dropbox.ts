@@ -45,11 +45,11 @@ function loadDropboxSdk(appKey: string): Promise<DropboxChooser> {
 			// Loaded but no global: clear the cached promise so a later call retries
 			// the load rather than reusing this rejection forever.
 			dropboxSdk = null;
-			reject(new ImportError("files.errors.importPickerLoadFailed"));
+			reject(new ImportError("documents.errors.importPickerLoadFailed"));
 		};
 		script.onerror = () => {
 			dropboxSdk = null; // allow a retry on the next attempt
-			reject(new ImportError("files.errors.importPickerLoadFailed"));
+			reject(new ImportError("documents.errors.importPickerLoadFailed"));
 		};
 		document.head.appendChild(script);
 	});

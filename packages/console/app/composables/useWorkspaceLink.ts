@@ -1,7 +1,7 @@
 /**
  * Build workspace-scoped links. Workspace feature routes live under
  * `/w/{slug}/...`; `wLink` prefixes an app-relative path with the active
- * workspace slug so call sites write `wLink("/files")` rather than
+ * workspace slug so call sites write `wLink("/documents")` rather than
  * interpolating the slug themselves.
  *
  * Non-workspace routes (`/auth/*`, `/account/*`, `/join/*`) are not scoped and

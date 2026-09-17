@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Audit, Detection } from "@nvisy/sdk/datatypes";
+import type { Audit, WorkspaceDetection } from "@nvisy/sdk/datatypes";
 import {
 	Check,
 	Cog,
@@ -27,7 +27,7 @@ import { personLabel } from "#console/utils/naming";
 
 const { t } = useI18n();
 
-const props = defineProps<{ detection: Detection | null }>();
+const props = defineProps<{ detection: WorkspaceDetection | null }>();
 const open = defineModel<boolean>("open", { required: true });
 
 const emit = defineEmits<{
@@ -41,7 +41,7 @@ const { resolveAvatarUrl } = useAvatarUrl();
 /** Title falls back to the file id when the display name was pruned. */
 const inputFileLabel = computed(() =>
 	props.detection
-		? props.detection.inputFileName || props.detection.inputFileId
+		? props.detection.inputDocumentName || props.detection.inputDocumentId
 		: "",
 );
 
@@ -112,7 +112,7 @@ async function copyDetectionId() {
 onBeforeUnmount(() => clearTimeout(copyTimer));
 
 function openInStudio() {
-	if (props.detection) emit("open-in-studio", props.detection.inputFileId);
+	if (props.detection) emit("open-in-studio", props.detection.inputDocumentId);
 }
 
 function downloadAudit(format: "json" | "csv") {
@@ -132,12 +132,12 @@ function downloadAudit(format: "json" | "csv") {
         <SheetHeader class="border-b border-border/50">
           <SheetTitle class="truncate">{{ inputFileLabel }}</SheetTitle>
           <SheetDescription class="font-mono">
-            {{ detection.pipelineSlug }}
+            {{ detection.pipelineId }}
           </SheetDescription>
         </SheetHeader>
 
         <div class="flex-1 space-y-4 overflow-y-auto p-4">
-          <!-- Detection summary — the headline for a complete detection -->
+          <!-- WorkspaceDetection summary — the headline for a complete detection -->
           <div
             v-if="hasDetection"
             class="flex items-center gap-2.5 rounded-lg border border-border/50 bg-muted/30 px-4 py-3"
@@ -154,7 +154,7 @@ function downloadAudit(format: "json" | "csv") {
             </span>
           </div>
 
-          <!-- Detection — status, trigger, who -->
+          <!-- WorkspaceDetection — status, trigger, who -->
           <dl class="rounded-lg border border-border/50 text-sm">
             <div class="flex items-center justify-between gap-4 px-4 py-2.5">
               <dt class="text-muted-foreground">

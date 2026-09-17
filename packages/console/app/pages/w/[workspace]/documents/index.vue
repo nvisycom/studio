@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import type {
-	Connection,
-	File as NvisyFile,
-	UpdateFile,
+	WorkspaceConnection,
+	WorkspaceDocument as NvisyDocument,
+	UpdateWorkspaceDocument,
 } from "@nvisy/sdk/datatypes";
 import { FileText, Loader2, Upload } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import {
-	DeleteFileDialog,
-	EditFileDialog,
-	FilesGridView,
-	FilesTableView,
-	UploadFilesDialog,
-} from "#console/components/pages/files";
+	AssignDocumentDialog,
+	DeleteDocumentDialog,
+	EditDocumentDialog,
+	DocumentsGridView,
+	DocumentsTableView,
+	UploadDocumentsDialog,
+} from "#console/components/pages/documents";
 import {
 	ExportToConnectionDialog,
 	ImportFromConnectionDialog,
@@ -21,113 +22,116 @@ import { ImportError } from "#console/utils/connections";
 import { Button } from "#console/components/ui/button";
 import {
 	HeaderSocket,
-	FilesHeaderControls,
+	DocumentsHeaderControls,
 } from "#console/components/layout/header";
 
 const { t } = useI18n();
 const { wLink } = useWorkspaceLink();
 
-useHead({ title: "Files" });
+useHead({ title: "Documents" });
 
 definePageMeta({
-	pageCategory: "header.category.files",
-	// The controls live in the app header (FilesHeaderControls), so reclaim the
+	pageCategory: "header.category.documents",
+	// The controls live in the app header (DocumentsHeaderControls), so reclaim the
 	// header's category slot for them.
 	hideCategory: true,
 });
 
-// Search/filter/view state is shared with the header controls via useFilesView.
+// Search/filter/view state is shared with the header controls via useDocumentsView.
 const {
 	viewMode,
 	uploadOpen: uploadDialogOpen,
 	importOpen: importDialogOpen,
-	filesQuery,
+	documentsQuery,
 	hasFilters,
 	clearFilters,
 	takeImportStarted,
-} = useFilesView();
+} = useDocumentsView();
 
 const {
-	files,
+	documents,
 	isLoading,
 	error,
-	deleteFileAsync,
-	deleteFilesAsync,
+	deleteDocumentAsync,
+	deleteDocumentsAsync,
 	isDeleting,
-	updateFileAsync,
+	updateDocumentAsync,
 	isUpdating,
-	uploadFilesAsync,
-	downloadFile,
+	uploadDocumentsAsync,
+	downloadDocument,
 	downloadMultiple,
 	loadMore,
 	hasMore,
 	isLoadingMore,
-	refresh: refreshFiles,
-} = useFiles({ query: filesQuery });
+	refresh: refreshDocuments,
+} = useDocuments({ query: documentsQuery });
 
 const isDraggingOver = ref(false);
 
 const deleteDialogOpen = ref(false);
 const editDialogOpen = ref(false);
+const assignDialogOpen = ref(false);
 // Files dropped onto the page, handed to the upload dialog so a drop and a
 // browse share the same validated flow.
 const droppedFiles = ref<File[]>([]);
-const fileToDelete = ref<NvisyFile | null>(null);
-const fileToEdit = ref<NvisyFile | null>(null);
+const documentToDelete = ref<NvisyDocument | null>(null);
+const documentToEdit = ref<NvisyDocument | null>(null);
+const documentToAssign = ref<NvisyDocument | null>(null);
 
 // Selection — passed whole to the file views; the page reads it for bulk ops.
-const filesSelection = useSelection({
-	items: files,
+const documentsSelection = useSelection({
+	items: documents,
 	getKey: (f) => f.id,
 });
-const { selected: selectedFiles, clear: clearSelection } = filesSelection;
+const { selected: selectedDocuments, clear: clearSelection } =
+	documentsSelection;
 
-const selectedFilesCount = computed(() => selectedFiles.value.size);
-const hasSelection = computed(() => selectedFilesCount.value > 0);
+const selectedDocumentsCount = computed(() => selectedDocuments.value.size);
+const hasSelection = computed(() => selectedDocumentsCount.value > 0);
 
 // Get studio files store
-const { openFile: openFileInStudio } = useStudioFiles();
+const { openDocument: openDocumentInStudio } = useStudioDocuments();
 
 function viewFile(fileId: string) {
 	// Find the file to pass metadata
-	const file = files.value?.find((f) => f.id === fileId);
-	openFileInStudio(fileId, file);
+	const file = documents.value?.find((f) => f.id === fileId);
+	openDocumentInStudio(fileId, file);
 	navigateTo(wLink("/studio"));
 }
 
 function handleBulkOpen() {
 	if (!hasSelection.value) return;
-	const fileIds = Array.from(selectedFiles.value);
+	const fileIds = Array.from(selectedDocuments.value);
 	// Open each selected file in the studio
 	for (const fileId of fileIds) {
-		const file = files.value?.find((f) => f.id === fileId);
-		openFileInStudio(fileId, file);
+		const file = documents.value?.find((f) => f.id === fileId);
+		openDocumentInStudio(fileId, file);
 	}
 	navigateTo(wLink("/studio"));
 }
 
-async function handleDownloadFile(file: NvisyFile) {
+async function handleDownloadFile(file: NvisyDocument) {
 	try {
 		// On desktop a save can be cancelled (returns false) — don't claim success.
-		const saved = await downloadFile(file.id, file.displayName);
-		if (saved) toast.success(t("files.messages.downloadStarted"));
+		const saved = await downloadDocument(file.id, file.displayName);
+		if (saved) toast.success(t("documents.messages.downloadStarted"));
 	} catch {
-		toast.error(t("files.errors.downloadFailed"));
+		toast.error(t("documents.errors.downloadFailed"));
 	}
 }
 
 async function handleBulkDownload() {
 	if (!hasSelection.value) return;
 	const { saved, failed } = await downloadMultiple(
-		Array.from(selectedFiles.value),
+		Array.from(selectedDocuments.value),
 	);
 	// downloadMultiple never throws (per-file errors are tallied). Report by
 	// outcome: any failures -> error, otherwise success if anything saved. A
 	// pure cancel (nothing saved, nothing failed) stays silent.
 	if (failed > 0) {
-		toast.error(t("files.errors.downloadFailed"));
+		toast.error(t("documents.errors.downloadFailed"));
 	} else if (saved > 0) {
-		toast.success(t("files.messages.downloadStarted"));
+		toast.success(t("documents.messages.downloadStarted"));
 	}
 }
 
@@ -142,8 +146,8 @@ const filesToExport = ref<string[]>([]);
 // before sending them to an external service.
 const unredactedExportCount = computed(() => {
 	const ids = new Set(filesToExport.value);
-	return (files.value ?? []).filter(
-		(f) => ids.has(f.id) && f.fileKind === "original",
+	return (documents.value ?? []).filter(
+		(f) => ids.has(f.id) && f.kind === "original",
 	).length;
 });
 
@@ -153,21 +157,21 @@ function openExportDialog(fileIds: string[]) {
 	exportDialogOpen.value = true;
 }
 
-function handleExportFile(file: NvisyFile) {
+function handleExportFile(file: NvisyDocument) {
 	openExportDialog([file.id]);
 }
 
 function handleBulkExport() {
-	openExportDialog(Array.from(selectedFiles.value));
+	openExportDialog(Array.from(selectedDocuments.value));
 }
 
 async function handleExport(connectionId: string) {
 	try {
 		await exportFilesAsync({ connectionId, fileIds: filesToExport.value });
 		exportDialogOpen.value = false;
-		toast.success(t("files.messages.exportStarted"));
+		toast.success(t("documents.messages.exportStarted"));
 	} catch {
-		toast.error(t("files.errors.exportFailed"));
+		toast.error(t("documents.errors.exportFailed"));
 	}
 }
 
@@ -183,16 +187,16 @@ const { importFrom } = useFileImport();
 const IMPORT_POLL_INTERVALS_MS = [1500, 3000, 5000, 8000];
 function pollAfterImport() {
 	for (const delay of IMPORT_POLL_INTERVALS_MS) {
-		setTimeout(() => refreshFiles(), delay);
+		setTimeout(() => refreshDocuments(), delay);
 	}
 }
 
-async function handleImport(connection: Connection) {
+async function handleImport(connection: WorkspaceConnection) {
 	try {
 		const count = await importFrom(connection);
 		if (count > 0) {
-			toast.success(t("files.messages.importStarted", { count }));
-			refreshFiles();
+			toast.success(t("documents.messages.importStarted", { count }));
+			refreshDocuments();
 			pollAfterImport();
 		}
 	} catch (error) {
@@ -200,7 +204,7 @@ async function handleImport(connection: Connection) {
 		// else is unexpected and falls back to the generic failure message.
 		const description =
 			error instanceof ImportError ? t(error.messageKey) : undefined;
-		toast.error(t("files.errors.importFailed"), { description });
+		toast.error(t("documents.errors.importFailed"), { description });
 	}
 }
 
@@ -210,62 +214,69 @@ onMounted(() => {
 	if (takeImportStarted()) pollAfterImport();
 });
 
-function openDeleteDialog(file?: NvisyFile) {
-	fileToDelete.value = file || null;
+function openDeleteDialog(file?: NvisyDocument) {
+	documentToDelete.value = file || null;
 	deleteDialogOpen.value = true;
 }
 
 function openBulkDeleteDialog() {
-	fileToDelete.value = null;
+	documentToDelete.value = null;
 	deleteDialogOpen.value = true;
 }
 
 async function confirmDelete() {
 	try {
-		if (fileToDelete.value) {
-			await deleteFileAsync(fileToDelete.value.id);
-			toast.success(t("files.messages.fileDeleted"));
+		if (documentToDelete.value) {
+			await deleteDocumentAsync(documentToDelete.value.id);
+			toast.success(t("documents.messages.fileDeleted"));
 		} else if (hasSelection.value) {
 			// One batch request; the server reports which ids it skipped (unknown,
 			// already gone, or held by an in-progress detection).
-			const { skipped } = await deleteFilesAsync(
-				Array.from(selectedFiles.value),
+			const { skipped } = await deleteDocumentsAsync(
+				Array.from(selectedDocuments.value),
 			);
 			if (skipped.length > 0) {
 				toast.warning(
-					t("files.messages.filesDeletedPartial", { count: skipped.length }),
+					t("documents.messages.filesDeletedPartial", {
+						count: skipped.length,
+					}),
 				);
 			} else {
-				toast.success(t("files.messages.filesDeleted"));
+				toast.success(t("documents.messages.filesDeleted"));
 			}
 			clearSelection();
 		}
 	} catch {
-		toast.error(t("files.errors.deleteFailed"));
+		toast.error(t("documents.errors.deleteFailed"));
 	} finally {
 		deleteDialogOpen.value = false;
-		fileToDelete.value = null;
+		documentToDelete.value = null;
 	}
 }
 
-function openEditDialog(file: NvisyFile) {
-	fileToEdit.value = file;
+function openEditDialog(file: NvisyDocument) {
+	documentToEdit.value = file;
 	editDialogOpen.value = true;
 }
 
-async function confirmEdit(data: UpdateFile) {
-	if (!fileToEdit.value) return;
+function openAssignDialog(file: NvisyDocument) {
+	documentToAssign.value = file;
+	assignDialogOpen.value = true;
+}
+
+async function confirmEdit(data: UpdateWorkspaceDocument) {
+	if (!documentToEdit.value) return;
 	try {
-		await updateFileAsync({
-			fileId: fileToEdit.value.id,
+		await updateDocumentAsync({
+			documentId: documentToEdit.value.id,
 			updates: data,
 		});
-		toast.success(t("files.messages.fileUpdated"));
+		toast.success(t("documents.messages.fileUpdated"));
 	} catch {
-		toast.error(t("files.errors.updateFailed"));
+		toast.error(t("documents.errors.updateFailed"));
 	} finally {
 		editDialogOpen.value = false;
-		fileToEdit.value = null;
+		documentToEdit.value = null;
 	}
 }
 
@@ -276,7 +287,7 @@ watch(uploadDialogOpen, (open) => {
 });
 
 function handleUploadComplete() {
-	toast.success(t("files.messages.filesUploaded"));
+	toast.success(t("documents.messages.filesUploaded"));
 	uploadDialogOpen.value = false;
 	isDraggingOver.value = false;
 }
@@ -354,9 +365,9 @@ function handleLoadMore() {
   >
     <div class="max-w-7xl mx-auto w-full flex flex-col flex-1 min-h-0">
       <!-- Search, filters, view toggle, and upload live in the app header via
-           the socket, sharing state with this page via useFilesView. -->
+           the socket, sharing state with this page via useDocumentsView. -->
       <HeaderSocket>
-        <FilesHeaderControls />
+        <DocumentsHeaderControls />
       </HeaderSocket>
 
       <!-- Loading State -->
@@ -370,13 +381,13 @@ function handleLoadMore() {
         class="p-4 bg-destructive/10 border border-destructive/20 rounded-lg"
       >
         <p class="text-sm text-destructive">
-          {{ error.message || t("files.errors.loadFailed") }}
+          {{ error.message || t("documents.errors.loadFailed") }}
         </p>
       </div>
 
       <template v-else>
         <!-- Files Content Area -->
-        <div v-if="files.length > 0" class="relative flex-1 min-h-0">
+        <div v-if="documents.length > 0" class="relative flex-1 min-h-0">
           <!-- Drag overlay -->
           <Transition
             enter-active-class="transition-opacity duration-200"
@@ -397,7 +408,7 @@ function handleLoadMore() {
                   <Upload :size="22" class="text-muted-foreground" />
                 </div>
                 <p class="text-sm font-medium text-foreground">
-                  {{ t("files.dialogs.upload.dropHint") }}
+                  {{ t("documents.dialogs.upload.dropHint") }}
                 </p>
               </div>
             </div>
@@ -407,15 +418,16 @@ function handleLoadMore() {
                height on its own (its scroll container is `h-full`), so no class
                is passed here — VirtualTable is multi-root, so an inherited
                `class` would be dropped with a Vue warning anyway. -->
-          <FilesTableView
+          <DocumentsTableView
             v-if="viewMode === 'list'"
-            :files="files"
-            :selection="filesSelection"
+            :documents="documents"
+            :selection="documentsSelection"
             @view="viewFile"
             @edit="openEditDialog"
             @download="handleDownloadFile"
             @delete="openDeleteDialog"
             @export="handleExportFile"
+            @assign="openAssignDialog"
             @bulk-open="handleBulkOpen"
             @bulk-download="handleBulkDownload"
             @bulk-export="handleBulkExport"
@@ -424,11 +436,11 @@ function handleLoadMore() {
           />
 
           <!-- Grid View -->
-          <FilesGridView
+          <DocumentsGridView
             v-else
             class="h-full"
-            :files="files"
-            :selection="filesSelection"
+            :documents="documents"
+            :selection="documentsSelection"
             @bulk-open="handleBulkOpen"
             @bulk-download="handleBulkDownload"
             @bulk-export="handleBulkExport"
@@ -438,6 +450,7 @@ function handleLoadMore() {
             @download="handleDownloadFile"
             @delete="openDeleteDialog"
             @export="handleExportFile"
+            @assign="openAssignDialog"
             @load-more="handleLoadMore"
           />
         </div>
@@ -453,7 +466,7 @@ function handleLoadMore() {
             <FileText class="h-5 w-5 text-muted-foreground" />
           </div>
           <p class="text-sm font-medium text-foreground mb-1">
-            {{ t("files.table.empty.title") }}
+            {{ t("documents.table.empty.title") }}
           </p>
           <p
             class="text-sm text-muted-foreground max-w-sm"
@@ -461,8 +474,8 @@ function handleLoadMore() {
           >
             {{
               hasFilters
-                ? t("files.table.empty.filterDescription")
-                : t("files.table.empty.description")
+                ? t("documents.table.empty.filterDescription")
+                : t("documents.table.empty.description")
             }}
           </p>
           <Button
@@ -471,31 +484,33 @@ function handleLoadMore() {
             size="sm"
             @click="clearFilters"
           >
-            {{ t("files.actions.clearFilters") }}
+            {{ t("documents.actions.clearFilters") }}
           </Button>
         </div>
       </template>
     </div>
 
     <!-- Dialogs -->
-    <DeleteFileDialog
+    <DeleteDocumentDialog
       v-model:open="deleteDialogOpen"
-      :file-name="fileToDelete?.displayName"
-      :file-count="fileToDelete ? 1 : selectedFilesCount"
+      :document-name="documentToDelete?.displayName"
+      :document-count="documentToDelete ? 1 : selectedDocumentsCount"
       :is-deleting="isDeleting"
       @confirm="confirmDelete"
     />
 
-    <EditFileDialog
+    <EditDocumentDialog
       v-model:open="editDialogOpen"
-      :file="fileToEdit"
+      :document="documentToEdit"
       :is-loading="isUpdating"
       @update="confirmEdit"
     />
 
-    <UploadFilesDialog
+    <AssignDocumentDialog v-model:open="assignDialogOpen" :document="documentToAssign" />
+
+    <UploadDocumentsDialog
       v-model:open="uploadDialogOpen"
-      :upload-fn="uploadFilesAsync"
+      :upload-fn="uploadDocumentsAsync"
       :initial-files="droppedFiles"
       @uploaded="handleUploadComplete"
     />

@@ -1,4 +1,4 @@
-import type { ConnectorCatalog } from "@nvisy/sdk/datatypes";
+import type { ConnectorCapabilities } from "@nvisy/sdk/datatypes";
 import type { FileProvider } from "#console/utils/connections";
 import { FILE_PROVIDER_CATALOG_KEY } from "#console/utils/connections";
 
@@ -22,19 +22,19 @@ export function useConnectorCatalog() {
 	const { $nvisyClient } = useNuxtApp();
 	const { isAuthenticated } = useAuth();
 
-	const query = useQuery<ConnectorCatalog>({
+	const query = useQuery<ConnectorCapabilities>({
 		key: ["catalog", "connectors"],
 		query: async () => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			return await client.catalog.listConnectors();
+			return await client.capabilities.listConnectors();
 		},
 		enabled: () => isAuthenticated.value,
 		// Deployment configuration, not per-request data; don't auto-refetch.
 		staleTime: Number.POSITIVE_INFINITY,
 	});
 
-	const catalog = computed<ConnectorCatalog | undefined>(
+	const catalog = computed<ConnectorCapabilities | undefined>(
 		() => query.data.value,
 	);
 

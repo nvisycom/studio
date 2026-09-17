@@ -1,8 +1,8 @@
 import type {
-	Connection,
-	CreateConnection,
+	WorkspaceConnection,
+	CreateWorkspaceConnection,
 	StartFileServiceOAuth,
-	UpdateConnection,
+	UpdateWorkspaceConnection,
 } from "@nvisy/sdk/datatypes";
 import type { FileProvider } from "#console/utils/connections";
 
@@ -12,40 +12,40 @@ import type { FileProvider } from "#console/utils/connections";
 export function useConnections() {
 	const connectionsQuery = workspaceQuery(
 		"connections",
-		({ client, workspaceSlug }) =>
+		({ client, workspaceId }) =>
 			fetchAllPages((after) =>
-				client.connections.listConnections(workspaceSlug, { after }),
+				client.connections.listConnections(workspaceId, { after }),
 			),
 	);
 
 	// Reflect updates on a row immediately, reconciling once settled.
-	const optimistic = useOptimisticList<Connection, Partial<Connection>>(
-		connectionsQuery.data,
-		(c) => c.id,
-	);
+	const optimistic = useOptimisticList<
+		WorkspaceConnection,
+		Partial<WorkspaceConnection>
+	>(connectionsQuery.data, (c) => c.id);
 
 	const createConnectionMutation = workspaceMutation(
-		({ client, workspaceSlug }, connection: CreateConnection) =>
-			client.connections.createConnection(workspaceSlug, connection),
+		({ client, workspaceId }, connection: CreateWorkspaceConnection) =>
+			client.connections.createConnection(workspaceId, connection),
 		{ invalidates: "connections" },
 	);
 
 	const updateConnectionMutation = workspaceMutation(
 		(
-			{ client, workspaceSlug },
+			{ client, workspaceId },
 			{
 				connectionId,
 				updates,
-			}: { connectionId: string; updates: UpdateConnection },
+			}: { connectionId: string; updates: UpdateWorkspaceConnection },
 		) =>
-			client.connections.updateConnection(workspaceSlug, connectionId, updates),
+			client.connections.updateConnection(workspaceId, connectionId, updates),
 		{
 			onMutate({ connectionId, updates }) {
 				// Optimistically reflect only the fields that render on the row and
 				// are read-shape compatible. `config`/`sync` use write-only input
 				// types (e.g. SyncScheduleInput vs the read SyncSchedule), so they
 				// can't merge into a `Connection`; settle()/refresh reconciles them.
-				const patch: Partial<Connection> = {};
+				const patch: Partial<WorkspaceConnection> = {};
 				if (updates.displayName !== undefined)
 					patch.displayName = updates.displayName;
 				if (updates.isActive !== undefined) patch.isActive = updates.isActive;
@@ -54,7 +54,7 @@ export function useConnections() {
 			onSettled(data, _error, { connectionId }) {
 				optimistic.settle(
 					connectionId,
-					data as Partial<Connection> | undefined,
+					data as Partial<WorkspaceConnection> | undefined,
 				);
 				connectionsQuery.refresh();
 			},
@@ -62,8 +62,8 @@ export function useConnections() {
 	);
 
 	const deleteConnectionMutation = workspaceMutation(
-		({ client, workspaceSlug }, connectionId: string) =>
-			client.connections.deleteConnection(workspaceSlug, connectionId),
+		({ client, workspaceId }, connectionId: string) =>
+			client.connections.deleteConnection(workspaceId, connectionId),
 		{
 			invalidates: "connections",
 			onMutate: (connectionId) => optimistic.remove(connectionId),
@@ -74,15 +74,15 @@ export function useConnections() {
 	// Trigger a manual sync for a connection: an object-store sync runs the
 	// connection's configured direction.
 	const startSyncMutation = workspaceMutation(
-		({ client, workspaceSlug }, connectionId: string) =>
-			client.syncs.startSync(workspaceSlug, connectionId),
+		({ client, workspaceId }, connectionId: string) =>
+			client.syncs.startSync(workspaceId, connectionId),
 		{ invalidates: "connections" },
 	);
 
 	// Verify a connection is reachable with its stored credentials.
 	const verifyConnectionMutation = workspaceMutation(
-		({ client, workspaceSlug }, connectionId: string) =>
-			client.connections.verifyConnection(workspaceSlug, connectionId),
+		({ client, workspaceId }, connectionId: string) =>
+			client.connections.verifyConnection(workspaceId, connectionId),
 	);
 
 	// Begin the OAuth flow for a cloud file-service provider (Drive, Dropbox,
@@ -92,17 +92,13 @@ export function useConnections() {
 	// after the redirect round-trip, not when this resolves.
 	const startFileServiceOAuthMutation = workspaceMutation(
 		(
-			{ client, workspaceSlug },
+			{ client, workspaceId },
 			{
 				provider,
 				request,
 			}: { provider: FileProvider; request: StartFileServiceOAuth },
 		) =>
-			client.connections.startFileServiceOAuth(
-				workspaceSlug,
-				provider,
-				request,
-			),
+			client.connections.startFileServiceOAuth(workspaceId, provider, request),
 	);
 
 	// Export workspace files to a file-service connection. Each file's redacted
@@ -110,10 +106,9 @@ export function useConnections() {
 	// never overwritten. Returns the created sync.
 	const exportFilesMutation = workspaceMutation(
 		(
-			{ client, workspaceSlug },
+			{ client, workspaceId },
 			{ connectionId, fileIds }: { connectionId: string; fileIds: string[] },
-		) =>
-			client.connections.exportFiles(workspaceSlug, connectionId, { fileIds }),
+		) => client.connections.exportFiles(workspaceId, connectionId, { fileIds }),
 	);
 
 	// Mint a short-lived provider access token for a browser file picker (Google
@@ -123,11 +118,11 @@ export function useConnections() {
 	// a token per resource); the server uses its default when omitted.
 	const getPickerTokenMutation = workspaceMutation(
 		(
-			{ client, workspaceSlug },
+			{ client, workspaceId },
 			{ connectionId, resource }: { connectionId: string; resource?: string },
 		) =>
 			client.connections.getPickerToken(
-				workspaceSlug,
+				workspaceId,
 				connectionId,
 				resource ? { resource } : {},
 			),
@@ -137,12 +132,12 @@ export function useConnections() {
 	// already-imported files are skipped. Returns the created sync.
 	const importFilesMutation = workspaceMutation(
 		(
-			{ client, workspaceSlug },
+			{ client, workspaceId },
 			{
 				connectionId,
 				files,
 			}: { connectionId: string; files: { id: string; name: string }[] },
-		) => client.connections.importFiles(workspaceSlug, connectionId, { files }),
+		) => client.connections.importFiles(workspaceId, connectionId, { files }),
 		{ invalidates: "connections" },
 	);
 

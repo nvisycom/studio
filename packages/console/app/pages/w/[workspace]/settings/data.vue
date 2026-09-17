@@ -117,13 +117,12 @@ const hasRetentionChanges = computed(() => {
 });
 
 async function saveWorkspaceSettings() {
-	const workspaceSlug = currentWorkspaceSlug.value;
 	const workspace = currentWorkspace.value;
-	if (!workspaceSlug || !workspace) return;
+	if (!workspace) return;
 
 	try {
 		await updateWorkspaceAsync({
-			workspaceSlug,
+			workspaceId: workspace.id,
 			updates: { settings: editedSettings.value },
 		});
 		toast.success(t("settings.workspace.messages.optionsSaved"));

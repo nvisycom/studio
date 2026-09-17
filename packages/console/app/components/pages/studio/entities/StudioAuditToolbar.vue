@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PipelineSummary } from "@nvisy/sdk/datatypes";
+import type { WorkspacePipelineSummary } from "@nvisy/sdk/datatypes";
 import {
 	ArrowUpFromLine,
 	Download,
@@ -28,7 +28,7 @@ import {
  * inspector isn't missed. Floats centered at the bottom of the wide table.
  */
 const props = defineProps<{
-	pipelines: PipelineSummary[] | undefined;
+	pipelines: WorkspacePipelineSummary[] | undefined;
 	phase: StudioDetectionPhase;
 	canRun: boolean;
 	redactPhase?: StudioRedactPhase;
@@ -70,8 +70,8 @@ const showRedaction = computed(() => props.phase === "complete");
       <SelectContent>
         <SelectItem
           v-for="p in pipelines ?? []"
-          :key="p.slug"
-          :value="p.slug"
+          :key="p.id"
+          :value="p.id"
           class="text-sm font-normal"
         >
           {{ p.displayName }}

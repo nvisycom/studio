@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Member } from "@nvisy/sdk/datatypes";
+import type { WorkspaceMember } from "@nvisy/sdk/datatypes";
 import type {
 	RowAction,
 	BulkAction,
@@ -11,7 +11,7 @@ import { VirtualTable } from "#console/components/ui/virtual-table";
 import { personLabel } from "#console/utils/naming";
 
 interface Props {
-	members: Member[];
+	members: WorkspaceMember[];
 	selection: Selection;
 }
 
@@ -22,7 +22,7 @@ interface Emits {
 }
 
 // The table keys rows by id; members are keyed by username, so expose it as id.
-type MemberRow = Member & { id: string };
+type MemberRow = WorkspaceMember & { id: string };
 
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
@@ -59,12 +59,6 @@ const columns = computed<VirtualColumn<MemberRow>[]>(() => [
 			label: t(`members.roles.${m.memberRole}`),
 			capitalize: true,
 		}),
-	},
-	{
-		key: "twoFA",
-		header: t("members.table.headers.twoFA"),
-		width: "160px",
-		cell: () => ({ type: "custom" }),
 	},
 	{
 		key: "joined",
@@ -124,22 +118,5 @@ function bulkAction(selected: Set<string>): BulkAction {
       title: t('members.table.empty.noMembers'),
       description: t('members.table.empty.noMembersDescription'),
     }"
-  >
-    <template #cell-twoFA="{ row }">
-      <span
-        :class="[
-          'text-xs',
-          row.has2fa
-            ? 'text-green-600 dark:text-green-400'
-            : 'text-muted-foreground',
-        ]"
-      >
-        {{
-          row.has2fa
-            ? t("members.table.status.enabled")
-            : t("members.table.status.disabled")
-        }}
-      </span>
-    </template>
-  </VirtualTable>
+  />
 </template>

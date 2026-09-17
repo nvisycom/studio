@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Workspace-scoped `NuxtLink`. Prefixes `to` with the active workspace slug so
- * templates write `<WorkspaceLink to="/files">` instead of interpolating
+ * templates write `<WorkspaceLink to="/documents">` instead of interpolating
  * `/w/{slug}/...`. All other attributes (class, target, ...) pass through to the
  * underlying `NuxtLink`.
  *

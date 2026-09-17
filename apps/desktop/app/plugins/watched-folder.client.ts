@@ -86,13 +86,13 @@ export default defineNuxtPlugin((nuxtApp) => {
 	async function newFiles(
 		sdk: Nvisy,
 		items: FolderFile[],
-		workspaceSlug: string,
+		workspaceId: string,
 	): Promise<PreparedUpload[]> {
 		const out: PreparedUpload[] = [];
 		for (const item of items) {
 			const bytes = new Uint8Array(item.data);
 			const hash = await sha256Hex(bytes);
-			const existing = await sdk.files.listFiles(workspaceSlug, {
+			const existing = await sdk.documents.listDocuments(workspaceId, {
 				hash,
 				limit: 1,
 			});
@@ -110,12 +110,12 @@ export default defineNuxtPlugin((nuxtApp) => {
 	async function uploadBatch(
 		sdk: Nvisy,
 		files: File[],
-		workspaceSlug: string,
+		workspaceId: string,
 	): Promise<"ok" | "retry" | "drop"> {
 		let backoff = BASE_BACKOFF;
 		for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
 			try {
-				await sdk.files.uploadFiles(workspaceSlug, files);
+				await sdk.documents.uploadDocuments(workspaceId, files);
 				return "ok";
 			} catch (error) {
 				if (!isRetryable(error)) {

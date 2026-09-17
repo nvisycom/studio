@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Connection } from "@nvisy/sdk/datatypes";
+import type { WorkspaceConnection } from "@nvisy/sdk/datatypes";
 import { Loader2, HardDrive, Plug, Check, TriangleAlert } from "@lucide/vue";
 import {
 	Dialog,
@@ -26,7 +26,7 @@ const props = withDefaults(
 		 */
 		unredactedCount?: number;
 		/** The workspace's connections; only file services can receive an export. */
-		connections: Connection[];
+		connections: WorkspaceConnection[];
 		isLoading?: boolean;
 	}>(),
 	{ open: false, isLoading: false, unredactedCount: 0 },

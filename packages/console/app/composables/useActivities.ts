@@ -24,7 +24,7 @@ export function useActivities(options?: {
 	pageSize?: number;
 	filters?: MaybeRefOrGetter<ActivityFilters>;
 }) {
-	const { requireContext, currentWorkspaceSlug } = useWorkspaceContext();
+	const { requireContext, currentWorkspaceId } = useWorkspaceContext();
 	const { saveBlob } = useFileDownload();
 	const pageSize = options?.pageSize ?? 20;
 
@@ -51,10 +51,10 @@ export function useActivities(options?: {
 
 	const activitiesQuery = workspaceQuery(
 		"activities",
-		({ client, workspaceSlug }) =>
-			client.activities.listActivities(workspaceSlug, buildQuery()),
+		({ client, workspaceId }) =>
+			client.activities.listActivities(workspaceId, buildQuery()),
 		{
-			key: () => ["activities", currentWorkspaceSlug.value, filterKey()],
+			key: () => ["activities", currentWorkspaceId.value, filterKey()],
 		},
 	);
 
@@ -64,8 +64,8 @@ export function useActivities(options?: {
 		loadMore,
 		isLoadingMore,
 	} = useCursorPagination(activitiesQuery.data, (after) => {
-		const { client, workspaceSlug } = requireContext();
-		return client.activities.listActivities(workspaceSlug, buildQuery(after));
+		const { client, workspaceId } = requireContext();
+		return client.activities.listActivities(workspaceId, buildQuery(after));
 	});
 
 	/**
@@ -83,8 +83,8 @@ export function useActivities(options?: {
 			type?: ActivityType[];
 		},
 	): Promise<void> {
-		const { client, workspaceSlug } = requireContext();
-		const response = await client.activities.exportActivities(workspaceSlug, {
+		const { client, workspaceId } = requireContext();
+		const response = await client.activities.exportActivities(workspaceId, {
 			format: exportOptions.format,
 			...(exportOptions.type?.length && { type: exportOptions.type }),
 			...(exportOptions.from && { from: exportOptions.from }),

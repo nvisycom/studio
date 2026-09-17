@@ -83,11 +83,11 @@ const totalPendingSize = computed(() =>
 /** Validate a file up front; returns an error message, or null if valid. */
 function validate(file: File): string | null {
 	if (!isAcceptedFileName(file.name)) {
-		return t("files.dialogs.upload.errors.unsupported");
+		return t("documents.dialogs.upload.errors.unsupported");
 	}
 	const max = maxUploadBytes.value;
 	if (max !== undefined && file.size > max) {
-		return t("files.dialogs.upload.errors.tooLarge", {
+		return t("documents.dialogs.upload.errors.tooLarge", {
 			max: formatFileSize(max),
 		});
 	}
@@ -163,10 +163,10 @@ async function startUpload() {
 		// can be stale (or absent). Surface it as a clear "too large" rather than
 		// the raw message.
 		const message = isPayloadTooLarge(error)
-			? t("files.dialogs.upload.errors.serverTooLarge")
+			? t("documents.dialogs.upload.errors.serverTooLarge")
 			: error instanceof Error
 				? error.message
-				: t("files.dialogs.upload.errors.failed");
+				: t("documents.dialogs.upload.errors.failed");
 		for (const file of pending) {
 			file.status = "error";
 			file.error = message;
@@ -197,7 +197,7 @@ async function handleBrowseClick() {
 	} catch (error) {
 		// A native picker that fails to read a chosen file (e.g. it vanished
 		// between pick and read) shouldn't silently no-op the button.
-		toast.error(t("files.dialogs.upload.errors.openFailed"), {
+		toast.error(t("documents.dialogs.upload.errors.openFailed"), {
 			description: error instanceof Error ? error.message : undefined,
 		});
 	}
@@ -208,14 +208,14 @@ async function handleBrowseClick() {
   <Dialog :open="open" @update:open="handleClose">
     <DialogContent class="sm:max-w-lg">
       <DialogHeader>
-        <DialogTitle>{{ t("files.dialogs.upload.title") }}</DialogTitle>
+        <DialogTitle>{{ t("documents.dialogs.upload.title") }}</DialogTitle>
         <DialogDescription>
           {{
             maxUploadBytes !== undefined
-              ? t("files.dialogs.upload.subtitle", {
+              ? t("documents.dialogs.upload.subtitle", {
                   max: formatFileSize(maxUploadBytes),
                 })
-              : t("files.dialogs.upload.subtitleNoLimit")
+              : t("documents.dialogs.upload.subtitleNoLimit")
           }}
         </DialogDescription>
       </DialogHeader>
@@ -255,12 +255,12 @@ async function handleBrowseClick() {
           <p class="text-sm font-medium text-foreground">
             {{
               isDragging
-                ? t("files.dialogs.upload.dropHint")
-                : t("files.dialogs.upload.description")
+                ? t("documents.dialogs.upload.dropHint")
+                : t("documents.dialogs.upload.description")
             }}
           </p>
           <p class="mt-1 text-xs text-muted-foreground">
-            {{ t("files.dialogs.upload.browseHint") }}
+            {{ t("documents.dialogs.upload.browseHint") }}
           </p>
         </button>
 
@@ -270,7 +270,7 @@ async function handleBrowseClick() {
             <p class="text-xs font-medium text-muted-foreground">
               {{
                 t(
-                  "files.dialogs.upload.selected",
+                  "documents.dialogs.upload.selected",
                   { count: uploadingFiles.length },
                   uploadingFiles.length,
                 )
@@ -328,7 +328,7 @@ async function handleBrowseClick() {
                   variant="ghost"
                   size="icon"
                   class="size-6 text-muted-foreground hover:text-foreground"
-                  :aria-label="t('files.dialogs.upload.remove')"
+                  :aria-label="t('documents.dialogs.upload.remove')"
                   @click="removeFile(item.id)"
                 >
                   <X :size="14" />
@@ -348,8 +348,8 @@ async function handleBrowseClick() {
         >
           {{
             allComplete
-              ? t("files.dialogs.upload.done")
-              : t("files.dialogs.upload.cancel")
+              ? t("documents.dialogs.upload.done")
+              : t("documents.dialogs.upload.cancel")
           }}
         </Button>
         <Button
@@ -363,9 +363,9 @@ async function handleBrowseClick() {
           <Loader2 v-else :size="16" class="mr-2 animate-spin" />
           {{
             isUploading
-              ? t("files.dialogs.upload.uploading")
+              ? t("documents.dialogs.upload.uploading")
               : t(
-                  "files.dialogs.upload.uploadCount",
+                  "documents.dialogs.upload.uploadCount",
                   { count: pendingFiles.length },
                   pendingFiles.length,
                 )

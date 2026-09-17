@@ -84,12 +84,12 @@ const { open: openCreateWorkspace } = useCreateWorkspace();
         >
           <DropdownMenuItem
             v-for="workspace in workspaces"
-            :key="workspace.slug"
+            :key="workspace.handle"
             class="flex items-center gap-2 px-2 py-1.5 mb-0.5 rounded-md cursor-pointer"
             :class="
-              workspace.slug === currentWorkspaceSlug ? 'bg-accent' : ''
+              workspace.handle === currentWorkspaceSlug ? 'bg-accent' : ''
             "
-            @click="selectWorkspace(workspace.slug)"
+            @click="selectWorkspace(workspace.handle)"
           >
             <EntityAvatar
               :name="workspace.displayName"

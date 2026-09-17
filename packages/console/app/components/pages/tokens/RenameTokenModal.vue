@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ApiToken } from "@nvisy/sdk/datatypes";
+import type { AccountApiToken } from "@nvisy/sdk/datatypes";
 import { Edit } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import {
@@ -15,7 +15,7 @@ import { Label } from "#console/components/ui/label";
 
 interface Props {
 	open: boolean;
-	token: ApiToken | null;
+	token: AccountApiToken | null;
 }
 
 interface Emits {

@@ -2,7 +2,7 @@
 import { ref, computed } from "vue";
 import { useResizeObserver } from "@vueuse/core";
 import { useVirtualizer } from "@tanstack/vue-virtual";
-import type { File as NvisyFile } from "@nvisy/sdk/datatypes";
+import type { WorkspaceDocument as NvisyDocument } from "@nvisy/sdk/datatypes";
 import type { Selection } from "#console/composables/useSelection";
 import { Checkbox } from "#console/components/ui/checkbox";
 import {
@@ -13,16 +13,17 @@ import {
 import RowActionItems from "#console/components/pages/RowActionItems.vue";
 
 interface Props {
-	files: NvisyFile[];
+	documents: NvisyDocument[];
 	selection: Selection;
 }
 
 interface Emits {
-	(e: "view", fileId: string): void;
-	(e: "edit", file: NvisyFile): void;
-	(e: "download", file: NvisyFile): void;
-	(e: "delete", file: NvisyFile): void;
-	(e: "export", file: NvisyFile): void;
+	(e: "view", documentId: string): void;
+	(e: "edit", document: NvisyDocument): void;
+	(e: "download", document: NvisyDocument): void;
+	(e: "delete", document: NvisyDocument): void;
+	(e: "export", document: NvisyDocument): void;
+	(e: "assign", document: NvisyDocument): void;
 	(e: "bulk-open"): void;
 	(e: "bulk-download"): void;
 	(e: "bulk-export"): void;
@@ -33,15 +34,16 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
-const selectedFiles = computed(() => props.selection.selected.value);
+const selectedDocuments = computed(() => props.selection.selected.value);
 
 // Shared with the table view so the action menu is defined once.
-const { fileActions } = useFileActions(props.selection, {
+const { documentActions } = useDocumentActions(props.selection, {
 	view: (id) => emit("view", id),
 	edit: (f) => emit("edit", f),
 	download: (f) => emit("download", f),
 	delete: (f) => emit("delete", f),
-	exportFile: (f) => emit("export", f),
+	exportDocument: (f) => emit("export", f),
+	assign: (f) => emit("assign", f),
 	bulkOpen: () => emit("bulk-open"),
 	bulkDownload: () => emit("bulk-download"),
 	bulkExport: () => emit("bulk-export"),
@@ -67,11 +69,11 @@ const columnsPerRow = computed(() => {
 	return Math.max(2, Math.min(6, Math.floor((w + GAP) / (MIN_CARD + GAP))));
 });
 
-const rows = computed<NvisyFile[][]>(() => {
+const rows = computed<NvisyDocument[][]>(() => {
 	const cols = columnsPerRow.value;
-	const out: NvisyFile[][] = [];
-	for (let i = 0; i < props.files.length; i += cols) {
-		out.push(props.files.slice(i, i + cols));
+	const out: NvisyDocument[][] = [];
+	for (let i = 0; i < props.documents.length; i += cols) {
+		out.push(props.documents.slice(i, i + cols));
 	}
 	return out;
 });
@@ -120,7 +122,7 @@ function onScroll(event: Event) {
             <div
               class="group relative flex cursor-pointer flex-col items-center rounded-lg border border-transparent p-4 transition-colors hover:border-border hover:bg-muted/50"
               :class="{
-                'bg-muted/50': selectedFiles.has(file.id),
+                'bg-muted/50': selectedDocuments.has(file.id),
                 'border-border bg-muted': open,
               }"
               @click="selection.toggle(file.id)"
@@ -128,12 +130,12 @@ function onScroll(event: Event) {
             >
               <div
                 class="absolute left-2 top-2 opacity-0 transition-opacity group-hover:opacity-100"
-                :class="{ 'opacity-100': selectedFiles.has(file.id) }"
+                :class="{ 'opacity-100': selectedDocuments.has(file.id) }"
                 @click.stop
                 @dblclick.stop
               >
                 <Checkbox
-                  :model-value="selectedFiles.has(file.id)"
+                  :model-value="selectedDocuments.has(file.id)"
                   @update:model-value="selection.toggle(file.id)"
                 />
               </div>
@@ -142,7 +144,7 @@ function onScroll(event: Event) {
                 class="mb-3 flex size-16 items-center justify-center rounded-lg bg-muted"
               >
                 <component
-                  :is="getFileIconForExtension(file.fileExtension)"
+                  :is="getFileIconForExtension(file.extension)"
                   :size="32"
                   class="text-muted-foreground"
                 />
@@ -155,12 +157,12 @@ function onScroll(event: Event) {
                 {{ file.displayName }}
               </p>
               <p class="mt-1 text-xs text-muted-foreground">
-                {{ formatFileSize(file.fileSize) }}
+                {{ formatFileSize(file.size) }}
               </p>
             </div>
           </ContextMenuTrigger>
           <ContextMenuContent>
-            <RowActionItems :actions="fileActions(file)" variant="context" />
+            <RowActionItems :actions="documentActions(file)" variant="context" />
           </ContextMenuContent>
         </ContextMenu>
       </div>

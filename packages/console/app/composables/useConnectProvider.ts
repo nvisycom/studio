@@ -1,6 +1,6 @@
 import type {
-	CreateConnection,
-	CreateProvider,
+	CreateWorkspaceConnection,
+	CreateWorkspaceProvider,
 	StartFileServiceOAuth,
 } from "@nvisy/sdk/datatypes";
 import type {
@@ -86,7 +86,7 @@ export function useConnectProvider() {
 	}
 
 	// Storage: create the object-store connection from the dialog's payload.
-	async function submitStorage(connection: CreateConnection) {
+	async function submitStorage(connection: CreateWorkspaceConnection) {
 		try {
 			await createConnectionAsync(connection);
 			storageOpen.value = false;
@@ -99,7 +99,7 @@ export function useConnectProvider() {
 
 	// LLM: create the inference provider from the dialog's payload, and land on
 	// the providers tab where it now lives.
-	async function submitLlm(provider: CreateProvider) {
+	async function submitLlm(provider: CreateWorkspaceProvider) {
 		try {
 			await createProviderAsync(provider);
 			llmOpen.value = false;

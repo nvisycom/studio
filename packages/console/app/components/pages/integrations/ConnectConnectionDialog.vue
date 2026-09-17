@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {
-	CreateConnection,
+	CreateWorkspaceConnection,
 	SyncDeletionPolicy,
 	SyncMode,
 } from "@nvisy/sdk/datatypes";
@@ -43,7 +43,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
 	(e: "update:open", value: boolean): void;
-	(e: "connect", connection: CreateConnection): void;
+	(e: "connect", connection: CreateWorkspaceConnection): void;
 }>();
 
 // Common fields.
@@ -105,7 +105,7 @@ function submit() {
 			credentials.value,
 			rootPath.value,
 		),
-	} satisfies CreateConnection;
+	} satisfies CreateWorkspaceConnection;
 
 	emit("connect", connection);
 }

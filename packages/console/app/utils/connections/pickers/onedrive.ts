@@ -31,7 +31,7 @@ export async function openOneDrivePicker(
 	// even though the import began from a genuine gesture.
 	const opened = window.open("", "onedrive-picker", "width=1080,height=680");
 	if (!opened) {
-		throw new ImportError("files.errors.importPopupBlocked");
+		throw new ImportError("documents.errors.importPopupBlocked");
 	}
 	const popup: Window = opened;
 
@@ -114,7 +114,7 @@ export async function openOneDrivePicker(
 					})
 					.catch(() => {
 						cleanup();
-						reject(new ImportError("files.errors.importAuthFailed"));
+						reject(new ImportError("documents.errors.importAuthFailed"));
 					});
 			} else if (command === "close") {
 				cleanup();

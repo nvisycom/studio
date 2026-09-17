@@ -2,7 +2,10 @@
 import { Plug, Loader2, Compass, History, HardDrive } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import type { LocationQueryValue } from "vue-router";
-import type { Connection, UpdateConnection } from "@nvisy/sdk/datatypes";
+import type {
+	WorkspaceConnection,
+	UpdateWorkspaceConnection,
+} from "@nvisy/sdk/datatypes";
 import { Button } from "#console/components/ui/button";
 import {
 	ConfigureConnectionDialog,
@@ -109,9 +112,11 @@ const isDisconnectConnectionDialogOpen = ref(false);
 // The connection sync runs, shown in a wide dialog from the "View runs" button.
 // Also opened by a `?runs=1` deep link (sync notifications land here).
 const runsOpen = ref(useRoute().query.runs === "1");
-const selectedConnection = ref<Connection | null>(null);
+const selectedConnection = ref<WorkspaceConnection | null>(null);
 
-function findConnectionById(connectionId: string): Connection | undefined {
+function findConnectionById(
+	connectionId: string,
+): WorkspaceConnection | undefined {
 	return connections.value?.find((c) => c.id === connectionId);
 }
 
@@ -131,7 +136,7 @@ function openDisconnectConnectionDialog(connectionId: string) {
 	}
 }
 
-async function handleUpdateConnection(updates: UpdateConnection) {
+async function handleUpdateConnection(updates: UpdateWorkspaceConnection) {
 	if (!selectedConnection.value) return;
 	try {
 		await updateConnectionAsync({
@@ -174,14 +179,14 @@ async function handleSyncConnection(connectionId: string) {
 // connection row is a shortcut there; the export dialog lets the user pick the
 // destination connection.
 function handleExportToConnection() {
-	navigateTo(wLink("/files"));
+	navigateTo(wLink("/documents"));
 }
 
 // Import: open the provider's picker, then import the chosen files. The picker
 // itself is a provider popup; a cancel returns 0 files and is silent.
 const { importFrom } = useFileImport();
-const { markImportStarted } = useFilesView();
-async function handleImportFromConnection(connection: Connection) {
+const { markImportStarted } = useDocumentsView();
+async function handleImportFromConnection(connection: WorkspaceConnection) {
 	try {
 		const count = await importFrom(connection);
 		if (count > 0) {
@@ -189,7 +194,7 @@ async function handleImportFromConnection(connection: Connection) {
 			// The imported files land on the Files page via a background sync — flag
 			// the import so that page polls for them, then take the user there.
 			markImportStarted();
-			navigateTo(wLink("/files"));
+			navigateTo(wLink("/documents"));
 		}
 	} catch (error) {
 		const description =
@@ -198,7 +203,7 @@ async function handleImportFromConnection(connection: Connection) {
 	}
 }
 
-async function handleToggleActive(connection: Connection) {
+async function handleToggleActive(connection: WorkspaceConnection) {
 	try {
 		await updateConnectionAsync({
 			connectionId: connection.id,
@@ -235,7 +240,7 @@ async function handleTestConnection(connectionId: string) {
 </script>
 
 <template>
-  <!-- Fixed-height page so the table fills and scrolls (like /files). -->
+  <!-- Fixed-height page so the table fills and scrolls (like /documents). -->
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6 h-[calc(100vh-5.5rem)]">
     <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 min-h-0">
       <!-- Section tabs in the app-header socket. -->

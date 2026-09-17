@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type {
-	Connection,
+	WorkspaceConnection,
 	SyncDeletionPolicy,
-	UpdateConnection,
+	UpdateWorkspaceConnection,
 } from "@nvisy/sdk/datatypes";
 import type { StorageProvider } from "#console/utils/connections";
 import {
@@ -32,7 +32,7 @@ const { t } = useI18n();
 const props = withDefaults(
 	defineProps<{
 		open?: boolean;
-		connection?: Connection | null;
+		connection?: WorkspaceConnection | null;
 		isLoading?: boolean;
 	}>(),
 	{ open: false, connection: null, isLoading: false },
@@ -40,7 +40,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
 	(e: "update:open", value: boolean): void;
-	(e: "update", updates: UpdateConnection): void;
+	(e: "update", updates: UpdateWorkspaceConnection): void;
 }>();
 
 const displayName = ref("");
@@ -58,7 +58,7 @@ const fields = computed(() =>
 
 const isValid = computed(() => displayName.value.trim().length > 0);
 
-function populate(connection: Connection) {
+function populate(connection: WorkspaceConnection) {
 	displayName.value = connection.displayName;
 	deletionPolicy.value = connection.sync?.deletionPolicy ?? "ignore";
 	isActive.value = connection.isActive;
@@ -81,7 +81,7 @@ function handleOpenChange(open: boolean) {
 function submit() {
 	if (!isValid.value || !props.connection) return;
 
-	const updates: UpdateConnection = {
+	const updates: UpdateWorkspaceConnection = {
 		displayName: displayName.value.trim(),
 		isActive: isActive.value,
 	};
@@ -110,7 +110,7 @@ function submit() {
 			updates.config = {
 				provider: providerTag.value,
 				credentials: creds,
-			} as UpdateConnection["config"];
+			} as UpdateWorkspaceConnection["config"];
 		}
 	}
 
@@ -139,7 +139,7 @@ function cancel() {
     :icon-alt="connection?.provider"
     @update:open="handleOpenChange"
   >
-    <!-- Connection name -->
+    <!-- WorkspaceConnection name -->
     <div class="space-y-2">
       <Label required>{{ t("connections.dialogs.configure.nameLabel") }}</Label>
       <Input

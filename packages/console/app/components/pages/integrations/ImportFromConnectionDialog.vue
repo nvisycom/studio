@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Connection } from "@nvisy/sdk/datatypes";
+import type { WorkspaceConnection } from "@nvisy/sdk/datatypes";
 import { ChevronRight, HardDrive, Plug } from "@lucide/vue";
 import {
 	Dialog,
@@ -16,14 +16,14 @@ const props = withDefaults(
 	defineProps<{
 		open?: boolean;
 		/** The workspace's connections; only importable file services are listed. */
-		connections: Connection[];
+		connections: WorkspaceConnection[];
 	}>(),
 	{ open: false },
 );
 
 const emit = defineEmits<{
 	(e: "update:open", value: boolean): void;
-	(e: "import", connection: Connection): void;
+	(e: "import", connection: WorkspaceConnection): void;
 }>();
 
 // The Dropbox picker only works where the app key is configured; gate its row.
@@ -37,7 +37,7 @@ const sources = computed(() =>
 
 // Picking a source launches its picker immediately (this click is the user
 // gesture the popup needs), so close the dialog and hand the connection up.
-function pick(connection: Connection) {
+function pick(connection: WorkspaceConnection) {
 	emit("update:open", false);
 	emit("import", connection);
 }

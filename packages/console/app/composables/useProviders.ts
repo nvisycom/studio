@@ -1,7 +1,7 @@
 import type {
-	CreateProvider,
-	Provider,
-	UpdateProvider,
+	CreateWorkspaceProvider,
+	WorkspaceProvider,
+	UpdateWorkspaceProvider,
 } from "@nvisy/sdk/datatypes";
 
 /**
@@ -12,50 +12,56 @@ import type {
 export function useProviders() {
 	const providersQuery = workspaceQuery(
 		"providers",
-		({ client, workspaceSlug }) =>
+		({ client, workspaceId }) =>
 			fetchAllPages((after) =>
-				client.providers.listProviders(workspaceSlug, { after }),
+				client.providers.listProviders(workspaceId, { after }),
 			),
 	);
 
 	// Reflect updates on a row immediately, reconciling once settled.
-	const optimistic = useOptimisticList<Provider, Partial<Provider>>(
-		providersQuery.data,
-		(p) => p.id,
-	);
+	const optimistic = useOptimisticList<
+		WorkspaceProvider,
+		Partial<WorkspaceProvider>
+	>(providersQuery.data, (p) => p.id);
 
 	const createProviderMutation = workspaceMutation(
-		({ client, workspaceSlug }, provider: CreateProvider) =>
-			client.providers.createProvider(workspaceSlug, provider),
+		({ client, workspaceId }, provider: CreateWorkspaceProvider) =>
+			client.providers.createProvider(workspaceId, provider),
 		{ invalidates: "providers" },
 	);
 
 	const updateProviderMutation = workspaceMutation(
 		(
-			{ client, workspaceSlug },
-			{ providerId, updates }: { providerId: string; updates: UpdateProvider },
-		) => client.providers.updateProvider(workspaceSlug, providerId, updates),
+			{ client, workspaceId },
+			{
+				providerId,
+				updates,
+			}: { providerId: string; updates: UpdateWorkspaceProvider },
+		) => client.providers.updateProvider(workspaceId, providerId, updates),
 		{
 			onMutate({ providerId, updates }) {
 				// Optimistically reflect only the fields that render on the row and are
 				// read-shape compatible. `config` uses a write-only input type, so it
 				// can't merge into a `Provider`; settle()/refresh reconciles it.
-				const patch: Partial<Provider> = {};
+				const patch: Partial<WorkspaceProvider> = {};
 				if (updates.displayName !== undefined)
 					patch.displayName = updates.displayName;
 				if (updates.isActive !== undefined) patch.isActive = updates.isActive;
 				optimistic.apply(providerId, patch);
 			},
 			onSettled(data, _error, { providerId }) {
-				optimistic.settle(providerId, data as Partial<Provider> | undefined);
+				optimistic.settle(
+					providerId,
+					data as Partial<WorkspaceProvider> | undefined,
+				);
 				providersQuery.refresh();
 			},
 		},
 	);
 
 	const deleteProviderMutation = workspaceMutation(
-		({ client, workspaceSlug }, providerId: string) =>
-			client.providers.deleteProvider(workspaceSlug, providerId),
+		({ client, workspaceId }, providerId: string) =>
+			client.providers.deleteProvider(workspaceId, providerId),
 		{
 			invalidates: "providers",
 			onMutate: (providerId) => optimistic.remove(providerId),
@@ -65,8 +71,8 @@ export function useProviders() {
 
 	// Verify a provider is reachable with its stored credentials.
 	const verifyProviderMutation = workspaceMutation(
-		({ client, workspaceSlug }, providerId: string) =>
-			client.providers.verifyProvider(workspaceSlug, providerId),
+		({ client, workspaceId }, providerId: string) =>
+			client.providers.verifyProvider(workspaceId, providerId),
 	);
 
 	return {

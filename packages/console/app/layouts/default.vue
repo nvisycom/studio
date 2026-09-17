@@ -30,7 +30,7 @@ const isValidWorkspace = computed(() => {
 	const list = workspaces.value;
 	const slug = currentWorkspaceSlug.value;
 	if (!list || !slug) return true; // not yet known — don't redirect
-	return list.some((w) => w.slug === slug);
+	return list.some((w) => w.handle === slug);
 });
 
 watch(

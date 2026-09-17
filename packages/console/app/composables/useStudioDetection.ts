@@ -1,4 +1,4 @@
-import type { Audit, Detection } from "@nvisy/sdk/datatypes";
+import type { Audit, WorkspaceDetection } from "@nvisy/sdk/datatypes";
 import type { MaybeRefOrGetter } from "vue";
 
 /** Lifecycle phase of the studio's detection. `complete` = analysis ready. */
@@ -61,10 +61,10 @@ export function useStudioDetection(
 		([list, adopt, resolved]) => {
 			if (!list?.length) return;
 			const target =
-				adopt && list.some((p) => p.slug === adopt)
+				adopt && list.some((p) => p.id === adopt)
 					? adopt
 					: resolved && !selectedPipeline.value
-						? list[0]!.slug
+						? list[0]!.id
 						: null;
 			if (target && target !== selectedPipeline.value) {
 				// Mark as programmatic so the pipeline watcher doesn't treat it as a
@@ -83,7 +83,7 @@ export function useStudioDetection(
 	// True when the shown audit came from a prior detection (restored on file
 	// open) rather than one started in this session.
 	const restored = ref(false);
-	const detectionStatus = ref<Detection["status"] | null>(null);
+	const detectionStatus = ref<WorkspaceDetection["status"] | null>(null);
 	const audit = ref<Audit | null>(null);
 	const errorMessage = ref("");
 
@@ -126,7 +126,7 @@ export function useStudioDetection(
 		try {
 			const result = await runDetection(
 				selectedPipeline.value,
-				{ fileId: file },
+				{ documentId: file },
 				(status) => {
 					if (token === restoreToken) detectionStatus.value = status;
 				},
@@ -143,13 +143,13 @@ export function useStudioDetection(
 	}
 
 	// Restore the most recent detection for a file — it still lives on the server
-	// even if the tab was closed. When `pipelineSlug` is given, restore that
+	// even if the tab was closed. When `pipelineId` is given, restore that
 	// pipeline's latest detection; otherwise the file's latest of any pipeline,
 	// adopting its pipeline into the picker (`adopt`). Best-effort: falls back to
 	// idle when nothing is found or the request is superseded.
 	async function restoreLatest(
 		file: string,
-		opts: { pipelineSlug?: string; adopt?: boolean } = {},
+		opts: { pipelineId?: string; adopt?: boolean } = {},
 	) {
 		const token = ++restoreToken;
 		phase.value = "restoring";
@@ -160,7 +160,7 @@ export function useStudioDetection(
 		detectionId.value = null;
 		detectionFileName.value = toValue(fileName) ?? null;
 		try {
-			const latest = await findLatestForFile(file, opts.pipelineSlug);
+			const latest = await findLatestForFile(file, opts.pipelineId);
 			// Bail if a newer restore started (file or pipeline changed) meanwhile.
 			if (token !== restoreToken) return;
 			if (!latest) {
@@ -172,7 +172,7 @@ export function useStudioDetection(
 			// Record the detection's pipeline to adopt into the picker, and mark
 			// adoption resolved so the selection watcher applies it (never the default).
 			if (opts.adopt) {
-				pendingAdoptPipeline.value = latest.pipelineSlug;
+				pendingAdoptPipeline.value = latest.pipelineId ?? null;
 				adoptResolved.value = true;
 			}
 			const restoredAudit = await getAnalysis(latest.id);
@@ -236,7 +236,7 @@ export function useStudioDetection(
 		// A manual switch overrides any pending adoption for this file.
 		pendingAdoptPipeline.value = null;
 		const file = toValue(fileId);
-		if (file && pipeline) restoreLatest(file, { pipelineSlug: pipeline });
+		if (file && pipeline) restoreLatest(file, { pipelineId: pipeline });
 	});
 
 	return {

@@ -1,16 +1,19 @@
-import type { UpdateMember, ListMembers } from "@nvisy/sdk/datatypes";
+import type {
+	UpdateWorkspaceMember,
+	ListWorkspaceMembers,
+} from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for workspace member operations
  */
-export function useMembers(query?: MaybeRef<ListMembers>) {
-	const { currentWorkspaceSlug } = useWorkspaceContext();
+export function useMembers(query?: MaybeRef<ListWorkspaceMembers>) {
+	const { currentWorkspaceId } = useWorkspaceContext();
 
 	const membersQuery = workspaceQuery(
 		"members",
-		async ({ client, workspaceSlug }) => {
+		async ({ client, workspaceId }) => {
 			const result = await client.members.listMembers(
-				workspaceSlug,
+				workspaceId,
 				toValue(query),
 			);
 			return result.items;
@@ -18,7 +21,7 @@ export function useMembers(query?: MaybeRef<ListMembers>) {
 		{
 			key: () => [
 				"members",
-				currentWorkspaceSlug.value,
+				currentWorkspaceId.value,
 				JSON.stringify(toValue(query) ?? null),
 			],
 			staleTime: 0,
@@ -30,15 +33,18 @@ export function useMembers(query?: MaybeRef<ListMembers>) {
 
 	const updateMemberMutation = workspaceMutation(
 		(
-			{ client, workspaceSlug },
-			{ username, updates }: { username: string; updates: UpdateMember },
-		) => client.members.updateMember(workspaceSlug, username, updates),
+			{ client, workspaceId },
+			{
+				username,
+				updates,
+			}: { username: string; updates: UpdateWorkspaceMember },
+		) => client.members.updateMember(workspaceId, username, updates),
 		{ invalidates: "members" },
 	);
 
 	const removeMemberMutation = workspaceMutation(
-		({ client, workspaceSlug }, username: string) =>
-			client.members.removeMember(workspaceSlug, username),
+		({ client, workspaceId }, username: string) =>
+			client.members.removeMember(workspaceId, username),
 		{
 			invalidates: "members",
 			onMutate: (username) => optimistic.remove(username),
@@ -47,7 +53,7 @@ export function useMembers(query?: MaybeRef<ListMembers>) {
 	);
 
 	const leaveMutation = workspaceMutation(
-		({ client, workspaceSlug }) => client.members.leaveWorkspace(workspaceSlug),
+		({ client, workspaceId }) => client.members.leaveWorkspace(workspaceId),
 		{ invalidates: "members" },
 	);
 

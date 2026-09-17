@@ -1,8 +1,3 @@
-import {
-	login as sdkLogin,
-	signup as sdkSignup,
-	startOidcSignIn as sdkStartOidcSignIn,
-} from "@nvisy/sdk/standalone";
 import type { Login, Signup, IdentityProvider } from "@nvisy/sdk/datatypes";
 
 // The browser session lives in two server-set cookies: an HttpOnly `nvisy.session`
@@ -43,11 +38,11 @@ export function useAuth() {
 	initializeAuth();
 
 	const queryCache = useQueryCache();
-	// Login/signup run before the app client is built, so they hit the API
-	// directly with the effective base URL and injected fetch (desktop: Tauri's
-	// native fetch, bypassing CORS) so auth reaches the same server the app uses.
-	const { baseUrl } = useApiBaseUrl();
-	const { apiFetch } = useApiFetch();
+	// Login/signup run before the app client is built, so they hit the API through
+	// the pre-auth guest client, which targets the effective base URL and injected
+	// fetch (desktop: Tauri's native fetch, bypassing CORS) so auth reaches the
+	// same server the app uses.
+	const { guest } = useGuestClient();
 	const { desktopToken, isDesktop } = useDesktopAuth();
 
 	// Desktop authenticates with a bearer token (external-browser sign-in), the
@@ -65,10 +60,7 @@ export function useAuth() {
 
 	const loginMutation = useMutation({
 		mutation: async (credentials: Login) => {
-			await sdkLogin(credentials, {
-				baseUrl: baseUrl.value,
-				fetch: apiFetch.value,
-			});
+			await guest.value.auth.loginAccount(credentials);
 		},
 		onSuccess() {
 			syncSession();
@@ -77,10 +69,7 @@ export function useAuth() {
 
 	const signupMutation = useMutation({
 		mutation: async (details: Signup) => {
-			await sdkSignup(details, {
-				baseUrl: baseUrl.value,
-				fetch: apiFetch.value,
-			});
+			await guest.value.auth.signupAccount(details);
 		},
 		onSuccess() {
 			syncSession();
@@ -91,15 +80,14 @@ export function useAuth() {
 	// caller sends the browser there; the provider's callback is handled
 	// server-side, which signs the user in (setting the session cookies) and
 	// redirects back to `redirectUri`. Runs before the app client exists, so it
-	// uses the standalone function with the effective base URL and injected fetch.
+	// goes through the pre-auth guest client.
 	async function startOidcSignIn(
 		provider: IdentityProvider,
 		redirectUri?: string,
 	) {
-		return await sdkStartOidcSignIn(
+		return await guest.value.auth.startOidcSignIn(
 			provider,
 			redirectUri ? { redirectUri } : undefined,
-			{ baseUrl: baseUrl.value, fetch: apiFetch.value },
 		);
 	}
 

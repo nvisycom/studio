@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ChevronDown, X } from "@lucide/vue";
 import type {
-	CreatePipeline,
-	Pipeline,
-	PolicySummary,
+	CreateWorkspacePipeline,
+	WorkspacePipeline,
+	WorkspacePolicySummary,
 	Retention,
-	UpdatePipeline,
+	UpdateWorkspacePipeline,
 } from "@nvisy/sdk/datatypes";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
@@ -24,7 +24,6 @@ import {
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from "#console/components/ui/collapsible";
-import { slugify } from "#console/utils/naming";
 
 const { t } = useI18n();
 
@@ -33,13 +32,13 @@ const { t } = useI18n();
 // reads `enabled`/`canSubmit` for the footer switch and button.
 const props = defineProps<{
 	isLoading?: boolean;
-	policies?: PolicySummary[];
-	pipeline?: Pipeline | null;
+	policies?: WorkspacePolicySummary[];
+	pipeline?: WorkspacePipeline | null;
 }>();
 
 const emit = defineEmits<{
-	create: [pipeline: CreatePipeline];
-	update: [slug: string, updates: UpdatePipeline];
+	create: [pipeline: CreateWorkspacePipeline];
+	update: [id: string, updates: UpdateWorkspacePipeline];
 	/** Whether the form is submittable (valid). */
 	"can-submit": [value: boolean];
 }>();
@@ -47,7 +46,6 @@ const emit = defineEmits<{
 const isEdit = computed(() => !!props.pipeline);
 
 const name = ref("");
-const slug = ref("");
 const description = ref("");
 // A new pipeline defaults to enabled so it can run immediately (the API
 // otherwise creates a draft, which rejects runs).
@@ -56,7 +54,7 @@ const enabled = ref(true);
 // Linked policies.
 const selectedPolicies = ref<string[]>([]);
 const policyOptions = computed(() =>
-	(props.policies ?? []).map((p) => ({ value: p.slug, label: p.displayName })),
+	(props.policies ?? []).map((p) => ({ value: p.id, label: p.displayName })),
 );
 
 // Scope: jurisdictions (country codes) + asserted languages (BCP-47 tags).
@@ -78,9 +76,9 @@ interface RetentionField {
 // "inherit" leads: it's the default, and everything after it is an override.
 const RETENTION_FIELD_MODES: FieldMode[] = [
 	"inherit",
-	"forever",
-	"days",
-	"zeroDays",
+	"persistent",
+	"fixed",
+	"ephemeral",
 ];
 const RETENTION_TARGETS = ["auditLogs", "redactedDocuments"] as const;
 type RetentionTarget = (typeof RETENTION_TARGETS)[number];
@@ -95,34 +93,29 @@ const retention = ref<Record<RetentionTarget, RetentionField>>({
 // null == inherit the workspace default for this scope.
 function fieldToRetention(f: RetentionField): Retention | null {
 	if (f.mode === "inherit") return null;
-	return f.mode === "days" ? { mode: "days", days: f.days } : { mode: f.mode };
+	return f.mode === "fixed"
+		? { mode: "fixed", days: f.days }
+		: { mode: f.mode };
 }
 // Only send the `retention` override when at least one scope isn't inheriting.
 const hasRetentionOverride = computed(() =>
 	RETENTION_TARGETS.some((tgt) => retention.value[tgt].mode !== "inherit"),
 );
 
-// On create the slug is derived from the name; on edit it is fixed to the
-// existing pipeline's slug and never changes.
-watch(name, (value) => {
-	if (!isEdit.value) slug.value = slugify(value);
-});
-
 // Convert a stored Retention (or null) back into an editor field.
 function retentionToField(r: Retention | null | undefined): RetentionField {
 	if (!r) return newRetentionField();
-	return r.mode === "days"
-		? { mode: "days", days: r.days }
+	return r.mode === "fixed"
+		? { mode: "fixed", days: r.days }
 		: { mode: r.mode, days: 30 };
 }
 
 // Populate the form from an existing pipeline (edit mode).
-function populate(pipeline: Pipeline) {
+function populate(pipeline: WorkspacePipeline) {
 	name.value = pipeline.displayName;
-	slug.value = pipeline.slug;
 	description.value = pipeline.description ?? "";
 	enabled.value = pipeline.status === "enabled";
-	selectedPolicies.value = [...(pipeline.definition.policySlugs ?? [])];
+	selectedPolicies.value = [...(pipeline.definition.policyIds ?? [])];
 	const scope = pipeline.definition.defaultScope;
 	countries.value = [...(scope?.countries ?? [])];
 	languages.value = (scope?.languages ?? []).map((l) => l.language);
@@ -173,15 +166,12 @@ function removeLanguage(value: string) {
 const retentionDaysValid = computed(() =>
 	RETENTION_TARGETS.every((tgt) => {
 		const field = retention.value[tgt];
-		return field.mode !== "days" || Number(field.days) >= 1;
+		return field.mode !== "fixed" || Number(field.days) >= 1;
 	}),
 );
 
 const isValid = computed(
-	() =>
-		name.value.trim().length >= 3 &&
-		slug.value.length > 0 &&
-		retentionDaysValid.value,
+	() => name.value.trim().length >= 3 && retentionDaysValid.value,
 );
 watch(isValid, (value) => emit("can-submit", value), { immediate: true });
 
@@ -189,7 +179,7 @@ watch(isValid, (value) => emit("can-submit", value), { immediate: true });
 // API's contract is "override when set / null == inherit" (each field
 // `@default null`). Sending null for an inheriting scope is the correct wire
 // shape; cast past the codegen quirk.
-type RetentionOverride = CreatePipeline["retention"];
+type RetentionOverride = CreateWorkspacePipeline["retention"];
 function buildRetention(): RetentionOverride {
 	return {
 		auditLogs: fieldToRetention(retention.value.auditLogs),
@@ -199,11 +189,11 @@ function buildRetention(): RetentionOverride {
 
 // Assemble the pipeline definition shared by create + edit. Only asserted
 // languages/countries are sent, so a simple pipeline inherits defaults.
-function buildDefinition(): CreatePipeline["definition"] {
+function buildDefinition(): CreateWorkspacePipeline["definition"] {
 	const hasScope = countries.value.length > 0 || languages.value.length > 0;
 	return {
 		...(selectedPolicies.value.length && {
-			policySlugs: [...selectedPolicies.value],
+			policyIds: [...selectedPolicies.value],
 		}),
 		...(hasScope && {
 			defaultScope: {
@@ -225,20 +215,19 @@ function submit() {
 	if (isEdit.value && props.pipeline) {
 		// Edit replaces the whole definition; retention is always sent (each scope
 		// inheriting sends null, matching the override-when-set contract).
-		const updates: UpdatePipeline = {
+		const updates: UpdateWorkspacePipeline = {
 			displayName: name.value.trim(),
 			description: description.value.trim() || undefined,
 			status,
 			definition: buildDefinition(),
-			retention: buildRetention() as UpdatePipeline["retention"],
+			retention: buildRetention() as UpdateWorkspacePipeline["retention"],
 		};
-		emit("update", props.pipeline.slug, updates);
+		emit("update", props.pipeline.id, updates);
 		return;
 	}
 
-	const pipeline: CreatePipeline = {
+	const pipeline: CreateWorkspacePipeline = {
 		displayName: name.value.trim(),
-		slug: slug.value,
 		description: description.value.trim() || undefined,
 		status,
 		definition: buildDefinition(),
@@ -267,21 +256,6 @@ defineExpose({ submit, isValid, enabled });
           data-testid="pipeline-name"
           :placeholder="t('workflows.create.namePlaceholder')"
         />
-      </div>
-      <div class="space-y-2">
-        <Label for="pipeline-slug">{{ t("workflows.create.slugLabel") }}</Label>
-        <Input
-          id="pipeline-slug"
-          :model-value="slug"
-          readonly
-          tabindex="-1"
-          aria-readonly="true"
-          class="font-mono text-sm text-muted-foreground"
-          :placeholder="t('workflows.create.slugPlaceholder')"
-        />
-        <p class="text-xs text-muted-foreground">
-          {{ t("workflows.create.slugHint") }}
-        </p>
       </div>
     </div>
 
@@ -451,7 +425,7 @@ defineExpose({ submit, isValid, enabled });
           </Label>
           <div class="flex items-center gap-2">
             <Input
-              v-if="retention[target].mode === 'days'"
+              v-if="retention[target].mode === 'fixed'"
               v-model.number="retention[target].days"
               type="number"
               min="1"

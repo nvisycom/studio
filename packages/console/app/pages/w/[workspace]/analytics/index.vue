@@ -163,7 +163,7 @@ const detectionsByStatus = computed<BreakdownRow[]>(() =>
 const storageByKind = computed<BreakdownRow[]>(() =>
 	toRows(analytics.value?.storage.byKind ?? [], {
 		value: (e) => e.totalBytes,
-		label: (e) => t(`files.kind.${e.kind}`),
+		label: (e) => t(`documents.kind.${e.kind}`),
 		format: (e) => formatFileSize(e.totalBytes),
 		keyOf: (e) => e.kind,
 		sub: (e) => t("analytics.kpis.files", { count: e.fileCount }),

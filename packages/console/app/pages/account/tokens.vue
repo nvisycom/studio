@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ApiToken, TokenExpiration } from "@nvisy/sdk/datatypes";
+import type { AccountApiToken, TokenExpiration } from "@nvisy/sdk/datatypes";
 import { Key, Loader2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 
@@ -70,10 +70,10 @@ const tokenExpiration = ref<TokenExpiration>("in90Days");
 // Modal state
 const newTokenGenerated = ref<string | null>(null);
 const isTokenCreatedModalOpen = ref(false);
-const tokenToDelete = ref<ApiToken | null>(null);
+const tokenToDelete = ref<AccountApiToken | null>(null);
 const isDeleteDialogOpen = ref(false);
 const isDeleteMultipleDialogOpen = ref(false);
-const tokenToRename = ref<ApiToken | null>(null);
+const tokenToRename = ref<AccountApiToken | null>(null);
 const isRenameDialogOpen = ref(false);
 
 // Selection state — the current session's own token can't be bulk-revoked.
@@ -130,7 +130,7 @@ function closeTokenCreatedModal() {
 }
 
 // Token deletion (revocation)
-function openDeleteDialog(token: ApiToken) {
+function openDeleteDialog(token: AccountApiToken) {
 	tokenToDelete.value = token;
 	isDeleteDialogOpen.value = true;
 }
@@ -182,7 +182,7 @@ async function deleteSelectedTokens() {
 }
 
 // Token rename
-function openRenameDialog(token: ApiToken) {
+function openRenameDialog(token: AccountApiToken) {
 	tokenToRename.value = token;
 	isRenameDialogOpen.value = true;
 }

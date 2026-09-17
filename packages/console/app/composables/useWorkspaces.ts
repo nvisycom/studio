@@ -44,10 +44,17 @@ export function useWorkspaces() {
 		if (!workspacesQuery.data.value || !currentWorkspaceSlug.value) return null;
 		return (
 			workspacesQuery.data.value.find(
-				(w) => w.slug === currentWorkspaceSlug.value,
+				(w) => w.handle === currentWorkspaceSlug.value,
 			) ?? null
 		);
 	});
+
+	// The active workspace's id — what every workspace-scoped SDK call now takes
+	// (the slug stays in the URL, display-only). Null until the workspace list
+	// resolves and the route slug matches a workspace.
+	const currentWorkspaceId = computed<string | null>(
+		() => currentWorkspace.value?.id ?? null,
+	);
 
 	const createWorkspaceMutation = useMutation({
 		mutation: async (workspace: CreateWorkspace) => {
@@ -64,21 +71,21 @@ export function useWorkspaces() {
 			// resolver bounces the user back to onboarding until a manual
 			// refresh. `refetch()` always hits the network.
 			await workspacesQuery.refetch();
-			navigateTo(`/w/${data.slug}`, { replace: true });
+			navigateTo(`/w/${data.handle}`, { replace: true });
 		},
 	});
 
 	const updateWorkspaceMutation = useMutation({
 		mutation: async ({
-			workspaceSlug,
+			workspaceId,
 			updates,
 		}: {
-			workspaceSlug: string;
+			workspaceId: string;
 			updates: UpdateWorkspace;
 		}) => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			return await client.workspaces.updateWorkspace(workspaceSlug, updates);
+			return await client.workspaces.updateWorkspace(workspaceId, updates);
 		},
 		onSuccess() {
 			workspacesQuery.refetch();
@@ -86,12 +93,12 @@ export function useWorkspaces() {
 	});
 
 	const deleteWorkspaceMutation = useMutation({
-		mutation: async (workspaceSlug: string) => {
+		mutation: async (workspaceId: string) => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			await client.workspaces.deleteWorkspace(workspaceSlug);
+			await client.workspaces.deleteWorkspace(workspaceId);
 		},
-		async onSuccess(_data, deletedSlug) {
+		async onSuccess(_data, deletedId) {
 			// Force a refetch (not the stale-gated refresh) so `data` reflects
 			// the deletion before we choose where to go — otherwise we'd pick the
 			// "next" workspace from a stale list (still containing the deleted
@@ -99,26 +106,26 @@ export function useWorkspaces() {
 			// user until a manual refresh.
 			await workspacesQuery.refetch();
 			// If the deleted workspace is the one in the URL, move to another.
-			if (currentWorkspaceSlug.value === deletedSlug) {
+			if (currentWorkspace.value?.id === deletedId) {
 				const next = workspacesQuery.data.value?.find(
-					(w) => w.slug !== deletedSlug,
+					(w) => w.id !== deletedId,
 				);
-				navigateTo(next ? `/w/${next.slug}` : "/", { replace: true });
+				navigateTo(next ? `/w/${next.handle}` : "/", { replace: true });
 			}
 		},
 	});
 
 	const uploadAvatarMutation = useMutation({
 		mutation: async ({
-			workspaceSlug,
+			workspaceId,
 			avatar,
 		}: {
-			workspaceSlug: string;
+			workspaceId: string;
 			avatar: Blob;
 		}) => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			return await client.workspaces.uploadAvatar(workspaceSlug, avatar);
+			return await client.workspaces.uploadAvatar(workspaceId, avatar);
 		},
 		onSuccess() {
 			workspacesQuery.refetch();
@@ -126,10 +133,10 @@ export function useWorkspaces() {
 	});
 
 	const deleteAvatarMutation = useMutation({
-		mutation: async (workspaceSlug: string) => {
+		mutation: async (workspaceId: string) => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			return await client.workspaces.deleteAvatar(workspaceSlug);
+			return await client.workspaces.deleteAvatar(workspaceId);
 		},
 		onSuccess() {
 			workspacesQuery.refetch();
@@ -156,8 +163,10 @@ export function useWorkspaces() {
 		// that must observe fresh data before acting on it.
 		refetch: workspacesQuery.refetch,
 
-		// Current workspace (derived from the /w/[workspace] route param)
+		// Current workspace (derived from the /w/[workspace] route param). The slug
+		// stays in the URL (display-only); `currentWorkspaceId` is what SDK calls take.
 		currentWorkspaceSlug,
+		currentWorkspaceId,
 		lastWorkspaceSlug,
 		currentWorkspace,
 		selectWorkspace,
