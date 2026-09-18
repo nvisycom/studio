@@ -1488,29 +1488,6 @@
 			"loading": "Loading…"
 		}
 	},
-	"chat": {
-		"title": "Assistant",
-		"description": "The workspace AI assistant.",
-		"toggle": "Toggle assistant",
-		"close": "Close",
-		"newChat": "New chat",
-		"deleteSession": "Delete chat",
-		"placeholder": "Ask the assistant…",
-		"send": "Send",
-		"copy": "Copy",
-		"copied": "Copied",
-		"retry": "Retry",
-		"emptyTitle": "Ask anything",
-		"emptyDescription": "The assistant can answer questions about your workspace and help you get things done.",
-		"needsProviderTitle": "No AI provider connected",
-		"needsProviderDescription": "Connect an inference provider (OpenAI, Anthropic, Ollama…) to chat with the assistant.",
-		"needsProviderCta": "Connect a provider",
-		"error": {
-			"send": "Couldn't send your message. Please try again.",
-			"stream": "The assistant's reply was interrupted. Please try again.",
-			"delete": "Couldn't delete that conversation. Please try again."
-		}
-	},
 	"commandMenu": {
 		"title": "Command Menu",
 		"placeholder": "Type a command or search...",

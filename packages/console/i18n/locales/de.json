@@ -1488,29 +1488,6 @@
 			"loading": "Wird geladen…"
 		}
 	},
-	"chat": {
-		"title": "Assistent",
-		"description": "Der KI-Assistent des Arbeitsbereichs.",
-		"toggle": "Assistent umschalten",
-		"close": "Schließen",
-		"newChat": "Neuer Chat",
-		"deleteSession": "Chat löschen",
-		"placeholder": "Den Assistenten fragen…",
-		"send": "Senden",
-		"copy": "Kopieren",
-		"copied": "Kopiert",
-		"retry": "Erneut versuchen",
-		"emptyTitle": "Fragen Sie alles",
-		"emptyDescription": "Der Assistent beantwortet Fragen zu Ihrem Arbeitsbereich und hilft Ihnen bei Ihren Aufgaben.",
-		"needsProviderTitle": "Kein KI-Anbieter verbunden",
-		"needsProviderDescription": "Verbinden Sie einen Inferenz-Anbieter (OpenAI, Anthropic, Ollama…), um mit dem Assistenten zu chatten.",
-		"needsProviderCta": "Anbieter verbinden",
-		"error": {
-			"send": "Nachricht konnte nicht gesendet werden. Bitte erneut versuchen.",
-			"stream": "Die Antwort des Assistenten wurde unterbrochen. Bitte erneut versuchen.",
-			"delete": "Diese Unterhaltung konnte nicht gelöscht werden. Bitte erneut versuchen."
-		}
-	},
 	"commandMenu": {
 		"title": "Befehlsmenü",
 		"placeholder": "Befehl eingeben oder suchen...",

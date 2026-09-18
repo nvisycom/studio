@@ -23,8 +23,7 @@ const props = defineProps<{
 
 <style scoped>
 .sidebar-content {
-  /* Stop before the chat rail's inset gap so the content card reflows when the
-     chat opens, rather than spanning under it. */
-  grid-column: content / chat-rail;
+  /* Span the content track to the shell's end line. */
+  grid-column: content / content-end;
 }
 </style>
