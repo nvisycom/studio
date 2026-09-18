@@ -137,7 +137,7 @@ const fileFilter = ref<string | null>(null);
 const detectionsFilter = computed<DetectionsFilter>(() => ({
 	...(statusFilter.value !== ALL && { status: statusFilter.value }),
 	...(triggerFilter.value !== ALL && { triggerType: triggerFilter.value }),
-	...(pipelineFilter.value !== ALL && { pipelineSlug: pipelineFilter.value }),
+	...(pipelineFilter.value !== ALL && { pipelineId: pipelineFilter.value }),
 	...(fileFilter.value && { fileId: fileFilter.value }),
 }));
 

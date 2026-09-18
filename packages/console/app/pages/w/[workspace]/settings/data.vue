@@ -51,7 +51,7 @@ const { isDesktop } = usePlatform();
 
 const {
 	currentWorkspace,
-	currentWorkspaceSlug,
+	currentWorkspaceId,
 	isLoading: isLoadingWorkspaces,
 	updateWorkspaceAsync,
 	isUpdating,
@@ -237,7 +237,7 @@ async function saveWorkspaceSettings() {
              into this workspace. -->
         <WatchedFolderCard
           v-if="isDesktop"
-          :workspace-slug="currentWorkspaceSlug ?? ''"
+          :workspace-id="currentWorkspaceId ?? ''"
         />
       </div>
     </div>

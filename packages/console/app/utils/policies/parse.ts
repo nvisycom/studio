@@ -139,20 +139,28 @@ export function fallbackFromDefinition(policy: Policy): EditableAction | null {
 	return policy.fallback ? actionToEditable(policy.fallback) : null;
 }
 
-// A stored policy carries its rules and fallback, but not the custom labels,
-// label scopes, or custom matchers used to author it — those are recognition
-// inputs, not part of the returned policy. The editor cannot repopulate them
-// when opening an existing policy, so these readers resolve to empty. They stay
-// to keep the editor's shape stable (see SDK_0.51_MIGRATION_GAPS.md).
+// A stored policy carries its rules, fallback, and label scopes, but not the
+// custom labels or custom matchers used to author it — those are recognition
+// inputs, not part of the returned policy. So scopes repopulate on edit; custom
+// labels and matchers can't and resolve to empty (see SDK_0.51_MIGRATION_GAPS.md).
 
 /** The editable custom-label list for an existing policy. */
 export function labelsFromDefinition(_policy: Policy): EditableLabel[] {
 	return [];
 }
 
-/** The editable label scopes for an existing policy. */
-export function scopesFromDefinition(_policy: Policy): EditableScope[] {
-	return [];
+/**
+ * The editable label scopes for an existing policy, reconstructed from
+ * `policy.scopes` so re-saving an edited policy preserves them (rather than
+ * clobbering the stored scopes with an empty list).
+ */
+export function scopesFromDefinition(policy: Policy): EditableScope[] {
+	return (policy.scopes ?? []).map((scope) => ({
+		key: crypto.randomUUID(),
+		name: scope.name,
+		...(scope.description ? { description: scope.description } : {}),
+		labels: [...scope.labels],
+	}));
 }
 
 /** The editable custom matchers for an existing policy. */

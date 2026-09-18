@@ -46,14 +46,14 @@ pub fn set_drop_limit<R: Runtime>(app: AppHandle<R>, max_bytes: Option<u64>) {
     drop::store_limit(&app, max_bytes);
 }
 
-/// Prompt for a folder to watch, auto-uploading its files to `workspace_slug`
+/// Prompt for a folder to watch, auto-uploading its files to `workspace_id`
 /// (accepting only the given extensions, lower-case, no dot). Emits the existing
 /// backlog and then new arrivals as `folder-file` events; persists the config.
 /// Returns the chosen config, or null if the user cancelled the picker.
 #[tauri::command]
 pub async fn set_watch_folder<R: Runtime>(
     app: AppHandle<R>,
-    workspace_slug: String,
+    workspace_id: String,
     extensions: Vec<String>,
 ) -> Result<Option<WatchConfig>, String> {
     let Some(folder) = dialog::pick_folder(&app).await? else {
@@ -61,16 +61,10 @@ pub async fn set_watch_folder<R: Runtime>(
     };
     let folder = folder.to_string_lossy().into_owned();
     // Fresh pick: emit the backlog now — the frontend is authed and listening.
-    watch::set_folder(
-        &app,
-        folder.clone(),
-        workspace_slug.clone(),
-        extensions,
-        true,
-    )?;
+    watch::set_folder(&app, folder.clone(), workspace_id.clone(), extensions, true)?;
     Ok(Some(WatchConfig {
         folder,
-        workspace_slug,
+        workspace_id,
     }))
 }
 

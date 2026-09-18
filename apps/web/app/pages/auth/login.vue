@@ -86,7 +86,7 @@ async function handleOidcSignIn(provider: IdentityProvider): Promise<void> {
 
 // The OIDC providers the server advertises, resolved to their brand (logo +
 // label). A provider without a brand mapping is skipped.
-const { hasOidc, oidcProviders } = useAuthCapabilities();
+const { oidcProviders } = useAuthCapabilities();
 const oidcButtons = computed(() =>
 	oidcProviders.value.flatMap((provider) => {
 		const brand = OIDC_BRANDS[provider];
@@ -136,7 +136,7 @@ onMounted(async () => {
       </p>
     </div>
 
-    <template v-if="hasOidc">
+    <template v-if="oidcButtons.length">
       <!-- Social sign-in: one button per OIDC provider the server offers. -->
       <div class="flex gap-3">
         <Button

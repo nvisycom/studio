@@ -13,16 +13,14 @@ import type { Ref } from "vue";
 /** The current watched folder + the workspace it auto-uploads to. */
 export interface WatchedFolder {
 	folder: string;
-	workspaceSlug: string;
+	workspaceId: string;
 }
 
 /** Read the current config (null when nothing is watched). */
 export type GetWatchFn = () => Promise<WatchedFolder | null>;
-/** Prompt for a folder and start watching it for `workspaceSlug`; null if the
+/** Prompt for a folder and start watching it for `workspaceId`; null if the
  *  user cancelled the folder picker. */
-export type SetWatchFn = (
-	workspaceSlug: string,
-) => Promise<WatchedFolder | null>;
+export type SetWatchFn = (workspaceId: string) => Promise<WatchedFolder | null>;
 /** Stop watching and clear the config. */
 export type ClearWatchFn = () => Promise<void>;
 

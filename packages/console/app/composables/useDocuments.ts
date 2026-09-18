@@ -39,6 +39,7 @@ export function useDocuments(options: UseDocumentsOptions = {}) {
 			key: () => [
 				"documents",
 				currentWorkspaceId.value,
+				pageSize,
 				JSON.stringify(queryParams.value),
 			],
 		},

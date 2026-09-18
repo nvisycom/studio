@@ -169,7 +169,7 @@ async function reopen(reviewId: string) {
                   <Button
                     variant="ghost"
                     size="icon-sm"
-                    class="size-6 text-muted-foreground opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100"
+                    class="size-6 text-muted-foreground opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100 focus-visible:opacity-100"
                     :aria-label="t('reviews.dialog.deleteReview')"
                     @click="removeReview(review.id)"
                   >
@@ -199,7 +199,7 @@ async function reopen(reviewId: string) {
                   <Button
                     variant="ghost"
                     size="icon-sm"
-                    class="size-6 text-muted-foreground opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100"
+                    class="size-6 text-muted-foreground opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100 focus-visible:opacity-100"
                     :aria-label="t('reviews.dialog.remove')"
                     @click="removeReviewer(review.id, reviewer.id)"
                   >

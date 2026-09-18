@@ -488,8 +488,8 @@
 			"delete": {
 				"title": "Dokument löschen",
 				"titleMultiple": "Dokumente löschen",
-				"description": "Sind Sie sicher, dass Sie diese Datei löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-				"descriptionMultiple": "Sind Sie sicher, dass Sie {count} Dateien löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+				"description": "Sind Sie sicher, dass Sie dieses Dokument löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+				"descriptionMultiple": "Sind Sie sicher, dass Sie {count} Dokumente löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
 				"confirm": "Löschen",
 				"cancel": "Abbrechen"
 			},
@@ -526,7 +526,7 @@
 		"messages": {
 			"fileDeleted": "Dokument erfolgreich gelöscht",
 			"filesDeleted": "Dokumente erfolgreich gelöscht",
-			"filesDeletedPartial": "Einige Dateien konnten nicht gelöscht werden ({count} übersprungen).",
+			"filesDeletedPartial": "Einige Dokumente konnten nicht gelöscht werden ({count} übersprungen).",
 			"fileUpdated": "Dokument erfolgreich aktualisiert",
 			"filesUploaded": "Dokumente erfolgreich hochgeladen",
 			"downloadStarted": "Download gestartet",
@@ -2501,7 +2501,14 @@
 			"editTitle": "Prüfung umbenennen",
 			"saveTitle": "Titel speichern",
 			"cancelTitle": "Abbrechen",
-			"documentFallback": "Dokument anzeigen"
+			"documentFallback": "Dokument anzeigen",
+			"loadFailed": "Diese Prüfung konnte nicht geladen werden.",
+			"retry": "Erneut versuchen",
+			"delete": {
+				"title": "Prüfung löschen?",
+				"description": "Dies löscht die Prüfung und ihre Diskussion endgültig. Diese Aktion kann nicht rückgängig gemacht werden.",
+				"confirm": "Prüfung löschen"
+			}
 		},
 		"actions": {
 			"verify": "Als geprüft markieren",

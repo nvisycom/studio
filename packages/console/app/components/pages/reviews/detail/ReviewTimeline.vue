@@ -18,7 +18,9 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-	comment: [body: string];
+	// `onSuccess` clears the composer — the parent calls it only once the comment
+	// is posted, so a failed submit keeps the user's text.
+	comment: [body: string, onSuccess: () => void];
 }>();
 
 const { t } = useI18n();
@@ -30,8 +32,9 @@ const draft = ref("");
 function submit() {
 	const body = draft.value.trim();
 	if (!body) return;
-	emit("comment", body);
-	draft.value = "";
+	emit("comment", body, () => {
+		draft.value = "";
+	});
 }
 </script>
 

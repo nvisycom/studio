@@ -189,10 +189,11 @@ async function handleLeaveWorkspace() {
 }
 
 async function handleDeleteWorkspace() {
-	if (!currentWorkspaceSlug.value) return;
+	const workspaceId = currentWorkspaceId.value;
+	if (!workspaceId) return;
 
 	try {
-		await deleteWorkspaceAsync(currentWorkspaceSlug.value);
+		await deleteWorkspaceAsync(workspaceId);
 		isDeleteDialogOpen.value = false;
 		deleteConfirmName.value = "";
 		toast.success(t("settings.workspace.messages.deleted"));

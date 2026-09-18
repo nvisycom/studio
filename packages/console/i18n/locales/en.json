@@ -2501,7 +2501,14 @@
 			"editTitle": "Rename review",
 			"saveTitle": "Save title",
 			"cancelTitle": "Cancel",
-			"documentFallback": "View document"
+			"documentFallback": "View document",
+			"loadFailed": "Couldn't load this review.",
+			"retry": "Try again",
+			"delete": {
+				"title": "Delete review?",
+				"description": "This permanently deletes the review and its discussion. This can't be undone.",
+				"confirm": "Delete review"
+			}
 		},
 		"actions": {
 			"verify": "Mark verified",

@@ -20,6 +20,7 @@ import {
 import { Badge } from "#console/components/ui/badge";
 import ReviewTimeline from "#console/components/pages/reviews/detail/ReviewTimeline.vue";
 import ReviewSidebar from "#console/components/pages/reviews/detail/ReviewSidebar.vue";
+import { ConfirmDialog } from "#console/components/shared";
 import { reviewStatusVariant } from "#console/utils/reviews";
 
 /**
@@ -42,6 +43,7 @@ const reviewId = computed(() => route.params.review as string);
 const {
 	review,
 	isLoading,
+	error,
 	timeline,
 	isLoadingTimeline,
 	postComment,
@@ -149,15 +151,19 @@ async function unassign(accountId: string) {
 	}
 }
 
-async function comment(body: string) {
+async function comment(body: string, onSuccess: () => void) {
 	try {
 		await postComment(body);
+		onSuccess();
 	} catch {
 		toast.error(t("reviews.detail.commentFailed"));
 	}
 }
 
-async function remove() {
+// Deleting is destructive and irreversible, so it goes through a confirmation.
+const showDeleteConfirm = ref(false);
+
+async function confirmDelete() {
 	try {
 		await deleteReviewAsync(reviewId.value);
 		await navigateTo(wLink("/reviews"));
@@ -186,10 +192,23 @@ function openInStudio() {
 
       <!-- Loading -->
       <div
-        v-if="isLoading || !review"
+        v-if="isLoading"
         class="flex items-center justify-center py-20 text-muted-foreground"
       >
         <Loader2 :size="24" class="animate-spin" />
+      </div>
+
+      <!-- Error: the review couldn't be loaded. -->
+      <div
+        v-else-if="error || !review"
+        class="flex flex-col items-center gap-3 py-20 text-center"
+      >
+        <p class="text-sm text-muted-foreground">
+          {{ t("reviews.detail.loadFailed") }}
+        </p>
+        <Button variant="outline" size="sm" @click="refresh()">
+          {{ t("reviews.detail.retry") }}
+        </Button>
       </div>
 
       <template v-else>
@@ -347,10 +366,20 @@ function openInStudio() {
             @reopen="reopen"
             @assign="assign"
             @unassign="unassign"
-            @delete="remove"
+            @delete="showDeleteConfirm = true"
           />
         </div>
       </template>
     </div>
+
+    <ConfirmDialog
+      v-model:open="showDeleteConfirm"
+      :title="t('reviews.detail.delete.title')"
+      :description="t('reviews.detail.delete.description')"
+      :confirm-label="t('reviews.detail.delete.confirm')"
+      :cancel-label="t('common.cancel')"
+      :is-loading="isDeleting"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>

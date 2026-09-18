@@ -161,6 +161,8 @@ export function useDocumentReviews(documentId: MaybeRef<string>) {
 				currentWorkspaceId.value,
 				toValue(documentId),
 			],
+			// No document selected yet — don't query with an empty id.
+			enabled: () => !!toValue(documentId),
 			staleTime: 0,
 		},
 	);

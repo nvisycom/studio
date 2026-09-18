@@ -11,9 +11,13 @@ import type { IdentityProvider } from "@nvisy/sdk/datatypes";
  */
 export function useAuthCapabilities() {
 	const { guest } = useGuestClient();
+	const { baseUrl } = useApiBaseUrl();
 
 	const capabilitiesQuery = useQuery({
-		key: () => ["auth-capabilities"],
+		// Keyed on the effective base URL: a self-hosted override rebuilds the
+		// guest client, and the key must change with it or a stale server's
+		// capabilities (infinite staleTime) would stick.
+		key: () => ["auth-capabilities", baseUrl.value],
 		query: () => guest.value.capabilities.getAuthCapabilities(),
 		staleTime: Number.POSITIVE_INFINITY,
 	});
@@ -28,13 +32,9 @@ export function useAuthCapabilities() {
 		methods.value.filter((m) => m !== "password"),
 	);
 
-	// Whether the server offers any OIDC provider at all.
-	const hasOidc = computed(() => oidcProviders.value.length > 0);
-
 	return {
 		methods,
 		oidcProviders,
-		hasOidc,
 		isLoading: capabilitiesQuery.isLoading,
 		error: capabilitiesQuery.error,
 	};

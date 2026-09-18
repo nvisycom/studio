@@ -99,6 +99,11 @@ export function useWorkspaces() {
 			await client.workspaces.deleteWorkspace(workspaceId);
 		},
 		async onSuccess(_data, deletedId) {
+			// Capture whether we were viewing the deleted workspace BEFORE the
+			// refetch — afterwards it's gone from `data`, so `currentWorkspace`
+			// (matched off the list by the URL handle) is null and the check
+			// below would never fire.
+			const wasCurrentWorkspace = currentWorkspace.value?.id === deletedId;
 			// Force a refetch (not the stale-gated refresh) so `data` reflects
 			// the deletion before we choose where to go — otherwise we'd pick the
 			// "next" workspace from a stale list (still containing the deleted
@@ -106,7 +111,7 @@ export function useWorkspaces() {
 			// user until a manual refresh.
 			await workspacesQuery.refetch();
 			// If the deleted workspace is the one in the URL, move to another.
-			if (currentWorkspace.value?.id === deletedId) {
+			if (wasCurrentWorkspace) {
 				const next = workspacesQuery.data.value?.find(
 					(w) => w.id !== deletedId,
 				);
