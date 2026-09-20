@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import type { Policy, PolicySummary, UpdatePolicy } from "@nvisy/sdk/datatypes";
+import type {
+	WorkspacePolicy,
+	WorkspacePolicySummary,
+	UpdateWorkspacePolicy,
+} from "@nvisy/sdk/datatypes";
 import type { RowAction } from "#console/components/pages/RowActions.vue";
 import type { VirtualColumn } from "#console/components/ui/virtual-table";
 import { EditPolicySheet } from "#console/components/pages/policies";
@@ -42,7 +46,7 @@ const {
 	isDeleting,
 } = usePolicies();
 
-const policyToDelete = ref<PolicySummary | null>(null);
+const policyToDelete = ref<WorkspacePolicySummary | null>(null);
 
 // Creating a policy is a shell-wide capability (the dialog is mounted in the
 // layout), so the "New policy" button just raises the shared open state.
@@ -52,17 +56,17 @@ const { open: openCreate } = useCreatePolicy();
 // `editingPolicy` holds the loaded policy; `isLoadingPolicy` gates the sheet
 // while it's fetched.
 const isEditSheetOpen = ref(false);
-const editingPolicy = ref<Policy | null>(null);
+const editingPolicy = ref<WorkspacePolicy | null>(null);
 const isLoadingPolicy = ref(false);
 
-async function openEdit(policy: PolicySummary) {
+async function openEdit(policy: WorkspacePolicySummary) {
 	// The list only holds summaries; fetch the full policy (with its definition)
 	// before opening the editor.
 	editingPolicy.value = null;
 	isLoadingPolicy.value = true;
 	isEditSheetOpen.value = true;
 	try {
-		editingPolicy.value = await getPolicy(policy.slug);
+		editingPolicy.value = await getPolicy(policy.id);
 	} catch (error) {
 		isEditSheetOpen.value = false;
 		toast.error(t("policies.toast.loadFailed"), {
@@ -73,9 +77,9 @@ async function openEdit(policy: PolicySummary) {
 	}
 }
 
-async function handleUpdate(policySlug: string, updates: UpdatePolicy) {
+async function handleUpdate(policyId: string, updates: UpdateWorkspacePolicy) {
 	try {
-		await updatePolicyAsync({ policySlug, updates });
+		await updatePolicyAsync({ policyId, updates });
 		toast.success(t("policies.toast.updated"));
 		isEditSheetOpen.value = false;
 	} catch (error) {
@@ -86,9 +90,9 @@ async function handleUpdate(policySlug: string, updates: UpdatePolicy) {
 }
 
 // VirtualTable keys rows by id; policies are keyed by slug, so expose it as id.
-type PolicyRow = PolicySummary & { id: string };
+type PolicyRow = WorkspacePolicySummary & { id: string };
 const policyRows = computed<PolicyRow[]>(() =>
-	(policies.value ?? []).map((p) => ({ ...p, id: p.slug })),
+	(policies.value ?? []).map((p) => ({ ...p, id: p.id })),
 );
 
 const columns = computed<VirtualColumn<PolicyRow>[]>(() => [
@@ -159,7 +163,7 @@ async function confirmDelete() {
 	const policy = policyToDelete.value;
 	if (!policy) return;
 	try {
-		await deletePolicyAsync(policy.slug);
+		await deletePolicyAsync(policy.id);
 		toast.success(t("policies.toast.deleted"));
 		policyToDelete.value = null;
 	} catch (error) {

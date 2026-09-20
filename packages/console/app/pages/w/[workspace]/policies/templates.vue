@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import type { CreatePolicy, PolicyTemplate } from "@nvisy/sdk/datatypes";
+import type {
+	CreateWorkspacePolicy,
+	PolicyTemplate,
+} from "@nvisy/sdk/datatypes";
 import { Loader2, ShieldCheck, Search } from "@lucide/vue";
 import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 import { Button } from "#console/components/ui/button";
@@ -179,8 +182,7 @@ function buildTemplate(kind: TemplateKind): PolicyTemplate {
 
 async function create() {
 	if (!selected.value || !isValid.value) return;
-	const policy: CreatePolicy = {
-		slug: slug.value,
+	const policy: CreateWorkspacePolicy = {
 		displayName: displayName.value.trim(),
 		source: "template",
 		template: buildTemplate(selected.value),

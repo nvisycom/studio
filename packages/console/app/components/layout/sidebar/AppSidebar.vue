@@ -24,7 +24,6 @@ import {
 const { t } = useI18n();
 const { state } = useSidebar();
 const { open: openHelpChat } = useHelpChat();
-const { has } = useFeatures();
 const { wLink } = useWorkspaceLink();
 
 // Navigation is defined once in useNavigation and shared with the command menu,
@@ -84,7 +83,6 @@ const allDisabled = (items: { disabled?: boolean }[]) =>
       <SidebarGroup>
         <SidebarMenu>
           <SidebarMenuItem
-            v-if="has('billing')"
             :class="{ 'opacity-50 pointer-events-none': !hasWorkspace }"
           >
             <SidebarMenuButton
@@ -118,7 +116,7 @@ const allDisabled = (items: { disabled?: boolean }[]) =>
               </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          <SidebarMenuItem v-if="has('support')">
+          <SidebarMenuItem>
             <SidebarMenuButton
               :tooltip="t('sidebar.support')"
               @click="openHelpChat"
@@ -141,5 +139,5 @@ const allDisabled = (items: { disabled?: boolean }[]) =>
   </Sidebar>
 
   <!-- Help Chat Popup -->
-  <HelpChat v-if="has('support')" />
+  <HelpChat />
 </template>

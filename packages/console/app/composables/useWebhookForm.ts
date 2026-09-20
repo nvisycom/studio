@@ -1,14 +1,14 @@
 import type {
-	Webhook,
+	WorkspaceWebhook,
 	WebhookEvent,
 	WebhookStatus,
 } from "@nvisy/sdk/datatypes";
 
 /** All webhook event types the SDK supports, in display order. */
 export const WEBHOOK_EVENTS: WebhookEvent[] = [
-	"file.created",
-	"file.updated",
-	"file.deleted",
+	"document.created",
+	"document.updated",
+	"document.deleted",
 	"member.added",
 	"member.updated",
 	"member.deleted",
@@ -120,7 +120,7 @@ export function useWebhookForm() {
 		urlError.value = "";
 	}
 
-	function populate(webhook: Webhook) {
+	function populate(webhook: WorkspaceWebhook) {
 		name.value = webhook.displayName;
 		url.value = webhook.url;
 		// "suspended" is a server-set failure state; treat anything not "enabled"

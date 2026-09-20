@@ -1,4 +1,7 @@
-import type { CreatePipeline, UpdatePipeline } from "@nvisy/sdk/datatypes";
+import type {
+	CreateWorkspacePipeline,
+	UpdateWorkspacePipeline,
+} from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for pipeline operations
@@ -8,46 +11,46 @@ export function usePipelines() {
 
 	const pipelinesQuery = workspaceQuery(
 		"pipelines",
-		({ client, workspaceSlug }) =>
+		({ client, workspaceId }) =>
 			fetchAllPages((after) =>
-				client.pipelines.listPipelines(workspaceSlug, { after }),
+				client.pipelines.listPipelines(workspaceId, { after }),
 			),
 	);
 
 	// Pipelines are keyed by slug; a delete drops the row immediately.
-	const optimistic = useOptimisticList(pipelinesQuery.data, (p) => p.slug);
+	const optimistic = useOptimisticList(pipelinesQuery.data, (p) => p.id);
 
 	// Fetch a single pipeline with its full definition + retention (the list only
 	// returns summaries).
-	async function getPipeline(pipelineSlug: string) {
-		const { client, workspaceSlug } = requireContext();
-		return await client.pipelines.getPipeline(workspaceSlug, pipelineSlug);
+	async function getPipeline(pipelineId: string) {
+		const { client, workspaceId } = requireContext();
+		return await client.pipelines.getPipeline(workspaceId, pipelineId);
 	}
 
 	const createPipelineMutation = workspaceMutation(
-		({ client, workspaceSlug }, pipeline: CreatePipeline) =>
-			client.pipelines.createPipeline(workspaceSlug, pipeline),
+		({ client, workspaceId }, pipeline: CreateWorkspacePipeline) =>
+			client.pipelines.createPipeline(workspaceId, pipeline),
 		{ invalidates: "pipelines" },
 	);
 
 	const updatePipelineMutation = workspaceMutation(
 		(
-			{ client, workspaceSlug },
+			{ client, workspaceId },
 			{
-				pipelineSlug,
+				pipelineId,
 				updates,
-			}: { pipelineSlug: string; updates: UpdatePipeline },
-		) => client.pipelines.updatePipeline(workspaceSlug, pipelineSlug, updates),
+			}: { pipelineId: string; updates: UpdateWorkspacePipeline },
+		) => client.pipelines.updatePipeline(workspaceId, pipelineId, updates),
 		{ invalidates: "pipelines" },
 	);
 
 	const deletePipelineMutation = workspaceMutation(
-		({ client, workspaceSlug }, pipelineSlug: string) =>
-			client.pipelines.deletePipeline(workspaceSlug, pipelineSlug),
+		({ client, workspaceId }, pipelineId: string) =>
+			client.pipelines.deletePipeline(workspaceId, pipelineId),
 		{
 			invalidates: "pipelines",
-			onMutate: (pipelineSlug) => optimistic.remove(pipelineSlug),
-			onError: (_error, pipelineSlug) => optimistic.restore(pipelineSlug),
+			onMutate: (pipelineId) => optimistic.remove(pipelineId),
+			onError: (_error, pipelineId) => optimistic.restore(pipelineId),
 		},
 	);
 

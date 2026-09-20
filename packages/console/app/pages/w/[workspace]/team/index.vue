@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import type {
-	Member,
-	Invite,
+	WorkspaceMember,
+	WorkspaceInvite,
 	InviteExpiration,
 	WorkspaceRole,
-	ListMembers,
-	ListInvites,
+	ListWorkspaceMembers,
+	ListWorkspaceInvites,
 	MemberSortField,
 	InviteSortField,
-	SortOrder,
+	Direction,
 } from "@nvisy/sdk/datatypes";
 import { toast } from "vue-sonner";
 
@@ -31,16 +31,16 @@ const { t } = useI18n();
 const searchQuery = ref("");
 const selectedRoleFilter = ref<WorkspaceRole | null>(null);
 const selectedSortField = ref<MemberSortField | InviteSortField>("date");
-const selectedSortOrder = ref<SortOrder>("desc");
+const selectedSortOrder = ref<Direction>("descending");
 
 // Build query objects for SDK
-const membersQuery = computed<ListMembers>(() => ({
+const membersQuery = computed<ListWorkspaceMembers>(() => ({
 	...(selectedRoleFilter.value && { role: selectedRoleFilter.value }),
 	sortBy: selectedSortField.value as MemberSortField,
 	order: selectedSortOrder.value,
 }));
 
-const invitesQuery = computed<ListInvites>(() => ({
+const invitesQuery = computed<ListWorkspaceInvites>(() => ({
 	...(selectedRoleFilter.value && { role: selectedRoleFilter.value }),
 	// Map "name" to "email" for invites (members use "name", invites use "email")
 	sortBy: (selectedSortField.value === "name"
@@ -78,12 +78,12 @@ const generatedRole = ref<WorkspaceRole | null>(null);
 const generatedExpiry = ref<InviteExpiration | null>(null);
 
 // Modal State
-const memberToDelete = ref<Member | null>(null);
+const memberToDelete = ref<WorkspaceMember | null>(null);
 const isDeleteMemberDialogOpen = ref(false);
 const isDeleteMultipleMembersDialogOpen = ref(false);
-const memberToEdit = ref<Member | null>(null);
+const memberToEdit = ref<WorkspaceMember | null>(null);
 const isEditMemberDialogOpen = ref(false);
-const inviteToCancel = ref<Invite | null>(null);
+const inviteToCancel = ref<WorkspaceInvite | null>(null);
 const isCancelInviteDialogOpen = ref(false);
 const isCancelMultipleInvitesDialogOpen = ref(false);
 
@@ -337,7 +337,7 @@ async function cancelSelectedInvites() {
 
 function handleSortingChange(
 	sortBy: MemberSortField | InviteSortField,
-	order: SortOrder,
+	order: Direction,
 ) {
 	selectedSortField.value = sortBy;
 	selectedSortOrder.value = order;

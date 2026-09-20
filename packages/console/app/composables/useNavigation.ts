@@ -1,6 +1,7 @@
 import type { LucideIcon } from "@lucide/vue";
 import {
 	BarChart3,
+	ClipboardCheck,
 	CreditCard,
 	FileSearch,
 	FolderOpen,
@@ -13,7 +14,6 @@ import {
 	Webhook as WebhookIcon,
 	Workflow,
 } from "@lucide/vue";
-import type { Feature } from "#console/composables/useFeatures";
 
 /**
  * A single navigable destination in the app shell.
@@ -31,7 +31,6 @@ export interface NavigationItem {
 	url: string;
 	icon: LucideIcon;
 	shortcut?: string;
-	feature?: Feature;
 	disabled?: boolean;
 }
 
@@ -49,7 +48,6 @@ export interface NavigationGroup {
  */
 export function useNavigation() {
 	const { t } = useI18n();
-	const { has } = useFeatures();
 	const { wLink } = useWorkspaceLink();
 	const { currentWorkspaceSlug, currentWorkspace } = useWorkspaces();
 
@@ -80,9 +78,9 @@ export function useNavigation() {
 				label: t("sidebar.workspace"),
 				items: [
 					{
-						id: "files",
-						title: t("sidebar.files"),
-						url: wLink("/files"),
+						id: "documents",
+						title: t("sidebar.documents"),
+						url: wLink("/documents"),
 						icon: FolderOpen,
 						shortcut: "F",
 						disabled: workspaceDisabled,
@@ -93,6 +91,14 @@ export function useNavigation() {
 						url: wLink("/studio"),
 						icon: PenTool,
 						shortcut: "S",
+						disabled: workspaceDisabled,
+					},
+					{
+						id: "reviews",
+						title: t("sidebar.reviews"),
+						url: wLink("/reviews"),
+						icon: ClipboardCheck,
+						shortcut: "R",
 						disabled: workspaceDisabled,
 					},
 					{
@@ -172,7 +178,6 @@ export function useNavigation() {
 						url: wLink("/billing"),
 						icon: CreditCard,
 						shortcut: "B",
-						feature: "billing",
 						disabled: workspaceDisabled,
 					},
 					{
@@ -186,13 +191,8 @@ export function useNavigation() {
 			},
 		];
 
-		// Drop items whose feature flag is off; keep the group only if non-empty.
-		return raw
-			.map((group) => ({
-				...group,
-				items: group.items.filter((item) => !item.feature || has(item.feature)),
-			}))
-			.filter((group) => group.items.length > 0);
+		// Keep only non-empty groups (role/workspace gating can empty one out).
+		return raw.filter((group) => group.items.length > 0);
 	});
 
 	return { overview, groups, hasWorkspace, isAdminOrOwner };

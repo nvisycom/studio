@@ -1,8 +1,8 @@
 import type {
-	ApiToken,
-	ApiTokenWithJWT,
-	CreateApiToken,
-	UpdateApiToken,
+	AccountApiToken,
+	AccountApiTokenWithJwt,
+	CreateAccountApiToken,
+	UpdateAccountApiToken,
 } from "@nvisy/sdk/datatypes";
 
 /**
@@ -28,7 +28,9 @@ export function useApiTokens() {
 	const optimistic = useOptimisticList(tokensQuery.data, (tk) => tk.id);
 
 	const createTokenMutation = useMutation({
-		mutation: async (token: CreateApiToken): Promise<ApiTokenWithJWT> => {
+		mutation: async (
+			token: CreateAccountApiToken,
+		): Promise<AccountApiTokenWithJwt> => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
 			return await client.apiTokens.createApiToken(token);
@@ -44,7 +46,7 @@ export function useApiTokens() {
 			updates,
 		}: {
 			tokenId: string;
-			updates: UpdateApiToken;
+			updates: UpdateAccountApiToken;
 		}) => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");

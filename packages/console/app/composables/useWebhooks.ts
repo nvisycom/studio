@@ -1,38 +1,39 @@
 import type {
-	Webhook,
-	CreateWebhook,
-	UpdateWebhook,
+	WorkspaceWebhook,
+	CreateWorkspaceWebhook,
+	UpdateWorkspaceWebhook,
 } from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for webhook operations
  */
 export function useWebhooks() {
-	const webhooksQuery = workspaceQuery(
-		"webhooks",
-		({ client, workspaceSlug }) =>
-			fetchAllPages((after) =>
-				client.webhooks.listWebhooks(workspaceSlug, { after }),
-			),
+	const webhooksQuery = workspaceQuery("webhooks", ({ client, workspaceId }) =>
+		fetchAllPages((after) =>
+			client.webhooks.listWebhooks(workspaceId, { after }),
+		),
 	);
 
 	// Reflect updates on a row immediately, reconciling once settled.
-	const optimistic = useOptimisticList<Webhook, Partial<Webhook>>(
-		webhooksQuery.data,
-		(w) => w.id,
-	);
+	const optimistic = useOptimisticList<
+		WorkspaceWebhook,
+		Partial<WorkspaceWebhook>
+	>(webhooksQuery.data, (w) => w.id);
 
 	const createWebhookMutation = workspaceMutation(
-		({ client, workspaceSlug }, webhook: CreateWebhook) =>
-			client.webhooks.createWebhook(workspaceSlug, webhook),
+		({ client, workspaceId }, webhook: CreateWorkspaceWebhook) =>
+			client.webhooks.createWebhook(workspaceId, webhook),
 		{ invalidates: "webhooks" },
 	);
 
 	const updateWebhookMutation = workspaceMutation(
 		(
-			{ client, workspaceSlug },
-			{ webhookId, updates }: { webhookId: string; updates: UpdateWebhook },
-		) => client.webhooks.updateWebhook(workspaceSlug, webhookId, updates),
+			{ client, workspaceId },
+			{
+				webhookId,
+				updates,
+			}: { webhookId: string; updates: UpdateWorkspaceWebhook },
+		) => client.webhooks.updateWebhook(workspaceId, webhookId, updates),
 		{
 			onMutate({ webhookId, updates }) {
 				optimistic.apply(webhookId, updates);
@@ -41,14 +42,17 @@ export function useWebhooks() {
 				optimistic.rollback(webhookId);
 			},
 			onSettled(data, _error, { webhookId }) {
-				optimistic.settle(webhookId, data as Partial<Webhook> | undefined);
+				optimistic.settle(
+					webhookId,
+					data as Partial<WorkspaceWebhook> | undefined,
+				);
 			},
 		},
 	);
 
 	const deleteWebhookMutation = workspaceMutation(
-		({ client, workspaceSlug }, webhookId: string) =>
-			client.webhooks.deleteWebhook(workspaceSlug, webhookId),
+		({ client, workspaceId }, webhookId: string) =>
+			client.webhooks.deleteWebhook(workspaceId, webhookId),
 		{
 			invalidates: "webhooks",
 			onMutate: (webhookId) => optimistic.remove(webhookId),
@@ -57,8 +61,8 @@ export function useWebhooks() {
 	);
 
 	const testWebhookMutation = workspaceMutation(
-		({ client, workspaceSlug }, webhookId: string) =>
-			client.webhooks.testWebhook(workspaceSlug, webhookId),
+		({ client, workspaceId }, webhookId: string) =>
+			client.webhooks.testWebhook(workspaceId, webhookId),
 	);
 
 	return {

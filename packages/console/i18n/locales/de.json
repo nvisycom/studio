@@ -35,7 +35,7 @@
 		},
 		"category": {
 			"overview": "Übersicht",
-			"files": "Dateien",
+			"documents": "Dokumente",
 			"studio": "Studio",
 			"team": "Team",
 			"workflows": "Workflows",
@@ -44,7 +44,8 @@
 			"analytics": "Analysen",
 			"billing": "Abrechnung",
 			"settings": "Einstellungen",
-			"webhooks": "Webhooks"
+			"webhooks": "Webhooks",
+			"reviews": "Prüfungen"
 		}
 	},
 	"common": {
@@ -156,9 +157,9 @@
 						"redactedDocuments": "Geschwärzte Dokumente"
 					},
 					"modes": {
-						"forever": "Für immer behalten",
-						"days": "Für Tage behalten",
-						"zeroDays": "Nicht behalten"
+						"persistent": "Für immer behalten",
+						"fixed": "Für Tage behalten",
+						"ephemeral": "Nicht behalten"
 					},
 					"footer": "Gilt für alle Daten in diesem Arbeitsbereich."
 				}
@@ -234,13 +235,20 @@
 			"categories": {
 				"members": {
 					"name": "Teammitglieder",
-					"invited": {
-						"name": "Mitglied eingeladen",
-						"description": "Wenn ein neues Mitglied in den Workspace eingeladen wird"
-					},
 					"joined": {
 						"name": "Mitglied beigetreten",
 						"description": "Wenn ein eingeladenes Mitglied dem Workspace beitritt"
+					}
+				},
+				"reviews": {
+					"name": "Prüfungen",
+					"assigned": {
+						"name": "Prüfung zugewiesen",
+						"description": "Wenn Ihnen ein Dokument zur Prüfung zugewiesen wird"
+					},
+					"mentioned": {
+						"name": "In einem Kommentar erwähnt",
+						"description": "Wenn Sie jemand in einem Prüfkommentar erwähnt"
 					}
 				},
 				"connections": {
@@ -437,9 +445,9 @@
 			"submitButton": "Arbeitsbereich Erstellen"
 		}
 	},
-	"files": {
+	"documents": {
 		"page": {
-			"description": "Verwalten Sie Ihre hochgeladenen Dateien und Dokumente"
+			"description": "Verwalten Sie Ihre hochgeladenen Dokumente"
 		},
 		"selection": {
 			"delete": "Löschen"
@@ -453,8 +461,8 @@
 				"uploadedBy": "Hochgeladen von"
 			},
 			"empty": {
-				"title": "Keine Dateien gefunden",
-				"description": "Laden Sie Ihre erste Datei hoch, um zu beginnen",
+				"title": "Keine Dokumente gefunden",
+				"description": "Laden Sie Ihr erstes Dokument hoch, um zu beginnen",
 				"filterDescription": "Versuchen Sie, Ihre Suche oder Filter anzupassen"
 			}
 		},
@@ -473,27 +481,28 @@
 			"delete": "Löschen",
 			"clearFilters": "Filter löschen",
 			"export": "Exportieren",
-			"import": "Importieren"
+			"import": "Importieren",
+			"assign": "Zuweisen"
 		},
 		"dialogs": {
 			"delete": {
-				"title": "Datei Löschen",
-				"titleMultiple": "Dateien Löschen",
-				"description": "Sind Sie sicher, dass Sie diese Datei löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-				"descriptionMultiple": "Sind Sie sicher, dass Sie {count} Dateien löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+				"title": "Dokument löschen",
+				"titleMultiple": "Dokumente löschen",
+				"description": "Sind Sie sicher, dass Sie dieses Dokument löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+				"descriptionMultiple": "Sind Sie sicher, dass Sie {count} Dokumente löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
 				"confirm": "Löschen",
 				"cancel": "Abbrechen"
 			},
 			"edit": {
-				"title": "Datei Bearbeiten",
+				"title": "Dokument bearbeiten",
 				"description": "Aktualisieren Sie den Dateinamen und andere Eigenschaften.",
-				"nameLabel": "Dateiname",
+				"nameLabel": "Dokumentname",
 				"namePlaceholder": "Dateinamen eingeben",
 				"save": "Änderungen Speichern",
 				"cancel": "Abbrechen"
 			},
 			"upload": {
-				"title": "Dateien hochladen",
+				"title": "Dokumente hochladen",
 				"subtitle": "Fügen Sie Dokumente zu Ihrem Workspace hinzu. Bis zu {max} pro Datei.",
 				"subtitleNoLimit": "Fügen Sie Dokumente zu Ihrem Workspace hinzu.",
 				"description": "Dateien hierher ziehen",
@@ -515,20 +524,20 @@
 			}
 		},
 		"messages": {
-			"fileDeleted": "Datei erfolgreich gelöscht",
-			"filesDeleted": "Dateien erfolgreich gelöscht",
-			"filesDeletedPartial": "Einige Dateien konnten nicht gelöscht werden ({count} übersprungen).",
-			"fileUpdated": "Datei erfolgreich aktualisiert",
-			"filesUploaded": "Dateien erfolgreich hochgeladen",
+			"fileDeleted": "Dokument erfolgreich gelöscht",
+			"filesDeleted": "Dokumente erfolgreich gelöscht",
+			"filesDeletedPartial": "Einige Dokumente konnten nicht gelöscht werden ({count} übersprungen).",
+			"fileUpdated": "Dokument erfolgreich aktualisiert",
+			"filesUploaded": "Dokumente erfolgreich hochgeladen",
 			"downloadStarted": "Download gestartet",
 			"exportStarted": "Export gestartet",
 			"importStarted": "{count} Datei wird importiert | {count} Dateien werden importiert"
 		},
 		"errors": {
-			"deleteFailed": "Datei konnte nicht gelöscht werden",
-			"updateFailed": "Datei konnte nicht aktualisiert werden",
-			"downloadFailed": "Datei konnte nicht heruntergeladen werden",
-			"loadFailed": "Dateien konnten nicht geladen werden",
+			"deleteFailed": "Dokument konnte nicht gelöscht werden",
+			"updateFailed": "Dokument konnte nicht aktualisiert werden",
+			"downloadFailed": "Dokument konnte nicht heruntergeladen werden",
+			"loadFailed": "Dokumente konnten nicht geladen werden",
 			"exportFailed": "Dateien konnten nicht exportiert werden",
 			"importFailed": "Import der Dateien fehlgeschlagen",
 			"importUnavailable": "Import ist für diese Verbindung nicht verfügbar.",
@@ -1312,7 +1321,7 @@
 	"sidebar": {
 		"overview": "Übersicht",
 		"workspace": "Arbeitsbereich",
-		"files": "Dateien",
+		"documents": "Dokumente",
 		"studio": "Studio",
 		"team": "Team",
 		"automation": "Automatisierung",
@@ -1326,7 +1335,8 @@
 		"billing": "Abrechnung",
 		"settings": "Einstellungen",
 		"support": "Support",
-		"webhooks": "Webhooks"
+		"webhooks": "Webhooks",
+		"reviews": "Prüfungen"
 	},
 	"health": {
 		"status": {
@@ -1438,7 +1448,7 @@
 			"parsing": "Dokument wird verarbeitet …",
 			"rendering": "Dokument wird gerendert …",
 			"emptyTitle": "Kein Dokument ausgewählt",
-			"emptyDescription": "Wählen Sie auf der Seite „Dateien“ eine Datei zur Vorschau aus",
+			"emptyDescription": "Wählen Sie auf der Seite „Dokumente“ eine Datei zur Vorschau aus",
 			"unsupported": "Dieser Dateityp wird in der Vorschau nicht unterstützt",
 			"table": "Tabelle",
 			"raw": "Roh",
@@ -1476,29 +1486,6 @@
 			"closeToRight": "Rechts schließen",
 			"closeAll": "Alle schließen",
 			"loading": "Wird geladen…"
-		}
-	},
-	"chat": {
-		"title": "Assistent",
-		"description": "Der KI-Assistent des Arbeitsbereichs.",
-		"toggle": "Assistent umschalten",
-		"close": "Schließen",
-		"newChat": "Neuer Chat",
-		"deleteSession": "Chat löschen",
-		"placeholder": "Den Assistenten fragen…",
-		"send": "Senden",
-		"copy": "Kopieren",
-		"copied": "Kopiert",
-		"retry": "Erneut versuchen",
-		"emptyTitle": "Fragen Sie alles",
-		"emptyDescription": "Der Assistent beantwortet Fragen zu Ihrem Arbeitsbereich und hilft Ihnen bei Ihren Aufgaben.",
-		"needsProviderTitle": "Kein KI-Anbieter verbunden",
-		"needsProviderDescription": "Verbinden Sie einen Inferenz-Anbieter (OpenAI, Anthropic, Ollama…), um mit dem Assistenten zu chatten.",
-		"needsProviderCta": "Anbieter verbinden",
-		"error": {
-			"send": "Nachricht konnte nicht gesendet werden. Bitte erneut versuchen.",
-			"stream": "Die Antwort des Assistenten wurde unterbrochen. Bitte erneut versuchen.",
-			"delete": "Diese Unterhaltung konnte nicht gelöscht werden. Bitte erneut versuchen."
 		}
 	},
 	"commandMenu": {
@@ -1901,9 +1888,9 @@
 			},
 			"retentionModes": {
 				"inherit": "Standard übernehmen",
-				"forever": "Für immer behalten",
-				"days": "Für Tage behalten",
-				"zeroDays": "Sofort löschen"
+				"persistent": "Für immer behalten",
+				"fixed": "Für Tage behalten",
+				"ephemeral": "Sofort löschen"
 			},
 			"retentionDays": "Tage"
 		},
@@ -2158,13 +2145,17 @@
 		"title": "Benachrichtigungen",
 		"empty": "Keine Benachrichtigungen",
 		"events": {
-			"memberInvited": {
-				"title": "Mitglied eingeladen",
-				"message": "{invitedBy} hat ein neues Mitglied zu {workspaceSlug} eingeladen"
-			},
 			"memberJoined": {
 				"title": "Mitglied beigetreten",
 				"message": "{memberUsername} ist {workspaceSlug} beigetreten"
+			},
+			"reviewAssigned": {
+				"title": "Prüfung zugewiesen",
+				"message": "{documentName} wurde Ihnen zur Prüfung zugewiesen"
+			},
+			"commentMentioned": {
+				"title": "Sie wurden erwähnt",
+				"message": "Sie wurden in einem Kommentar erwähnt"
 			},
 			"connectionSyncCompleted": {
 				"title": "Synchronisierung abgeschlossen",
@@ -2437,5 +2428,112 @@
 		"title": "Support",
 		"comingSoon": "Live-Chat ist bald verfügbar",
 		"contact": "In der Zwischenzeit erreichen Sie uns unter"
+	},
+	"reviews": {
+		"title": "Prüfungen",
+		"assign": "Zuweisen",
+		"detail": {
+			"back": "Alle Prüfungen",
+			"title": "Prüfung",
+			"comment": "Kommentieren",
+			"commentPlaceholder": "Kommentar hinterlassen…",
+			"commentFailed": "Kommentar konnte nicht gesendet werden. Bitte erneut versuchen.",
+			"noDetections": "Noch keine Erkennungen für dieses Dokument.",
+			"tabs": {
+				"discussion": "Diskussion",
+				"detections": "Erkennungen",
+				"redactions": "Schwärzungen"
+			},
+			"events": {
+				"review": {
+					"opened": "hat diese Prüfung eröffnet",
+					"renamed": "hat diese Prüfung umbenannt"
+				},
+				"detection": {
+					"linked": "hat eine Erkennung verknüpft"
+				},
+				"redaction": {
+					"linked": "hat eine Schwärzung verknüpft"
+				},
+				"assigned": "hat einen Prüfer zugewiesen",
+				"unassigned": "hat einen Prüfer entfernt",
+				"verified": "hat diese Prüfung bestätigt",
+				"reopened": "hat diese Prüfung wieder eröffnet"
+			},
+			"triggerType": {
+				"user": "Manuelle Erkennung",
+				"system": "Automatische Erkennung"
+			},
+			"sidebar": {
+				"status": "Status",
+				"reviewers": "Prüfer",
+				"noReviewers": "Keine Prüfer zugewiesen.",
+				"removeReviewer": "Prüfer entfernen",
+				"author": "Eröffnet von",
+				"delete": "Prüfung löschen"
+			},
+			"renameFailed": "Prüfung konnte nicht umbenannt werden. Bitte erneut versuchen.",
+			"titlePlaceholder": "Titel der Prüfung",
+			"editTitle": "Prüfung umbenennen",
+			"saveTitle": "Titel speichern",
+			"cancelTitle": "Abbrechen",
+			"documentFallback": "Dokument anzeigen",
+			"loadFailed": "Diese Prüfung konnte nicht geladen werden.",
+			"retry": "Erneut versuchen",
+			"delete": {
+				"title": "Prüfung löschen?",
+				"description": "Dies löscht die Prüfung und ihre Diskussion endgültig. Diese Aktion kann nicht rückgängig gemacht werden.",
+				"confirm": "Prüfung löschen"
+			},
+			"noRedactions": "Noch keine Schwärzungen.",
+			"redactionReady": "Bereit",
+			"redactionPending": "Ausstehend",
+			"redactionsFailed": "Schwärzungen konnten nicht geladen werden."
+		},
+		"actions": {
+			"verify": "Als geprüft markieren",
+			"reopen": "Prüfung wieder öffnen"
+		},
+		"table": {
+			"reviewer": "Prüfer",
+			"assigned": "Zugewiesen",
+			"status": "Status",
+			"document": "Dokument"
+		},
+		"status": {
+			"needs_review": "Zu prüfen",
+			"in_review": "In Prüfung",
+			"resolved": "Erledigt"
+		},
+		"filter": {
+			"all": "Alle"
+		},
+		"empty": {
+			"title": "Keine Prüfungen",
+			"hint": "Ihnen zur Prüfung zugewiesene Dokumente erscheinen hier."
+		},
+		"picker": {
+			"search": "Mitglieder suchen…",
+			"loading": "Mitglieder werden geladen…",
+			"empty": "Keine Mitglieder gefunden"
+		},
+		"dialog": {
+			"title": "Prüfungen",
+			"description": "Prüfungen dieses Dokuments verwalten.",
+			"none": "Noch keine Prüfungen.",
+			"remove": "Zuweisung aufheben",
+			"unassigned": "Nicht zugewiesen",
+			"openReview": "Prüfung eröffnen",
+			"titleLabel": "Titel (optional)",
+			"titlePlaceholder": "Titel der Prüfung",
+			"deleteReview": "Prüfung löschen"
+		},
+		"errors": {
+			"assignFailed": "Prüfung konnte nicht zugewiesen werden. Bitte versuchen Sie es erneut.",
+			"unassignFailed": "Zuweisung konnte nicht aufgehoben werden. Bitte versuchen Sie es erneut.",
+			"updateFailed": "Prüfung konnte nicht aktualisiert werden. Bitte versuchen Sie es erneut.",
+			"createFailed": "Prüfung konnte nicht eröffnet werden. Bitte erneut versuchen.",
+			"deleteFailed": "Prüfung konnte nicht gelöscht werden. Bitte erneut versuchen."
+		}
 	}
 }

@@ -32,10 +32,6 @@ export default defineNuxtConfig({
 			// Base URL of the web app for user-facing links (e.g. invite links).
 			// Empty on web — the current origin is already the web app.
 			webAppUrl: "",
-			// Deployment edition. "cloud" enables SaaS-only features (billing,
-			// OAuth, support chat); anything else is treated as self-hosted. Cloud
-			// builds set NUXT_PUBLIC_DEPLOYMENT=cloud; self-hosted leaves it unset.
-			deployment: process.env.NUXT_PUBLIC_DEPLOYMENT ?? "self-hosted",
 			// Dropbox Chooser app key (a public, domain-restricted client id — safe
 			// to expose). Enables the Dropbox import picker; blank disables it. Set
 			// via NUXT_PUBLIC_DROPBOX_APP_KEY.

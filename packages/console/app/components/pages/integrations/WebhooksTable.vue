@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Webhook } from "@nvisy/sdk/datatypes";
+import type { WorkspaceWebhook } from "@nvisy/sdk/datatypes";
 import type { RowAction } from "#console/components/pages/RowActions.vue";
 import type {
 	VirtualColumn,
@@ -13,7 +13,7 @@ const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
 
 const props = defineProps<{
-	webhooks: Webhook[];
+	webhooks: WorkspaceWebhook[];
 	empty?: VirtualTableEmpty;
 }>();
 
@@ -35,7 +35,7 @@ function formatUrl(url: string): string {
 
 // Most recent delivery: whichever of the last success / last failure is newer,
 // plus whether it failed and the failures piled up since the last success.
-function lastDelivery(webhook: Webhook) {
+function lastDelivery(webhook: WorkspaceWebhook) {
 	const success = webhook.lastSuccessAt;
 	const failure = webhook.lastFailureAt;
 	const failed = !!failure && (!success || failure > success);
@@ -46,7 +46,7 @@ function lastDelivery(webhook: Webhook) {
 	};
 }
 
-const columns = computed<VirtualColumn<Webhook>[]>(() => [
+const columns = computed<VirtualColumn<WorkspaceWebhook>[]>(() => [
 	{
 		key: "name",
 		header: t("connections.table.headers.name"),
@@ -90,7 +90,7 @@ const columns = computed<VirtualColumn<Webhook>[]>(() => [
 	},
 ]);
 
-function rowActions(webhook: Webhook): RowAction[] {
+function rowActions(webhook: WorkspaceWebhook): RowAction[] {
 	return [
 		{
 			key: "configure",

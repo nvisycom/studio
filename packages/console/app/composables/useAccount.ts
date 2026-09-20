@@ -55,9 +55,9 @@ export function useAccount() {
 	const uploadAvatarMutation = useMutation({
 		mutation: async (avatar: Blob) => {
 			const client = $nvisyClient.value;
-			const name = accountQuery.data.value?.username;
-			if (!client || !name) throw new Error("Not authenticated");
-			return await client.account.uploadAvatar(name, avatar);
+			const id = accountQuery.data.value?.id;
+			if (!client || !id) throw new Error("Not authenticated");
+			return await client.account.uploadAvatar(id, avatar);
 		},
 		onSuccess() {
 			accountQuery.refresh();
@@ -67,9 +67,9 @@ export function useAccount() {
 	const deleteAvatarMutation = useMutation({
 		mutation: async () => {
 			const client = $nvisyClient.value;
-			const name = accountQuery.data.value?.username;
-			if (!client || !name) throw new Error("Not authenticated");
-			return await client.account.deleteAvatar(name);
+			const id = accountQuery.data.value?.id;
+			if (!client || !id) throw new Error("Not authenticated");
+			return await client.account.deleteAvatar(id);
 		},
 		onSuccess() {
 			accountQuery.refresh();
@@ -77,6 +77,7 @@ export function useAccount() {
 	});
 
 	// Computed helpers for account data
+	const accountId = computed(() => accountQuery.data.value?.id ?? null);
 	const displayName = computed(() => accountQuery.data.value?.displayName);
 	const username = computed(() => accountQuery.data.value?.username);
 	const emailAddress = computed(() => accountQuery.data.value?.emailAddress);
@@ -91,6 +92,7 @@ export function useAccount() {
 		refresh: accountQuery.refresh,
 
 		// Computed helpers
+		accountId,
 		displayName,
 		username,
 		emailAddress,

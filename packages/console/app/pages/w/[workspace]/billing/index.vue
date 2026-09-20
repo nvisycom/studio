@@ -18,7 +18,6 @@ useHead({ title: () => t("billing.title") });
 
 definePageMeta({
 	pageCategory: "header.category.billing",
-	feature: "billing",
 });
 
 // Current plan

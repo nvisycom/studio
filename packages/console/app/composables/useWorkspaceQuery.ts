@@ -16,35 +16,37 @@ import type {
 /** The resolved context every workspace-scoped call needs. */
 export interface WorkspaceContext {
 	client: Nvisy;
-	workspaceSlug: string;
+	workspaceId: string;
 }
 
 /**
- * Resolve the SDK client + active workspace slug, or throw a single canonical
- * error. Use inside a query/mutation body where a workspace is required.
+ * Resolve the SDK client + active workspace id, or throw a single canonical
+ * error. Use inside a query/mutation body where a workspace is required. The
+ * URL is still keyed by slug (display-only); this resolves it to the id every
+ * SDK call now takes.
  */
 export function useWorkspaceContext() {
 	const { $nvisyClient } = useNuxtApp();
 	const { isAuthenticated } = useAuth();
-	const { currentWorkspaceSlug } = useWorkspaces();
+	const { currentWorkspaceId } = useWorkspaces();
 
 	function requireContext(): WorkspaceContext {
 		const client = $nvisyClient.value;
-		const workspaceSlug = currentWorkspaceSlug.value;
+		const workspaceId = currentWorkspaceId.value;
 		if (!client) throw new Error("Not authenticated");
-		if (!workspaceSlug) throw new Error("No workspace selected");
-		return { client, workspaceSlug };
+		if (!workspaceId) throw new Error("No workspace selected");
+		return { client, workspaceId };
 	}
 
-	/** True once there's a session and a selected workspace. */
-	const enabled = () => isAuthenticated.value && !!currentWorkspaceSlug.value;
+	/** True once there's a session and a resolved workspace id. */
+	const enabled = () => isAuthenticated.value && !!currentWorkspaceId.value;
 
-	/** Query key scoped to the active workspace: `[resource, slug, ...extra]`. */
+	/** Query key scoped to the active workspace: `[resource, id, ...extra]`. */
 	const key =
 		(resource: string, ...extra: Array<string | number | null>) =>
-		() => [resource, currentWorkspaceSlug.value, ...extra];
+		() => [resource, currentWorkspaceId.value, ...extra];
 
-	return { requireContext, enabled, key, currentWorkspaceSlug };
+	return { requireContext, enabled, key, currentWorkspaceId };
 }
 
 /**

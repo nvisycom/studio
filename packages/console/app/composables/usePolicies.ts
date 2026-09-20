@@ -1,4 +1,7 @@
-import type { CreatePolicy, UpdatePolicy } from "@nvisy/sdk/datatypes";
+import type {
+	CreateWorkspacePolicy,
+	UpdateWorkspacePolicy,
+} from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for policy operations (workspace-scoped).
@@ -6,45 +9,46 @@ import type { CreatePolicy, UpdatePolicy } from "@nvisy/sdk/datatypes";
 export function usePolicies() {
 	const { requireContext } = useWorkspaceContext();
 
-	const policiesQuery = workspaceQuery(
-		"policies",
-		({ client, workspaceSlug }) =>
-			fetchAllPages((after) =>
-				client.policies.listPolicies(workspaceSlug, { after }),
-			),
+	const policiesQuery = workspaceQuery("policies", ({ client, workspaceId }) =>
+		fetchAllPages((after) =>
+			client.policies.listPolicies(workspaceId, { after }),
+		),
 	);
 
 	// Policies are keyed by slug; a delete drops the row immediately.
-	const optimistic = useOptimisticList(policiesQuery.data, (p) => p.slug);
+	const optimistic = useOptimisticList(policiesQuery.data, (p) => p.id);
 
 	// Fetch a single policy with its full definition (the list only returns
 	// summaries).
-	async function getPolicy(policySlug: string) {
-		const { client, workspaceSlug } = requireContext();
-		return await client.policies.getPolicy(workspaceSlug, policySlug);
+	async function getPolicy(policyId: string) {
+		const { client, workspaceId } = requireContext();
+		return await client.policies.getPolicy(workspaceId, policyId);
 	}
 
 	const createPolicyMutation = workspaceMutation(
-		({ client, workspaceSlug }, policy: CreatePolicy) =>
-			client.policies.createPolicy(workspaceSlug, policy),
+		({ client, workspaceId }, policy: CreateWorkspacePolicy) =>
+			client.policies.createPolicy(workspaceId, policy),
 		{ invalidates: "policies" },
 	);
 
 	const updatePolicyMutation = workspaceMutation(
 		(
-			{ client, workspaceSlug },
-			{ policySlug, updates }: { policySlug: string; updates: UpdatePolicy },
-		) => client.policies.updatePolicy(workspaceSlug, policySlug, updates),
+			{ client, workspaceId },
+			{
+				policyId,
+				updates,
+			}: { policyId: string; updates: UpdateWorkspacePolicy },
+		) => client.policies.updatePolicy(workspaceId, policyId, updates),
 		{ invalidates: "policies" },
 	);
 
 	const deletePolicyMutation = workspaceMutation(
-		({ client, workspaceSlug }, policySlug: string) =>
-			client.policies.deletePolicy(workspaceSlug, policySlug),
+		({ client, workspaceId }, policyId: string) =>
+			client.policies.deletePolicy(workspaceId, policyId),
 		{
 			invalidates: "policies",
-			onMutate: (policySlug) => optimistic.remove(policySlug),
-			onError: (_error, policySlug) => optimistic.restore(policySlug),
+			onMutate: (policyId) => optimistic.remove(policyId),
+			onError: (_error, policyId) => optimistic.restore(policyId),
 		},
 	);
 

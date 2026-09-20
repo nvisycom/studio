@@ -12,8 +12,8 @@ import { Input } from "#console/components/ui/input";
 import { MultiSelect } from "#console/components/ui/multi-select";
 
 /**
- * Files page controls rendered in the app header (upload, search, format filter,
- * list/grid toggle). It reads the shared `useFilesView` state, so the header and
+ * Documents page controls rendered in the app header (upload, search, format filter,
+ * list/grid toggle). It reads the shared `useDocumentsView` state, so the header and
  * the page body stay in sync — the header-content variant for the /files route,
  * alongside the studio's file tabs.
  */
@@ -25,7 +25,7 @@ const {
 	formatOptions,
 	openUpload,
 	openImport,
-} = useFilesView();
+} = useDocumentsView();
 </script>
 
 <template>
@@ -44,11 +44,11 @@ const {
         size="sm"
         class="h-8 shrink-0"
         data-testid="files-upload"
-        :aria-label="t('files.actions.upload')"
+        :aria-label="t('documents.actions.upload')"
         @click="openUpload"
       >
         <Upload :size="16" class="@2xl:mr-2" />
-        <span class="hidden @2xl:inline">{{ t("files.actions.upload") }}</span>
+        <span class="hidden @2xl:inline">{{ t("documents.actions.upload") }}</span>
       </Button>
 
       <!-- Import from a connected file service (OneDrive, Dropbox, ...). A quiet
@@ -58,11 +58,11 @@ const {
         size="sm"
         class="h-8 shrink-0"
         data-testid="files-import"
-        :aria-label="t('files.actions.import')"
+        :aria-label="t('documents.actions.import')"
         @click="openImport"
       >
         <ArrowDownToLine :size="16" class="@2xl:mr-2" />
-        <span class="hidden @2xl:inline">{{ t("files.actions.import") }}</span>
+        <span class="hidden @2xl:inline">{{ t("documents.actions.import") }}</span>
       </Button>
 
       <!-- Search: quiet filled field (no hard border), capped so it doesn't take
@@ -74,7 +74,7 @@ const {
         />
         <Input
           v-model="searchQuery"
-          :placeholder="t('files.filters.search')"
+          :placeholder="t('documents.filters.search')"
           class="h-8 border-transparent bg-muted/60 pl-10 shadow-none dark:bg-muted/40"
         />
       </div>
@@ -83,10 +83,10 @@ const {
       <MultiSelect
         v-model="selectedFormats"
         :options="formatOptions"
-        :label="t('files.filters.format')"
+        :label="t('documents.filters.format')"
         searchable
-        :search-placeholder="t('files.filters.formatSearch')"
-        :empty-text="t('files.filters.noFormats')"
+        :search-placeholder="t('documents.filters.formatSearch')"
+        :empty-text="t('documents.filters.noFormats')"
         item-class="font-mono text-xs"
         compact
         :icon="FileType"
@@ -100,7 +100,7 @@ const {
         size="icon-sm"
         class="size-8"
         :class="{ 'bg-muted text-foreground': viewMode === 'list' }"
-        :aria-label="t('files.view.list')"
+        :aria-label="t('documents.view.list')"
         @click="viewMode = 'list'"
       >
         <List :size="16" />
@@ -110,7 +110,7 @@ const {
         size="icon-sm"
         class="size-8"
         :class="{ 'bg-muted text-foreground': viewMode === 'grid' }"
-        :aria-label="t('files.view.grid')"
+        :aria-label="t('documents.view.grid')"
         @click="viewMode = 'grid'"
       >
         <LayoutGrid :size="16" />

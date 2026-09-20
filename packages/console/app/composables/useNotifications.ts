@@ -1,5 +1,5 @@
 import { tryOnScopeDispose } from "@vueuse/core";
-import type { Notification } from "@nvisy/sdk/datatypes";
+import type { AccountNotification } from "@nvisy/sdk/datatypes";
 
 // How long to wait before reconnecting after the unread-count stream drops.
 const STREAM_RETRY_MS = 5_000;
@@ -23,7 +23,7 @@ const STREAM_RETRY_MS = 5_000;
  */
 
 const unreadCount = ref(0);
-const arrivalHandlers = new Set<(n: Notification) => void>();
+const arrivalHandlers = new Set<(n: AccountNotification) => void>();
 // The newest notification id we've already emitted, so a count rise only emits
 // what's actually new (the stream carries a count, not the notification itself).
 let lastEmittedId: string | null = null;
@@ -62,13 +62,13 @@ export function useNotifications() {
 	// after the baseline has been seeded.
 	async function emitNewArrivals() {
 		if (arrivalHandlers.size === 0) return;
-		let items: Notification[];
+		let items: AccountNotification[];
 		try {
 			items = (await requireClient().notifications.listNotifications()).items;
 		} catch {
 			return; // best-effort; the badge count is still correct
 		}
-		const fresh: Notification[] = [];
+		const fresh: AccountNotification[] = [];
 		for (const n of items) {
 			if (n.id === lastEmittedId) break;
 			fresh.push(n);
@@ -142,7 +142,7 @@ export function useNotifications() {
 	 * Subscribe to newly-arrived notifications (e.g. the desktop shell mirrors
 	 * them as native OS notifications). Auto-unsubscribes on scope dispose.
 	 */
-	function onArrival(handler: (n: Notification) => void) {
+	function onArrival(handler: (n: AccountNotification) => void) {
 		arrivalHandlers.add(handler);
 		onScopeDispose(() => arrivalHandlers.delete(handler));
 	}

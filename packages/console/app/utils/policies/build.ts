@@ -1,10 +1,8 @@
 import type {
-	CreatePolicy,
-	CustomMatcher,
-	Label,
+	CreateWorkspacePolicy,
 	LabelScope,
 	ModalityRedactions,
-	PolicyDefinition,
+	PolicyDraft,
 	PolicyRule,
 	TextRedaction,
 } from "@nvisy/sdk/datatypes";
@@ -189,28 +187,6 @@ function buildRule(r: PolicyInput["rules"][number]): PolicyRule {
 			};
 }
 
-/** Build the custom-label schemas this policy introduces. */
-function buildCustomLabels(input: PolicyInput): Label[] | undefined {
-	// The editor edits one locale's name/description; merge that back into the
-	// label's preserved localizations so a save never drops its other locales.
-	const custom: Label[] = (input.labels ?? [])
-		.filter((l) => l.name.trim())
-		.map((l) => ({
-			id: l.id,
-			localizations: {
-				...l.localizations,
-				[l.locale]: {
-					name: l.name.trim(),
-					...(l.description?.trim()
-						? { description: l.description.trim() }
-						: {}),
-				},
-			},
-			tags: csvToList(l.tags),
-		}));
-	return custom.length > 0 ? custom : undefined;
-}
-
 /** Build the named label sets this policy detects (referenced by `labelInScope`). */
 function buildScopes(input: PolicyInput): LabelScope[] | undefined {
 	const scopes: LabelScope[] = (input.scopes ?? [])
@@ -224,66 +200,32 @@ function buildScopes(input: PolicyInput): LabelScope[] | undefined {
 }
 
 /**
- * Build the caller-defined recognizers this policy adds. A matcher needs a name,
- * a label, and a non-empty pattern (regex) or terms list; incomplete rows are
- * dropped so a half-filled matcher never reaches the SDK.
+ * Build the SDK policy draft body shared by create and update — the policy name,
+ * description, predicated/table rules, and the fallback. The policy body has no
+ * home for custom labels or custom matchers, so those editor sections are not
+ * persisted (no authoring input accepts them yet — see nvisycom/server#316).
  */
-function buildMatchers(input: PolicyInput): CustomMatcher[] | undefined {
-	const matchers: CustomMatcher[] = [];
-	for (const m of input.matchers ?? []) {
-		const name = m.name.trim();
-		const label = m.label.trim();
-		if (!name || !label) continue;
-
-		const base = {
-			name,
-			label,
-			...(m.confidence !== undefined ? { confidence: m.confidence } : {}),
-		};
-		if (m.kind === "pattern") {
-			const pattern = m.pattern?.trim();
-			if (pattern) matchers.push({ ...base, kind: "pattern", pattern });
-		} else {
-			const terms = csvToList(m.terms);
-			if (terms.length > 0) matchers.push({ ...base, kind: "terms", terms });
-		}
-	}
-	return matchers.length > 0 ? matchers : undefined;
-}
-
-/**
- * Build the SDK policy definition body shared by create and update.
- *
- * The editor fully models predicated and table rules, the fallback, custom
- * labels, label scopes, and custom matchers.
- */
-export function buildDefinition(input: PolicyInput): PolicyDefinition {
+export function buildDefinition(input: PolicyInput): PolicyDraft {
 	const rules = input.rules.map(buildRule);
-	const custom = buildCustomLabels(input);
 	const scopes = buildScopes(input);
-	const matchers = buildMatchers(input);
 
 	return {
-		id: input.id,
 		name: input.displayName.trim(),
 		description: input.description?.trim() || undefined,
 		// `rules` is optional; omit it entirely for a fallback-only policy.
 		...(rules.length > 0 ? { rules } : {}),
 		...(input.fallback ? { fallback: buildAction(input.fallback) } : {}),
-		...(custom ? { custom } : {}),
 		...(scopes ? { scopes } : {}),
-		...(matchers ? { matchers } : {}),
-	} as PolicyDefinition;
+	};
 }
 
 /**
- * Assemble a `CreatePolicy` payload from the editor's field values. 0.14 makes
- * CreatePolicy a discriminated union (`source: "template" | "inline"`); the
- * editor always builds an inline definition.
+ * Assemble a `CreateWorkspacePolicy` payload from the editor's field values.
+ * `CreateWorkspacePolicy` is a discriminated union (`source:
+ * "template" | "inline" | "labels"`); the editor always builds an inline draft.
  */
-export function buildCreatePolicy(input: PolicyInput): CreatePolicy {
+export function buildCreatePolicy(input: PolicyInput): CreateWorkspacePolicy {
 	return {
-		slug: input.slug,
 		displayName: input.displayName.trim(),
 		description: input.description?.trim() || undefined,
 		source: "inline",

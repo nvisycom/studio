@@ -12,10 +12,8 @@
 	],
 	"scripts": {
 		"dev:web": "npm run dev -w @nvisy/webapp",
-		"dev:web:cloud": "npm run dev:cloud -w @nvisy/webapp",
 		"dev:desktop": "npm run dev -w @nvisy/desktop",
 		"build:web": "npm run build -w @nvisy/webapp",
-		"build:web:cloud": "npm run build:cloud -w @nvisy/webapp",
 		"build:desktop": "npm run generate -w @nvisy/desktop",
 		"tauri": "npm run tauri -w @nvisy/desktop",
 		"tauri:dev": "npm run tauri:dev -w @nvisy/desktop",

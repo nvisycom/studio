@@ -206,9 +206,7 @@ export interface EditableMatcher {
 
 /** The full editor input for building a create/update policy payload. */
 export interface PolicyInput {
-	id: string;
 	displayName: string;
-	slug: string;
 	description?: string;
 	rules: EditableRule[];
 	/** Catch-all action when no rule matches; null/undefined = none. */

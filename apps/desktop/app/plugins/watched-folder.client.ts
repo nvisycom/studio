@@ -32,7 +32,7 @@ import type { WatchedFolder } from "#console/composables/useWatchedFolder";
 interface FolderFile {
 	name: string;
 	data: number[];
-	workspaceSlug: string;
+	workspaceId: string;
 }
 
 /** A file ready to upload, paired with its source event so a failed upload can
@@ -86,13 +86,13 @@ export default defineNuxtPlugin((nuxtApp) => {
 	async function newFiles(
 		sdk: Nvisy,
 		items: FolderFile[],
-		workspaceSlug: string,
+		workspaceId: string,
 	): Promise<PreparedUpload[]> {
 		const out: PreparedUpload[] = [];
 		for (const item of items) {
 			const bytes = new Uint8Array(item.data);
 			const hash = await sha256Hex(bytes);
-			const existing = await sdk.files.listFiles(workspaceSlug, {
+			const existing = await sdk.documents.listDocuments(workspaceId, {
 				hash,
 				limit: 1,
 			});
@@ -110,12 +110,12 @@ export default defineNuxtPlugin((nuxtApp) => {
 	async function uploadBatch(
 		sdk: Nvisy,
 		files: File[],
-		workspaceSlug: string,
+		workspaceId: string,
 	): Promise<"ok" | "retry" | "drop"> {
 		let backoff = BASE_BACKOFF;
 		for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
 			try {
-				await sdk.files.uploadFiles(workspaceSlug, files);
+				await sdk.documents.uploadDocuments(workspaceId, files);
 				return "ok";
 			} catch (error) {
 				if (!isRetryable(error)) {
@@ -142,28 +142,28 @@ export default defineNuxtPlugin((nuxtApp) => {
 			// Take a run of files for a single workspace: the folder is bound to one
 			// workspace, but a rebind can leave events for the previous one still
 			// queued, so never mix workspaces in one upload call.
-			const workspaceSlug = queue[0]?.workspaceSlug;
-			if (!workspaceSlug) {
+			const workspaceId = queue[0]?.workspaceId;
+			if (!workspaceId) {
 				queue.shift();
 				continue;
 			}
 			const batch: FolderFile[] = [];
 			while (
 				batch.length < UPLOAD_BATCH &&
-				queue[0]?.workspaceSlug === workspaceSlug
+				queue[0]?.workspaceId === workspaceId
 			) {
 				const item = queue.shift();
 				if (item) batch.push(item);
 			}
 			try {
-				const prepared = await newFiles(sdk, batch, workspaceSlug);
+				const prepared = await newFiles(sdk, batch, workspaceId);
 				if (prepared.length > 0) {
 					if (!first) await sleep(BATCH_GAP);
 					first = false;
 					const result = await uploadBatch(
 						sdk,
 						prepared.map((p) => p.file),
-						workspaceSlug,
+						workspaceId,
 					);
 					if (result === "retry") {
 						// Transient server outage — requeue these files (not the ones
@@ -210,9 +210,9 @@ export default defineNuxtPlugin((nuxtApp) => {
 	// and hands the watcher the shared accepted-extension allowlist.
 	setWatchedFolder({
 		get: () => invoke<WatchedFolder | null>("watch_folder"),
-		set: (workspaceSlug) =>
+		set: (workspaceId) =>
 			invoke<WatchedFolder | null>("set_watch_folder", {
-				workspaceSlug,
+				workspaceId,
 				extensions: [...ACCEPTED_EXTENSIONS],
 			}),
 		clear: () => invoke("clear_watch_folder").then(() => undefined),

@@ -1,20 +1,20 @@
 import type {
-	CreateInvite,
-	GenerateInviteCode,
-	ListInvites,
+	CreateWorkspaceInvite,
+	GenerateWorkspaceInviteCode,
+	ListWorkspaceInvites,
 } from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for workspace invitation operations
  */
-export function useInvites(query?: MaybeRef<ListInvites>) {
-	const { currentWorkspaceSlug } = useWorkspaceContext();
+export function useInvites(query?: MaybeRef<ListWorkspaceInvites>) {
+	const { currentWorkspaceId } = useWorkspaceContext();
 
 	const invitesQuery = workspaceQuery(
 		"invites",
-		({ client, workspaceSlug }) =>
+		({ client, workspaceId }) =>
 			fetchAllPages((after) =>
-				client.invites.listInvites(workspaceSlug, {
+				client.invites.listInvites(workspaceId, {
 					...toValue(query),
 					after,
 				}),
@@ -22,7 +22,7 @@ export function useInvites(query?: MaybeRef<ListInvites>) {
 		{
 			key: () => [
 				"invites",
-				currentWorkspaceSlug.value,
+				currentWorkspaceId.value,
 				JSON.stringify(toValue(query) ?? null),
 			],
 			staleTime: 0,
@@ -33,14 +33,14 @@ export function useInvites(query?: MaybeRef<ListInvites>) {
 	const optimistic = useOptimisticList(invitesQuery.data, (i) => i.inviteId);
 
 	const sendInviteMutation = workspaceMutation(
-		({ client, workspaceSlug }, invite: CreateInvite) =>
-			client.invites.sendInvite(workspaceSlug, invite),
+		({ client, workspaceId }, invite: CreateWorkspaceInvite) =>
+			client.invites.sendInvite(workspaceId, invite),
 		{ invalidates: "invites" },
 	);
 
 	const cancelInviteMutation = workspaceMutation(
-		({ client, workspaceSlug }, inviteId: string) =>
-			client.invites.cancelInvite(workspaceSlug, inviteId),
+		({ client, workspaceId }, inviteId: string) =>
+			client.invites.cancelInvite(workspaceId, inviteId),
 		{
 			invalidates: "invites",
 			onMutate: (inviteId) => optimistic.remove(inviteId),
@@ -49,8 +49,8 @@ export function useInvites(query?: MaybeRef<ListInvites>) {
 	);
 
 	const generateCodeMutation = workspaceMutation(
-		({ client, workspaceSlug }, options: GenerateInviteCode) =>
-			client.invites.generateInviteCode(workspaceSlug, options),
+		({ client, workspaceId }, options: GenerateWorkspaceInviteCode) =>
+			client.invites.generateInviteCode(workspaceId, options),
 	);
 
 	return {

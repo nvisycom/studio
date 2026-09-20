@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Provider } from "@nvisy/sdk/datatypes";
+import type { WorkspaceProvider } from "@nvisy/sdk/datatypes";
 import type { RowAction } from "#console/components/pages/RowActions.vue";
 import type {
 	VirtualColumn,
@@ -14,7 +14,7 @@ const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
 
 defineProps<{
-	providers: Provider[];
+	providers: WorkspaceProvider[];
 	empty?: VirtualTableEmpty;
 }>();
 
@@ -22,10 +22,10 @@ const emit = defineEmits<{
 	(e: "configure", providerId: string): void;
 	(e: "delete", providerId: string): void;
 	(e: "test", providerId: string): void;
-	(e: "toggleActive", provider: Provider): void;
+	(e: "toggleActive", provider: WorkspaceProvider): void;
 }>();
 
-const columns = computed<VirtualColumn<Provider>[]>(() => [
+const columns = computed<VirtualColumn<WorkspaceProvider>[]>(() => [
 	{
 		key: "name",
 		header: t("providers.table.headers.name"),
@@ -59,7 +59,7 @@ const columns = computed<VirtualColumn<Provider>[]>(() => [
 	},
 ]);
 
-function rowActions(provider: Provider): RowAction[] {
+function rowActions(provider: WorkspaceProvider): RowAction[] {
 	return [
 		{
 			key: "configure",

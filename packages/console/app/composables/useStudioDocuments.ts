@@ -1,7 +1,7 @@
-import type { File as NvisyFile } from "@nvisy/sdk/datatypes";
+import type { WorkspaceDocument as NvisyFile } from "@nvisy/sdk/datatypes";
 import { useLocalStorage } from "@vueuse/core";
 
-export interface OpenFile {
+export interface OpenDocument {
 	fileId: string;
 	displayName: string;
 	/**
@@ -19,7 +19,7 @@ export interface OpenFile {
  * Composable for managing open files in Studio across navigation.
  * Uses a shared state that persists while the app is running.
  */
-const openFiles = ref<Map<string, OpenFile>>(new Map());
+const openFiles = ref<Map<string, OpenDocument>>(new Map());
 const activeFileId = ref<string | null>(null);
 
 /** localStorage key for the persisted per-workspace Studio open-files session. */
@@ -45,10 +45,10 @@ const loadedSlug = ref<string | null>(null);
 // The workspace-swap watcher is registered once, not per composable call.
 let swapWatcherRegistered = false;
 
-export function useStudioFiles() {
+export function useStudioDocuments() {
 	const { $nvisyClient } = useNuxtApp();
 	const { isAuthenticated } = useAuth();
-	const { currentWorkspaceSlug } = useWorkspaces();
+	const { currentWorkspaceSlug, currentWorkspaceId } = useWorkspaces();
 
 	// Snapshot the current in-memory tabs into localStorage. Keyed off the
 	// workspace the tabs actually belong to (loadedSlug), not the reactive
@@ -83,7 +83,7 @@ export function useStudioFiles() {
 		openFiles.value.set(fileId, {
 			fileId,
 			displayName: file?.displayName ?? "",
-			fileExtension: file?.fileExtension ?? "",
+			fileExtension: file?.extension ?? "",
 			contentUrl: null,
 			isLoading: true,
 		});
@@ -95,19 +95,16 @@ export function useStudioFiles() {
 	// the result if the workspace switched away mid-download.
 	async function fetchIntoTab(fileId: string, file?: NvisyFile) {
 		const workspaceSlug = loadedSlug.value ?? currentWorkspaceSlug.value;
+		const workspaceId = currentWorkspaceId.value;
 		try {
 			const client = $nvisyClient.value;
-			if (!client || !workspaceSlug || !isAuthenticated.value) {
+			if (!client || !workspaceSlug || !workspaceId || !isAuthenticated.value) {
 				throw new Error("Not authenticated");
 			}
 
 			const fileData =
-				file ?? (await client.files.getFile(workspaceSlug, fileId));
-			const contentUrl = await fetchFileContentUrl(
-				client,
-				workspaceSlug,
-				fileId,
-			);
+				file ?? (await client.documents.getDocument(workspaceId, fileId));
+			const contentUrl = await fetchFileContentUrl(client, workspaceId, fileId);
 
 			// Ignore if the workspace switched away, or the tab was closed, while
 			// this download was in flight.
@@ -118,7 +115,7 @@ export function useStudioFiles() {
 			openFiles.value.set(fileId, {
 				fileId,
 				displayName: fileData.displayName,
-				fileExtension: fileData.fileExtension,
+				fileExtension: fileData.extension,
 				contentUrl,
 				isLoading: false,
 			});
@@ -133,7 +130,7 @@ export function useStudioFiles() {
 	}
 
 	// Open a file (add to open files and set as active)
-	async function openFile(fileId: string, file?: NvisyFile) {
+	async function openDocument(fileId: string, file?: NvisyFile) {
 		// Claim ownership only when no workspace owns the tabs yet (the very first
 		// open). Never re-attribute existing tabs here: if this runs after the
 		// active workspace changed but before the swap watcher fires, overwriting
@@ -311,7 +308,7 @@ export function useStudioFiles() {
 		activeFile,
 
 		// Actions
-		openFile,
+		openDocument,
 		closeFile,
 		closeOtherFiles,
 		closeFilesToRight,

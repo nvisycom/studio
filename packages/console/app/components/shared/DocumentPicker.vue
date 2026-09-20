@@ -40,7 +40,7 @@ withDefaults(
 // Search box → debounced → the files query, so keystrokes don't spam the API.
 const search = ref("");
 const debouncedSearch = refDebounced(search, 250);
-const { files, getFile } = useFiles({
+const { documents, getDocument } = useDocuments({
 	query: computed(() => ({ search: debouncedSearch.value || undefined })),
 	pageSize: 20,
 });
@@ -52,7 +52,7 @@ const { files, getFile } = useFiles({
 // selection.
 const selectedLabel = ref("");
 watch(
-	[() => model.value, files],
+	[() => model.value, documents],
 	async ([id, list]) => {
 		if (!id) {
 			selectedLabel.value = "";
@@ -68,8 +68,8 @@ watch(
 		// previous selection's label showing for this new id.
 		selectedLabel.value = "";
 		try {
-			const file = await getFile(id);
-			if (model.value === id) selectedLabel.value = file.displayName;
+			const document = await getDocument(id);
+			if (model.value === id) selectedLabel.value = document.displayName;
 		} catch {
 			// Best-effort: the trigger falls back to the placeholder if the lookup fails.
 		}
@@ -122,16 +122,16 @@ const displayValue = () => "";
       <ComboboxEmpty>{{ t("common.filePicker.empty") }}</ComboboxEmpty>
       <ComboboxGroup>
         <ComboboxItem
-          v-for="file in files ?? []"
-          :key="file.id"
-          :value="file.id"
+          v-for="document in documents ?? []"
+          :key="document.id"
+          :value="document.id"
         >
           <Check
             :size="14"
             class="mr-2 shrink-0"
-            :class="model === file.id ? 'opacity-100' : 'opacity-0'"
+            :class="model === document.id ? 'opacity-100' : 'opacity-0'"
           />
-          <span class="truncate">{{ file.displayName }}</span>
+          <span class="truncate">{{ document.displayName }}</span>
         </ComboboxItem>
       </ComboboxGroup>
     </ComboboxList>

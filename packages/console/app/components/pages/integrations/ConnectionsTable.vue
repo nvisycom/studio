@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Connection } from "@nvisy/sdk/datatypes";
+import type { WorkspaceConnection } from "@nvisy/sdk/datatypes";
 import type { RowAction } from "#console/components/pages/RowActions.vue";
 import type {
 	VirtualColumn,
@@ -25,7 +25,7 @@ const { relativeTime } = useRelativeTime();
 const dropboxAppKey = useRuntimeConfig().public.dropboxAppKey as string;
 
 defineProps<{
-	connections: Connection[];
+	connections: WorkspaceConnection[];
 	empty?: VirtualTableEmpty;
 }>();
 
@@ -35,11 +35,11 @@ const emit = defineEmits<{
 	(e: "sync", connectionId: string): void;
 	(e: "test", connectionId: string): void;
 	(e: "export", connectionId: string): void;
-	(e: "import", connection: Connection): void;
-	(e: "toggleActive", connection: Connection): void;
+	(e: "import", connection: WorkspaceConnection): void;
+	(e: "toggleActive", connection: WorkspaceConnection): void;
 }>();
 
-const columns = computed<VirtualColumn<Connection>[]>(() => [
+const columns = computed<VirtualColumn<WorkspaceConnection>[]>(() => [
 	{
 		key: "name",
 		header: t("connections.table.headers.name"),
@@ -89,7 +89,7 @@ const columns = computed<VirtualColumn<Connection>[]>(() => [
 	},
 ]);
 
-function rowActions(connection: Connection): RowAction[] {
+function rowActions(connection: WorkspaceConnection): RowAction[] {
 	// Import/export are file-service-only (object stores and LLMs have neither a
 	// picker nor a redacted-export target). Import needs an active connection with
 	// a wired picker (the shared eligibility rule); export applies to any file

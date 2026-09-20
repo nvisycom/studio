@@ -51,7 +51,7 @@ const { isDesktop } = usePlatform();
 
 const {
 	currentWorkspace,
-	currentWorkspaceSlug,
+	currentWorkspaceId,
 	isLoading: isLoadingWorkspaces,
 	updateWorkspaceAsync,
 	isUpdating,
@@ -117,13 +117,12 @@ const hasRetentionChanges = computed(() => {
 });
 
 async function saveWorkspaceSettings() {
-	const workspaceSlug = currentWorkspaceSlug.value;
 	const workspace = currentWorkspace.value;
-	if (!workspaceSlug || !workspace) return;
+	if (!workspace) return;
 
 	try {
 		await updateWorkspaceAsync({
-			workspaceSlug,
+			workspaceId: workspace.id,
 			updates: { settings: editedSettings.value },
 		});
 		toast.success(t("settings.workspace.messages.optionsSaved"));
@@ -238,7 +237,7 @@ async function saveWorkspaceSettings() {
              into this workspace. -->
         <WatchedFolderCard
           v-if="isDesktop"
-          :workspace-slug="currentWorkspaceSlug ?? ''"
+          :workspace-id="currentWorkspaceId ?? ''"
         />
       </div>
     </div>

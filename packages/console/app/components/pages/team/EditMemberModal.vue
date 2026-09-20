@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Member, WorkspaceRole } from "@nvisy/sdk/datatypes";
+import type { WorkspaceMember, WorkspaceRole } from "@nvisy/sdk/datatypes";
 import { Loader2 } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import { Label } from "#console/components/ui/label";
@@ -21,7 +21,7 @@ import {
 
 interface Props {
 	open?: boolean;
-	member?: Member | null;
+	member?: WorkspaceMember | null;
 	isLoading?: boolean;
 }
 
@@ -83,7 +83,7 @@ function cancel(): void {
       </DialogHeader>
 
       <div class="space-y-6 py-6">
-        <!-- Member Info -->
+        <!-- WorkspaceMember Info -->
         <div>
           <Label
             class="mb-2 text-sm font-medium text-foreground"

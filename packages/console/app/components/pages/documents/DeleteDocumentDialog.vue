@@ -12,8 +12,8 @@ import {
 
 interface Props {
 	open: boolean;
-	fileName?: string;
-	fileCount?: number;
+	documentName?: string;
+	documentCount?: number;
 	isDeleting?: boolean;
 }
 
@@ -23,14 +23,14 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	fileCount: 1,
+	documentCount: 1,
 	isDeleting: false,
 });
 const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
 
-const isMultiple = computed(() => props.fileCount > 1);
+const isMultiple = computed(() => props.documentCount > 1);
 </script>
 
 <template>
@@ -40,22 +40,22 @@ const isMultiple = computed(() => props.fileCount > 1);
         <DialogTitle>
           {{
             isMultiple
-              ? t("files.dialogs.delete.titleMultiple")
-              : t("files.dialogs.delete.title")
+              ? t("documents.dialogs.delete.titleMultiple")
+              : t("documents.dialogs.delete.title")
           }}
         </DialogTitle>
         <DialogDescription>
           {{
             isMultiple
-              ? t("files.dialogs.delete.descriptionMultiple", { count: fileCount })
-              : t("files.dialogs.delete.description")
+              ? t("documents.dialogs.delete.descriptionMultiple", { count: documentCount })
+              : t("documents.dialogs.delete.description")
           }}
         </DialogDescription>
       </DialogHeader>
 
-      <div v-if="fileName && !isMultiple" class="min-w-0">
-        <p class="truncate text-sm font-medium text-foreground" :title="fileName">
-          {{ fileName }}
+      <div v-if="documentName && !isMultiple" class="min-w-0">
+        <p class="truncate text-sm font-medium text-foreground" :title="documentName">
+          {{ documentName }}
         </p>
       </div>
 
@@ -65,7 +65,7 @@ const isMultiple = computed(() => props.fileCount > 1);
           @click="emit('update:open', false)"
           :disabled="isDeleting"
         >
-          {{ t("files.dialogs.delete.cancel") }}
+          {{ t("documents.dialogs.delete.cancel") }}
         </Button>
         <Button
           variant="destructive"
@@ -73,7 +73,7 @@ const isMultiple = computed(() => props.fileCount > 1);
           :disabled="isDeleting"
         >
           <Loader2 v-if="isDeleting" class="mr-2 h-4 w-4 animate-spin" />
-          {{ t("files.dialogs.delete.confirm") }}
+          {{ t("documents.dialogs.delete.confirm") }}
         </Button>
       </DialogFooter>
     </DialogContent>

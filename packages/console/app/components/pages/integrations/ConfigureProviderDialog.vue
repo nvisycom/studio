@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import type { LlmConfig, Provider, UpdateProvider } from "@nvisy/sdk/datatypes";
+import type {
+	LlmConfig,
+	WorkspaceProvider,
+	UpdateWorkspaceProvider,
+} from "@nvisy/sdk/datatypes";
 import type { LlmProvider } from "#console/utils/connections";
 import {
 	LLM_PROVIDERS,
@@ -19,7 +23,7 @@ const { t } = useI18n();
 const props = withDefaults(
 	defineProps<{
 		open?: boolean;
-		provider?: Provider | null;
+		provider?: WorkspaceProvider | null;
 		isLoading?: boolean;
 	}>(),
 	{ open: false, provider: null, isLoading: false },
@@ -27,7 +31,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
 	(e: "update:open", value: boolean): void;
-	(e: "update", updates: UpdateProvider): void;
+	(e: "update", updates: UpdateWorkspaceProvider): void;
 }>();
 
 const displayName = ref("");
@@ -60,7 +64,7 @@ const isValid = computed(() => {
 	return true;
 });
 
-function populate(provider: Provider) {
+function populate(provider: WorkspaceProvider) {
 	displayName.value = provider.displayName;
 	isActive.value = provider.isActive;
 	showCredentials.value = false;
@@ -107,7 +111,7 @@ function buildConfig(tag: LlmProvider): LlmConfig | null {
 function submit() {
 	if (!isValid.value || !props.provider) return;
 
-	const updates: UpdateProvider = {
+	const updates: UpdateWorkspaceProvider = {
 		displayName: displayName.value.trim(),
 		isActive: isActive.value,
 	};
@@ -140,7 +144,7 @@ function cancel() {
     :icon-alt="provider?.provider"
     @update:open="handleOpenChange"
   >
-    <!-- Provider name -->
+    <!-- WorkspaceProvider name -->
     <div class="space-y-2">
       <Label required>{{ t("providers.dialogs.configure.nameLabel") }}</Label>
       <Input

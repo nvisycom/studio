@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import StudioFileTab from "./StudioFileTab.vue";
+import StudioDocumentTab from "./StudioDocumentTab.vue";
 
 const router = useRouter();
 const { wLink } = useWorkspaceLink();
@@ -17,7 +17,7 @@ const {
 	closeAllFiles,
 	reorderFiles,
 	setActiveFile,
-} = useStudioFiles();
+} = useStudioDocuments();
 
 const strip = ref<HTMLElement | null>(null);
 
@@ -102,7 +102,7 @@ function handleCloseAll() {
 // has nothing to show without an open file.
 function leaveIfEmpty() {
 	if (openFiles.value.length === 0) {
-		router.push(wLink("/files"));
+		router.push(wLink("/documents"));
 	}
 }
 </script>
@@ -125,7 +125,7 @@ function leaveIfEmpty() {
       @dragover.prevent
       @drop.prevent="dropped = true"
     >
-      <StudioFileTab
+      <StudioDocumentTab
         v-for="file in openFiles"
         :key="file.fileId"
         :file="file"

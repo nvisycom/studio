@@ -37,7 +37,7 @@ const retention = defineModel<RetentionForm>("retention", { required: true });
       </Label>
       <div class="flex items-center gap-2">
         <Input
-          v-if="retention[target].mode === 'days'"
+          v-if="retention[target].mode === 'fixed'"
           v-model.number="retention[target].days"
           type="number"
           min="1"

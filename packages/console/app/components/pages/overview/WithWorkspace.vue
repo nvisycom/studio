@@ -43,7 +43,7 @@ const { relativeTime } = useRelativeTime();
 const { resolveAvatarUrl } = useAvatarUrl();
 const { currentWorkspace } = useWorkspaces();
 const { members } = useMembers();
-const { files } = useFiles();
+const { documents } = useDocuments();
 const { policies } = usePolicies();
 const { activities } = useActivities({ pageSize: 8 });
 const { detections } = useDetections();
@@ -65,8 +65,8 @@ const setupSteps = computed<SetupStep[]>(() => [
 	{
 		key: "uploadFiles",
 		icon: FileText,
-		href: wLink("/files"),
-		done: (files.value?.length ?? 0) > 0,
+		href: wLink("/documents"),
+		done: (documents.value?.length ?? 0) > 0,
 	},
 	{
 		key: "createPolicy",
@@ -96,11 +96,11 @@ const dismissedSlugs = useLocalStorage<string[]>(
 );
 const isDismissed = computed(() =>
 	currentWorkspace.value
-		? dismissedSlugs.value.includes(currentWorkspace.value.slug)
+		? dismissedSlugs.value.includes(currentWorkspace.value.handle)
 		: false,
 );
 function dismissSetup(): void {
-	const slug = currentWorkspace.value?.slug;
+	const slug = currentWorkspace.value?.handle;
 	if (slug && !dismissedSlugs.value.includes(slug)) {
 		dismissedSlugs.value = [...dismissedSlugs.value, slug];
 	}
@@ -149,7 +149,7 @@ const recentActivities = computed(() =>
 		.slice(0, 5),
 );
 
-const recentFiles = computed(() => (files.value ?? []).slice(0, 5));
+const recentDocuments = computed(() => (documents.value ?? []).slice(0, 5));
 
 // Most-recent pipeline detections, newest first. Each is shown by the document
 // it analyzes (mirroring the Recent files card): a file-icon tile carrying a
@@ -162,11 +162,11 @@ const recentDetections = computed(() =>
 		.map((detection) => ({
 			id: detection.id,
 			status: detection.status,
-			pipelineSlug: detection.pipelineSlug,
+			pipelineId: detection.pipelineId,
 			startedAt: detection.startedAt,
 			triggeredBy: detection.triggeredBy,
 			// The source document; fall back to the id when the name is absent.
-			fileName: detection.inputFileName || detection.inputFileId,
+			fileName: detection.inputDocumentName || detection.inputDocumentId,
 		})),
 );
 
@@ -188,7 +188,7 @@ const quickActions = [
 	{
 		title: t("overview.quickActions.uploadFiles.title"),
 		icon: Upload,
-		href: wLink("/files"),
+		href: wLink("/documents"),
 	},
 	{
 		title: t("overview.quickActions.manageTeam.title"),
@@ -363,8 +363,8 @@ const quickActions = [
                 {{ t("overview.sections.recentFiles") }}
               </CardTitle>
               <NuxtLink
-                v-if="recentFiles.length"
-                :to="wLink('/files')"
+                v-if="recentDocuments.length"
+                :to="wLink('/documents')"
                 class="text-xs text-muted-foreground transition-colors hover:text-foreground"
               >
                 {{ t("overview.sections.viewAll") }}
@@ -372,18 +372,18 @@ const quickActions = [
             </div>
           </CardHeader>
           <CardContent class="pb-6">
-            <div v-if="recentFiles.length" class="-my-1 flex flex-col">
+            <div v-if="recentDocuments.length" class="-my-1 flex flex-col">
               <NuxtLink
-                v-for="file in recentFiles"
+                v-for="file in recentDocuments"
                 :key="file.id"
-                :to="wLink('/files')"
+                :to="wLink('/documents')"
                 class="group flex min-h-14 items-center gap-3 py-2.5"
               >
                 <div
                   class="flex size-8 shrink-0 items-center justify-center rounded-md border border-border/60 bg-muted/40 text-muted-foreground"
                 >
                   <component
-                    :is="getFileIconForExtension(file.fileExtension)"
+                    :is="getFileIconForExtension(file.extension)"
                     :size="16"
                     :stroke-width="1.75"
                   />
@@ -479,7 +479,7 @@ const quickActions = [
                     {{ detection.fileName }}
                   </p>
                   <p class="truncate font-mono text-xs text-muted-foreground">
-                    {{ detection.pipelineSlug }}
+                    {{ detection.pipelineId }}
                   </p>
                 </div>
                 <div class="flex min-w-0 shrink items-center gap-2">

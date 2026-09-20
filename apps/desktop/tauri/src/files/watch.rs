@@ -30,22 +30,32 @@ use crate::store;
 #[serde(rename_all = "camelCase")]
 pub struct WatchConfig {
     pub folder: String,
-    pub workspace_slug: String,
+    pub workspace_id: String,
 }
 
-/// Key holding the watched-folder config (`{ folder, workspaceSlug }`) or absent.
+/// Key holding the watched-folder config (`{ folder, workspaceId }`) or absent.
 const WATCH_KEY: &str = "watch_folder";
 
 /// The watched-folder config, or `None` when no folder is watched (or the store
 /// can't be read).
+///
+/// A config from before the `workspaceSlug` → `workspaceId` change stored a
+/// handle, which can't be used as the id the upload path now needs and can't be
+/// resolved here (no API client). Such a config is discarded — the stale key is
+/// deleted so it's a one-time clean forget, not a silent no-op every boot — and
+/// the user re-picks the folder, which persists it in the new shape.
 fn stored_config<R: Runtime>(app: &AppHandle<R>) -> Option<WatchConfig> {
     let store = store::open(app)?;
     let value = store.get(WATCH_KEY)?;
     let folder = value.get("folder")?.as_str()?.to_owned();
-    let workspace_slug = value.get("workspaceSlug")?.as_str()?.to_owned();
+    let Some(workspace_id) = value.get("workspaceId").and_then(|v| v.as_str()) else {
+        // Legacy (handle-based) or malformed config: drop it.
+        store.delete(WATCH_KEY);
+        return None;
+    };
     Some(WatchConfig {
         folder,
-        workspace_slug,
+        workspace_id: workspace_id.to_owned(),
     })
 }
 
@@ -57,7 +67,7 @@ fn store_config<R: Runtime>(app: &AppHandle<R>, config: Option<&WatchConfig>) {
     match config {
         Some(c) => store.set(
             WATCH_KEY,
-            json!({ "folder": c.folder, "workspaceSlug": c.workspace_slug }),
+            json!({ "folder": c.folder, "workspaceId": c.workspace_id }),
         ),
         None => {
             store.delete(WATCH_KEY);
@@ -90,10 +100,10 @@ struct FolderFile {
     /// The file's contents.
     data: Vec<u8>,
     /// The workspace the frontend should upload it to (the folder's binding).
-    workspace_slug: String,
+    workspace_id: String,
 }
 
-/// Start (or restart) watching `folder`, binding auto-uploads to `workspace_slug`
+/// Start (or restart) watching `folder`, binding auto-uploads to `workspace_id`
 /// and accepting only files whose extension is in `extensions` (lower-case, no
 /// dot). Persists the config and watches for new arrivals; when `emit_backlog_now`
 /// is set, also emits the existing backlog (a fresh pick, where the frontend is
@@ -101,7 +111,7 @@ struct FolderFile {
 pub fn set_folder<R: Runtime>(
     app: &AppHandle<R>,
     folder: String,
-    workspace_slug: String,
+    workspace_id: String,
     extensions: Vec<String>,
     emit_backlog_now: bool,
 ) -> Result<(), String> {
@@ -112,9 +122,10 @@ pub fn set_folder<R: Runtime>(
     let accepted: HashSet<String> = extensions.into_iter().collect();
 
     // Watcher callback: on any create/modify, read the newly-present supported
-    // files under the changed paths and emit them.
+    // files under the changed paths and emit them. Clones move into the closure,
+    // leaving `workspace_id` for the config/backlog below.
     let handle = app.clone();
-    let slug = workspace_slug.clone();
+    let callback_workspace_id = workspace_id.clone();
     let exts = accepted.clone();
     let mut debouncer = new_debouncer(DEBOUNCE, None, move |result: DebounceEventResult| {
         let events = match result {
@@ -131,7 +142,7 @@ pub fn set_folder<R: Runtime>(
                 continue;
             }
             for path in &event.paths {
-                emit_file(&handle, path, &slug, &exts);
+                emit_file(&handle, path, &callback_workspace_id, &exts);
             }
         }
     })
@@ -147,7 +158,7 @@ pub fn set_folder<R: Runtime>(
     });
     let config = WatchConfig {
         folder,
-        workspace_slug: workspace_slug.clone(),
+        workspace_id: workspace_id.clone(),
     };
     store_config(app, Some(&config));
 
@@ -155,7 +166,7 @@ pub fn set_folder<R: Runtime>(
     // pick the frontend is already authed to receive+upload these; the restore
     // path skips this and lets the frontend `scan` once it's ready — see below.)
     if emit_backlog_now {
-        emit_backlog(app, &path, &workspace_slug, &accepted);
+        emit_backlog(app, &path, &workspace_id, &accepted);
     }
     Ok(())
 }
@@ -190,13 +201,13 @@ pub fn scan<R: Runtime>(app: &AppHandle<R>, extensions: Vec<String>) {
     if let Err(error) = set_folder(
         app,
         config.folder,
-        config.workspace_slug.clone(),
+        config.workspace_id.clone(),
         accepted.iter().cloned().collect(),
         false,
     ) {
         log::warn!("failed to re-arm watched folder on scan: {error}");
     }
-    emit_backlog(app, &path, &config.workspace_slug, &accepted);
+    emit_backlog(app, &path, &config.workspace_id, &accepted);
 }
 
 /// On startup, the watched folder is left *disarmed*: the persisted config is
@@ -219,7 +230,7 @@ pub fn restore<R: Runtime>(app: &AppHandle<R>) {
 fn emit_file<R: Runtime>(
     app: &AppHandle<R>,
     path: &Path,
-    workspace_slug: &str,
+    workspace_id: &str,
     accepted: &HashSet<String>,
 ) {
     if !path.is_file() || !is_accepted(path, accepted) {
@@ -238,7 +249,7 @@ fn emit_file<R: Runtime>(
             let file = FolderFile {
                 name,
                 data,
-                workspace_slug: workspace_slug.to_owned(),
+                workspace_id: workspace_id.to_owned(),
             };
             if let Err(error) = app.emit(FOLDER_FILE_EVENT, file) {
                 log::warn!("failed to emit watched file: {error}");
@@ -255,7 +266,7 @@ fn emit_file<R: Runtime>(
 fn emit_backlog<R: Runtime>(
     app: &AppHandle<R>,
     folder: &Path,
-    workspace_slug: &str,
+    workspace_id: &str,
     accepted: &HashSet<String>,
 ) {
     let mut dirs = vec![folder.to_path_buf()];
@@ -270,7 +281,7 @@ fn emit_backlog<R: Runtime>(
             // uploaded — no cycles.
             match entry.file_type() {
                 Ok(ft) if ft.is_dir() => dirs.push(path),
-                Ok(ft) if ft.is_file() => emit_file(app, &path, workspace_slug, accepted),
+                Ok(ft) if ft.is_file() => emit_file(app, &path, workspace_id, accepted),
                 _ => {}
             }
         }

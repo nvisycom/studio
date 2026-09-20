@@ -19,8 +19,8 @@ watch(
 	(list) => {
 		if (!list || list.length === 0) return; // -> onboarding below
 		const target =
-			list.find((w) => w.slug === lastWorkspaceSlug.value) ?? list[0];
-		if (target) navigateTo(`/w/${target.slug}`, { replace: true });
+			list.find((w) => w.handle === lastWorkspaceSlug.value) ?? list[0];
+		if (target) navigateTo(`/w/${target.handle}`, { replace: true });
 	},
 	{ immediate: true },
 );

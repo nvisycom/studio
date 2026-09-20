@@ -1,4 +1,4 @@
-import type { UpdateNotificationSettings } from "@nvisy/sdk/datatypes";
+import type { UpdateWorkspaceNotificationSettings } from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for workspace notification settings operations
@@ -6,13 +6,13 @@ import type { UpdateNotificationSettings } from "@nvisy/sdk/datatypes";
 export function useNotificationSettings() {
 	const settingsQuery = workspaceQuery(
 		"notificationSettings",
-		({ client, workspaceSlug }) =>
-			client.workspaces.getNotificationSettings(workspaceSlug),
+		({ client, workspaceId }) =>
+			client.workspaces.getNotificationSettings(workspaceId),
 	);
 
 	const updateSettingsMutation = workspaceMutation(
-		({ client, workspaceSlug }, settings: UpdateNotificationSettings) =>
-			client.workspaces.updateNotificationSettings(workspaceSlug, settings),
+		({ client, workspaceId }, settings: UpdateWorkspaceNotificationSettings) =>
+			client.workspaces.updateNotificationSettings(workspaceId, settings),
 		{ invalidates: "notificationSettings" },
 	);
 

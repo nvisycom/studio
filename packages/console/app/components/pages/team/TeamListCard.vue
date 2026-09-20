@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type {
-	Member,
-	Invite,
+	WorkspaceMember,
+	WorkspaceInvite,
 	MemberSortField,
 	InviteSortField,
-	SortOrder,
+	Direction,
 	WorkspaceRole,
 } from "@nvisy/sdk/datatypes";
 import type { Selection } from "#console/composables/useSelection";
@@ -22,8 +22,8 @@ import {
 } from "#console/components/ui/select";
 
 defineProps<{
-	members: Member[];
-	invites: Invite[];
+	members: WorkspaceMember[];
+	invites: WorkspaceInvite[];
 	isLoadingMembers: boolean;
 	isLoadingInvites: boolean;
 	membersSelection: Selection;
@@ -35,7 +35,7 @@ const emit = defineEmits<{
 	"update:roleFilter": [role: WorkspaceRole | null];
 	"update:sorting": [
 		sortBy: MemberSortField | InviteSortField,
-		order: SortOrder,
+		order: Direction,
 	];
 	removeMember: [memberId: string];
 	editMember: [memberId: string];
@@ -51,7 +51,7 @@ const activeTab = ref("members");
 const searchQuery = ref("");
 const selectedRoleFilter = ref<WorkspaceRole | null>(null);
 const selectedSortField = ref<MemberSortField | InviteSortField>("date");
-const selectedSortOrder = ref<SortOrder>("desc");
+const selectedSortOrder = ref<Direction>("descending");
 
 // `Select` binds a single string, so the role filter uses an "any" sentinel and
 // sorting encodes field + order as "field|order".
@@ -66,10 +66,10 @@ const roleFilters = computed(() => [
 ]);
 
 const sortingOptions = computed(() => [
-	{ value: "name|asc", label: t("members.filters.sorting.nameAsc") },
-	{ value: "name|desc", label: t("members.filters.sorting.nameDesc") },
-	{ value: "date|desc", label: t("members.filters.sorting.dateNewest") },
-	{ value: "date|asc", label: t("members.filters.sorting.dateOldest") },
+	{ value: "name|ascending", label: t("members.filters.sorting.nameAsc") },
+	{ value: "name|descending", label: t("members.filters.sorting.nameDesc") },
+	{ value: "date|descending", label: t("members.filters.sorting.dateNewest") },
+	{ value: "date|ascending", label: t("members.filters.sorting.dateOldest") },
 ]);
 
 const roleFilterValue = computed({
@@ -85,7 +85,7 @@ const sortingValue = computed({
 	set: (value: string) => {
 		const [sortBy, order] = value.split("|") as [
 			MemberSortField | InviteSortField,
-			SortOrder,
+			Direction,
 		];
 		selectedSortField.value = sortBy;
 		selectedSortOrder.value = order;
@@ -99,7 +99,7 @@ watch(selectedRoleFilter, (role) => emit("update:roleFilter", role));
 
 <template>
   <div class="flex flex-col gap-4">
-    <!-- Tabs on the left, the primary Invite action on the right. -->
+    <!-- Tabs on the left, the primary WorkspaceInvite action on the right. -->
     <div class="flex items-center justify-between gap-3">
       <Tabs v-model="activeTab">
         <TabsList>

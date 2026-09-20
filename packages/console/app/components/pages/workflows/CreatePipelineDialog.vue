@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CreatePipeline } from "@nvisy/sdk/datatypes";
+import type { CreateWorkspacePipeline } from "@nvisy/sdk/datatypes";
 import { toast } from "vue-sonner";
 import { EditPipelineSheet } from "#console/components/pages/workflows";
 
@@ -20,7 +20,7 @@ const { isOpen, close } = useCreatePipeline();
 const { policies } = usePolicies();
 const { createPipelineAsync, isCreating } = usePipelines();
 
-async function handleCreate(pipeline: CreatePipeline) {
+async function handleCreate(pipeline: CreateWorkspacePipeline) {
 	try {
 		await createPipelineAsync(pipeline);
 		toast.success(t("workflows.toast.created"));

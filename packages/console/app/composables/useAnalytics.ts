@@ -5,13 +5,13 @@
  * strip on the overview and the full breakdowns on the analytics pages.
  */
 export function useAnalytics() {
-	const { currentWorkspaceSlug } = useWorkspaceContext();
+	const { currentWorkspaceId } = useWorkspaceContext();
 
 	const analyticsQuery = workspaceQuery(
 		"analytics",
-		({ client, workspaceSlug }) => client.analytics.getAnalytics(workspaceSlug),
+		({ client, workspaceId }) => client.analytics.getAnalytics(workspaceId),
 		{
-			key: () => ["analytics", currentWorkspaceSlug.value],
+			key: () => ["analytics", currentWorkspaceId.value],
 		},
 	);
 
@@ -19,10 +19,10 @@ export function useAnalytics() {
 	// trend charts and the detection-activity heatmap.
 	const timeSeriesQuery = workspaceQuery(
 		"analytics-timeseries",
-		({ client, workspaceSlug }) =>
-			client.analytics.getDetectionTimeSeries(workspaceSlug),
+		({ client, workspaceId }) =>
+			client.analytics.getDetectionTimeSeries(workspaceId),
 		{
-			key: () => ["analytics-timeseries", currentWorkspaceSlug.value],
+			key: () => ["analytics-timeseries", currentWorkspaceId.value],
 		},
 	);
 

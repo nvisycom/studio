@@ -6,15 +6,15 @@ import type { SyncStatus } from "@nvisy/sdk/datatypes";
  * pagination across every connection in the workspace.
  */
 export function useSyncs(options?: { status?: Ref<SyncStatus | undefined> }) {
-	const { requireContext, currentWorkspaceSlug } = useWorkspaceContext();
+	const { requireContext, currentWorkspaceId } = useWorkspaceContext();
 	const status = options?.status ?? ref<SyncStatus | undefined>(undefined);
 
 	const syncsQuery = workspaceQuery(
 		"syncs",
-		({ client, workspaceSlug }) =>
-			client.syncs.listWorkspaceSyncs(workspaceSlug, { status: status.value }),
+		({ client, workspaceId }) =>
+			client.syncs.listWorkspaceSyncs(workspaceId, { status: status.value }),
 		{
-			key: () => ["syncs", currentWorkspaceSlug.value, status.value ?? "all"],
+			key: () => ["syncs", currentWorkspaceId.value, status.value ?? "all"],
 		},
 	);
 
@@ -24,8 +24,8 @@ export function useSyncs(options?: { status?: Ref<SyncStatus | undefined> }) {
 		loadMore,
 		isLoadingMore,
 	} = useCursorPagination(syncsQuery.data, (after) => {
-		const { client, workspaceSlug } = requireContext();
-		return client.syncs.listWorkspaceSyncs(workspaceSlug, {
+		const { client, workspaceId } = requireContext();
+		return client.syncs.listWorkspaceSyncs(workspaceId, {
 			status: status.value,
 			after,
 		});
@@ -33,9 +33,9 @@ export function useSyncs(options?: { status?: Ref<SyncStatus | undefined> }) {
 
 	const cancelSyncMutation = workspaceMutation(
 		(
-			{ client, workspaceSlug },
+			{ client, workspaceId },
 			{ connectionId, syncId }: { connectionId: string; syncId: string },
-		) => client.syncs.cancelSync(workspaceSlug, connectionId, syncId),
+		) => client.syncs.cancelSync(workspaceId, connectionId, syncId),
 		{ invalidates: "syncs" },
 	);
 

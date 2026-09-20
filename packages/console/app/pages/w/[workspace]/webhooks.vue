@@ -2,7 +2,7 @@
 import { Webhook as WebhookIcon, Loader2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import type {
-	Webhook,
+	WorkspaceWebhook,
 	WebhookEvent,
 	WebhookStatus,
 } from "@nvisy/sdk/datatypes";
@@ -36,9 +36,9 @@ const {
 const isCreateDialogOpen = ref(false);
 const isEditDialogOpen = ref(false);
 const isDeleteDialogOpen = ref(false);
-const selectedWebhook = ref<Webhook | null>(null);
+const selectedWebhook = ref<WorkspaceWebhook | null>(null);
 
-function findWebhookById(webhookId: string): Webhook | undefined {
+function findWebhookById(webhookId: string): WorkspaceWebhook | undefined {
 	return webhooks.value?.find((w) => w.id === webhookId);
 }
 

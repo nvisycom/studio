@@ -1,4 +1,8 @@
-import type { Audit, EditSet, RedactionResult } from "@nvisy/sdk/datatypes";
+import type {
+	Audit,
+	EditSet,
+	WorkspaceRedactionResult,
+} from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for redaction operations (workspace-scoped). A redaction is the
@@ -20,10 +24,10 @@ export function useRedactions() {
 	async function createRedaction(
 		detectionId: string,
 		edits?: EditSet,
-	): Promise<RedactionResult> {
-		const { client, workspaceSlug } = requireContext();
+	): Promise<WorkspaceRedactionResult> {
+		const { client, workspaceId } = requireContext();
 		return await client.detections.createRedaction(
-			workspaceSlug,
+			workspaceId,
 			detectionId,
 			edits ? { edits } : {},
 		);
@@ -32,10 +36,10 @@ export function useRedactions() {
 	/** The most recent redaction of a detection, or null if it has none yet. */
 	async function findLatestForDetection(
 		detectionId: string,
-	): Promise<RedactionResult | null> {
-		const { client, workspaceSlug } = requireContext();
+	): Promise<WorkspaceRedactionResult | null> {
+		const { client, workspaceId } = requireContext();
 		const { items } = await client.detections.listRedactions(
-			workspaceSlug,
+			workspaceId,
 			detectionId,
 			{ limit: 1 },
 		);
@@ -47,8 +51,8 @@ export function useRedactions() {
 	 * reviewer edits were applied, keyed by redaction id.
 	 */
 	async function getReview(redactionId: string): Promise<Audit> {
-		const { client, workspaceSlug } = requireContext();
-		return await client.redactions.getReview(workspaceSlug, redactionId);
+		const { client, workspaceId } = requireContext();
+		return await client.redactions.getReview(workspaceId, redactionId);
 	}
 
 	/** Download a redaction's output file, saved under `fileName`. */
@@ -56,9 +60,9 @@ export function useRedactions() {
 		outputFileId: string,
 		fileName: string,
 	): Promise<void> {
-		const { client, workspaceSlug } = requireContext();
-		const response = await client.files.downloadFile(
-			workspaceSlug,
+		const { client, workspaceId } = requireContext();
+		const response = await client.documents.downloadDocument(
+			workspaceId,
 			outputFileId,
 		);
 		await saveBlob(await response.blob(), fileName);
@@ -69,5 +73,41 @@ export function useRedactions() {
 		findLatestForDetection,
 		getReview,
 		downloadOutput,
+	};
+}
+
+/**
+ * The redactions of a document — every redaction produced from any detection
+ * that analyzed it, most recent first. Used by the review detail page's
+ * Redactions tab (the review is scoped to a single document).
+ */
+export function useDocumentRedactions(documentId: MaybeRef<string>) {
+	const { currentWorkspaceId } = useWorkspaceContext();
+
+	const q = workspaceQuery<WorkspaceRedactionResult[]>(
+		"document-redactions",
+		async ({ client, workspaceId }) => {
+			const page = await client.redactions.listRedactions(workspaceId, {
+				documentId: toValue(documentId),
+			});
+			return page.items;
+		},
+		{
+			key: () => [
+				"document-redactions",
+				currentWorkspaceId.value,
+				toValue(documentId),
+			],
+			// No document selected yet — don't query with an empty id.
+			enabled: () => !!toValue(documentId),
+			staleTime: 0,
+		},
+	);
+
+	return {
+		redactions: computed(() => q.data.value ?? []),
+		isLoading: q.isLoading,
+		error: q.error,
+		refresh: q.refresh,
 	};
 }

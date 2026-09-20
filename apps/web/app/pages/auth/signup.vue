@@ -4,10 +4,9 @@ import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
 import { Checkbox } from "#console/components/ui/checkbox";
-import { FeatureGate } from "#console/components/shared";
-import { NvisyApiError } from "@nvisy/sdk";
 import type { IdentityProvider } from "@nvisy/sdk/datatypes";
 import { toast } from "vue-sonner";
+import { OIDC_BRANDS } from "~/utils/oidcBrands";
 
 const { t } = useI18n();
 useHead({ title: () => t("auth.signup.title") });
@@ -23,10 +22,6 @@ const { signupAsync, isSigningUp, signupError, startOidcSignIn } = useAuth();
 // native-app token and hand it back on that link instead of entering the app
 // here. On the plain web there's no `redirect_uri` and this is inert.
 const { callbackFromRoute, tryDesktopHandoff } = useDesktopSignInReturn();
-
-const apiError = computed(() =>
-	signupError.value instanceof NvisyApiError ? signupError.value : null,
-);
 
 // Form state
 const username = ref("");
@@ -94,8 +89,15 @@ async function handleOidcSignIn(provider: IdentityProvider): Promise<void> {
 	}
 }
 
-const handleGoogleSignup = () => handleOidcSignIn("google");
-const handleMicrosoftSignup = () => handleOidcSignIn("microsoft");
+// The OIDC providers the server advertises, resolved to their brand (logo +
+// label). A provider without a brand mapping is skipped.
+const { oidcProviders } = useAuthCapabilities();
+const oidcButtons = computed(() =>
+	oidcProviders.value.flatMap((provider) => {
+		const brand = OIDC_BRANDS[provider];
+		return brand ? [{ provider, ...brand }] : [];
+	}),
+);
 </script>
 
 <template>
@@ -108,46 +110,24 @@ const handleMicrosoftSignup = () => handleOidcSignIn("microsoft");
       </p>
     </div>
 
-    <FeatureGate feature="oauth">
-      <!-- Social Signup Buttons -->
-      <div class="grid grid-cols-2 gap-3">
+    <template v-if="oidcButtons.length">
+      <!-- Social sign-up: one button per OIDC provider the server offers. -->
+      <div class="flex gap-3">
         <Button
+          v-for="btn in oidcButtons"
+          :key="btn.provider"
           type="button"
           variant="outline"
-          class="h-10"
+          class="h-10 flex-1"
           :disabled="oidcPending !== null"
-          @click="handleGoogleSignup"
+          @click="handleOidcSignIn(btn.provider)"
         >
           <Loader2
-            v-if="oidcPending === 'google'"
+            v-if="oidcPending === btn.provider"
             class="mr-2 h-4 w-4 animate-spin"
           />
-          <img
-            v-else
-            src="~/assets/brands/google.png"
-            :alt="t('auth.shared.google')"
-            class="mr-2 h-4 w-4"
-          />
-          {{ t("auth.shared.google") }}
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          class="h-10"
-          :disabled="oidcPending !== null"
-          @click="handleMicrosoftSignup"
-        >
-          <Loader2
-            v-if="oidcPending === 'microsoft'"
-            class="mr-2 h-4 w-4 animate-spin"
-          />
-          <img
-            v-else
-            src="~/assets/brands/microsoft.png"
-            :alt="t('auth.shared.microsoft')"
-            class="mr-2 h-4 w-4"
-          />
-          {{ t("auth.shared.microsoft") }}
+          <img v-else :src="btn.logo" :alt="t(btn.labelKey)" class="mr-2 h-4 w-4" />
+          {{ t(btn.labelKey) }}
         </Button>
       </div>
 
@@ -162,7 +142,7 @@ const handleMicrosoftSignup = () => handleOidcSignIn("microsoft");
           </span>
         </div>
       </div>
-    </FeatureGate>
+    </template>
 
     <!-- Form -->
     <form @submit.prevent="handleSignup" class="space-y-4">
@@ -267,17 +247,6 @@ const handleMicrosoftSignup = () => handleOidcSignIn("microsoft");
         class="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg"
       >
         <p>{{ signupError.message || t("auth.signup.genericError") }}</p>
-        <p v-if="apiError?.suggestion" class="mt-1 opacity-80">
-          {{ apiError.suggestion }}
-        </p>
-        <ul
-          v-if="apiError?.validation?.length"
-          class="mt-2 list-disc list-inside space-y-1"
-        >
-          <li v-for="err in apiError.validation" :key="err.field">
-            <span class="font-medium">{{ err.field }}:</span> {{ err.message }}
-          </li>
-        </ul>
       </div>
 
       <!-- Submit Button -->

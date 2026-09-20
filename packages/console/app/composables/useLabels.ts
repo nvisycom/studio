@@ -24,7 +24,7 @@ export function useLabels() {
 		query: async () => {
 			const client = $nvisyClient.value;
 			if (!client) throw new Error("Not authenticated");
-			return await client.catalog.listLabels();
+			return await client.capabilities.listLabels();
 		},
 		enabled: () => isAuthenticated.value,
 		// The taxonomy is server-immutable; never auto-refetch within a session.

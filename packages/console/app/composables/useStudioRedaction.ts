@@ -562,11 +562,11 @@ export function useStudioRedaction(target: RedactionTarget) {
 			// The target detection changed, or the edits moved on — drop this stale
 			// result rather than publishing output that doesn't match the panel.
 			if (detectionId.value !== detection || editRevision !== revision) return;
-			if (!result.outputFileId)
+			if (!result.outputDocumentId)
 				throw new Error("The redaction produced no output file.");
 			output.value = {
-				fileId: result.outputFileId,
-				fileName: redactedName(result.outputFileId),
+				fileId: result.outputDocumentId,
+				fileName: redactedName(result.outputDocumentId),
 			};
 			redactPhase.value = "done";
 		} catch (err) {
@@ -603,10 +603,10 @@ export function useStudioRedaction(target: RedactionTarget) {
 			try {
 				const redaction = await findLatestRedaction(id);
 				if (detectionId.value !== id) return;
-				if (redaction?.outputFileId) {
+				if (redaction?.outputDocumentId) {
 					output.value = {
-						fileId: redaction.outputFileId,
-						fileName: redactedName(redaction.outputFileId),
+						fileId: redaction.outputDocumentId,
+						fileName: redactedName(redaction.outputDocumentId),
 					};
 					redactPhase.value = "done";
 				}

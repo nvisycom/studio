@@ -17,14 +17,14 @@ import { Button } from "#console/components/ui/button";
  * {@link useWatchedFolder}, so this imports no Tauri and is inert on the web.
  */
 const props = defineProps<{
-	/** The workspace a newly-set folder feeds (the one being configured). */
-	workspaceSlug: string;
+	/** The id of the workspace a newly-set folder feeds (the one being configured). */
+	workspaceId: string;
 }>();
 
 const { t } = useI18n();
 const { watchedFolder } = useWatchedFolder();
 
-const config = ref<{ folder: string; workspaceSlug: string } | null>(null);
+const config = ref<{ folder: string; workspaceId: string } | null>(null);
 const busy = ref(false);
 
 onMounted(async () => {
@@ -34,7 +34,7 @@ onMounted(async () => {
 
 // Whether the current watch feeds a *different* workspace than this page's.
 const boundElsewhere = computed(
-	() => !!config.value && config.value.workspaceSlug !== props.workspaceSlug,
+	() => !!config.value && config.value.workspaceId !== props.workspaceId,
 );
 
 async function choose() {
@@ -42,7 +42,7 @@ async function choose() {
 	if (!set || busy.value) return;
 	busy.value = true;
 	try {
-		const result = await set(props.workspaceSlug);
+		const result = await set(props.workspaceId);
 		if (result) config.value = result; // null = the user cancelled the picker
 	} catch (err) {
 		toast.error(t("settings.watchedFolder.errors.setFailed"), {

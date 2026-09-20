@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import type { CreatePolicy, Policy, UpdatePolicy } from "@nvisy/sdk/datatypes";
+import type {
+	CreateWorkspacePolicy,
+	WorkspacePolicy,
+	UpdateWorkspacePolicy,
+} from "@nvisy/sdk/datatypes";
 import type {
 	EditableRule,
 	EditablePredicatedRule,
@@ -22,7 +26,6 @@ import {
 	matchersFromDefinition,
 } from "#console/utils/policies";
 import { LabelPicker, LabelSelect, TagInput } from "#console/components/label";
-import { slugify } from "#console/utils/naming";
 import {
 	Plus,
 	Trash2,
@@ -57,13 +60,13 @@ import CollapsibleSection from "./CollapsibleSection.vue";
 const { t } = useI18n();
 
 const props = withDefaults(
-	defineProps<{ policy?: Policy | null; isLoading?: boolean }>(),
+	defineProps<{ policy?: WorkspacePolicy | null; isLoading?: boolean }>(),
 	{ policy: null, isLoading: false },
 );
 
 const emit = defineEmits<{
-	create: [policy: CreatePolicy];
-	update: [slug: string, updates: UpdatePolicy];
+	create: [policy: CreateWorkspacePolicy];
+	update: [id: string, updates: UpdateWorkspacePolicy];
 	/** Whether the form is submittable: valid, and (in edit mode) changed. */
 	"can-submit": [value: boolean];
 }>();
@@ -86,14 +89,12 @@ function activeModalities(action: EditableAction): Modality[] {
 }
 
 const displayName = ref("");
-const slug = ref("");
 const description = ref("");
 const rules = ref<EditableRule[]>([]);
 const fallback = ref<EditableAction | null>(null);
 const labels = ref<EditableLabel[]>([]);
 const scopes = ref<EditableScope[]>([]);
 const matchers = ref<EditableMatcher[]>([]);
-const policyId = ref("");
 
 // Collapsible sections start collapsed; adding an item auto-expands them.
 const rulesOpen = ref(false);
@@ -213,12 +214,6 @@ function removeMatcher(key: string) {
 	matchers.value = matchers.value.filter((m) => m.key !== key);
 }
 
-// On create the slug is immutable and always derived from the name; on edit it
-// is fixed to the existing policy's slug and never changes.
-watch(displayName, (value) => {
-	if (!isEdit.value) slug.value = slugify(value);
-});
-
 function defaultAction(): EditableAction {
 	return { modalities: { text: { textKind: "erase" } } };
 }
@@ -282,9 +277,7 @@ function removeEntry(rule: EditableTableRule, key: string) {
 }
 
 // Validation, split per card
-const metaValid = computed(
-	() => displayName.value.trim().length >= 3 && slug.value.length > 0,
-);
+const metaValid = computed(() => displayName.value.trim().length >= 3);
 const definitionValid = computed(() => {
 	// Rules are optional (a policy may be labels + fallback only), but each rule
 	// that exists must be named, and the policy has to do *something* — at least
@@ -342,9 +335,7 @@ const definitionBaseline = ref("");
 
 function currentInput() {
 	return {
-		id: policyId.value,
 		displayName: displayName.value,
-		slug: slug.value,
 		description: description.value,
 		rules: rules.value,
 		fallback: fallback.value,
@@ -425,9 +416,7 @@ watch(
 	() => props.policy,
 	(policy) => {
 		if (policy) {
-			policyId.value = policy.definition.id;
 			displayName.value = policy.displayName;
-			slug.value = policy.slug;
 			description.value = policy.description ?? "";
 			// Reverse-map the stored definition into the editor model. Guard each
 			// mapper so one unexpected shape can't blank the whole form.
@@ -458,9 +447,7 @@ watch(
 				matchers.value = [];
 			}
 		} else {
-			policyId.value = crypto.randomUUID();
 			displayName.value = "";
-			slug.value = "";
 			description.value = "";
 			// Start with no rules — the user adds them explicitly (a policy may
 			// also be labels + fallback only).
@@ -489,7 +476,7 @@ function submitCreate() {
 // actually changed, then rebaselines so the button disables again.
 function saveEdit() {
 	if (!props.policy || !isValid.value || !hasChanges.value) return;
-	const updates: UpdatePolicy = {};
+	const updates: UpdateWorkspacePolicy = {};
 	if (hasMetaChanges.value) {
 		updates.displayName = displayName.value.trim();
 		updates.description = description.value.trim() || undefined;
@@ -497,7 +484,7 @@ function saveEdit() {
 	if (hasDefinitionChanges.value) {
 		updates.definition = buildDefinition(currentInput());
 	}
-	emit("update", props.policy.slug, updates);
+	emit("update", props.policy.definition.id, updates);
 	metaBaseline.value = metaSnapshot();
 	definitionBaseline.value = definitionSnapshot();
 }
@@ -561,21 +548,6 @@ function ruleSummary(rule: EditablePredicatedRule): string {
             v-model="displayName"
             :placeholder="t('policies.editor.namePlaceholder')"
           />
-        </div>
-        <div class="space-y-2">
-          <Label for="policy-slug">{{ t("policies.editor.slugLabel") }}</Label>
-          <Input
-            id="policy-slug"
-            :model-value="slug"
-            readonly
-            tabindex="-1"
-            aria-readonly="true"
-            class="font-mono text-sm text-muted-foreground"
-            :placeholder="t('policies.editor.slugPlaceholder')"
-          />
-          <p class="text-xs text-muted-foreground">
-            {{ t("policies.editor.slugHint") }}
-          </p>
         </div>
       </div>
       <div class="space-y-2">

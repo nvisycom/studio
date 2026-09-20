@@ -1,5 +1,5 @@
 import type { ShallowRef } from "vue";
-import { type ClientConfig, Nvisy } from "@nvisy/sdk";
+import { type NvisyOptions, Nvisy } from "@nvisy/sdk";
 
 declare module "#app" {
 	interface NuxtApp {
@@ -142,29 +142,26 @@ export default defineNuxtPlugin(() => {
 		unreachableShown = false;
 	});
 
-	// The auth transport: a desktop build sends a bearer token over the plain
-	// fetch; the web sends the session cookie (`credentials: "include"`) over a
-	// fetch wrapped to echo the CSRF header. Keyed on `isDesktop`, never on token
-	// presence, so a desktop build never falls back to the cookie path. Two modes,
-	// never mixed.
-	function authTransport(): Pick<
-		ClientConfig,
-		"apiToken" | "credentials" | "fetch"
-	> {
+	// The auth transport: a desktop build authenticates with a bearer token over
+	// the plain fetch; the web authenticates with the browser cookie session
+	// (`session: true`, which sends `credentials: "include"`) over a fetch wrapped
+	// to echo the CSRF header. Keyed on `isDesktop`, never on token presence, so a
+	// desktop build never falls back to the cookie path. Two modes, never mixed.
+	function authTransport(): NvisyOptions {
 		// Every request gets the timeout wrapper so a hang can't strand the app.
 		const fetch = withTimeout(apiFetch.value ?? globalThis.fetch);
+		const base = {
+			baseUrl: baseUrl.value,
+			withLogging: config.public.nvisySdkLogging as boolean,
+		};
 		if (isDesktop.value) {
-			return { apiToken: desktopToken.value ?? "", fetch };
+			return { ...base, apiToken: desktopToken.value ?? "", fetch };
 		}
-		return { credentials: "include", fetch: withCsrf(fetch) };
+		return { ...base, session: true, fetch: withCsrf(fetch) };
 	}
 
 	function makeClient(): Nvisy {
-		const client = new Nvisy({
-			...authTransport(),
-			baseUrl: baseUrl.value,
-			withLogging: config.public.nvisySdkLogging as boolean,
-		});
+		const client = new Nvisy(authTransport());
 		// Intercept auth failures (a response arrived) and transport failures (the
 		// fetch rejected — no response) globally on every request.
 		client.api.use({

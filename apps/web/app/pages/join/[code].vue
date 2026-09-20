@@ -48,9 +48,9 @@ const acceptMutation = useMutation({
 	},
 	async onSuccess() {
 		// Refresh workspaces list and land in the newly joined workspace.
-		const workspaceSlug = preview.value?.workspaceSlug;
+		const handle = preview.value?.workspaceHandle;
 		await refreshWorkspaces();
-		navigateTo(workspaceSlug ? `/w/${workspaceSlug}` : "/");
+		navigateTo(handle ? `/w/${handle}` : "/");
 	},
 });
 

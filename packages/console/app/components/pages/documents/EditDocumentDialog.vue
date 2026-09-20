@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import type { File as NvisyFile, UpdateFile } from "@nvisy/sdk/datatypes";
+import type {
+	WorkspaceDocument as NvisyDocument,
+	UpdateWorkspaceDocument,
+} from "@nvisy/sdk/datatypes";
 import { Loader2 } from "@lucide/vue";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
@@ -17,18 +20,18 @@ const { t } = useI18n();
 
 interface Props {
 	open?: boolean;
-	file?: NvisyFile | null;
+	document?: NvisyDocument | null;
 	isLoading?: boolean;
 }
 
 interface Emits {
 	(e: "update:open", value: boolean): void;
-	(e: "update", data: UpdateFile): void;
+	(e: "update", data: UpdateWorkspaceDocument): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	open: false,
-	file: null,
+	document: null,
 	isLoading: false,
 });
 
@@ -43,24 +46,24 @@ const isFormValid = computed(() => {
 });
 
 const hasChanges = computed(() => {
-	if (!props.file) return false;
-	return displayName.value.trim() !== props.file.displayName;
+	if (!props.document) return false;
+	return displayName.value.trim() !== props.document.displayName;
 });
 
 // Repopulate the form whenever the file changes or the dialog reopens.
 watch(
-	[() => props.open, () => props.file],
+	[() => props.open, () => props.document],
 	() => {
-		if (props.open && props.file) {
-			populateForm(props.file);
+		if (props.open && props.document) {
+			populateForm(props.document);
 		}
 	},
 	{ immediate: true },
 );
 
 // Functions
-function populateForm(file: NvisyFile) {
-	displayName.value = file.displayName;
+function populateForm(document: NvisyDocument) {
+	displayName.value = document.displayName;
 }
 
 function handleOpenChange(open: boolean) {
@@ -74,8 +77,8 @@ function resetForm() {
 	displayName.value = "";
 }
 
-function updateFile() {
-	if (!isFormValid.value || !props.file) return;
+function updateDocument() {
+	if (!isFormValid.value || !props.document) return;
 
 	emit("update", {
 		displayName: displayName.value.trim(),
@@ -92,9 +95,9 @@ function cancel() {
   <Dialog :open="open" @update:open="handleOpenChange">
     <DialogContent class="max-w-md">
       <DialogHeader>
-        <DialogTitle>{{ t("files.dialogs.edit.title") }}</DialogTitle>
+        <DialogTitle>{{ t("documents.dialogs.edit.title") }}</DialogTitle>
         <DialogDescription>
-          {{ t("files.dialogs.edit.description") }}
+          {{ t("documents.dialogs.edit.description") }}
         </DialogDescription>
       </DialogHeader>
 
@@ -102,25 +105,25 @@ function cancel() {
         <!-- File Name -->
         <div>
           <Label required class="mb-2 text-sm font-medium">
-            {{ t("files.dialogs.edit.nameLabel") }}
+            {{ t("documents.dialogs.edit.nameLabel") }}
           </Label>
           <Input
             v-model="displayName"
-            :placeholder="t('files.dialogs.edit.namePlaceholder')"
+            :placeholder="t('documents.dialogs.edit.namePlaceholder')"
           />
         </div>
       </div>
 
       <DialogFooter>
         <Button variant="outline" @click="cancel">
-          {{ t("files.dialogs.edit.cancel") }}
+          {{ t("documents.dialogs.edit.cancel") }}
         </Button>
         <Button
-          @click="updateFile"
+          @click="updateDocument"
           :disabled="!isFormValid || !hasChanges || isLoading"
         >
           <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-          {{ t("files.dialogs.edit.save") }}
+          {{ t("documents.dialogs.edit.save") }}
         </Button>
       </DialogFooter>
     </DialogContent>

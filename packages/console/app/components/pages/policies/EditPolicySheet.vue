@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { Loader2 } from "@lucide/vue";
-import type { CreatePolicy, Policy, UpdatePolicy } from "@nvisy/sdk/datatypes";
+import type {
+	CreateWorkspacePolicy,
+	WorkspacePolicy,
+	UpdateWorkspacePolicy,
+} from "@nvisy/sdk/datatypes";
 import { PolicyForm } from "#console/components/pages/policies";
 import { Button } from "#console/components/ui/button";
 import {
@@ -21,14 +25,14 @@ const open = defineModel<boolean>("open", { default: false });
 // footer here can drive it. `loadingPolicy` is true while the full policy is
 // being fetched for edit (so we don't briefly flash the create form).
 const props = defineProps<{
-	policy?: Policy | null;
+	policy?: WorkspacePolicy | null;
 	isLoading?: boolean;
 	loadingPolicy?: boolean;
 }>();
 
 const emit = defineEmits<{
-	create: [policy: CreatePolicy];
-	update: [slug: string, updates: UpdatePolicy];
+	create: [policy: CreateWorkspacePolicy];
+	update: [slug: string, updates: UpdateWorkspacePolicy];
 }>();
 
 const isEdit = computed(() => !!props.policy || !!props.loadingPolicy);
@@ -40,10 +44,10 @@ const form = ref<{ submit: () => void } | null>(null);
 // exposed computed through a template ref would not track it reactively.
 const canSubmit = ref(false);
 
-function onCreate(policy: CreatePolicy) {
+function onCreate(policy: CreateWorkspacePolicy) {
 	emit("create", policy);
 }
-function onUpdate(slug: string, updates: UpdatePolicy) {
+function onUpdate(slug: string, updates: UpdateWorkspacePolicy) {
 	emit("update", slug, updates);
 }
 function cancel() {

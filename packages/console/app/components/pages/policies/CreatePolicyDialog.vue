@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CreatePolicy } from "@nvisy/sdk/datatypes";
+import type { CreateWorkspacePolicy } from "@nvisy/sdk/datatypes";
 import { toast } from "vue-sonner";
 import { EditPolicySheet } from "#console/components/pages/policies";
 
@@ -18,7 +18,7 @@ const { wLink } = useWorkspaceLink();
 const { isOpen, close } = useCreatePolicy();
 const { createPolicyAsync, isCreating } = usePolicies();
 
-async function handleCreate(policy: CreatePolicy) {
+async function handleCreate(policy: CreateWorkspacePolicy) {
 	try {
 		await createPolicyAsync(policy);
 		toast.success(t("policies.toast.created"));

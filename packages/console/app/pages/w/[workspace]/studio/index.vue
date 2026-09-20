@@ -29,7 +29,7 @@ import {
 import { Button } from "#console/components/ui/button";
 import {
 	HeaderSocket,
-	StudioFileTabs,
+	StudioDocumentTabs,
 } from "#console/components/layout/header";
 
 const { t } = useI18n();
@@ -43,7 +43,7 @@ definePageMeta({
 });
 
 // Use studio files store for persistent open files
-const { activeFile, restoreSession } = useStudioFiles();
+const { activeFile, restoreSession } = useStudioDocuments();
 
 // After a refresh, re-open the tabs persisted for this workspace (client-only).
 onMounted(() => {
@@ -238,9 +238,9 @@ async function handleExportRedacted(connectionId: string) {
 	try {
 		await exportFilesAsync({ connectionId, fileIds: [fileId] });
 		exportDialogOpen.value = false;
-		toast.success(t("files.messages.exportStarted"));
+		toast.success(t("documents.messages.exportStarted"));
 	} catch {
-		toast.error(t("files.errors.exportFailed"));
+		toast.error(t("documents.errors.exportFailed"));
 	}
 }
 
@@ -346,7 +346,7 @@ const auditProps = computed(() => ({
   <div class="absolute inset-0 overflow-hidden bg-background flex">
     <!-- Open-file tabs live in the app header via the socket. -->
     <HeaderSocket>
-      <StudioFileTabs />
+      <StudioDocumentTabs />
     </HeaderSocket>
 
     <!-- Document canvas + inspector, split by a resizable, collapsible divider.

@@ -98,11 +98,11 @@ function resolveContent(
 			return content("webhookUpdated", "webhook", payload.data);
 		case "webhook.deleted":
 			return content("webhookDeleted", "webhook", payload.data);
-		case "file.created":
+		case "document.created":
 			return content("fileCreated", "file", payload.data);
-		case "file.updated":
+		case "document.updated":
 			return content("fileUpdated", "file", payload.data);
-		case "file.deleted":
+		case "document.deleted":
 			return content("fileDeleted", "file", payload.data);
 		case "pipeline.created":
 			return content("pipelineCreated", "pipeline", payload.data);
