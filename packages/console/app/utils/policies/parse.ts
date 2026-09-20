@@ -142,7 +142,7 @@ export function fallbackFromDefinition(policy: Policy): EditableAction | null {
 // A stored policy carries its rules, fallback, and label scopes, but not the
 // custom labels or custom matchers used to author it — those are recognition
 // inputs, not part of the returned policy. So scopes repopulate on edit; custom
-// labels and matchers can't and resolve to empty (see SDK_0.51_MIGRATION_GAPS.md).
+// labels and matchers can't and resolve to empty (see nvisycom/server#316).
 
 /** The editable custom-label list for an existing policy. */
 export function labelsFromDefinition(_policy: Policy): EditableLabel[] {

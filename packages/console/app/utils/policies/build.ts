@@ -203,7 +203,7 @@ function buildScopes(input: PolicyInput): LabelScope[] | undefined {
  * Build the SDK policy draft body shared by create and update — the policy name,
  * description, predicated/table rules, and the fallback. The policy body has no
  * home for custom labels or custom matchers, so those editor sections are not
- * persisted (see SDK_0.51_MIGRATION_GAPS.md).
+ * persisted (no authoring input accepts them yet — see nvisycom/server#316).
  */
 export function buildDefinition(input: PolicyInput): PolicyDraft {
 	const rules = input.rules.map(buildRule);
