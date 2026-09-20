@@ -90,8 +90,12 @@ const { detections: detectionsData, isLoading: isLoadingDetections } =
 	);
 const detections = computed(() => detectionsData.value ?? []);
 
-const { redactions, isLoading: isLoadingRedactions } =
-	useDocumentRedactions(documentId);
+const {
+	redactions,
+	isLoading: isLoadingRedactions,
+	error: redactionsError,
+	refresh: refreshRedactions,
+} = useDocumentRedactions(documentId);
 
 useHead({
 	title: () => review.value?.displayName ?? t("reviews.detail.title"),
@@ -363,6 +367,17 @@ function openInStudio() {
                   class="flex items-center justify-center py-10 text-muted-foreground"
                 >
                   <Loader2 :size="20" class="animate-spin" />
+                </div>
+                <div
+                  v-else-if="redactionsError"
+                  class="flex flex-col items-center gap-3 py-10 text-center"
+                >
+                  <p class="text-sm text-muted-foreground">
+                    {{ t("reviews.detail.redactionsFailed") }}
+                  </p>
+                  <Button variant="outline" size="sm" @click="refreshRedactions()">
+                    {{ t("reviews.detail.retry") }}
+                  </Button>
                 </div>
                 <div
                   v-else-if="redactions.length === 0"

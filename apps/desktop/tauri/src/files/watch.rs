@@ -38,14 +38,24 @@ const WATCH_KEY: &str = "watch_folder";
 
 /// The watched-folder config, or `None` when no folder is watched (or the store
 /// can't be read).
+///
+/// A config from before the `workspaceSlug` → `workspaceId` change stored a
+/// handle, which can't be used as the id the upload path now needs and can't be
+/// resolved here (no API client). Such a config is discarded — the stale key is
+/// deleted so it's a one-time clean forget, not a silent no-op every boot — and
+/// the user re-picks the folder, which persists it in the new shape.
 fn stored_config<R: Runtime>(app: &AppHandle<R>) -> Option<WatchConfig> {
     let store = store::open(app)?;
     let value = store.get(WATCH_KEY)?;
     let folder = value.get("folder")?.as_str()?.to_owned();
-    let workspace_id = value.get("workspaceId")?.as_str()?.to_owned();
+    let Some(workspace_id) = value.get("workspaceId").and_then(|v| v.as_str()) else {
+        // Legacy (handle-based) or malformed config: drop it.
+        store.delete(WATCH_KEY);
+        return None;
+    };
     Some(WatchConfig {
         folder,
-        workspace_id,
+        workspace_id: workspace_id.to_owned(),
     })
 }
 
