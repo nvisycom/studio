@@ -2439,7 +2439,6 @@
 			"commentPlaceholder": "Kommentar hinterlassen…",
 			"commentFailed": "Kommentar konnte nicht gesendet werden. Bitte erneut versuchen.",
 			"noDetections": "Noch keine Erkennungen für dieses Dokument.",
-			"redactionsHint": "Schwärzungen erscheinen hier, sobald Erkennungen geschwärzt wurden.",
 			"tabs": {
 				"discussion": "Diskussion",
 				"detections": "Erkennungen",
@@ -2485,7 +2484,10 @@
 				"title": "Prüfung löschen?",
 				"description": "Dies löscht die Prüfung und ihre Diskussion endgültig. Diese Aktion kann nicht rückgängig gemacht werden.",
 				"confirm": "Prüfung löschen"
-			}
+			},
+			"noRedactions": "Noch keine Schwärzungen.",
+			"redactionReady": "Bereit",
+			"redactionPending": "Ausstehend"
 		},
 		"actions": {
 			"verify": "Als geprüft markieren",

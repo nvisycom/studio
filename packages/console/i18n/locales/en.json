@@ -2439,7 +2439,6 @@
 			"commentPlaceholder": "Leave a comment…",
 			"commentFailed": "Couldn't post your comment. Please try again.",
 			"noDetections": "No detections on this document yet.",
-			"redactionsHint": "Redactions will appear here once detections are redacted.",
 			"tabs": {
 				"discussion": "Discussion",
 				"detections": "Detections",
@@ -2485,7 +2484,10 @@
 				"title": "Delete review?",
 				"description": "This permanently deletes the review and its discussion. This can't be undone.",
 				"confirm": "Delete review"
-			}
+			},
+			"noRedactions": "No redactions yet.",
+			"redactionReady": "Ready",
+			"redactionPending": "Pending"
 		},
 		"actions": {
 			"verify": "Mark verified",

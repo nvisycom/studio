@@ -20,7 +20,9 @@ import {
 import { Badge } from "#console/components/ui/badge";
 import ReviewTimeline from "#console/components/pages/reviews/detail/ReviewTimeline.vue";
 import ReviewSidebar from "#console/components/pages/reviews/detail/ReviewSidebar.vue";
+import EntityAvatar from "#console/components/avatar/EntityAvatar.vue";
 import { ConfirmDialog } from "#console/components/shared";
+import { personLabel } from "#console/utils/naming";
 import { reviewStatusVariant } from "#console/utils/reviews";
 
 /**
@@ -37,6 +39,7 @@ const { t } = useI18n();
 const route = useRoute();
 const { wLink } = useWorkspaceLink();
 const { relativeTime } = useRelativeTime();
+const { resolveAvatarUrl } = useAvatarUrl();
 
 const reviewId = computed(() => route.params.review as string);
 
@@ -86,6 +89,9 @@ const { detections: detectionsData, isLoading: isLoadingDetections } =
 		documentId.value ? { documentId: documentId.value } : {},
 	);
 const detections = computed(() => detectionsData.value ?? []);
+
+const { redactions, isLoading: isLoadingRedactions } =
+	useDocumentRedactions(documentId);
 
 useHead({
 	title: () => review.value?.displayName ?? t("reviews.detail.title"),
@@ -352,9 +358,56 @@ function openInStudio() {
               </TabsContent>
 
               <TabsContent value="redactions" class="pt-4">
-                <p class="py-10 text-center text-sm text-muted-foreground">
-                  {{ t("reviews.detail.redactionsHint") }}
-                </p>
+                <div
+                  v-if="isLoadingRedactions"
+                  class="flex items-center justify-center py-10 text-muted-foreground"
+                >
+                  <Loader2 :size="20" class="animate-spin" />
+                </div>
+                <div
+                  v-else-if="redactions.length === 0"
+                  class="flex flex-col items-center gap-2 py-10 text-center"
+                >
+                  <FileText :size="24" class="text-muted-foreground opacity-40" />
+                  <p class="text-sm text-muted-foreground">
+                    {{ t("reviews.detail.noRedactions") }}
+                  </p>
+                </div>
+                <ul
+                  v-else
+                  class="divide-y divide-border/50 rounded-lg border border-border/50"
+                >
+                  <li
+                    v-for="redaction in redactions"
+                    :key="redaction.id"
+                    class="flex items-center justify-between gap-3 px-4 py-2.5 text-sm"
+                  >
+                    <span class="flex min-w-0 items-center gap-2">
+                      <EntityAvatar
+                        size="sm"
+                        class="!size-5 !text-[9px]"
+                        :name="personLabel(redaction.requestedBy)"
+                        :src="resolveAvatarUrl(redaction.requestedBy.avatarUrl)"
+                      />
+                      <span class="truncate text-foreground">
+                        {{ personLabel(redaction.requestedBy) }}
+                      </span>
+                      <span class="shrink-0 text-xs text-muted-foreground">
+                        {{ relativeTime(redaction.createdAt) }}
+                      </span>
+                    </span>
+                    <Badge
+                      :variant="redaction.outputDocumentId ? 'default' : 'secondary'"
+                      class="shrink-0"
+                    >
+                      {{
+                        redaction.outputDocumentId
+                          ? t("reviews.detail.redactionReady")
+                          : t("reviews.detail.redactionPending")
+                      }}
+                    </Badge>
+                  </li>
+                </ul>
               </TabsContent>
             </Tabs>
           </div>

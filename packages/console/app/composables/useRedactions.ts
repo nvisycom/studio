@@ -75,3 +75,39 @@ export function useRedactions() {
 		downloadOutput,
 	};
 }
+
+/**
+ * The redactions of a document — every redaction produced from any detection
+ * that analyzed it, most recent first. Used by the review detail page's
+ * Redactions tab (the review is scoped to a single document).
+ */
+export function useDocumentRedactions(documentId: MaybeRef<string>) {
+	const { currentWorkspaceId } = useWorkspaceContext();
+
+	const q = workspaceQuery<WorkspaceRedactionResult[]>(
+		"document-redactions",
+		async ({ client, workspaceId }) => {
+			const page = await client.redactions.listRedactions(workspaceId, {
+				documentId: toValue(documentId),
+			});
+			return page.items;
+		},
+		{
+			key: () => [
+				"document-redactions",
+				currentWorkspaceId.value,
+				toValue(documentId),
+			],
+			// No document selected yet — don't query with an empty id.
+			enabled: () => !!toValue(documentId),
+			staleTime: 0,
+		},
+	);
+
+	return {
+		redactions: computed(() => q.data.value ?? []),
+		isLoading: q.isLoading,
+		error: q.error,
+		refresh: q.refresh,
+	};
+}
