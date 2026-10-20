@@ -9,47 +9,111 @@
 //! stays on the generic `store_*` commands.
 //!
 //! The caller (the webview) supplies the `folder`, so it is NOT trusted: a FS
-//! command acts only on a folder the app itself has allowed — the one most
-//! recently picked for a workspace, or one re-registered from a persisted
-//! workspace at load (`register_workspace_folder`). Every `path` is then resolved
-//! under that folder and the resolved, canonicalized path is confirmed to stay
-//! inside it, so neither a crafted `folder` (`"/"`, `"C:\\"`) nor a traversal
+//! command acts only on a folder the app itself has allowed. A folder becomes
+//! allowed in one way only — the user picks it through the native folder panel
+//! (`pick_workspace_folder`) — and that fact is persisted to a file only Rust
+//! writes, so a folder picked in a past session is re-allowed at load without
+//! the webview being able to add one. The webview can never widen the set; a
+//! crafted `folder` (`"/"`, `"C:\\"`) is simply not in it. Every `path` is then
+//! resolved under the allowed folder and the resolved, canonicalized path is
+//! confirmed to stay inside it, so neither a crafted `folder` nor a traversal
 //! `path` can reach a file outside an allowed workspace folder. Bytes cross to
 //! the webview as a raw `tauri::ipc::Response` (an ArrayBuffer), not a JSON
 //! number array — the way Tauri v2 recommends for binary payloads.
 
 use std::collections::HashSet;
 use std::path::{Component, Path, PathBuf};
-use std::sync::Mutex;
+use std::sync::{Mutex, OnceLock};
 
 use serde::Serialize;
 use sha2::{Digest, Sha256};
 use tauri::ipc::Response;
-use tauri::{AppHandle, Runtime, State};
+use tauri::{AppHandle, Manager, Runtime, State};
 
 use crate::files::pick_folder;
 
+/// File under the app data dir that records the folders the user has picked.
+/// Only Rust writes it (on a pick); the webview has no command that touches it,
+/// so it can't widen the allowlist.
+const ALLOWED_FILE: &str = "allowed-folders.json";
+
 /// The set of folders the app has allowed FS access to (canonicalized), one per
 /// local workspace. The webview supplies a `folder` on each FS call but is not
-/// trusted; only a folder in this set is served. Populated when a workspace
-/// folder is picked, and re-seeded from persisted workspaces at load.
+/// trusted; only a folder in this set is served. A folder enters the set only
+/// when the user picks it ([`pick_workspace_folder`]); the set is persisted to
+/// [`ALLOWED_FILE`] and re-seeded at startup ([`AllowedFolders::load`]), so past
+/// picks survive a restart without the webview being able to add one.
 #[derive(Default)]
-pub struct AllowedFolders(Mutex<HashSet<PathBuf>>);
+pub struct AllowedFolders {
+    set: Mutex<HashSet<PathBuf>>,
+    /// The persistence file, set once at startup (unset before `load`, as in
+    /// tests — then a write is simply not persisted).
+    store: OnceLock<PathBuf>,
+}
 
 impl AllowedFolders {
-    /// Record a folder as allowed (canonicalized, so comparisons are stable).
+    /// Seed the set from the persisted file and remember it for later writes.
+    /// Called once at setup, when the app data dir is known. A missing or
+    /// unreadable file just means no folders are allowed yet (first run).
+    pub fn load<R: Runtime>(&self, app: &AppHandle<R>) {
+        let Ok(dir) = app.path().app_data_dir() else {
+            return;
+        };
+        let file = dir.join(ALLOWED_FILE);
+        let _ = self.store.set(file.clone());
+        let Ok(bytes) = std::fs::read(&file) else {
+            return;
+        };
+        let Ok(folders) = serde_json::from_slice::<Vec<String>>(&bytes) else {
+            return;
+        };
+        if let Ok(mut set) = self.set.lock() {
+            for folder in folders {
+                // Re-canonicalize on load: a folder moved or deleted since it was
+                // picked simply drops out (it won't resolve), which is correct.
+                if let Ok(path) = std::fs::canonicalize(&folder) {
+                    set.insert(path);
+                }
+            }
+        }
+    }
+
+    /// Record a folder as allowed (canonicalized) and persist the set. Only the
+    /// pick command calls this, so the allowlist only ever grows by a user pick.
     fn allow(&self, folder: &str) {
-        if let Ok(path) = std::fs::canonicalize(folder)
-            && let Ok(mut set) = self.0.lock()
-        {
-            set.insert(path);
+        let Ok(path) = std::fs::canonicalize(folder) else {
+            return;
+        };
+        let Ok(mut set) = self.set.lock() else {
+            return;
+        };
+        if set.insert(path) {
+            self.persist(&set);
+        }
+    }
+
+    /// Write the current set to the persistence file (best-effort; a failed write
+    /// just means the folder isn't remembered across a restart, not a crash).
+    fn persist(&self, set: &HashSet<PathBuf>) {
+        let Some(file) = self.store.get() else {
+            return;
+        };
+        let folders: Vec<String> = set
+            .iter()
+            .map(|p| p.to_string_lossy().into_owned())
+            .collect();
+        if let Ok(json) = serde_json::to_vec(&folders) {
+            if let Some(parent) = file.parent() {
+                let _ = std::fs::create_dir_all(parent);
+            }
+            let _ = std::fs::write(file, json);
         }
     }
 
     /// The canonical form of `folder` if it is allowed, else `None`.
     fn resolve_allowed(&self, folder: &str) -> Option<PathBuf> {
         let canonical = std::fs::canonicalize(folder).ok()?;
-        let set = self.0.lock().ok()?;
+        let set = self.set.lock().ok()?;
         set.contains(&canonical).then_some(canonical)
     }
 
@@ -62,14 +126,6 @@ impl AllowedFolders {
     pub fn resolve_path(&self, folder: &str, path: &str) -> Result<PathBuf, String> {
         resolve(self, folder, path)
     }
-}
-
-/// Re-register a workspace folder as allowed (the frontend calls this for each
-/// local workspace it loads, so a folder picked in a past session is served
-/// again this session).
-#[tauri::command]
-pub fn register_workspace_folder(allowed: State<'_, AllowedFolders>, folder: String) {
-    allowed.allow(&folder);
 }
 
 /// One file found in a workspace folder during a scan — the facts the frontend
@@ -245,6 +301,16 @@ fn resolve(allowed: &AllowedFolders, folder: &str, path: &str) -> Result<PathBuf
     }
 
     let joined = root.join(rel);
+    // Refuse a symlink at the final component. `exists()` below (and `fs::write`)
+    // follow symlinks, so a link — even a dangling one, whose target doesn't
+    // exist yet — could redirect a write outside the folder past the containment
+    // check. `symlink_metadata` does not follow, so it catches the link itself.
+    if std::fs::symlink_metadata(&joined)
+        .map(|meta| meta.file_type().is_symlink())
+        .unwrap_or(false)
+    {
+        return Err("document path must not be a symlink".to_owned());
+    }
     // Confirm containment after resolving symlinks. A file that doesn't exist yet
     // (a write) has no canonical form, so check its parent instead.
     let check = if joined.exists() {
@@ -408,5 +474,25 @@ mod tests {
         // An ordinary nested path under the allowed folder resolves.
         let ok = resolve(&allowed, &folder, "sub/doc.txt").unwrap();
         assert!(ok.starts_with(dir.0.canonicalize().unwrap()));
+    }
+
+    // A symlink at the final component is rejected even when it points outside the
+    // folder — `fs::write` would otherwise follow it and write out of bounds. Unix
+    // only (symlink creation differs on Windows; the check itself is cross-plat).
+    #[cfg(unix)]
+    #[test]
+    fn resolve_rejects_symlink_final_component() {
+        let dir = TempDir::new("symlink");
+        let folder = dir.path();
+        let allowed = allowing(&folder);
+
+        // A dangling symlink (target doesn't exist) inside the folder, pointing
+        // out of it — the dangerous case `exists()` would miss.
+        let link = PathBuf::from(&folder).join("escape.txt");
+        std::os::unix::fs::symlink("/tmp/nvisy-outside-target", &link).unwrap();
+        assert!(
+            resolve(&allowed, &folder, "escape.txt").is_err(),
+            "a symlink at the final component must be refused"
+        );
     }
 }

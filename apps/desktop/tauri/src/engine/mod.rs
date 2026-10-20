@@ -53,16 +53,29 @@ impl Default for EngineState {
 /// the webview boundary in either direction. The size is checked against the
 /// cap before the read, so an oversized file is rejected without loading it.
 fn read_document(allowed: &AllowedFolders, doc: &DocRef) -> Result<Vec<u8>, String> {
+    use std::io::Read;
+
     let resolved = allowed.resolve_path(&doc.folder, &doc.path)?;
-    let size = std::fs::metadata(&resolved)
-        .map_err(|err| err.to_string())?
-        .len();
+    // Open once and read through that handle, so the size check and the read see
+    // the same file — a folder workspace is open to other processes (sync
+    // clients, downloads), so a second path lookup could hit a grown or swapped
+    // file and bypass the cap. `take(cap + 1)` bounds the read regardless of what
+    // metadata reported.
+    let file = std::fs::File::open(&resolved).map_err(|err| err.to_string())?;
+    let size = file.metadata().map_err(|err| err.to_string())?.len();
     if size > MAX_DETECT_BYTES {
         return Err(format!(
             "document is too large to process on-device ({size} bytes; limit {MAX_DETECT_BYTES})"
         ));
     }
-    std::fs::read(&resolved).map_err(|err| err.to_string())
+    let mut bytes = Vec::with_capacity(size as usize);
+    file.take(MAX_DETECT_BYTES + 1)
+        .read_to_end(&mut bytes)
+        .map_err(|err| err.to_string())?;
+    if bytes.len() as u64 > MAX_DETECT_BYTES {
+        return Err("document grew past the on-device limit while reading".to_owned());
+    }
+    Ok(bytes)
 }
 
 /// Detect over one document on-device, returning the reviewable audit.

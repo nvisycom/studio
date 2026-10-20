@@ -38,7 +38,6 @@ fn command_handler<R: tauri::Runtime>() -> impl Fn(tauri::ipc::Invoke<R>) -> boo
         database::store_upsert,
         database::store_delete,
         documents::pick_workspace_folder,
-        documents::register_workspace_folder,
         documents::documents_read,
         documents::documents_write,
         documents::documents_remove,
@@ -117,6 +116,11 @@ fn setup(app: &mut tauri::App) -> Result<(), Box<dyn Error>> {
     let database = tauri::async_runtime::block_on(database::open(app.handle()))
         .map_err(|err| -> Box<dyn Error> { err.into() })?;
     app.manage(database);
+
+    // Seed the allowed workspace folders from the folders the user picked in past
+    // sessions (persisted by the pick command, written only by Rust). The webview
+    // cannot add a folder, so this is the only source of allowed folders.
+    app.state::<documents::AllowedFolders>().load(app.handle());
 
     // The tray is the app's anchor: it summons the main window and holds the
     // spotlight launcher, the notifications toggle, and quit.

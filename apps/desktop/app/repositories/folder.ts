@@ -1,4 +1,3 @@
-import { invoke } from "@tauri-apps/api/core";
 import type { Workspace } from "@nvisy/sdk/datatypes";
 import { parseBody, storeGet } from "./store";
 
@@ -28,10 +27,10 @@ export async function resolveFolder(workspaceId: string): Promise<string> {
 	if (!workspace.folder) {
 		throw new Error("this local workspace has no folder");
 	}
-	// Register the folder as allowed before any FS command uses it — the Rust
-	// side only serves folders the app has allowed, and a folder picked in a past
-	// session needs re-allowing this session. Idempotent; runs before every use.
-	await invoke("register_workspace_folder", { folder: workspace.folder });
+	// No registration step: the Rust side allows only folders the user picked
+	// (persisted by the pick command, re-seeded at startup), so a folder that was
+	// picked for this workspace is already allowed. The webview cannot widen the
+	// set — a folder we never picked simply won't resolve on the next FS command.
 	return workspace.folder;
 }
 

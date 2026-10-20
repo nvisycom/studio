@@ -47,6 +47,8 @@
 	"overrides": {
 		"vite": "^8.2.0",
 		"nanoid": "^3.3.17",
-		"undici": "^8.12.3"
+		"nuxt": {
+			"undici": "^8.12.3"
+		}
 	}
 }

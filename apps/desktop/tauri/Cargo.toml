@@ -79,3 +79,15 @@ anyhow = { version = "1", features = [] }
 # via `on_open_url`, so this backend isn't needed there.
 [target."cfg(any(target_os = \"windows\", target_os = \"linux\"))".dependencies]
 tauri-plugin-single-instance = { version = "2", features = ["deep-link"] }
+
+# Pin rust-ini on Linux (where tauri-plugin-deep-link uses it): 0.21.2 added a
+# field to the public `ParseOption` struct, breaking the struct-literal
+# construction in tauri-plugin-deep-link — a minor-version break on rust-ini's
+# side. There is no upgrade out of it: the latest stable plugin (2.6.2) has the
+# bug, and the only newer release (3.0.0-alpha) still constructs ParseOption the
+# same way AND requires Tauri 3-alpha. So pin rust-ini to its last good release;
+# `=0.21.1` is the last version before the breaking field. We don't use rust-ini
+# directly — this only constrains the resolver, which otherwise re-picks 0.21.3
+# in CI (it doesn't build with --locked). Remove once rust-ini/the plugin fix it.
+[target."cfg(target_os = \"linux\")".dependencies]
+rust-ini = "=0.21.1"
