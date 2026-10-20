@@ -28,7 +28,7 @@ import { createLocalWorkspaceList } from "~/repositories/workspace-list";
 export default defineNuxtPlugin({
 	name: "repository",
 	enforce: "pre",
-	setup() {
+	setup(nuxtApp) {
 		if (!isTauri()) return;
 
 		// Built once, lazily — they hold no client, only invoke commands / the
@@ -36,41 +36,39 @@ export default defineNuxtPlugin({
 		let repository: Repository | null = null;
 		let workspaceList: WorkspaceList | null = null;
 
-		const requireWorkspaceId = () => {
-			const id = useWorkspaces().currentWorkspaceId.value;
-			if (!id) throw new Error("No workspace selected");
-			return id;
-		};
 		const localRepository = () => (repository ??= createLocalRepository());
-
-		// Per-workspace backends are built fresh per resolve (they're thin — they
-		// capture only the workspace-id getter and the local repository) so a
-		// switch between workspaces always reflects the active one.
-		const localDetection = (): DetectionProvider =>
-			createLocalDetectionProvider(localRepository(), requireWorkspaceId);
-		const localRedaction = (): RedactionProvider =>
-			createLocalRedactionProvider(localRepository(), requireWorkspaceId);
 
 		// The one per-workspace decision, shared by all three data seams: a local
 		// folder-workspace is served locally; anything else falls through to the
 		// server default. `null` workspace (none active yet) → server default.
 		const local = (workspace: Workspace | null) => isLocalWorkspace(workspace);
 
+		// The resolver already receives the active workspace, so the per-workspace
+		// providers take that workspace's id directly — no `useWorkspaces()` inside
+		// the provider (which would register a watcher on every invocation and can
+		// run outside an active Nuxt context during async work).
+		const wsId = (workspace: Workspace) => () => workspace.id;
+
 		setRepositoryResolver((workspace) =>
 			local(workspace) ? localRepository() : null,
 		);
-		setDetectionResolver((workspace) =>
-			local(workspace) ? localDetection() : null,
+		setDetectionResolver((workspace): DetectionProvider | null =>
+			workspace && local(workspace)
+				? createLocalDetectionProvider(localRepository(), wsId(workspace))
+				: null,
 		);
-		setRedactionResolver((workspace) =>
-			local(workspace) ? localRedaction() : null,
+		setRedactionResolver((workspace): RedactionProvider | null =>
+			workspace && local(workspace)
+				? createLocalRedactionProvider(localRepository(), wsId(workspace))
+				: null,
 		);
 
 		// The workspace list is the union: always local, plus the server's when a
-		// client exists (signed in). Built once; the server half is read lazily so
-		// it picks up a sign-in that happens after boot.
+		// client exists (signed in). Built once; the server half reads the client
+		// off the captured `nuxtApp` (not `useNuxtApp()` after an await), so it
+		// picks up a sign-in that happens after boot without needing a Nuxt context.
 		workspaceList ??= createLocalWorkspaceList(() => {
-			const client = useNuxtApp().$nvisyClient.value;
+			const client = nuxtApp.$nvisyClient.value;
 			return client ? client.workspaces : null;
 		});
 		setWorkspaceListResolver(() => workspaceList);

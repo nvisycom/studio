@@ -44,24 +44,36 @@ export function createLocalWorkspaceList(
 
 	return {
 		workspaces: {
-			listWorkspaces: async (query): Promise<WorkspacePage> => {
-				// Local workspaces always; server workspaces when signed in. The two
-				// id spaces don't collide (local ids are random UUIDs), so a plain
-				// concat is the union. Paging is a single page at a single user's
-				// scale (the local store caps at 1000; the server honors its cursor).
-				const localPage = await local.listWorkspaces(query);
-				// Defensive: a local-store workspace MUST have a folder (that's what
-				// makes it local). Skip any folder-less entry — it would otherwise
-				// show up mislabeled as a server workspace. `createWorkspace` now
-				// guards against making one, but older data may exist.
-				const localItems = localPage.items.filter((w) => isLocalWorkspace(w));
+			listWorkspaces: async (_query): Promise<WorkspacePage> => {
+				// The union of two independently-paginated sources can't share one
+				// cursor, so this returns the COMPLETE union in a single page (no
+				// cursor) — it walks each source to the end itself. The incoming
+				// `after` is ignored for the same reason (it couldn't belong to both).
+				// Fine at a single user's scale.
+				const localItems: Workspace[] = [];
+				let after: string | undefined;
+				do {
+					const page = await local.listWorkspaces({ after });
+					// Defensive: a local-store workspace MUST have a folder (that's what
+					// makes it local). Skip any folder-less entry — it would otherwise
+					// show up mislabeled as a server workspace.
+					localItems.push(...page.items.filter((w) => isLocalWorkspace(w)));
+					after = page.nextCursor;
+				} while (after);
+
 				const srv = server();
-				if (!srv) return { ...localPage, items: localItems };
-				const serverPage = await srv.listWorkspaces(query);
+				if (!srv) return { items: localItems, nextCursor: undefined };
+
+				const serverItems: Workspace[] = [];
+				after = undefined;
+				do {
+					const page = await srv.listWorkspaces({ after });
+					serverItems.push(...page.items);
+					after = page.nextCursor;
+				} while (after);
+
 				return {
-					items: [...localItems, ...serverPage.items],
-					// No merged cursor: both sides are listed in full here. A combined
-					// keyset would be needed only past the per-side caps.
+					items: [...localItems, ...serverItems],
 					nextCursor: undefined,
 				};
 			},

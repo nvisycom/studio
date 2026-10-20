@@ -6,20 +6,21 @@ import type {
 	RedactionProvider,
 } from "#console/detection/redaction";
 import type { Repository } from "#console/repositories/types";
-import { resolveFolder } from "~/repositories/folder";
+import { locateDocument } from "~/repositories/folder";
 import { getRun } from "~/repositories/runs";
 
 /*
  * The local, engine-backed redaction provider: applies the reviewer's edits to a
- * local run's audit in-process and returns the redacted bytes directly (no output
- * file id). The studio saves them via the native file bridge. Desktop-only;
- * injected into the redaction seam by the desktop plugin.
+ * local run's audit in-process. The engine reads the input from disk and writes
+ * the redacted output as a sibling in the workspace folder (so it becomes a
+ * persisted `redacted` document), returning its path; this provider reads that
+ * output back for the studio's download. Desktop-only; injected by the plugin.
  */
 
-/** The redacted bytes the engine's `redact` command returns. */
+/** The output the engine's `redact` command writes and returns. */
 interface Redacted {
 	name: string;
-	bytes: number[];
+	path: string;
 }
 
 /** Resolve the policy definitions the redaction's run was detected with. */
@@ -46,40 +47,36 @@ export function createLocalRedactionProvider(
 ): RedactionProvider {
 	return {
 		async produce(input: RedactionInput): Promise<RedactionOutput> {
+			const ws = workspaceId();
+			const run = await getRun(input.detectionId);
+			if (!run) throw new Error(`local run ${input.detectionId} not found`);
 			const policies = await policiesForRun(
 				repository,
 				workspaceId,
 				input.detectionId,
 			);
-			const bytes = await input.bytes();
+			// The input document is on disk; the engine reads it by (folder, path),
+			// redacts, and writes the sibling output itself — no bytes cross IPC. The
+			// run records which document it was.
+			const document = await locateDocument(ws, run.fileId);
 			const redacted = await invoke<Redacted>("redact", {
-				name: input.name,
-				bytes: Array.from(bytes),
+				document,
 				policies,
 				audit: input.audit,
 				edits: input.edits,
 			});
 
-			// Write the output back into the workspace folder as a sibling, so it
-			// becomes a persisted `redacted` document (the next list reconcile
-			// classifies a `.redacted.` name as redacted). Best-effort: if the folder
-			// write fails, the studio still saves the bytes via the native panel.
-			try {
-				const folder = await resolveFolder(workspaceId());
-				await invoke("documents_write", {
-					folder,
-					path: redacted.name,
-					data: redacted.bytes,
-				});
-			} catch (error) {
-				console.warn("Could not write redaction into the folder:", error);
-			}
+			// Read the written output back for the studio's download (a raw response;
+			// number[] on the WebKitGTK fallback).
+			const raw = await invoke<ArrayBuffer | number[]>("documents_read", {
+				folder: document.folder,
+				path: redacted.path,
+			});
+			// `new Uint8Array` accepts both an ArrayBuffer and a number[] (the
+			// WebKitGTK fallback), so one call covers both.
+			const bytes = new Uint8Array(raw);
 
-			return {
-				kind: "local",
-				bytes: new Uint8Array(redacted.bytes),
-				fileName: redacted.name,
-			};
+			return { kind: "local", bytes, fileName: redacted.name };
 		},
 
 		// A local run has no persisted redaction output to restore — redaction is

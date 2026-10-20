@@ -12,6 +12,7 @@ import type {
 	RestoredDetection,
 } from "#console/detection/types";
 import type { Repository } from "#console/repositories/types";
+import { locateDocument } from "~/repositories/folder";
 import { parseBody, storeGet } from "~/repositories/store";
 import {
 	findLatestRun,
@@ -103,12 +104,12 @@ export function createLocalDetectionProvider(
 				workspaceId,
 				input.pipelineId,
 			);
-			const bytes = await input.bytes();
-			// The engine runs synchronously and returns the audit directly; there
-			// is no server detection id.
+			// The document already lives in the workspace folder, so the engine
+			// reads it from disk by (folder, path) — no bytes cross IPC. The engine
+			// runs synchronously and returns the audit directly (no server id).
+			const document = await locateDocument(ws, input.fileId);
 			const audit = await invoke<Audit>("detect", {
-				name: input.name,
-				bytes: Array.from(bytes),
+				document,
 				policies,
 			});
 

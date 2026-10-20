@@ -63,6 +63,18 @@ function splitName(fileName: string): {
 	};
 }
 
+/** A path not already in `taken`, disambiguating a collision as `name (n).ext`. */
+function uniquePath(name: string, taken: Set<string>): string {
+	if (!taken.has(name)) return name;
+	const dot = name.lastIndexOf(".");
+	const base = dot > 0 ? name.slice(0, dot) : name;
+	const ext = dot > 0 ? name.slice(dot) : "";
+	for (let n = 1; ; n++) {
+		const candidate = `${base} (${n})${ext}`;
+		if (!taken.has(candidate)) return candidate;
+	}
+}
+
 /** The record to persist for a document (its path indexes the folder file). */
 function toRecord(doc: LocalDocument): StoreRecord {
 	return {
@@ -87,10 +99,24 @@ async function toNamedBytes(
 
 /** The local store's documents resource, backed by the workspace folder. */
 export function createDocumentsRepository(): Repository["documents"] {
-	/** Every stored record for a workspace, parsed. */
+	/** Every stored record for a workspace, parsed — across all pages. */
 	async function allRecords(workspaceId: string): Promise<LocalDocument[]> {
-		const page = await storeList("documents", { workspaceId, limit: 1000 });
-		return page.items.map((r) => parseBody<LocalDocument>(r));
+		const out: LocalDocument[] = [];
+		let after: string | undefined;
+		do {
+			const page = await storeList("documents", { workspaceId, after });
+			out.push(...page.items.map((r) => parseBody<LocalDocument>(r)));
+			after = page.nextCursor;
+		} while (after);
+		return out;
+	}
+
+	/** The workspace's URL handle (not its display name), for document records. */
+	async function workspaceHandle(workspaceId: string): Promise<string> {
+		const record = await storeGet("workspaces", workspaceId);
+		return record
+			? (parseBody<{ handle: string }>(record).handle ?? workspaceId)
+			: workspaceId;
 	}
 
 	/** Write a file into the folder and persist its record, returning the doc. */
@@ -146,20 +172,21 @@ export function createDocumentsRepository(): Repository["documents"] {
 			query?: ListWorkspaceDocuments & CursorPagination,
 		): Promise<WorkspaceDocumentPage> => {
 			const folder = await resolveFolder(workspaceId);
-			const workspace = await storeGet("workspaces", workspaceId);
-			const handle = workspace?.name ?? workspaceId;
+			const handle = await workspaceHandle(workspaceId);
 
 			// Reconcile the index against the folder.
 			const scanned = await invoke<ScannedFile[]>("documents_scan", { folder });
 			const byPath = new Map(scanned.map((f) => [f.path, f]));
 			const records = await allRecords(workspaceId);
 			const seen = new Set<string>();
+			// Records whose path no longer exists on disk — candidates for a rename
+			// match (by content hash) before we treat them as deleted.
+			const orphans: LocalDocument[] = [];
 
 			for (const doc of records) {
 				const file = byPath.get(doc.path);
 				if (!file) {
-					// The file was removed outside the app — drop its stale record.
-					await storeDelete("documents", doc.id);
+					orphans.push(doc);
 					continue;
 				}
 				seen.add(doc.path);
@@ -175,10 +202,29 @@ export function createDocumentsRepository(): Repository["documents"] {
 				}
 			}
 
-			// New files on disk (dropped in via Finder) get a fresh record.
+			// Match new scanned files to orphaned records by hash first — that's a
+			// rename (keep the id, so studio tabs / runs stay bound); only a file
+			// with no orphan match is genuinely new and gets a fresh id.
+			const orphansByHash = new Map(orphans.map((d) => [d.hash, d]));
 			for (const file of scanned) {
 				if (seen.has(file.path)) continue;
 				const now = new Date().toISOString();
+				const renamed = orphansByHash.get(file.hash);
+				if (renamed) {
+					orphansByHash.delete(file.hash);
+					const { displayName, extension } = splitName(file.path);
+					await storeUpsert(
+						"documents",
+						toRecord({
+							...renamed,
+							path: file.path,
+							displayName,
+							extension,
+							updatedAt: now,
+						}),
+					);
+					continue;
+				}
 				const { displayName, extension } = splitName(file.path);
 				// A `.redacted.` sibling is a redaction output; everything else is an
 				// original.
@@ -203,6 +249,11 @@ export function createDocumentsRepository(): Repository["documents"] {
 					workspaceHandle: handle,
 				};
 				await storeUpsert("documents", toRecord(doc));
+			}
+
+			// Any orphan not matched to a rename is genuinely gone — drop its record.
+			for (const orphan of orphansByHash.values()) {
+				await storeDelete("documents", orphan.id);
 			}
 
 			// Return the reconciled set, newest-first, applying the search filter.
@@ -240,22 +291,36 @@ export function createDocumentsRepository(): Repository["documents"] {
 			documents: Blob | Blob[],
 		): Promise<WorkspaceDocument[]> => {
 			const folder = await resolveFolder(workspaceId);
-			const workspace = await storeGet("workspaces", workspaceId);
-			const handle = workspace?.name ?? workspaceId;
+			const handle = await workspaceHandle(workspaceId);
 			const blobs = Array.isArray(documents) ? documents : [documents];
+			// Existing records, so an upload neither overwrites a different file of
+			// the same name nor re-adds an identical one.
+			const existing = await allRecords(workspaceId);
+			const byHash = new Map(existing.map((d) => [d.hash, d]));
+			const usedPaths = new Set(existing.map((d) => d.path));
 			const out: WorkspaceDocument[] = [];
 			for (const [index, blob] of blobs.entries()) {
 				const { name, bytes } = await toNamedBytes(blob, index);
-				out.push(
-					await writeDocument(
-						workspaceId,
-						handle,
-						folder,
-						name,
-						bytes,
-						"original",
-					),
+				// Identical content already here → reuse that record, don't duplicate.
+				const hash = await sha256Hex(bytes);
+				const same = byHash.get(hash);
+				if (same) {
+					out.push(same);
+					continue;
+				}
+				// Name taken by a different file → pick a unique "name (n).ext".
+				const path = uniquePath(name, usedPaths);
+				usedPaths.add(path);
+				const doc = await writeDocument(
+					workspaceId,
+					handle,
+					folder,
+					path,
+					bytes,
+					"original",
 				);
+				byHash.set(hash, doc);
+				out.push(doc);
 			}
 			return out;
 		},

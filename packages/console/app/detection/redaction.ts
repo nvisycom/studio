@@ -34,6 +34,11 @@ export interface RedactionProvider {
 
 	/** The existing redaction output for a detection, or `null` — restored so the
 	 *  panel offers the download without re-running. Local runs have none until
-	 *  redacted in-session, so the local provider returns `null`. */
-	findLatest(detectionId: string): Promise<RedactionOutput | null>;
+	 *  redacted in-session, so the local provider returns `null`. `sourceName` is
+	 *  the source document's name, so the restored output downloads with a real
+	 *  file name (and extension), not the opaque output id. */
+	findLatest(
+		detectionId: string,
+		sourceName?: string,
+	): Promise<RedactionOutput | null>;
 }

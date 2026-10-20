@@ -1,6 +1,9 @@
+# https://doc.rust-lang.org/cargo/reference/manifest.html
+
 [package]
 name = "studio-elide"
 description = "Embeds the Elide pipeline: build an engine from a deployment TOML, then analyze and anonymize documents on-device"
+readme = "README.md"
 
 version = { workspace = true }
 rust-version = { workspace = true }

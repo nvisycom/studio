@@ -11,12 +11,13 @@ import type {
  * documents endpoint.
  */
 
-/** A sensible download name for a redacted output file id. */
+/** A download name for a redaction of `fileName`, e.g. `report.redacted.pdf` —
+ *  the same `.redacted.` convention the on-device path uses. */
 function redactedName(fileName: string): string {
 	const dot = fileName.lastIndexOf(".");
 	return dot > 0
-		? `${fileName.slice(0, dot)}-redacted${fileName.slice(dot)}`
-		: `${fileName}-redacted`;
+		? `${fileName.slice(0, dot)}.redacted${fileName.slice(dot)}`
+		: `${fileName}.redacted`;
 }
 
 /** Build a server-backed redaction provider over an SDK client + workspace. */
@@ -40,7 +41,10 @@ export function createServerRedactionProvider(
 			};
 		},
 
-		async findLatest(detectionId: string): Promise<RedactionOutput | null> {
+		async findLatest(
+			detectionId: string,
+			sourceName?: string,
+		): Promise<RedactionOutput | null> {
 			const { items } = await client.detections.listRedactions(
 				workspaceId(),
 				detectionId,
@@ -51,7 +55,9 @@ export function createServerRedactionProvider(
 			return {
 				kind: "server",
 				fileId: latest.outputDocumentId,
-				fileName: redactedName(latest.outputDocumentId),
+				// Name after the source document so the download has a real name and
+				// extension — the output id is opaque and has neither.
+				fileName: sourceName ? redactedName(sourceName) : "redacted",
 			};
 		},
 	};

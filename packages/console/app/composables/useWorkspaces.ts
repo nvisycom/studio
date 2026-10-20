@@ -48,8 +48,13 @@ export function useWorkspaces() {
 		{ immediate: true },
 	);
 
+	const { isAuthenticated } = useAuth();
 	const workspacesQuery = useQuery({
-		key: ["workspaces"],
+		// Key on the session too: on desktop the list is a union that grows when
+		// signed in, so the logged-out (local-only) and signed-in (local + server)
+		// lists must cache separately — otherwise a stale local-only result could
+		// survive sign-in.
+		key: () => ["workspaces", isAuthenticated.value],
 		query: () =>
 			fetchAllPages((after) =>
 				requireList().workspaces.listWorkspaces({ after }),

@@ -1,6 +1,9 @@
+# https://doc.rust-lang.org/cargo/reference/manifest.html
+
 [package]
 name = "studio-sqlite"
 description = "The console's on-device entity store: a local SQLite database (diesel) of per-entity tables holding opaque-JSON bodies, queried in Rust"
+readme = "README.md"
 
 version = { workspace = true }
 rust-version = { workspace = true }

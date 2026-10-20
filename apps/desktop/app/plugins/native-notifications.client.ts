@@ -18,15 +18,21 @@ export default defineNuxtPlugin({
 			setEnabled: (enabled) =>
 				invoke("set_notifications_enabled", { enabled }).then(() => undefined),
 			emit: async (event, message) => {
-				// Honor the per-event pref: fire only if this event is in the enabled
-				// (native) list. No stored prefs yet → treat all local events as on,
-				// matching the settings page's defaults.
-				const prefs = await invoke<WorkspaceNotificationSettings | null>(
-					"notification_prefs",
-				);
-				const enabledEvents = prefs?.notificationEventsApp;
-				if (enabledEvents && !enabledEvents.includes(event as never)) return;
-				await invoke("notify", { title: message.title, body: message.body });
+				// A notification is a side effect: never let a failed pref read or a
+				// failed notify break the caller (the detection/redaction flow).
+				try {
+					// Honor the per-event pref: fire only if this event is enabled. A
+					// failed read defaults to "no stored prefs" → all local events on,
+					// matching the settings page's defaults.
+					const prefs = await invoke<WorkspaceNotificationSettings | null>(
+						"notification_prefs",
+					).catch(() => null);
+					const enabledEvents = prefs?.notificationEventsApp;
+					if (enabledEvents && !enabledEvents.includes(event as never)) return;
+					await invoke("notify", { title: message.title, body: message.body });
+				} catch (error) {
+					console.warn("native notification failed:", error);
+				}
 			},
 		});
 	},

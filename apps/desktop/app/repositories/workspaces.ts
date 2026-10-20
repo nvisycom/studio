@@ -10,6 +10,7 @@ import type {
 import type { WorkspaceList } from "#console/repositories/types";
 import type { LocalWorkspace } from "./folder";
 import {
+	type Collection,
 	parseBody,
 	type StoreRecord,
 	storeDelete,
@@ -17,6 +18,18 @@ import {
 	storeList,
 	storeUpsert,
 } from "./store";
+
+/** The collections whose rows belong to a workspace and are cleared with it. */
+const WORKSPACE_SCOPED: Collection[] = [
+	"documents",
+	"policies",
+	"pipelines",
+	"detections",
+	"redactions",
+	"scopes",
+	"matchers",
+	"labels",
+];
 
 /*
  * The workspaces resource of the local store. A local workspace is a real
@@ -125,6 +138,20 @@ export function createWorkspacesRepository(): WorkspaceList["workspaces"] {
 		},
 
 		deleteWorkspace: async (workspaceId: string): Promise<void> => {
+			// Delete the workspace's child records first, then the workspace itself.
+			// A detection body holds a full `Audit` (the detected sensitive values),
+			// so leaving them behind would strand PII on disk with no UI to remove
+			// it. Every workspace-scoped collection is cleared.
+			for (const collection of WORKSPACE_SCOPED) {
+				let after: string | undefined;
+				do {
+					const page = await storeList(collection, { workspaceId, after });
+					for (const record of page.items) {
+						await storeDelete(collection, record.id);
+					}
+					after = page.nextCursor;
+				} while (after);
+			}
 			await storeDelete("workspaces", workspaceId);
 		},
 	};

@@ -2047,7 +2047,7 @@
 			"noAccount": "Noch kein Konto?",
 			"connect": {
 				"heading": "Mit einem Server verbinden",
-				"subtitle": "Melde dich bei einem Nvisy-Server an, um deine Arbeit zu synchronisieren und zusammenzuarbeiten. Optional – die App funktioniert auch offline.",
+				"subtitle": "Melden Sie sich bei einem Nvisy-Server an, um Ihre Arbeit zu synchronisieren und zusammenzuarbeiten. Optional – die App funktioniert auch offline.",
 				"back": "Offline fortfahren"
 			}
 		},

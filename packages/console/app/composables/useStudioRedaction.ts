@@ -628,7 +628,10 @@ export function useStudioRedaction(target: RedactionTarget) {
 			resetRedaction();
 			if (!id) return;
 			try {
-				const restored = await requireRedactionProvider().findLatest(id);
+				const restored = await requireRedactionProvider().findLatest(
+					id,
+					detectionFileName.value ?? undefined,
+				);
 				if (detectionId.value !== id) return;
 				if (restored) {
 					output.value = restored;

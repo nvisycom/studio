@@ -17,6 +17,7 @@ pub fn run() {
     register_plugins(tauri::Builder::default())
         .manage(auth::AuthState::default())
         .manage(engine::EngineState::default())
+        .manage(documents::AllowedFolders::default())
         .manage(files::DropLimit::default())
         .manage(files::watch::WatchState::default())
         .invoke_handler(command_handler())
@@ -37,6 +38,7 @@ fn command_handler<R: tauri::Runtime>() -> impl Fn(tauri::ipc::Invoke<R>) -> boo
         database::store_upsert,
         database::store_delete,
         documents::pick_workspace_folder,
+        documents::register_workspace_folder,
         documents::documents_read,
         documents::documents_write,
         documents::documents_remove,

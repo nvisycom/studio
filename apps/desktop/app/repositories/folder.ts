@@ -1,3 +1,4 @@
+import { invoke } from "@tauri-apps/api/core";
 import type { Workspace } from "@nvisy/sdk/datatypes";
 import { parseBody, storeGet } from "./store";
 
@@ -27,5 +28,25 @@ export async function resolveFolder(workspaceId: string): Promise<string> {
 	if (!workspace.folder) {
 		throw new Error("this local workspace has no folder");
 	}
+	// Register the folder as allowed before any FS command uses it — the Rust
+	// side only serves folders the app has allowed, and a folder picked in a past
+	// session needs re-allowing this session. Idempotent; runs before every use.
+	await invoke("register_workspace_folder", { folder: workspace.folder });
 	return workspace.folder;
+}
+
+/**
+ * Locate a document on disk: the workspace folder plus the document's path
+ * within it, resolved from its id. The engine reads the file directly from this
+ * (folder, path), so the bytes never cross IPC.
+ */
+export async function locateDocument(
+	workspaceId: string,
+	documentId: string,
+): Promise<{ folder: string; path: string }> {
+	const folder = await resolveFolder(workspaceId);
+	const record = await storeGet("documents", documentId);
+	if (!record) throw new Error(`document ${documentId} not found`);
+	const path = parseBody<{ path: string }>(record).path;
+	return { folder, path };
 }

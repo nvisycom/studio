@@ -20,8 +20,17 @@ yanked = "deny"
 # until Tauri updates them upstream; "workspace" keeps the check meaningful
 # without a large, rotting ignore list of transitive advisory IDs.
 unmaintained = "workspace"
-# A list of advisory IDs to ignore
+# Advisories with no reachable fix, kept scoped and documented so each is removed
+# the moment upstream ships a patch.
 ignore = [
+    # webpki-roots 0.26.x bundles the distrusted emSign ECC Root CA - G3. The fix
+    # only landed in the 1.0 line; the 0.26.x line (the latest is 0.26.11) has no
+    # patched release. It reaches us solely through the `deepgram` provider
+    # feature of `elide-pipeline` (hosted speech-to-text, compiled in for the
+    # deployment-TOML remote-provider step), whose `deepgram` dep still requires
+    # `webpki-roots ^0.26` even at its latest. Remove when deepgram moves to
+    # webpki-roots 1.0.
+    "RUSTSEC-2026-0381",
     # quick-xml 0.37.5 XML-parsing DoS, reached only through `little_exif
     # 0.6.23` (an EXIF/XMP dependency of elide-image). `little_exif` pins
     # `^0.37`; the fix is in the semver-incompatible 0.41 and 0.6.23 is its

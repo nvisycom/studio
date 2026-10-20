@@ -32,14 +32,11 @@ impl LocalEngine {
 
     /// Reads an [`Audit`] back from its serialized form.
     ///
-    /// An audit is [`Serialize`] but not [`Deserialize`]: its report tags entity
+    /// An audit is `Serialize` but not `Deserialize`: its report tags entity
     /// groups by modality name, so rebuilding one needs this engine's codec
     /// registry. The frontend sends a detection's audit back (with any reviewer
     /// edits) as JSON for redaction; this turns it back into an [`Audit`] the
     /// same engine can apply.
-    ///
-    /// [`Serialize`]: serde::Serialize
-    /// [`Deserialize`]: serde::Deserialize
     ///
     /// # Errors
     ///
