@@ -220,7 +220,8 @@
 				},
 				"desktop": {
 					"label": "Desktop",
-					"description": "Native Benachrichtigungen auf diesem Gerät."
+					"description": "Native Benachrichtigungen auf diesem Gerät.",
+					"toggle": "Native Benachrichtigungen anzeigen"
 				}
 			},
 			"events": {
@@ -307,7 +308,10 @@
 			"subtitle": "Das passiert gerade in {workspace}",
 			"description": "Erstellen Sie Ihren ersten Arbeitsbereich, um Dokumente zu organisieren, mit Ihrem Team zusammenzuarbeiten und KI-gestützte Einblicke zu nutzen.",
 			"createWorkspace": "Arbeitsbereich Erstellen",
-			"setupProfile": "Profil Einrichten"
+			"setupProfile": "Profil Einrichten",
+			"localDescription": "Öffnen Sie einen Ordner, um zu beginnen. Seine Dateien werden zu Ihren Dokumenten – auf Ihrem Gerät erkannt und anonymisiert, nichts verlässt Ihren Rechner.",
+			"openFolder": "Ordner öffnen",
+			"openFolderFailed": "Dieser Ordner konnte nicht geöffnet werden"
 		},
 		"workspace": {
 			"members": "Mitglieder",
@@ -429,9 +433,21 @@
 	"workspace": {
 		"select": "Arbeitsbereich Auswählen",
 		"addWorkspace": "Arbeitsbereich Hinzufügen",
+		"localGroup": "Lokal",
+		"serverGroup": "Arbeitsbereiche",
+		"localLabel": "Lokal",
 		"create": {
 			"title": "Neuen Arbeitsbereich Erstellen",
 			"description": "Richten Sie einen neuen Arbeitsbereich ein, um Ihre Dokumente und Workflows zu organisieren.",
+			"typeLocalTitle": "Lokaler Ordner",
+			"typeLocalHint": "Auf diesem Gerät, kein Konto",
+			"typeRemoteTitle": "Remote-Server",
+			"typeRemoteHint": "Synchronisiert, kollaborativ",
+			"folderLabel": "Ordner",
+			"folderChoose": "Ordner wählen",
+			"folderChange": "Ändern",
+			"folderHint": "Seine Dateien werden zu den Dokumenten dieses Arbeitsbereichs. Nichts verlässt Ihr Gerät.",
+			"localDescription": "Ein lokaler Arbeitsbereich ist ein Ordner auf Ihrem Gerät.",
 			"nameLabel": "Name des Arbeitsbereichs",
 			"namePlaceholder": "Mein Arbeitsbereich",
 			"slugLabel": "Slug",
@@ -441,8 +457,10 @@
 			"descriptionPlaceholder": "Kurze Beschreibung Ihres Arbeitsbereichs...",
 			"advancedSettings": "Erweitert",
 			"error": "Arbeitsbereich konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
+			"folderError": "Dieser Ordner konnte nicht geöffnet werden",
 			"cancelButton": "Abbrechen",
-			"submitButton": "Arbeitsbereich Erstellen"
+			"submitButton": "Arbeitsbereich Erstellen",
+			"submitLocalButton": "Lokalen Arbeitsbereich Erstellen"
 		}
 	},
 	"documents": {
@@ -1351,6 +1369,20 @@
 		}
 	},
 	"studio": {
+		"notify": {
+			"detectionComplete": {
+				"title": "Erkennung abgeschlossen",
+				"body": "Keine Entitäten in {name} gefunden | {count} Entität in {name} gefunden | {count} Entitäten in {name} gefunden"
+			},
+			"detectionFailed": {
+				"title": "Erkennung fehlgeschlagen",
+				"body": "{name} konnte nicht analysiert werden"
+			},
+			"redactionCreated": {
+				"title": "Anonymisierung bereit",
+				"body": "Anonymisierte Ausgabe für {name} erstellt"
+			}
+		},
 		"audit": {
 			"expand": "Auf Vollbild erweitern",
 			"collapse": "Vollbild verlassen",
@@ -2012,7 +2044,12 @@
 			"genericError": "Bei der Anmeldung ist ein Fehler aufgetreten",
 			"submit": "Anmelden",
 			"submitting": "Anmeldung läuft...",
-			"noAccount": "Noch kein Konto?"
+			"noAccount": "Noch kein Konto?",
+			"connect": {
+				"heading": "Mit einem Server verbinden",
+				"subtitle": "Melde dich bei einem Nvisy-Server an, um deine Arbeit zu synchronisieren und zusammenzuarbeiten. Optional – die App funktioniert auch offline.",
+				"back": "Offline fortfahren"
+			}
 		},
 		"signup": {
 			"title": "Registrieren",
@@ -2336,7 +2373,10 @@
 		"themeDark": "Dunkel",
 		"themeSystem": "System",
 		"language": "Sprache",
-		"documentation": "Dokumentation"
+		"documentation": "Dokumentation",
+		"localAccount": "Lokal",
+		"localAccountHint": "Kein Konto",
+		"connectServer": "Mit Server verbinden"
 	},
 	"billing": {
 		"title": "Abrechnung",

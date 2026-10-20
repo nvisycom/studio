@@ -1,12 +1,49 @@
 <script setup lang="ts">
-import { Layers, User } from "@lucide/vue";
+import type { CreateWorkspace } from "@nvisy/sdk/datatypes";
+import { FolderOpen, Layers, Loader2, User } from "@lucide/vue";
+import { toast } from "vue-sonner";
 import { Button } from "#console/components/ui/button";
 import CreateWorkspaceSheet from "#console/components/shared/CreateWorkspaceSheet.vue";
 
 const { t } = useI18n();
 const { firstName } = useAccount();
+const { isAuthenticated } = useAuth();
+const { createWorkspaceAsync } = useWorkspaces();
+const { host } = useNativeHost();
 
 const isCreateWorkspaceSheetOpen = ref(false);
+
+// Two onboarding paths, on their own axes:
+//  - "Open a folder" is gated on the host capability, not the platform: it shows
+//    wherever the native folder picker exists (desktop), no account needed.
+//  - "Create workspace" is a server action, shown when signed in.
+// On signed-in desktop both appear; on web only create; logged-out desktop only
+// the folder path.
+const canOpenFolder = computed(() => !!host.value.pickFolder);
+const canCreateServer = isAuthenticated;
+const isOpeningFolder = ref(false);
+
+async function openFolder() {
+	const pickFolder = host.value.pickFolder;
+	if (!pickFolder || isOpeningFolder.value) return;
+	isOpeningFolder.value = true;
+	try {
+		const folder = await pickFolder();
+		if (!folder) return; // Cancelled the picker.
+		// Name the workspace after the folder's last path segment.
+		const name = folder.split(/[/\\]/).filter(Boolean).pop() ?? "Workspace";
+		await createWorkspaceAsync({
+			displayName: name,
+			folder,
+		} as CreateWorkspace);
+	} catch (error) {
+		toast.error(t("overview.welcome.openFolderFailed"), {
+			description: getErrorMessage(error, t("common.errors.tryAgain")),
+		});
+	} finally {
+		isOpeningFolder.value = false;
+	}
+}
 </script>
 
 <template>
@@ -18,12 +55,29 @@ const isCreateWorkspaceSheetOpen = ref(false);
         >!
       </h1>
       <p class="mb-8 text-sm leading-relaxed text-muted-foreground">
-        {{ t("overview.welcome.description") }}
+        {{ canCreateServer ? t("overview.welcome.description") : t("overview.welcome.localDescription") }}
       </p>
 
       <div class="flex items-center justify-center gap-3">
+        <!-- Open a folder (desktop): creates a local folder-workspace, no account. -->
         <Button
+          v-if="canOpenFolder"
           size="default"
+          class="cursor-pointer gap-2"
+          :disabled="isOpeningFolder"
+          data-testid="onboarding-open-folder"
+          @click="openFolder"
+        >
+          <Loader2 v-if="isOpeningFolder" :size="16" class="animate-spin" />
+          <FolderOpen v-else :size="16" />
+          {{ t("overview.welcome.openFolder") }}
+        </Button>
+
+        <!-- Create a server workspace (signed in). -->
+        <Button
+          v-if="canCreateServer"
+          size="default"
+          :variant="canOpenFolder ? 'outline' : 'default'"
           class="cursor-pointer gap-2"
           data-testid="onboarding-create-workspace"
           @click="isCreateWorkspaceSheetOpen = true"
@@ -31,7 +85,15 @@ const isCreateWorkspaceSheetOpen = ref(false);
           <Layers :size="16" />
           {{ t("overview.welcome.createWorkspace") }}
         </Button>
-        <Button as-child size="default" variant="outline" class="gap-2">
+
+        <!-- Profile setup (web onboarding only — desktop leads with the folder). -->
+        <Button
+          v-if="canCreateServer && !canOpenFolder"
+          as-child
+          size="default"
+          variant="outline"
+          class="gap-2"
+        >
           <NuxtLink to="/account/general">
             <User :size="16" />
             {{ t("overview.welcome.setupProfile") }}

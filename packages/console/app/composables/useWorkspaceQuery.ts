@@ -4,6 +4,7 @@ import type {
 	UseQueryOptions,
 	UseQueryReturn,
 } from "@pinia/colada";
+import type { Repository } from "#console/repositories/types";
 
 /**
  * Shared plumbing for the workspace-scoped data composables. Every one of them
@@ -13,23 +14,45 @@ import type {
  * individual composables read as just their resource calls.
  */
 
-/** The resolved context every workspace-scoped call needs. */
+/**
+ * The resolved context a workspace-scoped call needs.
+ *
+ * `client` is the SDK client, guaranteed non-null here — composables not yet
+ * routed through the repository seam call it directly, and those run only on the
+ * server-backed path (a live session). `repository` is the seam a routed
+ * composable calls instead; see {@link requireRepository} for the offline path
+ * that does not require a client.
+ */
 export interface WorkspaceContext {
 	client: Nvisy;
 	workspaceId: string;
 }
 
 /**
- * Resolve the SDK client + active workspace id, or throw a single canonical
- * error. Use inside a query/mutation body where a workspace is required. The
- * URL is still keyed by slug (display-only); this resolves it to the id every
- * SDK call now takes.
+ * The resolved context a repository-routed call needs: the data source and the
+ * workspace, with no client requirement — so it works offline, backed by the
+ * local store.
+ */
+export interface RepositoryContext {
+	repository: Repository;
+	workspaceId: string;
+}
+
+/**
+ * Resolve the SDK client / repository + active workspace id, or throw a single
+ * canonical error. Use inside a query/mutation body where a workspace is
+ * required. The URL is still keyed by slug (display-only); this resolves it to
+ * the id every call now takes.
  */
 export function useWorkspaceContext() {
 	const { $nvisyClient } = useNuxtApp();
-	const { isAuthenticated } = useAuth();
 	const { currentWorkspaceId } = useWorkspaces();
+	const { repository } = useRepository();
 
+	/**
+	 * The client-backed context, for composables not yet routed through the
+	 * repository. Requires a session, so it is only reached on the server path.
+	 */
 	function requireContext(): WorkspaceContext {
 		const client = $nvisyClient.value;
 		const workspaceId = currentWorkspaceId.value;
@@ -38,15 +61,37 @@ export function useWorkspaceContext() {
 		return { client, workspaceId };
 	}
 
-	/** True once there's a session and a resolved workspace id. */
-	const enabled = () => isAuthenticated.value && !!currentWorkspaceId.value;
+	/**
+	 * The repository-backed context, for routed composables. Needs no session —
+	 * the local store backs it offline.
+	 */
+	function requireRepository(): RepositoryContext {
+		const repo = repository.value;
+		const workspaceId = currentWorkspaceId.value;
+		if (!repo) throw new Error("No data source available");
+		if (!workspaceId) throw new Error("No workspace selected");
+		return { repository: repo, workspaceId };
+	}
+
+	/**
+	 * True once a data source (server or local) and a workspace id are both
+	 * resolved. A local repository needs no session, so this no longer gates on
+	 * authentication — the desktop app lists and edits local data logged out.
+	 */
+	const enabled = () => !!repository.value && !!currentWorkspaceId.value;
 
 	/** Query key scoped to the active workspace: `[resource, id, ...extra]`. */
 	const key =
 		(resource: string, ...extra: Array<string | number | null>) =>
 		() => [resource, currentWorkspaceId.value, ...extra];
 
-	return { requireContext, enabled, key, currentWorkspaceId };
+	return {
+		requireContext,
+		requireRepository,
+		enabled,
+		key,
+		currentWorkspaceId,
+	};
 }
 
 /**
@@ -116,6 +161,57 @@ export function workspaceMutation<T, V = void>(
 
 	return useMutation<T, V>({
 		mutation: (variables: V) => mutate(requireContext(), variables),
+		onSuccess(...args) {
+			for (const resource of resources) {
+				queryCache.invalidateQueries({ key: key(resource)() });
+			}
+			onSuccess?.(...args);
+		},
+		onSettled,
+		...rest,
+	});
+}
+
+/**
+ * A {@link workspaceQuery} routed through the repository seam: the fetcher
+ * receives `{ repository, workspaceId }` and needs no session, so it reads from
+ * the local store when offline and the server when signed in.
+ */
+export function repositoryQuery<T>(
+	resource: string,
+	fetch: (ctx: RepositoryContext) => Promise<T>,
+	options?: Partial<UseQueryOptions<T>>,
+): UseQueryReturn<T> {
+	const { requireRepository, enabled, key } = useWorkspaceContext();
+	return useQuery<T>({
+		key: key(resource),
+		query: () => fetch(requireRepository()),
+		enabled,
+		...options,
+	});
+}
+
+/**
+ * A {@link workspaceMutation} routed through the repository seam: the mutator
+ * receives `{ repository, workspaceId }` and the variables, and needs no
+ * session.
+ */
+export function repositoryMutation<T, V = void>(
+	mutate: (ctx: RepositoryContext, variables: V) => Promise<T>,
+	options: WorkspaceMutationOptions<T, V> = {},
+) {
+	const { requireRepository, key } = useWorkspaceContext();
+	const queryCache = useQueryCache();
+	const { invalidates, onSuccess, onSettled, ...rest } = options;
+	const resources =
+		invalidates == null
+			? []
+			: Array.isArray(invalidates)
+				? invalidates
+				: [invalidates];
+
+	return useMutation<T, V>({
+		mutation: (variables: V) => mutate(requireRepository(), variables),
 		onSuccess(...args) {
 			for (const resource of resources) {
 				queryCache.invalidateQueries({ key: key(resource)() });

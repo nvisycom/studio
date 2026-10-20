@@ -46,8 +46,7 @@ const loadedSlug = ref<string | null>(null);
 let swapWatcherRegistered = false;
 
 export function useStudioDocuments() {
-	const { $nvisyClient } = useNuxtApp();
-	const { isAuthenticated } = useAuth();
+	const { repository } = useRepository();
 	const { currentWorkspaceSlug, currentWorkspaceId } = useWorkspaces();
 
 	// Snapshot the current in-memory tabs into localStorage. Keyed off the
@@ -97,14 +96,21 @@ export function useStudioDocuments() {
 		const workspaceSlug = loadedSlug.value ?? currentWorkspaceSlug.value;
 		const workspaceId = currentWorkspaceId.value;
 		try {
-			const client = $nvisyClient.value;
-			if (!client || !workspaceSlug || !workspaceId || !isAuthenticated.value) {
-				throw new Error("Not authenticated");
+			// Documents flow through the repository seam — the server when signed in,
+			// the local folder when offline — so the studio loads a file the same way
+			// in both. No auth gate: the local repository needs no session.
+			const documents = repository.value?.documents;
+			if (!documents || !workspaceSlug || !workspaceId) {
+				throw new Error("No data source available");
 			}
 
 			const fileData =
-				file ?? (await client.documents.getDocument(workspaceId, fileId));
-			const contentUrl = await fetchFileContentUrl(client, workspaceId, fileId);
+				file ?? (await documents.getDocument(workspaceId, fileId));
+			const contentUrl = await fetchFileContentUrl(
+				documents,
+				workspaceId,
+				fileId,
+			);
 
 			// Ignore if the workspace switched away, or the tab was closed, while
 			// this download was in flight.

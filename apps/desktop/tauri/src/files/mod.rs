@@ -13,6 +13,7 @@ pub mod watch;
 
 use tauri::{AppHandle, Runtime};
 
+pub use self::dialog::pick_folder;
 use self::dialog::{FileFilter, PickedFile};
 pub use self::drop::{DropLimit, on_window_event};
 use self::watch::WatchConfig;

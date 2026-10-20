@@ -272,10 +272,10 @@ onBeforeUnmount(() => window.removeEventListener("focus", onWindowFocus));
           <NvisyLogo :size="34" class="text-foreground" />
           <div class="space-y-1.5">
             <h1 class="text-2xl font-semibold tracking-tight">
-              {{ t("auth.login.heading") }}
+              {{ t("auth.login.connect.heading") }}
             </h1>
             <p class="text-sm text-muted-foreground">
-              {{ t("auth.login.subtitle") }}
+              {{ t("auth.login.connect.subtitle") }}
             </p>
           </div>
         </div>
@@ -417,6 +417,18 @@ onBeforeUnmount(() => window.removeEventListener("focus", onWindowFocus));
           <p class="text-center text-xs text-muted-foreground">
             {{ t("auth.login.browser.hint") }}
           </p>
+
+          <!-- Connecting a server is opt-in: this page is reached on demand from
+               the account chip, not at launch, so offer the way back to the
+               local app rather than stranding the user here. -->
+          <div class="text-center">
+            <NuxtLink
+              to="/"
+              class="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+            >
+              {{ t("auth.login.connect.back") }}
+            </NuxtLink>
+          </div>
         </div>
       </div>
     </main>

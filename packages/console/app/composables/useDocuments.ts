@@ -20,7 +20,7 @@ export interface BulkDownloadResult {
  * Composable for document operations with infinite scroll support.
  */
 export function useDocuments(options: UseDocumentsOptions = {}) {
-	const { requireContext, currentWorkspaceId } = useWorkspaceContext();
+	const { requireRepository, currentWorkspaceId } = useWorkspaceContext();
 	const { saveBlob } = useFileDownload();
 
 	const pageSize = options.pageSize ?? 50;
@@ -28,10 +28,13 @@ export function useDocuments(options: UseDocumentsOptions = {}) {
 		...toValue(options.query ?? {}),
 	}));
 
-	const documentsQuery = workspaceQuery(
+	// Documents go through the repository seam, so the same list/upload/download/
+	// delete flow serves the server (web, signed-in desktop) and the local folder
+	// (desktop, offline) with no change here or in the UI.
+	const documentsQuery = repositoryQuery(
 		"documents",
-		({ client, workspaceId }) =>
-			client.documents.listDocuments(workspaceId, {
+		({ repository, workspaceId }) =>
+			repository.documents.listDocuments(workspaceId, {
 				...queryParams.value,
 				limit: pageSize,
 			}),
@@ -51,43 +54,43 @@ export function useDocuments(options: UseDocumentsOptions = {}) {
 		loadMore,
 		isLoadingMore,
 	} = useCursorPagination(documentsQuery.data, (after) => {
-		const { client, workspaceId } = requireContext();
-		return client.documents.listDocuments(workspaceId, {
+		const { repository, workspaceId } = requireRepository();
+		return repository.documents.listDocuments(workspaceId, {
 			...queryParams.value,
 			after,
 			limit: pageSize,
 		});
 	});
 
-	const updateDocumentMutation = workspaceMutation(
+	const updateDocumentMutation = repositoryMutation(
 		(
-			{ client, workspaceId },
+			{ repository, workspaceId },
 			{
 				documentId,
 				updates,
 			}: { documentId: string; updates: UpdateWorkspaceDocument },
-		) => client.documents.updateDocument(workspaceId, documentId, updates),
+		) => repository.documents.updateDocument(workspaceId, documentId, updates),
 		{ invalidates: "documents" },
 	);
 
-	const deleteDocumentMutation = workspaceMutation(
-		({ client, workspaceId }, documentId: string) =>
-			client.documents.deleteDocument(workspaceId, documentId),
+	const deleteDocumentMutation = repositoryMutation(
+		({ repository, workspaceId }, documentId: string) =>
+			repository.documents.deleteDocument(workspaceId, documentId),
 		{ invalidates: "documents" },
 	);
 
 	// Batch delete in one request, returning which ids were deleted vs skipped
 	// (unknown, already gone, or held by an in-progress detection). Preferred for
 	// bulk deletes over looping the single-delete mutation.
-	const deleteDocumentsMutation = workspaceMutation(
-		({ client, workspaceId }, documentIds: string[]) =>
-			client.documents.deleteDocuments(workspaceId, documentIds),
+	const deleteDocumentsMutation = repositoryMutation(
+		({ repository, workspaceId }, documentIds: string[]) =>
+			repository.documents.deleteDocuments(workspaceId, documentIds),
 		{ invalidates: "documents" },
 	);
 
-	const uploadDocumentsMutation = workspaceMutation(
-		({ client, workspaceId }, files: File[]) =>
-			client.documents.uploadDocuments(workspaceId, files),
+	const uploadDocumentsMutation = repositoryMutation(
+		({ repository, workspaceId }, files: File[]) =>
+			repository.documents.uploadDocuments(workspaceId, files),
 		{ invalidates: "documents" },
 	);
 
@@ -95,8 +98,8 @@ export function useDocuments(options: UseDocumentsOptions = {}) {
 	// the user cancelled a native save panel on desktop). A fetch or write
 	// failure throws — the caller decides how to surface it.
 	async function downloadDocument(documentId: string, fileName: string) {
-		const { client, workspaceId } = requireContext();
-		const response = await client.documents.downloadDocument(
+		const { repository, workspaceId } = requireRepository();
+		const response = await repository.documents.downloadDocument(
 			workspaceId,
 			documentId,
 		);
@@ -131,8 +134,8 @@ export function useDocuments(options: UseDocumentsOptions = {}) {
 
 	/** Fetch a single document's metadata by id (e.g. to name a preselected one). */
 	async function getDocument(documentId: string) {
-		const { client, workspaceId } = requireContext();
-		return await client.documents.getDocument(workspaceId, documentId);
+		const { repository, workspaceId } = requireRepository();
+		return await repository.documents.getDocument(workspaceId, documentId);
 	}
 
 	return {

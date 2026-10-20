@@ -220,7 +220,8 @@
 				},
 				"desktop": {
 					"label": "Desktop",
-					"description": "Native notifications on this device."
+					"description": "Native notifications on this device.",
+					"toggle": "Show native notifications"
 				}
 			},
 			"events": {
@@ -307,7 +308,10 @@
 			"subtitle": "Here's what's happening in {workspace}",
 			"description": "Create your first workspace to start organizing documents, collaborating with your team, and leveraging AI-powered insights.",
 			"createWorkspace": "Create Workspace",
-			"setupProfile": "Setup Profile"
+			"setupProfile": "Setup Profile",
+			"localDescription": "Open a folder to start. Its files become your documents — detected and redacted on your device, nothing leaving your machine.",
+			"openFolder": "Open a folder",
+			"openFolderFailed": "Couldn't open that folder"
 		},
 		"workspace": {
 			"members": "Members",
@@ -429,9 +433,21 @@
 	"workspace": {
 		"select": "Select Workspace",
 		"addWorkspace": "Add Workspace",
+		"localGroup": "Local",
+		"serverGroup": "Workspaces",
+		"localLabel": "Local",
 		"create": {
 			"title": "Create New Workspace",
 			"description": "Set up a new workspace to organize your documents and workflows.",
+			"typeLocalTitle": "Local folder",
+			"typeLocalHint": "On this device, no account",
+			"typeRemoteTitle": "Remote server",
+			"typeRemoteHint": "Synced, collaborate",
+			"folderLabel": "Folder",
+			"folderChoose": "Choose a folder",
+			"folderChange": "Change",
+			"folderHint": "Its files become this workspace's documents. Nothing leaves your machine.",
+			"localDescription": "A local workspace is a folder on your device.",
 			"nameLabel": "Workspace Name",
 			"namePlaceholder": "My Workspace",
 			"slugLabel": "Slug",
@@ -441,8 +457,10 @@
 			"descriptionPlaceholder": "Brief description of your workspace...",
 			"advancedSettings": "Advanced",
 			"error": "Failed to create workspace. Please try again.",
+			"folderError": "Couldn't open that folder",
 			"cancelButton": "Cancel",
-			"submitButton": "Create Workspace"
+			"submitButton": "Create Workspace",
+			"submitLocalButton": "Create Local Workspace"
 		}
 	},
 	"documents": {
@@ -1351,6 +1369,20 @@
 		}
 	},
 	"studio": {
+		"notify": {
+			"detectionComplete": {
+				"title": "Detection complete",
+				"body": "No entities found in {name} | {count} entity found in {name} | {count} entities found in {name}"
+			},
+			"detectionFailed": {
+				"title": "Detection failed",
+				"body": "Couldn't analyze {name}"
+			},
+			"redactionCreated": {
+				"title": "Redaction ready",
+				"body": "Redacted output created for {name}"
+			}
+		},
 		"audit": {
 			"expand": "Expand to full screen",
 			"collapse": "Exit full screen",
@@ -2012,7 +2044,12 @@
 			"genericError": "An error occurred during login",
 			"submit": "Sign in",
 			"submitting": "Signing in...",
-			"noAccount": "Don't have an account?"
+			"noAccount": "Don't have an account?",
+			"connect": {
+				"heading": "Connect a server",
+				"subtitle": "Sign in to a Nvisy server to sync your work and collaborate. It's optional — the app works offline without one.",
+				"back": "Continue offline"
+			}
 		},
 		"signup": {
 			"title": "Sign Up",
@@ -2336,7 +2373,10 @@
 		"themeDark": "Dark",
 		"themeSystem": "System",
 		"language": "Language",
-		"documentation": "Documentation"
+		"documentation": "Documentation",
+		"localAccount": "Local",
+		"localAccountHint": "No account",
+		"connectServer": "Connect a server"
 	},
 	"billing": {
 		"title": "Billing",

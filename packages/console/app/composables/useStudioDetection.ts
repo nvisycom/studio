@@ -28,10 +28,33 @@ export function useStudioDetection(
 	documentText: MaybeRefOrGetter<string | null>,
 	docxParts?: MaybeRefOrGetter<Map<string, Uint8Array> | null>,
 	fileName?: MaybeRefOrGetter<string | null>,
+	documentBytes?: () => Promise<Uint8Array>,
 ) {
 	const { t } = useI18n();
 	const { pipelines } = usePipelines();
-	const { runDetection, findLatestForFile, getAnalysis } = useDetections();
+	// Detection runs through the injected provider: the server pipeline flow, or
+	// the on-device engine when offline. The provider owns run + restore; this
+	// composable owns the pipeline selection, phases, and restore orchestration.
+	const { provider } = useDetectionProvider();
+	// Native notifications for LOCAL events only. A server workspace already
+	// notifies through the server's notification stream, so firing here too would
+	// double up; a local, in-session run has no such stream, so the studio fires
+	// the native one itself. No-op on web / server / when the event is disabled.
+	const { notifications: native } = useNativeNotifications();
+	const { currentWorkspaceIsLocal } = useWorkspaces();
+	function notifyLocal(
+		event: string,
+		message: { title: string; body: string },
+	) {
+		if (currentWorkspaceIsLocal.value) native.value.emit?.(event, message);
+	}
+
+	/** The active detection backend, or throw the one canonical error. */
+	function requireProvider() {
+		const p = provider.value;
+		if (!p) throw new Error("No detection backend available");
+		return p;
+	}
 
 	const selectedPipeline = ref<string>("");
 	// The last value we set on `selectedPipeline` programmatically (default or
@@ -124,21 +147,46 @@ export function useStudioDetection(
 		detectionId.value = null;
 		detectionFileName.value = toValue(fileName) ?? null;
 		try {
-			const result = await runDetection(
-				selectedPipeline.value,
-				{ documentId: file },
+			const result = await requireProvider().produce(
+				{
+					fileId: file,
+					name: toValue(fileName) ?? file,
+					pipelineId: selectedPipeline.value,
+					bytes: documentBytes ?? (() => Promise.reject(new Error("no bytes"))),
+				},
 				(status) => {
-					if (token === restoreToken) detectionStatus.value = status;
+					if (token === restoreToken)
+						detectionStatus.value = status as WorkspaceDetection["status"];
 				},
 			);
 			if (token !== restoreToken) return;
 			audit.value = result.audit;
 			detectionId.value = result.detectionId;
 			phase.value = "complete";
+
+			// Fire a native "detection complete" notification (local events only;
+			// the seam's pref check + device gate decide whether it actually shows).
+			const name = toValue(fileName) ?? file;
+			const count = (result.audit.report.parts ?? []).reduce(
+				(total, part) => total + (part.entities?.length ?? 0),
+				0,
+			);
+			notifyLocal("pipeline.detection.completed", {
+				title: t("studio.notify.detectionComplete.title"),
+				body: t("studio.notify.detectionComplete.body", count, {
+					named: { count, name },
+				}),
+			});
 		} catch (err) {
 			if (token !== restoreToken) return;
 			phase.value = "failed";
 			errorMessage.value = getErrorMessage(err, t("studio.audit.runFailed"));
+			notifyLocal("pipeline.detection.failed", {
+				title: t("studio.notify.detectionFailed.title"),
+				body: t("studio.notify.detectionFailed.body", {
+					name: toValue(fileName) ?? file,
+				}),
+			});
 		}
 	}
 
@@ -160,7 +208,7 @@ export function useStudioDetection(
 		detectionId.value = null;
 		detectionFileName.value = toValue(fileName) ?? null;
 		try {
-			const latest = await findLatestForFile(file, opts.pipelineId);
+			const latest = await requireProvider().findLatest(file, opts.pipelineId);
 			// Bail if a newer restore started (file or pipeline changed) meanwhile.
 			if (token !== restoreToken) return;
 			if (!latest) {
@@ -175,11 +223,10 @@ export function useStudioDetection(
 				pendingAdoptPipeline.value = latest.pipelineId ?? null;
 				adoptResolved.value = true;
 			}
-			const restoredAudit = await getAnalysis(latest.id);
 			if (token !== restoreToken) return;
-			audit.value = restoredAudit;
-			detectionId.value = latest.id;
-			detectionStatus.value = latest.status;
+			audit.value = latest.audit;
+			detectionId.value = latest.detectionId;
+			detectionStatus.value = "complete";
 			restored.value = true;
 			phase.value = "complete";
 		} catch {

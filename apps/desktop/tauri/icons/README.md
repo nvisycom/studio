@@ -3,11 +3,12 @@
 Every file here is **generated** from the source art in `../assets/`. Do not
 edit them by hand; edit the source and regenerate.
 
-- `../assets/app-icon.svg` — the app mark (fading redaction bars, frosted tile).
-  `tauri icon` turns it into the whole cross-platform set: `icon.icns` (macOS),
-  `icon.ico` (Windows), the `*.png` sizes, and the `Square*Logo.png` /
-  `StoreLogo.png` tiles. `tauri.conf.json` bundles the subset it needs.
-- `../assets/tray-icon.svg` — the menu-bar mark (redacted lines, monochrome).
+- `../assets/app-icon.svg` — the app mark (the dissolving dots, glowing on a
+  dark tile). `tauri icon` turns it into the whole cross-platform set:
+  `icon.icns` (macOS), `icon.ico` (Windows), the `*.png` sizes, and the
+  `Square*Logo.png` / `StoreLogo.png` tiles. `tauri.conf.json` bundles the subset
+  it needs.
+- `../assets/tray-icon.svg` — the menu-bar mark (the dissolving dots, monochrome).
   Rendered to `trayTemplate.png` / `trayTemplate@2x.png` by the Rust **build
   script** (`build.rs`, via `resvg`) on every build, and used by `tray.rs` as a
   macOS **template** image (black + alpha; the system tints it light/dark).

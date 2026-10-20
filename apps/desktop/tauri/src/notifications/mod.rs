@@ -9,6 +9,19 @@ use tauri_plugin_notification::NotificationExt;
 
 pub use self::settings::{enabled, set_enabled};
 
+/// Read the per-event notification preferences for a local workspace (the JSON
+/// the settings page round-trips), or `null` when none is stored yet.
+#[tauri::command]
+pub fn notification_prefs<R: Runtime>(app: AppHandle<R>) -> Option<serde_json::Value> {
+    settings::prefs(&app)
+}
+
+/// Persist the per-event notification preferences for a local workspace.
+#[tauri::command]
+pub fn set_notification_prefs<R: Runtime>(app: AppHandle<R>, prefs: serde_json::Value) {
+    settings::set_prefs(&app, prefs);
+}
+
 /// Whether native notifications are enabled (the device-scoped preference behind
 /// the tray toggle and the Desktop notification channel).
 #[tauri::command]

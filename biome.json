@@ -66,6 +66,26 @@
 	},
 	"overrides": [
 		{
+			"includes": ["packages/console/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": ["@tauri-apps/*", "@tauri-apps/**"],
+										"message": "The shared console layer must stay host-agnostic. Reach native capabilities through a seam (useNativeHost / useFileBridge / useRepository) that the desktop app injects — never import Tauri here."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
 			"includes": ["**/components/ui/**"],
 			"linter": {
 				"rules": {

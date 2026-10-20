@@ -45,6 +45,15 @@ const sectionTabs = useSectionTabs();
 
 useHead({ title: () => t("tokens.title") });
 
+// API tokens are server/account-backed. In local-first mode (desktop, no
+// account) the entry point is hidden, but the route is still reachable directly,
+// so redirect out. Reactive and immediate — inert on web.
+const { isDesktop } = usePlatform();
+const { isAuthenticated } = useAuth();
+watchEffect(() => {
+	if (isDesktop.value && !isAuthenticated.value) navigateTo("/");
+});
+
 // Use the API tokens composable
 const {
 	tokens,

@@ -11,6 +11,11 @@ import { ReviewsList } from "#console/components/pages/reviews";
 const { t } = useI18n();
 const { accountId } = useAccount();
 
+// Server-only: the reviewer queue assigns reviews to workspace accounts, which a
+// local workspace has none of (it would otherwise hang on a never-arriving
+// account id). Redirects out when the active workspace is local.
+useServerOnlyPage();
+
 useHead({ title: () => t("reviews.title") });
 
 definePageMeta({

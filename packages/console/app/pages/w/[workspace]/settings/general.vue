@@ -29,12 +29,15 @@ definePageMeta({
 
 const { t } = useI18n();
 const sectionTabs = useSectionTabs();
-
-// Composables
+// A local folder-workspace has no server avatar and no membership, so hide the
+// avatar upload and "leave workspace" for it; name/description edits stay (they
+// go through the local seam). Gated on the workspace's origin, not the session,
+// so a server workspace keeps them even on desktop.
 const {
 	currentWorkspace,
 	currentWorkspaceSlug,
 	currentWorkspaceId,
+	currentWorkspaceIsLocal: localWorkspace,
 	isLoading: isLoadingWorkspaces,
 	updateWorkspaceAsync,
 	isUpdating,
@@ -231,8 +234,9 @@ const canDelete = computed(() => {
       </div>
 
       <div v-else-if="currentWorkspace" class="space-y-6">
-        <!-- Workspace Avatar -->
+        <!-- Workspace Avatar (server-only — hidden offline) -->
         <AvatarUploadCard
+          v-if="!localWorkspace"
           :name="currentWorkspace.displayName"
           :src="avatarSrc"
           :label="t('settings.workspace.avatar.label')"
@@ -328,8 +332,9 @@ const canDelete = computed(() => {
           </CardFooter>
         </Card>
 
-        <!-- Leave Workspace -->
+        <!-- Leave Workspace (membership is server-only — hidden offline) -->
         <DangerZoneCard
+          v-if="!localWorkspace"
           :title="t('settings.workspace.leave.title')"
           :description="t('settings.workspace.leave.description')"
           :content="t('settings.workspace.leave.content')"

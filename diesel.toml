@@ -1,0 +1,13 @@
+# https://diesel.rs/guides/configuring-diesel-cli
+#
+# The desktop app's on-device SQLite store. The schema is generated into the
+# `studio-sqlite` crate; `embed_migrations!` in that crate reads this same
+# `migrations/` directory (via "../../migrations"), so the diesel CLI and the
+# shipped binary share one source of truth.
+
+[print_schema]
+file = "./crates/studio-sqlite/src/schema.rs"
+import_types = ["diesel::sql_types::*"]
+
+[migrations_directory]
+dir = "./migrations"

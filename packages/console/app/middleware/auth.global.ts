@@ -61,6 +61,12 @@ export default defineNuxtRouteMiddleware((to) => {
 
 	if (isPublicRoute) return;
 
+	// Desktop is local-first: it works with no account, backed by the on-device
+	// store, so an unauthenticated user is never bounced to login — they land in
+	// the app and sign in only if they choose to. The web app still requires auth.
+	const { isDesktop } = usePlatform();
+	if (isDesktop.value) return;
+
 	if (!isAuthenticated.value) {
 		// Preserve where the user was headed (e.g. an invite at /join/[code],
 		// which needs auth to load) so login can return them there afterwards.

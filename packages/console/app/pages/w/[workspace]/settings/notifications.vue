@@ -63,8 +63,10 @@ definePageMeta({
 
 const { t } = useI18n();
 const sectionTabs = useSectionTabs();
+const { currentWorkspaceIsLocal: localWorkspace } = useWorkspaces();
 
-// Composable
+// Composable (seam-routed: server settings for a server workspace, on-device
+// prefs for a local one — the page is identical for both).
 const { settings, isLoading, updateSettingsAsync, isUpdating } =
 	useNotificationSettings();
 
@@ -193,6 +195,15 @@ const categories = computed<
 	},
 ]);
 
+// A local workspace only has the pipeline events (detection/redaction run in the
+// studio); it has no member/review/connection events. So locally the list shows
+// just that category — "exactly as the server," minus what doesn't exist locally.
+const visibleCategories = computed(() =>
+	localWorkspace.value
+		? categories.value.filter((c) => c.id === "pipelines")
+		: categories.value,
+);
+
 // Order-independent equality for two event lists.
 function sameEvents(a: NotificationEvent[], b: NotificationEvent[]) {
 	if (a.length !== b.length) return false;
@@ -265,14 +276,41 @@ async function saveEventSettings() {
         <SectionTabs :tabs="sectionTabs.settings.value" />
       </HeaderSocket>
 
+      <!-- Native desktop notifications: a device-scoped channel that needs no
+           server, so it lives in its own card OUTSIDE the server-settings gate
+           below — it must work for a local workspace too. Desktop-only. -->
+      <Card v-if="isDesktop" class="rounded-xl border-border/50 mb-6">
+        <CardContent class="flex items-center justify-between gap-4">
+          <div class="space-y-1">
+            <p
+              class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
+            >
+              {{ t("settings.notifications.channels.desktop.label") }}
+            </p>
+            <p class="text-sm text-foreground">
+              {{ t("settings.notifications.channels.desktop.toggle") }}
+            </p>
+            <p class="text-xs text-muted-foreground">
+              {{ t("settings.notifications.channels.desktop.description") }}
+            </p>
+          </div>
+          <Switch
+            :model-value="nativeEnabled"
+            :disabled="nativePending"
+            @update:model-value="toggleNative"
+          />
+        </CardContent>
+      </Card>
+
       <!-- Loading State -->
       <div v-if="isLoading" class="flex items-center justify-center py-12">
         <Loader2 :size="24" class="animate-spin text-muted-foreground" />
       </div>
 
       <div v-else-if="settings" class="space-y-6">
-        <!-- Notification Channels -->
-        <Card class="py-0 pt-6 rounded-xl border-border/50">
+        <!-- Notification Channels (server-backed: web + email) — hidden for a
+             local workspace, whose only channel is the native one above. -->
+        <Card v-if="!localWorkspace" class="py-0 pt-6 rounded-xl border-border/50">
           <CardHeader class="pb-4">
             <CardTitle
               class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
@@ -310,23 +348,6 @@ async function saveEventSettings() {
                   @update:model-value="toggleEmailNotifications"
                 />
               </div>
-              <!-- Native desktop notifications: a device-scoped channel, shown
-                   only in the desktop shell. -->
-              <div v-if="isDesktop" class="flex items-center justify-between">
-                <div>
-                  <p class="text-sm font-medium text-foreground">
-                    {{ t("settings.notifications.channels.desktop.label") }}
-                  </p>
-                  <p class="text-xs text-muted-foreground">
-                    {{ t("settings.notifications.channels.desktop.description") }}
-                  </p>
-                </div>
-                <Switch
-                  :model-value="nativeEnabled"
-                  :disabled="nativePending"
-                  @update:model-value="toggleNative"
-                />
-              </div>
             </div>
           </CardContent>
           <CardFooter
@@ -351,8 +372,10 @@ async function saveEventSettings() {
           </CardHeader>
           <CardContent>
             <div class="space-y-6">
-              <div v-for="category in categories" :key="category.id">
-                <!-- Category Header with Web/Email Labels -->
+              <div v-for="category in visibleCategories" :key="category.id">
+                <!-- Category Header. A local workspace has only the native
+                     channel, so it shows a single "Desktop" column; the server
+                     shows Web + Email. -->
                 <div
                   class="flex items-center justify-between pb-2 border-b border-border/50"
                 >
@@ -363,9 +386,10 @@ async function saveEventSettings() {
                     <span
                       class="text-xs font-medium text-muted-foreground w-16 text-center"
                     >
-                      {{ t("settings.notifications.events.headers.web") }}
+                      {{ localWorkspace ? t("settings.notifications.channels.desktop.label") : t("settings.notifications.events.headers.web") }}
                     </span>
                     <span
+                      v-if="!localWorkspace"
                       class="text-xs font-medium text-muted-foreground w-16 text-center"
                     >
                       {{ t("settings.notifications.events.headers.email") }}
@@ -401,8 +425,9 @@ async function saveEventSettings() {
                         />
                       </div>
 
-                      <!-- Email Checkbox -->
-                      <div class="w-16 flex justify-center">
+                      <!-- Email Checkbox (server only — a local workspace has no
+                           email channel). -->
+                      <div v-if="!localWorkspace" class="w-16 flex justify-center">
                         <Checkbox
                           :model-value="emailEvents.includes(item.event)"
                           :disabled="!notifyViaEmail"

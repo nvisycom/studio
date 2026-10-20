@@ -1,4 +1,7 @@
 mod auth;
+mod database;
+mod documents;
+mod engine;
 mod files;
 mod notifications;
 mod spotlight;
@@ -13,6 +16,7 @@ use tauri::Manager;
 pub fn run() {
     register_plugins(tauri::Builder::default())
         .manage(auth::AuthState::default())
+        .manage(engine::EngineState::default())
         .manage(files::DropLimit::default())
         .manage(files::watch::WatchState::default())
         .invoke_handler(command_handler())
@@ -28,6 +32,17 @@ fn command_handler<R: tauri::Runtime>() -> impl Fn(tauri::ipc::Invoke<R>) -> boo
         auth::auth_token,
         auth::clear_auth_token,
         auth::set_authed,
+        database::store_list,
+        database::store_get,
+        database::store_upsert,
+        database::store_delete,
+        documents::pick_workspace_folder,
+        documents::documents_read,
+        documents::documents_write,
+        documents::documents_remove,
+        documents::documents_scan,
+        engine::detect,
+        engine::redact,
         files::open_files,
         files::save_file,
         files::set_drop_limit,
@@ -38,6 +53,8 @@ fn command_handler<R: tauri::Runtime>() -> impl Fn(tauri::ipc::Invoke<R>) -> boo
         notifications::notify,
         notifications::notifications_enabled,
         notifications::set_notifications_enabled,
+        notifications::notification_prefs,
+        notifications::set_notification_prefs,
         spotlight::toggle_spotlight,
         spotlight::hide_spotlight,
         spotlight::open_main_window,
@@ -91,6 +108,13 @@ fn setup(app: &mut tauri::App) -> Result<(), Box<dyn Error>> {
                 .build(),
         )?;
     }
+
+    // Open the on-device entity store and manage it, so the local repository's
+    // commands can reach it. Opening touches the filesystem and applies the
+    // schema, so it runs on the async runtime before the app serves any command.
+    let database = tauri::async_runtime::block_on(database::open(app.handle()))
+        .map_err(|err| -> Box<dyn Error> { err.into() })?;
+    app.manage(database);
 
     // The tray is the app's anchor: it summons the main window and holds the
     // spotlight launcher, the notifications toggle, and quit.
