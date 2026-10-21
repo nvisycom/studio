@@ -17,7 +17,7 @@ pub fn run() {
     register_plugins(tauri::Builder::default())
         .manage(auth::AuthState::default())
         .manage(engine::EngineState::default())
-        .manage(documents::AllowedFolders::default())
+        .manage(documents::WorkspaceFolders::default())
         .manage(files::DropLimit::default())
         .manage(files::watch::WatchState::default())
         .invoke_handler(command_handler())
@@ -38,6 +38,8 @@ fn command_handler<R: tauri::Runtime>() -> impl Fn(tauri::ipc::Invoke<R>) -> boo
         database::store_upsert,
         database::store_delete,
         documents::pick_workspace_folder,
+        documents::bind_workspace_folder,
+        documents::unbind_workspace_folder,
         documents::documents_read,
         documents::documents_write,
         documents::documents_remove,
@@ -117,10 +119,12 @@ fn setup(app: &mut tauri::App) -> Result<(), Box<dyn Error>> {
         .map_err(|err| -> Box<dyn Error> { err.into() })?;
     app.manage(database);
 
-    // Seed the allowed workspace folders from the folders the user picked in past
-    // sessions (persisted by the pick command, written only by Rust). The webview
-    // cannot add a folder, so this is the only source of allowed folders.
-    app.state::<documents::AllowedFolders>().load(app.handle());
+    // Seed the workspace→folder bindings from the ones persisted in past sessions
+    // (written only by Rust, on a bind of a user-picked folder). Loading Rust's
+    // own file is trusted, so past workspaces are authorized without a re-pick,
+    // while the webview still can't introduce or repoint a binding.
+    app.state::<documents::WorkspaceFolders>()
+        .load(app.handle());
 
     // The tray is the app's anchor: it summons the main window and holds the
     // spotlight launcher, the notifications toggle, and quit.

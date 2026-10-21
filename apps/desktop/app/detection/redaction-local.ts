@@ -55,9 +55,9 @@ export function createLocalRedactionProvider(
 				workspaceId,
 				input.detectionId,
 			);
-			// The input document is on disk; the engine reads it by (folder, path),
-			// redacts, and writes the sibling output itself — no bytes cross IPC. The
-			// run records which document it was.
+			// The input document is on disk; the engine reads it by (workspaceId,
+			// path), redacts, and writes the sibling output itself — no bytes cross
+			// IPC. The run records which document it was.
 			const document = await locateDocument(ws, run.fileId);
 			const redacted = await invoke<Redacted>("redact", {
 				document,
@@ -69,7 +69,7 @@ export function createLocalRedactionProvider(
 			// Read the written output back for the studio's download (a raw response;
 			// number[] on the WebKitGTK fallback).
 			const raw = await invoke<ArrayBuffer | number[]>("documents_read", {
-				folder: document.folder,
+				workspaceId: ws,
 				path: redacted.path,
 			});
 			// `new Uint8Array` accepts both an ArrayBuffer and a number[] (the

@@ -1,3 +1,4 @@
+import { invoke } from "@tauri-apps/api/core";
 import type {
 	AccountRef,
 	CreateWorkspace,
@@ -119,6 +120,13 @@ export function createWorkspacesRepository(): WorkspaceList["workspaces"] {
 				updatedAt: now,
 				folder,
 			};
+			// Bind the id to its folder in Rust before persisting the record, so
+			// every later FS/engine command authorizes by id. The folder was just
+			// picked this session, so the bind is allowed.
+			await invoke("bind_workspace_folder", {
+				workspaceId: workspace.id,
+				folder,
+			});
 			return upsert(workspace);
 		},
 
@@ -153,6 +161,9 @@ export function createWorkspacesRepository(): WorkspaceList["workspaces"] {
 				} while (after);
 			}
 			await storeDelete("workspaces", workspaceId);
+			// Drop the folder binding too, so Rust's persisted map doesn't keep the
+			// deleted workspace's folder.
+			await invoke("unbind_workspace_folder", { workspaceId });
 		},
 	};
 }

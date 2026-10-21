@@ -9,7 +9,7 @@ import type {
 	WorkspaceDocumentPage,
 } from "@nvisy/sdk/datatypes";
 import type { Repository } from "#console/repositories/types";
-import { resolveFolder } from "./folder";
+import { ensureBound } from "./folder";
 import {
 	parseBody,
 	type StoreRecord,
@@ -123,7 +123,6 @@ export function createDocumentsRepository(): Repository["documents"] {
 	async function writeDocument(
 		workspaceId: string,
 		workspaceHandle: string,
-		folder: string,
 		path: string,
 		bytes: Uint8Array,
 		kind: WorkspaceDocument["kind"],
@@ -132,7 +131,7 @@ export function createDocumentsRepository(): Repository["documents"] {
 		// are a plain number array (same tradeoff as `save_file`). The read path
 		// uses a raw response because previews fetch bytes far more often.
 		await invoke("documents_write", {
-			folder,
+			workspaceId,
 			path,
 			data: Array.from(bytes),
 		});
@@ -171,11 +170,13 @@ export function createDocumentsRepository(): Repository["documents"] {
 			workspaceId: string,
 			query?: ListWorkspaceDocuments & CursorPagination,
 		): Promise<WorkspaceDocumentPage> => {
-			const folder = await resolveFolder(workspaceId);
+			await ensureBound(workspaceId);
 			const handle = await workspaceHandle(workspaceId);
 
 			// Reconcile the index against the folder.
-			const scanned = await invoke<ScannedFile[]>("documents_scan", { folder });
+			const scanned = await invoke<ScannedFile[]>("documents_scan", {
+				workspaceId,
+			});
 			const byPath = new Map(scanned.map((f) => [f.path, f]));
 			const records = await allRecords(workspaceId);
 			const seen = new Set<string>();
@@ -275,11 +276,11 @@ export function createDocumentsRepository(): Repository["documents"] {
 			workspaceId: string,
 			documentId: string,
 		): Promise<Response> => {
-			const folder = await resolveFolder(workspaceId);
+			await ensureBound(workspaceId);
 			const doc = (await getDocument(workspaceId, documentId)) as LocalDocument;
 			// Raw IPC response → ArrayBuffer (number[] on the WebKitGTK fallback).
 			const raw = await invoke<ArrayBuffer | number[]>("documents_read", {
-				folder,
+				workspaceId,
 				path: doc.path,
 			});
 			const bytes = Array.isArray(raw) ? new Uint8Array(raw) : raw;
@@ -290,7 +291,7 @@ export function createDocumentsRepository(): Repository["documents"] {
 			workspaceId: string,
 			documents: Blob | Blob[],
 		): Promise<WorkspaceDocument[]> => {
-			const folder = await resolveFolder(workspaceId);
+			await ensureBound(workspaceId);
 			const handle = await workspaceHandle(workspaceId);
 			const blobs = Array.isArray(documents) ? documents : [documents];
 			// Existing records, so an upload neither overwrites a different file of
@@ -314,7 +315,6 @@ export function createDocumentsRepository(): Repository["documents"] {
 				const doc = await writeDocument(
 					workspaceId,
 					handle,
-					folder,
 					path,
 					bytes,
 					"original",
@@ -347,9 +347,9 @@ export function createDocumentsRepository(): Repository["documents"] {
 			workspaceId: string,
 			documentId: string,
 		): Promise<void> => {
-			const folder = await resolveFolder(workspaceId);
+			await ensureBound(workspaceId);
 			const doc = (await getDocument(workspaceId, documentId)) as LocalDocument;
-			await invoke("documents_remove", { folder, path: doc.path });
+			await invoke("documents_remove", { workspaceId, path: doc.path });
 			await storeDelete("documents", documentId);
 		},
 
@@ -357,7 +357,7 @@ export function createDocumentsRepository(): Repository["documents"] {
 			workspaceId: string,
 			documentIds: string[],
 		): Promise<WorkspaceDeletedDocuments> => {
-			const folder = await resolveFolder(workspaceId);
+			await ensureBound(workspaceId);
 			const deleted: string[] = [];
 			const skipped: string[] = [];
 			for (const id of documentIds) {
@@ -367,7 +367,7 @@ export function createDocumentsRepository(): Repository["documents"] {
 					continue;
 				}
 				const doc = parseBody<LocalDocument>(record);
-				await invoke("documents_remove", { folder, path: doc.path });
+				await invoke("documents_remove", { workspaceId, path: doc.path });
 				await storeDelete("documents", id);
 				deleted.push(id);
 			}

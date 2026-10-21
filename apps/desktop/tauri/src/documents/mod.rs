@@ -8,20 +8,22 @@
 //! scan the folder to reconcile the index, and remove a file. The record CRUD
 //! stays on the generic `store_*` commands.
 //!
-//! The caller (the webview) supplies the `folder`, so it is NOT trusted: a FS
-//! command acts only on a folder the app itself has allowed. A folder becomes
-//! allowed in one way only — the user picks it through the native folder panel
-//! (`pick_workspace_folder`) — and that fact is persisted to a file only Rust
-//! writes, so a folder picked in a past session is re-allowed at load without
-//! the webview being able to add one. The webview can never widen the set; a
-//! crafted `folder` (`"/"`, `"C:\\"`) is simply not in it. Every `path` is then
-//! resolved under the allowed folder and the resolved, canonicalized path is
-//! confirmed to stay inside it, so neither a crafted `folder` nor a traversal
-//! `path` can reach a file outside an allowed workspace folder. Bytes cross to
-//! the webview as a raw `tauri::ipc::Response` (an ArrayBuffer), not a JSON
-//! number array — the way Tauri v2 recommends for binary payloads.
+//! The caller (the webview) is NOT trusted, so a FS or engine command never
+//! takes a folder path from it — it takes the `workspaceId` it is acting on, and
+//! Rust resolves that id to its bound folder through [`WorkspaceFolders`]. A
+//! folder is bound to a workspace only through a user pick (the native folder
+//! panel, `pick_workspace_folder`), and the `id → folder` map is persisted to a
+//! file only Rust writes, so it survives a restart without the webview being able
+//! to add or repoint a binding. Because authorization is keyed by workspace, one
+//! workspace can't reach another's folder, and the persisted workspace record's
+//! `folder` field (which the webview writes via `store_upsert`) carries no
+//! authority. Every `path` is then resolved under the bound folder and the
+//! resolved, canonicalized path is confirmed to stay inside it, so neither a
+//! traversal `path` nor a symlink can reach a file outside it. Bytes cross to the
+//! webview as a raw `tauri::ipc::Response` (an ArrayBuffer), not a JSON number
+//! array — the way Tauri v2 recommends for binary payloads.
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::path::{Component, Path, PathBuf};
 use std::sync::{Mutex, OnceLock};
 
@@ -32,77 +34,118 @@ use tauri::{AppHandle, Manager, Runtime, State};
 
 use crate::files::pick_folder;
 
-/// File under the app data dir that records the folders the user has picked.
-/// Only Rust writes it (on a pick); the webview has no command that touches it,
-/// so it can't widen the allowlist.
-const ALLOWED_FILE: &str = "allowed-folders.json";
+/// File under the app data dir that records the workspace→folder bindings. Only
+/// Rust writes it (on a bind), so the webview can't add or repoint a binding.
+const BINDINGS_FILE: &str = "workspace-folders.json";
 
-/// The set of folders the app has allowed FS access to (canonicalized), one per
-/// local workspace. The webview supplies a `folder` on each FS call but is not
-/// trusted; only a folder in this set is served. A folder enters the set only
-/// when the user picks it ([`pick_workspace_folder`]); the set is persisted to
-/// [`ALLOWED_FILE`] and re-seeded at startup ([`AllowedFolders::load`]), so past
-/// picks survive a restart without the webview being able to add one.
+/// The authorization layer for folder-backed workspaces: which folder each local
+/// workspace is bound to. The FS and engine commands take a `workspaceId` (never
+/// a caller-supplied folder) and resolve the bound folder here, so one workspace
+/// can't reach another's folder and the persisted workspace record's `folder`
+/// field — which the webview writes via `store_upsert` — has no authority.
+///
+/// A binding is created only through [`bind`](Self::bind), gated on the folder
+/// having been picked this session ([`pick_workspace_folder`] records it). The
+/// `id → folder` map is persisted to [`BINDINGS_FILE`] and re-seeded at startup
+/// ([`WorkspaceFolders::load`]) — that's Rust reading its own file, not a webview
+/// bind, so past workspaces work on launch without a re-pick while the webview
+/// still cannot introduce a folder it didn't pick.
 #[derive(Default)]
-pub struct AllowedFolders {
-    set: Mutex<HashSet<PathBuf>>,
+pub struct WorkspaceFolders {
+    /// `workspaceId → canonical folder`: the authorization map.
+    bindings: Mutex<HashMap<String, PathBuf>>,
+    /// Canonical folders picked this session — the only folders a webview-issued
+    /// bind may name. Not persisted; a bind of a past workspace comes from the
+    /// seeded `bindings`, not from here.
+    picked: Mutex<HashSet<PathBuf>>,
     /// The persistence file, set once at startup (unset before `load`, as in
     /// tests — then a write is simply not persisted).
     store: OnceLock<PathBuf>,
 }
 
-impl AllowedFolders {
-    /// Seed the set from the persisted file and remember it for later writes.
-    /// Called once at setup, when the app data dir is known. A missing or
-    /// unreadable file just means no folders are allowed yet (first run).
+impl WorkspaceFolders {
+    /// Seed the bindings from the persisted file and remember it for later
+    /// writes. Called once at setup. A missing or unreadable file just means no
+    /// workspace is bound yet (first run). Rust wrote this file, so loading it is
+    /// trusted — not a webview bind.
     pub fn load<R: Runtime>(&self, app: &AppHandle<R>) {
         let Ok(dir) = app.path().app_data_dir() else {
             return;
         };
-        let file = dir.join(ALLOWED_FILE);
+        let file = dir.join(BINDINGS_FILE);
         let _ = self.store.set(file.clone());
         let Ok(bytes) = std::fs::read(&file) else {
             return;
         };
-        let Ok(folders) = serde_json::from_slice::<Vec<String>>(&bytes) else {
+        let Ok(saved) = serde_json::from_slice::<HashMap<String, String>>(&bytes) else {
             return;
         };
-        if let Ok(mut set) = self.set.lock() {
-            for folder in folders {
+        if let Ok(mut bindings) = self.bindings.lock() {
+            for (id, folder) in saved {
                 // Re-canonicalize on load: a folder moved or deleted since it was
-                // picked simply drops out (it won't resolve), which is correct.
+                // bound simply drops out (it won't resolve), which is correct.
                 if let Ok(path) = std::fs::canonicalize(&folder) {
-                    set.insert(path);
+                    bindings.insert(id, path);
                 }
             }
         }
     }
 
-    /// Record a folder as allowed (canonicalized) and persist the set. Only the
-    /// pick command calls this, so the allowlist only ever grows by a user pick.
-    fn allow(&self, folder: &str) {
-        let Ok(path) = std::fs::canonicalize(folder) else {
-            return;
-        };
-        let Ok(mut set) = self.set.lock() else {
-            return;
-        };
-        if set.insert(path) {
-            self.persist(&set);
+    /// Record a folder as picked this session, so a later [`bind`](Self::bind)
+    /// may name it. Only [`pick_workspace_folder`] calls this.
+    fn remember_picked(&self, folder: &str) {
+        if let Ok(path) = std::fs::canonicalize(folder)
+            && let Ok(mut picked) = self.picked.lock()
+        {
+            picked.insert(path);
         }
     }
 
-    /// Write the current set to the persistence file (best-effort; a failed write
-    /// just means the folder isn't remembered across a restart, not a crash).
-    fn persist(&self, set: &HashSet<PathBuf>) {
+    /// Bind `workspace_id` to `folder`, persisting the map. Succeeds only if the
+    /// folder was picked this session (or is already this id's binding — an
+    /// idempotent re-bind the frontend does on load). The webview can therefore
+    /// name a workspace but never bind a folder it didn't pick, nor repoint an
+    /// existing binding to a different folder.
+    ///
+    /// # Errors
+    ///
+    /// - A string error if the folder can't be canonicalized, or it was neither
+    ///   picked this session nor already this workspace's binding.
+    fn bind(&self, workspace_id: &str, folder: &str) -> Result<(), String> {
+        let path = std::fs::canonicalize(folder).map_err(|err| err.to_string())?;
+        let mut bindings = self
+            .bindings
+            .lock()
+            .map_err(|_| "folder bindings unavailable".to_owned())?;
+
+        let already_bound = bindings.get(workspace_id) == Some(&path);
+        let picked_now = self
+            .picked
+            .lock()
+            .map(|picked| picked.contains(&path))
+            .unwrap_or(false);
+        if !already_bound && !picked_now {
+            return Err("folder was not picked this session".to_owned());
+        }
+
+        if bindings.get(workspace_id) != Some(&path) {
+            bindings.insert(workspace_id.to_owned(), path);
+            self.persist(&bindings);
+        }
+        Ok(())
+    }
+
+    /// Write the current bindings to the persistence file (best-effort; a failed
+    /// write just means a binding isn't remembered across a restart, not a crash).
+    fn persist(&self, bindings: &HashMap<String, PathBuf>) {
         let Some(file) = self.store.get() else {
             return;
         };
-        let folders: Vec<String> = set
+        let saved: HashMap<&str, String> = bindings
             .iter()
-            .map(|p| p.to_string_lossy().into_owned())
+            .map(|(id, path)| (id.as_str(), path.to_string_lossy().into_owned()))
             .collect();
-        if let Ok(json) = serde_json::to_vec(&folders) {
+        if let Ok(json) = serde_json::to_vec(&saved) {
             if let Some(parent) = file.parent() {
                 let _ = std::fs::create_dir_all(parent);
             }
@@ -110,21 +153,30 @@ impl AllowedFolders {
         }
     }
 
-    /// The canonical form of `folder` if it is allowed, else `None`.
-    fn resolve_allowed(&self, folder: &str) -> Option<PathBuf> {
-        let canonical = std::fs::canonicalize(folder).ok()?;
-        let set = self.set.lock().ok()?;
-        set.contains(&canonical).then_some(canonical)
+    /// The canonical folder bound to `workspace_id`, or `None` if unbound.
+    fn folder_of(&self, workspace_id: &str) -> Option<PathBuf> {
+        self.bindings.lock().ok()?.get(workspace_id).cloned()
     }
 
-    /// Resolve `path` under an allowed `folder` to an absolute, contained path.
-    /// The engine commands use this to read a document straight from disk.
+    /// Drop `workspace_id`'s binding (on workspace delete), persisting the change
+    /// so the map doesn't keep a deleted workspace's folder.
+    fn unbind(&self, workspace_id: &str) {
+        if let Ok(mut bindings) = self.bindings.lock()
+            && bindings.remove(workspace_id).is_some()
+        {
+            self.persist(&bindings);
+        }
+    }
+
+    /// Resolve `path` under `workspace_id`'s bound folder to an absolute,
+    /// contained path. The engine commands use this to read a document from disk.
     ///
     /// # Errors
     ///
-    /// - A string error if `folder` is not allowed, or `path` escapes it.
-    pub fn resolve_path(&self, folder: &str, path: &str) -> Result<PathBuf, String> {
-        resolve(self, folder, path)
+    /// - A string error if the workspace is not bound to a folder, or `path`
+    ///   escapes it.
+    pub fn resolve_path(&self, workspace_id: &str, path: &str) -> Result<PathBuf, String> {
+        resolve(self, workspace_id, path)
     }
 }
 
@@ -144,61 +196,83 @@ pub struct ScannedFile {
 }
 
 /// Open a native folder picker for a new local workspace. Returns the chosen
-/// absolute path, or `None` if the user cancelled.
+/// absolute path, or `None` if the user cancelled. The chosen folder is recorded
+/// as picked-this-session, so [`bind_workspace_folder`] may bind it to the new
+/// workspace's id; it is not yet bound to anything (no id exists yet).
 #[tauri::command]
 pub async fn pick_workspace_folder<R: Runtime>(
     app: AppHandle<R>,
-    allowed: State<'_, AllowedFolders>,
+    folders: State<'_, WorkspaceFolders>,
 ) -> Result<Option<String>, String> {
     let picked = pick_folder(&app).await?;
     if let Some(path) = &picked {
-        allowed.allow(&path.to_string_lossy());
+        folders.remember_picked(&path.to_string_lossy());
     }
     Ok(picked.map(|path| path.to_string_lossy().into_owned()))
 }
 
-/// Read one document's bytes from the workspace folder, as a raw IPC response
-/// (an ArrayBuffer on the webview side). `path` is relative to `folder`, which
-/// must be an allowed workspace folder.
+/// Bind a workspace id to its folder. The frontend calls this when creating a
+/// local workspace (with the folder just picked) and again when loading one, so
+/// authorization is keyed by workspace id for every later command. Binding only
+/// succeeds for a folder picked this session, or one already bound to this id —
+/// the webview can't bind a folder it didn't pick, nor repoint a binding.
+#[tauri::command]
+pub fn bind_workspace_folder(
+    folders: State<'_, WorkspaceFolders>,
+    workspace_id: String,
+    folder: String,
+) -> Result<(), String> {
+    folders.bind(&workspace_id, &folder)
+}
+
+/// Drop a workspace's folder binding when the workspace is deleted, so the
+/// persisted map doesn't keep a stale folder. A no-op if it wasn't bound.
+#[tauri::command]
+pub fn unbind_workspace_folder(folders: State<'_, WorkspaceFolders>, workspace_id: String) {
+    folders.unbind(&workspace_id);
+}
+
+/// Read one document's bytes from a workspace's folder, as a raw IPC response
+/// (an ArrayBuffer on the webview side). `path` is relative to the folder bound
+/// to `workspace_id`.
 #[tauri::command]
 pub fn documents_read(
-    allowed: State<'_, AllowedFolders>,
-    folder: String,
+    folders: State<'_, WorkspaceFolders>,
+    workspace_id: String,
     path: String,
 ) -> Result<Response, String> {
-    let resolved = resolve(&allowed, &folder, &path)?;
+    let resolved = resolve(&folders, &workspace_id, &path)?;
     let bytes = std::fs::read(&resolved).map_err(|err| err.to_string())?;
     Ok(Response::new(bytes))
 }
 
-/// Write bytes into the workspace folder at `path` (relative to an allowed
-/// `folder`), creating parent directories as needed. Used for an upload and for
-/// a redaction's sibling output. The bytes arrive as a plain argument, matching
-/// the existing `save_file` command — writes are occasional, so the read path's
-/// raw-response optimization isn't needed here.
+/// Write bytes into a workspace's folder at `path` (relative to the folder bound
+/// to `workspace_id`), creating parent directories as needed. Used for an upload
+/// and for a redaction's sibling output. The bytes arrive as a plain argument,
+/// matching the existing `save_file` command — writes are occasional, so the read
+/// path's raw-response optimization isn't needed here.
 #[tauri::command]
 pub fn documents_write(
-    allowed: State<'_, AllowedFolders>,
-    folder: String,
+    folders: State<'_, WorkspaceFolders>,
+    workspace_id: String,
     path: String,
     data: Vec<u8>,
 ) -> Result<(), String> {
-    let resolved = resolve(&allowed, &folder, &path)?;
+    let resolved = resolve(&folders, &workspace_id, &path)?;
     if let Some(parent) = resolved.parent() {
         std::fs::create_dir_all(parent).map_err(|err| err.to_string())?;
     }
     std::fs::write(&resolved, &data).map_err(|err| err.to_string())
 }
 
-/// Delete one document from an allowed workspace folder. A no-op if it is already
-/// gone.
+/// Delete one document from a workspace's folder. A no-op if it is already gone.
 #[tauri::command]
 pub fn documents_remove(
-    allowed: State<'_, AllowedFolders>,
-    folder: String,
+    folders: State<'_, WorkspaceFolders>,
+    workspace_id: String,
     path: String,
 ) -> Result<(), String> {
-    let resolved = resolve(&allowed, &folder, &path)?;
+    let resolved = resolve(&folders, &workspace_id, &path)?;
     match std::fs::remove_file(&resolved) {
         Ok(()) => Ok(()),
         Err(err) if err.kind() == std::io::ErrorKind::NotFound => Ok(()),
@@ -206,7 +280,7 @@ pub fn documents_remove(
     }
 }
 
-/// Scan an allowed workspace folder, returning every regular file with its
+/// Scan a workspace's bound folder, returning every regular file with its
 /// relative path, size, and content hash. The frontend reconciles this against
 /// the index — matching renames by hash, detecting edits as a changed hash, and
 /// dropping records whose file is gone. Hidden files (dot-prefixed) are skipped.
@@ -214,14 +288,17 @@ pub fn documents_remove(
 /// not fatal, so one bad file doesn't blank the whole list.
 #[tauri::command]
 pub fn documents_scan(
-    allowed: State<'_, AllowedFolders>,
-    folder: String,
+    folders: State<'_, WorkspaceFolders>,
+    workspace_id: String,
 ) -> Result<Vec<ScannedFile>, String> {
-    let root = allowed
-        .resolve_allowed(&folder)
-        .ok_or("folder is not an allowed workspace folder")?;
+    let root = folders
+        .folder_of(&workspace_id)
+        .ok_or("workspace is not bound to a folder")?;
     if !root.is_dir() {
-        return Err(format!("workspace folder is not a directory: {folder}"));
+        return Err(format!(
+            "workspace folder is not a directory: {}",
+            root.display()
+        ));
     }
     let mut out = Vec::new();
     scan_dir(&root, &root, &mut out)?;
@@ -281,17 +358,17 @@ fn hash_file(path: &Path) -> std::io::Result<(u64, String)> {
     Ok((size, hex))
 }
 
-/// Resolve `path` (relative to `folder`) to an absolute path confined to an
-/// ALLOWED workspace folder. `folder` is caller-supplied and untrusted, so it
-/// must be one the app allowed; `path` must be relative and carry no root or
-/// parent (`..`) component (which rules out Windows roots like `\Windows` and
-/// `C:\` too, since those parse as a `RootDir`/`Prefix` component, not `Normal`).
-/// The joined path is then canonicalized and confirmed to stay under the folder,
-/// so a symlink inside the folder can't redirect out either.
-fn resolve(allowed: &AllowedFolders, folder: &str, path: &str) -> Result<PathBuf, String> {
-    let root = allowed
-        .resolve_allowed(folder)
-        .ok_or("folder is not an allowed workspace folder")?;
+/// Resolve `path` to an absolute path confined to `workspace_id`'s bound folder.
+/// The caller supplies the workspace id (not a folder), so the root is whatever
+/// Rust bound to that id; `path` must be relative and carry no root or parent
+/// (`..`) component (which rules out Windows roots like `\Windows` and `C:\` too,
+/// since those parse as a `RootDir`/`Prefix` component, not `Normal`). The joined
+/// path is then canonicalized and confirmed to stay under the folder, so a
+/// symlink inside the folder can't redirect out either.
+fn resolve(folders: &WorkspaceFolders, workspace_id: &str, path: &str) -> Result<PathBuf, String> {
+    let root = folders
+        .folder_of(workspace_id)
+        .ok_or("workspace is not bound to a folder")?;
 
     let rel = Path::new(path);
     for component in rel.components() {
@@ -370,25 +447,30 @@ mod tests {
         }
     }
 
-    /// An `AllowedFolders` with `folder` already allowed, for the FS helpers.
-    fn allowing(folder: &str) -> AllowedFolders {
-        let allowed = AllowedFolders::default();
-        allowed.allow(folder);
-        allowed
+    /// The workspace id the FS helpers bind a folder to.
+    const WS: &str = "ws-test";
+
+    /// A `WorkspaceFolders` with `folder` picked-and-bound to [`WS`], as the pick
+    /// + bind commands would leave it, for the FS helpers.
+    fn bound(folder: &str) -> WorkspaceFolders {
+        let folders = WorkspaceFolders::default();
+        folders.remember_picked(folder);
+        folders.bind(WS, folder).unwrap();
+        folders
     }
 
-    /// Write bytes under an allowed folder (the command body, sans `State`).
-    fn write(allowed: &AllowedFolders, folder: &str, path: &str, data: &[u8]) {
-        let resolved = resolve(allowed, folder, path).unwrap();
+    /// Write bytes under [`WS`]'s bound folder (the command body, sans `State`).
+    fn write(folders: &WorkspaceFolders, path: &str, data: &[u8]) {
+        let resolved = resolve(folders, WS, path).unwrap();
         if let Some(parent) = resolved.parent() {
             std::fs::create_dir_all(parent).unwrap();
         }
         std::fs::write(resolved, data).unwrap();
     }
 
-    /// Scan an allowed folder (the command body, sans `State`).
-    fn scan(allowed: &AllowedFolders, folder: &str) -> Vec<ScannedFile> {
-        let root = allowed.resolve_allowed(folder).unwrap();
+    /// Scan [`WS`]'s bound folder (the command body, sans `State`).
+    fn scan(folders: &WorkspaceFolders) -> Vec<ScannedFile> {
+        let root = folders.folder_of(WS).unwrap();
         let mut out = Vec::new();
         scan_dir(&root, &root, &mut out).unwrap();
         out
@@ -397,13 +479,12 @@ mod tests {
     #[test]
     fn write_scan_read_round_trip() {
         let dir = TempDir::new("round-trip");
-        let folder = dir.path();
-        let allowed = allowing(&folder);
+        let folders = bound(&dir.path());
 
-        write(&allowed, &folder, "a.txt", b"hello");
-        write(&allowed, &folder, "sub/b.txt", b"world");
+        write(&folders, "a.txt", b"hello");
+        write(&folders, "sub/b.txt", b"world");
 
-        let mut files = scan(&allowed, &folder);
+        let mut files = scan(&folders);
         files.sort_by(|a, b| a.path.cmp(&b.path));
         assert_eq!(files.len(), 2);
         assert_eq!(files[0].path, "a.txt");
@@ -413,31 +494,30 @@ mod tests {
         // The hash is the content's SHA-256.
         assert_eq!(
             files[0].hash,
-            hash_file(&resolve(&allowed, &folder, "a.txt").unwrap())
+            hash_file(&resolve(&folders, WS, "a.txt").unwrap())
                 .unwrap()
                 .1
         );
 
         // The resolved path reads back the exact bytes.
-        let resolved = resolve(&allowed, &folder, "a.txt").unwrap();
+        let resolved = resolve(&folders, WS, "a.txt").unwrap();
         assert_eq!(std::fs::read(resolved).unwrap(), b"hello");
     }
 
     #[test]
     fn scan_detects_edit_and_skips_hidden() {
         let dir = TempDir::new("edit");
-        let folder = dir.path();
-        let allowed = allowing(&folder);
+        let folders = bound(&dir.path());
 
-        write(&allowed, &folder, "doc.txt", b"one");
-        let before = scan(&allowed, &folder)[0].hash.clone();
+        write(&folders, "doc.txt", b"one");
+        let before = scan(&folders)[0].hash.clone();
 
         // A hidden file is skipped by the scan.
-        std::fs::write(PathBuf::from(&folder).join(".hidden"), b"x").unwrap();
+        std::fs::write(dir.0.join(".hidden"), b"x").unwrap();
         // Editing the file changes its hash — the reconcile signal.
-        write(&allowed, &folder, "doc.txt", b"two");
+        write(&folders, "doc.txt", b"two");
 
-        let files = scan(&allowed, &folder);
+        let files = scan(&folders);
         assert_eq!(files.len(), 1, "the hidden file is not listed");
         assert_ne!(files[0].hash, before, "an edit changes the hash");
     }
@@ -445,12 +525,11 @@ mod tests {
     #[test]
     fn remove_is_idempotent() {
         let dir = TempDir::new("remove");
-        let folder = dir.path();
-        let allowed = allowing(&folder);
-        write(&allowed, &folder, "gone.txt", b"x");
-        let resolved = resolve(&allowed, &folder, "gone.txt").unwrap();
+        let folders = bound(&dir.path());
+        write(&folders, "gone.txt", b"x");
+        let resolved = resolve(&folders, WS, "gone.txt").unwrap();
         std::fs::remove_file(&resolved).unwrap();
-        assert!(scan(&allowed, &folder).is_empty());
+        assert!(scan(&folders).is_empty());
         // Removing a file that is already gone is a no-op, not an error.
         assert!(
             matches!(std::fs::remove_file(&resolved), Err(e) if e.kind() == std::io::ErrorKind::NotFound)
@@ -458,22 +537,52 @@ mod tests {
     }
 
     #[test]
-    fn resolve_rejects_traversal_absolute_and_disallowed_folder() {
+    fn resolve_rejects_traversal_absolute_and_unbound_workspace() {
         let dir = TempDir::new("resolve");
-        let folder = dir.path();
-        let allowed = allowing(&folder);
+        let folders = bound(&dir.path());
 
         // Traversal and absolute paths are rejected.
-        assert!(resolve(&allowed, &folder, "../escape.txt").is_err());
-        assert!(resolve(&allowed, &folder, "a/../../escape.txt").is_err());
-        assert!(resolve(&allowed, &folder, "/etc/passwd").is_err());
-        // A folder the app never allowed is rejected outright, even with a benign
+        assert!(resolve(&folders, WS, "../escape.txt").is_err());
+        assert!(resolve(&folders, WS, "a/../../escape.txt").is_err());
+        assert!(resolve(&folders, WS, "/etc/passwd").is_err());
+        // A workspace that was never bound resolves to nothing, even with a benign
         // path — the caller can't point FS access at an arbitrary directory.
-        assert!(resolve(&allowed, "/", "etc/passwd").is_err());
-        assert!(resolve(&AllowedFolders::default(), &folder, "a.txt").is_err());
-        // An ordinary nested path under the allowed folder resolves.
-        let ok = resolve(&allowed, &folder, "sub/doc.txt").unwrap();
+        assert!(resolve(&folders, "ws-unknown", "a.txt").is_err());
+        assert!(resolve(&WorkspaceFolders::default(), WS, "a.txt").is_err());
+        // An ordinary nested path under the bound folder resolves.
+        let ok = resolve(&folders, WS, "sub/doc.txt").unwrap();
         assert!(ok.starts_with(dir.0.canonicalize().unwrap()));
+    }
+
+    #[test]
+    fn bind_requires_a_folder_picked_this_session() {
+        let dir = TempDir::new("bind-gate");
+        let folders = WorkspaceFolders::default();
+        // A folder that was never picked this session can't be bound — this is what
+        // stops the webview from binding an arbitrary path like "/".
+        assert!(folders.bind(WS, &dir.path()).is_err());
+        // Once picked, the bind succeeds and the workspace resolves.
+        folders.remember_picked(&dir.path());
+        assert!(folders.bind(WS, &dir.path()).is_ok());
+        assert!(folders.folder_of(WS).is_some());
+    }
+
+    #[test]
+    fn a_workspace_cannot_reach_another_workspaces_folder() {
+        let a = TempDir::new("ws-a");
+        let b = TempDir::new("ws-b");
+        let folders = WorkspaceFolders::default();
+        folders.remember_picked(&a.path());
+        folders.remember_picked(&b.path());
+        folders.bind("ws-a", &a.path()).unwrap();
+        folders.bind("ws-b", &b.path()).unwrap();
+        // Put a file in B; A's id must not be able to resolve into B's folder.
+        std::fs::write(b.0.join("secret.txt"), b"x").unwrap();
+        let from_a = resolve(&folders, "ws-a", "secret.txt").unwrap();
+        // A's resolved path stays under A's folder, so it points at a non-existent
+        // file, never B's — authorization is keyed by workspace, not a shared set.
+        assert!(from_a.starts_with(a.0.canonicalize().unwrap()));
+        assert!(!from_a.exists());
     }
 
     // A symlink at the final component is rejected even when it points outside the
@@ -483,15 +592,14 @@ mod tests {
     #[test]
     fn resolve_rejects_symlink_final_component() {
         let dir = TempDir::new("symlink");
-        let folder = dir.path();
-        let allowed = allowing(&folder);
+        let folders = bound(&dir.path());
 
         // A dangling symlink (target doesn't exist) inside the folder, pointing
         // out of it — the dangerous case `exists()` would miss.
-        let link = PathBuf::from(&folder).join("escape.txt");
+        let link = dir.0.join("escape.txt");
         std::os::unix::fs::symlink("/tmp/nvisy-outside-target", &link).unwrap();
         assert!(
-            resolve(&allowed, &folder, "escape.txt").is_err(),
+            resolve(&folders, WS, "escape.txt").is_err(),
             "a symlink at the final component must be refused"
         );
     }

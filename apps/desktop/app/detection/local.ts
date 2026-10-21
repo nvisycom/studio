@@ -105,8 +105,8 @@ export function createLocalDetectionProvider(
 				input.pipelineId,
 			);
 			// The document already lives in the workspace folder, so the engine
-			// reads it from disk by (folder, path) — no bytes cross IPC. The engine
-			// runs synchronously and returns the audit directly (no server id).
+			// reads it from disk by (workspaceId, path) — no bytes cross IPC, and the
+			// id authorizes the folder. Runs synchronously, returns the audit directly.
 			const document = await locateDocument(ws, input.fileId);
 			const audit = await invoke<Audit>("detect", {
 				document,

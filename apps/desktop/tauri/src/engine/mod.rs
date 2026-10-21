@@ -11,14 +11,16 @@ use studio_elide::{
 };
 use tauri::State;
 
-use crate::documents::AllowedFolders;
+use crate::documents::WorkspaceFolders;
 
-/// A reference to a document on disk: an allowed workspace folder and the file's
-/// path within it. The engine reads the bytes from here itself, so no document
-/// bytes cross the IPC boundary.
+/// A reference to a document on disk: the workspace it belongs to and the file's
+/// path within that workspace's bound folder. The engine resolves the folder from
+/// the id (never a caller-supplied path) and reads the bytes itself, so no
+/// document bytes cross the IPC boundary and one workspace can't read another's.
 #[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct DocRef {
-    folder: String,
+    workspace_id: String,
     path: String,
 }
 
@@ -46,16 +48,16 @@ impl Default for EngineState {
     }
 }
 
-/// Read a document's bytes from an allowed workspace folder, size-bounded.
+/// Read a document's bytes from its workspace's bound folder, size-bounded.
 ///
 /// The document already lives on disk in the folder, so the engine reads it
 /// itself rather than receiving the bytes over IPC — no multi-MB payload crosses
 /// the webview boundary in either direction. The size is checked against the
 /// cap before the read, so an oversized file is rejected without loading it.
-fn read_document(allowed: &AllowedFolders, doc: &DocRef) -> Result<Vec<u8>, String> {
+fn read_document(folders: &WorkspaceFolders, doc: &DocRef) -> Result<Vec<u8>, String> {
     use std::io::Read;
 
-    let resolved = allowed.resolve_path(&doc.folder, &doc.path)?;
+    let resolved = folders.resolve_path(&doc.workspace_id, &doc.path)?;
     // Open once and read through that handle, so the size check and the read see
     // the same file — a folder workspace is open to other processes (sync
     // clients, downloads), so a second path lookup could hit a grown or swapped
@@ -80,8 +82,8 @@ fn read_document(allowed: &AllowedFolders, doc: &DocRef) -> Result<Vec<u8>, Stri
 
 /// Detect over one document on-device, returning the reviewable audit.
 ///
-/// The document is read from disk (`folder` + relative `path`, an allowed
-/// workspace folder); its name's extension selects the codec. `policies` are the
+/// The document is read from disk (`workspaceId` + relative `path`, the
+/// workspace's bound folder); its name's extension selects the codec. `policies` are the
 /// detection intent (the same inline policy shape the server takes). `context` is
 /// the optional asserted scope (languages, jurisdictions, tags); omitted means
 /// the recognizers' own defaults.
@@ -91,12 +93,12 @@ fn read_document(allowed: &AllowedFolders, doc: &DocRef) -> Result<Vec<u8>, Stri
 #[tauri::command]
 pub async fn detect(
     engine: State<'_, EngineState>,
-    allowed: State<'_, AllowedFolders>,
+    folders: State<'_, WorkspaceFolders>,
     document: DocRef,
     policies: Vec<Policy>,
     context: Option<DocumentContext>,
 ) -> Result<Audit, String> {
-    let bytes = read_document(&allowed, &document)?;
+    let bytes = read_document(&folders, &document)?;
     let name = file_name(&document.path);
     let request = match context {
         Some(context) => RequestContext::new().with_context(context),
@@ -133,7 +135,7 @@ pub struct Redacted {
 /// Redact one document on-device from a prior detection's audit, writing the
 /// redacted output as a sibling in the workspace folder and returning its path.
 ///
-/// The input document is read from disk (`folder` + relative `path`). `audit` is
+/// The input document is read from disk (`workspaceId` + relative `path`). `audit` is
 /// the serialized audit a prior [`detect`] produced — an [`Audit`] is not
 /// directly deserializable (its report is rebuilt against this engine's codec
 /// registry), so it arrives as JSON and is read back through the engine. `edits`
@@ -144,14 +146,14 @@ pub struct Redacted {
 #[tauri::command]
 pub async fn redact(
     engine: State<'_, EngineState>,
-    allowed: State<'_, AllowedFolders>,
+    folders: State<'_, WorkspaceFolders>,
     document: DocRef,
     policies: Vec<Policy>,
     audit: serde_json::Value,
     edits: Option<EditSet>,
     key: Option<KeyConfig>,
 ) -> Result<Redacted, String> {
-    let bytes = read_document(&allowed, &document)?;
+    let bytes = read_document(&folders, &document)?;
     let name = file_name(&document.path);
     let audit = engine
         .engine
@@ -171,7 +173,7 @@ pub async fn redact(
         Some((dir, _)) => format!("{dir}/{out_name}"),
         None => out_name.clone(),
     };
-    let out_abs = allowed.resolve_path(&document.folder, &out_rel)?;
+    let out_abs = folders.resolve_path(&document.workspace_id, &out_rel)?;
     std::fs::write(&out_abs, redacted.bytes.as_ref()).map_err(|err| err.to_string())?;
 
     Ok(Redacted {
