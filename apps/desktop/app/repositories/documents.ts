@@ -157,12 +157,19 @@ export function createDocumentsRepository(): Repository["documents"] {
 	}
 
 	async function getDocument(
-		_workspaceId: string,
+		workspaceId: string,
 		documentId: string,
 	): Promise<WorkspaceDocument> {
 		const record = await storeGet("documents", documentId);
-		if (!record) throw new Error(`document ${documentId} not found`);
-		return parseBody<LocalDocument>(record);
+		const doc = record ? parseBody<LocalDocument>(record) : null;
+		// Scope the lookup to the workspace: a record is addressed by id alone, so
+		// without this check a document id from another workspace would resolve its
+		// path under THIS workspace's folder (acting on the wrong file). Treat a
+		// cross-workspace id as not found.
+		if (!doc || doc.workspaceId !== workspaceId) {
+			throw new Error(`document ${documentId} not found`);
+		}
+		return doc;
 	}
 
 	return {
@@ -362,11 +369,14 @@ export function createDocumentsRepository(): Repository["documents"] {
 			const skipped: string[] = [];
 			for (const id of documentIds) {
 				const record = await storeGet("documents", id);
-				if (!record) {
+				const doc = record ? parseBody<LocalDocument>(record) : null;
+				// Skip a missing id, and one that belongs to another workspace — its
+				// path would otherwise resolve under THIS workspace's folder and delete
+				// the wrong file.
+				if (!doc || doc.workspaceId !== workspaceId) {
 					skipped.push(id);
 					continue;
 				}
-				const doc = parseBody<LocalDocument>(record);
 				await invoke("documents_remove", { workspaceId, path: doc.path });
 				await storeDelete("documents", id);
 				deleted.push(id);

@@ -52,7 +52,13 @@ export async function locateDocument(
 ): Promise<{ workspaceId: string; path: string }> {
 	await ensureBound(workspaceId);
 	const record = await storeGet("documents", documentId);
-	if (!record) throw new Error(`document ${documentId} not found`);
-	const path = parseBody<{ path: string }>(record).path;
-	return { workspaceId, path };
+	const doc = record
+		? parseBody<{ path: string; workspaceId: string }>(record)
+		: null;
+	// Scope to the workspace: a document id from another workspace would otherwise
+	// resolve its path under THIS workspace's folder and read the wrong file.
+	if (!doc || doc.workspaceId !== workspaceId) {
+		throw new Error(`document ${documentId} not found`);
+	}
+	return { workspaceId, path: doc.path };
 }

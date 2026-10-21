@@ -101,16 +101,18 @@ impl WorkspaceFolders {
         }
     }
 
-    /// Bind `workspace_id` to `folder`, persisting the map. Succeeds only if the
-    /// folder was picked this session (or is already this id's binding — an
-    /// idempotent re-bind the frontend does on load). The webview can therefore
-    /// name a workspace but never bind a folder it didn't pick, nor repoint an
-    /// existing binding to a different folder.
+    /// Bind `workspace_id` to `folder`, persisting the map. The binding of a given
+    /// id never changes once set: a re-bind to the same folder is a no-op (the
+    /// frontend does this on load), and a bind to a *different* folder is refused.
+    /// A first bind succeeds only for a folder picked this session, and consumes
+    /// that pick (a pick binds exactly one workspace). So the webview can name a
+    /// workspace but never bind a folder it didn't pick, nor repoint a binding.
     ///
     /// # Errors
     ///
-    /// - A string error if the folder can't be canonicalized, or it was neither
-    ///   picked this session nor already this workspace's binding.
+    /// - A string error if the folder can't be canonicalized, if the workspace is
+    ///   already bound to a different folder, or if a first bind names a folder
+    ///   that was not picked this session.
     fn bind(&self, workspace_id: &str, folder: &str) -> Result<(), String> {
         let path = std::fs::canonicalize(folder).map_err(|err| err.to_string())?;
         let mut bindings = self
@@ -118,20 +120,28 @@ impl WorkspaceFolders {
             .lock()
             .map_err(|_| "folder bindings unavailable".to_owned())?;
 
-        let already_bound = bindings.get(workspace_id) == Some(&path);
-        let picked_now = self
+        // An existing binding is immutable: same folder is a no-op, a different
+        // one is refused (no repointing to another workspace's folder).
+        if let Some(bound) = bindings.get(workspace_id) {
+            return if bound == &path {
+                Ok(())
+            } else {
+                Err("workspace is already bound to a different folder".to_owned())
+            };
+        }
+
+        // A first bind must name a folder picked this session, and consumes that
+        // pick so one pick can't bind more than one workspace.
+        let mut picked = self
             .picked
             .lock()
-            .map(|picked| picked.contains(&path))
-            .unwrap_or(false);
-        if !already_bound && !picked_now {
+            .map_err(|_| "picked folders unavailable".to_owned())?;
+        if !picked.remove(&path) {
             return Err("folder was not picked this session".to_owned());
         }
 
-        if bindings.get(workspace_id) != Some(&path) {
-            bindings.insert(workspace_id.to_owned(), path);
-            self.persist(&bindings);
-        }
+        bindings.insert(workspace_id.to_owned(), path);
+        self.persist(&bindings);
         Ok(())
     }
 
@@ -565,6 +575,28 @@ mod tests {
         folders.remember_picked(&dir.path());
         assert!(folders.bind(WS, &dir.path()).is_ok());
         assert!(folders.folder_of(WS).is_some());
+        // Re-binding the same workspace to the same folder is a no-op (the frontend
+        // does this on every load), even though the pick was consumed.
+        assert!(folders.bind(WS, &dir.path()).is_ok());
+    }
+
+    #[test]
+    fn bind_cannot_repoint_or_reuse_a_pick() {
+        let a = TempDir::new("repoint-a");
+        let b = TempDir::new("repoint-b");
+        let folders = WorkspaceFolders::default();
+        folders.remember_picked(&a.path());
+        folders.bind(WS, &a.path()).unwrap();
+
+        // A workspace already bound can't be repointed to a different folder, even
+        // one picked this session.
+        folders.remember_picked(&b.path());
+        assert!(folders.bind(WS, &b.path()).is_err());
+        assert_eq!(folders.folder_of(WS).unwrap(), a.0.canonicalize().unwrap());
+
+        // A pick is consumed by its first bind, so the same picked folder can't be
+        // bound to a second workspace id.
+        folders.bind("ws-other", &a.path()).unwrap_err();
     }
 
     #[test]
