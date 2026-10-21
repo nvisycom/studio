@@ -22,6 +22,16 @@ definePageMeta({
 const { t } = useI18n();
 const sectionTabs = useSectionTabs();
 
+// Account pages are entirely server/account-backed. In local-first mode
+// (desktop, no account) their entry points are already hidden, but the route is
+// still reachable directly, so redirect out to the app. Reactive and
+// immediate — inert on web (isDesktop is false there).
+const { isDesktop } = usePlatform();
+const { isAuthenticated } = useAuth();
+watchEffect(() => {
+	if (isDesktop.value && !isAuthenticated.value) navigateTo("/");
+});
+
 const {
 	account,
 	displayName: accountDisplayName,

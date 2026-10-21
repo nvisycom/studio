@@ -27,3 +27,22 @@ pub fn set_enabled<R: tauri::Runtime>(app: &tauri::AppHandle<R>, enabled: bool) 
     };
     store.set(NOTIFICATIONS_KEY, enabled);
 }
+
+/// Key holding the per-event notification preferences (a JSON object mirroring
+/// the SDK's `WorkspaceNotificationSettings`), scoped to a local workspace.
+const PREFS_KEY: &str = "notification_prefs";
+
+/// The stored per-event notification preferences for a local workspace, or
+/// `null` when nothing is stored yet (the frontend then seeds its defaults).
+pub fn prefs<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> Option<serde_json::Value> {
+    store::open(app)?.get(PREFS_KEY)
+}
+
+/// Persist the per-event notification preferences (opaque JSON, owned by the
+/// frontend's settings shape).
+pub fn set_prefs<R: tauri::Runtime>(app: &tauri::AppHandle<R>, value: serde_json::Value) {
+    let Some(store) = store::open(app) else {
+        return;
+    };
+    store.set(PREFS_KEY, value);
+}

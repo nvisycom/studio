@@ -1,12 +1,31 @@
 import type { CreateWorkspace, UpdateWorkspace } from "@nvisy/sdk/datatypes";
+import { isLocalWorkspace } from "#console/repositories/types";
 
 /**
  * Composable for workspace operations
  */
 export function useWorkspaces() {
 	const { $nvisyClient } = useNuxtApp();
-	const { isAuthenticated } = useAuth();
+	const { list } = useWorkspaceList();
 	const route = useRoute();
+
+	/** The workspace-lifecycle backend, or throw the one canonical error. */
+	function requireList() {
+		const backend = list.value;
+		if (!backend) throw new Error("No data source available");
+		return backend;
+	}
+
+	/**
+	 * The SDK client, for the few workspace operations not in the seam (avatars).
+	 * These are server-only — there is no local avatar store — so they require a
+	 * session.
+	 */
+	function requireClient() {
+		const client = $nvisyClient.value;
+		if (!client) throw new Error("Not authenticated");
+		return client;
+	}
 
 	// The URL is the source of truth for the active workspace: feature routes
 	// live under /w/[workspace]/... The cookie only remembers the last-used slug
@@ -29,15 +48,20 @@ export function useWorkspaces() {
 		{ immediate: true },
 	);
 
+	const { isAuthenticated } = useAuth();
 	const workspacesQuery = useQuery({
-		key: ["workspaces"],
-		query: async () => {
-			const client = $nvisyClient.value;
-			if (!client) throw new Error("Not authenticated");
-			const result = await client.workspaces.listWorkspaces();
-			return result.items;
-		},
-		enabled: () => isAuthenticated.value,
+		// Key on the session too: on desktop the list is a union that grows when
+		// signed in, so the logged-out (local-only) and signed-in (local + server)
+		// lists must cache separately — otherwise a stale local-only result could
+		// survive sign-in.
+		key: () => ["workspaces", isAuthenticated.value],
+		query: () =>
+			fetchAllPages((after) =>
+				requireList().workspaces.listWorkspaces({ after }),
+			),
+		// A data source is enough: the local store needs no session, so the
+		// desktop app lists its workspaces logged out.
+		enabled: () => !!list.value,
 	});
 
 	const currentWorkspace = computed(() => {
@@ -56,11 +80,18 @@ export function useWorkspaces() {
 		() => currentWorkspace.value?.id ?? null,
 	);
 
+	// Whether the active workspace is a local folder-workspace (vs. a server
+	// one). This is the axis the data-surface chrome gates on — a local workspace
+	// hides server-only nav/settings regardless of session, and a server
+	// workspace shows them even on desktop. Distinct from the session axis
+	// (`useAuth().isAuthenticated`), which drives the account chip and connect.
+	const currentWorkspaceIsLocal = computed(() =>
+		isLocalWorkspace(currentWorkspace.value),
+	);
+
 	const createWorkspaceMutation = useMutation({
 		mutation: async (workspace: CreateWorkspace) => {
-			const client = $nvisyClient.value;
-			if (!client) throw new Error("Not authenticated");
-			return await client.workspaces.createWorkspace(workspace);
+			return await requireList().workspaces.createWorkspace(workspace);
 		},
 		async onSuccess(data) {
 			// Force a refetch (not refresh) so the list contains the new
@@ -83,9 +114,10 @@ export function useWorkspaces() {
 			workspaceId: string;
 			updates: UpdateWorkspace;
 		}) => {
-			const client = $nvisyClient.value;
-			if (!client) throw new Error("Not authenticated");
-			return await client.workspaces.updateWorkspace(workspaceId, updates);
+			return await requireList().workspaces.updateWorkspace(
+				workspaceId,
+				updates,
+			);
 		},
 		onSuccess() {
 			workspacesQuery.refetch();
@@ -94,9 +126,7 @@ export function useWorkspaces() {
 
 	const deleteWorkspaceMutation = useMutation({
 		mutation: async (workspaceId: string) => {
-			const client = $nvisyClient.value;
-			if (!client) throw new Error("Not authenticated");
-			await client.workspaces.deleteWorkspace(workspaceId);
+			await requireList().workspaces.deleteWorkspace(workspaceId);
 		},
 		async onSuccess(_data, deletedId) {
 			// Capture whether we were viewing the deleted workspace BEFORE the
@@ -128,9 +158,7 @@ export function useWorkspaces() {
 			workspaceId: string;
 			avatar: Blob;
 		}) => {
-			const client = $nvisyClient.value;
-			if (!client) throw new Error("Not authenticated");
-			return await client.workspaces.uploadAvatar(workspaceId, avatar);
+			return await requireClient().workspaces.uploadAvatar(workspaceId, avatar);
 		},
 		onSuccess() {
 			workspacesQuery.refetch();
@@ -139,9 +167,7 @@ export function useWorkspaces() {
 
 	const deleteAvatarMutation = useMutation({
 		mutation: async (workspaceId: string) => {
-			const client = $nvisyClient.value;
-			if (!client) throw new Error("Not authenticated");
-			return await client.workspaces.deleteAvatar(workspaceId);
+			return await requireClient().workspaces.deleteAvatar(workspaceId);
 		},
 		onSuccess() {
 			workspacesQuery.refetch();
@@ -172,6 +198,7 @@ export function useWorkspaces() {
 		// stays in the URL (display-only); `currentWorkspaceId` is what SDK calls take.
 		currentWorkspaceSlug,
 		currentWorkspaceId,
+		currentWorkspaceIsLocal,
 		lastWorkspaceSlug,
 		currentWorkspace,
 		selectWorkspace,

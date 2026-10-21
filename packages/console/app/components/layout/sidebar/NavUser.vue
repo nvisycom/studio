@@ -11,7 +11,9 @@ import {
 	Languages,
 	ExternalLink,
 	User,
+	UserRound,
 	Key,
+	Plug,
 } from "@lucide/vue";
 import { EntityAvatar } from "#console/components/avatar";
 import {
@@ -48,9 +50,18 @@ function switchLocale(code: LocaleCode) {
 }
 const { getKbdKey } = useKbd();
 const { isMobile } = useSidebar();
-const { logout } = useAuth();
+const { logout, isAuthenticated } = useAuth();
+const { isDesktop } = usePlatform();
 const { displayName, username, emailAddress, avatarUrl } = useAccount();
 const { resolveAvatarUrl } = useAvatarUrl();
+
+// The account chip is SESSION-driven, not workspace-driven: with no server
+// account (desktop, signed out) it presents an honest "Local" state instead of
+// a blank avatar/name, hides the account pages (they need a server), and turns
+// "Log out" into "Connect a server" — sign-in is an opt-in. This is about the
+// session, independent of whether the active workspace is local or server.
+// Reactive, so the menu re-renders the moment a server is connected or left.
+const noAccount = computed(() => isDesktop.value && !isAuthenticated.value);
 
 const avatarSrc = computed(() => resolveAvatarUrl(avatarUrl.value));
 
@@ -104,7 +115,14 @@ function handleLogout() {
             size="lg"
             class="data-[state=open]:bg-sidebar-accent/50 group-data-[collapsible=icon]:justify-center"
           >
+            <div
+              v-if="noAccount"
+              class="-ml-1 flex size-8 shrink-0 items-center justify-center rounded-md bg-sidebar-accent text-sidebar-foreground/70 group-data-[collapsible=icon]:ml-0!"
+            >
+              <UserRound :size="16" />
+            </div>
             <EntityAvatar
+              v-else
               :name="primaryLabel"
               :src="avatarSrc"
               size="sm"
@@ -113,15 +131,26 @@ function handleLogout() {
             <div
               class="grid flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden"
             >
-              <span
-                class="truncate text-sm font-medium text-sidebar-foreground"
-                >{{ primaryLabel }}</span
-              >
-              <span
-                v-if="secondaryLabel"
-                class="truncate text-xs text-sidebar-foreground/60"
-                >{{ secondaryLabel }}</span
-              >
+              <template v-if="noAccount">
+                <span
+                  class="truncate text-sm font-medium text-sidebar-foreground"
+                  >{{ t("userMenu.localAccount") }}</span
+                >
+                <span class="truncate text-xs text-sidebar-foreground/60">{{
+                  t("userMenu.localAccountHint")
+                }}</span>
+              </template>
+              <template v-else>
+                <span
+                  class="truncate text-sm font-medium text-sidebar-foreground"
+                  >{{ primaryLabel }}</span
+                >
+                <span
+                  v-if="secondaryLabel"
+                  class="truncate text-xs text-sidebar-foreground/60"
+                  >{{ secondaryLabel }}</span
+                >
+              </template>
             </div>
             <ChevronsUpDown
               class="ml-auto size-4 text-sidebar-foreground/50 group-data-[collapsible=icon]:hidden"
@@ -134,27 +163,29 @@ function handleLogout() {
           align="end"
           :side-offset="4"
         >
-          <DropdownMenuGroup>
-            <DropdownMenuItem as-child>
-              <NuxtLink
-                to="/account/general"
-                class="cursor-pointer flex items-center"
-              >
-                <User />
-                {{ t("commandMenu.account.profile") }}
-              </NuxtLink>
-            </DropdownMenuItem>
-            <DropdownMenuItem as-child>
-              <NuxtLink
-                to="/account/tokens"
-                class="cursor-pointer flex items-center"
-              >
-                <Key />
-                {{ t("commandMenu.account.tokens") }}
-              </NuxtLink>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
+          <template v-if="!noAccount">
+            <DropdownMenuGroup>
+              <DropdownMenuItem as-child>
+                <NuxtLink
+                  to="/account/general"
+                  class="cursor-pointer flex items-center"
+                >
+                  <User />
+                  {{ t("commandMenu.account.profile") }}
+                </NuxtLink>
+              </DropdownMenuItem>
+              <DropdownMenuItem as-child>
+                <NuxtLink
+                  to="/account/tokens"
+                  class="cursor-pointer flex items-center"
+                >
+                  <Key />
+                  {{ t("commandMenu.account.tokens") }}
+                </NuxtLink>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+          </template>
           <DropdownMenuGroup>
             <DropdownMenuItem class="cursor-pointer" @click="openCommandMenu">
               <Command />
@@ -239,7 +270,20 @@ function handleLogout() {
                 <ExternalLink :size="12" class="ml-auto opacity-60" />
               </a>
             </DropdownMenuItem>
-            <DropdownMenuItem class="cursor-pointer" @click="handleLogout">
+            <DropdownMenuItem v-if="noAccount" as-child>
+              <NuxtLink
+                to="/auth/login"
+                class="cursor-pointer flex items-center"
+              >
+                <Plug />
+                {{ t("userMenu.connectServer") }}
+              </NuxtLink>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              v-else
+              class="cursor-pointer"
+              @click="handleLogout"
+            >
               <LogOut />
               {{ t("commandMenu.account.logout") }}
             </DropdownMenuItem>

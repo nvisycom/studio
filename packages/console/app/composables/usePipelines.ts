@@ -7,13 +7,13 @@ import type {
  * Composable for pipeline operations
  */
 export function usePipelines() {
-	const { requireContext } = useWorkspaceContext();
+	const { requireRepository } = useWorkspaceContext();
 
-	const pipelinesQuery = workspaceQuery(
+	const pipelinesQuery = repositoryQuery(
 		"pipelines",
-		({ client, workspaceId }) =>
+		({ repository, workspaceId }) =>
 			fetchAllPages((after) =>
-				client.pipelines.listPipelines(workspaceId, { after }),
+				repository.pipelines.listPipelines(workspaceId, { after }),
 			),
 	);
 
@@ -23,30 +23,30 @@ export function usePipelines() {
 	// Fetch a single pipeline with its full definition + retention (the list only
 	// returns summaries).
 	async function getPipeline(pipelineId: string) {
-		const { client, workspaceId } = requireContext();
-		return await client.pipelines.getPipeline(workspaceId, pipelineId);
+		const { repository, workspaceId } = requireRepository();
+		return await repository.pipelines.getPipeline(workspaceId, pipelineId);
 	}
 
-	const createPipelineMutation = workspaceMutation(
-		({ client, workspaceId }, pipeline: CreateWorkspacePipeline) =>
-			client.pipelines.createPipeline(workspaceId, pipeline),
+	const createPipelineMutation = repositoryMutation(
+		({ repository, workspaceId }, pipeline: CreateWorkspacePipeline) =>
+			repository.pipelines.createPipeline(workspaceId, pipeline),
 		{ invalidates: "pipelines" },
 	);
 
-	const updatePipelineMutation = workspaceMutation(
+	const updatePipelineMutation = repositoryMutation(
 		(
-			{ client, workspaceId },
+			{ repository, workspaceId },
 			{
 				pipelineId,
 				updates,
 			}: { pipelineId: string; updates: UpdateWorkspacePipeline },
-		) => client.pipelines.updatePipeline(workspaceId, pipelineId, updates),
+		) => repository.pipelines.updatePipeline(workspaceId, pipelineId, updates),
 		{ invalidates: "pipelines" },
 	);
 
-	const deletePipelineMutation = workspaceMutation(
-		({ client, workspaceId }, pipelineId: string) =>
-			client.pipelines.deletePipeline(workspaceId, pipelineId),
+	const deletePipelineMutation = repositoryMutation(
+		({ repository, workspaceId }, pipelineId: string) =>
+			repository.pipelines.deletePipeline(workspaceId, pipelineId),
 		{
 			invalidates: "pipelines",
 			onMutate: (pipelineId) => optimistic.remove(pipelineId),

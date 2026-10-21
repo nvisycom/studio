@@ -14,6 +14,10 @@ import { ConfirmDialog } from "#console/components/shared";
 import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 
 const { t } = useI18n();
+
+// Server-only: hidden from the nav for a local workspace; redirect out if its
+// route is reached directly (bookmark / command menu) while local.
+useServerOnlyPage();
 const sectionTabs = useSectionTabs();
 
 useHead({ title: "Webhooks" });

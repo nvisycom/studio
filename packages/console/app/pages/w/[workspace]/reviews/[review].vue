@@ -36,6 +36,10 @@ import { reviewStatusVariant } from "#console/utils/reviews";
  * review's own links — the review is scoped to a single document.
  */
 const { t } = useI18n();
+
+// Server-only: hidden from the nav for a local workspace; redirect out if its
+// route is reached directly (bookmark / command menu) while local.
+useServerOnlyPage();
 const route = useRoute();
 const { wLink } = useWorkspaceLink();
 const { relativeTime } = useRelativeTime();

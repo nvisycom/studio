@@ -128,11 +128,20 @@ watch(
 // Detection run + audit state for the active file (the long-running "job"),
 // shared between the detection bar (pipeline + controls), the audit panel
 // (results list), and the document preview (inline highlights).
+// The active document's raw bytes, from the blob already loaded for preview.
+// The on-device engine (offline) needs these; the server path ignores them.
+async function documentBytes(): Promise<Uint8Array> {
+	const url = activeFile.value?.contentUrl;
+	if (!url) throw new Error("The document is not loaded yet.");
+	return new Uint8Array(await (await fetch(url)).arrayBuffer());
+}
+
 const detection = useStudioDetection(
 	() => activeFile.value?.fileId ?? null,
 	() => documentText.value,
 	() => docxParts.value,
 	() => activeFile.value?.displayName ?? null,
+	documentBytes,
 );
 
 // Audio transcript state for the audio view. Resolved once a detection completes
@@ -212,6 +221,8 @@ const redaction = useStudioRedaction({
 	phase: detection.phase,
 	detectionId: detection.detectionId,
 	detectionFileName: detection.detectionFileName,
+	audit: detection.audit,
+	documentBytes,
 	entities: detection.entities,
 	count: detection.count,
 });
@@ -233,7 +244,10 @@ function openExportRedacted() {
 }
 
 async function handleExportRedacted(connectionId: string) {
-	const fileId = redaction.output.value?.fileId;
+	// Export-to-connection is server-only: it needs a stored output file id, which
+	// a local (offline) redaction — raw bytes — doesn't have.
+	const out = redaction.output.value;
+	const fileId = out?.kind === "server" ? out.fileId : null;
 	if (!fileId) return;
 	try {
 		await exportFilesAsync({ connectionId, fileIds: [fileId] });
@@ -512,7 +526,7 @@ const auditProps = computed(() => ({
     <!-- Export the redacted output to a cloud file-service connection. -->
     <ExportToConnectionDialog
       v-model:open="exportDialogOpen"
-      :file-ids="redaction.output.value ? [redaction.output.value.fileId] : []"
+      :file-ids="redaction.output.value?.kind === 'server' ? [redaction.output.value.fileId] : []"
       :connections="connections ?? []"
       :is-loading="isExporting"
       @export="handleExportRedacted"

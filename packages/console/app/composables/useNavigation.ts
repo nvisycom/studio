@@ -46,13 +46,44 @@ export interface NavigationGroup {
  * (workspace presence, role, feature flags) is applied here, so consumers don't
  * each re-derive it.
  */
+/**
+ * Items whose data lives only on the server — no local backend. For a local
+ * workspace they have nothing to show, so they're dropped from the nav entirely
+ * rather than rendered disabled. Everything else (overview, documents, studio,
+ * workflows, policies, settings) runs through a local seam and stays.
+ *
+ * `reviews` is server-only: the reviewer queue is about assigning reviews to
+ * workspace accounts/members, which a local folder-workspace has none of (the
+ * studio's own review-an-audit flow is separate and stays). It was mis-kept as
+ * local before, which hung the page on a never-arriving account id offline.
+ */
+const SERVER_ONLY_ITEMS = new Set([
+	"team",
+	"reviews",
+	"integrations",
+	"webhooks",
+	"analytics",
+	"logs",
+	"billing",
+]);
+
 export function useNavigation() {
 	const { t } = useI18n();
 	const { wLink } = useWorkspaceLink();
-	const { currentWorkspaceSlug, currentWorkspace } = useWorkspaces();
+	const { currentWorkspaceSlug, currentWorkspace, currentWorkspaceIsLocal } =
+		useWorkspaces();
+
+	// The nav gates on the ACTIVE WORKSPACE'S origin, not the session: a local
+	// folder-workspace hides the server-only items (team, integrations, …) and
+	// drops the account-role gate ("no account" means no role locally); a server
+	// workspace shows them even on desktop. Reactive, so switching workspaces
+	// re-filters the nav with no reload.
+	const localWorkspace = currentWorkspaceIsLocal;
 
 	const hasWorkspace = computed(() => !!currentWorkspaceSlug.value);
 	const isAdminOrOwner = computed(() => {
+		// A local workspace has no membership/role; treat automation as ungated.
+		if (localWorkspace.value) return true;
 		const role = currentWorkspace.value?.memberRole;
 		return role === "owner" || role === "admin";
 	});
@@ -191,8 +222,17 @@ export function useNavigation() {
 			},
 		];
 
-		// Keep only non-empty groups (role/workspace gating can empty one out).
-		return raw.filter((group) => group.items.length > 0);
+		// A local workspace drops the server-only items (they have no local data).
+		const filtered = localWorkspace.value
+			? raw.map((group) => ({
+					...group,
+					items: group.items.filter((item) => !SERVER_ONLY_ITEMS.has(item.id)),
+				}))
+			: raw;
+
+		// Keep only non-empty groups (role/workspace gating, or the local-workspace
+		// filter above, can empty one out).
+		return filtered.filter((group) => group.items.length > 0);
 	});
 
 	return { overview, groups, hasWorkspace, isAdminOrOwner };

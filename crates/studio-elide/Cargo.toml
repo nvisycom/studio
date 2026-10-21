@@ -1,0 +1,44 @@
+# https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[package]
+name = "studio-elide"
+description = "Embeds the Elide pipeline: build an engine from a deployment TOML, then analyze and anonymize documents on-device"
+readme = "README.md"
+
+version = { workspace = true }
+rust-version = { workspace = true }
+edition = { workspace = true }
+license = { workspace = true }
+publish = { workspace = true }
+
+authors = { workspace = true }
+repository = { workspace = true }
+homepage = { workspace = true }
+
+[dependencies]
+# The stateless detect/redact pipeline. `all-modalities` compiles in every
+# codec; `audit-*` produce the JSON/CSV/zip audit the console downloads;
+# `codec-sniff` decodes a file whose extension is missing or wrong; `pioneer`
+# (hosted GLiNER NER), `google-document-ai` (hosted OCR), and `deepgram`
+# (hosted STT) ship the remote backends a deployment TOML may name, so any TOML
+# naming a supported provider works without recompiling (bentoml and the
+# OpenAI/Anthropic/Google LLM backends are always compiled in regardless).
+# `codec-mp3` and `codec-pdf-render` stay opt-in (MP3 patent licensing; a native
+# PDF-render dependency).
+elide-pipeline = { workspace = true, features = [
+	"all-modalities",
+	"codec-sniff",
+	"audit-json",
+	"audit-csv",
+	"audit-zip",
+	"pioneer",
+	"google-document-ai",
+	"deepgram",
+] }
+
+# The host drives the async analyze/anonymize calls.
+tokio = { workspace = true, features = ["rt"] }
+
+# Reading a serialized audit back through the engine (it is Serialize but not
+# Deserialize; the engine rebuilds its report against the codec registry).
+serde_json = { workspace = true }

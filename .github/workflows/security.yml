@@ -52,8 +52,11 @@ jobs:
 
       # Studio ships a web app + Tauri desktop, so its build/runtime deps matter
       # beyond the production subset — audit the whole tree. Moderate is the gate.
+      # `better-npm-audit` reads `.nsprc`, a scoped allowlist of advisories with
+      # no reachable fix (each with a reason + expiry); it also flags a stale
+      # entry once its advisory clears, so the allowlist can't rot.
       - name: Run security audit
-        run: npm audit --audit-level=moderate
+        run: npx --yes better-npm-audit@3 audit --level moderate
 
   license:
     name: License Check

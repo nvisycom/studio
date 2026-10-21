@@ -13,10 +13,20 @@ import type { Ref } from "vue";
 export type GetEnabledFn = () => Promise<boolean>;
 /** Persist the enabled state (desktop store + tray sync). */
 export type SetEnabledFn = (enabled: boolean) => Promise<void>;
+/**
+ * Fire a native notification for a local event, if that event is enabled in the
+ * on-device per-event prefs (and the device toggle is on — enforced natively).
+ * `event` is a `NotificationEvent` id; a no-op where the seam is unset (web).
+ */
+export type EmitFn = (
+	event: string,
+	message: { title: string; body: string },
+) => Promise<void>;
 
 interface NativeNotifications {
 	getEnabled?: GetEnabledFn;
 	setEnabled?: SetEnabledFn;
+	emit?: EmitFn;
 }
 
 // Module-level so an injected provider is shared across consumers.

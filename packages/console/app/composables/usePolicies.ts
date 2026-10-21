@@ -7,12 +7,17 @@ import type {
  * Composable for policy operations (workspace-scoped).
  */
 export function usePolicies() {
-	const { requireContext } = useWorkspaceContext();
+	const { requireRepository } = useWorkspaceContext();
 
-	const policiesQuery = workspaceQuery("policies", ({ client, workspaceId }) =>
-		fetchAllPages((after) =>
-			client.policies.listPolicies(workspaceId, { after }),
-		),
+	// The policies page shows the whole list, so flatten every page. The
+	// repository's `listPolicies` is paginated (local or server); `fetchAllPages`
+	// follows the cursor until the list is exhausted.
+	const policiesQuery = repositoryQuery(
+		"policies",
+		({ repository, workspaceId }) =>
+			fetchAllPages((after) =>
+				repository.policies.listPolicies(workspaceId, { after }),
+			),
 	);
 
 	// Policies are keyed by slug; a delete drops the row immediately.
@@ -21,30 +26,30 @@ export function usePolicies() {
 	// Fetch a single policy with its full definition (the list only returns
 	// summaries).
 	async function getPolicy(policyId: string) {
-		const { client, workspaceId } = requireContext();
-		return await client.policies.getPolicy(workspaceId, policyId);
+		const { repository, workspaceId } = requireRepository();
+		return await repository.policies.getPolicy(workspaceId, policyId);
 	}
 
-	const createPolicyMutation = workspaceMutation(
-		({ client, workspaceId }, policy: CreateWorkspacePolicy) =>
-			client.policies.createPolicy(workspaceId, policy),
+	const createPolicyMutation = repositoryMutation(
+		({ repository, workspaceId }, policy: CreateWorkspacePolicy) =>
+			repository.policies.createPolicy(workspaceId, policy),
 		{ invalidates: "policies" },
 	);
 
-	const updatePolicyMutation = workspaceMutation(
+	const updatePolicyMutation = repositoryMutation(
 		(
-			{ client, workspaceId },
+			{ repository, workspaceId },
 			{
 				policyId,
 				updates,
 			}: { policyId: string; updates: UpdateWorkspacePolicy },
-		) => client.policies.updatePolicy(workspaceId, policyId, updates),
+		) => repository.policies.updatePolicy(workspaceId, policyId, updates),
 		{ invalidates: "policies" },
 	);
 
-	const deletePolicyMutation = workspaceMutation(
-		({ client, workspaceId }, policyId: string) =>
-			client.policies.deletePolicy(workspaceId, policyId),
+	const deletePolicyMutation = repositoryMutation(
+		({ repository, workspaceId }, policyId: string) =>
+			repository.policies.deletePolicy(workspaceId, policyId),
 		{
 			invalidates: "policies",
 			onMutate: (policyId) => optimistic.remove(policyId),

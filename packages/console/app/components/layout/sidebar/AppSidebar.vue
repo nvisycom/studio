@@ -25,6 +25,13 @@ const { t } = useI18n();
 const { state } = useSidebar();
 const { open: openHelpChat } = useHelpChat();
 const { wLink } = useWorkspaceLink();
+const { currentWorkspaceIsLocal } = useWorkspaces();
+
+// Billing and support are server-workspace concepts, so drop their footer links
+// when the active workspace is local; only settings stays (workspace name/data
+// edits are local). Reactive, so switching to a server workspace brings them
+// back without a reload.
+const localWorkspace = currentWorkspaceIsLocal;
 
 // Navigation is defined once in useNavigation and shared with the command menu,
 // so a route added there appears in both. The sidebar renders the three labeled
@@ -62,17 +69,23 @@ const allDisabled = (items: { disabled?: boolean }[]) =>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
+      <!-- A group renders only when it has items — a local workspace filters out
+           the server-only ones, which can empty a whole group (e.g. all of
+           observability), and an empty group must not leave a dangling label. -->
       <NavMain
+        v-if="navWorkspace.length > 0"
         :items="navWorkspace"
         :label="t('sidebar.workspace')"
         :disabled="allDisabled(navWorkspace)"
       />
       <NavMain
+        v-if="navAutomation.length > 0"
         :items="navAutomation"
         :label="t('sidebar.automation')"
         :disabled="allDisabled(navAutomation)"
       />
       <NavMain
+        v-if="navObservability.length > 0"
         :items="navObservability"
         :label="t('sidebar.observability')"
         :disabled="allDisabled(navObservability)"
@@ -83,6 +96,7 @@ const allDisabled = (items: { disabled?: boolean }[]) =>
       <SidebarGroup>
         <SidebarMenu>
           <SidebarMenuItem
+            v-if="!localWorkspace"
             :class="{ 'opacity-50 pointer-events-none': !hasWorkspace }"
           >
             <SidebarMenuButton
@@ -116,7 +130,7 @@ const allDisabled = (items: { disabled?: boolean }[]) =>
               </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          <SidebarMenuItem>
+          <SidebarMenuItem v-if="!localWorkspace">
             <SidebarMenuButton
               :tooltip="t('sidebar.support')"
               @click="openHelpChat"

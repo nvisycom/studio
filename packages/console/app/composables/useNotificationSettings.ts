@@ -1,18 +1,27 @@
 import type { UpdateWorkspaceNotificationSettings } from "@nvisy/sdk/datatypes";
 
 /**
- * Composable for workspace notification settings operations
+ * Workspace notification settings — which events fire a notification. Routed
+ * through the repository seam, so a server workspace reads/writes the server's
+ * settings and a local folder-workspace reads/writes on-device prefs (scoped to
+ * the locally-meaningful pipeline events). The page is identical for both.
  */
 export function useNotificationSettings() {
-	const settingsQuery = workspaceQuery(
+	const settingsQuery = repositoryQuery(
 		"notificationSettings",
-		({ client, workspaceId }) =>
-			client.workspaces.getNotificationSettings(workspaceId),
+		({ repository, workspaceId }) =>
+			repository.notificationSettings.getNotificationSettings(workspaceId),
 	);
 
-	const updateSettingsMutation = workspaceMutation(
-		({ client, workspaceId }, settings: UpdateWorkspaceNotificationSettings) =>
-			client.workspaces.updateNotificationSettings(workspaceId, settings),
+	const updateSettingsMutation = repositoryMutation(
+		(
+			{ repository, workspaceId },
+			settings: UpdateWorkspaceNotificationSettings,
+		) =>
+			repository.notificationSettings.updateNotificationSettings(
+				workspaceId,
+				settings,
+			),
 		{ invalidates: "notificationSettings" },
 	);
 

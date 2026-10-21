@@ -11,6 +11,12 @@ import { Bell, Loader2, Inbox } from "@lucide/vue";
 const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
 const { wLink } = useWorkspaceLink();
+const { isDesktop } = usePlatform();
+const { isAuthenticated } = useAuth();
+
+// A server-health dot is meaningless with no server, so suppress it in
+// local-first mode (desktop, no account). Reactive — it returns on connect.
+const showHealth = computed(() => !(isDesktop.value && !isAuthenticated.value));
 
 const isOpen = ref(false);
 
@@ -82,7 +88,7 @@ watch(isOpen, (opened) => {
       <div
         class="flex items-center gap-2 border-b border-border/50 px-4 py-3"
       >
-        <AppHealth />
+        <AppHealth v-if="showHealth" />
         <h3 class="text-sm font-medium text-foreground">
           {{ t("notifications.title") }}
         </h3>

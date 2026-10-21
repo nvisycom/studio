@@ -1,4 +1,5 @@
 import type {
+	Audit,
 	AudioLocation,
 	EditSet,
 	ImageLocation,
@@ -7,6 +8,9 @@ import type {
 } from "@nvisy/sdk/datatypes";
 import type { Ref } from "vue";
 import { toast } from "vue-sonner";
+import type { RedactionOutput } from "#console/detection/redaction";
+
+export type { RedactionOutput };
 import type { TextEntityView } from "#console/composables/useTextEntities";
 import type { ImageEntityView } from "#console/composables/useImageEntities";
 import type { AudioEntityView } from "#console/composables/useAudioEntities";
@@ -15,12 +19,6 @@ import type { StudioDetectionPhase } from "#console/composables/useStudioDetecti
 
 /** Lifecycle of applying redactions to a complete detection. */
 export type StudioRedactPhase = "idle" | "redacting" | "done" | "failed";
-
-/** The redacted output file a redaction produced, ready to download. */
-export interface RedactionOutput {
-	fileId: string;
-	fileName: string;
-}
 
 /**
  * The raw-source part byte span a DOCX add carries (a `source`-only text coord).
@@ -149,6 +147,11 @@ export interface RedactionTarget {
 	phase: Ref<StudioDetectionPhase>;
 	detectionId: Ref<string | null>;
 	detectionFileName: Ref<string | null>;
+	/** The audit being redacted — passed to the local engine; the server path,
+	 *  which has the stored detection, ignores it. */
+	audit: Ref<Audit | null>;
+	/** The document bytes, for the local engine redaction. Omitted on the web. */
+	documentBytes?: () => Promise<Uint8Array>;
 	/** Detected entities of the audit's modality (text/tabular or image). */
 	entities: Ref<StudioEntityView[]>;
 	count: Ref<number>;
@@ -166,13 +169,32 @@ export interface RedactionTarget {
 export function useStudioRedaction(target: RedactionTarget) {
 	const { t } = useI18n();
 	const { resolveLabel } = useLabels();
-	const {
-		createRedaction,
-		findLatestForDetection: findLatestRedaction,
-		downloadOutput,
-	} = useRedactions();
+	const { downloadOutput } = useRedactions();
+	// Redaction runs through the injected provider: the server redaction flow, or
+	// the on-device engine when offline.
+	const { provider: redactionProvider } = useRedactionProvider();
+	const { saveBlob } = useFileDownload();
+	// Native "redaction created" notification for a LOCAL, in-session run only
+	// (a server workspace notifies through its own stream — firing here too would
+	// double up). No-op on web / server / when the event is off in the prefs.
+	const { notifications: native } = useNativeNotifications();
+	const { currentWorkspaceIsLocal } = useWorkspaces();
 
-	const { phase, detectionId, detectionFileName, entities, count } = target;
+	function requireRedactionProvider() {
+		const p = redactionProvider.value;
+		if (!p) throw new Error("No redaction backend available");
+		return p;
+	}
+
+	const {
+		phase,
+		detectionId,
+		detectionFileName,
+		audit,
+		documentBytes,
+		entities,
+		count,
+	} = target;
 
 	// Redaction lifecycle for the current detection, and the redacted output it
 	// produced (present once done, so the UI can offer a download).
@@ -532,18 +554,6 @@ export function useStudioRedaction(target: RedactionTarget) {
 			redactPhase.value !== "redacting",
 	);
 
-	// The download name for a redacted output: the input's name tagged `.redacted`
-	// (keeping its extension so it still opens), falling back to the file id while
-	// the name isn't known yet.
-	function redactedName(fileId: string): string {
-		const base = detectionFileName.value;
-		if (!base) return fileId;
-		const dot = base.lastIndexOf(".");
-		return dot > 0
-			? `${base.slice(0, dot)}.redacted${base.slice(dot)}`
-			: `${base}.redacted`;
-	}
-
 	/**
 	 * Apply redactions to the complete detection, producing its redacted output
 	 * file. On success `output` carries the file to download; guarded so a stale
@@ -558,17 +568,28 @@ export function useStudioRedaction(target: RedactionTarget) {
 		redactPhase.value = "redacting";
 		redactError.value = "";
 		try {
-			const result = await createRedaction(detection, buildEditSet());
+			const current = audit.value;
+			if (!current) throw new Error("No audit to redact.");
+			const result = await requireRedactionProvider().produce({
+				detectionId: detection,
+				edits: buildEditSet(),
+				name: detectionFileName.value ?? detection,
+				bytes: documentBytes ?? (() => Promise.reject(new Error("no bytes"))),
+				audit: current,
+			});
 			// The target detection changed, or the edits moved on — drop this stale
 			// result rather than publishing output that doesn't match the panel.
 			if (detectionId.value !== detection || editRevision !== revision) return;
-			if (!result.outputDocumentId)
-				throw new Error("The redaction produced no output file.");
-			output.value = {
-				fileId: result.outputDocumentId,
-				fileName: redactedName(result.outputDocumentId),
-			};
+			output.value = result;
 			redactPhase.value = "done";
+			if (currentWorkspaceIsLocal.value) {
+				native.value.emit?.("pipeline.redaction.created", {
+					title: t("studio.notify.redactionCreated.title"),
+					body: t("studio.notify.redactionCreated.body", {
+						name: detectionFileName.value ?? detection,
+					}),
+				});
+			}
 		} catch (err) {
 			if (detectionId.value !== detection || editRevision !== revision) return;
 			redactPhase.value = "failed";
@@ -576,11 +597,17 @@ export function useStudioRedaction(target: RedactionTarget) {
 		}
 	}
 
-	/** Download the redacted output file produced by {@link redact}. */
+	/** Download the redacted output produced by {@link redact}. */
 	async function downloadRedacted() {
-		if (!output.value) return;
+		const out = output.value;
+		if (!out) return;
 		try {
-			await downloadOutput(output.value.fileId, output.value.fileName);
+			if (out.kind === "server") {
+				await downloadOutput(out.fileId, out.fileName);
+			} else {
+				// Local redaction returns bytes directly — save them natively.
+				await saveBlob(new Blob([out.bytes as BlobPart]), out.fileName);
+			}
 		} catch (err) {
 			// On desktop the native save can fail after the panel closes (e.g. the
 			// target dir is unwritable); surface it instead of an unhandled reject.
@@ -601,13 +628,13 @@ export function useStudioRedaction(target: RedactionTarget) {
 			resetRedaction();
 			if (!id) return;
 			try {
-				const redaction = await findLatestRedaction(id);
+				const restored = await requireRedactionProvider().findLatest(
+					id,
+					detectionFileName.value ?? undefined,
+				);
 				if (detectionId.value !== id) return;
-				if (redaction?.outputDocumentId) {
-					output.value = {
-						fileId: redaction.outputDocumentId,
-						fileName: redactedName(redaction.outputDocumentId),
-					};
+				if (restored) {
+					output.value = restored;
 					redactPhase.value = "done";
 				}
 			} catch {

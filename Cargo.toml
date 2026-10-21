@@ -1,0 +1,44 @@
+# https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[workspace]
+resolver = "3"
+members = [
+	"crates/studio-elide",
+	"crates/studio-sqlite",
+	"apps/desktop/tauri",
+]
+
+[workspace.package]
+version = "0.1.0"
+rust-version = "1.97"
+edition = "2024"
+license = "Apache-2.0"
+publish = false
+
+authors = ["nvisy <contact@nvisy.com>"]
+repository = "https://github.com/nvisycom/portal"
+homepage = "https://github.com/nvisycom/portal"
+
+[workspace.dependencies]
+# The console's own crates, consumed by the desktop shell (and reusable by a
+# future server binary) via `{ workspace = true }`.
+studio-elide = { path = "crates/studio-elide" }
+studio-sqlite = { path = "crates/studio-sqlite" }
+
+# The Elide runtime: the stateless detect/redact pipeline embedded in-process.
+elide-pipeline = { git = "https://github.com/nvisycom/elide-runtime", branch = "main", default-features = false }
+
+# The on-device SQLite store. diesel (type-safe queries, one table per entity,
+# matching the server's Postgres models) over diesel-async's SyncConnectionWrapper
+# for an async API, with embedded diesel_migrations. `libsqlite3-sys` is bundled
+# so no system SQLite is needed; it matches the version diesel resolves.
+diesel = { version = "2.3", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
+diesel-async = { version = "0.9", features = ["sqlite", "async-connection-wrapper"] }
+diesel_migrations = { version = "2.3", features = ["sqlite"] }
+libsqlite3-sys = { version = "0.38", features = ["bundled"] }
+
+# Async runtime, serialization, error types shared across the crates.
+tokio = { version = "1", default-features = false }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+thiserror = { version = "2" }

@@ -33,14 +33,12 @@
 		"ci:biome": "biome ci .",
 		"ci:cargo": "npm run ci:cargo -w @nvisy/desktop",
 		"i18n:unused": "node scripts/i18n-unused.mjs",
-		"e2e": "playwright test",
-		"e2e:ui": "playwright test --ui",
-		"e2e:headed": "cross-env SLOWMO=800 playwright test --headed"
+		"audit": "better-npm-audit audit --level moderate"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.12",
-		"@playwright/test": "^1.63.0",
 		"@types/node": "^26.4.1",
+		"better-npm-audit": "^3.11.0",
 		"cross-env": "^10.1.0",
 		"license-checker-rseidelsohn": "^5.0.1",
 		"typescript": "^6.0.3",
@@ -48,6 +46,9 @@
 	},
 	"overrides": {
 		"vite": "^8.2.0",
-		"nanoid": "^3.3.17"
+		"nanoid": "^3.3.17",
+		"nuxt": {
+			"undici": "^8.12.3"
+		}
 	}
 }

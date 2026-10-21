@@ -9,32 +9,14 @@ const error = useError();
 
 // While the shell restores the stored session token from the OS keychain at
 // launch (an async read that can block on a system prompt), show a launch splash
-// instead of the app. Otherwise the auth guard would see "no token yet", flash
-// the login screen, then bounce back once the token lands. The splash holds only
-// for that first read; once the token settles (to a value or null) the real
-// screen — the shell or login — renders.
+// instead of the app, so a returning user isn't flashed the signed-out shell and
+// then re-rendered once the token lands. The splash holds only for that first
+// read; once the token settles the real screen renders.
+//
+// Desktop is local-first: with no token the app works offline against the local
+// store, so a signed-out launch simply lands in the app (no bounce to login —
+// the web app and its global guard still require auth).
 const { restoringDesktopAuth } = useDesktopAuth();
-const { isAuthenticated } = useAuth();
-const route = useRoute();
-
-// The auth guard skips its redirect while the token is being restored (it can't
-// yet tell "signed out" from "not read yet"). Once the read settles, re-run the
-// decision for the route we held on: if it turns out we're signed out on a
-// protected route, send the user to login now. Authed users simply stay put.
-const authRoutePrefixes = ["/auth/", "/spotlight"];
-watch(restoringDesktopAuth, (restoring) => {
-	if (restoring) return;
-	const onPublicRoute = authRoutePrefixes.some((p) => route.path.startsWith(p));
-	if (!isAuthenticated.value && !onPublicRoute) {
-		// Preserve where we held (e.g. a deep-link launch onto /join/[code]) so
-		// login can return the user there, matching the global auth middleware.
-		const redirect = safeRedirectPath(route.fullPath);
-		navigateTo({
-			path: "/auth/login",
-			query: redirect ? { redirect } : undefined,
-		});
-	}
-});
 
 // See apps/web/app/app.vue: a function titleTemplate (can't live in nuxt.config)
 // so a missing or "Nvisy" title renders as plain "Nvisy", not "Nvisy · Nvisy".

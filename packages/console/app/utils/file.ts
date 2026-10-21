@@ -1,5 +1,5 @@
-import type { Nvisy } from "@nvisy/sdk";
 import type { Component } from "vue";
+import type { Repository } from "#console/repositories/types";
 import {
 	FileText,
 	FileImage,
@@ -73,11 +73,11 @@ export function isAcceptedFileName(fileName: string): boolean {
  * value is replaced, or right after triggering a download.
  */
 export async function fetchFileContentUrl(
-	client: Nvisy,
+	documents: Repository["documents"],
 	workspaceId: string,
 	fileId: string,
 ): Promise<string> {
-	const response = await client.documents.downloadDocument(workspaceId, fileId);
+	const response = await documents.downloadDocument(workspaceId, fileId);
 	const blob = await response.blob();
 	return URL.createObjectURL(blob);
 }

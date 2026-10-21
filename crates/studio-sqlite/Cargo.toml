@@ -1,0 +1,41 @@
+# https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[package]
+name = "studio-sqlite"
+description = "The console's on-device entity store: a local SQLite database (diesel) of per-entity tables holding opaque-JSON bodies, queried in Rust"
+readme = "README.md"
+
+version = { workspace = true }
+rust-version = { workspace = true }
+edition = { workspace = true }
+license = { workspace = true }
+publish = { workspace = true }
+
+authors = { workspace = true }
+repository = { workspace = true }
+homepage = { workspace = true }
+
+[dependencies]
+# The embedded SQLite store. One table per entity (like the server's Postgres
+# models), queried through diesel's type-safe DSL; diesel-async's
+# SyncConnectionWrapper gives the async API the Tauri commands await, and
+# diesel_migrations embeds the schema into the binary.
+diesel = { workspace = true }
+diesel-async = { workspace = true }
+diesel_migrations = { workspace = true }
+libsqlite3-sys = { workspace = true }
+
+# Opens the migration connection on a blocking thread, and guards the shared
+# connection.
+tokio = { workspace = true, features = ["rt", "sync"] }
+
+# Records cross the API as serde types; bodies are opaque JSON strings.
+serde = { workspace = true, features = ["derive"] }
+
+# Error types for the store.
+thiserror = { workspace = true }
+
+[dev-dependencies]
+# Drives the async store tests. Multi-thread: the diesel-async migration harness
+# uses `block_in_place`, which panics on a single-threaded runtime.
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
