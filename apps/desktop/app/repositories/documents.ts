@@ -47,6 +47,13 @@ interface ScannedFile {
 	hash: string;
 }
 
+/** The scan result: files read, plus paths that exist but couldn't be read. */
+interface ScanResult {
+	files: ScannedFile[];
+	/** Paths present on disk but unreadable this scan — keep their records. */
+	skipped: string[];
+}
+
 /** A stored document record: the SDK document plus its path within the folder. */
 type LocalDocument = WorkspaceDocument & { path: string };
 
@@ -181,10 +188,14 @@ export function createDocumentsRepository(): Repository["documents"] {
 			const handle = await workspaceHandle(workspaceId);
 
 			// Reconcile the index against the folder.
-			const scanned = await invoke<ScannedFile[]>("documents_scan", {
+			const scan = await invoke<ScanResult>("documents_scan", {
 				workspaceId,
 			});
-			const byPath = new Map(scanned.map((f) => [f.path, f]));
+			const byPath = new Map(scan.files.map((f) => [f.path, f]));
+			// Paths that exist on disk but couldn't be read this scan: keep their
+			// records untouched (a transient lock/permission error must not drop a
+			// document's stable id by looking like a deletion).
+			const skipped = new Set(scan.skipped);
 			const records = await allRecords(workspaceId);
 			const seen = new Set<string>();
 			// Records whose path no longer exists on disk — candidates for a rename
@@ -194,7 +205,13 @@ export function createDocumentsRepository(): Repository["documents"] {
 			for (const doc of records) {
 				const file = byPath.get(doc.path);
 				if (!file) {
-					orphans.push(doc);
+					// A skipped (unreadable) path still exists — keep the record as-is,
+					// don't orphan it.
+					if (skipped.has(doc.path)) {
+						seen.add(doc.path);
+					} else {
+						orphans.push(doc);
+					}
 					continue;
 				}
 				seen.add(doc.path);
@@ -214,7 +231,7 @@ export function createDocumentsRepository(): Repository["documents"] {
 			// rename (keep the id, so studio tabs / runs stay bound); only a file
 			// with no orphan match is genuinely new and gets a fresh id.
 			const orphansByHash = new Map(orphans.map((d) => [d.hash, d]));
-			for (const file of scanned) {
+			for (const file of scan.files) {
 				if (seen.has(file.path)) continue;
 				const now = new Date().toISOString();
 				const renamed = orphansByHash.get(file.hash);

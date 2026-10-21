@@ -205,6 +205,20 @@ pub struct ScannedFile {
     pub hash: String,
 }
 
+/// The result of scanning a workspace folder: the files that were read, and the
+/// relative paths that exist on disk but couldn't be read this time (a permission
+/// error, a Windows lock). The frontend keeps a record for a skipped path — the
+/// file is still there — instead of treating it as deleted, so a transient read
+/// failure never drops a document's stable id.
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScanResult {
+    /// The files read this scan.
+    pub files: Vec<ScannedFile>,
+    /// Paths that exist but couldn't be hashed this scan (kept, not deleted).
+    pub skipped: Vec<String>,
+}
+
 /// Open a native folder picker for a new local workspace. Returns the chosen
 /// absolute path, or `None` if the user cancelled. The chosen folder is recorded
 /// as picked-this-session, so [`bind_workspace_folder`] may bind it to the new
@@ -290,17 +304,19 @@ pub fn documents_remove(
     }
 }
 
-/// Scan a workspace's bound folder, returning every regular file with its
-/// relative path, size, and content hash. The frontend reconciles this against
-/// the index — matching renames by hash, detecting edits as a changed hash, and
-/// dropping records whose file is gone. Hidden files (dot-prefixed) are skipped.
-/// A file that can't be read (a permission error, a Windows lock) is skipped,
-/// not fatal, so one bad file doesn't blank the whole list.
+/// Scan a workspace's bound folder, returning every regular file read (relative
+/// path, size, content hash) plus the paths that exist but couldn't be read this
+/// time. The frontend reconciles this against the index — matching renames by
+/// hash, detecting edits as a changed hash, dropping records whose file is truly
+/// gone, and KEEPING records for skipped paths (the file is still there). Hidden
+/// files (dot-prefixed) are ignored entirely. A file that can't be read (a
+/// permission error, a Windows lock) is reported as skipped, not fatal, so one
+/// bad file neither blanks the list nor drops the document's stable id.
 #[tauri::command]
 pub fn documents_scan(
     folders: State<'_, WorkspaceFolders>,
     workspace_id: String,
-) -> Result<Vec<ScannedFile>, String> {
+) -> Result<ScanResult, String> {
     let root = folders
         .folder_of(&workspace_id)
         .ok_or("workspace is not bound to a folder")?;
@@ -310,14 +326,26 @@ pub fn documents_scan(
             root.display()
         ));
     }
-    let mut out = Vec::new();
-    scan_dir(&root, &root, &mut out)?;
-    Ok(out)
+    let mut result = ScanResult {
+        files: Vec::new(),
+        skipped: Vec::new(),
+    };
+    scan_dir(&root, &root, &mut result)?;
+    Ok(result)
+}
+
+/// The relative, forward-slashed path of `path` under `root`.
+fn rel_path(root: &Path, path: &Path) -> Result<String, String> {
+    Ok(path
+        .strip_prefix(root)
+        .map_err(|err| err.to_string())?
+        .to_string_lossy()
+        .replace('\\', "/"))
 }
 
 /// Recursively collect files under `dir`, pathing each relative to `root`. A file
-/// that can't be opened or hashed is skipped (logged), not fatal.
-fn scan_dir(root: &Path, dir: &Path, out: &mut Vec<ScannedFile>) -> Result<(), String> {
+/// that can't be opened or hashed is recorded as skipped (and logged), not fatal.
+fn scan_dir(root: &Path, dir: &Path, out: &mut ScanResult) -> Result<(), String> {
     for entry in std::fs::read_dir(dir).map_err(|err| err.to_string())? {
         let entry = entry.map_err(|err| err.to_string())?;
         let path = entry.path();
@@ -332,18 +360,16 @@ fn scan_dir(root: &Path, dir: &Path, out: &mut Vec<ScannedFile>) -> Result<(), S
         if file_type.is_dir() {
             scan_dir(root, &path, out)?;
         } else if file_type.is_file() {
-            // Stream the hash so a large file isn't read fully into memory, and
-            // skip (rather than fail the whole scan) a file we can't read.
+            // Stream the hash so a large file isn't read fully into memory. A file
+            // we can't read is reported as skipped (kept by the reconcile), not
+            // dropped — the file is still on disk.
             let Ok((size, hash)) = hash_file(&path) else {
                 log::warn!("skipping unreadable file during scan: {}", path.display());
+                out.skipped.push(rel_path(root, &path)?);
                 continue;
             };
-            let rel = path
-                .strip_prefix(root)
-                .map_err(|err| err.to_string())?
-                .to_string_lossy()
-                .replace('\\', "/");
-            out.push(ScannedFile {
+            let rel = rel_path(root, &path)?;
+            out.files.push(ScannedFile {
                 path: rel,
                 size,
                 hash,
@@ -479,11 +505,19 @@ mod tests {
     }
 
     /// Scan [`WS`]'s bound folder (the command body, sans `State`).
-    fn scan(folders: &WorkspaceFolders) -> Vec<ScannedFile> {
+    fn scan_result(folders: &WorkspaceFolders) -> ScanResult {
         let root = folders.folder_of(WS).unwrap();
-        let mut out = Vec::new();
+        let mut out = ScanResult {
+            files: Vec::new(),
+            skipped: Vec::new(),
+        };
         scan_dir(&root, &root, &mut out).unwrap();
         out
+    }
+
+    /// The files a scan of [`WS`]'s folder read (ignoring skipped paths).
+    fn scan(folders: &WorkspaceFolders) -> Vec<ScannedFile> {
+        scan_result(folders).files
     }
 
     #[test]
@@ -530,6 +564,33 @@ mod tests {
         let files = scan(&folders);
         assert_eq!(files.len(), 1, "the hidden file is not listed");
         assert_ne!(files[0].hash, before, "an edit changes the hash");
+    }
+
+    // An unreadable file is reported as skipped, not dropped — so the frontend
+    // keeps its record (and stable id) instead of treating it as deleted. Unix
+    // only (removing read permission is the easy way to make a file unreadable).
+    #[cfg(unix)]
+    #[test]
+    fn scan_reports_unreadable_files_as_skipped() {
+        use std::os::unix::fs::PermissionsExt;
+
+        let dir = TempDir::new("skip");
+        let folders = bound(&dir.path());
+        write(&folders, "ok.txt", b"readable");
+        write(&folders, "locked.txt", b"secret");
+
+        // Make `locked.txt` unreadable so `hash_file` fails on it.
+        let locked = resolve(&folders, WS, "locked.txt").unwrap();
+        std::fs::set_permissions(&locked, std::fs::Permissions::from_mode(0o000)).unwrap();
+
+        let result = scan_result(&folders);
+        // It is reported as skipped, not among the read files — and not lost.
+        assert_eq!(result.files.len(), 1);
+        assert_eq!(result.files[0].path, "ok.txt");
+        assert_eq!(result.skipped, vec!["locked.txt".to_owned()]);
+
+        // Restore permissions so the temp dir can be cleaned up.
+        std::fs::set_permissions(&locked, std::fs::Permissions::from_mode(0o644)).unwrap();
     }
 
     #[test]
