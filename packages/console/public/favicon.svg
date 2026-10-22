@@ -1,8 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <rect width="32" height="32" rx="7" fill="#f4f4f5"/>
+  <!-- The dissolving-dots mark (the Elide motif), matching NvisyLogo: three dots
+       fading left to right, the dissolve carried by opacity 1 / .6 / .22. Centres
+       at x 9/16/23, r=3.2, so the mark fills the tile like the app icon's dots. -->
   <g fill="#18181b">
-    <rect x="7" y="9.5" width="18" height="3" rx="1.5"/>
-    <rect x="7" y="14.5" width="18" height="3" rx="1.5"/>
-    <rect x="7" y="19.5" width="11" height="3" rx="1.5" opacity="0.55"/>
+    <circle cx="9" cy="16" r="3.2"/>
+    <circle cx="16" cy="16" r="3.2" opacity="0.6"/>
+    <circle cx="23" cy="16" r="3.2" opacity="0.22"/>
   </g>
 </svg>
