@@ -1,11 +1,11 @@
 import { isTauri } from "@tauri-apps/api/core";
 import type { Workspace } from "@nvisy/sdk/datatypes";
-import type { DetectionProvider } from "#console/detection/types";
-import type { RedactionProvider } from "#console/detection/redaction";
+import type { DetectionProvider } from "#console/providers/types";
+import type { RedactionProvider } from "#console/providers/redaction";
 import type { Repository, WorkspaceList } from "#console/repositories/types";
 import { isLocalWorkspace } from "#console/repositories/types";
-import { createLocalDetectionProvider } from "~/detection/local";
-import { createLocalRedactionProvider } from "~/detection/redaction-local";
+import { createLocalDetectionProvider } from "~/providers/local";
+import { createLocalRedactionProvider } from "~/providers/redaction-local";
 import { createLocalRepository } from "~/repositories/local";
 import { createLocalWorkspaceList } from "~/repositories/workspace-list";
 

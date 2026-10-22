@@ -1,7 +1,7 @@
 import type { Ref } from "vue";
 import type { Workspace } from "@nvisy/sdk/datatypes";
-import { createServerDetectionProvider } from "#console/detection/server";
-import type { DetectionProvider } from "#console/detection/types";
+import { createServerDetectionProvider } from "#console/providers/server";
+import type { DetectionProvider } from "#console/providers/types";
 
 /**
  * The detection seam: where the studio runs a detection, resolved to a backend

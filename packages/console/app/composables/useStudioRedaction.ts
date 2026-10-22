@@ -8,7 +8,7 @@ import type {
 } from "@nvisy/sdk/datatypes";
 import type { Ref } from "vue";
 import { toast } from "vue-sonner";
-import type { RedactionOutput } from "#console/detection/redaction";
+import type { RedactionOutput } from "#console/providers/redaction";
 
 export type { RedactionOutput };
 import type { TextEntityView } from "#console/composables/useTextEntities";
