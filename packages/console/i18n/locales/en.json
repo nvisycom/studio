@@ -1991,9 +1991,7 @@
 		},
 		"trends": {
 			"detections": "Detections",
-			"tokens": "Tokens",
 			"detectionsTitle": "Detections per day",
-			"tokensTitle": "Tokens per day",
 			"errorRate": "Error rate",
 			"avgDuration": "Avg duration",
 			"errorRateTitle": "Error rate per day",

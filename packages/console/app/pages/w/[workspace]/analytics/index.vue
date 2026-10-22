@@ -29,6 +29,13 @@ useHead({ title: () => t("analytics.overview.title") });
 const { analytics, isLoading, timeSeries, isLoadingTimeSeries } =
 	useAnalytics();
 
+// Usage is metered per-unit (`tokensTotal`, `tokensInput`, `seconds`, …), and the
+// server includes only meters that were actually reported — an absent meter means
+// zero. Read one by name, defaulting to 0.
+function meter(meters: Record<string, number>, name: string): number {
+	return meters[name] ?? 0;
+}
+
 // ── KPI tiles: detection health + storage + usage, from the snapshot ────────
 const kpis = computed(() => {
 	const a = analytics.value;
@@ -72,11 +79,11 @@ const kpis = computed(() => {
 			icon: Cpu,
 			label: t("analytics.kpis.usage"),
 			value: t("analytics.kpis.tokens", {
-				count: a.usage.totalTokens.toLocaleString(),
+				count: meter(a.usage.meters, "tokensTotal").toLocaleString(),
 			}),
 			sub: t("analytics.kpis.tokenSplit", {
-				input: a.usage.inputTokens.toLocaleString(),
-				output: a.usage.outputTokens.toLocaleString(),
+				input: meter(a.usage.meters, "tokensInput").toLocaleString(),
+				output: meter(a.usage.meters, "tokensOutput").toLocaleString(),
 			}),
 		},
 	];
@@ -89,7 +96,6 @@ const trendData = computed(() =>
 	(timeSeries.value?.points ?? []).map((p) => ({
 		date: new Date(p.date),
 		detections: p.detections,
-		tokens: p.totalTokens ?? 0,
 		errorPct: (p.errorRate ?? 0) * 100,
 		avgSeconds: (p.avgDurationMs ?? 0) / 1000,
 	})),
@@ -111,9 +117,6 @@ const detectionsTrend = computed(() =>
 		"var(--chart-1)",
 		Play,
 	),
-);
-const tokensTrend = computed(() =>
-	trendSpec("tokens", t("analytics.trends.tokens"), "var(--chart-2)", Cpu),
 );
 const errorTrend = computed(() =>
 	trendSpec(
@@ -176,15 +179,17 @@ const storageByKind = computed<BreakdownRow[]>(() =>
 
 const usageByModel = computed<BreakdownRow[]>(() =>
 	toRows(analytics.value?.usage.byModel ?? [], {
-		value: (e) => e.totalTokens,
+		value: (e) => meter(e.meters, "tokensTotal"),
 		label: (e) => e.model,
 		format: (e) =>
-			t("analytics.kpis.tokens", { count: e.totalTokens.toLocaleString() }),
+			t("analytics.kpis.tokens", {
+				count: meter(e.meters, "tokensTotal").toLocaleString(),
+			}),
 		keyOf: (e) => e.model,
 		sub: (e) =>
 			t("analytics.kpis.tokenSplit", {
-				input: e.inputTokens.toLocaleString(),
-				output: e.outputTokens.toLocaleString(),
+				input: meter(e.meters, "tokensInput").toLocaleString(),
+				output: meter(e.meters, "tokensOutput").toLocaleString(),
 			}),
 	}),
 );
@@ -275,18 +280,7 @@ const usageByModel = computed<BreakdownRow[]>(() =>
           </CardContent>
         </Card>
 
-        <div class="grid gap-4 md:grid-cols-3">
-          <Card class="rounded-xl border-border/50">
-            <CardHeader class="pb-2">
-              <CardTitle class="text-sm font-medium">
-                {{ t("analytics.trends.tokensTitle") }}
-              </CardTitle>
-            </CardHeader>
-            <CardContent class="pt-2">
-              <AnalyticsAreaChart :spec="tokensTrend" compact />
-            </CardContent>
-          </Card>
-
+        <div class="grid gap-4 md:grid-cols-2">
           <Card class="rounded-xl border-border/50">
             <CardHeader class="pb-2">
               <CardTitle class="text-sm font-medium">

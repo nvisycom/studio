@@ -21,13 +21,13 @@ export interface ImageLayoutBlock {
 
 /**
  * Map an SDK OCR {@link Layout} to the preview's {@link ImageLayout}, or null when
- * absent. Every block is kept (its `region.bounding_box` is required in the SDK).
+ * absent. Every region is kept (its `region.bounding_box` is required in the SDK).
  */
 export function toImageLayout(
 	layout: Layout | null | undefined,
 ): ImageLayout | null {
 	if (!layout) return null;
-	const blocks: ImageLayoutBlock[] = layout.blocks.map((b) => {
+	const blocks: ImageLayoutBlock[] = layout.regions.map((b) => {
 		const bbox = b.region.bounding_box;
 		return {
 			box: {

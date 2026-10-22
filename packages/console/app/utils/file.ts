@@ -37,7 +37,7 @@ export const ACCEPTED_EXTENSIONS = [
 	"ogg",
 	"pdf",
 	"png",
-	"rtf",
+	"pptx",
 	"tif",
 	"tiff",
 	"txt",
@@ -111,7 +111,7 @@ export function getFileIconForExtension(ext: string): Component {
 		case "pdf":
 		case "doc":
 		case "docx":
-		case "rtf":
+		case "pptx":
 		case "txt":
 		case "log":
 		case "md":

@@ -1991,9 +1991,7 @@
 		},
 		"trends": {
 			"detections": "Erkennungen",
-			"tokens": "Tokens",
 			"detectionsTitle": "Erkennungen pro Tag",
-			"tokensTitle": "Tokens pro Tag",
 			"errorRate": "Fehlerrate",
 			"avgDuration": "Ø Dauer",
 			"errorRateTitle": "Fehlerrate pro Tag",
