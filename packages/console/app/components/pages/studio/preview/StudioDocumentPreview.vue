@@ -233,11 +233,18 @@ const activeChipEl = computed<{ getBoundingClientRect(): DOMRect } | null>(
 	() => {
 		const id = props.activeEntityId;
 		if (!id) return null;
+		// The floating layer measures the anchor only on scroll/resize, not every
+		// frame, and the chip can be gone at that moment — a DOCX decoration renders
+		// only while its range is in view, so scrolling it off removes the node.
+		// Returning a zero rect then would pin the open popover to the viewport's
+		// top-left until the next scroll; instead keep returning the last real rect.
+		let lastRect = new DOMRect(0, 0, 0, 0);
 		return {
-			// A zero rect while the chip is momentarily absent (mid-rebuild) keeps the
-			// popover from jumping; it re-measures against the real chip next frame.
-			getBoundingClientRect: () =>
-				findChip(id)?.getBoundingClientRect() ?? new DOMRect(0, 0, 0, 0),
+			getBoundingClientRect: () => {
+				const chip = findChip(id);
+				if (chip) lastRect = chip.getBoundingClientRect();
+				return lastRect;
+			},
 		};
 	},
 );

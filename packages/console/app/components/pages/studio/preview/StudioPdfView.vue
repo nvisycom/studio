@@ -224,7 +224,6 @@ function paintHighlights() {
 		// so an `inset:0` overlay on the page sits exactly over the text.
 		if (overlay.childElementCount > 0) page.appendChild(overlay);
 	}
-	scrollToActive();
 	// Resume watching for real page/text-layer changes.
 	observer?.observe(target, { childList: true, subtree: true });
 }
@@ -322,17 +321,6 @@ function highlightBox(
 	return box;
 }
 
-/** Scroll the active entity's first match into view (after a repaint). */
-function scrollToActive() {
-	const id = props.activeEntityId;
-	if (!id) return;
-	requestAnimationFrame(() => {
-		container.value
-			?.querySelector(`[data-entity="${CSS.escape(id)}"]`)
-			?.scrollIntoView({ block: "center", behavior: "smooth" });
-	});
-}
-
 function teardown() {
 	if (repaintHandle) {
 		clearTimeout(repaintHandle);
@@ -355,7 +343,9 @@ function teardown() {
 watch(() => props.entities, scheduleRepaint, { deep: true });
 watch(() => props.activeEntityId, applyActive);
 
-/** Move the `--active` class to the focused entity's boxes, without rebuilding. */
+// Move the `--active` class to the focused entity's boxes, without rebuilding.
+// Scrolling the focused chip into view is the dispatcher's job (it owns the
+// popover anchor too), so this only toggles the highlight ring.
 function applyActive() {
 	const active = `${CHIP_CLASS}--active`;
 	for (const box of container.value?.querySelectorAll<HTMLElement>(
@@ -363,7 +353,6 @@ function applyActive() {
 	) ?? []) {
 		box.classList.toggle(active, box.dataset.entity === props.activeEntityId);
 	}
-	scrollToActive();
 }
 
 // Render whenever the file (or the container, after mount) changes.

@@ -254,7 +254,10 @@ export function useTextEntities(
 					a.start - b.start
 				);
 			}
-			if (a.decoded && b.decoded) return a.start - b.start;
+			// For paginated (PDF) entities the offsets are page-local, so page comes
+			// first; unpaginated text has no page and sorts on the offset alone.
+			if (a.decoded && b.decoded)
+				return (a.page ?? 0) - (b.page ?? 0) || a.start - b.start;
 			if (a.decoded !== b.decoded) return a.decoded ? -1 : 1;
 			return sourcePosition(a).localeCompare(sourcePosition(b));
 		});
@@ -268,13 +271,14 @@ export function useTextEntities(
 	// coordinates that actually disambiguate a position: the cell (row/column) for
 	// tabular, whose byte offsets are *within* the cell; the source part + range for
 	// a source-only entity, whose offsets are part-local; otherwise the decoded
-	// document offset.
+	// document offset — prefixed with the page for PDF, whose offsets are page-local
+	// (else a repeated header/footer value at the same offset on each page collides).
 	const textClusterKey = (item: TextEntityView) => ({
 		group: item.locatable === false ? "meta" : "body",
 		location: item.cell
 			? `${item.cell.row}:${item.cell.column}:${item.start}:${item.end}`
 			: item.decoded
-				? `${item.start}:${item.end}`
+				? `${item.page ?? ""}:${item.start}:${item.end}`
 				: sourcePosition(item),
 	});
 
