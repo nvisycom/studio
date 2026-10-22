@@ -17,8 +17,12 @@ import {
  */
 const props = defineProps<{
 	entity: TextEntityView | null;
-	/** The focused chip's DOM element, used as the floating anchor. */
-	reference: HTMLElement | null;
+	/**
+	 * The floating anchor for the focused chip. A virtual element (an object with
+	 * `getBoundingClientRect`) rather than a captured node, so it survives the
+	 * views recreating their chips on re-highlight — see the dispatcher.
+	 */
+	reference: { getBoundingClientRect(): DOMRect } | null;
 	/** Whether the CSV's first row is a header (matches the table + audit list). */
 	withHeaders?: boolean;
 }>();
@@ -42,6 +46,24 @@ const canSuppress = computed(() => !!props.entity && !props.entity.added);
 
 function onOpenChange(next: boolean) {
 	if (!next) emit("close");
+}
+
+// Clicking another entity's chip is an "outside" interaction for this popover, so
+// Radix would close it — racing the new focus and leaving nothing open. When the
+// interaction lands on a chip, keep this popover open; the focus change then
+// re-points it (via the virtual anchor) to the new chip. A chip is marked either
+// with `data-entity` (code/CSV/PDF) or a `docx-eid-*` class (DOCX decoration run).
+function onInteractOutside(event: {
+	target: EventTarget | null;
+	preventDefault: () => void;
+}) {
+	if (
+		(event.target as HTMLElement | null)?.closest?.(
+			'[data-entity], [class*="docx-eid-"]',
+		)
+	) {
+		event.preventDefault();
+	}
 }
 const confidencePct = computed(() =>
 	props.entity ? `${Math.round(props.entity.confidence * 100)}%` : "",
@@ -90,6 +112,7 @@ const location = computed(() => {
       :side-offset="6"
       class="w-64 p-0"
       @open-auto-focus.prevent
+      @interact-outside="onInteractOutside"
     >
       <div v-if="entity" class="p-3">
         <div class="flex items-center gap-2">

@@ -1486,6 +1486,7 @@
 			"raw": "Roh",
 			"withHeaders": "Mit Kopfzeile",
 			"docxFailed": "Dieses Word-Dokument konnte nicht dargestellt werden.",
+			"pdfFailed": "Dieses PDF konnte nicht dargestellt werden.",
 			"textFailed": "Diese Datei konnte nicht geladen werden.",
 			"audioFailed": "Diese Audiodatei konnte nicht abgespielt werden.",
 			"play": "Abspielen",

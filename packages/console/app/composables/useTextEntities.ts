@@ -58,6 +58,13 @@ export interface TextEntityView extends BaseEntityView {
 	/** Cell coordinates for tabular entities; absent for plain text. */
 	cell?: CellLocation;
 	/**
+	 * 1-based page the entity's span is on, when the modality is paginated (PDF).
+	 * The PDF preview's offsets are page-local, so the highlighter needs the page
+	 * to resolve {@link start}/{@link end} against that page's text. Absent for
+	 * unpaginated text (plain text, DOCX body offsets are document-wide).
+	 */
+	page?: number;
+	/**
 	 * Raw-source byte ranges this entity came from, per container part (for DOCX,
 	 * spans into `word/document.xml`). Present when the decoded text a recognizer
 	 * scanned differs from the raw source (DOCX/XML); empty for plain text/CSV,
@@ -191,6 +198,9 @@ export function useTextEntities(
 					audit: e.audit,
 					...(sourceRefs?.length ? { sourceRefs } : {}),
 					...(matched ? { text: matched } : {}),
+					// The page carries the paginated (PDF) highlight position; the
+					// offsets above are page-local there.
+					...(e.location.page != null ? { page: e.location.page } : {}),
 				} satisfies TextEntityView;
 			});
 		} else if (group?.modality === "tabular") {

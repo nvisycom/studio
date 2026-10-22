@@ -205,45 +205,67 @@ const activeEntity = computed(
 	() => props.textEntities.find((e) => e.id === props.activeEntityId) ?? null,
 );
 
-// Scroll the focused entity into view and anchor the detail popover to its
-// chip. The chip may live in the code view or the CSV table, so query from the
-// preview root.
+// Anchor the detail popover to the focused entity's chip. The chip may live in
+// any preview, so it's queried from the preview root.
 const rootEl = ref<HTMLElement | null>(null);
-const activeChipEl = ref<HTMLElement | null>(null);
 
-// Re-resolve the anchor chip for the active entity. Split from the watch so it
-// can run both when the focus changes and when the highlights rebuild: the DOCX
-// view recreates its chip elements on every re-highlight (e.g. after a keep
-// toggle), which detaches the previously-captured node — leaving the popover
-// anchored to a stale element, so it snaps to the top-left corner. Re-querying
-// keeps it pinned to the live chip. `scroll` is only for a focus change.
-function reanchor(scroll: boolean) {
-	const id = props.activeEntityId;
-	if (!id) {
-		activeChipEl.value = null;
-		return;
-	}
-	nextTick(() => {
-		if (props.activeEntityId !== id) return;
-		const el = rootEl.value?.querySelector<HTMLElement>(
-			`[data-entity="${id}"]`,
-		);
-		activeChipEl.value = el ?? null;
-		if (scroll) el?.scrollIntoView({ block: "center", behavior: "smooth" });
-	});
+// Locate the on-screen chip for an entity. The previews mark it two ways: most
+// (code, CSV, PDF) set `data-entity`, while the DOCX overlay (SuperDoc decoration
+// spans) carries a `docx-eid-<id>` class instead. Query both so every view
+// anchors. A DOCX run can hold several ids (overlapping entities); the class
+// selector matches any of them.
+function findChip(id: string): HTMLElement | null {
+	const escaped = CSS.escape(id);
+	return (
+		rootEl.value?.querySelector<HTMLElement>(
+			`[data-entity="${escaped}"], .docx-eid-${escaped}`,
+		) ?? null
+	);
 }
 
-// On focus change: re-anchor and scroll the newly focused chip into view.
+// The anchor is a VIRTUAL element, not a captured chip node: the views recreate
+// their chip elements on every re-highlight (a DOCX keep toggle, a PDF repaint),
+// which would detach a captured node and snap the popover to the top-left corner.
+// Re-querying the live chip inside `getBoundingClientRect` — which the floating
+// layer calls on every reposition — keeps the popover pinned to whatever chip is
+// currently on screen, surviving those rebuilds.
+const activeChipEl = computed<{ getBoundingClientRect(): DOMRect } | null>(
+	() => {
+		const id = props.activeEntityId;
+		if (!id) return null;
+		return {
+			// A zero rect while the chip is momentarily absent (mid-rebuild) keeps the
+			// popover from jumping; it re-measures against the real chip next frame.
+			getBoundingClientRect: () =>
+				findChip(id)?.getBoundingClientRect() ?? new DOMRect(0, 0, 0, 0),
+		};
+	},
+);
+
+// Scroll the newly focused chip into view on a focus change (not on a rebuild).
+// The popover anchors to the chip's *current* on-screen rect, so the chip has to
+// be in view before the floating layer measures it — otherwise the popover is
+// positioned off-screen (an entity that needed scrolling shows no popover) or
+// against the pre-scroll rect (it lands detached from the chip). Scroll it in
+// synchronously (`instant`, no smooth-scroll race), then prompt a reposition: the
+// floating layer re-reads the anchor on window scroll/resize, and the virtual
+// anchor now returns the settled rect.
 watch(
 	() => props.activeEntityId,
-	() => reanchor(true),
-);
-// On highlight rebuild (entity set / suppressed state changed): re-anchor without
-// scrolling, so a keep toggle doesn't leave the popover pinned to a dead node.
-watch(
-	() => props.textEntities,
-	() => reanchor(false),
-	{ deep: true },
+	(id) => {
+		if (!id) return;
+		nextTick(() => {
+			if (props.activeEntityId !== id) return;
+			const chip = findChip(id);
+			if (!chip) return;
+			chip.scrollIntoView({ block: "center", behavior: "instant" });
+			// After layout settles, nudge the floating layer to re-measure against
+			// the chip's new position.
+			requestAnimationFrame(() => {
+				window.dispatchEvent(new Event("resize"));
+			});
+		});
+	},
 );
 </script>
 

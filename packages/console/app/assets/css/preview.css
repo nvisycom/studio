@@ -1,0 +1,68 @@
+/*
+ * Shared treatment for the studio's paged document previews (the SuperDoc-backed
+ * DOCX and PDF views). Both render a stack of pages on a backdrop; this file is
+ * the one place that gives them a consistent look:
+ *
+ *   - the page "paper" frame (a soft shadow on white),
+ *   - the outer breathing room above the first / below the last page,
+ *   - the gap between pages.
+ *
+ * Without this each engine differs: SuperDoc frames and spaces the DOCX pages
+ * through its editor layout, while the PDF viewer renders its pages flush and
+ * unframed. Owning it here (keyed on each view's canvas class) keeps the two in
+ * sync and lets a future paged view opt in by adding its page/canvas selectors.
+ * Values are SuperDoc's own DOCX defaults, verified against the live page, so the
+ * DOCX view is unchanged and the PDF view now matches it. The non-paged views
+ * (image, audio, CSV, text) keep their own layouts and are untouched.
+ *
+ * Loaded globally via the layer's nuxt css[].
+ *
+ * Page elements per engine:
+ *   - DOCX: `.superdoc-page` (inside `.superdoc-layout`), carries `data-page-number`.
+ *   - PDF:  `.sd-pdf-viewer-page`.
+ */
+:root {
+	/* SuperDoc's default page frame: a soft, slate-tinted drop shadow plus a
+	   hairline outline on white — the outline gives the sheet a crisp edge over
+	   the soft shadow. Both use the same slate tint (verified against the live
+	   DOCX page). */
+	--studio-page-bg: #ffffff;
+	--studio-page-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+	--studio-page-outline: 0.5px solid rgba(15, 23, 42, 0.08);
+	/* Breathing room above the first / below the last page (SuperDoc's 2rem), and
+	   the gap between consecutive pages. */
+	--studio-page-outer-gap: 2rem;
+	--studio-page-inner-gap: 1rem;
+}
+
+/* Page frame. Scoped to the studio preview canvases so it can't leak to unrelated
+   elements. The DOCX page already carries these values from SuperDoc; restating
+   them keeps one source of truth. The PDF page gets them for the first time. */
+.studio-docx .superdoc-page,
+.studio-pdf .sd-pdf-viewer-page {
+	background: var(--studio-page-bg);
+	box-shadow: var(--studio-page-shadow);
+	outline: var(--studio-page-outline);
+}
+
+/* Outer breathing room. DOCX applies it through its editor layout container; PDF
+   has no such container, so it goes on the scroll canvas — minus half the page
+   margin below, so that canvas-padding + first-page-margin equals the same 2rem
+   the DOCX first page sits at. */
+.studio-docx .superdoc-layout {
+	/* SuperDoc sets the layout's padding inline, so `!important` is needed. */
+	padding-block: var(--studio-page-outer-gap) !important;
+}
+.studio-pdf-canvas {
+	padding-block: calc(
+		var(--studio-page-outer-gap) - var(--studio-page-inner-gap) / 2
+	);
+}
+
+/* Gap between pages. SuperDoc spaces the DOCX pages itself; the PDF viewer butts
+   them together, so give its pages a between-sheets margin (and center them). A
+   full inner-gap between two pages' adjacent margins. */
+.studio-pdf .sd-pdf-viewer-page {
+	margin-inline: auto;
+	margin-block: calc(var(--studio-page-inner-gap) / 2);
+}

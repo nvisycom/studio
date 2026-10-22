@@ -402,15 +402,11 @@ onBeforeUnmount(teardown);
 </template>
 
 <style scoped>
-/* SuperDoc paints its own layout (pages on a backdrop). Tint the backdrop to the
-   app's content surface so the canvas matches the rest of the studio, and add
-   breathing room above the first page / below the last (SuperDoc butts the page
-   against the container edge otherwise). */
+/* Tint the backdrop the pages sit on to the app's content surface, so the canvas
+   matches the rest of the studio. (The page frame and the page spacing are shared
+   across the paged previews — see assets/css/preview.css.) */
 .studio-docx :deep(.superdoc-layout) {
   background: var(--background);
-  /* SuperDoc sets the layout's padding inline, so `!important` is needed to add
-     breathing room above the first page / below the last. */
-  padding-block: 2rem !important;
 }
 
 /* Center the pages horizontally. SuperDoc's root (`.superdoc`) is a flex row
