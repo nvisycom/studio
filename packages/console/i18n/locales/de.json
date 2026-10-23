@@ -98,7 +98,8 @@
 		"labelSelect": {
 			"placeholder": "Label auswählen"
 		},
-		"close": "Schließen"
+		"close": "Schließen",
+		"remove": "Entfernen"
 	},
 	"settings": {
 		"workspace": {

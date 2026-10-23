@@ -134,10 +134,13 @@ export function createLocalDetectionProvider(
 			// The document already lives in the workspace folder, so the engine
 			// reads it from disk by (workspaceId, path) — no bytes cross IPC, and the
 			// id authorizes the folder. Runs synchronously, returns the audit directly.
+			// The optional per-run scope (jurisdictions/languages, and for a pipeline
+			// an override of its saved default) rides along as `context`.
 			const document = await locateDocument(ws, input.fileId);
 			const audit = await invoke<Audit>("detect", {
 				document,
 				policies,
+				...(input.source.scope ? { context: input.source.scope } : {}),
 			});
 
 			// Persist the run so the detections list and restore-latest work offline.

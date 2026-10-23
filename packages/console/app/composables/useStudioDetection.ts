@@ -141,20 +141,31 @@ export function useStudioDetection(
 	// switched away from (or a file that changed) can't overwrite newer state.
 	let loadToken = 0;
 
-	/** Show a specific detection: load its audit and make it the active one. */
+	/** Show a specific detection: load its audit and make it the active one. Only
+	 *  a completed detection has an analysis to fetch; a pending/failed row stays
+	 *  selected but shows its status instead of loading. */
 	async function loadDetection(id: string) {
 		const file = toValue(fileId);
 		const row = detections.value.find((d) => d.id === id);
 		if (!row) return;
 		const token = ++loadToken;
 		selectedDetectionId.value = id;
+		detectionFileName.value =
+			row.inputDocumentName ?? toValue(fileName) ?? null;
+		if (row.status !== "complete") {
+			audit.value = null;
+			detectionId.value = null;
+			detectionStatus.value = row.status;
+			errorMessage.value =
+				row.status === "failed" ? t("studio.audit.runFailed") : "";
+			phase.value = row.status === "failed" ? "failed" : "running";
+			return;
+		}
 		phase.value = "restoring";
 		detectionStatus.value = null;
 		errorMessage.value = "";
 		audit.value = null;
 		detectionId.value = null;
-		detectionFileName.value =
-			row.inputDocumentName ?? toValue(fileName) ?? null;
 		try {
 			const loaded = await requireProvider().loadAnalysis(id);
 			if (token !== loadToken || toValue(fileId) !== file) return;
@@ -308,8 +319,12 @@ export function useStudioDetection(
 				const rows = await requireProvider().listForFile(file);
 				if (token !== loadToken || toValue(fileId) !== file) return;
 				detections.value = rows;
-				const newest = rows[0];
-				if (newest) await loadDetection(newest.id);
+				// Auto-open the newest COMPLETED detection (rows are newest-first), so
+				// opening a file lands on an audit, not a pending/failed row with no
+				// analysis. Fall back to the newest of any status so the switcher still
+				// reflects a selection; `loadDetection` shows its status in that case.
+				const target = rows.find((d) => d.status === "complete") ?? rows[0];
+				if (target) await loadDetection(target.id);
 				else clearShown();
 			} catch {
 				if (token === loadToken) clearShown();

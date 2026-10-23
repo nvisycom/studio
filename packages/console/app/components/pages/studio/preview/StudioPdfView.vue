@@ -317,6 +317,7 @@ function onPointerDown(event: PointerEvent) {
 }
 
 function onPointerUp(event: PointerEvent) {
+	if (event.button !== 0) return; // primary button only; ignore right/middle
 	if (
 		Math.abs(event.clientX - downX) > CLICK_SLOP ||
 		Math.abs(event.clientY - downY) > CLICK_SLOP

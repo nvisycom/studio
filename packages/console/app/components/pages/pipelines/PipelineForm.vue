@@ -32,7 +32,7 @@ import {
 	CollapsibleTrigger,
 } from "#console/components/ui/collapsible";
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 // `pipeline` present → edit mode; absent → create mode. The parent sheet owns the
 // chrome and pinned footer; it drives submit through the exposed `submit()` and
@@ -74,13 +74,13 @@ const languages = ref<string[]>([]);
 const countryOptions = computed(() =>
 	COUNTRY_CODES.map((value) => ({
 		value,
-		label: regionName(value) ?? value,
+		label: regionName(value, locale.value) ?? value,
 	})),
 );
 const languageOptions = computed(() =>
 	LANGUAGE_TAGS.map((value) => ({
 		value,
-		label: languageName(value) ?? value,
+		label: languageName(value, locale.value) ?? value,
 	})),
 );
 const toCountryCode = (raw: string) => raw.trim().toUpperCase();
@@ -342,6 +342,7 @@ defineExpose({ submit, isValid, enabled });
             :normalize="toCountryCode"
             :placeholder="t('pipelines.create.countriesPlaceholder')"
             :add-label="t('pipelines.create.addValue')"
+            :remove-label="t('common.remove')"
             autocapitalize="characters"
           />
           <p class="text-xs text-muted-foreground">
@@ -361,6 +362,7 @@ defineExpose({ submit, isValid, enabled });
             :normalize="toLanguageTag"
             :placeholder="t('pipelines.create.languagesPlaceholder')"
             :add-label="t('pipelines.create.addValue')"
+            :remove-label="t('common.remove')"
             autocapitalize="none"
           />
           <p class="text-xs text-muted-foreground">

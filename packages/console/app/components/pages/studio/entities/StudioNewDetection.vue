@@ -30,7 +30,7 @@ import {
  * languages) applies to whichever source is chosen. Running empties into the
  * Audit tab with the fresh result.
  */
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const props = defineProps<{
 	pipelines: WorkspacePipelineSummary[] | undefined;
@@ -55,12 +55,15 @@ defineEmits<{ run: [] }>();
 const SOURCES = ["pipeline", "labels", "policies"] as const;
 
 const countryOptions = computed(() =>
-	COUNTRY_CODES.map((value) => ({ value, label: regionName(value) ?? value })),
+	COUNTRY_CODES.map((value) => ({
+		value,
+		label: regionName(value, locale.value) ?? value,
+	})),
 );
 const languageOptions = computed(() =>
 	LANGUAGE_TAGS.map((value) => ({
 		value,
-		label: languageName(value) ?? value,
+		label: languageName(value, locale.value) ?? value,
 	})),
 );
 const toCountryCode = (raw: string) => raw.trim().toUpperCase();
@@ -167,6 +170,7 @@ function togglePolicy(id: string, checked: boolean | "indeterminate") {
             :normalize="toCountryCode"
             :placeholder="t('pipelines.create.countriesPlaceholder')"
             :add-label="t('pipelines.create.addValue')"
+            :remove-label="t('common.remove')"
           />
         </div>
         <div class="space-y-1">
@@ -179,6 +183,7 @@ function togglePolicy(id: string, checked: boolean | "indeterminate") {
             :normalize="toLanguageTag"
             :placeholder="t('pipelines.create.languagesPlaceholder')"
             :add-label="t('pipelines.create.addValue')"
+            :remove-label="t('common.remove')"
           />
         </div>
       </div>

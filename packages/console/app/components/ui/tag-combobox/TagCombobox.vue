@@ -38,12 +38,14 @@ const props = withDefaults(
 		placeholder?: string;
 		/** Label shown in the "Add «term»" custom-value row (e.g. "Add"). */
 		addLabel?: string;
+		/** Accessible name for a chip's remove button (the chip label is appended). */
+		removeLabel?: string;
 		/** Normalize a free-typed term before storing it (e.g. upper/lowercase). */
 		normalize?: (raw: string) => string;
 		contentClass?: string;
 		id?: string;
 	}>(),
-	{ normalize: (raw: string) => raw.trim() },
+	{ normalize: (raw: string) => raw.trim(), removeLabel: "Remove" },
 );
 
 const term = ref("");
@@ -70,12 +72,17 @@ const filtered = computed<Option[]>(() => {
 });
 
 // The normalized custom value for the current term, offered as an "Add" row when
-// it isn't blank, isn't already selected, and isn't an exact option match (those
-// are already in the list above).
+// it isn't blank, isn't already selected, and doesn't match a known option — by
+// its value (code) OR its label (name). A typed name like "Poland" matches the
+// `PL` option's label, so the real option takes precedence over an "Add Poland".
 const customValue = computed<string | null>(() => {
 	const value = props.normalize(term.value);
 	if (!value || model.value.includes(value)) return null;
-	if (props.options.some((o) => o.value === value)) return null;
+	const q = term.value.trim().toLowerCase();
+	if (
+		props.options.some((o) => o.value === value || o.label.toLowerCase() === q)
+	)
+		return null;
 	return value;
 });
 
@@ -121,6 +128,7 @@ function onEnter(event: Event) {
           <button
             type="button"
             class="rounded-sm text-muted-foreground transition-colors hover:text-foreground"
+            :aria-label="`${props.removeLabel} ${chipLabel(value)}`"
             @click="remove(value)"
           >
             <X :size="13" />
@@ -147,19 +155,8 @@ function onEnter(event: Event) {
       <!-- The item list scrolls once it outgrows this height (the country list
            is long); the content box itself is overflow-hidden. -->
       <div class="max-h-72 overflow-y-auto">
-        <!-- Add a free-typed value the suggestions don't cover. -->
-        <ComboboxItem
-          v-if="customValue"
-          :value="customValue"
-          class="gap-2"
-          @select.prevent="add(customValue)"
-        >
-          <Plus :size="14" class="text-muted-foreground" />
-          <span class="truncate">
-            {{ props.addLabel }}
-            <span class="font-medium">{{ customValue }}</span>
-          </span>
-        </ComboboxItem>
+        <!-- Matching options first, so a typed name/code resolves to a real
+             option before the free-entry "Add" row below. -->
         <ComboboxItem
           v-for="option in filtered"
           :key="option.value"
@@ -175,6 +172,19 @@ function onEnter(event: Event) {
             {{ option.value }}
           </span>
           <span class="truncate">{{ option.label }}</span>
+        </ComboboxItem>
+        <!-- Add a free-typed value the suggestions don't cover. -->
+        <ComboboxItem
+          v-if="customValue"
+          :value="customValue"
+          class="gap-2"
+          @select.prevent="add(customValue)"
+        >
+          <Plus :size="14" class="text-muted-foreground" />
+          <span class="truncate">
+            {{ props.addLabel }}
+            <span class="font-medium">{{ customValue }}</span>
+          </span>
         </ComboboxItem>
       </div>
     </ComboboxList>

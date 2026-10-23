@@ -174,6 +174,21 @@ function runNewDetection() {
 	detection.run();
 }
 
+// The full-screen audit toolbar only offers a pipeline picker, so its Run is
+// enabled on a pipeline being selected (regardless of the Detection tab's source)
+// and forces the source to `pipeline` before running — otherwise its picker and
+// the run would disagree when the inspector was left on labels/policies.
+const canRunPipeline = computed(
+	() =>
+		!!detection.selectedPipeline.value &&
+		detection.phase.value !== "running" &&
+		detection.phase.value !== "restoring",
+);
+function runFromAuditToolbar() {
+	detection.newSource.value = "pipeline";
+	detection.run();
+}
+
 // Audio transcript state for the audio view. Resolved once a detection completes
 // for an audio file, by fetching its enrichment intermediates:
 //   - hidden      — no completed detection yet (the panel isn't shown).
@@ -431,14 +446,14 @@ const auditProps = computed(() => ({
                   v-model:selected-pipeline="detection.selectedPipeline.value"
                   :pipelines="detection.pipelines.value"
                   :phase="detection.phase.value"
-                  :can-run="detection.canRun.value"
+                  :can-run="canRunPipeline"
                   :redact-phase="redaction.redactPhase.value"
                   :can-redact="redaction.canRedact.value"
                   :redact-error="redaction.redactError.value"
                   :output="redaction.output.value"
                   :count="detection.count.value"
                   :effective-redact-count="redaction.effectiveRedactCount.value"
-                  @run="detection.run"
+                  @run="runFromAuditToolbar"
                   @redact="redaction.redact"
                   @download-output="redaction.downloadRedacted"
                   @export-output="openExportRedacted"
