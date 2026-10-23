@@ -46,42 +46,22 @@ own shell.
 - **Node.js** 24+ and **npm** 10+
 - **Rust + Cargo** (desktop app only)
 
-## Quick start
+## Getting started
 
 ```bash
-make install                           # Install dependencies
-npm run dev -w @nvisy/webapp           # Web dev server        (port 3000)
-npm run dev -w @nvisy/desktop          # Desktop frontend dev  (port 1420)
-npm run tauri -w @nvisy/desktop dev    # Desktop app in a Tauri window
-npm run tauri:dev -w @nvisy/desktop    # …pointed at a local server (NVISY_DEV=1)
+git clone https://github.com/nvisycom/studio.git
+cd studio
+make install
 ```
 
-> [!NOTE]
-> The desktop app defaults to the hosted server. `tauri:dev` sets `NVISY_DEV=1`
-> to target a local one (`http://127.0.0.1:8080`) instead.
+Then run the web or desktop app, check the code, or build for release — see
+[CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow, and `make help` for
+every task the Makefile exposes.
 
-## Commands
+## Project
 
-| Command | What it does |
-| --- | --- |
-| `make build` | Build the web app → `./output` |
-| `make build-desktop` | Build the desktop frontend |
-| `make check` | Lint and format check (Biome) |
-| `make clean` / `make repair` | Remove build artifacts / clean + reinstall |
-| `npm run typecheck` | Type check all workspaces |
-| `npm run icons -w @nvisy/desktop` | Regenerate desktop icons from `tauri/assets/` |
-
-Desktop icons are generated from the SVG sources in `apps/desktop/tauri/assets/`.
-See [`apps/desktop/tauri/icons/README.md`](apps/desktop/tauri/icons/README.md).
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
-
-## License
-
-GNU Affero General Public License v3.0 (AGPL-3.0), see
-[LICENSE](LICENSE).
+- **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines
+- **License**: GNU Affero General Public License v3.0 (AGPL-3.0), see [LICENSE](LICENSE)
 
 ## Support
 

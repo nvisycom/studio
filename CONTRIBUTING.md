@@ -23,10 +23,16 @@ make install
 npm run dev -w @nvisy/webapp           # Web app (http://localhost:3000)
 npm run dev -w @nvisy/desktop          # Desktop frontend (http://localhost:1420)
 npm run tauri -w @nvisy/desktop dev    # Desktop app in a Tauri window
+npm run tauri:dev -w @nvisy/desktop    # …pointed at a local server (NVISY_DEV=1)
 ```
+
+The desktop app defaults to the hosted server; `tauri:dev` sets `NVISY_DEV=1` to
+target a local one (`http://127.0.0.1:8080`) instead.
 
 The web app defaults to the self-hosted edition; use `npm run dev:cloud` to run
 the cloud edition locally (see [Editions & feature flags](#editions--feature-flags)).
+
+Run `make help` for every task the Makefile exposes.
 
 ## Project Structure
 
@@ -63,6 +69,11 @@ If things break after pulling changes:
 ```bash
 make repair         # Clean and reinstall dependencies
 ```
+
+Desktop icons are generated from the SVG sources in
+`apps/desktop/tauri/assets/` — regenerate them with
+`npm run icons -w @nvisy/desktop` (see
+[`apps/desktop/tauri/icons/README.md`](apps/desktop/tauri/icons/README.md)).
 
 ## Editions & feature flags
 

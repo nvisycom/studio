@@ -1,12 +1,21 @@
 # Makefile for app.nvisy.com
 # This file provides common commands for managing the project build lifecycle.
 
+.DEFAULT_GOAL := help
+
 define log
 	@echo "[$(shell date '+%Y-%m-%d %H:%M:%S')] [MAKE] [$(MAKECMDGOALS)] $(1)"
 endef
 
+# `help` parses the `## …` doc comment after each target name and prints
+# `target — description`. Keeping help auto-generated from the targets
+# themselves means new targets don't need a manual entry to show up.
+.PHONY: help
+help: ## Show this help.
+	@awk 'BEGIN { FS = ":.*## " } /^[a-zA-Z0-9_.-]+:.*## / { printf "  %-16s  %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
+
 .PHONY: install
-install: # Installs all dependencies.
+install: ## Installs all dependencies.
 	$(call log,Installing dependencies...)
 	@npm install
 	@if [ -d scripts ]; then \
@@ -16,13 +25,13 @@ install: # Installs all dependencies.
 	fi
 
 .PHONY: install-tools
-install-tools: # Installs Lighthouse tools.
+install-tools: ## Installs Lighthouse tools.
 	$(call log,Installing Lighthouse...)
 	@npm install -g lighthouse
 	$(call log,Tools installed.)
 
 .PHONY: build
-build: # Builds the web app (self-hosted edition).
+build: ## Builds the web app (self-hosted edition).
 	$(call log,Building web app (self-hosted)...)
 	@npm run generate -w @nvisy/webapp
 	$(call log,Copying build output to ./output folder...)
@@ -31,7 +40,7 @@ build: # Builds the web app (self-hosted edition).
 	$(call log,Copied build output to ./output folder.)
 
 .PHONY: build-cloud
-build-cloud: # Builds the web app (cloud edition, app.nvisy.com).
+build-cloud: ## Builds the web app (cloud edition, app.nvisy.com).
 	$(call log,Building app.nvisy.com (cloud)...)
 	@NUXT_PUBLIC_DEPLOYMENT=cloud npm run generate -w @nvisy/webapp
 	$(call log,Copying build output to ./output folder...)
@@ -40,13 +49,13 @@ build-cloud: # Builds the web app (cloud edition, app.nvisy.com).
 	$(call log,Copied build output to ./output folder.)
 
 .PHONY: build-desktop
-build-desktop: # Builds the desktop app frontend (Tauri).
+build-desktop: ## Builds the desktop app frontend (Tauri).
 	$(call log,Building desktop frontend...)
 	@npm run generate -w @nvisy/desktop
 	$(call log,Desktop frontend built at apps/desktop/.output/public.)
 
 .PHONY: clean
-clean: # Cleans build artifacts and dependencies.
+clean: ## Cleans build artifacts and dependencies.
 	$(call log,Cleaning build artifacts...)
 	@rm -rf node_modules
 	@rm -rf packages/*/node_modules apps/*/node_modules
@@ -56,15 +65,15 @@ clean: # Cleans build artifacts and dependencies.
 	$(call log,Cleaned build artifacts.)
 
 .PHONY: repair
-repair: clean install # Cleans and reinstalls dependencies.
+repair: clean install ## Cleans and reinstalls dependencies.
 
 .PHONY: check
-check: # Runs code quality checks.
+check: ## Runs code quality checks.
 	$(call log,Running code checks...)
 	@npm run ci
 
 .PHONY: lighthouse
-lighthouse: build # Runs Lighthouse performance tests on the web app.
+lighthouse: build ## Runs Lighthouse performance tests on the web app.
 	@mkdir -p .lighthouse/webapp
 	$(call log,Running Lighthouse on the web app (production build)...)
 	@npx serve output -l 3000 -s &
