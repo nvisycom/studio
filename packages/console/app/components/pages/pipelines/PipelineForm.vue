@@ -12,6 +12,13 @@ import { Label } from "#console/components/ui/label";
 import { Badge } from "#console/components/ui/badge";
 import { Textarea } from "#console/components/ui/textarea";
 import { MultiSelect } from "#console/components/ui/multi-select";
+import { TagCombobox } from "#console/components/ui/tag-combobox";
+import {
+	COUNTRY_CODES,
+	LANGUAGE_TAGS,
+	languageName,
+	regionName,
+} from "#console/utils/locales";
 import {
 	Select,
 	SelectContent,
@@ -57,12 +64,27 @@ const policyOptions = computed(() =>
 	(props.policies ?? []).map((p) => ({ value: p.id, label: p.displayName })),
 );
 
-// Scope: jurisdictions (country codes) + asserted languages (BCP-47 tags).
+// Scope: jurisdictions (country codes) + asserted languages (BCP-47 tags). Each
+// is a tag field with suggestions — the well-known codes labelled by their
+// localized name (`Intl.DisplayNames`), while a less common code can still be
+// typed. Codes are stored uppercase (countries) / lowercase (languages).
 const scopeOpen = ref(false);
 const countries = ref<string[]>([]);
-const countryInput = ref("");
 const languages = ref<string[]>([]);
-const languageInput = ref("");
+const countryOptions = computed(() =>
+	COUNTRY_CODES.map((value) => ({
+		value,
+		label: regionName(value) ?? value,
+	})),
+);
+const languageOptions = computed(() =>
+	LANGUAGE_TAGS.map((value) => ({
+		value,
+		label: languageName(value) ?? value,
+	})),
+);
+const toCountryCode = (raw: string) => raw.trim().toUpperCase();
+const toLanguageTag = (raw: string) => raw.trim().toLowerCase();
 
 // Retention override (audit logs + redacted docs). Each scope is either
 // "inherit" (take the workspace default — sent as null, the API's
@@ -139,24 +161,8 @@ watch(
 	{ immediate: true },
 );
 
-function addCountry() {
-	const value = countryInput.value.trim().toUpperCase();
-	if (value && !countries.value.includes(value)) countries.value.push(value);
-	countryInput.value = "";
-}
-function addLanguage() {
-	const value = languageInput.value.trim().toLowerCase();
-	if (value && !languages.value.includes(value)) languages.value.push(value);
-	languageInput.value = "";
-}
 function removePolicy(value: string) {
 	selectedPolicies.value = selectedPolicies.value.filter((v) => v !== value);
-}
-function removeCountry(value: string) {
-	countries.value = countries.value.filter((v) => v !== value);
-}
-function removeLanguage(value: string) {
-	languages.value = languages.value.filter((v) => v !== value);
 }
 
 // A retention target in `days` mode needs a positive day count — the `min="1"`
@@ -244,30 +250,28 @@ defineExpose({ submit, isValid, enabled });
 
 <template>
   <div class="space-y-6">
-    <!-- Basics -->
-    <div class="grid gap-5 sm:grid-cols-2">
-      <div class="space-y-2">
-        <Label for="pipeline-name" required>{{
-          t("workflows.create.nameLabel")
-        }}</Label>
-        <Input
-          id="pipeline-name"
-          v-model="name"
-          data-testid="pipeline-name"
-          :placeholder="t('workflows.create.namePlaceholder')"
-        />
-      </div>
+    <!-- Name -->
+    <div class="space-y-2">
+      <Label for="pipeline-name" required>{{
+        t("pipelines.create.nameLabel")
+      }}</Label>
+      <Input
+        id="pipeline-name"
+        v-model="name"
+        data-testid="pipeline-name"
+        :placeholder="t('pipelines.create.namePlaceholder')"
+      />
     </div>
 
     <!-- Description -->
     <div class="space-y-2">
       <Label for="pipeline-description">{{
-        t("workflows.create.descriptionLabel")
+        t("pipelines.create.descriptionLabel")
       }}</Label>
       <Textarea
         id="pipeline-description"
         v-model="description"
-        :placeholder="t('workflows.create.descriptionPlaceholder')"
+        :placeholder="t('pipelines.create.descriptionPlaceholder')"
         class="min-h-[72px]"
       />
     </div>
@@ -276,16 +280,16 @@ defineExpose({ submit, isValid, enabled });
     <div class="space-y-2">
       <div class="flex items-center justify-between gap-3">
         <div>
-          <Label>{{ t("workflows.create.policiesLabel") }}</Label>
+          <Label>{{ t("pipelines.create.policiesLabel") }}</Label>
           <p class="text-xs text-muted-foreground">
-            {{ t("workflows.create.policiesHint") }}
+            {{ t("pipelines.create.policiesHint") }}
           </p>
         </div>
         <MultiSelect
           v-model="selectedPolicies"
           :options="policyOptions"
-          :label="t('workflows.create.policiesSelect')"
-          :empty-text="t('workflows.create.policiesEmpty')"
+          :label="t('pipelines.create.policiesSelect')"
+          :empty-text="t('pipelines.create.policiesEmpty')"
           searchable
           content-class="w-64"
           data-testid="pipeline-policies"
@@ -317,7 +321,7 @@ defineExpose({ submit, isValid, enabled });
           type="button"
           class="flex w-full items-center justify-between text-sm font-medium text-muted-foreground hover:text-foreground"
         >
-          {{ t("workflows.create.advanced") }}
+          {{ t("pipelines.create.advanced") }}
           <ChevronDown
             :size="16"
             class="transition-transform"
@@ -329,68 +333,38 @@ defineExpose({ submit, isValid, enabled });
         <!-- Jurisdictions -->
         <div class="space-y-2">
           <Label for="pipeline-countries">{{
-            t("workflows.create.countriesLabel")
+            t("pipelines.create.countriesLabel")
           }}</Label>
-          <Input
+          <TagCombobox
             id="pipeline-countries"
-            v-model="countryInput"
+            v-model="countries"
+            :options="countryOptions"
+            :normalize="toCountryCode"
+            :placeholder="t('pipelines.create.countriesPlaceholder')"
+            :add-label="t('pipelines.create.addValue')"
             autocapitalize="characters"
-            :placeholder="t('workflows.create.countriesPlaceholder')"
-            @keydown.enter.prevent="addCountry"
           />
-          <div v-if="countries.length" class="flex flex-wrap gap-1.5">
-            <Badge
-              v-for="value in countries"
-              :key="value"
-              variant="secondary"
-              class="gap-1 font-normal"
-            >
-              {{ value }}
-              <button
-                type="button"
-                class="text-muted-foreground hover:text-foreground"
-                @click="removeCountry(value)"
-              >
-                <X :size="12" />
-              </button>
-            </Badge>
-          </div>
           <p class="text-xs text-muted-foreground">
-            {{ t("workflows.create.scopeHint") }}
+            {{ t("pipelines.create.scopeHint") }}
           </p>
         </div>
 
         <!-- Languages -->
         <div class="space-y-2">
           <Label for="pipeline-languages">{{
-            t("workflows.create.languagesLabel")
+            t("pipelines.create.languagesLabel")
           }}</Label>
-          <Input
+          <TagCombobox
             id="pipeline-languages"
-            v-model="languageInput"
+            v-model="languages"
+            :options="languageOptions"
+            :normalize="toLanguageTag"
+            :placeholder="t('pipelines.create.languagesPlaceholder')"
+            :add-label="t('pipelines.create.addValue')"
             autocapitalize="none"
-            :placeholder="t('workflows.create.languagesPlaceholder')"
-            @keydown.enter.prevent="addLanguage"
           />
-          <div v-if="languages.length" class="flex flex-wrap gap-1.5">
-            <Badge
-              v-for="value in languages"
-              :key="value"
-              variant="secondary"
-              class="gap-1 font-normal"
-            >
-              {{ value }}
-              <button
-                type="button"
-                class="text-muted-foreground hover:text-foreground"
-                @click="removeLanguage(value)"
-              >
-                <X :size="12" />
-              </button>
-            </Badge>
-          </div>
           <p class="text-xs text-muted-foreground">
-            {{ t("workflows.create.languagesHint") }}
+            {{ t("pipelines.create.languagesHint") }}
           </p>
         </div>
       </CollapsibleContent>
@@ -403,7 +377,7 @@ defineExpose({ submit, isValid, enabled });
           type="button"
           class="flex w-full items-center justify-between text-sm font-medium text-muted-foreground hover:text-foreground"
         >
-          {{ t("workflows.create.retention") }}
+          {{ t("pipelines.create.retention") }}
           <ChevronDown
             :size="16"
             class="transition-transform"
@@ -413,7 +387,7 @@ defineExpose({ submit, isValid, enabled });
       </CollapsibleTrigger>
       <CollapsibleContent class="space-y-2.5">
         <p class="pb-1.5 text-xs text-muted-foreground">
-          {{ t("workflows.create.retentionHint") }}
+          {{ t("pipelines.create.retentionHint") }}
         </p>
         <div
           v-for="target in RETENTION_TARGETS"
@@ -421,7 +395,7 @@ defineExpose({ submit, isValid, enabled });
           class="flex items-center justify-between gap-3"
         >
           <Label>
-            {{ t(`workflows.create.retentionTargets.${target}`) }}
+            {{ t(`pipelines.create.retentionTargets.${target}`) }}
           </Label>
           <div class="flex items-center gap-2">
             <Input
@@ -430,7 +404,7 @@ defineExpose({ submit, isValid, enabled });
               type="number"
               min="1"
               class="h-9 w-20"
-              :aria-label="t('workflows.create.retentionDays')"
+              :aria-label="t('pipelines.create.retentionDays')"
             />
             <Select v-model="retention[target].mode">
               <SelectTrigger class="h-9 w-[200px] shrink-0">
@@ -442,7 +416,7 @@ defineExpose({ submit, isValid, enabled });
                   :key="mode"
                   :value="mode"
                 >
-                  {{ t(`workflows.create.retentionModes.${mode}`) }}
+                  {{ t(`pipelines.create.retentionModes.${mode}`) }}
                 </SelectItem>
               </SelectContent>
             </Select>
