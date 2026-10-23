@@ -6,15 +6,9 @@ import type {
 import { Loader2, Play } from "@lucide/vue";
 import type { StudioDetectionPhase } from "#console/composables/useStudioDetection";
 import StudioLabelChecklist from "./StudioLabelChecklist.vue";
+import { Badge } from "#console/components/ui/badge";
 import { Button } from "#console/components/ui/button";
 import { Checkbox } from "#console/components/ui/checkbox";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "#console/components/ui/select";
 import { TagCombobox } from "#console/components/ui/tag-combobox";
 import {
 	COUNTRY_CODES,
@@ -79,7 +73,10 @@ function togglePolicy(id: string, checked: boolean | "indeterminate") {
 
 <template>
   <div class="flex h-full min-h-0 flex-col">
-    <div class="min-h-0 flex-1 space-y-3 overflow-y-auto p-3">
+    <!-- Fixed top: the source toggle + the shared scope. Kept out of the scroll
+         area so scope sits at the same place on every source (the source list
+         below is what varies in height). -->
+    <div class="@container shrink-0 space-y-3 p-3">
       <!-- Source: the one choice that drives the run. -->
       <div class="flex rounded-md border border-input p-0.5">
         <button
@@ -98,68 +95,11 @@ function togglePolicy(id: string, checked: boolean | "indeterminate") {
         </button>
       </div>
 
-      <!-- Pipeline: pick a saved pipeline. -->
-      <div v-if="source === 'pipeline'" class="space-y-1.5">
-        <Select v-model="selectedPipeline" :disabled="phase === 'running'">
-          <SelectTrigger class="h-9 w-full text-sm">
-            <SelectValue :placeholder="t('studio.audit.pipelinePlaceholder')" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem
-              v-for="p in pipelines ?? []"
-              :key="p.id"
-              :value="p.id"
-              class="text-sm font-normal"
-            >
-              {{ p.displayName }}
-            </SelectItem>
-            <p
-              v-if="!pipelines?.length"
-              class="px-2 py-1.5 text-sm text-muted-foreground"
-            >
-              {{ t("studio.audit.noPipelines") }}
-            </p>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <!-- Labels: scan the catalogue by category and tick entity types. -->
-      <div v-else-if="source === 'labels'" class="space-y-1.5">
-        <StudioLabelChecklist v-model="labels" />
-        <p class="text-xs text-muted-foreground">
-          {{ t("studio.detections.labelsHint") }}
-        </p>
-      </div>
-
-      <!-- Policies: pick existing workspace policies. -->
-      <div v-else class="space-y-1.5">
-        <div
-          v-if="props.policies?.length"
-          class="max-h-60 space-y-0.5 overflow-y-auto"
-        >
-          <label
-            v-for="p in props.policies"
-            :key="p.id"
-            class="flex cursor-pointer items-center gap-2 rounded-sm px-1 py-1 text-sm hover:bg-muted"
-          >
-            <Checkbox
-              :model-value="policyIds.includes(p.id)"
-              @update:model-value="(v) => togglePolicy(p.id, v)"
-            />
-            <span class="truncate">{{ p.displayName }}</span>
-          </label>
-        </div>
-        <p v-else class="text-xs text-muted-foreground">
-          {{ t("studio.detections.noPolicies") }}
-        </p>
-      </div>
-
       <!-- Scope: shared across every source (for a pipeline it overrides the
-           pipeline's saved default). Always shown. -->
-      <div class="space-y-2.5 border-t pt-3">
-        <p class="text-xs font-medium text-muted-foreground">
-          {{ t("studio.detections.scope") }}
-        </p>
+           pipeline's saved default). Fixed above the source list so it doesn't
+           drift with the source content's height. Jurisdictions + languages sit
+           side by side on a wide panel to keep the block compact. -->
+      <div class="grid grid-cols-1 items-start gap-2.5 @md:grid-cols-2">
         <div class="space-y-1">
           <p class="text-xs text-muted-foreground">
             {{ t("studio.detections.jurisdictions") }}
@@ -186,6 +126,92 @@ function togglePolicy(id: string, checked: boolean | "indeterminate") {
             :remove-label="t('common.remove')"
           />
         </div>
+      </div>
+    </div>
+
+    <!-- Scrolling source list: the part whose height varies by source. -->
+    <div class="min-h-0 flex-1 overflow-y-auto border-t p-3">
+      <!-- Pipeline: pick one saved pipeline. Single-select rows (not a dropdown)
+           so the choices read like the Labels and Policies lists. -->
+      <div v-if="source === 'pipeline'" class="space-y-0.5">
+        <template v-if="pipelines?.length">
+          <button
+            v-for="p in pipelines"
+            :key="p.id"
+            type="button"
+            :disabled="phase === 'running'"
+            class="flex w-full items-start gap-2 rounded-sm px-1.5 py-1.5 text-left transition-colors hover:bg-muted disabled:opacity-50"
+            :class="selectedPipeline === p.id ? 'bg-muted' : ''"
+            :aria-pressed="selectedPipeline === p.id"
+            @click="selectedPipeline = p.id"
+          >
+            <span
+              class="mt-0.5 size-4 shrink-0 rounded-full border transition-colors"
+              :class="
+                selectedPipeline === p.id
+                  ? 'border-primary bg-primary ring-2 ring-inset ring-background'
+                  : 'border-input'
+              "
+            />
+            <span class="min-w-0 flex-1">
+              <span class="flex items-center gap-1.5">
+                <span class="truncate text-sm">{{ p.displayName }}</span>
+                <Badge
+                  v-if="p.status !== 'enabled'"
+                  variant="outline"
+                  class="shrink-0 px-1 py-0 text-[10px] capitalize"
+                >
+                  {{ t(`studio.detections.pipelineStatus.${p.status}`) }}
+                </Badge>
+              </span>
+              <span
+                v-if="p.description"
+                class="mt-0.5 line-clamp-2 text-xs text-muted-foreground"
+              >
+                {{ p.description }}
+              </span>
+            </span>
+          </button>
+        </template>
+        <p v-else class="text-xs text-muted-foreground">
+          {{ t("studio.audit.noPipelines") }}
+        </p>
+      </div>
+
+      <!-- Labels: scan the catalogue by category and tick entity types. -->
+      <div v-else-if="source === 'labels'" class="space-y-1.5">
+        <StudioLabelChecklist v-model="labels" />
+      </div>
+
+      <!-- Policies: pick existing workspace policies (multi-select). Rows show the
+           description + a badge for one-shot policies (minted by a quick run), so
+           they're distinguishable from authored ones. -->
+      <div v-else class="space-y-0.5">
+        <template v-if="props.policies?.length">
+          <label
+            v-for="p in props.policies"
+            :key="p.id"
+            class="flex cursor-pointer items-start gap-2 rounded-sm px-1.5 py-1.5 transition-colors hover:bg-muted"
+          >
+            <Checkbox
+              class="mt-0.5 shrink-0"
+              :model-value="policyIds.includes(p.id)"
+              @update:model-value="(v) => togglePolicy(p.id, v)"
+            />
+            <span class="min-w-0 flex-1">
+              <span class="block truncate text-sm">{{ p.displayName }}</span>
+              <span
+                v-if="p.description"
+                class="mt-0.5 line-clamp-2 text-xs text-muted-foreground"
+              >
+                {{ p.description }}
+              </span>
+            </span>
+          </label>
+        </template>
+        <p v-else class="text-xs text-muted-foreground">
+          {{ t("studio.detections.noPolicies") }}
+        </p>
       </div>
     </div>
 

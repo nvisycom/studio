@@ -65,7 +65,7 @@ function toggleSection(
 </script>
 
 <template>
-  <div class="space-y-0.5">
+  <div class="@container space-y-0.5">
     <p v-if="isLoading" class="px-1 py-2 text-sm text-muted-foreground">
       {{ t("common.labelPicker.loading") }}
     </p>
@@ -76,15 +76,16 @@ function toggleSection(
       class="group/category"
     >
       <!-- Category header: a bulk checkbox + the collapse trigger with the colour
-           dot, name, and a selected/total count. -->
-      <div class="flex items-center gap-2 px-1 py-1">
+           dot, name, and a selected/total count. A muted band like the audit
+           list's category headers. -->
+      <div class="flex items-center gap-2 rounded-md bg-muted px-3 py-1.5">
         <Checkbox
           :model-value="sectionState(section.items)"
           :aria-label="categoryName(sectionCategory(section.key))"
           @update:model-value="(v) => toggleSection(section.items, v)"
         />
         <CollapsibleTrigger
-          class="flex min-w-0 flex-1 items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
+          class="section-label flex min-w-0 flex-1 items-center gap-1.5 transition-colors hover:text-foreground"
         >
           <ChevronRight
             :size="11"
@@ -111,17 +112,24 @@ function toggleSection(
       </div>
 
       <CollapsibleContent>
-        <label
-          v-for="label in section.items"
-          :key="label.id"
-          class="flex cursor-pointer items-center gap-2 rounded-md py-1 pl-7 pr-1 text-sm transition-colors hover:bg-muted"
-        >
-          <Checkbox
-            :model-value="selected(label.id)"
-            @update:model-value="(v) => toggle(label.id, v)"
-          />
-          <span class="truncate">{{ labelName(label.id) }}</span>
-        </label>
+        <!-- Two columns once the panel is wide enough (container query, so it
+             tracks the panel's width, not the viewport). The grid lives on a
+             plain div inside CollapsibleContent — reka's content element drives
+             the expand/collapse animation and shouldn't also be the grid. -->
+        <div class="grid grid-cols-1 gap-x-2 pl-6 @md:grid-cols-2">
+          <label
+            v-for="label in section.items"
+            :key="label.id"
+            class="flex cursor-pointer items-center gap-2 rounded-md py-1 pl-1 pr-1 text-sm transition-colors hover:bg-muted"
+          >
+            <Checkbox
+              class="shrink-0"
+              :model-value="selected(label.id)"
+              @update:model-value="(v) => toggle(label.id, v)"
+            />
+            <span class="truncate">{{ labelName(label.id) }}</span>
+          </label>
+        </div>
       </CollapsibleContent>
     </Collapsible>
   </div>

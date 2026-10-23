@@ -138,7 +138,7 @@ function onEnter(event: Event) {
           :id="props.id"
           v-model="term"
           v-bind="$attrs"
-          class="h-6 min-w-24 flex-1 border-0 bg-transparent p-0 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-0"
+          class="h-6 min-w-12 flex-1 border-0 bg-transparent p-0 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-0"
           :placeholder="model.length ? '' : props.placeholder"
           @keydown.enter="onEnter"
         />
