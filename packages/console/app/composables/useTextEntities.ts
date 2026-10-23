@@ -1,4 +1,4 @@
-import type { Audit } from "@nvisy/sdk/datatypes";
+import type { Audit, UnitBoundingBox } from "@nvisy/sdk/datatypes";
 import type { MaybeRefOrGetter } from "vue";
 import {
 	type BaseEntityView,
@@ -40,30 +40,37 @@ export interface TextEntityView extends BaseEntityView {
 	 */
 	modality: "text" | "tabular";
 	/**
-	 * Byte offsets of the span. For text, offsets into the whole document; for
-	 * tabular, offsets *within the cell* named by {@link cell} (the preview maps
-	 * those onto the flat text). Meaningful only when {@link decoded} is true — a
-	 * source-only entity has no decoded position, so these are 0 and ordering /
-	 * clustering fall back to {@link sourceRefs} instead.
+	 * Byte offsets of the span in the decoded text. For plain text, offsets into
+	 * the whole document; for a paginated modality (PDF), offsets into *that
+	 * page's* text (see {@link page}); for tabular, offsets *within the cell*
+	 * named by {@link cell}. Meaningful only when {@link decoded} is true — a
+	 * reviewer's rendered-medium selection has no decoded span, so these are 0 and
+	 * ordering / clustering fall back to {@link sourceRefs} instead.
 	 */
 	start: number;
 	end: number;
 	/**
-	 * Whether {@link start}/{@link end} are a real decoded-document position.
-	 * False for a source-only entity (raw part bytes, no decoded span), whose
-	 * position lives in {@link sourceRefs}; those offsets are part-local, so
-	 * treating them as document offsets would collide across parts.
+	 * Whether {@link start}/{@link end} are a real decoded span. False for a
+	 * source-only mark (a reviewer selection on a rendered medium with no decoded
+	 * text), whose position lives in {@link sourceRefs} / {@link rects}.
 	 */
 	decoded: boolean;
 	/** Cell coordinates for tabular entities; absent for plain text. */
 	cell?: CellLocation;
 	/**
-	 * 1-based page the entity's span is on, when the modality is paginated (PDF).
-	 * The PDF preview's offsets are page-local, so the highlighter needs the page
-	 * to resolve {@link start}/{@link end} against that page's text. Absent for
-	 * unpaginated text (plain text, DOCX body offsets are document-wide).
+	 * 1-based page the entity is rendered on, for a paginated modality (PDF). The
+	 * highlighter paints from {@link rects}; the page scopes those boxes and keys
+	 * the ordering/clustering (a repeated header value at the same page-local
+	 * offset on each page must stay distinct). Absent for unpaginated text.
 	 */
 	page?: number;
+	/**
+	 * Page-normalized highlight boxes (0..1, top-left origin), one per line the
+	 * span wraps across, for a rendered modality (PDF). The preview overlays these
+	 * directly as percent-positioned boxes — no cross-extractor offset mapping.
+	 * Absent for non-rendered text (plain text, DOCX, tabular).
+	 */
+	rects?: UnitBoundingBox[];
 	/**
 	 * Raw-source byte ranges this entity came from, per container part (for DOCX,
 	 * spans into `word/document.xml`). Present when the decoded text a recognizer
@@ -142,35 +149,41 @@ export function useTextEntities(
 			// Slice the matched value straight from the flat document by its
 			// byte-offset span (converted to char indices for JS strings).
 			views = group.entities.map((e) => {
-				// A text location's position is a tagged `coord`: a `decoded` byte range
-				// (with the optional raw `source` it decodes from), or a `source`-only
-				// reference (content with no decoded range). Pipeline detections are
-				// `decoded`; a source-only coord has no document offset, so `start`/`end`
-				// stay 0 and its position is carried by `sourceRefs` (part-local, so it
-				// can't stand in as a document offset).
-				const coord = e.location.coord;
-				const decoded = coord.kind === "decoded";
-				const start = decoded ? coord.range.start : 0;
-				const end = decoded ? coord.range.end : 0;
+				// `location` is a tagged union of where the entity sits. A `Detected`
+				// location (what the pipeline finds over text) always carries a decoded
+				// `span`, with a `kind` saying where that text physically lives: `inline`
+				// (the span is its own source — plain text), `source` (raw-byte refs it
+				// decoded from — DOCX/XML), or `rendered` (a page + normalized boxes —
+				// PDF). A `Marked` location is a reviewer's rendered-medium selection
+				// with NO decoded span, located only by refs/rects; it has no offset, so
+				// `start`/`end` stay 0 and its position is carried by `sourceRefs`.
+				const loc = e.location;
+				const decoded = "span" in loc;
+				const start = decoded ? loc.span.start : 0;
+				const end = decoded ? loc.span.end : 0;
 				// Raw-source spans (DOCX/XML): the source bytes the decoded span came
 				// from, per container part. The preview maps document-body spans onto
-				// rendered runs; other parts (metadata) provide the value only. Both
-				// coord variants carry `source` (required for `source`, optional for
-				// `decoded`), so read it off the union directly.
-				const sourceRefs: DocxSourceRef[] | undefined = coord.source?.map(
-					(ref) => ({
-						part: ref.part,
-						start: ref.range.start,
-						end: ref.range.end,
-					}),
-				);
-				// Matched value. `range` indexes the decoded stream, which for XML
-				// differs from the raw text we show, so when a single-file source ref
-				// is present slice the raw `doc` by that source byte span instead.
-				// DOCX has no flat `doc`, so it slices from the part bytes.
+				// rendered runs; other parts (metadata) provide the value only.
+				const sourceRefs: DocxSourceRef[] | undefined =
+					loc.kind === "source"
+						? loc.refs.map((ref) => ({
+								part: ref.part,
+								start: ref.range.start,
+								end: ref.range.end,
+							}))
+						: undefined;
+				// Rendered geometry (PDF): page-normalized boxes to overlay, scoped to a
+				// 1-based page. Painted directly, no offset→glyph mapping.
+				const page = loc.kind === "rendered" ? loc.page : undefined;
+				const rects = loc.kind === "rendered" ? loc.rects : undefined;
+				// Matched value. For a `source` location the decoded `span` indexes the
+				// decoded stream, which for XML differs from the raw text we show, so
+				// slice the raw `doc` by the single-file source byte span instead. DOCX
+				// has no flat `doc`, so it slices from the part bytes. A `rendered` (PDF)
+				// value never rides in the audit, so there's nothing to slice there.
 				const rawRef = sourceRefs?.find((r) => !r.part);
 				let matched: string | undefined;
-				if (doc)
+				if (doc && decoded)
 					matched = rawRef
 						? sliceBytes(doc, rawRef.start, rawRef.end)
 						: sliceBytes(doc, start, end);
@@ -179,8 +192,8 @@ export function useTextEntities(
 				// Locatable unless the entity has source refs and none target a
 				// rendered part (document body, header, footer, notes) — i.e. it's
 				// metadata-only (a DOCX hyperlink target in `.rels`). No source refs
-				// means a plain body position, so plain-text/JSON entities stay
-				// locatable regardless of fetch state.
+				// means a plain body / rendered position, so plain-text/JSON/PDF
+				// entities stay locatable regardless of fetch state.
 				const locatable =
 					!sourceRefs?.length ||
 					sourceRefs.some((r) => isRenderedDocxPart(r.part));
@@ -198,9 +211,10 @@ export function useTextEntities(
 					audit: e.audit,
 					...(sourceRefs?.length ? { sourceRefs } : {}),
 					...(matched ? { text: matched } : {}),
-					// The page carries the paginated (PDF) highlight position; the
-					// offsets above are page-local there.
-					...(e.location.page != null ? { page: e.location.page } : {}),
+					// Page + boxes for the paginated (PDF) highlight; the offsets above
+					// are page-local there.
+					...(page != null ? { page } : {}),
+					...(rects?.length ? { rects } : {}),
 				} satisfies TextEntityView;
 			});
 		} else if (group?.modality === "tabular") {

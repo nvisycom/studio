@@ -3,7 +3,6 @@ import type {
 	AudioLocation,
 	EditSet,
 	ImageLocation,
-	TextCoord,
 	TextLocation,
 } from "@nvisy/sdk/datatypes";
 import type { Ref } from "vue";
@@ -21,11 +20,12 @@ import type { StudioDetectionPhase } from "#console/composables/useStudioDetecti
 export type StudioRedactPhase = "idle" | "redacting" | "done" | "failed";
 
 /**
- * The raw-source part byte span a DOCX add carries (a `source`-only text coord).
- * DOCX has no flat decoded stream on the client, so a reviewer's selection is
- * located by the exact raw bytes it covers in its container part (usually
- * `word/document.xml`). Absent for flat-text adds, whose {@link AddedTextEntity}
- * `byteStart`/`byteEnd` already index the shown file (→ a `decoded` coord).
+ * The raw-source part byte span a DOCX add carries (a source-only `Marked`
+ * location). DOCX has no flat decoded stream on the client, so a reviewer's
+ * selection is located by the exact raw bytes it covers in its container part
+ * (usually `word/document.xml`). Absent for flat-text adds, whose
+ * {@link AddedTextEntity} `byteStart`/`byteEnd` already index the shown file
+ * (→ an inline `Detected` location).
  */
 export interface AddedSource {
 	part: string;
@@ -34,25 +34,26 @@ export interface AddedSource {
 }
 
 /**
- * A `source`-only text coord for a DOCX add: the reviewer selected rendered
- * text, so there's no decoded stream to offset into. The apply path
- * reverse-resolves the entity from this raw part byte range.
+ * A source-only `Marked` location for a DOCX add: the reviewer selected rendered
+ * text, so there's no decoded span to offset into — the location is the raw part
+ * byte range. The apply path reverse-resolves the entity from it.
  */
-function sourceCoord(source: AddedSource): TextCoord {
+function sourceLocation(source: AddedSource): TextLocation {
 	return {
 		kind: "source",
-		source: [
+		refs: [
 			{ part: source.part, range: { start: source.start, end: source.end } },
 		],
 	};
 }
 
 /**
- * A `decoded` text coord for a flat-text add (plain text / JSON): the reviewer's
- * byte offsets index the shown, decoded document directly.
+ * An inline `Detected` location for a flat-text add (plain text / JSON): the
+ * reviewer's byte offsets index the shown, decoded document directly, and the
+ * span is its own source.
  */
-function decodedCoord(byteStart: number, byteEnd: number): TextCoord {
-	return { kind: "decoded", range: { start: byteStart, end: byteEnd } };
+function inlineLocation(byteStart: number, byteEnd: number): TextLocation {
+	return { kind: "inline", span: { start: byteStart, end: byteEnd } };
 }
 
 /**
@@ -496,13 +497,12 @@ export function useStudioRedaction(target: RedactionTarget) {
 			bucket.push({ op: "suppress", id: entity.id });
 		}
 		for (const a of addedTexts.value) {
-			// A DOCX add carries a source-only coord (no decoded stream on the client);
-			// a flat-text add carries a decoded coord off the shown document's offsets.
-			const location: TextLocation = {
-				coord: a.source
-					? sourceCoord(a.source)
-					: decodedCoord(a.byteStart, a.byteEnd),
-			};
+			// A DOCX add is a source-only `Marked` location (no decoded stream on the
+			// client); a flat-text add is an inline `Detected` location off the shown
+			// document's offsets.
+			const location: TextLocation = a.source
+				? sourceLocation(a.source)
+				: inlineLocation(a.byteStart, a.byteEnd);
 			text.push({ op: "add", label: a.label, location });
 		}
 		for (const a of addedImages.value) {

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { TextEntityView } from "#console/composables/useTextEntities";
 import type { StudioViewPhase } from "#console/composables/useStudioView";
-import { byteOffsetToChar } from "#console/utils/preview";
 
 /**
  * Read-only PDF preview with detected-entity highlighting. One of the studio
@@ -9,19 +8,15 @@ import { byteOffsetToChar } from "#console/utils/preview";
  * phase (`downloading` -> `rendering` -> `ready`) so the host shows one loader.
  *
  * Rendered by SuperDoc's PDF viewer (pdf.js under the hood), keyed to an
- * `application/pdf` file. SuperDoc paginates the PDF to canvas plus a pdf.js
- * TEXT LAYER (positioned text spans) — enabled via `modules.pdf.textLayer`. The
- * viewer has no decoration/anchor API like the DOCX editor, so we paint our own
- * overlay.
+ * `application/pdf` file. SuperDoc paginates the PDF to canvas (the text layer
+ * isn't needed for highlighting). The viewer has no decoration/anchor API like
+ * the DOCX editor, so we paint our own overlay.
  *
- * Highlighting is BY OFFSET, not by matching the entity's value: a PDF entity
- * carries a `[start, end)` byte range into its page's decoded text plus the
- * `page` number (the value itself never rides in the audit). elide's per-page
- * decoded text and pdf.js's text layer share the page's reading order, so the
- * same offsets address the same characters in the rendered text layer. We convert
- * the byte offsets to char indices within that page's text (`byteOffsetToChar`,
- * for non-ASCII pages), build a DOM Range over exactly those characters, and lay
- * a percent-positioned highlight box over each client rect.
+ * Highlighting is BY GEOMETRY: a PDF entity carries page-normalized boxes
+ * (`rects`, 0..1 top-left) on a 1-based `page`, computed upstream from the
+ * glyph positions of the same PDF pdf.js renders. We overlay each box as a
+ * percent-positioned div on its page — no cross-extractor offset mapping, so
+ * the box lands exactly on the rendered glyphs at any zoom.
  *
  * SuperDoc + pdf.js are heavy, so they're dynamically imported when a PDF opens.
  */
@@ -33,7 +28,7 @@ import { byteOffsetToChar } from "#console/utils/preview";
 interface Props {
 	/** Blob object URL of the PDF file, or null when nothing is open. */
 	contentUrl: string | null;
-	/** Detected entities to highlight (by their page + byte-offset span). */
+	/** Detected entities to highlight (by their page + normalized rects). */
 	entities?: TextEntityView[];
 	/** Currently focused entity id, for the active style + scroll-into-view. */
 	activeEntityId?: string | null;
@@ -56,8 +51,8 @@ const container = ref<HTMLElement | null>(null);
 // The live SuperDoc instance. SuperDoc's public types are broad, so it's narrowly
 // typed to the one method we call on teardown.
 let superdoc: { destroy?: () => void } | null = null;
-// Observes the viewer subtree so highlights repaint when the text layer (re)mounts
-// — pages render lazily and re-render on zoom, each replacing its text layer.
+// Observes the viewer subtree so highlights repaint when a page (re)mounts —
+// pages render lazily and re-render on zoom, replacing their canvas.
 let observer: MutationObserver | null = null;
 // Coalesce bursts of DOM mutations (a page render emits many) into one repaint.
 let repaintHandle: ReturnType<typeof setTimeout> | null = null;
@@ -109,9 +104,9 @@ async function render(url: string, target: HTMLElement) {
 			hyperlinks: false,
 			// Supply the pdf.js library to SuperDoc's PDF viewer (it doesn't bundle
 			// the library itself; `setWorker: false` because we set `workerSrc`
-			// above). `textLayer: true` renders pdf.js's text layer over each page —
-			// the positioned spans the entity highlighter matches against.
-			modules: { pdf: { pdfLib, setWorker: false, textLayer: true } },
+			// above). No text layer: highlighting is by geometry (the entities'
+			// page-normalized `rects`), so the positioned text spans aren't needed.
+			modules: { pdf: { pdfLib, setWorker: false } },
 			// Disable SuperDoc's built-in loading overlay — the parent preview shows a
 			// single loader and keeps it up until we signal ready.
 			ui: { loading: false },
@@ -133,8 +128,8 @@ async function render(url: string, target: HTMLElement) {
 			},
 		}) as { destroy?: () => void };
 
-		// Pages (and their text layers) render lazily and re-render on zoom; watch
-		// the viewer subtree and repaint highlights whenever a text layer changes.
+		// Pages render lazily and re-render on zoom; watch the viewer subtree and
+		// repaint highlights whenever a page's content changes.
 		// Ignore mutations that only touch our own overlay — otherwise painting it
 		// re-triggers the observer, a feedback loop that churns the boxes (flicker,
 		// and a click that lands between a box's removal and its recreation).
@@ -171,11 +166,11 @@ function scheduleRepaint() {
 }
 
 /**
- * Paint the entity highlights over every rendered page's text layer. For each
- * page it rebuilds one overlay of absolutely-positioned boxes: the entities on
- * that page are placed by their byte-offset span (converted to a char index into
- * the page's text), located with a DOM Range so a box covers exactly those
- * characters.
+ * Paint the entity highlights over every rendered page. For each page it rebuilds
+ * one overlay of percent-positioned boxes straight from the entities' rendered
+ * geometry: an entity on this page contributes one box per `rect` (page-normalized
+ * 0..1, top-left), so a span wrapping several lines yields several boxes. Percent
+ * positioning tracks the page as zoom resizes it; no text layer or offset mapping.
  */
 function paintHighlights() {
 	const target = container.value;
@@ -187,108 +182,35 @@ function paintHighlights() {
 	for (const page of target.querySelectorAll<HTMLElement>(
 		".sd-pdf-viewer-page",
 	)) {
-		const textLayer = page.querySelector<HTMLElement>(
-			".sd-pdf-viewer-page__text-layer",
-		);
-		if (!textLayer) continue;
-
 		// Rebuild this page's overlay from scratch (cheap; entity sets are small).
 		for (const node of page.querySelectorAll(`.${LAYER_CLASS}`)) {
 			node.remove();
 		}
-		const pageRect = page.getBoundingClientRect();
-		const layerRect = textLayer.getBoundingClientRect();
-		if (layerRect.width === 0 || layerRect.height === 0) continue;
-
 		const pageNumber = Number(page.getAttribute("data-page-number"));
-		const index = textIndex(textLayer);
 		const overlay = document.createElement("div");
 		overlay.className = LAYER_CLASS;
 
 		for (const entity of props.entities) {
-			// Only decoded, page-scoped entities are locatable on the rendered page;
-			// a source-only or metadata entity has no page position.
-			if (!entity.decoded || entity.page !== pageNumber) continue;
-			// Offsets are UTF-8 byte offsets into the page's text; convert to char
-			// indices for the DOM Range (a no-op on an ASCII page).
-			const from = byteOffsetToChar(index.text, entity.start);
-			const to = byteOffsetToChar(index.text, entity.end);
-			for (const rect of rangeRects(index, from, to, pageRect)) {
-				overlay.appendChild(highlightBox(entity, rect));
+			// Only rendered, page-scoped entities paint here; a source-only or
+			// metadata entity carries no page geometry.
+			if (entity.page !== pageNumber || !entity.rects?.length) continue;
+			for (const rect of entity.rects) {
+				overlay.appendChild(
+					highlightBox(entity, {
+						left: rect.x,
+						top: rect.y,
+						width: rect.width,
+						height: rect.height,
+					}),
+				);
 			}
 		}
-		// Append to the PAGE, not the text layer: pdf.js transforms every direct
-		// child of the text layer (`text-layer > :not(.markedContent)` applies a
-		// per-glyph scale), which would skew the overlay and break its hit-testing.
-		// The page is `position:relative` and the text layer is `inset:0` within it,
-		// so an `inset:0` overlay on the page sits exactly over the text.
+		// The page is `position:relative`, so an `inset:0` overlay sits exactly over
+		// it and the boxes' percentages are of the page box the glyphs render in.
 		if (overlay.childElementCount > 0) page.appendChild(overlay);
 	}
-	// Resume watching for real page/text-layer changes.
+	// Resume watching for real page changes.
 	observer?.observe(target, { childList: true, subtree: true });
-}
-
-/**
- * The text layer's characters as one flat string plus a map from a char index to
- * its `(text node, offset within the node)`, so a document-page char range can be
- * turned into a DOM Range. The text layer's spans are in reading order, matching
- * elide's decoded page text.
- */
-function textIndex(textLayer: HTMLElement): {
-	text: string;
-	nodes: { node: Text; start: number }[];
-} {
-	let text = "";
-	const nodes: { node: Text; start: number }[] = [];
-	for (const span of textLayer.querySelectorAll<HTMLElement>("span")) {
-		const node = span.firstChild;
-		if (!node || node.nodeType !== Node.TEXT_NODE) continue;
-		nodes.push({ node: node as Text, start: text.length });
-		text += node.textContent ?? "";
-	}
-	return { text, nodes };
-}
-
-/** The text node + in-node offset a flat char index falls in, or null. */
-function locate(
-	index: { nodes: { node: Text; start: number }[] },
-	charIndex: number,
-): { node: Text; offset: number } | null {
-	for (let i = index.nodes.length - 1; i >= 0; i--) {
-		const { node, start } = index.nodes[i]!;
-		if (charIndex >= start) {
-			return { node, offset: Math.min(charIndex - start, node.length) };
-		}
-	}
-	return null;
-}
-
-/**
- * The client rects of the `[from, to)` char range across the text layer, as
- * fractions (0..1) of the layer — positioning the overlay in percentages makes it
- * track the page as zoom resizes the layer. A range that spans several lines
- * yields a rect per line.
- */
-function rangeRects(
-	index: { text: string; nodes: { node: Text; start: number }[] },
-	from: number,
-	to: number,
-	pageRect: DOMRect,
-): { left: number; top: number; width: number; height: number }[] {
-	const start = locate(index, from);
-	const end = locate(index, to);
-	if (!start || !end) return [];
-	const range = document.createRange();
-	range.setStart(start.node, start.offset);
-	range.setEnd(end.node, end.offset);
-	const out = [...range.getClientRects()].map((r) => ({
-		left: (r.left - pageRect.left) / pageRect.width,
-		top: (r.top - pageRect.top) / pageRect.height,
-		width: r.width / pageRect.width,
-		height: r.height / pageRect.height,
-	}));
-	range.detach?.();
-	return out;
 }
 
 /** One highlight box for an entity match, styled + class-tagged like a chip. */
@@ -311,8 +233,8 @@ function highlightBox(
 	// queries to position itself against the focused entity's chip.
 	box.dataset.entity = entity.id;
 	// `pointer-events:auto` inline (not via scoped CSS): the box is created
-	// imperatively and lives inside SuperDoc's text layer, so a scoped `:deep`
-	// rule is fragile here — set it on the element so the click always lands.
+	// imperatively inside SuperDoc's page, so a scoped `:deep` rule is fragile
+	// here — set it on the element so the click always lands.
 	box.style.cssText = `position:absolute; pointer-events:auto; left:${
 		rect.left * 100
 	}%; top:${rect.top * 100}%; width:${rect.width * 100}%; height:${
@@ -417,11 +339,11 @@ onBeforeUnmount(teardown);
   justify-content: center;
 }
 
-/* The highlight overlay fills the text layer; its boxes are percent-positioned
-   within it, so they track the page as zoom resizes the layer. (The boxes set
-   their own `pointer-events:auto` inline, for click → focus.) `user-select:none`
-   so clicking a box focuses the entity instead of starting a text selection on
-   the pdf.js text layer underneath (which would otherwise stick). */
+/* The highlight overlay fills the page; its boxes are percent-positioned within
+   it, so they track the page as zoom resizes it. (The boxes set their own
+   `pointer-events:auto` inline, for click → focus.) `user-select:none` so
+   clicking a box focuses the entity instead of starting a text selection on the
+   page underneath (which would otherwise stick). */
 .studio-pdf :deep(.studio-pdf-highlights) {
   position: absolute;
   inset: 0;
