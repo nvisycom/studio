@@ -11,7 +11,7 @@
  * uncategorized entity falls back to the neutral base color.
  *
  * Both class names are styled: `.chip` (code + CSV, rendered in templates) and
- * `.docx-chip` (DOCX, created imperatively). Defined globally so no preview
+ * `.overlay-chip` (DOCX, created imperatively). Defined globally so no preview
  * duplicates the rules or needs `:deep()`.
  *
  * The 13 category hues are harmonized (one lightness/chroma band, spaced around
@@ -58,7 +58,7 @@
 }
 
 /* Map a category to its hue via `--flag`, on any element carrying
-   `data-category` (a chip, a docx-chip, or an audit-list category dot). An
+   `data-category` (a chip, a overlay-chip, or an audit-list category dot). An
    unknown/custom category keeps the neutral base `--flag`. `data-category` only
    appears on our entity elements, so the bare attribute selector is safe. */
 [data-category="identity"] {
@@ -103,45 +103,45 @@
 
 /* Same category -> hue mapping via class, for the DOCX preview (SuperDoc): its
    decorations paint the `className` reliably but don't surface `data-category`
-   as a DOM attribute, so the `.docx-cat-*` class carries the hue there. Keep in
+   as a DOM attribute, so the `.overlay-cat-*` class carries the hue there. Keep in
    sync with the `[data-category]` rules above. */
-.docx-cat-identity {
+.overlay-cat-identity {
 	--flag: var(--flag-identity);
 }
-.docx-cat-contact {
+.overlay-cat-contact {
 	--flag: var(--flag-contact);
 }
-.docx-cat-geographic {
+.overlay-cat-geographic {
 	--flag: var(--flag-geographic);
 }
-.docx-cat-demographic {
+.overlay-cat-demographic {
 	--flag: var(--flag-demographic);
 }
-.docx-cat-protected_characteristic {
+.overlay-cat-protected_characteristic {
 	--flag: var(--flag-protected_characteristic);
 }
-.docx-cat-financial {
+.overlay-cat-financial {
 	--flag: var(--flag-financial);
 }
-.docx-cat-health {
+.overlay-cat-health {
 	--flag: var(--flag-health);
 }
-.docx-cat-biometric {
+.overlay-cat-biometric {
 	--flag: var(--flag-biometric);
 }
-.docx-cat-judicial {
+.overlay-cat-judicial {
 	--flag: var(--flag-judicial);
 }
-.docx-cat-credentials {
+.overlay-cat-credentials {
 	--flag: var(--flag-credentials);
 }
-.docx-cat-network {
+.overlay-cat-network {
 	--flag: var(--flag-network);
 }
-.docx-cat-organization {
+.overlay-cat-organization {
 	--flag: var(--flag-organization);
 }
-.docx-cat-contextual {
+.overlay-cat-contextual {
 	--flag: var(--flag-contextual);
 }
 
@@ -156,7 +156,7 @@
 }
 
 .chip,
-.docx-chip {
+.overlay-chip {
 	/* Marker underline; the text is untouched so it stays readable. Rendered as
 	   an inset box-shadow rather than a background gradient or a border: it never
 	   affects layout (no line-height shift, no reflow), and — unlike a fractional
@@ -174,7 +174,7 @@
 }
 
 .chip:hover,
-.docx-chip:hover {
+.overlay-chip:hover {
 	/* Thicker line + a whisper of fill on hover. */
 	box-shadow: inset 0 -3px 0 -1px var(--flag);
 	background-color: color-mix(in oklab, var(--flag) 10%, transparent);
@@ -184,7 +184,7 @@
    and hover wins by source order) — a focused chip that's also hovered keeps its
    active styling. */
 .chip.chip--active,
-.docx-chip.docx-chip--active {
+.overlay-chip.overlay-chip--active {
 	/* Focused entity: a bold underline and a light fill so it clearly leads. */
 	box-shadow: inset 0 -4px 0 -1px var(--flag);
 	background-color: color-mix(in oklab, var(--flag) 18%, transparent);
@@ -196,14 +196,14 @@
    tint (the palette is otherwise monochrome) matches the browser convention and
    stays legible on both themes. Overrides the underline chip treatment above. */
 .chip[data-category="pending"],
-.docx-chip[data-category="pending"] {
+.overlay-chip[data-category="pending"] {
 	--select: oklch(0.62 0.16 255);
 	box-shadow: none;
 	background-color: color-mix(in oklab, var(--select) 28%, transparent);
 	border-radius: 0.15em;
 }
 .dark .chip[data-category="pending"],
-.dark .docx-chip[data-category="pending"] {
+.dark .overlay-chip[data-category="pending"] {
 	--select: oklch(0.7 0.15 255);
 	background-color: color-mix(in oklab, var(--select) 34%, transparent);
 }
@@ -213,9 +213,43 @@
    the underline (and hover/active) all read as "won't be redacted" — and drop
    the text to muted so it recedes from the active detections around it. */
 .chip[data-suppressed],
-.docx-chip[data-suppressed],
-.docx-chip--suppressed {
+.overlay-chip[data-suppressed],
+.overlay-chip--suppressed {
 	--flag: var(--color-muted-foreground);
 	color: var(--color-muted-foreground);
 	opacity: 0.75;
+}
+
+/*
+ * High-visibility mode: a highlighter-pen fill behind every entity, in its
+ * category hue, instead of only the marker underline. Opt-in — the preview root
+ * carries `data-highlight="bold"` — so the default stays the subtle underline.
+ * Descendant selectors so it reaches every preview (chips and overlay-chips alike,
+ * wherever they sit under the root).
+ */
+[data-highlight="bold"] .chip,
+[data-highlight="bold"] .overlay-chip {
+	background-color: color-mix(in oklab, var(--flag) 22%, transparent);
+	box-shadow: inset 0 -2px 0 -1px var(--flag);
+}
+[data-highlight="bold"] .chip:hover,
+[data-highlight="bold"] .overlay-chip:hover {
+	background-color: color-mix(in oklab, var(--flag) 30%, transparent);
+}
+[data-highlight="bold"] .chip.chip--active,
+[data-highlight="bold"] .overlay-chip.overlay-chip--active {
+	/* The active entity stays a step bolder than the rest. */
+	background-color: color-mix(in oklab, var(--flag) 38%, transparent);
+	box-shadow: inset 0 -4px 0 -1px var(--flag);
+}
+/* The pending-add span keeps its own selection-blue fill; don't double-tint it. */
+[data-highlight="bold"] .chip[data-category="pending"],
+[data-highlight="bold"] .overlay-chip[data-category="pending"] {
+	box-shadow: none;
+}
+/* Suppressed entities keep receding even in high-vis — a lighter gray fill. */
+[data-highlight="bold"] .chip[data-suppressed],
+[data-highlight="bold"] .overlay-chip[data-suppressed],
+[data-highlight="bold"] .overlay-chip--suppressed {
+	background-color: color-mix(in oklab, var(--flag) 14%, transparent);
 }

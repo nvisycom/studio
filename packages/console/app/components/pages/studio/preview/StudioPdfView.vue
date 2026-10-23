@@ -60,7 +60,7 @@ let observer: MutationObserver | null = null;
 let repaintHandle: ReturnType<typeof setTimeout> | null = null;
 
 /** The class the shared entity styling targets (see assets/css/entities.css). */
-const CHIP_CLASS = "docx-chip";
+const CHIP_CLASS = "overlay-chip";
 /** The class on our overlay container, so a repaint can clear the prior pass. */
 const LAYER_CLASS = "studio-pdf-highlights";
 
@@ -227,7 +227,7 @@ function highlightBox(
 	// Style via classes (the category class carries the hue, see entities.css).
 	box.className = [
 		CHIP_CLASS,
-		`docx-cat-${entity.category ?? "none"}`,
+		`overlay-cat-${entity.category ?? "none"}`,
 		entity.id === props.activeEntityId ? `${CHIP_CLASS}--active` : "",
 		entity.suppressed ? `${CHIP_CLASS}--suppressed` : "",
 	]

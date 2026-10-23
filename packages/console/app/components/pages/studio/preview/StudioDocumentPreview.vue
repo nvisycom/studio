@@ -75,6 +75,10 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 
+// High-visibility highlight mode (shared, persisted) — reflected as
+// `data-highlight="bold"` on the root for entities.css to style.
+const { bold: highlightBold } = useStudioHighlight();
+
 // File kind drives which preview renders. Each format family has a self-contained
 // view component, registered in the renderer registry (the single source of truth
 // for extension -> handler); this component looks the renderer up by the API's
@@ -324,7 +328,11 @@ watch(
 </script>
 
 <template>
-  <div ref="rootEl" class="h-full overflow-hidden relative">
+  <div
+    ref="rootEl"
+    class="h-full overflow-hidden relative"
+    :data-highlight="highlightBold ? 'bold' : undefined"
+  >
     <EntityDetailPopover
       :entity="activeEntity"
       :reference="activeChipEl"

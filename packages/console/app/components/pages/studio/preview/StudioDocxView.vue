@@ -86,7 +86,7 @@ let desiredEntities: TextEntityView[] = [];
 let desiredActiveId: string | null = null;
 
 /** The class the shared entity styling targets (see assets/css/entities.css). */
-const CHIP_CLASS = "docx-chip";
+const CHIP_CLASS = "overlay-chip";
 
 async function render(url: string, target: HTMLElement) {
 	teardown();
@@ -136,7 +136,7 @@ async function render(url: string, target: HTMLElement) {
 								// decoration's `className` reliably, whereas its `data` payload
 								// does not surface as the `data-category`/`data-suppressed` DOM
 								// attributes entities.css keys off. The category class carries
-								// the hue (see the docx-chip category rules in entities.css); the
+								// the hue (see the overlay-chip category rules in entities.css); the
 								// entity id rides along as data (for click -> focus, read via
 								// closest()).
 								return {
@@ -150,7 +150,7 @@ async function render(url: string, target: HTMLElement) {
 									// class tokens).
 									className: [
 										CHIP_CLASS,
-										`docx-cat-${entity.category ?? "none"}`,
+										`overlay-cat-${entity.category ?? "none"}`,
 										`docx-eid-${entity.id}`,
 										entity.id === desiredActiveId
 											? `${CHIP_CLASS}--active`
@@ -422,6 +422,6 @@ onBeforeUnmount(teardown);
   scrollbar-color: var(--border) transparent;
 }
 
-/* Entity-chip styling (the `.docx-chip` marker) is shared and lives in
+/* Entity-chip styling (the `.overlay-chip` marker) is shared and lives in
    assets/css/entities.css so every preview stays consistent. */
 </style>
