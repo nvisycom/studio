@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import type { ExtraLabel } from "#console/composables/useLabelOptions";
 import { X } from "@lucide/vue";
+// Bare reka-ui input (just the `<input>`): our themed `ComboboxInput` wraps the
+// field in a search-icon + bordered box built for a command palette, whose
+// chrome squeezes an inline tag field's placeholder (it gets clipped). Inside
+// this tag box we want a plain borderless input that fills the row.
+import { ComboboxInput } from "reka-ui";
 import LabelOptionList from "./LabelOptionList.vue";
 import {
 	Combobox,
 	ComboboxAnchor,
-	ComboboxInput,
 	ComboboxList,
 } from "#console/components/ui/combobox";
 
@@ -81,7 +85,7 @@ function remove(id: string) {
           </button>
         </span>
         <ComboboxInput
-          class="h-6 min-w-24 flex-1 border-0 bg-transparent p-0 shadow-none focus-visible:ring-0"
+          class="h-6 min-w-24 flex-1 border-0 bg-transparent p-0 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-0"
           :placeholder="model.length ? '' : (placeholder ?? t('common.labelPicker.placeholder'))"
         />
       </div>

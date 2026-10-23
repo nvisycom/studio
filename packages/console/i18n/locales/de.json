@@ -1519,6 +1519,24 @@
 			"closeToRight": "Rechts schließen",
 			"closeAll": "Alle schließen",
 			"loading": "Wird geladen…"
+		},
+		"detections": {
+			"new": "Erkennung",
+			"none": "Noch keine Erkennungen",
+			"pipeline": "Pipeline",
+			"auditTab": "Audit",
+			"source": {
+				"pipeline": "Pipeline",
+				"labels": "Label",
+				"policies": "Richtlinien"
+			},
+			"adhoc": "Ad-hoc",
+			"labelsHint": "Diese Entitätstypen mit einer einmaligen Richtlinie erkennen.",
+			"noPolicies": "Noch keine Richtlinien. Erstellen Sie eine oder erkennen Sie per Label.",
+			"scope": "Geltungsbereich (optional)",
+			"jurisdictions": "Jurisdiktionen",
+			"languages": "Sprachen",
+			"runDetection": "Erkennung ausführen"
 		}
 	},
 	"commandMenu": {

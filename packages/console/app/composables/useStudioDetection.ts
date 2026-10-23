@@ -1,5 +1,6 @@
 import type { Audit, WorkspaceDetection } from "@nvisy/sdk/datatypes";
 import type { MaybeRefOrGetter } from "vue";
+import type { DetectionSource } from "#console/providers/types";
 
 /** Lifecycle phase of the studio's detection. `complete` = analysis ready. */
 export type StudioDetectionPhase =
@@ -56,56 +57,61 @@ export function useStudioDetection(
 		return p;
 	}
 
+	// The pipeline chosen for a NEW detection (pipeline mode). Defaults to the
+	// first pipeline once the list loads, so the "New detection" form has a
+	// sensible pre-selection. Switching it no longer restores anything — the file's
+	// detections are a list the reviewer picks from (below), not keyed off this.
 	const selectedPipeline = ref<string>("");
-	// The last value we set on `selectedPipeline` programmatically (default or
-	// adoption). The pipeline watcher runs asynchronously — after the sync block
-	// that set the value — so a boolean flag reset synchronously wouldn't span it.
-	// Instead we record the value and have the watcher skip a restore when the new
-	// selection equals it (i.e. it wasn't a user switch).
-	let programmaticPipeline: string | null = null;
-
-	// The pipeline of the file's most recent detection, to adopt into the picker. Held
-	// separately because the detection can resolve before the pipeline list loads; once
-	// the list is present, this wins over the "first pipeline" default so a
-	// refresh restores the file's own pipeline rather than resetting to the first.
-	const pendingAdoptPipeline = ref<string | null>(null);
-	// Whether the file-open restore has decided on adoption yet. We hold off the
-	// "first pipeline" default until it has, so the picker doesn't briefly show
-	// the wrong pipeline and then flicker to the adopted one. With no file open,
-	// there's nothing to adopt, so it's resolved immediately.
-	const adoptResolved = ref(!toValue(fileId));
-
-	// Pick the selected pipeline once the list loads (or the pending adoption
-	// arrives): the file's latest-detection pipeline when known and still valid, else —
-	// only once adoption has resolved — the first pipeline. Only sets a default
-	// when nothing is selected yet.
 	watch(
-		[pipelines, pendingAdoptPipeline, adoptResolved],
-		([list, adopt, resolved]) => {
-			if (!list?.length) return;
-			const target =
-				adopt && list.some((p) => p.id === adopt)
-					? adopt
-					: resolved && !selectedPipeline.value
-						? list[0]!.id
-						: null;
-			if (target && target !== selectedPipeline.value) {
-				// Mark as programmatic so the pipeline watcher doesn't treat it as a
-				// user switch (which would start a competing/wrong restore).
-				programmaticPipeline = target;
-				selectedPipeline.value = target;
-			}
+		pipelines,
+		(list) => {
+			if (list?.length && !selectedPipeline.value)
+				selectedPipeline.value = list[0]!.id;
 		},
 		{ immediate: true },
 	);
 
+	// Configuring a NEW detection. One `source` drives it, chosen from three peers:
+	// a saved `pipeline`, built-in `labels` (minting a one-shot policy — the
+	// no-setup path), or existing `policies`. An optional per-run scope
+	// (jurisdictions + languages) applies to any of the three. The matching picker
+	// state (selectedPipeline above, labels / policyIds here) feeds whichever
+	// source is active.
+	const { policies } = usePolicies();
+	const newSource = ref<"pipeline" | "labels" | "policies">("pipeline");
+	const newLabels = ref<string[]>([]);
+	const newPolicyIds = ref<string[]>([]);
+	const newCountries = ref<string[]>([]);
+	const newLanguages = ref<string[]>([]);
+
+	function resetNewDetection() {
+		newSource.value = "pipeline";
+		newLabels.value = [];
+		newPolicyIds.value = [];
+		newCountries.value = [];
+		newLanguages.value = [];
+	}
+
+	// The optional per-run scope as the SDK `DocumentContext` shape, or undefined
+	// when neither jurisdictions nor languages are set.
+	const newScope = computed(() => {
+		const countries = newCountries.value;
+		const languages = newLanguages.value;
+		if (!countries.length && !languages.length) return undefined;
+		return {
+			...(countries.length ? { countries: [...countries] } : {}),
+			...(languages.length
+				? {
+						languages: languages.map((language) => ({
+							language,
+							source: "asserted" as const,
+						})),
+					}
+				: {}),
+		};
+	});
+
 	const phase = ref<StudioDetectionPhase>("idle");
-	// Restore token: bumped whenever a restore starts so an in-flight restore can
-	// tell it has been superseded (file or pipeline changed) and bail.
-	let restoreToken = 0;
-	// True when the shown audit came from a prior detection (restored on file
-	// open) rather than one started in this session.
-	const restored = ref(false);
 	const detectionStatus = ref<WorkspaceDetection["status"] | null>(null);
 	const audit = ref<Audit | null>(null);
 	const errorMessage = ref("");
@@ -125,23 +131,95 @@ export function useStudioDetection(
 		docxParts,
 	);
 
+	// The file's detections, newest-first — the list the reviewer picks from. On
+	// file open it's fetched and the newest is auto-selected (its audit shown), so
+	// opening a file still lands on a result, with the rest a switch away. A new
+	// run prepends its detection and selects it.
+	const detections = ref<WorkspaceDetection[]>([]);
+	const selectedDetectionId = ref<string | null>(null);
+	// A load token so a slow `loadAnalysis` for a detection the user has since
+	// switched away from (or a file that changed) can't overwrite newer state.
+	let loadToken = 0;
+
+	/** Show a specific detection: load its audit and make it the active one. */
+	async function loadDetection(id: string) {
+		const file = toValue(fileId);
+		const row = detections.value.find((d) => d.id === id);
+		if (!row) return;
+		const token = ++loadToken;
+		selectedDetectionId.value = id;
+		phase.value = "restoring";
+		detectionStatus.value = null;
+		errorMessage.value = "";
+		audit.value = null;
+		detectionId.value = null;
+		detectionFileName.value =
+			row.inputDocumentName ?? toValue(fileName) ?? null;
+		try {
+			const loaded = await requireProvider().loadAnalysis(id);
+			if (token !== loadToken || toValue(fileId) !== file) return;
+			audit.value = loaded;
+			detectionId.value = id;
+			detectionStatus.value = "complete";
+			phase.value = "complete";
+		} catch {
+			if (token === loadToken) {
+				errorMessage.value = t("studio.audit.runFailed");
+				phase.value = "failed";
+			}
+		}
+	}
+
+	// The detection source for the chosen kind, or null when nothing runnable is
+	// selected yet (no pipeline / no labels / no policies). Scope rides along on
+	// the two ad-hoc kinds.
+	const activeSource = computed<DetectionSource | null>(() => {
+		const scope = newScope.value;
+		switch (newSource.value) {
+			case "pipeline":
+				return selectedPipeline.value
+					? {
+							kind: "pipeline",
+							pipelineId: selectedPipeline.value,
+							...(scope && { scope }),
+						}
+					: null;
+			case "labels":
+				return newLabels.value.length
+					? {
+							kind: "labels",
+							labels: [...newLabels.value],
+							...(scope && { scope }),
+						}
+					: null;
+			case "policies":
+				return newPolicyIds.value.length
+					? {
+							kind: "policy",
+							policyIds: [...newPolicyIds.value],
+							...(scope && { scope }),
+						}
+					: null;
+		}
+	});
+
 	const canRun = computed(
 		() =>
 			!!toValue(fileId) &&
-			!!selectedPipeline.value &&
+			!!activeSource.value &&
 			phase.value !== "running" &&
 			phase.value !== "restoring",
 	);
 
 	async function run() {
 		const file = toValue(fileId);
-		if (!file || !selectedPipeline.value) return;
-		// Supersede any in-flight restore, and capture the token so a detection
-		// that finishes after the active file changed can't overwrite new state.
-		const token = ++restoreToken;
+		const source = activeSource.value;
+		if (!file || !source) return;
+		// Supersede any in-flight load, and capture the token so a detection that
+		// finishes after the active file changed can't overwrite new state.
+		const token = ++loadToken;
 		phase.value = "running";
 		detectionStatus.value = "pending";
-		restored.value = false;
 		errorMessage.value = "";
 		audit.value = null;
 		detectionId.value = null;
@@ -151,18 +229,27 @@ export function useStudioDetection(
 				{
 					fileId: file,
 					name: toValue(fileName) ?? file,
-					pipelineId: selectedPipeline.value,
+					source,
 					bytes: documentBytes ?? (() => Promise.reject(new Error("no bytes"))),
 				},
 				(status) => {
-					if (token === restoreToken)
+					if (token === loadToken)
 						detectionStatus.value = status as WorkspaceDetection["status"];
 				},
 			);
-			if (token !== restoreToken) return;
+			if (token !== loadToken || toValue(fileId) !== file) return;
 			audit.value = result.audit;
 			detectionId.value = result.detectionId;
+			selectedDetectionId.value = result.detectionId;
 			phase.value = "complete";
+			// Refresh the list so the new detection appears (and future switches see
+			// it); best-effort — the run already shows its own result above.
+			void requireProvider()
+				.listForFile(file)
+				.then((rows) => {
+					if (toValue(fileId) === file) detections.value = rows;
+				})
+				.catch(() => {});
 
 			// Fire a native "detection complete" notification (local events only;
 			// the seam's pref check + device gate decide whether it actually shows).
@@ -178,7 +265,7 @@ export function useStudioDetection(
 				}),
 			});
 		} catch (err) {
-			if (token !== restoreToken) return;
+			if (token !== loadToken) return;
 			phase.value = "failed";
 			errorMessage.value = getErrorMessage(err, t("studio.audit.runFailed"));
 			notifyLocal("pipeline.detection.failed", {
@@ -190,107 +277,62 @@ export function useStudioDetection(
 		}
 	}
 
-	// Restore the most recent detection for a file — it still lives on the server
-	// even if the tab was closed. When `pipelineId` is given, restore that
-	// pipeline's latest detection; otherwise the file's latest of any pipeline,
-	// adopting its pipeline into the picker (`adopt`). Best-effort: falls back to
-	// idle when nothing is found or the request is superseded.
-	async function restoreLatest(
-		file: string,
-		opts: { pipelineId?: string; adopt?: boolean } = {},
-	) {
-		const token = ++restoreToken;
-		phase.value = "restoring";
+	/** Clear all shown-detection state (no file, or a file with no detections). */
+	function clearShown() {
+		phase.value = "idle";
 		detectionStatus.value = null;
-		restored.value = false;
 		errorMessage.value = "";
 		audit.value = null;
 		detectionId.value = null;
-		detectionFileName.value = toValue(fileName) ?? null;
-		try {
-			const latest = await requireProvider().findLatest(file, opts.pipelineId);
-			// Bail if a newer restore started (file or pipeline changed) meanwhile.
-			if (token !== restoreToken) return;
-			if (!latest) {
-				// Adoption decided: no detection for this file, so the default may apply.
-				if (opts.adopt) adoptResolved.value = true;
-				phase.value = "idle";
-				return;
-			}
-			// Record the detection's pipeline to adopt into the picker, and mark
-			// adoption resolved so the selection watcher applies it (never the default).
-			if (opts.adopt) {
-				pendingAdoptPipeline.value = latest.pipelineId ?? null;
-				adoptResolved.value = true;
-			}
-			if (token !== restoreToken) return;
-			audit.value = latest.audit;
-			detectionId.value = latest.detectionId;
-			detectionStatus.value = "complete";
-			restored.value = true;
-			phase.value = "complete";
-		} catch {
-			if (token === restoreToken) {
-				if (opts.adopt) adoptResolved.value = true; // don't block the default
-				phase.value = "idle";
-			}
-		}
+		detectionFileName.value = null;
+		selectedDetectionId.value = null;
 	}
 
-	// On file open, restore the file's most recent detection and adopt its pipeline, so
-	// opening a file shows its latest audit under the pipeline that produced it.
+	// On file open, fetch the file's detections and open the newest (its audit),
+	// leaving the rest as a list to switch to. The quick selection is reset so a
+	// prior file's ad-hoc choice can't leak into this file's "New detection" form.
 	watch(
 		() => toValue(fileId),
-		(file) => {
-			// Reset per-file pipeline state so the prior file's choice can't leak:
-			// clear the pending adoption, and clear the selection (programmatically,
-			// so the pipeline watcher doesn't treat it as a user switch) so the
-			// selection watcher can re-pick this file's adopted or default pipeline.
-			pendingAdoptPipeline.value = null;
-			if (selectedPipeline.value) {
-				programmaticPipeline = "";
-				selectedPipeline.value = "";
-			}
+		async (file) => {
+			const token = ++loadToken;
+			detections.value = [];
+			resetNewDetection();
 			if (!file) {
-				++restoreToken; // supersede any in-flight restore
-				adoptResolved.value = true; // nothing to adopt → default may apply
-				phase.value = "idle";
-				detectionStatus.value = null;
-				restored.value = false;
-				errorMessage.value = "";
-				audit.value = null;
-				detectionId.value = null;
-				detectionFileName.value = null;
+				clearShown();
 				return;
 			}
-			// Wait for this file's restore before defaulting, so the picker doesn't
-			// flicker through the wrong pipeline.
-			adoptResolved.value = false;
-			restoreLatest(file, { adopt: true });
+			phase.value = "restoring";
+			audit.value = null;
+			detectionId.value = null;
+			try {
+				const rows = await requireProvider().listForFile(file);
+				if (token !== loadToken || toValue(fileId) !== file) return;
+				detections.value = rows;
+				const newest = rows[0];
+				if (newest) await loadDetection(newest.id);
+				else clearShown();
+			} catch {
+				if (token === loadToken) clearShown();
+			}
 		},
 		{ immediate: true },
 	);
 
-	// When the user switches the pipeline, restore that pipeline's latest audit
-	// for the current file. A programmatic selection (default or adoption) sets
-	// `programmaticPipeline` to the same value and is skipped — the file-open flow
-	// already handles its restore, so we don't start a competing/wrong one.
-	watch(selectedPipeline, (pipeline) => {
-		if (pipeline === programmaticPipeline) {
-			programmaticPipeline = null; // consume; further changes are user switches
-			return;
-		}
-		// A manual switch overrides any pending adoption for this file.
-		pendingAdoptPipeline.value = null;
-		const file = toValue(fileId);
-		if (file && pipeline) restoreLatest(file, { pipelineId: pipeline });
-	});
-
 	return {
 		pipelines,
 		selectedPipeline,
+		policies,
+		// New-detection config: one source + its picker state + optional scope.
+		newSource,
+		newLabels,
+		newPolicyIds,
+		newCountries,
+		newLanguages,
+		// The file's detections + which one is shown, and a switcher.
+		detections,
+		selectedDetectionId,
+		loadDetection,
 		phase,
-		restored,
 		detectionStatus,
 		audit,
 		detectionId,

@@ -72,24 +72,3 @@ export async function listRuns(workspaceId: string): Promise<LocalRun[]> {
 	const page = await storeList("detections", { workspaceId, limit: 1000 });
 	return page.items.map(parseRun);
 }
-
-/**
- * The most recent run for a file (optionally a specific pipeline's), or null.
- *
- * Runs are listed newest-first by the store; scan for the first whose file
- * matches (and pipeline, when given). The store has no file-id column, so this
- * filters in memory — fine at a single user's scale.
- */
-export async function findLatestRun(
-	workspaceId: string,
-	fileId: string,
-	pipelineId?: string,
-): Promise<LocalRun | null> {
-	const page = await storeList("detections", { workspaceId, limit: 1000 });
-	for (const record of page.items) {
-		if (pipelineId && record.kind !== pipelineId) continue;
-		const run = parseRun(record);
-		if (run.fileId === fileId) return run;
-	}
-	return null;
-}

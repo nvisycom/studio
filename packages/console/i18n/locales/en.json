@@ -1519,6 +1519,24 @@
 			"closeToRight": "Close to the right",
 			"closeAll": "Close all",
 			"loading": "Loading…"
+		},
+		"detections": {
+			"new": "Detection",
+			"none": "No detections yet",
+			"pipeline": "Pipeline",
+			"auditTab": "Audit",
+			"source": {
+				"pipeline": "Pipeline",
+				"labels": "Labels",
+				"policies": "Policies"
+			},
+			"adhoc": "Ad-hoc",
+			"labelsHint": "Detect these entity types with a one-off policy.",
+			"noPolicies": "No policies yet. Create one, or detect by labels.",
+			"scope": "Scope (optional)",
+			"jurisdictions": "Jurisdictions",
+			"languages": "Languages",
+			"runDetection": "Run detection"
 		}
 	},
 	"commandMenu": {
