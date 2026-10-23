@@ -1,11 +1,35 @@
 <script setup lang="ts">
-import { Loader2, GitCommitHorizontal } from "@lucide/vue";
-import type { WorkspaceReviewEntry } from "@nvisy/sdk/datatypes";
+import {
+	Check,
+	CircleDot,
+	FileSearch,
+	GitCommitHorizontal,
+	Loader2,
+	MoreHorizontal,
+	Pencil,
+	RotateCcw,
+	Scissors,
+	Trash2,
+	UserMinus,
+	UserPlus,
+} from "@lucide/vue";
+import type {
+	ReviewEventKind,
+	WorkspaceReviewEntry,
+} from "@nvisy/sdk/datatypes";
+import type { Component } from "vue";
 import { Button } from "#console/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "#console/components/ui/dropdown-menu";
 import {
 	MentionInput,
 	type MentionCandidate,
 } from "#console/components/ui/mention-input";
+import { ConfirmDialog } from "#console/components/shared";
 import EntityAvatar from "#console/components/avatar/EntityAvatar.vue";
 import { personLabel } from "#console/utils/naming";
 
@@ -17,16 +41,38 @@ import { personLabel } from "#console/utils/naming";
 const props = defineProps<{
 	entries: WorkspaceReviewEntry[];
 	loading?: boolean;
+	// The viewer's account id — comments they authored get edit/delete actions.
+	currentAccountId?: string | null;
 	// Post a comment. Its promise settles when the post does: resolve clears the
 	// composer, reject keeps the user's text. While it is pending the composer is
 	// disabled, so the same comment can't be sent twice.
 	onComment: (body: string) => Promise<void>;
+	// Edit / delete a comment. Omit to render comments read-only. The promise
+	// settling drives the row's loading state.
+	onEditComment?: (commentId: string, body: string) => Promise<void>;
+	onDeleteComment?: (commentId: string) => Promise<void>;
 }>();
 
 const { t } = useI18n();
 const { resolveAvatarUrl } = useAvatarUrl();
 const { relativeTime } = useRelativeTime();
 const { members } = useMembers();
+
+// A distinct marker icon per event kind, so the timeline is scannable at a
+// glance. An unknown/future kind falls back to the neutral commit marker.
+const EVENT_ICONS: Record<ReviewEventKind, Component> = {
+	"review.opened": CircleDot,
+	"review.renamed": Pencil,
+	"detection.linked": FileSearch,
+	"redaction.linked": Scissors,
+	assigned: UserPlus,
+	unassigned: UserMinus,
+	verified: Check,
+	reopened: RotateCcw,
+};
+function eventIcon(kind: string): Component {
+	return EVENT_ICONS[kind as ReviewEventKind] ?? GitCommitHorizontal;
+}
 
 // Mention candidates: the reserved AI assistant (pinned, special) + the
 // workspace's members. `@assistant` is a server-recognized handle that triggers
@@ -87,6 +133,60 @@ async function submit() {
 		posting.value = false;
 	}
 }
+
+// Comment management (edit/delete), only for the viewer's own comments and only
+// when the parent wired the callbacks.
+type CommentEntry = Extract<WorkspaceReviewEntry, { type: "comment" }>;
+function canManage(entry: CommentEntry): boolean {
+	return !!props.currentAccountId && entry.author.id === props.currentAccountId;
+}
+// A comment the author changed after posting (server bumps updatedAt).
+function isEdited(entry: CommentEntry): boolean {
+	return entry.updatedAt !== entry.createdAt;
+}
+
+// Inline edit: which comment is open, its draft, and a busy latch.
+const editingId = ref<string | null>(null);
+const editDraft = ref("");
+const busyId = ref<string | null>(null);
+
+function startEdit(entry: CommentEntry) {
+	editingId.value = entry.id;
+	editDraft.value = entry.body;
+}
+function cancelEdit() {
+	editingId.value = null;
+	editDraft.value = "";
+}
+async function saveEdit(entry: CommentEntry) {
+	const body = editDraft.value.trim();
+	if (!body || !props.onEditComment || busyId.value) return;
+	busyId.value = entry.id;
+	try {
+		await props.onEditComment(entry.id, body);
+		cancelEdit();
+	} catch {
+		// The parent toasts; keep the editor open so the text isn't lost.
+	} finally {
+		busyId.value = null;
+	}
+}
+
+// Delete: a confirm step before the destructive call.
+const deletingEntry = ref<CommentEntry | null>(null);
+async function confirmDelete() {
+	const entry = deletingEntry.value;
+	if (!entry || !props.onDeleteComment) return;
+	busyId.value = entry.id;
+	try {
+		await props.onDeleteComment(entry.id);
+		deletingEntry.value = null;
+	} catch {
+		// The parent toasts.
+	} finally {
+		busyId.value = null;
+	}
+}
 </script>
 
 <template>
@@ -131,8 +231,80 @@ async function submit() {
               <span class="text-xs text-muted-foreground">
                 {{ relativeTime(entry.createdAt) }}
               </span>
+              <span v-if="isEdited(entry)" class="text-xs text-muted-foreground">
+                · {{ t("reviews.detail.commentActions.edited") }}
+              </span>
+              <!-- Own-comment actions: edit (inline) + delete (confirm). -->
+              <DropdownMenu
+                v-if="
+                  canManage(entry) &&
+                  (onEditComment || onDeleteComment) &&
+                  editingId !== entry.id
+                "
+              >
+                <DropdownMenuTrigger as-child>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    class="ml-auto size-6 shrink-0 text-muted-foreground"
+                    :disabled="busyId === entry.id"
+                    :aria-label="t('reviews.detail.commentActions.actions')"
+                  >
+                    <MoreHorizontal :size="15" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    v-if="onEditComment"
+                    @select="startEdit(entry)"
+                  >
+                    <Pencil :size="14" />
+                    {{ t("reviews.detail.commentActions.edit") }}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    v-if="onDeleteComment"
+                    class="text-destructive focus:text-destructive"
+                    @select="deletingEntry = entry"
+                  >
+                    <Trash2 :size="14" />
+                    {{ t("reviews.detail.commentActions.delete") }}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
-            <p class="whitespace-pre-wrap px-3 py-2.5 text-sm text-foreground">
+
+            <!-- Inline editor for this comment. -->
+            <div v-if="editingId === entry.id" class="flex flex-col gap-2 p-3">
+              <MentionInput
+                v-model="editDraft"
+                :candidates="mentionCandidates"
+                :placeholder="t('reviews.detail.commentPlaceholder')"
+                @submit="saveEdit(entry)"
+              />
+              <div class="flex justify-end gap-2">
+                <Button variant="ghost" size="sm" @click="cancelEdit">
+                  {{ t("common.cancel") }}
+                </Button>
+                <Button
+                  size="sm"
+                  :disabled="!editDraft.trim() || busyId === entry.id"
+                  @click="saveEdit(entry)"
+                >
+                  <Loader2
+                    v-if="busyId === entry.id"
+                    :size="14"
+                    class="mr-1.5 animate-spin"
+                  />
+                  {{ t("reviews.detail.commentActions.save") }}
+                </Button>
+              </div>
+            </div>
+
+            <!-- Rendered comment body. -->
+            <p
+              v-else
+              class="whitespace-pre-wrap px-3 py-2.5 text-sm text-foreground"
+            >
               <template
                 v-for="(seg, i) in bodySegments(entry.body)"
                 :key="i"
@@ -152,7 +324,7 @@ async function submit() {
           <span
             class="z-10 flex size-6 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground ring-2 ring-background"
           >
-            <GitCommitHorizontal :size="13" />
+            <component :is="eventIcon(entry.kind)" :size="13" />
           </span>
           <p class="flex flex-wrap items-baseline gap-1.5 pt-0.5 text-sm text-muted-foreground">
             <span v-if="entry.actor" class="font-medium text-foreground">
@@ -180,5 +352,17 @@ async function submit() {
         </Button>
       </div>
     </form>
+
+    <!-- Delete-comment confirm. -->
+    <ConfirmDialog
+      :open="!!deletingEntry"
+      :title="t('reviews.detail.commentActions.deleteTitle')"
+      :description="t('reviews.detail.commentActions.deleteDescription')"
+      :confirm-label="t('reviews.detail.commentActions.delete')"
+      :cancel-label="t('common.cancel')"
+      :is-loading="!!deletingEntry && busyId === deletingEntry.id"
+      @update:open="(v) => !v && (deletingEntry = null)"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>

@@ -66,6 +66,32 @@ export function useReview(reviewId: MaybeRef<string>) {
 		await timelineQuery.refresh();
 	}
 
+	// Edit a comment's text (author-only, enforced server-side).
+	const editCommentMutation = workspaceMutation(
+		(
+			{ client, workspaceId },
+			{ commentId, body }: { commentId: string; body: string },
+		) => client.reviews.updateComment(workspaceId, commentId, { body }),
+		{ invalidates: "review-timeline" },
+	);
+
+	async function editComment(commentId: string, body: string) {
+		await editCommentMutation.mutateAsync({ commentId, body });
+		await timelineQuery.refresh();
+	}
+
+	// Delete a comment (author-only, enforced server-side).
+	const deleteCommentMutation = workspaceMutation(
+		({ client, workspaceId }, commentId: string) =>
+			client.reviews.deleteComment(workspaceId, commentId),
+		{ invalidates: "review-timeline" },
+	);
+
+	async function deleteComment(commentId: string) {
+		await deleteCommentMutation.mutateAsync(commentId);
+		await timelineQuery.refresh();
+	}
+
 	// Rename the review (its title / purpose label).
 	const renameMutation = workspaceMutation(
 		({ client, workspaceId }, displayName: string) =>
@@ -92,6 +118,10 @@ export function useReview(reviewId: MaybeRef<string>) {
 		refreshTimeline: timelineQuery.refresh,
 		postComment,
 		isPostingComment: commentMutation.isLoading,
+		editComment,
+		isEditingComment: editCommentMutation.isLoading,
+		deleteComment,
+		isDeletingComment: deleteCommentMutation.isLoading,
 
 		// Rename.
 		rename,

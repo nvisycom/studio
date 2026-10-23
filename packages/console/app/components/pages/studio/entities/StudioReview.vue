@@ -67,8 +67,11 @@ const {
 	timeline,
 	isLoadingTimeline,
 	postComment,
+	editComment,
+	deleteComment,
 	refresh: refreshReview,
 } = useReview(activeReviewId);
+const { accountId } = useAccount();
 
 async function openReview() {
 	// Capture the document (and its detection) at submission: if the user switches
@@ -138,6 +141,22 @@ async function removeReviewer(accountId: string) {
 async function onComment(body: string) {
 	try {
 		await postComment(body);
+	} catch (error) {
+		toast.error(getErrorMessage(error, t("common.errors.generic")));
+		throw error;
+	}
+}
+async function onEditComment(commentId: string, body: string) {
+	try {
+		await editComment(commentId, body);
+	} catch (error) {
+		toast.error(getErrorMessage(error, t("common.errors.generic")));
+		throw error;
+	}
+}
+async function onDeleteComment(commentId: string) {
+	try {
+		await deleteComment(commentId);
 	} catch (error) {
 		toast.error(getErrorMessage(error, t("common.errors.generic")));
 		throw error;
@@ -223,10 +242,10 @@ async function onReopen() {
 
     <!-- The selected review: status + assignees + linked context + timeline. -->
     <template v-else-if="review">
-      <div class="shrink-0 space-y-2.5 border-b px-3 py-2.5 text-sm">
+      <div class="shrink-0 space-y-3 border-b p-3 text-sm">
         <!-- Status -->
         <div class="grid grid-cols-[5rem_1fr] items-center gap-2">
-          <span class="text-xs text-muted-foreground">
+          <span class="section-label">
             {{ t("studio.detections.review.status") }}
           </span>
           <ReviewStatusControl
@@ -239,7 +258,7 @@ async function onReopen() {
         </div>
         <!-- Reviewers -->
         <div class="grid grid-cols-[5rem_1fr] items-center gap-2">
-          <span class="text-xs text-muted-foreground">
+          <span class="section-label">
             {{ t("studio.detections.review.reviewers") }}
           </span>
           <div class="flex flex-wrap items-center justify-end gap-1">
@@ -276,7 +295,7 @@ async function onReopen() {
           v-if="detectionId"
           class="grid grid-cols-[5rem_1fr] items-center gap-2"
         >
-          <span class="text-xs text-muted-foreground">
+          <span class="section-label">
             {{ t("studio.detections.review.linked") }}
           </span>
           <span
@@ -292,7 +311,10 @@ async function onReopen() {
         <ReviewTimeline
           :entries="timeline"
           :loading="isLoadingTimeline"
+          :current-account-id="accountId"
           :on-comment="onComment"
+          :on-edit-comment="onEditComment"
+          :on-delete-comment="onDeleteComment"
         />
       </div>
     </template>

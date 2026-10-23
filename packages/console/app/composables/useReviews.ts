@@ -5,10 +5,12 @@ import type {
 	WorkspaceReviewsQuery,
 } from "@nvisy/sdk/datatypes";
 
-// Both review-list resources a mutation can stale: the workspace queue
-// (`useReviews`) and the per-document list (`useDocumentReviews`). Every review
-// mutation invalidates both, so a change shows in either place without a reload.
-const REVIEW_RESOURCES = ["reviews", "document-reviews"];
+// The review resources a mutation can stale: the workspace queue (`useReviews`),
+// the per-document list (`useDocumentReviews`), and the open review's detail
+// (`useReview`, which holds status + assignees). Every review mutation
+// invalidates all three, so a change shows wherever it's rendered without a
+// reload.
+const REVIEW_RESOURCES = ["reviews", "document-reviews", "review"];
 
 /**
  * Document-review operations for the active workspace.

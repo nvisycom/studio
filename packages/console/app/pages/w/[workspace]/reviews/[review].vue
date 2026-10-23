@@ -54,10 +54,15 @@ const {
 	timeline,
 	isLoadingTimeline,
 	postComment,
+	editComment,
+	deleteComment,
 	rename,
 	isRenaming,
 	refresh,
 } = useReview(reviewId);
+
+// The viewer — their own comments get edit/delete actions in the timeline.
+const { accountId } = useAccount();
 
 // Review actions (shared with the queue). Applied to this review by id.
 const {
@@ -168,6 +173,22 @@ async function unassign(accountId: string) {
 async function comment(body: string) {
 	try {
 		await postComment(body);
+	} catch (error) {
+		toast.error(t("reviews.detail.commentFailed"));
+		throw error;
+	}
+}
+async function editCommentHandler(commentId: string, body: string) {
+	try {
+		await editComment(commentId, body);
+	} catch (error) {
+		toast.error(t("reviews.detail.commentFailed"));
+		throw error;
+	}
+}
+async function deleteCommentHandler(commentId: string) {
+	try {
+		await deleteComment(commentId);
 	} catch (error) {
 		toast.error(t("reviews.detail.commentFailed"));
 		throw error;
@@ -320,7 +341,10 @@ function openInStudio() {
                 <ReviewTimeline
                   :entries="timeline"
                   :loading="isLoadingTimeline"
+                  :current-account-id="accountId"
                   :on-comment="comment"
+                  :on-edit-comment="editCommentHandler"
+                  :on-delete-comment="deleteCommentHandler"
                 />
               </TabsContent>
 
