@@ -32,6 +32,12 @@ const props = withDefaults(
 // The model is the serialized plain text (text + `@username` tokens).
 const model = defineModel<string>({ default: "" });
 
+const emit = defineEmits<{
+	// Plain Enter (menu closed) — the consumer decides whether to submit. Shift+
+	// Enter inserts a newline instead.
+	submit: [];
+}>();
+
 const editor = ref<HTMLElement | null>(null);
 const empty = ref(true);
 
@@ -72,19 +78,34 @@ function chipEl(c: MentionCandidate): HTMLSpanElement {
 	return span;
 }
 
-/** Serialize the editor's children to plain text: chips → `@username`. */
+// Block-level tags the browser may insert (Enter, pasted markup): each starts a
+// new line when serialized.
+const BLOCK_TAGS = new Set(["DIV", "P", "LI", "BLOCKQUOTE", "PRE"]);
+
+/** Serialize a node subtree to plain text: mention chips → `@username`, `<br>`
+ *  and block boundaries → newlines. Recurses so nested wrappers (the `<div>`s
+ *  contenteditable inserts on Enter) don't flatten chips to their display text. */
+function serializeNode(node: Node): string {
+	if (node.nodeType === Node.TEXT_NODE) return node.textContent ?? "";
+	if (!(node instanceof HTMLElement)) return "";
+	if (node.dataset.mention !== undefined) return `@${node.dataset.mention}`;
+	if (node.tagName === "BR") return "\n";
+	let out = "";
+	for (const child of node.childNodes) out += serializeNode(child);
+	// A block element ends its line, unless the text already does.
+	if (BLOCK_TAGS.has(node.tagName) && out && !out.endsWith("\n")) out += "\n";
+	return out;
+}
+
+/** Serialize the editor's contents to plain text. */
 function serialize(): string {
 	const root = editor.value;
 	if (!root) return "";
 	let out = "";
-	for (const node of root.childNodes) {
-		if (node.nodeType === Node.TEXT_NODE) out += node.textContent ?? "";
-		else if (node instanceof HTMLElement && node.dataset.mention !== undefined)
-			out += `@${node.dataset.mention}`;
-		else if (node instanceof HTMLElement && node.tagName === "BR") out += "\n";
-		else out += node.textContent ?? "";
-	}
-	return out;
+	for (const node of root.childNodes) out += serializeNode(node);
+	// A trailing newline from the last block is an artifact of the wrapper, not
+	// something the user typed.
+	return out.replace(/\n$/, "");
 }
 
 function syncModel() {
@@ -194,7 +215,17 @@ function onInput() {
 	readQuery();
 }
 function onKeydown(event: KeyboardEvent) {
-	if (!menuOpen.value) return;
+	if (!menuOpen.value) {
+		// Menu closed: plain Enter submits (the consumer decides what that means);
+		// Shift+Enter falls through to insert a newline. Preventing the default
+		// keeps the browser from wrapping lines in block `<div>`s, which would break
+		// serialization.
+		if (event.key === "Enter" && !event.shiftKey) {
+			event.preventDefault();
+			emit("submit");
+		}
+		return;
+	}
 	if (event.key === "ArrowDown") {
 		event.preventDefault();
 		activeIndex.value = (activeIndex.value + 1) % filtered.value.length;

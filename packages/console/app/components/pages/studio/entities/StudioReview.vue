@@ -44,6 +44,9 @@ const {
 	assignReviewerAsync,
 	unassignReviewerAsync,
 	isAssigning,
+	isUnassigning,
+	isVerifying,
+	isReopening,
 } = useReviews();
 
 // Which review is open. Default to the newest once the list loads; reset when the
@@ -220,6 +223,7 @@ async function onReopen() {
           <ReviewStatusControl
             class="justify-self-end"
             :status="review.reviewStatus"
+            :loading="isVerifying || isReopening"
             @verify="onVerify"
             @reopen="onReopen"
           />
@@ -243,8 +247,9 @@ async function onReopen() {
               <span class="truncate">{{ a.displayName ?? a.username }}</span>
               <button
                 type="button"
-                class="text-muted-foreground transition-colors hover:text-foreground"
+                class="text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
                 :aria-label="t('common.remove')"
+                :disabled="isUnassigning"
                 @click="removeReviewer(a.id)"
               >
                 <X :size="12" />

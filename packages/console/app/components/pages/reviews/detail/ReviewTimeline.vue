@@ -47,12 +47,18 @@ const mentionCandidates = computed<MentionCandidate[]>(() => [
 	})),
 ]);
 
+// A run of a comment body: plain text, or a highlighted `@mention`.
+interface BodySegment {
+	text: string;
+	mention: boolean;
+}
+
 // Split a comment body into text + `@mention` segments, so mentions render
 // highlighted (matching how they're composed as chips). A mention is `@` + word
 // chars at a word boundary — the same shape the server parses.
 const MENTION_RE = /(^|\s)(@[\w.-]+)/g;
-function bodySegments(body: string): { text: string; mention: boolean }[] {
-	const out: { text: string; mention: boolean }[] = [];
+function bodySegments(body: string): BodySegment[] {
+	const out: BodySegment[] = [];
 	let last = 0;
 	for (const m of body.matchAll(MENTION_RE)) {
 		const lead = m[1] ?? "";
@@ -160,6 +166,7 @@ function submit() {
         v-model="draft"
         :candidates="mentionCandidates"
         :placeholder="t('reviews.detail.commentPlaceholder')"
+        @submit="submit"
       />
       <div class="flex justify-end">
         <Button type="submit" size="sm" :disabled="!draft.trim() || posting">

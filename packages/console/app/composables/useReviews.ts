@@ -5,6 +5,11 @@ import type {
 	WorkspaceReviewsQuery,
 } from "@nvisy/sdk/datatypes";
 
+// Both review-list resources a mutation can stale: the workspace queue
+// (`useReviews`) and the per-document list (`useDocumentReviews`). Every review
+// mutation invalidates both, so a change shows in either place without a reload.
+const REVIEW_RESOURCES = ["reviews", "document-reviews"];
+
 /**
  * Document-review operations for the active workspace.
  *
@@ -58,7 +63,7 @@ export function useReviews(
 				review,
 			}: { documentId: string; review: CreateWorkspaceReview },
 		) => client.reviews.createForDocument(workspaceId, documentId, review),
-		{ invalidates: "reviews" },
+		{ invalidates: REVIEW_RESOURCES },
 	);
 
 	// Link a detection to a review (records a `detection.linked` event). Used when
@@ -69,7 +74,7 @@ export function useReviews(
 			{ client, workspaceId },
 			{ reviewId, detectionId }: { reviewId: string; detectionId: string },
 		) => client.reviews.linkDetection(workspaceId, reviewId, detectionId),
-		{ invalidates: "reviews" },
+		{ invalidates: REVIEW_RESOURCES },
 	);
 
 	// Add a reviewer to a review (a review can have several).
@@ -78,7 +83,7 @@ export function useReviews(
 			{ client, workspaceId },
 			{ reviewId, accountId }: { reviewId: string; accountId: string },
 		) => client.reviews.assignReviewer(workspaceId, reviewId, accountId),
-		{ invalidates: "reviews" },
+		{ invalidates: REVIEW_RESOURCES },
 	);
 
 	// Remove a reviewer from a review.
@@ -87,28 +92,28 @@ export function useReviews(
 			{ client, workspaceId },
 			{ reviewId, accountId }: { reviewId: string; accountId: string },
 		) => client.reviews.unassignReviewer(workspaceId, reviewId, accountId),
-		{ invalidates: "reviews" },
+		{ invalidates: REVIEW_RESOURCES },
 	);
 
 	// Mark a review verified (→ resolved).
 	const verifyReviewMutation = workspaceMutation(
 		({ client, workspaceId }, reviewId: string) =>
 			client.reviews.verifyReview(workspaceId, reviewId),
-		{ invalidates: "reviews" },
+		{ invalidates: REVIEW_RESOURCES },
 	);
 
 	// Reopen a resolved review (→ back to needs_review).
 	const reopenReviewMutation = workspaceMutation(
 		({ client, workspaceId }, reviewId: string) =>
 			client.reviews.reopenReview(workspaceId, reviewId),
-		{ invalidates: "reviews" },
+		{ invalidates: REVIEW_RESOURCES },
 	);
 
 	// Delete a review (removes it and its discussion from the document).
 	const deleteReviewMutation = workspaceMutation(
 		({ client, workspaceId }, reviewId: string) =>
 			client.reviews.deleteReview(workspaceId, reviewId),
-		{ invalidates: "reviews" },
+		{ invalidates: REVIEW_RESOURCES },
 	);
 
 	return {
