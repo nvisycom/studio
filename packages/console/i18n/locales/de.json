@@ -1475,7 +1475,11 @@
 			},
 			"exportRedacted": "Redigierte Datei exportieren",
 			"download": "Herunterladen",
-			"export": "Exportieren"
+			"export": "Exportieren",
+			"highlight": {
+				"label": "Markierungen",
+				"hint": "Kräftige Markierungen im Dokument umschalten"
+			}
 		},
 		"preview": {
 			"loading": "Dokument wird geladen …",
@@ -1532,9 +1536,7 @@
 				"policies": "Richtlinien"
 			},
 			"adhoc": "Ad-hoc",
-			"labelsHint": "Diese Entitätstypen mit einer einmaligen Richtlinie erkennen.",
 			"noPolicies": "Noch keine Richtlinien. Erstellen Sie eine oder erkennen Sie per Label.",
-			"scope": "Geltungsbereich (optional)",
 			"jurisdictions": "Jurisdiktionen",
 			"languages": "Sprachen",
 			"runDetection": "Erkennung ausführen",
@@ -1550,6 +1552,11 @@
 				"createFailed": "Prüfung konnte nicht geöffnet werden",
 				"startHint": "Öffnen Sie eine Prüfung, um dieses Dokument zu besprechen und freizugeben.",
 				"defaultTitle": "Dokumentprüfung"
+			},
+			"pipelineStatus": {
+				"draft": "Entwurf",
+				"disabled": "Deaktiviert",
+				"enabled": "Aktiviert"
 			}
 		}
 	},
@@ -2561,7 +2568,16 @@
 			"redactionReady": "Bereit",
 			"redactionPending": "Ausstehend",
 			"redactionsFailed": "Schwärzungen konnten nicht geladen werden.",
-			"assistant": "Assistent"
+			"assistant": "Assistent",
+			"commentActions": {
+				"edited": "bearbeitet",
+				"actions": "Kommentaraktionen",
+				"edit": "Bearbeiten",
+				"delete": "Löschen",
+				"save": "Speichern",
+				"deleteTitle": "Kommentar löschen?",
+				"deleteDescription": "Dies entfernt den Kommentar dauerhaft aus der Diskussion."
+			}
 		},
 		"actions": {
 			"verify": "Als geprüft markieren",

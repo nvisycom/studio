@@ -4,6 +4,7 @@ import { SplitterPanel } from "reka-ui";
 import { toast } from "vue-sonner";
 import JSZip from "jszip";
 import {
+	Highlighter,
 	Maximize2,
 	Minimize2,
 	PanelRightClose,
@@ -80,6 +81,17 @@ const activeEntityId = ref<string | null>(null);
 // Whether a CSV's first row is a header. Shared so the audit list labels rows
 // the same way the table renders them.
 const withHeaders = ref(true);
+
+// High-visibility highlights (persisted) — the audit toolbar toggles it; the
+// document preview reads the same ref.
+const { bold: highlightBold } = useStudioHighlight();
+
+// Review count for the active document, shown as a badge on the Review tab (like
+// the Audit tab's detection count). Shares its query cache with StudioReview, so
+// the extra read is free.
+const { reviews: documentReviews } = useDocumentReviews(
+	computed(() => activeFile.value?.fileId ?? ""),
+);
 
 // The active file's flat text, read from its content blob. Shared with the
 // audit panel so it can show each detection's matched value. Only text-backed
@@ -576,9 +588,15 @@ const auditProps = computed(() => ({
             </TabsTrigger>
             <TabsTrigger
               value="review"
-              class="h-9 flex-1 rounded-none border-0 border-b-2 border-transparent bg-transparent text-muted-foreground shadow-none data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
+              class="h-9 flex-1 gap-1.5 rounded-none border-0 border-b-2 border-transparent bg-transparent text-muted-foreground shadow-none data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
             >
               {{ t("studio.detections.reviewTab") }}
+              <span
+                v-if="documentReviews.length"
+                class="rounded-full bg-foreground/10 px-1.5 text-[10px] font-semibold leading-4 text-foreground/70"
+              >
+                {{ documentReviews.length }}
+              </span>
             </TabsTrigger>
           </TabsList>
 
@@ -589,14 +607,34 @@ const auditProps = computed(() => ({
           >
             <div
               v-if="detection.detections.value.length"
-              class="shrink-0 border-b px-2 py-1.5"
+              class="flex shrink-0 items-center gap-2 border-b px-2 py-1.5"
             >
-              <StudioDetectionSwitcher
-                :detections="detection.detections.value"
-                :pipelines="detection.pipelines.value"
-                :selected-detection-id="detection.selectedDetectionId.value"
-                @select="detection.loadDetection"
-              />
+              <div class="min-w-0 flex-1">
+                <StudioDetectionSwitcher
+                  :detections="detection.detections.value"
+                  :pipelines="detection.pipelines.value"
+                  :selected-detection-id="detection.selectedDetectionId.value"
+                  @select="detection.loadDetection"
+                />
+              </div>
+              <!-- Highlight visibility: subtle underline vs. a bold fill. A
+                   labelled toggle, not a bare icon, so it reads as a control. -->
+              <Button
+                :variant="highlightBold ? 'secondary' : 'outline'"
+                size="sm"
+                class="h-8 shrink-0 gap-1.5 px-2.5 font-normal"
+                :aria-pressed="highlightBold"
+                :title="t('studio.audit.highlight.hint')"
+                @click="highlightBold = !highlightBold"
+              >
+                <Highlighter
+                  :size="15"
+                  :class="
+                    highlightBold ? 'text-primary' : 'text-muted-foreground'
+                  "
+                />
+                <span class="text-sm">{{ t("studio.audit.highlight.label") }}</span>
+              </Button>
             </div>
             <div class="min-h-0 flex-1 overflow-hidden">
               <StudioAuditPanel

@@ -1475,7 +1475,11 @@
 			},
 			"exportRedacted": "Export redacted file",
 			"download": "Download",
-			"export": "Export"
+			"export": "Export",
+			"highlight": {
+				"label": "Highlights",
+				"hint": "Toggle bold highlight fill in the document"
+			}
 		},
 		"preview": {
 			"loading": "Loading document...",
@@ -1532,9 +1536,7 @@
 				"policies": "Policies"
 			},
 			"adhoc": "Ad-hoc",
-			"labelsHint": "Detect these entity types with a one-off policy.",
 			"noPolicies": "No policies yet. Create one, or detect by labels.",
-			"scope": "Scope (optional)",
 			"jurisdictions": "Jurisdictions",
 			"languages": "Languages",
 			"runDetection": "Run detection",
@@ -1550,6 +1552,11 @@
 				"createFailed": "Failed to open review",
 				"startHint": "Open a review to discuss and sign off this document.",
 				"defaultTitle": "Document review"
+			},
+			"pipelineStatus": {
+				"draft": "Draft",
+				"disabled": "Disabled",
+				"enabled": "Enabled"
 			}
 		}
 	},
@@ -2561,7 +2568,16 @@
 			"redactionReady": "Ready",
 			"redactionPending": "Pending",
 			"redactionsFailed": "Couldn't load redactions.",
-			"assistant": "Assistant"
+			"assistant": "Assistant",
+			"commentActions": {
+				"edited": "edited",
+				"actions": "Comment actions",
+				"edit": "Edit",
+				"delete": "Delete",
+				"save": "Save",
+				"deleteTitle": "Delete comment?",
+				"deleteDescription": "This permanently removes the comment from the discussion."
+			}
 		},
 		"actions": {
 			"verify": "Mark verified",
