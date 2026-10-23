@@ -67,12 +67,16 @@ const {
 	timeline,
 	isLoadingTimeline,
 	postComment,
-	isPostingComment,
 	refresh: refreshReview,
 } = useReview(activeReviewId);
 
 async function openReview() {
-	if (!props.documentId) return;
+	// Capture the document (and its detection) at submission: if the user switches
+	// documents while creation is pending, the result belongs to the OLD document,
+	// so it must not be selected under — or linked to — the new one.
+	const forDocument = props.documentId;
+	const forDetection = props.detectionId;
+	if (!forDocument) return;
 	// The server requires a non-blank title (1-255), so default to the document's
 	// name (what the documents-list create flow does too).
 	const displayName =
@@ -81,7 +85,7 @@ async function openReview() {
 	let created: Awaited<ReturnType<typeof createReviewAsync>>;
 	try {
 		created = await createReviewAsync({
-			documentId: props.documentId,
+			documentId: forDocument,
 			review: { displayName },
 		});
 	} catch (error) {
@@ -90,14 +94,17 @@ async function openReview() {
 		});
 		return;
 	}
+	// Dropped if the active document changed mid-flight — the new review stays on
+	// its own document's list, reachable when the user returns to it.
+	if (props.documentId !== forDocument) return;
 	selectedReviewId.value = created.id;
 	// Attach the detection the reviewer is signing off on. Best-effort and in its
 	// own catch: the review is already open, so a link failure must not surface as
 	// "failed to open review".
-	if (props.detectionId)
+	if (forDetection)
 		linkDetectionAsync({
 			reviewId: created.id,
-			detectionId: props.detectionId,
+			detectionId: forDetection,
 		}).catch(() => {});
 }
 
@@ -127,12 +134,14 @@ async function removeReviewer(accountId: string) {
 	}
 }
 
-function onComment(body: string, onSuccess: () => void) {
-	postComment(body)
-		.then(onSuccess)
-		.catch((error) =>
-			toast.error(getErrorMessage(error, t("common.errors.generic"))),
-		);
+// Rejects on failure (after toasting) so the composer keeps the user's text.
+async function onComment(body: string) {
+	try {
+		await postComment(body);
+	} catch (error) {
+		toast.error(getErrorMessage(error, t("common.errors.generic")));
+		throw error;
+	}
 }
 async function onVerify() {
 	if (!selectedReviewId.value) return;
@@ -283,8 +292,7 @@ async function onReopen() {
         <ReviewTimeline
           :entries="timeline"
           :loading="isLoadingTimeline"
-          :posting="isPostingComment"
-          @comment="onComment"
+          :on-comment="onComment"
         />
       </div>
     </template>

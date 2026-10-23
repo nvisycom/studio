@@ -74,7 +74,8 @@ export function useReviews(
 			{ client, workspaceId },
 			{ reviewId, detectionId }: { reviewId: string; detectionId: string },
 		) => client.reviews.linkDetection(workspaceId, reviewId, detectionId),
-		{ invalidates: REVIEW_RESOURCES },
+		// Also the timeline: linking records a `detection.linked` event on it.
+		{ invalidates: [...REVIEW_RESOURCES, "review-timeline"] },
 	);
 
 	// Add a reviewer to a review (a review can have several).

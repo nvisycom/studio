@@ -215,6 +215,10 @@ function onInput() {
 	readQuery();
 }
 function onKeydown(event: KeyboardEvent) {
+	// Mid-IME composition: Enter confirms the composed text, it must not submit or
+	// drive the mention menu. (keyCode 229 covers browsers that don't set
+	// isComposing on the confirming keydown.)
+	if (event.isComposing || event.keyCode === 229) return;
 	if (!menuOpen.value) {
 		// Menu closed: plain Enter submits (the consumer decides what that means);
 		// Shift+Enter falls through to insert a newline. Preventing the default

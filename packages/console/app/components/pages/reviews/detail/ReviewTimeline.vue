@@ -14,16 +14,13 @@ import { personLabel } from "#console/utils/naming";
  * lines (opened / closed / renamed), oldest first, GitHub-timeline style. A
  * composer at the bottom posts a new comment.
  */
-defineProps<{
+const props = defineProps<{
 	entries: WorkspaceReviewEntry[];
 	loading?: boolean;
-	posting?: boolean;
-}>();
-
-const emit = defineEmits<{
-	// `onSuccess` clears the composer — the parent calls it only once the comment
-	// is posted, so a failed submit keeps the user's text.
-	comment: [body: string, onSuccess: () => void];
+	// Post a comment. Its promise settles when the post does: resolve clears the
+	// composer, reject keeps the user's text. While it is pending the composer is
+	// disabled, so the same comment can't be sent twice.
+	onComment: (body: string) => Promise<void>;
 }>();
 
 const { t } = useI18n();
@@ -75,12 +72,20 @@ function bodySegments(body: string): BodySegment[] {
 
 const draft = ref("");
 
-function submit() {
+// One latch owns the whole in-flight post: it gates re-entry (a second Enter
+// before the prop updates can't double-send), drives the button's spinner, and
+// releases in `finally` on either outcome.
+const posting = ref(false);
+async function submit() {
 	const body = draft.value.trim();
-	if (!body) return;
-	emit("comment", body, () => {
+	if (!body || posting.value) return;
+	posting.value = true;
+	try {
+		await props.onComment(body);
 		draft.value = "";
-	});
+	} finally {
+		posting.value = false;
+	}
 }
 </script>
 
