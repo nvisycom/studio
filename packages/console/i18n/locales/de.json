@@ -10,7 +10,7 @@
 				"explore": "Erkunden",
 				"providers": "Anbieter"
 			},
-			"workflows": {
+			"pipelines": {
 				"index": "Pipelines",
 				"detections": "Erkennungen"
 			},
@@ -38,7 +38,7 @@
 			"documents": "Dokumente",
 			"studio": "Studio",
 			"team": "Team",
-			"workflows": "Workflows",
+			"pipelines": "Pipelines",
 			"policies": "Richtlinien",
 			"integrations": "Integrationen",
 			"analytics": "Analysen",
@@ -52,7 +52,8 @@
 		"save": "Speichern",
 		"cancel": "Abbrechen",
 		"errors": {
-			"tryAgain": "Bitte versuchen Sie es erneut."
+			"tryAgain": "Bitte versuchen Sie es erneut.",
+			"generic": "Etwas ist schiefgelaufen"
 		},
 		"time": {
 			"justNow": "Gerade eben",
@@ -98,7 +99,8 @@
 		"labelSelect": {
 			"placeholder": "Label auswählen"
 		},
-		"close": "Schließen"
+		"close": "Schließen",
+		"remove": "Entfernen"
 	},
 	"settings": {
 		"workspace": {
@@ -1346,7 +1348,7 @@
 		"connections": "Integrationen",
 		"explore": "Entdecken",
 		"policies": "Richtlinien",
-		"workflows": "Workflows",
+		"pipelines": "Pipelines",
 		"observability": "Beobachtbarkeit",
 		"analytics": "Analytik",
 		"logs": "Protokolle",
@@ -1519,6 +1521,36 @@
 			"closeToRight": "Rechts schließen",
 			"closeAll": "Alle schließen",
 			"loading": "Wird geladen…"
+		},
+		"detections": {
+			"none": "Noch keine Erkennungen",
+			"pipeline": "Pipeline",
+			"auditTab": "Audit",
+			"source": {
+				"pipeline": "Pipeline",
+				"labels": "Label",
+				"policies": "Richtlinien"
+			},
+			"adhoc": "Ad-hoc",
+			"labelsHint": "Diese Entitätstypen mit einer einmaligen Richtlinie erkennen.",
+			"noPolicies": "Noch keine Richtlinien. Erstellen Sie eine oder erkennen Sie per Label.",
+			"scope": "Geltungsbereich (optional)",
+			"jurisdictions": "Jurisdiktionen",
+			"languages": "Sprachen",
+			"runDetection": "Erkennung ausführen",
+			"detectTab": "Erkennen",
+			"reviewTab": "Prüfung",
+			"review": {
+				"none": "Keine Prüfungen für dieses Dokument",
+				"new": "Neue Prüfung",
+				"linked": "Verknüpft",
+				"linkedDetection": "Erkennung",
+				"status": "Status",
+				"reviewers": "Prüfer",
+				"createFailed": "Prüfung konnte nicht geöffnet werden",
+				"startHint": "Öffnen Sie eine Prüfung, um dieses Dokument zu besprechen und freizugeben.",
+				"defaultTitle": "Dokumentprüfung"
+			}
 		}
 	},
 	"commandMenu": {
@@ -1803,7 +1835,7 @@
 			"slugEmpty": "Geben Sie einen Namen mit Buchstaben oder Zahlen ein, um einen Slug zu erzeugen."
 		}
 	},
-	"workflows": {
+	"pipelines": {
 		"title": "Pipelines",
 		"count": "{count} Pipeline konfiguriert | {count} Pipelines konfiguriert",
 		"detections": {
@@ -1908,11 +1940,12 @@
 			"policiesEmpty": "Keine Richtlinien in diesem Arbeitsbereich",
 			"advanced": "Geltungsbereich",
 			"countriesLabel": "Rechtsräume",
-			"countriesPlaceholder": "Ländercode hinzufügen (z. B. US) und Enter drücken",
+			"countriesPlaceholder": "Ländercode suchen oder eingeben (z. B. US)",
 			"scopeHint": "Beschränkt rechtsraumspezifische Erkennungsregeln auf diese Länder.",
 			"languagesLabel": "Sprachen",
-			"languagesPlaceholder": "BCP-47-Tag hinzufügen (z. B. en) und Enter drücken",
+			"languagesPlaceholder": "BCP-47-Tag suchen oder eingeben (z. B. en)",
 			"languagesHint": "Geben Sie die in Ihren Dokumenten vorhandenen Sprachen an.",
+			"addValue": "Hinzufügen",
 			"retention": "Aufbewahrung",
 			"retentionHint": "Überschreiben Sie, wie lange diese Pipeline Daten aufbewahrt. Nicht gesetzte Bereiche erben die Arbeitsbereich-Vorgabe.",
 			"retentionTargets": {
@@ -2527,7 +2560,8 @@
 			"noRedactions": "Noch keine Schwärzungen.",
 			"redactionReady": "Bereit",
 			"redactionPending": "Ausstehend",
-			"redactionsFailed": "Schwärzungen konnten nicht geladen werden."
+			"redactionsFailed": "Schwärzungen konnten nicht geladen werden.",
+			"assistant": "Assistent"
 		},
 		"actions": {
 			"verify": "Als geprüft markieren",

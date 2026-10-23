@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import type {
 	Audit,
+	DocumentContext,
 	Policy,
 	WorkspaceDetection,
 	WorkspacePolicy,
@@ -9,45 +10,87 @@ import type {
 	DetectionInput,
 	DetectionProvider,
 	DetectionResult,
-	RestoredDetection,
+	DetectionSource,
 } from "#console/providers/types";
 import type { Repository } from "#console/repositories/types";
 import { locateDocument } from "~/repositories/folder";
 import { parseBody, storeGet } from "~/repositories/store";
-import {
-	findLatestRun,
-	getRun,
-	listRuns,
-	type LocalRun,
-	saveRun,
-} from "~/repositories/runs";
+import { getRun, listRuns, type LocalRun, saveRun } from "~/repositories/runs";
 
 /*
  * The local, engine-backed detection provider: the desktop app's detection path
  * when offline. `produce` resolves the pipeline's policies, gathers the document
  * bytes the studio already holds, and invokes the on-device engine — synchronous,
  * in-process, returning the audit directly (no pipeline job, no status stream).
- * `findLatest` restores a file's most recent local run from the store.
+ * `listForFile` lists a file's stored runs and `loadAnalysis` loads one's audit.
  *
  * This is desktop-only (it imports Tauri). It is injected into the detection seam
  * by the desktop plugin; the shared layer never imports it.
  */
 
-/** Resolve a pipeline's policy definitions — what the engine actually runs. */
-async function resolvePolicies(
+/**
+ * Resolve a detection source to the policy definitions the engine runs. A
+/** What the engine needs to run a detection: the governance policies and the
+ *  effective per-run scope (a pipeline's saved default, overridden by a per-run
+ *  scope). */
+interface ResolvedSource {
+	policies: Policy[];
+	scope?: DocumentContext;
+}
+
+/**
+ * Resolve a detection source to what the engine runs. A pipeline resolves its
+ * saved `policyIds`; a quick policy run takes the given ids; a quick labels run
+ * mints (or reuses) a one-shot policy from the labels — the same three shapes the
+ * server path resolves, done against the local repository. Returns the governance
+ * `Policy` definitions (not the workspace wrappers), which is what the engine
+ * takes, plus the effective scope.
+ */
+async function resolveSource(
 	repository: Repository,
 	workspaceId: () => string,
-	pipelineId: string,
-): Promise<Policy[]> {
+	source: DetectionSource,
+): Promise<ResolvedSource> {
 	const ws = workspaceId();
-	const pipeline = await repository.pipelines.getPipeline(ws, pipelineId);
-	const policyIds = pipeline.definition.policyIds ?? [];
+	let policyIds: string[];
+	// The pipeline's saved default scope, which a per-run scope overrides — so a
+	// local pipeline run applies the same scope a server run would.
+	let defaultScope: DocumentContext | undefined;
+	if (source.kind === "pipeline") {
+		const pipeline = await repository.pipelines.getPipeline(
+			ws,
+			source.pipelineId,
+		);
+		policyIds = pipeline.definition.policyIds ?? [];
+		defaultScope = pipeline.definition.defaultScope;
+	} else if (source.kind === "policy") {
+		policyIds = source.policyIds;
+	} else {
+		// A labels source mints a one-shot policy (reused if identical), the same
+		// two-step the server path isolates — here against the local repository.
+		const policy = await repository.policies.createPolicy(ws, {
+			source: "labels",
+			labels: source.labels,
+		});
+		policyIds = [policy.id];
+	}
 	const policies = await Promise.all(
 		policyIds.map((id) => repository.policies.getPolicy(ws, id)),
 	);
-	// The engine takes the governance `Policy` — the policy's definition, not the
-	// workspace wrapper.
-	return policies.map((p: WorkspacePolicy) => p.definition);
+	return {
+		policies: policies.map((p: WorkspacePolicy) => p.definition),
+		scope: source.scope ?? defaultScope,
+	};
+}
+
+/**
+ * The workspace's display handle for a detection row, read once from the stored
+ * workspace record (workspace listing isn't on the per-workspace repository
+ * seam). Falls back to the id if the record is gone.
+ */
+async function workspaceHandle(ws: string): Promise<string> {
+	const record = await storeGet("workspaces", ws);
+	return record ? parseBody<{ handle: string }>(record).handle : ws;
 }
 
 /** Total entities an audit found, across every modality part. */
@@ -79,7 +122,9 @@ function runToDetection(
 		id: run.id,
 		inputDocumentId: run.fileId,
 		inputDocumentName: run.fileName,
-		pipelineId: run.pipelineId,
+		// Empty for a quick (ad-hoc) run — the field is "absent for an ad-hoc
+		// detection", so surface undefined rather than an empty string.
+		...(run.pipelineId ? { pipelineId: run.pipelineId } : {}),
 		status: "complete",
 		triggerType: "user",
 		triggeredBy: { id: "local", username: "local" },
@@ -99,27 +144,32 @@ export function createLocalDetectionProvider(
 	return {
 		async produce(input: DetectionInput): Promise<DetectionResult> {
 			const ws = workspaceId();
-			const policies = await resolvePolicies(
+			const { policies, scope } = await resolveSource(
 				repository,
 				workspaceId,
-				input.pipelineId,
+				input.source,
 			);
 			// The document already lives in the workspace folder, so the engine
 			// reads it from disk by (workspaceId, path) — no bytes cross IPC, and the
 			// id authorizes the folder. Runs synchronously, returns the audit directly.
+			// `scope` is the effective per-run scope: the pipeline's saved default,
+			// overridden by a per-run scope — the same scope a server run receives.
 			const document = await locateDocument(ws, input.fileId);
 			const audit = await invoke<Audit>("detect", {
 				document,
 				policies,
+				...(scope ? { context: scope } : {}),
 			});
 
 			// Persist the run so the detections list and restore-latest work offline.
-			// The run id IS the detection id for the local path.
+			// The run id IS the detection id for the local path. A quick (policy/
+			// labels) run has no owning pipeline, so its `pipelineId` is empty.
 			const runId = crypto.randomUUID();
 			await saveRun({
 				id: runId,
 				workspaceId: ws,
-				pipelineId: input.pipelineId,
+				pipelineId:
+					input.source.kind === "pipeline" ? input.source.pipelineId : "",
 				fileId: input.fileId,
 				fileName: input.name,
 				entityCount: countEntities(audit),
@@ -130,25 +180,24 @@ export function createLocalDetectionProvider(
 			return { detectionId: runId, audit };
 		},
 
-		async findLatest(
-			fileId: string,
-			pipelineId?: string,
-		): Promise<RestoredDetection | null> {
-			const run = await findLatestRun(workspaceId(), fileId, pipelineId);
-			if (!run) return null;
-			return {
-				detectionId: run.id,
-				audit: run.audit,
-				pipelineId: run.pipelineId,
-			};
+		async listForFile(fileId: string): Promise<WorkspaceDetection[]> {
+			const ws = workspaceId();
+			const handle = await workspaceHandle(ws);
+			const runs = await listRuns(ws);
+			return runs
+				.filter((run) => run.fileId === fileId)
+				.sort((a, b) => b.ranAt.localeCompare(a.ranAt))
+				.map((run) => runToDetection(run, handle));
+		},
+
+		async loadAnalysis(detectionId: string): Promise<Audit> {
+			const run = await getRun(detectionId);
+			if (!run) throw new Error("No local run for that detection.");
+			return run.audit;
 		},
 
 		async list(ws: string): Promise<WorkspaceDetection[]> {
-			// The handle is display-only on the row; read it once from the stored
-			// workspace record (workspace listing isn't on the per-workspace
-			// repository seam anymore). Fall back to the id if the record is gone.
-			const record = await storeGet("workspaces", ws);
-			const handle = record ? parseBody<{ handle: string }>(record).handle : ws;
+			const handle = await workspaceHandle(ws);
 			const runs = await listRuns(ws);
 			return runs.map((run) => runToDetection(run, handle));
 		},

@@ -538,17 +538,15 @@ function ruleSummary(rule: EditablePredicatedRule): string {
       >
         {{ t("policies.editor.groups.details") }}
       </p>
-      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-        <div class="space-y-2">
-          <Label for="policy-name" required>{{
-            t("policies.editor.nameLabel")
-          }}</Label>
-          <Input
-            id="policy-name"
-            v-model="displayName"
-            :placeholder="t('policies.editor.namePlaceholder')"
-          />
-        </div>
+      <div class="space-y-2">
+        <Label for="policy-name" required>{{
+          t("policies.editor.nameLabel")
+        }}</Label>
+        <Input
+          id="policy-name"
+          v-model="displayName"
+          :placeholder="t('policies.editor.namePlaceholder')"
+        />
       </div>
       <div class="space-y-2">
         <Label for="policy-description">{{

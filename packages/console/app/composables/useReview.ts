@@ -22,6 +22,8 @@ export function useReview(reviewId: MaybeRef<string>) {
 			client.reviews.getReview(workspaceId, toValue(reviewId)),
 		{
 			key: () => ["review", currentWorkspaceId.value, toValue(reviewId)],
+			// No review selected yet — don't query with an empty id.
+			enabled: () => !!toValue(reviewId),
 			staleTime: 0,
 		},
 	);
@@ -45,6 +47,7 @@ export function useReview(reviewId: MaybeRef<string>) {
 				currentWorkspaceId.value,
 				toValue(reviewId),
 			],
+			enabled: () => !!toValue(reviewId),
 			staleTime: 0,
 		},
 	);

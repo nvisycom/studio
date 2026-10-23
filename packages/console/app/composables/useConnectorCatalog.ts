@@ -46,7 +46,9 @@ export function useConnectorCatalog() {
 	const objectStoresAvailable = computed(
 		() => catalog.value?.objectStores ?? true,
 	);
-	const inferenceAvailable = computed(() => catalog.value?.inference ?? true);
+	const inferenceAvailable = computed(
+		() => catalog.value?.inference.available ?? true,
+	);
 
 	/** Whether a specific OAuth file-service provider can be connected here. */
 	function fileServiceAvailable(provider: FileProvider): boolean {

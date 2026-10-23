@@ -17,7 +17,7 @@ import type { RowAction } from "#console/components/pages/RowActions.vue";
 import type { VirtualColumn } from "#console/components/ui/virtual-table";
 import { EntityAvatar } from "#console/components/avatar";
 import { DocumentPicker } from "#console/components/shared";
-import { DetectionDetailSheet } from "#console/components/pages/workflows";
+import { DetectionDetailSheet } from "#console/components/pages/pipelines";
 import { personLabel } from "#console/utils/naming";
 import { toast } from "vue-sonner";
 import { Button } from "#console/components/ui/button";
@@ -49,7 +49,7 @@ function openDetails(detection: WorkspaceDetection) {
 // file into a tab; surface a failure rather than let it reject unhandled.
 function openInStudio(fileId: string) {
 	openDocument(fileId).catch((error) => {
-		toast.error(t("workflows.detections.openInStudioFailed"), {
+		toast.error(t("pipelines.detections.openInStudioFailed"), {
 			description: getErrorMessage(error, t("common.errors.tryAgain")),
 		});
 	});
@@ -78,7 +78,7 @@ async function downloadDetectionAudit(
 	try {
 		await downloadAudit(detection.id, format, auditFileName(detection, format));
 	} catch (error) {
-		toast.error(t("workflows.detections.auditDownloadFailed"), {
+		toast.error(t("pipelines.detections.auditDownloadFailed"), {
 			description: getErrorMessage(error, t("common.errors.tryAgain")),
 		});
 	}
@@ -90,26 +90,26 @@ function rowActions(
 	return [
 		{
 			key: "details",
-			label: t("workflows.detections.seeDetails"),
+			label: t("pipelines.detections.seeDetails"),
 			icon: PanelRightOpen,
 			select: () => openDetails(detection),
 		},
 		{
 			key: "studio",
-			label: t("workflows.detections.openInStudio"),
+			label: t("pipelines.detections.openInStudio"),
 			icon: ScanSearch,
 			select: () => openInStudio(detection.inputDocumentId),
 		},
 		{
 			key: "audit-json",
-			label: t("workflows.detections.downloadAuditJson"),
+			label: t("pipelines.detections.downloadAuditJson"),
 			icon: FileJson,
 			separatorBefore: true,
 			select: () => downloadDetectionAudit(detection, "json"),
 		},
 		{
 			key: "audit-csv",
-			label: t("workflows.detections.downloadAuditCsv"),
+			label: t("pipelines.detections.downloadAuditCsv"),
 			icon: FileSpreadsheet,
 			select: () => downloadDetectionAudit(detection, "csv"),
 		},
@@ -119,7 +119,7 @@ function rowActions(
 useHead({ title: "Detections" });
 
 definePageMeta({
-	pageCategory: "header.category.workflows",
+	pageCategory: "header.category.pipelines",
 	hideCategory: true,
 });
 
@@ -165,12 +165,12 @@ const columns = computed<
 >(() => [
 	{
 		key: "pipeline",
-		header: t("workflows.detections.pipeline"),
+		header: t("pipelines.detections.pipeline"),
 		cell: (r) => ({ type: "text", value: r.pipelineId ?? "—", mono: true }),
 	},
 	{
 		key: "file",
-		header: t("workflows.detections.file"),
+		header: t("pipelines.detections.file"),
 		cell: (r) => ({
 			type: "primary",
 			title: r.inputDocumentName || r.inputDocumentId,
@@ -179,7 +179,7 @@ const columns = computed<
 	},
 	{
 		key: "triggeredBy",
-		header: t("workflows.detections.triggeredBy"),
+		header: t("pipelines.detections.triggeredBy"),
 		width: "180px",
 		cell: (r) => ({
 			type: "avatar",
@@ -189,17 +189,17 @@ const columns = computed<
 	},
 	{
 		key: "status",
-		header: t("workflows.detections.statusHeader"),
+		header: t("pipelines.detections.statusHeader"),
 		width: "140px",
 		cell: (r) => ({
 			type: "badge",
-			label: t(`workflows.detections.detectionStatus.${r.status}`),
+			label: t(`pipelines.detections.detectionStatus.${r.status}`),
 			variant: r.status === "failed" ? "destructive" : "secondary",
 		}),
 	},
 	{
 		key: "started",
-		header: t("workflows.detections.started"),
+		header: t("pipelines.detections.started"),
 		width: "140px",
 		cell: (r) => ({
 			type: "text",
@@ -216,13 +216,13 @@ const columns = computed<
     <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 min-h-0">
       <!-- Section tabs in the app-header socket. -->
       <HeaderSocket>
-        <SectionTabs :tabs="sectionTabs.workflows.value" />
+        <SectionTabs :tabs="sectionTabs.pipelines.value" />
       </HeaderSocket>
 
       <!-- Filter toolbar. -->
       <div class="flex flex-wrap items-center gap-3">
         <p class="shrink-0 text-sm text-muted-foreground">
-          {{ t("workflows.detections.runsFound", { count: sortedDetections.length }) }}
+          {{ t("pipelines.detections.runsFound", { count: sortedDetections.length }) }}
         </p>
 
         <div class="flex-1" />
@@ -230,11 +230,11 @@ const columns = computed<
         <!-- Pipeline filter -->
         <Select v-model="pipelineFilter">
           <SelectTrigger class="h-9 w-[170px] text-sm">
-            <SelectValue :placeholder="t('workflows.detections.pipeline')" />
+            <SelectValue :placeholder="t('pipelines.detections.pipeline')" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all" class="text-sm font-normal">
-              {{ t("workflows.detections.allPipelines") }}
+              {{ t("pipelines.detections.allPipelines") }}
             </SelectItem>
             <SelectItem
               v-for="p in pipelines ?? []"
@@ -253,11 +253,11 @@ const columns = computed<
         <!-- Trigger filter -->
         <Select v-model="triggerFilter">
           <SelectTrigger class="h-9 w-[150px] text-sm">
-            <SelectValue :placeholder="t('workflows.detections.trigger')" />
+            <SelectValue :placeholder="t('pipelines.detections.trigger')" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all" class="text-sm font-normal">
-              {{ t("workflows.detections.allTriggers") }}
+              {{ t("pipelines.detections.allTriggers") }}
             </SelectItem>
             <SelectItem
               v-for="tt in TRIGGER_TYPES"
@@ -265,7 +265,7 @@ const columns = computed<
               :value="tt"
               class="text-sm font-normal"
             >
-              {{ t(`workflows.detections.triggerType.${tt}`) }}
+              {{ t(`pipelines.detections.triggerType.${tt}`) }}
             </SelectItem>
           </SelectContent>
         </Select>
@@ -273,11 +273,11 @@ const columns = computed<
         <!-- Status filter -->
         <Select v-model="statusFilter">
           <SelectTrigger class="h-9 w-[160px] text-sm">
-            <SelectValue :placeholder="t('workflows.detections.status')" />
+            <SelectValue :placeholder="t('pipelines.detections.status')" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all" class="text-sm font-normal">
-              {{ t("workflows.detections.allStatus") }}
+              {{ t("pipelines.detections.allStatus") }}
             </SelectItem>
             <SelectItem
               v-for="s in DETECTION_STATUSES"
@@ -285,7 +285,7 @@ const columns = computed<
               :value="s"
               class="text-sm font-normal"
             >
-              {{ t(`workflows.detections.detectionStatus.${s}`) }}
+              {{ t(`pipelines.detections.detectionStatus.${s}`) }}
             </SelectItem>
           </SelectContent>
         </Select>
@@ -305,11 +305,11 @@ const columns = computed<
           :rows="sortedDetections"
           :columns="columns"
           :row-actions="rowActions"
-          :menu-label="t('workflows.detections.menu')"
+          :menu-label="t('pipelines.detections.menu')"
           :empty="{
             icon: History,
-            title: t('workflows.detections.noRunsFound'),
-            description: t('workflows.detections.noRunsDescription'),
+            title: t('pipelines.detections.noRunsFound'),
+            description: t('pipelines.detections.noRunsDescription'),
           }"
           @row-click="openDetails"
         />

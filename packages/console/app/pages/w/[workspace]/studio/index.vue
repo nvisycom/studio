@@ -13,7 +13,9 @@ import {
 	StudioDocumentPreview,
 	StudioAuditPanel,
 	StudioAuditTable,
-	StudioDetectionBar,
+	StudioNewDetection,
+	StudioDetectionSwitcher,
+	StudioReview,
 	StudioAuditToolbar,
 	EntityAuditModal,
 } from "#console/components/pages/studio";
@@ -27,6 +29,12 @@ import {
 	ResizableHandle,
 } from "#console/components/ui/resizable";
 import { Button } from "#console/components/ui/button";
+import {
+	Tabs,
+	TabsContent,
+	TabsList,
+	TabsTrigger,
+} from "#console/components/ui/tabs";
 import {
 	HeaderSocket,
 	StudioDocumentTabs,
@@ -144,6 +152,45 @@ const detection = useStudioDetection(
 	documentBytes,
 );
 
+// The inspector's two tabs: configuring a new detection, and the existing audit
+// (pick + view a detection). On a file change, land on Audit when the file has
+// detections to show, else on Detection so the user can run one — decided once
+// when the FIRST file's detections resolve (the list loads async after open).
+// After that the user owns the choice: switching files keeps the current panel
+// tab rather than yanking back to Audit.
+const panelTab = ref<"new" | "audit" | "review">("new");
+let tabDecided = false;
+watch(
+	[() => activeFile.value?.fileId, () => detection.phase.value],
+	([file, phase]) => {
+		if (!tabDecided && file && phase !== "restoring") {
+			tabDecided = true;
+			panelTab.value = detection.detections.value.length ? "audit" : "new";
+		}
+	},
+	{ immediate: true },
+);
+// Run a new detection, then switch to the Audit tab so its result shows.
+function runNewDetection() {
+	panelTab.value = "audit";
+	detection.run();
+}
+
+// The full-screen audit toolbar only offers a pipeline picker, so its Run is
+// enabled on a pipeline being selected (regardless of the Detection tab's source)
+// and forces the source to `pipeline` before running — otherwise its picker and
+// the run would disagree when the inspector was left on labels/policies.
+const canRunPipeline = computed(
+	() =>
+		!!detection.selectedPipeline.value &&
+		detection.phase.value !== "running" &&
+		detection.phase.value !== "restoring",
+);
+function runFromAuditToolbar() {
+	detection.newSource.value = "pipeline";
+	detection.run();
+}
+
 // Audio transcript state for the audio view. Resolved once a detection completes
 // for an audio file, by fetching its enrichment intermediates:
 //   - hidden      — no completed detection yet (the panel isn't shown).
@@ -226,6 +273,15 @@ const redaction = useStudioRedaction({
 	entities: detection.entities,
 	count: detection.count,
 });
+
+// Applying a redaction completes the Detect → Audit → Review progression, so move
+// to the Review tab once it lands (on the transition to `done`).
+watch(
+	() => redaction.redactPhase.value,
+	(phase, prev) => {
+		if (phase === "done" && prev !== "done") panelTab.value = "review";
+	},
+);
 
 function focusEntity(id: string) {
 	activeEntityId.value = activeEntityId.value === id ? null : id;
@@ -401,14 +457,14 @@ const auditProps = computed(() => ({
                   v-model:selected-pipeline="detection.selectedPipeline.value"
                   :pipelines="detection.pipelines.value"
                   :phase="detection.phase.value"
-                  :can-run="detection.canRun.value"
+                  :can-run="canRunPipeline"
                   :redact-phase="redaction.redactPhase.value"
                   :can-redact="redaction.canRedact.value"
                   :redact-error="redaction.redactError.value"
                   :output="redaction.output.value"
                   :count="detection.count.value"
                   :effective-redact-count="redaction.effectiveRedactCount.value"
-                  @run="detection.run"
+                  @run="runFromAuditToolbar"
                   @redact="redaction.redact"
                   @download-output="redaction.downloadRedacted"
                   @export-output="openExportRedacted"
@@ -493,27 +549,102 @@ const auditProps = computed(() => ({
         @collapse="inspectorCollapsed = true"
         @expand="inspectorCollapsed = false"
       >
-        <div class="flex h-full min-w-0 flex-col overflow-hidden">
-          <StudioDetectionBar
-            v-model:selected-pipeline="detection.selectedPipeline.value"
-            :pipelines="detection.pipelines.value"
-            :phase="detection.phase.value"
-            :can-run="detection.canRun.value"
-            @run="detection.run"
-          />
-          <div class="min-h-0 flex-1 overflow-hidden">
-            <StudioAuditPanel
-              v-bind="auditProps"
-              @focus-entity="focusEntity"
-              @view-details="auditModalEntity = $event"
-              @redact="redaction.redact"
-              @download-output="redaction.downloadRedacted"
-              @export-output="openExportRedacted"
-              @toggle-suppress="redaction.toggleSuppress"
-              @remove-added="redaction.removeAdded"
+        <!-- Two tabs: the existing audit (pick which detection to view + its
+             entities) and configuring a new detection. -->
+        <Tabs
+          v-model="panelTab"
+          class="flex h-full min-w-0 flex-col overflow-hidden gap-0"
+        >
+          <TabsList class="h-9 w-full shrink-0 gap-0 rounded-none border-b border-border/50 bg-transparent p-0">
+            <TabsTrigger
+              value="new"
+              class="h-9 flex-1 rounded-none border-0 border-b-2 border-transparent bg-transparent text-muted-foreground shadow-none data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
+            >
+              {{ t("studio.detections.detectTab") }}
+            </TabsTrigger>
+            <TabsTrigger
+              value="audit"
+              class="h-9 flex-1 gap-1.5 rounded-none border-0 border-b-2 border-transparent bg-transparent text-muted-foreground shadow-none data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
+            >
+              {{ t("studio.detections.auditTab") }}
+              <span
+                v-if="detection.detections.value.length"
+                class="rounded-full bg-foreground/10 px-1.5 text-[10px] font-semibold leading-4 text-foreground/70"
+              >
+                {{ detection.detections.value.length }}
+              </span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="review"
+              class="h-9 flex-1 rounded-none border-0 border-b-2 border-transparent bg-transparent text-muted-foreground shadow-none data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
+            >
+              {{ t("studio.detections.reviewTab") }}
+            </TabsTrigger>
+          </TabsList>
+
+          <!-- Audit: the detection switcher + the selected detection's entities. -->
+          <TabsContent
+            value="audit"
+            class="mt-0 flex min-h-0 flex-1 flex-col overflow-hidden"
+          >
+            <div
+              v-if="detection.detections.value.length"
+              class="shrink-0 border-b px-2 py-1.5"
+            >
+              <StudioDetectionSwitcher
+                :detections="detection.detections.value"
+                :pipelines="detection.pipelines.value"
+                :selected-detection-id="detection.selectedDetectionId.value"
+                @select="detection.loadDetection"
+              />
+            </div>
+            <div class="min-h-0 flex-1 overflow-hidden">
+              <StudioAuditPanel
+                v-bind="auditProps"
+                @focus-entity="focusEntity"
+                @view-details="auditModalEntity = $event"
+                @redact="redaction.redact"
+                @download-output="redaction.downloadRedacted"
+                @export-output="openExportRedacted"
+                @toggle-suppress="redaction.toggleSuppress"
+                @remove-added="redaction.removeAdded"
+              />
+            </div>
+          </TabsContent>
+
+          <!-- New detection: one source (pipeline / labels / policies) + scope. -->
+          <TabsContent
+            value="new"
+            class="mt-0 flex min-h-0 flex-1 flex-col overflow-hidden"
+          >
+            <StudioNewDetection
+              v-model:source="detection.newSource.value"
+              v-model:selected-pipeline="detection.selectedPipeline.value"
+              v-model:labels="detection.newLabels.value"
+              v-model:policy-ids="detection.newPolicyIds.value"
+              v-model:countries="detection.newCountries.value"
+              v-model:languages="detection.newLanguages.value"
+              :pipelines="detection.pipelines.value"
+              :policies="detection.policies.value"
+              :phase="detection.phase.value"
+              :can-run="detection.canRun.value"
+              @run="runNewDetection"
             />
-          </div>
-        </div>
+          </TabsContent>
+
+          <!-- Review: the document's review discussion + sign-off (the third
+               step after Detect and Audit). -->
+          <TabsContent
+            value="review"
+            class="mt-0 flex min-h-0 flex-1 flex-col overflow-hidden"
+          >
+            <StudioReview
+              :document-id="activeFile?.fileId ?? null"
+              :document-name="activeFile?.displayName ?? null"
+              :detection-id="detection.detectionId.value"
+            />
+          </TabsContent>
+        </Tabs>
       </ResizablePanel>
     </ResizablePanelGroup>
 

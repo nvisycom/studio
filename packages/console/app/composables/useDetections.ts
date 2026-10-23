@@ -17,6 +17,12 @@ export interface DetectionsFilter extends WorkspaceDetectionsQuery {
 	pipelineId?: string;
 }
 
+/** A completed detection run: its id and the fetched analysis. */
+export interface RunDetectionResult {
+	detectionId: string;
+	audit: Audit;
+}
+
 /**
  * Composable for detection operations (workspace-scoped). Pass a reactive
  * `filter` to scope the detections list server-side (status, trigger, pipeline).
@@ -187,7 +193,7 @@ export function useDetections(filter?: MaybeRefOrGetter<DetectionsFilter>) {
 		pipelineId: string,
 		body: CreateWorkspaceDetection,
 		onStatus?: (status: WorkspaceDetection["status"]) => void,
-	): Promise<{ detectionId: string; audit: Audit }> {
+	): Promise<RunDetectionResult> {
 		const { client, workspaceId } = requireContext();
 		const created = await client.detections.createDetection(
 			workspaceId,

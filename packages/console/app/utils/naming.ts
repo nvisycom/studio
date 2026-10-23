@@ -57,6 +57,12 @@ export function slugify(value: string): string {
 }
 
 /** Vibrant from→to gradient pairs an avatar is deterministically assigned. */
+/** A two-stop avatar gradient: `from` → `to` color. */
+export interface AvatarGradient {
+	from: string;
+	to: string;
+}
+
 const GRADIENT_PAIRS = [
 	{ from: "#3B82F6", to: "#EC4899" }, // Blue → Pink
 	{ from: "#14B8A6", to: "#8B5CF6" }, // Teal → Purple
@@ -109,7 +115,7 @@ function hashString(str: string): number {
  * @param name - The name to derive the gradient from.
  * @returns The chosen `{ from, to }` color pair.
  */
-export function gradientForName(name?: string): { from: string; to: string } {
+export function gradientForName(name?: string): AvatarGradient {
 	const index = name ? hashString(name) % GRADIENT_PAIRS.length : 0;
 	return GRADIENT_PAIRS[index] ?? GRADIENT_PAIRS[0];
 }

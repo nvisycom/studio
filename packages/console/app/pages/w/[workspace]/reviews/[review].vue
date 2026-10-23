@@ -54,7 +54,6 @@ const {
 	timeline,
 	isLoadingTimeline,
 	postComment,
-	isPostingComment,
 	rename,
 	isRenaming,
 	refresh,
@@ -165,12 +164,13 @@ async function unassign(accountId: string) {
 	}
 }
 
-async function comment(body: string, onSuccess: () => void) {
+// Rejects on failure (after toasting) so the composer keeps the user's text.
+async function comment(body: string) {
 	try {
 		await postComment(body);
-		onSuccess();
-	} catch {
+	} catch (error) {
 		toast.error(t("reviews.detail.commentFailed"));
+		throw error;
 	}
 }
 
@@ -320,8 +320,7 @@ function openInStudio() {
                 <ReviewTimeline
                   :entries="timeline"
                   :loading="isLoadingTimeline"
-                  :posting="isPostingComment"
-                  @comment="comment"
+                  :on-comment="comment"
                 />
               </TabsContent>
 

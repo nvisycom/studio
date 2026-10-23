@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { ArrowUpFromLine, Download, Loader2, TriangleAlert } from "@lucide/vue";
+import {
+	ArrowUpFromLine,
+	Download,
+	Loader2,
+	Scissors,
+	TriangleAlert,
+} from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import type {
 	RedactionOutput,
@@ -74,21 +80,21 @@ const applyCount = computed(() => props.effectiveRedactCount ?? props.count);
       </p>
     </template>
 
-    <!-- Idle / redacting / failed: apply (or retry) redaction. The count
+    <!-- Idle / redacting / failed: apply (or retry) redaction. Styled like the
+         "Run detection" primary button so the two steps read as a pair. The count
          reflects reviewer edits — kept (suppressed) entities are excluded. -->
     <Button
       v-else
-      variant="outline"
-      size="sm"
-      class="w-full"
+      class="w-full gap-2"
       :disabled="!canRedact || applyCount === 0"
       @click="emit('redact')"
     >
       <Loader2
         v-if="redactPhase === 'redacting'"
-        :size="15"
+        :size="16"
         class="animate-spin"
       />
+      <Scissors v-else :size="16" />
       {{
         redactPhase === "redacting"
           ? t("studio.audit.redacting")

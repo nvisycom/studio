@@ -50,7 +50,7 @@ export interface NavigationGroup {
  * Items whose data lives only on the server — no local backend. For a local
  * workspace they have nothing to show, so they're dropped from the nav entirely
  * rather than rendered disabled. Everything else (overview, documents, studio,
- * workflows, policies, settings) runs through a local seam and stays.
+ * pipelines, policies, settings) runs through a local seam and stays.
  *
  * `reviews` is server-only: the reviewer queue is about assigning reviews to
  * workspace accounts/members, which a local folder-workspace has none of (the
@@ -147,9 +147,9 @@ export function useNavigation() {
 				label: t("sidebar.automation"),
 				items: [
 					{
-						id: "workflows",
-						title: t("sidebar.workflows"),
-						url: wLink("/workflows"),
+						id: "pipelines",
+						title: t("sidebar.pipelines"),
+						url: wLink("/pipelines"),
 						icon: Workflow,
 						disabled: automationDisabled,
 					},

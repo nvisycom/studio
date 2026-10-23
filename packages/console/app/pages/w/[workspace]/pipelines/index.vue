@@ -13,17 +13,17 @@ import { VirtualTable } from "#console/components/ui/virtual-table";
 import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 import { personLabel } from "#console/utils/naming";
 import { ConfirmDialog } from "#console/components/shared";
-import { EditPipelineSheet } from "#console/components/pages/workflows";
+import { EditPipelineSheet } from "#console/components/pages/pipelines";
 
 const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
 const { resolveAvatarUrl } = useAvatarUrl();
 const sectionTabs = useSectionTabs();
 
-useHead({ title: "Workflows" });
+useHead({ title: "Pipelines" });
 
 definePageMeta({
-	pageCategory: "header.category.workflows",
+	pageCategory: "header.category.pipelines",
 	hideCategory: true,
 });
 
@@ -61,7 +61,7 @@ async function openEdit(pipeline: WorkspacePipelineSummary) {
 		editingPipeline.value = await getPipeline(pipeline.id);
 	} catch (err) {
 		isEditSheetOpen.value = false;
-		toast.error(t("workflows.toast.loadFailed"), {
+		toast.error(t("pipelines.toast.loadFailed"), {
 			description: getErrorMessage(err, t("common.errors.tryAgain")),
 		});
 	} finally {
@@ -72,10 +72,10 @@ async function openEdit(pipeline: WorkspacePipelineSummary) {
 async function handleUpdate(slug: string, updates: UpdateWorkspacePipeline) {
 	try {
 		await updatePipelineAsync({ pipelineId: slug, updates });
-		toast.success(t("workflows.toast.updated"));
+		toast.success(t("pipelines.toast.updated"));
 		isEditSheetOpen.value = false;
 	} catch (err) {
-		toast.error(t("workflows.toast.updateFailed"), {
+		toast.error(t("pipelines.toast.updateFailed"), {
 			description: getErrorMessage(err, t("common.errors.tryAgain")),
 		});
 	}
@@ -88,10 +88,10 @@ async function confirmDelete() {
 	if (!pipeline) return;
 	try {
 		await deletePipelineAsync(pipeline.id);
-		toast.success(t("workflows.toast.deleted"));
+		toast.success(t("pipelines.toast.deleted"));
 		pipelineToDelete.value = null;
 	} catch (err) {
-		toast.error(t("workflows.toast.deleteFailed"), {
+		toast.error(t("pipelines.toast.deleteFailed"), {
 			description: getErrorMessage(err, t("common.errors.tryAgain")),
 		});
 	}
@@ -106,7 +106,7 @@ const pipelineRows = computed<PipelineRow[]>(() =>
 const columns = computed<VirtualColumn<PipelineRow>[]>(() => [
 	{
 		key: "name",
-		header: t("workflows.table.name"),
+		header: t("pipelines.table.name"),
 		cell: (p) => ({
 			type: "primary",
 			title: p.displayName,
@@ -116,7 +116,7 @@ const columns = computed<VirtualColumn<PipelineRow>[]>(() => [
 	},
 	{
 		key: "creator",
-		header: t("workflows.table.creator"),
+		header: t("pipelines.table.creator"),
 		width: "200px",
 		cell: (p) => ({
 			type: "avatar",
@@ -126,7 +126,7 @@ const columns = computed<VirtualColumn<PipelineRow>[]>(() => [
 	},
 	{
 		key: "created",
-		header: t("workflows.table.created"),
+		header: t("pipelines.table.created"),
 		width: "120px",
 		cell: (p) => ({
 			type: "text",
@@ -136,7 +136,7 @@ const columns = computed<VirtualColumn<PipelineRow>[]>(() => [
 	},
 	{
 		key: "updated",
-		header: t("workflows.table.updated"),
+		header: t("pipelines.table.updated"),
 		width: "120px",
 		cell: (p) => ({
 			type: "text",
@@ -146,18 +146,18 @@ const columns = computed<VirtualColumn<PipelineRow>[]>(() => [
 	},
 ]);
 
-/** Right-click / ⋯ actions for a workflow row. */
+/** Right-click / ⋯ actions for a pipeline row. */
 function rowActions(pipeline: PipelineRow): RowAction[] {
 	return [
 		{
 			key: "edit",
-			label: t("workflows.actions.edit"),
+			label: t("pipelines.actions.edit"),
 			icon: Pencil,
 			select: () => openEdit(pipeline),
 		},
 		{
 			key: "delete",
-			label: t("workflows.actions.delete"),
+			label: t("pipelines.actions.delete"),
 			icon: Trash2,
 			danger: true,
 			separatorBefore: true,
@@ -175,17 +175,17 @@ function rowActions(pipeline: PipelineRow): RowAction[] {
     <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 min-h-0">
       <!-- Section tabs in the app-header socket. -->
       <HeaderSocket>
-        <SectionTabs :tabs="sectionTabs.workflows.value" />
+        <SectionTabs :tabs="sectionTabs.pipelines.value" />
       </HeaderSocket>
 
       <!-- Action row above the table. -->
       <div class="flex items-center justify-between gap-3">
         <p class="text-sm text-muted-foreground">
-          {{ t("workflows.count", { count: pipelines?.length ?? 0 }) }}
+          {{ t("pipelines.count", { count: pipelines?.length ?? 0 }) }}
         </p>
         <Button size="sm" data-testid="pipeline-create" @click="openCreate">
           <Workflow :size="16" class="mr-1.5" />
-          {{ t("workflows.actions.create") }}
+          {{ t("pipelines.actions.create") }}
         </Button>
       </div>
 
@@ -203,11 +203,11 @@ function rowActions(pipeline: PipelineRow): RowAction[] {
           :rows="pipelineRows"
           :columns="columns"
           :row-actions="rowActions"
-          :menu-label="t('workflows.table.menu')"
+          :menu-label="t('pipelines.table.menu')"
           :empty="{
             icon: Workflow,
-            title: t('workflows.empty.title'),
-            description: t('workflows.empty.description'),
+            title: t('pipelines.empty.title'),
+            description: t('pipelines.empty.description'),
           }"
         />
       </div>
@@ -225,11 +225,11 @@ function rowActions(pipeline: PipelineRow): RowAction[] {
         <ConfirmDialog
           :open="!!pipelineToDelete"
           :title="
-            t('workflows.delete.title', { name: pipelineToDelete?.displayName })
+            t('pipelines.delete.title', { name: pipelineToDelete?.displayName })
           "
-          :description="t('workflows.delete.description')"
-          :confirm-label="t('workflows.delete.confirm')"
-          :cancel-label="t('workflows.delete.cancel')"
+          :description="t('pipelines.delete.description')"
+          :confirm-label="t('pipelines.delete.confirm')"
+          :cancel-label="t('pipelines.delete.cancel')"
           :is-loading="isDeleting"
           @update:open="(v) => !v && (pipelineToDelete = null)"
           @confirm="confirmDelete"
@@ -240,7 +240,7 @@ function rowActions(pipeline: PipelineRow): RowAction[] {
                 {{ pipelineToDelete.displayName }}
               </p>
               <p class="truncate text-xs text-muted-foreground">
-                {{ t(`workflows.status.${pipelineToDelete.status}`) }}
+                {{ t(`pipelines.status.${pipelineToDelete.status}`) }}
               </p>
             </div>
           </template>

@@ -6,7 +6,7 @@ import type {
 	WorkspacePolicySummary,
 	UpdateWorkspacePipeline,
 } from "@nvisy/sdk/datatypes";
-import { PipelineForm } from "#console/components/pages/workflows";
+import { PipelineForm } from "#console/components/pages/pipelines";
 import { Button } from "#console/components/ui/button";
 import { EnabledSwitch } from "#console/components/shared";
 import {
@@ -42,7 +42,7 @@ const isEdit = computed(() => !!props.pipeline || !!props.loadingPipeline);
 
 /** i18n keys switch on mode. */
 const keys = computed(() => {
-	const ns = isEdit.value ? "workflows.edit" : "workflows.create";
+	const ns = isEdit.value ? "pipelines.edit" : "pipelines.create";
 	return {
 		title: `${ns}.title`,
 		description: `${ns}.description`,
@@ -106,7 +106,7 @@ function cancel() {
         <EnabledSwitch v-model="form.enabled" />
         <div class="flex items-center gap-2">
           <Button variant="outline" @click="cancel">
-            {{ t("workflows.create.cancel") }}
+            {{ t("pipelines.create.cancel") }}
           </Button>
           <Button
             data-testid="pipeline-submit"

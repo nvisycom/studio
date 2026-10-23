@@ -8,15 +8,17 @@ import type { StudioViewPhase } from "#console/composables/useStudioView";
  * phase (`downloading` -> `rendering` -> `ready`) so the host shows one loader.
  *
  * Rendered by SuperDoc's PDF viewer (pdf.js under the hood), keyed to an
- * `application/pdf` file. SuperDoc paginates the PDF to canvas (the text layer
- * isn't needed for highlighting). The viewer has no decoration/anchor API like
- * the DOCX editor, so we paint our own overlay.
+ * `application/pdf` file. SuperDoc paginates the PDF to canvas plus a pdf.js
+ * text layer (so the reviewer can select and copy the text). The viewer has no
+ * decoration/anchor API like the DOCX editor, so we paint our own overlay.
  *
  * Highlighting is BY GEOMETRY: a PDF entity carries page-normalized boxes
  * (`rects`, 0..1 top-left) on a 1-based `page`, computed upstream from the
  * glyph positions of the same PDF pdf.js renders. We overlay each box as a
  * percent-positioned div on its page — no cross-extractor offset mapping, so
- * the box lands exactly on the rendered glyphs at any zoom.
+ * the box lands exactly on the rendered glyphs at any zoom. The overlay is
+ * `pointer-events:none` so it never blocks text selection; click → focus is
+ * hit-tested against the boxes.
  *
  * SuperDoc + pdf.js are heavy, so they're dynamically imported when a PDF opens.
  */
@@ -104,9 +106,11 @@ async function render(url: string, target: HTMLElement) {
 			hyperlinks: false,
 			// Supply the pdf.js library to SuperDoc's PDF viewer (it doesn't bundle
 			// the library itself; `setWorker: false` because we set `workerSrc`
-			// above). No text layer: highlighting is by geometry (the entities'
-			// page-normalized `rects`), so the positioned text spans aren't needed.
-			modules: { pdf: { pdfLib, setWorker: false } },
+			// above). `textLayer: true` renders pdf.js's selectable text spans over
+			// each page — highlighting is by geometry (the entities' page-normalized
+			// `rects`), but the text layer is what lets the reviewer select and copy
+			// the PDF's text.
+			modules: { pdf: { pdfLib, setWorker: false, textLayer: true } },
 			// Disable SuperDoc's built-in loading overlay — the parent preview shows a
 			// single loader and keeps it up until we signal ready.
 			ui: { loading: false },
@@ -170,7 +174,8 @@ function scheduleRepaint() {
  * one overlay of percent-positioned boxes straight from the entities' rendered
  * geometry: an entity on this page contributes one box per `rect` (page-normalized
  * 0..1, top-left), so a span wrapping several lines yields several boxes. Percent
- * positioning tracks the page as zoom resizes it; no text layer or offset mapping.
+ * positioning tracks the page as zoom resizes it; placed by geometry, not by
+ * mapping offsets into the text layer.
  */
 function paintHighlights() {
 	const target = container.value;
@@ -229,13 +234,15 @@ function highlightBox(
 		.filter(Boolean)
 		.join(" ");
 	// `data-entity` is the shared anchor the other text previews (code/CSV) use:
-	// it's what click → focus reads back, and what the host's detail popover
-	// queries to position itself against the focused entity's chip.
+	// it's what the host's detail popover queries to position itself against the
+	// focused entity's chip, and what click → focus hit-tests for.
 	box.dataset.entity = entity.id;
-	// `pointer-events:auto` inline (not via scoped CSS): the box is created
-	// imperatively inside SuperDoc's page, so a scoped `:deep` rule is fragile
-	// here — set it on the element so the click always lands.
-	box.style.cssText = `position:absolute; pointer-events:auto; left:${
+	// `pointer-events:none`: the box must NOT capture the pointer, or it would
+	// block the pdf.js text layer beneath it from being selected (you could select
+	// everywhere except over a detected entity). Click → focus is handled by
+	// geometrically hit-testing the click point against the box rects (see
+	// `onPointerUp`) — not via the event target, which is the text layer.
+	box.style.cssText = `position:absolute; pointer-events:none; left:${
 		rect.left * 100
 	}%; top:${rect.top * 100}%; width:${rect.width * 100}%; height:${
 		rect.height * 100
@@ -292,19 +299,41 @@ watch(
 	{ immediate: true },
 );
 
-// Focus a highlight on POINTERDOWN, not click: SuperDoc's PDF viewer inserts a
-// selection layer over the page on mousedown, so the following mouseup (and thus
-// the `click`) lands on that layer instead of our box. pointerdown still targets
-// our box; `preventDefault` stops SuperDoc from starting a text selection from it.
-// (Overlay boxes are painted outside Vue's template, so we delegate on the root;
-// the entity id is read from the box's `data-entity` attribute — the shared
-// anchor the other previews use.)
+// Click → focus, without stealing text selection. The highlight boxes are
+// `pointer-events:none` so a drag selects the text layer beneath them — which
+// also means the click can't be read off the event target, AND `elementsFromPoint`
+// won't return the boxes (it skips `pointer-events:none` elements). So: remember
+// where the pointer went down, and on pointer-up, if it barely moved (a drag is a
+// text selection, left alone), hit-test the point GEOMETRICALLY against each box's
+// rect and focus that entity. A later box wins a tie (painted on top).
+let downX = 0;
+let downY = 0;
+/** Max pointer travel (px) still counted as a click rather than a drag-select. */
+const CLICK_SLOP = 4;
+
 function onPointerDown(event: PointerEvent) {
-	const id = (event.target as HTMLElement).closest<HTMLElement>("[data-entity]")
-		?.dataset.entity;
-	if (!id) return;
-	event.preventDefault();
-	emit("focus-entity", id);
+	downX = event.clientX;
+	downY = event.clientY;
+}
+
+function onPointerUp(event: PointerEvent) {
+	if (event.button !== 0) return; // primary button only; ignore right/middle
+	if (
+		Math.abs(event.clientX - downX) > CLICK_SLOP ||
+		Math.abs(event.clientY - downY) > CLICK_SLOP
+	)
+		return; // a drag (text selection), not a click
+	const x = event.clientX;
+	const y = event.clientY;
+	let hit: string | undefined;
+	for (const box of container.value?.querySelectorAll<HTMLElement>(
+		`.${LAYER_CLASS} [data-entity]`,
+	) ?? []) {
+		const r = box.getBoundingClientRect();
+		if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom)
+			hit = box.dataset.entity; // last match wins (topmost paint)
+	}
+	if (hit) emit("focus-entity", hit);
 }
 
 onBeforeUnmount(teardown);
@@ -321,6 +350,7 @@ onBeforeUnmount(teardown);
       ref="container"
       class="studio-pdf min-h-full w-full"
       @pointerdown="onPointerDown"
+      @pointerup="onPointerUp"
     />
   </div>
 </template>
@@ -340,15 +370,24 @@ onBeforeUnmount(teardown);
 }
 
 /* The highlight overlay fills the page; its boxes are percent-positioned within
-   it, so they track the page as zoom resizes it. (The boxes set their own
-   `pointer-events:auto` inline, for click → focus.) `user-select:none` so
-   clicking a box focuses the entity instead of starting a text selection on the
-   page underneath (which would otherwise stick). */
+   it, so they track the page as zoom resizes it. `pointer-events:none` (on the
+   layer and every box) so the pdf.js text layer beneath stays selectable — click
+   → focus is hit-tested in JS, not captured here. */
 .studio-pdf :deep(.studio-pdf-highlights) {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  user-select: none;
+}
+
+/* Neutralize SuperDoc's own PDF selection layer. It sits above the text layer
+   (z-index 10) and flips to `pointer-events:auto` on mousedown to run SuperDoc's
+   selection handling — but in this read-only viewer that handling just swallows
+   the pointer, blocking both native text selection on the pdf.js text layer and
+   our own click → focus (the pointerup never reaches the container). Forcing it
+   off hands pointer events back to the text layer and the highlight hit-test.
+   `!important` because SuperDoc sets `pointer-events` inline on this element. */
+.studio-pdf :deep(.superdoc__selection-layer) {
+  pointer-events: none !important;
 }
 
 /* In dark mode the default light scrollbar glares against the dark backdrop. */

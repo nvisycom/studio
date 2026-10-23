@@ -45,10 +45,13 @@ function numberLength(s: string, i: number): number {
  *   inside it snaps to the token's raw start, never a stray inner char (which a
  *   naive inversion of `map` would pick, since several raw chars collapse there).
  */
-function buildJsonMaps(
-	raw: string,
-	formatted: string,
-): { map: number[]; inverse: number[] } {
+/** Bidirectional raw↔formatted char index maps. */
+interface IndexMaps {
+	map: number[];
+	inverse: number[];
+}
+
+function buildJsonMaps(raw: string, formatted: string): IndexMaps {
 	const map: number[] = new Array(raw.length + 1);
 	const inverse: number[] = new Array(formatted.length + 1);
 	// Fill inverse[from, to) with a single raw index (a token whose formatted span

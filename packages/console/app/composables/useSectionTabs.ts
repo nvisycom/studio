@@ -42,18 +42,18 @@ export function useSectionTabs() {
 		},
 	]);
 
-	const workflows = computed<SectionTab[]>(() => [
+	const pipelines = computed<SectionTab[]>(() => [
 		{
-			value: "workflows",
-			label: t("header.tabs.workflows.index"),
+			value: "pipelines",
+			label: t("header.tabs.pipelines.index"),
 			icon: Workflow,
-			to: "/workflows",
+			to: "/pipelines",
 		},
 		{
 			value: "detections",
-			label: t("header.tabs.workflows.detections"),
+			label: t("header.tabs.pipelines.detections"),
 			icon: History,
-			to: "/workflows/detections",
+			to: "/pipelines/detections",
 		},
 	]);
 
@@ -136,5 +136,5 @@ export function useSectionTabs() {
 		},
 	]);
 
-	return { policies, workflows, integrations, settings, analytics, account };
+	return { policies, pipelines, integrations, settings, analytics, account };
 }

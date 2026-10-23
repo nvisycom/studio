@@ -98,11 +98,11 @@ async function copyDetectionId() {
 	} catch {
 		// Clipboard access can be denied (insecure context, permission) — tell the
 		// user rather than silently failing.
-		toast.error(t("workflows.detections.detail.copyFailed"));
+		toast.error(t("pipelines.detections.detail.copyFailed"));
 		return;
 	}
 	copied.value = true;
-	toast(t("workflows.detections.detail.copied"));
+	toast(t("pipelines.detections.detail.copied"));
 	clearTimeout(copyTimer);
 	copyTimer = setTimeout(() => {
 		copied.value = false;
@@ -144,13 +144,13 @@ function downloadAudit(format: "json" | "csv") {
           >
             <ScanSearch :size="18" class="shrink-0 text-muted-foreground" />
             <span v-if="auditLoading" class="text-sm text-muted-foreground">
-              {{ t("workflows.detections.detail.detectionLoading") }}
+              {{ t("pipelines.detections.detail.detectionLoading") }}
             </span>
             <span v-else-if="auditFailed" class="text-sm text-muted-foreground">
-              {{ t("workflows.detections.detail.detectionUnavailable") }}
+              {{ t("pipelines.detections.detail.detectionUnavailable") }}
             </span>
             <span v-else class="text-sm font-medium text-foreground">
-              {{ t("workflows.detections.detail.detections", { count }) }}
+              {{ t("pipelines.detections.detail.detections", { count }) }}
             </span>
           </div>
 
@@ -158,11 +158,11 @@ function downloadAudit(format: "json" | "csv") {
           <dl class="rounded-lg border border-border/50 text-sm">
             <div class="flex items-center justify-between gap-4 px-4 py-2.5">
               <dt class="text-muted-foreground">
-                {{ t("workflows.detections.detail.status") }}
+                {{ t("pipelines.detections.detail.status") }}
               </dt>
               <dd>
                 <Badge :variant="detection.status === 'failed' ? 'destructive' : 'secondary'">
-                  {{ t("workflows.detections.detectionStatus." + detection.status) }}
+                  {{ t("pipelines.detections.detectionStatus." + detection.status) }}
                 </Badge>
               </dd>
             </div>
@@ -170,7 +170,7 @@ function downloadAudit(format: "json" | "csv") {
               class="flex items-center justify-between gap-4 border-t border-border/50 px-4 py-2.5"
             >
               <dt class="text-muted-foreground">
-                {{ t("workflows.detections.detail.trigger") }}
+                {{ t("pipelines.detections.detail.trigger") }}
               </dt>
               <dd class="flex items-center gap-1.5 font-medium text-foreground">
                 <User
@@ -179,14 +179,14 @@ function downloadAudit(format: "json" | "csv") {
                   class="text-muted-foreground"
                 />
                 <Cog v-else :size="14" class="text-muted-foreground" />
-                {{ t("workflows.detections.triggerType." + detection.triggerType) }}
+                {{ t("pipelines.detections.triggerType." + detection.triggerType) }}
               </dd>
             </div>
             <div
               class="flex items-center justify-between gap-4 border-t border-border/50 px-4 py-2.5"
             >
               <dt class="text-muted-foreground">
-                {{ t("workflows.detections.triggeredBy") }}
+                {{ t("pipelines.detections.triggeredBy") }}
               </dt>
               <dd class="flex min-w-0 items-center gap-2 font-medium text-foreground">
                 <EntityAvatar
@@ -203,7 +203,7 @@ function downloadAudit(format: "json" | "csv") {
           <dl class="rounded-lg border border-border/50 text-sm">
             <div class="flex items-center justify-between gap-4 px-4 py-2.5">
               <dt class="text-muted-foreground">
-                {{ t("workflows.detections.detail.started") }}
+                {{ t("pipelines.detections.detail.started") }}
               </dt>
               <dd class="font-medium text-foreground">
                 {{ formatDateTime(detection.startedAt) }}
@@ -213,13 +213,13 @@ function downloadAudit(format: "json" | "csv") {
               class="flex items-center justify-between gap-4 border-t border-border/50 px-4 py-2.5"
             >
               <dt class="text-muted-foreground">
-                {{ t("workflows.detections.detail.completed") }}
+                {{ t("pipelines.detections.detail.completed") }}
               </dt>
               <dd class="font-medium text-foreground">
                 {{
                   detection.completedAt
                     ? formatDateTime(detection.completedAt)
-                    : t("workflows.detections.detail.none")
+                    : t("pipelines.detections.detail.none")
                 }}
               </dd>
             </div>
@@ -227,14 +227,14 @@ function downloadAudit(format: "json" | "csv") {
               class="flex items-center justify-between gap-4 border-t border-border/50 px-4 py-2.5"
             >
               <dt class="text-muted-foreground">
-                {{ t("workflows.detections.detail.duration") }}
+                {{ t("pipelines.detections.detail.duration") }}
               </dt>
               <dd class="font-medium text-foreground">
                 <template v-if="detection.completedAt">
                   {{ formatDuration(detection.startedAt, detection.completedAt) }}
                 </template>
                 <span v-else class="text-muted-foreground">
-                  {{ t("workflows.detections.detail.running") }}
+                  {{ t("pipelines.detections.detail.running") }}
                 </span>
               </dd>
             </div>
@@ -244,7 +244,7 @@ function downloadAudit(format: "json" | "csv") {
           <dl class="rounded-lg border border-border/50 text-sm">
             <div class="flex items-center justify-between gap-4 px-4 py-2.5">
               <dt class="shrink-0 text-muted-foreground">
-                {{ t("workflows.detections.detail.input") }}
+                {{ t("pipelines.detections.detail.input") }}
               </dt>
               <dd class="min-w-0 truncate font-medium text-foreground">
                 {{ inputFileLabel }}
@@ -264,7 +264,7 @@ function downloadAudit(format: "json" | "csv") {
           <dl class="rounded-lg border border-border/50 text-sm">
             <div class="flex items-center justify-between gap-4 px-4 py-2.5">
               <dt class="text-muted-foreground">
-                {{ t("workflows.detections.detail.detectionId") }}
+                {{ t("pipelines.detections.detail.detectionId") }}
               </dt>
               <dd class="flex min-w-0 items-center gap-1.5">
                 <span class="truncate font-mono text-xs text-foreground">
@@ -274,7 +274,7 @@ function downloadAudit(format: "json" | "csv") {
                   variant="ghost"
                   size="icon"
                   class="size-6 shrink-0"
-                  :aria-label="t('workflows.detections.detail.copy')"
+                  :aria-label="t('pipelines.detections.detail.copy')"
                   @click="copyDetectionId"
                 >
                   <Check v-if="copied" :size="14" class="text-emerald-500" />
@@ -287,7 +287,7 @@ function downloadAudit(format: "json" | "csv") {
               class="flex items-start justify-between gap-4 border-t border-border/50 px-4 py-2.5"
             >
               <dt class="shrink-0 text-muted-foreground">
-                {{ t("workflows.detections.detail.tags") }}
+                {{ t("pipelines.detections.detail.tags") }}
               </dt>
               <dd class="flex flex-wrap justify-end gap-1">
                 <Badge v-for="tag in tags" :key="tag" variant="secondary">
@@ -301,7 +301,7 @@ function downloadAudit(format: "json" | "csv") {
         <SheetFooter class="border-t border-border/50">
           <Button class="w-full" @click="openInStudio">
             <ExternalLink :size="16" class="mr-2" />
-            {{ t("workflows.detections.openInStudio") }}
+            {{ t("pipelines.detections.openInStudio") }}
           </Button>
           <!-- Audit download is only meaningful once the detection is complete. -->
           <div v-if="hasDetection" class="flex items-center gap-2">
@@ -311,7 +311,7 @@ function downloadAudit(format: "json" | "csv") {
               @click="downloadAudit('json')"
             >
               <FileJson :size="16" class="mr-2" />
-              {{ t("workflows.detections.detail.downloadJson") }}
+              {{ t("pipelines.detections.detail.downloadJson") }}
             </Button>
             <Button
               variant="outline"
@@ -319,7 +319,7 @@ function downloadAudit(format: "json" | "csv") {
               @click="downloadAudit('csv')"
             >
               <FileSpreadsheet :size="16" class="mr-2" />
-              {{ t("workflows.detections.detail.downloadCsv") }}
+              {{ t("pipelines.detections.detail.downloadCsv") }}
             </Button>
           </div>
         </SheetFooter>

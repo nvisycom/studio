@@ -94,11 +94,14 @@ function toRecord(doc: LocalDocument): StoreRecord {
 	};
 }
 
+/** A file's name and raw bytes, ready to write into the folder. */
+interface NamedBytes {
+	name: string;
+	bytes: Uint8Array;
+}
+
 /** Normalize a Blob/File to its name and bytes for writing into the folder. */
-async function toNamedBytes(
-	blob: Blob,
-	index: number,
-): Promise<{ name: string; bytes: Uint8Array }> {
+async function toNamedBytes(blob: Blob, index: number): Promise<NamedBytes> {
 	const name = blob instanceof File ? blob.name : `document-${index + 1}`;
 	const bytes = new Uint8Array(await blob.arrayBuffer());
 	return { name, bytes };
