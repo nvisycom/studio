@@ -204,7 +204,7 @@ function clusterActiveClass(cluster: EntityCluster<StudioEntityView>): string {
 </script>
 
 <template>
-  <div class="flex h-full flex-col">
+  <div class="flex h-full min-h-0 flex-col">
     <!-- Body -->
     <div class="min-h-0 flex-1 overflow-y-auto">
       <!-- Error -->
@@ -263,7 +263,7 @@ function clusterActiveClass(cluster: EntityCluster<StudioEntityView>): string {
              of the tiers, with a "+" marker instead of a category dot. -->
         <section v-if="added?.length">
           <div
-            class="sticky top-0 z-10 flex w-full items-center gap-1.5 bg-muted/50 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground backdrop-blur-sm"
+            class="section-label sticky top-0 z-10 flex w-full items-center gap-1.5 bg-muted/50 px-3 py-1.5 backdrop-blur-sm"
           >
             <Plus :size="12" class="shrink-0 text-emerald-600 dark:text-emerald-500" />
             <span>{{ t("studio.audit.addedByYou") }}</span>
@@ -324,7 +324,7 @@ function clusterActiveClass(cluster: EntityCluster<StudioEntityView>): string {
               @update:model-value="toggleCategory(section)"
             />
             <CollapsibleTrigger
-              class="flex min-w-0 flex-1 items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
+              class="section-label flex min-w-0 flex-1 items-center gap-1.5 transition-colors hover:text-foreground"
             >
               <ChevronRight
                 :size="11"
