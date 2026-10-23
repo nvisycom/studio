@@ -12,7 +12,7 @@ dashboard through a Nuxt layer.
 [![Build](https://img.shields.io/github/actions/workflow/status/nvisycom/studio/build.yml?branch=main&label=build&style=flat-square)](https://github.com/nvisycom/studio/actions/workflows/build.yml)
 [![Desktop](https://img.shields.io/github/actions/workflow/status/nvisycom/studio/desktop.yml?branch=main&label=desktop&style=flat-square)](https://github.com/nvisycom/studio/actions/workflows/desktop.yml)
 [![Security](https://img.shields.io/github/actions/workflow/status/nvisycom/studio/security.yml?branch=main&label=security&style=flat-square)](https://github.com/nvisycom/studio/actions/workflows/security.yml)
-[![License](https://img.shields.io/badge/license-AGPL%20v3-blue?style=flat-square)](LICENSE.txt)
+[![License](https://img.shields.io/badge/license-AGPL%20v3-blue?style=flat-square)](LICENSE)
 
 [**nvisy.com**](https://nvisy.com) · [**docs.nvisy.com**](https://docs.nvisy.com) · [**app.nvisy.com**](https://app.nvisy.com)
 
@@ -81,7 +81,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 ## License
 
 GNU Affero General Public License v3.0 (AGPL-3.0), see
-[LICENSE.txt](LICENSE.txt).
+[LICENSE](LICENSE).
 
 ## Support
 
