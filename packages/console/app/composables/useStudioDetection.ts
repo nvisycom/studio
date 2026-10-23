@@ -141,26 +141,8 @@ export function useStudioDetection(
 	// switched away from (or a file that changed) can't overwrite newer state.
 	let loadToken = 0;
 
-	/** Show a specific detection: load its audit and make it the active one. Only
-	 *  a completed detection has an analysis to fetch; a pending/failed row stays
-	 *  selected but shows its status instead of loading. */
-	async function loadDetection(id: string) {
-		const file = toValue(fileId);
-		const row = detections.value.find((d) => d.id === id);
-		if (!row) return;
-		const token = ++loadToken;
-		selectedDetectionId.value = id;
-		detectionFileName.value =
-			row.inputDocumentName ?? toValue(fileName) ?? null;
-		if (row.status !== "complete") {
-			audit.value = null;
-			detectionId.value = null;
-			detectionStatus.value = row.status;
-			errorMessage.value =
-				row.status === "failed" ? t("studio.audit.runFailed") : "";
-			phase.value = row.status === "failed" ? "failed" : "running";
-			return;
-		}
+	/** Fetch and show a completed detection's audit (the `complete` path). */
+	async function showAnalysis(id: string, token: number, file: string | null) {
 		phase.value = "restoring";
 		detectionStatus.value = null;
 		errorMessage.value = "";
@@ -178,6 +160,63 @@ export function useStudioDetection(
 				errorMessage.value = t("studio.audit.runFailed");
 				phase.value = "failed";
 			}
+		}
+	}
+
+	/** Poll a still-pending selected detection until it settles, then show its
+	 *  analysis (or its failure). Bounded by the load token so a file/selection
+	 *  change cancels it. */
+	async function pollPending(id: string, token: number, file: string | null) {
+		while (token === loadToken && toValue(fileId) === file) {
+			await new Promise((r) => setTimeout(r, 2500));
+			if (token !== loadToken || toValue(fileId) !== file) return;
+			let rows: WorkspaceDetection[];
+			try {
+				rows = await requireProvider().listForFile(file ?? "");
+			} catch {
+				continue; // transient; try again next tick
+			}
+			if (token !== loadToken || toValue(fileId) !== file) return;
+			detections.value = rows;
+			const row = rows.find((d) => d.id === id);
+			if (!row) return; // gone
+			detectionStatus.value = row.status;
+			if (row.status === "complete") return showAnalysis(id, token, file);
+			if (row.status === "failed") {
+				errorMessage.value = t("studio.audit.runFailed");
+				phase.value = "failed";
+				return;
+			}
+		}
+	}
+
+	/** Show a specific detection: load its audit and make it the active one. A
+	 *  completed detection's analysis is fetched; a pending one shows its status
+	 *  and is polled until it settles; a failed one shows the failure. This is a
+	 *  displayed selection, distinct from a run started via `run()`. */
+	async function loadDetection(id: string) {
+		const file = toValue(fileId);
+		const row = detections.value.find((d) => d.id === id);
+		if (!row) return;
+		const token = ++loadToken;
+		selectedDetectionId.value = id;
+		detectionFileName.value =
+			row.inputDocumentName ?? toValue(fileName) ?? null;
+		detectionStatus.value = row.status;
+		if (row.status === "complete") {
+			await showAnalysis(id, token, file);
+		} else if (row.status === "failed") {
+			audit.value = null;
+			detectionId.value = null;
+			errorMessage.value = t("studio.audit.runFailed");
+			phase.value = "failed";
+		} else {
+			// Pending: show the running state and poll until it settles.
+			audit.value = null;
+			detectionId.value = null;
+			errorMessage.value = "";
+			phase.value = "running";
+			void pollPending(id, token, file);
 		}
 	}
 

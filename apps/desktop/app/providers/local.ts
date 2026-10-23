@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import type {
 	Audit,
+	DocumentContext,
 	Policy,
 	WorkspaceDetection,
 	WorkspacePolicy,
@@ -29,25 +30,39 @@ import { getRun, listRuns, type LocalRun, saveRun } from "~/repositories/runs";
 
 /**
  * Resolve a detection source to the policy definitions the engine runs. A
- * pipeline resolves its saved `policyIds`; a quick policy run takes the given
- * ids; a quick labels run mints (or reuses) a one-shot policy from the labels
- * — the same three shapes the server path resolves, done against the local
- * repository. Returns the governance `Policy` definitions (not the workspace
- * wrappers), which is what the engine takes.
+/** What the engine needs to run a detection: the governance policies and the
+ *  effective per-run scope (a pipeline's saved default, overridden by a per-run
+ *  scope). */
+interface ResolvedSource {
+	policies: Policy[];
+	scope?: DocumentContext;
+}
+
+/**
+ * Resolve a detection source to what the engine runs. A pipeline resolves its
+ * saved `policyIds`; a quick policy run takes the given ids; a quick labels run
+ * mints (or reuses) a one-shot policy from the labels — the same three shapes the
+ * server path resolves, done against the local repository. Returns the governance
+ * `Policy` definitions (not the workspace wrappers), which is what the engine
+ * takes, plus the effective scope.
  */
-async function resolvePolicies(
+async function resolveSource(
 	repository: Repository,
 	workspaceId: () => string,
 	source: DetectionSource,
-): Promise<Policy[]> {
+): Promise<ResolvedSource> {
 	const ws = workspaceId();
 	let policyIds: string[];
+	// The pipeline's saved default scope, which a per-run scope overrides — so a
+	// local pipeline run applies the same scope a server run would.
+	let defaultScope: DocumentContext | undefined;
 	if (source.kind === "pipeline") {
 		const pipeline = await repository.pipelines.getPipeline(
 			ws,
 			source.pipelineId,
 		);
 		policyIds = pipeline.definition.policyIds ?? [];
+		defaultScope = pipeline.definition.defaultScope;
 	} else if (source.kind === "policy") {
 		policyIds = source.policyIds;
 	} else {
@@ -62,7 +77,10 @@ async function resolvePolicies(
 	const policies = await Promise.all(
 		policyIds.map((id) => repository.policies.getPolicy(ws, id)),
 	);
-	return policies.map((p: WorkspacePolicy) => p.definition);
+	return {
+		policies: policies.map((p: WorkspacePolicy) => p.definition),
+		scope: source.scope ?? defaultScope,
+	};
 }
 
 /**
@@ -126,7 +144,7 @@ export function createLocalDetectionProvider(
 	return {
 		async produce(input: DetectionInput): Promise<DetectionResult> {
 			const ws = workspaceId();
-			const policies = await resolvePolicies(
+			const { policies, scope } = await resolveSource(
 				repository,
 				workspaceId,
 				input.source,
@@ -134,13 +152,13 @@ export function createLocalDetectionProvider(
 			// The document already lives in the workspace folder, so the engine
 			// reads it from disk by (workspaceId, path) — no bytes cross IPC, and the
 			// id authorizes the folder. Runs synchronously, returns the audit directly.
-			// The optional per-run scope (jurisdictions/languages, and for a pipeline
-			// an override of its saved default) rides along as `context`.
+			// `scope` is the effective per-run scope: the pipeline's saved default,
+			// overridden by a per-run scope — the same scope a server run receives.
 			const document = await locateDocument(ws, input.fileId);
 			const audit = await invoke<Audit>("detect", {
 				document,
 				policies,
-				...(input.source.scope ? { context: input.source.scope } : {}),
+				...(scope ? { context: scope } : {}),
 			});
 
 			// Persist the run so the detections list and restore-latest work offline.
