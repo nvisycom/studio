@@ -248,27 +248,19 @@ async function render(url: string, target: HTMLElement) {
 					}
 				};
 
-				// Scroll the active entity's first match into view (after a repaint).
-				const scrollToActive = () => {
-					if (!desiredActiveId) return;
-					requestAnimationFrame(() => {
-						target
-							.querySelector(`.${CHIP_CLASS}--active`)
-							?.scrollIntoView({ block: "center", behavior: "smooth" });
-					});
-				};
-
 				// Full rebuild (re-match every entity) — for entity-set / file changes.
 				refreshHighlights = () => {
-					void rebuild().then(scrollToActive);
+					void rebuild();
 				};
 
 				// Active-only update — the anchor set doesn't depend on the focused
-				// entity, only the `--active` class does, so just repaint + scroll
-				// instead of re-matching the whole document on every focus step.
+				// entity, only the `--active` class does, so just repaint instead of
+				// re-matching the whole document on every focus step. Scrolling the
+				// focused chip into view (only when off-screen) and anchoring its popover
+				// is the dispatcher's job (StudioDocumentPreview.focusChip); the view must
+				// NOT also scroll, or the two fight and re-center an already-visible entity.
 				applyActive = () => {
 					ctx.decorations.invalidate("studio.entities");
-					scrollToActive();
 				};
 
 				// Paint once the document is ready — reads whatever desired state has
@@ -402,15 +394,11 @@ onBeforeUnmount(teardown);
 </template>
 
 <style scoped>
-/* SuperDoc paints its own layout (pages on a backdrop). Tint the backdrop to the
-   app's content surface so the canvas matches the rest of the studio, and add
-   breathing room above the first page / below the last (SuperDoc butts the page
-   against the container edge otherwise). */
+/* Tint the backdrop the pages sit on to the app's content surface, so the canvas
+   matches the rest of the studio. (The page frame and the page spacing are shared
+   across the paged previews — see assets/css/preview.css.) */
 .studio-docx :deep(.superdoc-layout) {
   background: var(--background);
-  /* SuperDoc sets the layout's padding inline, so `!important` is needed to add
-     breathing room above the first page / below the last. */
-  padding-block: 2rem !important;
 }
 
 /* Center the pages horizontally. SuperDoc's root (`.superdoc`) is a flex row

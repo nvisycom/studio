@@ -4,7 +4,7 @@ import type {
 	RedactionInput,
 	RedactionOutput,
 	RedactionProvider,
-} from "#console/detection/redaction";
+} from "#console/providers/redaction";
 import type { Repository } from "#console/repositories/types";
 import { locateDocument } from "~/repositories/folder";
 import { getRun } from "~/repositories/runs";

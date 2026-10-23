@@ -10,7 +10,7 @@ import type {
 	DetectionProvider,
 	DetectionResult,
 	RestoredDetection,
-} from "#console/detection/types";
+} from "#console/providers/types";
 import type { Repository } from "#console/repositories/types";
 import { locateDocument } from "~/repositories/folder";
 import { parseBody, storeGet } from "~/repositories/store";

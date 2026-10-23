@@ -205,45 +205,121 @@ const activeEntity = computed(
 	() => props.textEntities.find((e) => e.id === props.activeEntityId) ?? null,
 );
 
-// Scroll the focused entity into view and anchor the detail popover to its
-// chip. The chip may live in the code view or the CSV table, so query from the
-// preview root.
+// Anchor the detail popover to the focused entity's chip. The chip may live in
+// any preview, so it's queried from the preview root.
 const rootEl = ref<HTMLElement | null>(null);
-const activeChipEl = ref<HTMLElement | null>(null);
+// The inner scroll container. The detail popover is teleported into it (see
+// `EntityDetailPopover`'s `to`) so the card scrolls natively with the chip and is
+// clipped by the pane — it's `position:relative` to be that absolute-positioning
+// context.
+const scrollEl = ref<HTMLElement | null>(null);
 
-// Re-resolve the anchor chip for the active entity. Split from the watch so it
-// can run both when the focus changes and when the highlights rebuild: the DOCX
-// view recreates its chip elements on every re-highlight (e.g. after a keep
-// toggle), which detaches the previously-captured node — leaving the popover
-// anchored to a stale element, so it snaps to the top-left corner. Re-querying
-// keeps it pinned to the live chip. `scroll` is only for a focus change.
-function reanchor(scroll: boolean) {
-	const id = props.activeEntityId;
-	if (!id) {
-		activeChipEl.value = null;
-		return;
-	}
-	nextTick(() => {
-		if (props.activeEntityId !== id) return;
-		const el = rootEl.value?.querySelector<HTMLElement>(
-			`[data-entity="${id}"]`,
-		);
-		activeChipEl.value = el ?? null;
-		if (scroll) el?.scrollIntoView({ block: "center", behavior: "smooth" });
-	});
+// Locate the on-screen chip for an entity. The previews mark it two ways: most
+// (code, CSV, PDF) set `data-entity`, while the DOCX overlay (SuperDoc decoration
+// spans) carries a `docx-eid-<id>` class instead. Query both so every view
+// anchors. A DOCX run can hold several ids (overlapping entities); the class
+// selector matches any of them.
+function findChip(id: string): HTMLElement | null {
+	const escaped = CSS.escape(id);
+	return (
+		rootEl.value?.querySelector<HTMLElement>(
+			`[data-entity="${escaped}"], .docx-eid-${escaped}`,
+		) ?? null
+	);
 }
 
-// On focus change: re-anchor and scroll the newly focused chip into view.
+// Whether a chip is already fully within the preview's visible area, so a focus
+// doesn't needlessly scroll it. Compares the chip's rect against the preview
+// root's rect (the scroll viewport's clipping box); a chip whose top or bottom
+// falls outside isn't fully visible and should be scrolled into view.
+function isChipInView(chip: HTMLElement): boolean {
+	const root = rootEl.value;
+	if (!root) return true;
+	const view = root.getBoundingClientRect();
+	const rect = chip.getBoundingClientRect();
+	return rect.top >= view.top && rect.bottom <= view.bottom;
+}
+
+// The anchor is a VIRTUAL element, not a captured chip node: the views recreate
+// their chip elements on every re-highlight (a DOCX keep toggle, a PDF repaint),
+// which would detach a captured node and snap the popover to the top-left corner.
+// Re-querying the live chip inside `getBoundingClientRect` — which the floating
+// layer calls on every reposition — keeps the popover pinned to whatever chip is
+// currently on screen, surviving those rebuilds.
+const activeChipEl = computed<{ getBoundingClientRect(): DOMRect } | null>(
+	() => {
+		const id = props.activeEntityId;
+		if (!id) return null;
+		// The floating layer measures the anchor only on scroll/resize, not every
+		// frame, and the chip can be gone at that moment — a DOCX decoration renders
+		// only while its range is in view, so scrolling it off removes the node.
+		// Returning a zero rect then would pin the open popover to the viewport's
+		// top-left until the next scroll; instead keep returning the last real rect.
+		let lastRect = new DOMRect(0, 0, 0, 0);
+		return {
+			getBoundingClientRect: () => {
+				const chip = findChip(id);
+				if (chip) lastRect = chip.getBoundingClientRect();
+				return lastRect;
+			},
+		};
+	},
+);
+
+// Reveal the page a paginated (PDF) entity sits on. The PDF viewer renders pages
+// lazily (pdf.js only paints a page, and its text layer, once it scrolls near the
+// viewport), so a chip on an unrendered page does not exist yet. Every page's
+// container div is in the DOM from the start with its placeholder height, so
+// scrolling that container into view brings the page near the viewport, which
+// triggers the lazy render — and once the text layer paints, the highlighter adds
+// the chip. Returns whether the page container was found.
+function revealPage(page: number): boolean {
+	const pageEl = rootEl.value?.querySelector<HTMLElement>(
+		`.sd-pdf-viewer-page[data-page-number="${page}"]`,
+	);
+	pageEl?.scrollIntoView({ block: "center", behavior: "instant" });
+	return !!pageEl;
+}
+
+// Scroll the focused chip into view and settle the popover against it. The popover
+// anchors to the chip's *current* on-screen rect, so the chip has to be in view
+// before the floating layer measures it — otherwise the popover is positioned
+// off-screen (an entity that needed scrolling shows no popover) or against the
+// pre-scroll rect (it lands detached from the chip). When the chip isn't painted
+// yet (a lazily-rendered PDF page), reveal its page and retry for a few frames
+// until the text layer paints the chip; `attempts` bounds that wait so a chip that
+// never appears (e.g. a metadata-only entity) doesn't spin.
+function focusChip(id: string, attempts = 20, revealed = false) {
+	if (props.activeEntityId !== id) return;
+	const chip = findChip(id);
+	if (chip) {
+		// Only scroll a chip that isn't already fully in view — re-centering an
+		// entity the user can already see is jarring and unnecessary. `nearest`
+		// (not `center`) brings a partly/out-of-view chip just far enough to show
+		// it, without yanking an on-screen one to the middle. No manual re-measure
+		// nudge: the popover's `update-position-strategy="always"` already tracks
+		// the anchor every frame, so a `resize` dispatch here only double-updates
+		// and makes the popover wobble as the scroll settles.
+		if (!isChipInView(chip))
+			chip.scrollIntoView({ block: "nearest", behavior: "instant" });
+		return;
+	}
+	// Chip not painted yet. For a paginated entity, reveal its page once (which
+	// triggers the lazy render), then poll for the chip the page's text layer will
+	// paint — without re-scrolling, so the user isn't fought frame to frame.
+	const page = activeEntity.value?.page;
+	if (!revealed && page != null) revealed = revealPage(page);
+	if (attempts > 0)
+		requestAnimationFrame(() => focusChip(id, attempts - 1, revealed));
+}
+
+// Scroll the newly focused chip into view on a focus change (not on a rebuild).
 watch(
 	() => props.activeEntityId,
-	() => reanchor(true),
-);
-// On highlight rebuild (entity set / suppressed state changed): re-anchor without
-// scrolling, so a keep toggle doesn't leave the popover pinned to a dead node.
-watch(
-	() => props.textEntities,
-	() => reanchor(false),
-	{ deep: true },
+	(id) => {
+		if (!id) return;
+		nextTick(() => focusChip(id));
+	},
 );
 </script>
 
@@ -253,10 +329,11 @@ watch(
       :entity="activeEntity"
       :reference="activeChipEl"
       :with-headers="withHeaders"
+      :to="scrollEl"
       @close="emit('clear-entity')"
       @toggle-suppress="emit('toggle-suppress', $event)"
     />
-    <div class="h-full overflow-y-auto">
+    <div ref="scrollEl" class="relative h-full overflow-y-auto">
       <!-- Single loading overlay for every file kind, driven by the active
            view's reported phase. Rendered as an overlay (not v-if against the
            views) so a view can mount and work *underneath* it (e.g. SuperDoc

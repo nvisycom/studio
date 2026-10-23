@@ -1486,6 +1486,7 @@
 			"raw": "Raw",
 			"withHeaders": "With headers",
 			"docxFailed": "Couldn't render this Word document.",
+			"pdfFailed": "Couldn't render this PDF.",
 			"textFailed": "Unable to load this file.",
 			"audioFailed": "Couldn't play this audio file.",
 			"play": "Play",
@@ -1991,9 +1992,7 @@
 		},
 		"trends": {
 			"detections": "Detections",
-			"tokens": "Tokens",
 			"detectionsTitle": "Detections per day",
-			"tokensTitle": "Tokens per day",
 			"errorRate": "Error rate",
 			"avgDuration": "Avg duration",
 			"errorRateTitle": "Error rate per day",

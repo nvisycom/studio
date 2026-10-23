@@ -123,6 +123,15 @@ export const STUDIO_RENDERERS: readonly StudioRenderer[] = [
 		component: () => import("./StudioDocxView.vue"),
 		detectionSource: "docx-parts",
 	},
+	{
+		kind: "pdf",
+		extensions: ["pdf"],
+		component: () => import("./StudioPdfView.vue"),
+		// The PDF view highlights entities by their page-local byte offsets against
+		// pdf.js's own text layer, so it needs no fetched source text to map against
+		// (unlike the text/DOCX views) — nothing to source here.
+		detectionSource: "none",
+	},
 ];
 
 /** Extension -> renderer index, built once (extensions are unique per renderer). */

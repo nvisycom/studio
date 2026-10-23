@@ -36,7 +36,7 @@ export const FORMAT_TOKENS: FormatToken[] = [
 	"log",
 	"pdf",
 	"png",
-	"rtf",
+	"pptx",
 	"tif",
 	"tiff",
 	"txt",

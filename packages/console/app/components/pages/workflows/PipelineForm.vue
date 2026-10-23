@@ -199,7 +199,7 @@ function buildDefinition(): CreateWorkspacePipeline["definition"] {
 			defaultScope: {
 				languages: languages.value.map((language) => ({
 					language,
-					provenance: "asserted" as const,
+					source: "asserted" as const,
 				})),
 				...(countries.value.length && { countries: [...countries.value] }),
 			},

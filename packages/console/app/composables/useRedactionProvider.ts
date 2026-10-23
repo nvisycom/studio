@@ -1,7 +1,7 @@
 import type { Ref } from "vue";
 import type { Workspace } from "@nvisy/sdk/datatypes";
-import type { RedactionProvider } from "#console/detection/redaction";
-import { createServerRedactionProvider } from "#console/detection/redaction-server";
+import type { RedactionProvider } from "#console/providers/redaction";
+import { createServerRedactionProvider } from "#console/providers/redaction-server";
 
 /**
  * The redaction seam: where the studio applies reviewer edits, resolved to a
