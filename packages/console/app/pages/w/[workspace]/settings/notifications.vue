@@ -92,17 +92,25 @@ async function toggleEmailNotifications(value: boolean) {
 	}
 }
 
+// A single toggleable notification event within a category.
+interface NotificationEventRow {
+	event: NotificationEvent;
+	name: string;
+	description: string;
+}
+
+// A labelled group of notification events.
+interface NotificationCategory {
+	id: string;
+	name: string;
+	events: NotificationEventRow[];
+}
+
 // Notification categories, grouping the backend's NotificationEvent values.
 // The event ids carry dots (e.g. "connection.sync.completed"), so the i18n
 // leaf keys use dot-free camelCase (syncCompleted, runAnalyzed, ...) to avoid
 // vue-i18n treating the dot as a path separator.
-const categories = computed<
-	{
-		id: string;
-		name: string;
-		events: { event: NotificationEvent; name: string; description: string }[];
-	}[]
->(() => [
+const categories = computed<NotificationCategory[]>(() => [
 	{
 		id: "members",
 		name: t("settings.notifications.categories.members.name"),

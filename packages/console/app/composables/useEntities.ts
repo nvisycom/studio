@@ -187,10 +187,19 @@ export interface CategorizedGroup<T extends BaseEntityView> {
 	labels: LabelGroup<T>[];
 }
 
+/** A flat grouping of entities by raw label id, before catalog enrichment (no
+ *  display `name` yet — that's {@link LabelGroup}). */
+export interface RawLabelGroup<T extends BaseEntityView> {
+	/** Raw label id. */
+	label: string;
+	/** Every occurrence for this label, in order. */
+	items: T[];
+}
+
 /** Group a flat entity list by raw label id, preserving order. */
 export function groupByLabel<T extends BaseEntityView>(
 	entities: T[],
-): { label: string; items: T[] }[] {
+): RawLabelGroup<T>[] {
 	const map = new Map<string, T[]>();
 	for (const entity of entities) {
 		const list = map.get(entity.label);

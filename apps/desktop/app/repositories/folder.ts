@@ -40,6 +40,13 @@ export async function ensureBound(workspaceId: string): Promise<void> {
 	});
 }
 
+/** A document's position: the owning workspace and its path within that
+ *  workspace's bound folder. */
+export interface DocumentLocation {
+	workspaceId: string;
+	path: string;
+}
+
 /**
  * Locate a document for the engine: the workspace id plus the document's path
  * within that workspace's bound folder, resolved from its id. The engine reads
@@ -49,12 +56,10 @@ export async function ensureBound(workspaceId: string): Promise<void> {
 export async function locateDocument(
 	workspaceId: string,
 	documentId: string,
-): Promise<{ workspaceId: string; path: string }> {
+): Promise<DocumentLocation> {
 	await ensureBound(workspaceId);
 	const record = await storeGet("documents", documentId);
-	const doc = record
-		? parseBody<{ path: string; workspaceId: string }>(record)
-		: null;
+	const doc = record ? parseBody<DocumentLocation>(record) : null;
 	// Scope to the workspace: a document id from another workspace would otherwise
 	// resolve its path under THIS workspace's folder and read the wrong file.
 	if (!doc || doc.workspaceId !== workspaceId) {

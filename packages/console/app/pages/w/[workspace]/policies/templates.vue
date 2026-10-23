@@ -70,7 +70,13 @@ type PciRender = Extract<
 	{ part: "pan_render" }
 >["render"];
 
-const TEMPLATES: { kind: TemplateKind; category: string }[] = [
+// A policy template offered in the gallery: its kind and display category.
+interface TemplateRow {
+	kind: TemplateKind;
+	category: string;
+}
+
+const TEMPLATES: TemplateRow[] = [
 	{ kind: "hipaa_deidentification", category: "HIPAA" },
 	{ kind: "gdpr_article9", category: "GDPR" },
 	{ kind: "pci_dss", category: "PCI DSS" },

@@ -113,6 +113,12 @@ export function useDocumentSegments(inputs: {
 	//   into the raw file instead — same as DOCX.
 	// - Tabular (CSV) entities are byte offsets *within a cell*: from the cell's
 	//   content start, advance by the byte offset converted to a char index.
+	// An entity resolved to a concrete char span in the shown text.
+	type PlacedSpan = { e: TextEntityView; start: number; end: number };
+
+	// A byte range in the shown raw file.
+	type ByteRange = { byteStart: number; byteEnd: number };
+
 	const entitySpans = computed(() => {
 		const byteMap = byteToChar.value;
 		const csv = parsedCsv.value;
@@ -146,7 +152,7 @@ export function useDocumentSegments(inputs: {
 		return entities.value
 			.map((e) => ({ e, ...resolve(e) }))
 			.filter(
-				(s): s is { e: TextEntityView; start: number; end: number } =>
+				(s): s is PlacedSpan =>
 					s.start != null && s.end != null && s.end > s.start,
 			)
 			.sort((a, b) => a.start - b.start);
@@ -165,7 +171,7 @@ export function useDocumentSegments(inputs: {
 		// De-overlap the entity spans once (keep the earliest on a clash); the SAME
 		// list drives both the boundary set and the per-run lookup, so a run is only
 		// attributed to an entity whose edges were actually split.
-		const placed: { e: TextEntityView; start: number; end: number }[] = [];
+		const placed: PlacedSpan[] = [];
 		let cursor = 0;
 		for (const s of entitySpans.value) {
 			if (s.start < cursor) continue;
@@ -280,10 +286,7 @@ export function useDocumentSegments(inputs: {
 	// such a token would yield an empty raw range and drop a valid add. When the
 	// raw range collapses but the formatted selection wasn't empty, expand it to the
 	// whole raw token (a number is redacted whole anyway) so the range stays useful.
-	function charRangeToBytes(
-		startFmt: number,
-		endFmt: number,
-	): { byteStart: number; byteEnd: number } {
+	function charRangeToBytes(startFmt: number, endFmt: number): ByteRange {
 		let rawStart = charToRaw(startFmt);
 		let rawEnd = charToRaw(endFmt);
 		if (rawEnd <= rawStart && endFmt > startFmt) {
