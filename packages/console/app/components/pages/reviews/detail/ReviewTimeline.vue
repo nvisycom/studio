@@ -116,6 +116,38 @@ function bodySegments(body: string): BodySegment[] {
 	return out;
 }
 
+type EventEntry = Extract<WorkspaceReviewEntry, { type: "event" }>;
+
+// A timeline row: a comment on its own, or a run of consecutive events by the
+// same actor collapsed into one compact line (opened · assigned · verified …),
+// so the lifecycle metadata doesn't drown the discussion.
+type TimelineRow =
+	| { kind: "comment"; id: string; entry: CommentEntry }
+	| { kind: "events"; id: string; items: EventEntry[] };
+
+const rows = computed<TimelineRow[]>(() => {
+	const out: TimelineRow[] = [];
+	for (const entry of props.entries) {
+		if (entry.type === "comment") {
+			out.push({ kind: "comment", id: entry.id, entry });
+			continue;
+		}
+		const prev = out.at(-1);
+		// Merge into the previous event run when the same actor acted; otherwise a
+		// new run. Actor absence (removed account) breaks the run.
+		if (
+			prev?.kind === "events" &&
+			entry.actor &&
+			prev.items[0]?.actor?.id === entry.actor.id
+		) {
+			prev.items.push(entry);
+		} else {
+			out.push({ kind: "events", id: entry.id, items: [entry] });
+		}
+	}
+	return out;
+});
+
 const draft = ref("");
 
 // One latch owns the whole in-flight post: it gates re-entry (a second Enter
@@ -198,48 +230,53 @@ async function confirmDelete() {
       <Loader2 :size="20" class="animate-spin" />
     </div>
 
-    <ol v-else class="flex flex-col gap-4">
-      <li
-        v-for="(entry, i) in entries"
-        :key="entry.id"
-        class="relative flex gap-3"
-      >
-        <!-- Per-item rail connector: a line from this marker down to the next.
-             Drawn on every item but the last, so the rail never trails off into
-             nothing. Centered on the 24px marker (x = 12px). -->
-        <span
-          v-if="i < entries.length - 1"
-          aria-hidden="true"
-          class="absolute left-3 top-6 -bottom-4 w-px bg-border"
-        />
+    <ol v-else class="relative flex flex-col gap-3">
+      <!-- One continuous rail behind every item, from the first marker's centre
+           to the last's (markers are 24px, so ±12px). Markers sit on top with an
+           opaque ring, so the line reads as unbroken (GitHub-style). -->
+      <span
+        v-if="rows.length > 1"
+        aria-hidden="true"
+        class="absolute left-3 top-3 bottom-3 w-px bg-border"
+      />
 
-        <!-- Comment: a full card with the author's avatar. -->
-        <template v-if="entry.type === 'comment'">
-          <EntityAvatar
-            size="sm"
-            class="z-10 shrink-0 ring-2 ring-background"
-            :name="personLabel(entry.author)"
-            :src="resolveAvatarUrl(entry.author.avatarUrl)"
-          />
-          <div class="min-w-0 flex-1 rounded-lg border border-border/60">
+      <li
+        v-for="row in rows"
+        :key="row.id"
+        class="relative flex gap-3"
+        :class="row.kind === 'events' ? 'items-center' : ''"
+      >
+        <!-- Comment: a full card that breaks out to the left of the rail (so it
+             stands apart from the on-rail events), with the author avatar inside
+             its header. -->
+        <template v-if="row.kind === 'comment'">
+          <div
+            class="-ml-3 min-w-0 flex-1 rounded-lg border border-border/60 bg-background"
+          >
             <div
-              class="flex items-center gap-2 border-b border-border/60 bg-muted/30 px-3 py-1.5 text-sm"
+              class="flex items-center gap-2 rounded-t-lg border-b border-border/60 bg-muted/30 px-3 py-2 text-sm"
             >
+              <EntityAvatar
+                size="sm"
+                class="shrink-0"
+                :name="personLabel(row.entry.author)"
+                :src="resolveAvatarUrl(row.entry.author.avatarUrl)"
+              />
               <span class="font-medium text-foreground">
-                {{ personLabel(entry.author) }}
+                {{ personLabel(row.entry.author) }}
               </span>
               <span class="text-xs text-muted-foreground">
-                {{ relativeTime(entry.createdAt) }}
+                {{ relativeTime(row.entry.createdAt) }}
               </span>
-              <span v-if="isEdited(entry)" class="text-xs text-muted-foreground">
+              <span v-if="isEdited(row.entry)" class="text-xs text-muted-foreground">
                 · {{ t("reviews.detail.commentActions.edited") }}
               </span>
               <!-- Own-comment actions: edit (inline) + delete (confirm). -->
               <DropdownMenu
                 v-if="
-                  canManage(entry) &&
+                  canManage(row.entry) &&
                   (onEditComment || onDeleteComment) &&
-                  editingId !== entry.id
+                  editingId !== row.entry.id
                 "
               >
                 <DropdownMenuTrigger as-child>
@@ -247,7 +284,7 @@ async function confirmDelete() {
                     variant="ghost"
                     size="icon"
                     class="ml-auto size-6 shrink-0 text-muted-foreground"
-                    :disabled="busyId === entry.id"
+                    :disabled="busyId === row.entry.id"
                     :aria-label="t('reviews.detail.commentActions.actions')"
                   >
                     <MoreHorizontal :size="15" />
@@ -256,7 +293,7 @@ async function confirmDelete() {
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem
                     v-if="onEditComment"
-                    @select="startEdit(entry)"
+                    @select="startEdit(row.entry)"
                   >
                     <Pencil :size="14" />
                     {{ t("reviews.detail.commentActions.edit") }}
@@ -264,7 +301,7 @@ async function confirmDelete() {
                   <DropdownMenuItem
                     v-if="onDeleteComment"
                     class="text-destructive focus:text-destructive"
-                    @select="deletingEntry = entry"
+                    @select="deletingEntry = row.entry"
                   >
                     <Trash2 :size="14" />
                     {{ t("reviews.detail.commentActions.delete") }}
@@ -274,12 +311,12 @@ async function confirmDelete() {
             </div>
 
             <!-- Inline editor for this comment. -->
-            <div v-if="editingId === entry.id" class="flex flex-col gap-2 p-3">
+            <div v-if="editingId === row.entry.id" class="flex flex-col gap-2 p-3">
               <MentionInput
                 v-model="editDraft"
                 :candidates="mentionCandidates"
                 :placeholder="t('reviews.detail.commentPlaceholder')"
-                @submit="saveEdit(entry)"
+                @submit="saveEdit(row.entry)"
               />
               <div class="flex justify-end gap-2">
                 <Button variant="ghost" size="sm" @click="cancelEdit">
@@ -287,11 +324,11 @@ async function confirmDelete() {
                 </Button>
                 <Button
                   size="sm"
-                  :disabled="!editDraft.trim() || busyId === entry.id"
-                  @click="saveEdit(entry)"
+                  :disabled="!editDraft.trim() || busyId === row.entry.id"
+                  @click="saveEdit(row.entry)"
                 >
                   <Loader2
-                    v-if="busyId === entry.id"
+                    v-if="busyId === row.entry.id"
                     :size="14"
                     class="mr-1.5 animate-spin"
                   />
@@ -306,7 +343,7 @@ async function confirmDelete() {
               class="whitespace-pre-wrap px-3 py-2.5 text-sm text-foreground"
             >
               <template
-                v-for="(seg, i) in bodySegments(entry.body)"
+                v-for="(seg, i) in bodySegments(row.entry.body)"
                 :key="i"
               >
                 <span
@@ -319,19 +356,27 @@ async function confirmDelete() {
           </div>
         </template>
 
-        <!-- Event: a compact inline line with a marker. -->
+        <!-- Events: a run of lifecycle actions by one actor, collapsed into one
+             quiet line (opened · assigned · verified …) so metadata recedes and
+             comments lead. A smaller, muted marker carries the first action. -->
         <template v-else>
           <span
-            class="z-10 flex size-6 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground ring-2 ring-background"
+            class="relative z-10 flex size-6 shrink-0 items-center justify-center rounded-full border border-border bg-background text-muted-foreground"
           >
-            <component :is="eventIcon(entry.kind)" :size="13" />
+            <component :is="eventIcon(row.items[0]!.kind)" :size="12" />
           </span>
-          <p class="flex flex-wrap items-baseline gap-1.5 pt-0.5 text-sm text-muted-foreground">
-            <span v-if="entry.actor" class="font-medium text-foreground">
-              {{ personLabel(entry.actor) }}
+          <p class="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-sm text-muted-foreground">
+            <span
+              v-if="row.items[0]!.actor"
+              class="font-medium text-foreground"
+            >
+              {{ personLabel(row.items[0]!.actor!) }}
             </span>
-            <span>{{ t(`reviews.detail.events.${entry.kind}`) }}</span>
-            <span class="text-xs">{{ relativeTime(entry.createdAt) }}</span>
+            <template v-for="(ev, j) in row.items" :key="ev.id">
+              <span v-if="j > 0" aria-hidden="true" class="text-border">·</span>
+              <span>{{ t(`reviews.detail.events.${ev.kind}`) }}</span>
+              <span class="text-xs">{{ relativeTime(ev.createdAt) }}</span>
+            </template>
           </p>
         </template>
       </li>

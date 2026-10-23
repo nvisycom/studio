@@ -321,9 +321,10 @@ function openInStudio() {
           </Badge>
         </header>
 
-        <!-- Two-column: main (tabs) + right rail -->
+        <!-- Two-column: main (tabs) + right rail. The main column is capped for a
+             readable thread width rather than sprawling across a wide screen. -->
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_240px]">
-          <div class="min-w-0">
+          <div class="min-w-0 lg:max-w-3xl">
             <Tabs default-value="discussion">
               <TabsList>
                 <TabsTrigger value="discussion">

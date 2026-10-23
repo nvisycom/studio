@@ -34,11 +34,11 @@ const assignedIds = computed(() => props.review.assignees.map((a) => a.id));
 </script>
 
 <template>
-  <aside class="flex w-full flex-col gap-5 text-sm">
+  <aside class="flex w-full flex-col gap-4 text-sm">
     <!-- Status -->
     <section class="flex flex-col gap-2">
       <h3
-        class="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+        class="section-label"
       >
         {{ t("reviews.detail.sidebar.status") }}
       </h3>
@@ -57,7 +57,7 @@ const assignedIds = computed(() => props.review.assignees.map((a) => a.id));
     <section class="flex flex-col gap-2">
       <div class="flex items-center justify-between">
         <h3
-          class="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+          class="section-label"
         >
           {{ t("reviews.detail.sidebar.reviewers") }}
         </h3>
@@ -100,7 +100,7 @@ const assignedIds = computed(() => props.review.assignees.map((a) => a.id));
     <!-- Opened by -->
     <section class="flex flex-col gap-2">
       <h3
-        class="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+        class="section-label"
       >
         {{ t("reviews.detail.sidebar.author") }}
       </h3>
