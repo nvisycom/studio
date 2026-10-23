@@ -161,7 +161,7 @@ function toRows<T>(
 const detectionsByStatus = computed<BreakdownRow[]>(() =>
 	toRows(analytics.value?.detections.byStatus ?? [], {
 		value: (e) => e.count,
-		label: (e) => t(`workflows.detections.detectionStatus.${e.status}`),
+		label: (e) => t(`pipelines.detections.detectionStatus.${e.status}`),
 		format: (e) => e.count.toLocaleString(),
 		keyOf: (e) => e.status,
 	}),

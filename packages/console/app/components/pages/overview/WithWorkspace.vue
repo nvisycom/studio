@@ -434,7 +434,7 @@ const quickActions = [
               </CardTitle>
               <NuxtLink
                 v-if="recentDetections.length"
-                :to="wLink('/workflows/detections')"
+                :to="wLink('/pipelines/detections')"
                 class="text-xs text-muted-foreground transition-colors hover:text-foreground"
               >
                 {{ t("overview.sections.viewAll") }}
@@ -446,7 +446,7 @@ const quickActions = [
               <NuxtLink
                 v-for="detection in recentDetections"
                 :key="detection.id"
-                :to="wLink('/workflows/detections')"
+                :to="wLink('/pipelines/detections')"
                 class="flex min-h-14 items-center gap-3 py-2.5"
               >
                 <div class="relative shrink-0">
@@ -460,7 +460,7 @@ const quickActions = [
                     />
                   </div>
                   <span
-                    :title="t(`workflows.detections.detectionStatus.${detection.status}`)"
+                    :title="t(`pipelines.detections.detectionStatus.${detection.status}`)"
                     class="absolute -bottom-1 -right-1 flex size-[18px] items-center justify-center rounded-full border border-border bg-background ring-2 ring-background"
                   >
                     <component

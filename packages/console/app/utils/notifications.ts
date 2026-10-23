@@ -56,19 +56,19 @@ export function notificationContent(
 			return content(
 				"pipelineDetectionCompleted",
 				payload.data,
-				"/workflows/detections",
+				"/pipelines/detections",
 			);
 		case "pipeline.detection.failed":
 			return content(
 				"pipelineDetectionFailed",
 				payload.data,
-				"/workflows/detections",
+				"/pipelines/detections",
 			);
 		case "pipeline.redaction.created":
 			return content(
 				"pipelineRedactionCreated",
 				payload.data,
-				"/workflows/detections",
+				"/pipelines/detections",
 			);
 		// Version skew: a newer API can emit a `type` outside the pinned SDK
 		// union. Fall back to a generic entry so the notification still renders

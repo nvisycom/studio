@@ -10,7 +10,7 @@
 				"explore": "Erkunden",
 				"providers": "Anbieter"
 			},
-			"workflows": {
+			"pipelines": {
 				"index": "Pipelines",
 				"detections": "Erkennungen"
 			},
@@ -38,7 +38,7 @@
 			"documents": "Dokumente",
 			"studio": "Studio",
 			"team": "Team",
-			"workflows": "Workflows",
+			"pipelines": "Pipelines",
 			"policies": "Richtlinien",
 			"integrations": "Integrationen",
 			"analytics": "Analysen",
@@ -1346,7 +1346,7 @@
 		"connections": "Integrationen",
 		"explore": "Entdecken",
 		"policies": "Richtlinien",
-		"workflows": "Workflows",
+		"pipelines": "Pipelines",
 		"observability": "Beobachtbarkeit",
 		"analytics": "Analytik",
 		"logs": "Protokolle",
@@ -1803,7 +1803,7 @@
 			"slugEmpty": "Geben Sie einen Namen mit Buchstaben oder Zahlen ein, um einen Slug zu erzeugen."
 		}
 	},
-	"workflows": {
+	"pipelines": {
 		"title": "Pipelines",
 		"count": "{count} Pipeline konfiguriert | {count} Pipelines konfiguriert",
 		"detections": {

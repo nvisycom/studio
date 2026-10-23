@@ -10,7 +10,7 @@
 				"explore": "Explore",
 				"providers": "Providers"
 			},
-			"workflows": {
+			"pipelines": {
 				"index": "Pipelines",
 				"detections": "Detections"
 			},
@@ -38,7 +38,7 @@
 			"documents": "Documents",
 			"studio": "Studio",
 			"team": "Team",
-			"workflows": "Workflows",
+			"pipelines": "Pipelines",
 			"policies": "Policies",
 			"integrations": "Integrations",
 			"analytics": "Analytics",
@@ -1346,7 +1346,7 @@
 		"connections": "Integrations",
 		"explore": "Explore",
 		"policies": "Policies",
-		"workflows": "Workflows",
+		"pipelines": "Pipelines",
 		"observability": "Observability",
 		"analytics": "Analytics",
 		"logs": "Logs",
@@ -1803,7 +1803,7 @@
 			"slugEmpty": "Enter a name using letters or numbers to generate a slug."
 		}
 	},
-	"workflows": {
+	"pipelines": {
 		"title": "Pipelines",
 		"count": "{count} pipeline configured | {count} pipelines configured",
 		"detections": {

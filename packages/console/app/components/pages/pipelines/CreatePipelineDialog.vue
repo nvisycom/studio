@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { CreateWorkspacePipeline } from "@nvisy/sdk/datatypes";
 import { toast } from "vue-sonner";
-import { EditPipelineSheet } from "#console/components/pages/workflows";
+import { EditPipelineSheet } from "#console/components/pages/pipelines";
 
 /**
  * The shell-wide "create pipeline" dialog: mounted once in the layout and driven
- * by `useCreatePipeline`, so any trigger (command palette, workflows page) opens
+ * by `useCreatePipeline`, so any trigger (command palette, pipelines page) opens
  * the same dialog wherever the user is. Owns the create mutation and, on success,
- * navigates to the workflows list so the new pipeline is in view. Fetches the
+ * navigates to the pipelines list so the new pipeline is in view. Fetches the
  * policy list itself (the sheet offers them for linking).
  *
  * Editing a pipeline is the page's job (it loads the pipeline and owns its row),
@@ -23,12 +23,12 @@ const { createPipelineAsync, isCreating } = usePipelines();
 async function handleCreate(pipeline: CreateWorkspacePipeline) {
 	try {
 		await createPipelineAsync(pipeline);
-		toast.success(t("workflows.toast.created"));
+		toast.success(t("pipelines.toast.created"));
 		close();
-		await navigateTo(wLink("/workflows"));
+		await navigateTo(wLink("/pipelines"));
 	} catch (err) {
 		// Keep the dialog open on failure so the user can retry.
-		toast.error(t("workflows.toast.createFailed"), {
+		toast.error(t("pipelines.toast.createFailed"), {
 			description: getErrorMessage(err, t("common.errors.tryAgain")),
 		});
 	}
