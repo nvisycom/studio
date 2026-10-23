@@ -248,27 +248,19 @@ async function render(url: string, target: HTMLElement) {
 					}
 				};
 
-				// Scroll the active entity's first match into view (after a repaint).
-				const scrollToActive = () => {
-					if (!desiredActiveId) return;
-					requestAnimationFrame(() => {
-						target
-							.querySelector(`.${CHIP_CLASS}--active`)
-							?.scrollIntoView({ block: "center", behavior: "smooth" });
-					});
-				};
-
 				// Full rebuild (re-match every entity) — for entity-set / file changes.
 				refreshHighlights = () => {
-					void rebuild().then(scrollToActive);
+					void rebuild();
 				};
 
 				// Active-only update — the anchor set doesn't depend on the focused
-				// entity, only the `--active` class does, so just repaint + scroll
-				// instead of re-matching the whole document on every focus step.
+				// entity, only the `--active` class does, so just repaint instead of
+				// re-matching the whole document on every focus step. Scrolling the
+				// focused chip into view (only when off-screen) and anchoring its popover
+				// is the dispatcher's job (StudioDocumentPreview.focusChip); the view must
+				// NOT also scroll, or the two fight and re-center an already-visible entity.
 				applyActive = () => {
 					ctx.decorations.invalidate("studio.entities");
-					scrollToActive();
 				};
 
 				// Paint once the document is ready — reads whatever desired state has

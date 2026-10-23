@@ -25,6 +25,13 @@ const props = defineProps<{
 	reference: { getBoundingClientRect(): DOMRect } | null;
 	/** Whether the CSV's first row is a header (matches the table + audit list). */
 	withHeaders?: boolean;
+	/**
+	 * Portal target for the card — the preview's scroll container. Teleporting the
+	 * card there (instead of `<body>`) makes it a scroll sibling of the chip, so it
+	 * moves natively with the content (no reposition lag) and is clipped by the
+	 * pane's rounded inset instead of floating over its edge.
+	 */
+	to?: string | HTMLElement | null;
 }>();
 
 const emit = defineEmits<{
@@ -106,11 +113,21 @@ const location = computed(() => {
 <template>
   <Popover :open="open" @update:open="onOpenChange">
     <PopoverAnchor :reference="reference ?? undefined" />
+    <!-- The card is teleported into the preview's scroll container (`to`), so it
+         scrolls natively with the chip and is clipped by the pane's rounded inset.
+         `position-strategy="absolute"` positions it in that container's coordinate
+         space (not viewport-fixed), which is what lets it ride the scroll instead
+         of being re-placed every frame. `update-position-strategy="always"` still
+         re-measures the virtual anchor (no DOM ancestry) each frame so it re-pins
+         after a chip rebuild. `z-[5]` keeps it under the sticky header (z-10). -->
     <PopoverContent
       side="bottom"
       align="start"
       :side-offset="6"
-      class="w-64 p-0"
+      :to="to ?? undefined"
+      position-strategy="absolute"
+      update-position-strategy="always"
+      class="w-64 p-0 z-[5]"
       @open-auto-focus.prevent
       @interact-outside="onInteractOutside"
     >

@@ -10,7 +10,16 @@ defineOptions({
 });
 
 const props = withDefaults(
-	defineProps<PopoverContentProps & { class?: HTMLAttributes["class"] }>(),
+	defineProps<
+		PopoverContentProps & {
+			class?: HTMLAttributes["class"];
+			/** Portal target for the content. Defaults to `<body>` (reka-ui's
+			 * default) when unset; pass a selector/element to teleport the content
+			 * into a specific container (e.g. a scroll pane so it clips + scrolls
+			 * with the content). */
+			to?: string | HTMLElement | null;
+		}
+	>(),
 	{
 		align: "center",
 		sideOffset: 4,
@@ -18,13 +27,14 @@ const props = withDefaults(
 );
 const emits = defineEmits<PopoverContentEmits>();
 
-const delegatedProps = reactiveOmit(props, "class");
+// `to` drives the portal, not the content; `class` is applied below.
+const delegatedProps = reactiveOmit(props, "class", "to");
 
 const forwarded = useForwardPropsEmits(delegatedProps, emits);
 </script>
 
 <template>
-  <PopoverPortal>
+  <PopoverPortal :to="to ?? undefined">
     <PopoverContent
       data-slot="popover-content"
       v-bind="{ ...forwarded, ...$attrs }"
