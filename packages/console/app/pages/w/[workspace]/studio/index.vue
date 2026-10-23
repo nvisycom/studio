@@ -15,6 +15,7 @@ import {
 	StudioAuditTable,
 	StudioNewDetection,
 	StudioDetectionSwitcher,
+	StudioReview,
 	StudioAuditToolbar,
 	EntityAuditModal,
 } from "#console/components/pages/studio";
@@ -154,15 +155,16 @@ const detection = useStudioDetection(
 // The inspector's two tabs: configuring a new detection, and the existing audit
 // (pick + view a detection). On a file change, land on Audit when the file has
 // detections to show, else on Detection so the user can run one — decided once
-// per file, when its detections resolve (the list loads async after open), so a
-// later list refresh never yanks the user off the tab they chose.
-const panelTab = ref<"audit" | "new">("new");
-let tabDecidedFor: string | null = null;
+// when the FIRST file's detections resolve (the list loads async after open).
+// After that the user owns the choice: switching files keeps the current panel
+// tab rather than yanking back to Audit.
+const panelTab = ref<"new" | "audit" | "review">("new");
+let tabDecided = false;
 watch(
 	[() => activeFile.value?.fileId, () => detection.phase.value],
 	([file, phase]) => {
-		if (file !== tabDecidedFor && phase !== "restoring") {
-			tabDecidedFor = file ?? null;
+		if (!tabDecided && file && phase !== "restoring") {
+			tabDecided = true;
 			panelTab.value = detection.detections.value.length ? "audit" : "new";
 		}
 	},
@@ -271,6 +273,15 @@ const redaction = useStudioRedaction({
 	entities: detection.entities,
 	count: detection.count,
 });
+
+// Applying a redaction completes the Detect → Audit → Review progression, so move
+// to the Review tab once it lands (on the transition to `done`).
+watch(
+	() => redaction.redactPhase.value,
+	(phase, prev) => {
+		if (phase === "done" && prev !== "done") panelTab.value = "review";
+	},
+);
 
 function focusEntity(id: string) {
 	activeEntityId.value = activeEntityId.value === id ? null : id;
@@ -549,7 +560,7 @@ const auditProps = computed(() => ({
               value="new"
               class="h-9 flex-1 rounded-none border-0 border-b-2 border-transparent bg-transparent text-muted-foreground shadow-none data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
             >
-              {{ t("studio.detections.new") }}
+              {{ t("studio.detections.detectTab") }}
             </TabsTrigger>
             <TabsTrigger
               value="audit"
@@ -562,6 +573,12 @@ const auditProps = computed(() => ({
               >
                 {{ detection.detections.value.length }}
               </span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="review"
+              class="h-9 flex-1 rounded-none border-0 border-b-2 border-transparent bg-transparent text-muted-foreground shadow-none data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
+            >
+              {{ t("studio.detections.reviewTab") }}
             </TabsTrigger>
           </TabsList>
 
@@ -612,6 +629,19 @@ const auditProps = computed(() => ({
               :phase="detection.phase.value"
               :can-run="detection.canRun.value"
               @run="runNewDetection"
+            />
+          </TabsContent>
+
+          <!-- Review: the document's review discussion + sign-off (the third
+               step after Detect and Audit). -->
+          <TabsContent
+            value="review"
+            class="mt-0 flex min-h-0 flex-1 flex-col overflow-hidden"
+          >
+            <StudioReview
+              :document-id="activeFile?.fileId ?? null"
+              :document-name="activeFile?.displayName ?? null"
+              :detection-id="detection.detectionId.value"
             />
           </TabsContent>
         </Tabs>

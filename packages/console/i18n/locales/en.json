@@ -52,7 +52,8 @@
 		"save": "Save",
 		"cancel": "Cancel",
 		"errors": {
-			"tryAgain": "Please try again."
+			"tryAgain": "Please try again.",
+			"generic": "Something went wrong"
 		},
 		"time": {
 			"justNow": "Just now",
@@ -1522,7 +1523,6 @@
 			"loading": "Loading…"
 		},
 		"detections": {
-			"new": "Detection",
 			"none": "No detections yet",
 			"pipeline": "Pipeline",
 			"auditTab": "Audit",
@@ -1537,7 +1537,20 @@
 			"scope": "Scope (optional)",
 			"jurisdictions": "Jurisdictions",
 			"languages": "Languages",
-			"runDetection": "Run detection"
+			"runDetection": "Run detection",
+			"detectTab": "Detect",
+			"reviewTab": "Review",
+			"review": {
+				"none": "No reviews for this document",
+				"new": "New review",
+				"linked": "Linked",
+				"linkedDetection": "Detection",
+				"status": "Status",
+				"reviewers": "Reviewers",
+				"createFailed": "Failed to open review",
+				"startHint": "Open a review to discuss and sign off this document.",
+				"defaultTitle": "Document review"
+			}
 		}
 	},
 	"commandMenu": {
@@ -2547,7 +2560,8 @@
 			"noRedactions": "No redactions yet.",
 			"redactionReady": "Ready",
 			"redactionPending": "Pending",
-			"redactionsFailed": "Couldn't load redactions."
+			"redactionsFailed": "Couldn't load redactions.",
+			"assistant": "Assistant"
 		},
 		"actions": {
 			"verify": "Mark verified",

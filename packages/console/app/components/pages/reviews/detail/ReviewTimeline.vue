@@ -2,7 +2,10 @@
 import { Loader2, GitCommitHorizontal } from "@lucide/vue";
 import type { WorkspaceReviewEntry } from "@nvisy/sdk/datatypes";
 import { Button } from "#console/components/ui/button";
-import { Textarea } from "#console/components/ui/textarea";
+import {
+	MentionInput,
+	type MentionCandidate,
+} from "#console/components/ui/mention-input";
 import EntityAvatar from "#console/components/avatar/EntityAvatar.vue";
 import { personLabel } from "#console/utils/naming";
 
@@ -26,6 +29,43 @@ const emit = defineEmits<{
 const { t } = useI18n();
 const { resolveAvatarUrl } = useAvatarUrl();
 const { relativeTime } = useRelativeTime();
+const { members } = useMembers();
+
+// Mention candidates: the reserved AI assistant (pinned, special) + the
+// workspace's members. `@assistant` is a server-recognized handle that triggers
+// an AI reply in the thread; members are notified of a plain `@username` mention.
+const mentionCandidates = computed<MentionCandidate[]>(() => [
+	{
+		username: "assistant",
+		name: t("reviews.detail.assistant"),
+		special: true,
+	},
+	...(members.value ?? []).map((m) => ({
+		username: m.username,
+		name: personLabel(m),
+		avatarUrl: resolveAvatarUrl(m.avatarUrl),
+	})),
+]);
+
+// Split a comment body into text + `@mention` segments, so mentions render
+// highlighted (matching how they're composed as chips). A mention is `@` + word
+// chars at a word boundary — the same shape the server parses.
+const MENTION_RE = /(^|\s)(@[\w.-]+)/g;
+function bodySegments(body: string): { text: string; mention: boolean }[] {
+	const out: { text: string; mention: boolean }[] = [];
+	let last = 0;
+	for (const m of body.matchAll(MENTION_RE)) {
+		const lead = m[1] ?? "";
+		const handle = m[2] ?? "";
+		const start = (m.index ?? 0) + lead.length;
+		if (start > last)
+			out.push({ text: body.slice(last, start), mention: false });
+		out.push({ text: handle, mention: true });
+		last = start + handle.length;
+	}
+	if (last < body.length) out.push({ text: body.slice(last), mention: false });
+	return out;
+}
 
 const draft = ref("");
 
@@ -47,23 +87,26 @@ function submit() {
       <Loader2 :size="20" class="animate-spin" />
     </div>
 
-    <ol v-else class="relative flex flex-col gap-4">
-      <!-- The vertical rail running through the feed. -->
-      <span
-        aria-hidden="true"
-        class="absolute bottom-4 left-3.5 top-4 w-px bg-border"
-      />
-
+    <ol v-else class="flex flex-col gap-4">
       <li
-        v-for="entry in entries"
+        v-for="(entry, i) in entries"
         :key="entry.id"
         class="relative flex gap-3"
       >
+        <!-- Per-item rail connector: a line from this marker down to the next.
+             Drawn on every item but the last, so the rail never trails off into
+             nothing. Centered on the 24px marker (x = 12px). -->
+        <span
+          v-if="i < entries.length - 1"
+          aria-hidden="true"
+          class="absolute left-3 top-6 -bottom-4 w-px bg-border"
+        />
+
         <!-- Comment: a full card with the author's avatar. -->
         <template v-if="entry.type === 'comment'">
           <EntityAvatar
             size="sm"
-            class="z-10 mt-0.5 shrink-0 ring-2 ring-background"
+            class="z-10 shrink-0 ring-2 ring-background"
             :name="personLabel(entry.author)"
             :src="resolveAvatarUrl(entry.author.avatarUrl)"
           />
@@ -79,7 +122,16 @@ function submit() {
               </span>
             </div>
             <p class="whitespace-pre-wrap px-3 py-2.5 text-sm text-foreground">
-              {{ entry.body }}
+              <template
+                v-for="(seg, i) in bodySegments(entry.body)"
+                :key="i"
+              >
+                <span
+                  v-if="seg.mention"
+                  class="rounded bg-primary/10 px-0.5 font-medium text-primary"
+                  >{{ seg.text }}</span
+                ><template v-else>{{ seg.text }}</template>
+              </template>
             </p>
           </div>
         </template>
@@ -87,11 +139,11 @@ function submit() {
         <!-- Event: a compact inline line with a marker. -->
         <template v-else>
           <span
-            class="z-10 mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground ring-2 ring-background"
+            class="z-10 flex size-6 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground ring-2 ring-background"
           >
-            <GitCommitHorizontal :size="14" />
+            <GitCommitHorizontal :size="13" />
           </span>
-          <p class="flex flex-wrap items-baseline gap-1.5 pt-1 text-sm text-muted-foreground">
+          <p class="flex flex-wrap items-baseline gap-1.5 pt-0.5 text-sm text-muted-foreground">
             <span v-if="entry.actor" class="font-medium text-foreground">
               {{ personLabel(entry.actor) }}
             </span>
@@ -102,13 +154,12 @@ function submit() {
       </li>
     </ol>
 
-    <!-- Comment composer -->
+    <!-- Comment composer with @-mentions (members + the AI assistant). -->
     <form class="flex flex-col gap-2" @submit.prevent="submit">
-      <Textarea
+      <MentionInput
         v-model="draft"
+        :candidates="mentionCandidates"
         :placeholder="t('reviews.detail.commentPlaceholder')"
-        rows="3"
-        class="resize-y"
       />
       <div class="flex justify-end">
         <Button type="submit" size="sm" :disabled="!draft.trim() || posting">

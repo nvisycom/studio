@@ -61,6 +61,17 @@ export function useReviews(
 		{ invalidates: "reviews" },
 	);
 
+	// Link a detection to a review (records a `detection.linked` event). Used when
+	// opening a review from the studio, so the review points at the detection the
+	// reviewer is signing off on.
+	const linkDetectionMutation = workspaceMutation(
+		(
+			{ client, workspaceId },
+			{ reviewId, detectionId }: { reviewId: string; detectionId: string },
+		) => client.reviews.linkDetection(workspaceId, reviewId, detectionId),
+		{ invalidates: "reviews" },
+	);
+
 	// Add a reviewer to a review (a review can have several).
 	const assignReviewerMutation = workspaceMutation(
 		(
@@ -115,6 +126,10 @@ export function useReviews(
 		createReview: createReviewMutation.mutate,
 		createReviewAsync: createReviewMutation.mutateAsync,
 		isCreating: createReviewMutation.isLoading,
+
+		// Link a detection to a review.
+		linkDetection: linkDetectionMutation.mutate,
+		linkDetectionAsync: linkDetectionMutation.mutateAsync,
 
 		// Add a reviewer to a review.
 		assignReviewer: assignReviewerMutation.mutate,

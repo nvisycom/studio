@@ -52,7 +52,8 @@
 		"save": "Speichern",
 		"cancel": "Abbrechen",
 		"errors": {
-			"tryAgain": "Bitte versuchen Sie es erneut."
+			"tryAgain": "Bitte versuchen Sie es erneut.",
+			"generic": "Etwas ist schiefgelaufen"
 		},
 		"time": {
 			"justNow": "Gerade eben",
@@ -1522,7 +1523,6 @@
 			"loading": "Wird geladen…"
 		},
 		"detections": {
-			"new": "Erkennung",
 			"none": "Noch keine Erkennungen",
 			"pipeline": "Pipeline",
 			"auditTab": "Audit",
@@ -1537,7 +1537,20 @@
 			"scope": "Geltungsbereich (optional)",
 			"jurisdictions": "Jurisdiktionen",
 			"languages": "Sprachen",
-			"runDetection": "Erkennung ausführen"
+			"runDetection": "Erkennung ausführen",
+			"detectTab": "Erkennen",
+			"reviewTab": "Prüfung",
+			"review": {
+				"none": "Keine Prüfungen für dieses Dokument",
+				"new": "Neue Prüfung",
+				"linked": "Verknüpft",
+				"linkedDetection": "Erkennung",
+				"status": "Status",
+				"reviewers": "Prüfer",
+				"createFailed": "Prüfung konnte nicht geöffnet werden",
+				"startHint": "Öffnen Sie eine Prüfung, um dieses Dokument zu besprechen und freizugeben.",
+				"defaultTitle": "Dokumentprüfung"
+			}
 		}
 	},
 	"commandMenu": {
@@ -2547,7 +2560,8 @@
 			"noRedactions": "Noch keine Schwärzungen.",
 			"redactionReady": "Bereit",
 			"redactionPending": "Ausstehend",
-			"redactionsFailed": "Schwärzungen konnten nicht geladen werden."
+			"redactionsFailed": "Schwärzungen konnten nicht geladen werden.",
+			"assistant": "Assistent"
 		},
 		"actions": {
 			"verify": "Als geprüft markieren",
