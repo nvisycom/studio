@@ -31,20 +31,21 @@ import { getRun, listRuns, type LocalRun, saveRun } from "~/repositories/runs";
 /**
  * Resolve a detection source to the policy definitions the engine runs. A
 /** What the engine needs to run a detection: the governance policies and the
- *  effective per-run scope (a pipeline's saved default, overridden by a per-run
- *  scope). */
+ *  effective per-run scope. */
 interface ResolvedSource {
+	/** The policy ids the run executes against (persisted so it can be redacted
+	 *  again offline). */
+	policyIds: string[];
 	policies: Policy[];
 	scope?: DocumentContext;
 }
 
 /**
- * Resolve a detection source to what the engine runs. A pipeline resolves its
- * saved `policyIds`; a quick policy run takes the given ids; a quick labels run
- * mints (or reuses) a one-shot policy from the labels — the same three shapes the
- * server path resolves, done against the local repository. Returns the governance
- * `Policy` definitions (not the workspace wrappers), which is what the engine
- * takes, plus the effective scope.
+ * Resolve a detection source to what the engine runs. A policy run takes the
+ * given ids; a labels run mints (or reuses) a derived policy from the labels —
+ * the same two shapes the server path resolves, done against the local
+ * repository. Returns the governance `Policy` definitions (not the workspace
+ * wrappers), which is what the engine takes, plus the effective scope.
  */
 async function resolveSource(
 	repository: Repository,
@@ -53,20 +54,10 @@ async function resolveSource(
 ): Promise<ResolvedSource> {
 	const ws = workspaceId();
 	let policyIds: string[];
-	// The pipeline's saved default scope, which a per-run scope overrides — so a
-	// local pipeline run applies the same scope a server run would.
-	let defaultScope: DocumentContext | undefined;
-	if (source.kind === "pipeline") {
-		const pipeline = await repository.pipelines.getPipeline(
-			ws,
-			source.pipelineId,
-		);
-		policyIds = pipeline.definition.policyIds ?? [];
-		defaultScope = pipeline.definition.defaultScope;
-	} else if (source.kind === "policy") {
+	if (source.kind === "policy") {
 		policyIds = source.policyIds;
 	} else {
-		// A labels source mints a one-shot policy (reused if identical), the same
+		// A labels source mints a derived policy (reused if identical), the same
 		// two-step the server path isolates — here against the local repository.
 		const policy = await repository.policies.createPolicy(ws, {
 			source: "labels",
@@ -78,8 +69,9 @@ async function resolveSource(
 		policyIds.map((id) => repository.policies.getPolicy(ws, id)),
 	);
 	return {
+		policyIds,
 		policies: policies.map((p: WorkspacePolicy) => p.definition),
-		scope: source.scope ?? defaultScope,
+		scope: source.scope,
 	};
 }
 
@@ -108,8 +100,8 @@ function countEntities(audit: Audit): number {
  * A run is synchronous and always-complete, so the fields the page reads that a
  * local run has no honest source for are synthesized: `status` is always
  * `complete` (the engine returns the audit or throws — there is no pending/
- * failed row to list), the trigger is the local user, and there is no owning
- * account. The rest map directly (`fileId`→`inputDocumentId`, `fileName`→
+ * failed row to list), and there is no owning account beyond the local user.
+ * The rest map directly (`fileId`→`inputDocumentId`, `fileName`→
  * `inputDocumentName`, `ranAt`→`startedAt`/`completedAt`). `entityCount` rides
  * in `metadata.tags` so the detail/export paths can surface it later without a
  * server round-trip.
@@ -122,11 +114,7 @@ function runToDetection(
 		id: run.id,
 		inputDocumentId: run.fileId,
 		inputDocumentName: run.fileName,
-		// Empty for a quick (ad-hoc) run — the field is "absent for an ad-hoc
-		// detection", so surface undefined rather than an empty string.
-		...(run.pipelineId ? { pipelineId: run.pipelineId } : {}),
 		status: "complete",
-		triggerType: "user",
 		triggeredBy: { id: "local", username: "local" },
 		startedAt: run.ranAt,
 		completedAt: run.ranAt,
@@ -147,7 +135,7 @@ export function createLocalDetectionProvider(
 	return {
 		async produce(input: DetectionInput): Promise<DetectionResult> {
 			const ws = workspaceId();
-			const { policies, scope } = await resolveSource(
+			const { policyIds, policies, scope } = await resolveSource(
 				repository,
 				workspaceId,
 				input.source,
@@ -155,8 +143,8 @@ export function createLocalDetectionProvider(
 			// The document already lives in the workspace folder, so the engine
 			// reads it from disk by (workspaceId, path) — no bytes cross IPC, and the
 			// id authorizes the folder. Runs synchronously, returns the audit directly.
-			// `scope` is the effective per-run scope: the pipeline's saved default,
-			// overridden by a per-run scope — the same scope a server run receives.
+			// `scope` is the effective per-run scope — the same scope a server run
+			// receives.
 			const document = await locateDocument(ws, input.fileId);
 			const audit = await invoke<Audit>("detect", {
 				document,
@@ -165,14 +153,12 @@ export function createLocalDetectionProvider(
 			});
 
 			// Persist the run so the detections list and restore-latest work offline.
-			// The run id IS the detection id for the local path. A quick (policy/
-			// labels) run has no owning pipeline, so its `pipelineId` is empty.
+			// The run id IS the detection id for the local path.
 			const runId = crypto.randomUUID();
 			await saveRun({
 				id: runId,
 				workspaceId: ws,
-				pipelineId:
-					input.source.kind === "pipeline" ? input.source.pipelineId : "",
+				policyIds,
 				fileId: input.fileId,
 				fileName: input.name,
 				entityCount: countEntities(audit),

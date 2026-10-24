@@ -3,8 +3,6 @@ import {
 	Bot,
 	Webhook as WebhookIcon,
 	Compass,
-	History,
-	Workflow,
 	ShieldCheck,
 	LayoutTemplate,
 	Settings,
@@ -39,21 +37,6 @@ export function useSectionTabs() {
 			label: t("header.tabs.policies.templates"),
 			icon: LayoutTemplate,
 			to: "/policies/templates",
-		},
-	]);
-
-	const pipelines = computed<SectionTab[]>(() => [
-		{
-			value: "pipelines",
-			label: t("header.tabs.pipelines.index"),
-			icon: Workflow,
-			to: "/pipelines",
-		},
-		{
-			value: "detections",
-			label: t("header.tabs.pipelines.detections"),
-			icon: History,
-			to: "/pipelines/detections",
 		},
 	]);
 
@@ -136,5 +119,5 @@ export function useSectionTabs() {
 		},
 	]);
 
-	return { policies, pipelines, integrations, settings, analytics, account };
+	return { policies, integrations, settings, analytics, account };
 }

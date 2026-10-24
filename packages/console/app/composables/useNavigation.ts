@@ -8,11 +8,11 @@ import {
 	LayoutDashboard,
 	PenTool,
 	Puzzle,
+	ScanSearch,
 	ShieldCheck,
 	Settings,
 	Users,
 	Webhook as WebhookIcon,
-	Workflow,
 } from "@lucide/vue";
 
 /**
@@ -50,7 +50,7 @@ export interface NavigationGroup {
  * Items whose data lives only on the server — no local backend. For a local
  * workspace they have nothing to show, so they're dropped from the nav entirely
  * rather than rendered disabled. Everything else (overview, documents, studio,
- * pipelines, policies, settings) runs through a local seam and stays.
+ * detections, policies, settings) runs through a local seam and stays.
  *
  * `reviews` is server-only: the reviewer queue is about assigning reviews to
  * workspace accounts/members, which a local folder-workspace has none of (the
@@ -60,6 +60,9 @@ export interface NavigationGroup {
 const SERVER_ONLY_ITEMS = new Set([
 	"team",
 	"reviews",
+	// The workspace-wide detections list is a server view; a local workspace's
+	// detections are seen per-file in the studio, not through a list endpoint.
+	"detections",
 	"integrations",
 	"webhooks",
 	"analytics",
@@ -147,10 +150,10 @@ export function useNavigation() {
 				label: t("sidebar.automation"),
 				items: [
 					{
-						id: "pipelines",
-						title: t("sidebar.pipelines"),
-						url: wLink("/pipelines"),
-						icon: Workflow,
+						id: "detections",
+						title: t("sidebar.detections"),
+						url: wLink("/detections"),
+						icon: ScanSearch,
 						disabled: automationDisabled,
 					},
 					{

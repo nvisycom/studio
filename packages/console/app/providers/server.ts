@@ -8,9 +8,9 @@ import type {
 } from "./types";
 
 /*
- * The server-backed detection provider. `produce` runs a detection — a saved
- * pipeline, or a quick ad-hoc policy/labels run — streaming its status until it
- * settles, then fetches the analysis. `listForFile` returns the file's
+ * The server-backed detection provider. `produce` runs a detection against a set
+ * of policies (named directly, or minted from labels), streaming its status
+ * until it settles, then fetches the analysis. `listForFile` returns the file's
  * detections (the switcher list) and `loadAnalysis` loads a chosen one's audit.
  * It needs the active workspace id, captured per call.
  */
@@ -43,19 +43,17 @@ export function createServerDetectionProvider(
 	}
 
 	/**
-	 * Resolve a quick-detection source to the policy ids an ad-hoc detection runs
-	 * against. An existing-policy source passes its ids through; a labels source
-	 * mints (or reuses) a one-shot policy from the labels and returns its id. This
-	 * is the single seam a future server `/quick` endpoint would replace — the
-	 * mint-then-detect two-step lives here, not in the UI.
+	 * Resolve a detection source to the policy ids the run executes against. An
+	 * existing-policy source passes its ids through; a labels source mints (or
+	 * reuses) a derived policy from the labels and returns its id.
 	 */
-	async function resolveQuickPolicyIds(
+	async function resolvePolicyIds(
 		ws: string,
-		source: Extract<DetectionSource, { kind: "policy" | "labels" }>,
+		source: DetectionSource,
 	): Promise<string[]> {
 		if (source.kind === "policy") return source.policyIds;
-		// A `labels` body mints a one-shot policy, reused when an identical one
-		// already exists (the API dedupes), so repeat quick runs don't pile up.
+		// A `labels` body mints a derived policy, reused when an identical one
+		// already exists (the API dedupes), so repeat label runs don't pile up.
 		const policy = await client.policies.createPolicy(ws, {
 			source: "labels",
 			labels: source.labels,
@@ -69,24 +67,13 @@ export function createServerDetectionProvider(
 			onStatus?: (status: string) => void,
 		): Promise<DetectionResult> {
 			const ws = workspaceId();
-			// Pipeline runs through the saved pipeline (its scope, when set,
-			// overrides the pipeline's defaultScope); a quick (policy/labels) run
-			// resolves to policy ids and starts an ad-hoc detection.
-			const created =
-				input.source.kind === "pipeline"
-					? await client.detections.createDetection(
-							ws,
-							input.source.pipelineId,
-							{
-								documentId: input.fileId,
-								...(input.source.scope ? { scope: input.source.scope } : {}),
-							},
-						)
-					: await client.detections.createAdhocDetection(ws, {
-							documentId: input.fileId,
-							policyIds: await resolveQuickPolicyIds(ws, input.source),
-							...(input.source.scope ? { scope: input.source.scope } : {}),
-						});
+			// Every run resolves to a set of policy ids (a labels run mints one
+			// first), then starts a detection against the document.
+			const created = await client.detections.createDetection(ws, {
+				documentId: input.fileId,
+				policyIds: await resolvePolicyIds(ws, input.source),
+				...(input.source.scope ? { scope: input.source.scope } : {}),
+			});
 			onStatus?.(created.status);
 
 			const status = TERMINAL.includes(created.status)

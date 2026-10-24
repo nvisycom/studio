@@ -8,35 +8,31 @@ import type {
  * The detection seam: a narrow interface for the two backend operations the
  * studio delegates — running a detection and restoring a file's latest one. It
  * is deliberately NOT a full unified interface over the whole detection
- * lifecycle: pipeline selection, SSE status streaming, and server-side storage
- * have no honest local equivalent, so those stay in `useStudioDetection` (server
- * paths hidden offline). Only the "produce / restore an Audit" boundary, where
- * the two backends genuinely agree (on the shared `Audit` type), is seamed.
+ * lifecycle: SSE status streaming and server-side storage have no honest local
+ * equivalent, so those stay in `useStudioDetection` (server paths hidden
+ * offline). Only the "produce / restore an Audit" boundary, where the two
+ * backends genuinely agree (on the shared `Audit` type), is seamed.
  *
- * ServerDetectionProvider is the pipeline flow (createDetection → stream →
- * getAnalysis); LocalDetectionProvider invokes the on-device engine. The studio
- * composable calls the injected provider and never knows which is in play.
+ * ServerDetectionProvider runs the detection against the server (createDetection
+ * → stream → getAnalysis); LocalDetectionProvider invokes the on-device engine.
+ * The studio composable calls the injected provider and never knows which is in
+ * play.
  */
 
 /**
- * How a detection run decides *what to detect*. Three shapes that all resolve to
+ * How a detection run decides *what to detect*. Two shapes that both resolve to
  * the same thing (a set of policies to run), differing only in where that set
  * comes from:
  *
- * - `pipeline` — a saved pipeline's policy set (the server path runs it by id;
- *   the local path resolves the pipeline's `policyIds`).
- * - `policy` — a quick ad-hoc run against existing workspace policies, named
- *   directly. No saved pipeline.
- * - `labels` — a quick ad-hoc run that mints (or reuses) a one-shot policy from
- *   a set of built-in labels, then runs that. The no-setup path: detect these
- *   entity types without authoring or saving anything.
+ * - `policy` — a run against existing workspace policies, named directly by id.
+ * - `labels` — a run that mints (or reuses) a derived policy from a set of
+ *   built-in labels, then runs that. The no-setup path: detect these entity
+ *   types without authoring or saving anything.
  *
- * All three carry an optional per-run {@link DocumentContext} scope: for `policy`
- * and `labels` it is the run's scope; for `pipeline` it overrides the pipeline's
- * saved `defaultScope` (absent falls back to that default).
+ * Both carry an optional per-run {@link DocumentContext} scope (jurisdictions,
+ * languages, document labels) applied to the run.
  */
 export type DetectionSource =
-	| { kind: "pipeline"; pipelineId: string; scope?: DocumentContext }
 	| { kind: "policy"; policyIds: string[]; scope?: DocumentContext }
 	| { kind: "labels"; labels: string[]; scope?: DocumentContext };
 
@@ -46,7 +42,7 @@ export interface DetectionInput {
 	fileId: string;
 	/** The document's display name. */
 	name: string;
-	/** What to detect: a saved pipeline, or a quick ad-hoc policy/labels run. */
+	/** What to detect: a policy set, or a labels run. */
 	source: DetectionSource;
 	/** The document bytes, loaded lazily (the local engine needs them; the
 	 *  server path, which has the stored document, ignores this). */

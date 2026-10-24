@@ -23,7 +23,8 @@ interface Redacted {
 	path: string;
 }
 
-/** Resolve the policy definitions the redaction's run was detected with. */
+/** Resolve the policy definitions the redaction's run was detected with. The run
+ *  records the policy ids it ran against, so redaction uses the same set. */
 async function policiesForRun(
 	repository: Repository,
 	workspaceId: () => string,
@@ -32,10 +33,8 @@ async function policiesForRun(
 	const run = await getRun(detectionId);
 	if (!run) throw new Error(`local run ${detectionId} not found`);
 	const ws = workspaceId();
-	const pipeline = await repository.pipelines.getPipeline(ws, run.pipelineId);
-	const ids = pipeline.definition.policyIds ?? [];
 	const policies = await Promise.all(
-		ids.map((id) => repository.policies.getPolicy(ws, id)),
+		run.policyIds.map((id) => repository.policies.getPolicy(ws, id)),
 	);
 	return policies.map((p: WorkspacePolicy) => p.definition);
 }

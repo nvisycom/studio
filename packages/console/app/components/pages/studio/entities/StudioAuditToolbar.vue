@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { WorkspacePipelineSummary } from "@nvisy/sdk/datatypes";
 import {
 	ArrowUpFromLine,
 	Download,
@@ -13,22 +12,15 @@ import type {
 	StudioRedactPhase,
 } from "#console/composables/useStudioRedaction";
 import { Button } from "#console/components/ui/button";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "#console/components/ui/select";
 
 /**
- * The floating controls bar for the full-screen audit review: pipeline
- * selection + run on the left, redaction actions (apply, then download/export)
- * on the right — all the inspector's controls in one bar so the collapsed
- * inspector isn't missed. Floats centered at the bottom of the wide table.
+ * The floating controls bar for the full-screen audit review: a run/re-run
+ * button on the left (reusing the Detect tab's configured source) and redaction
+ * actions (apply, then download/export) on the right — all the inspector's
+ * controls in one bar so the collapsed inspector isn't missed. Floats centered
+ * at the bottom of the wide table.
  */
 const props = defineProps<{
-	pipelines: WorkspacePipelineSummary[] | undefined;
 	phase: StudioDetectionPhase;
 	canRun: boolean;
 	redactPhase?: StudioRedactPhase;
@@ -46,10 +38,6 @@ const emit = defineEmits<{
 	"export-output": [];
 }>();
 
-const selectedPipeline = defineModel<string>("selectedPipeline", {
-	default: "",
-});
-
 const { t } = useI18n();
 
 // How many entities the "Apply" button will redact (excludes kept ones).
@@ -62,41 +50,17 @@ const showRedaction = computed(() => props.phase === "complete");
   <div
     class="flex items-center gap-2 rounded-xl border border-border/60 bg-background/95 p-2 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/80"
   >
-    <!-- Detection: pick a pipeline and run it. -->
-    <Select v-model="selectedPipeline" :disabled="phase === 'running'">
-      <SelectTrigger class="h-8 w-48 text-sm">
-        <SelectValue :placeholder="t('studio.audit.pipelinePlaceholder')" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem
-          v-for="p in pipelines ?? []"
-          :key="p.id"
-          :value="p.id"
-          class="text-sm font-normal"
-        >
-          {{ p.displayName }}
-        </SelectItem>
-        <p
-          v-if="!pipelines?.length"
-          class="px-2 py-1.5 text-sm text-muted-foreground"
-        >
-          {{ t("studio.audit.noPipelines") }}
-        </p>
-      </SelectContent>
-    </Select>
+    <!-- Detection: run (or re-run) with the Detect tab's configured source. -->
     <Button
-      size="icon"
-      class="size-8 shrink-0"
+      size="sm"
+      class="h-8 shrink-0"
       :disabled="!canRun"
-      :title="phase === 'complete' ? t('studio.audit.runAgain') : t('studio.audit.run')"
-      :aria-label="
-        phase === 'complete' ? t('studio.audit.runAgain') : t('studio.audit.run')
-      "
       @click="emit('run')"
     >
       <Loader2 v-if="phase === 'running'" :size="16" class="animate-spin" />
       <RotateCcw v-else-if="phase === 'complete'" :size="16" />
       <Play v-else :size="16" />
+      {{ phase === "complete" ? t("studio.audit.runAgain") : t("studio.audit.run") }}
     </Button>
 
     <!-- Redaction: apply, then download / export the output. -->

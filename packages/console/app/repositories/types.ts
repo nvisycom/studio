@@ -78,17 +78,6 @@ export interface Repository {
 		| "deletePolicy"
 		| "promotePolicy"
 	>;
-	// Pipelines are the detection-time policy set. On desktop they are local
-	// entities (a named `{ policyIds, defaultScope }`, no triggers/schedules), so
-	// the studio's pipeline picker works offline against the local store.
-	pipelines: ResourceOf<
-		Nvisy["pipelines"],
-		| "listPipelines"
-		| "getPipeline"
-		| "createPipeline"
-		| "updatePipeline"
-		| "deletePipeline"
-	>;
 	// Documents. On desktop these are the files in the workspace's folder: the
 	// folder holds the bytes, a local index holds the records. `downloadDocument`
 	// returns a `Response` so the studio's blob-URL byte path is identical to the

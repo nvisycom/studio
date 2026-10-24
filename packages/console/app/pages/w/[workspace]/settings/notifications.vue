@@ -169,46 +169,46 @@ const categories = computed<NotificationCategory[]>(() => [
 		],
 	},
 	{
-		id: "pipelines",
-		name: t("settings.notifications.categories.pipelines.name"),
+		id: "detections",
+		name: t("settings.notifications.categories.detections.name"),
 		events: [
 			{
-				event: "pipeline.detection.completed",
+				event: "detection.completed",
 				name: t(
-					"settings.notifications.categories.pipelines.detectionCompleted.name",
+					"settings.notifications.categories.detections.detectionCompleted.name",
 				),
 				description: t(
-					"settings.notifications.categories.pipelines.detectionCompleted.description",
+					"settings.notifications.categories.detections.detectionCompleted.description",
 				),
 			},
 			{
-				event: "pipeline.detection.failed",
+				event: "detection.failed",
 				name: t(
-					"settings.notifications.categories.pipelines.detectionFailed.name",
+					"settings.notifications.categories.detections.detectionFailed.name",
 				),
 				description: t(
-					"settings.notifications.categories.pipelines.detectionFailed.description",
+					"settings.notifications.categories.detections.detectionFailed.description",
 				),
 			},
 			{
-				event: "pipeline.redaction.created",
+				event: "redaction.created",
 				name: t(
-					"settings.notifications.categories.pipelines.redactionCreated.name",
+					"settings.notifications.categories.detections.redactionCreated.name",
 				),
 				description: t(
-					"settings.notifications.categories.pipelines.redactionCreated.description",
+					"settings.notifications.categories.detections.redactionCreated.description",
 				),
 			},
 		],
 	},
 ]);
 
-// A local workspace only has the pipeline events (detection/redaction run in the
-// studio); it has no member/review/connection events. So locally the list shows
-// just that category — "exactly as the server," minus what doesn't exist locally.
+// A local workspace only has the detection events (detection/redaction run in
+// the studio); it has no member/review/connection events. So locally the list
+// shows just that category — "exactly as the server," minus what's not local.
 const visibleCategories = computed(() =>
 	localWorkspace.value
-		? categories.value.filter((c) => c.id === "pipelines")
+		? categories.value.filter((c) => c.id === "detections")
 		: categories.value,
 );
 

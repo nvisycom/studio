@@ -374,7 +374,7 @@ function openInStudio() {
                   >
                     <span class="flex min-w-0 items-baseline gap-2">
                       <span class="truncate text-foreground">
-                        {{ t(`reviews.detail.triggerType.${detection.triggerType}`) }}
+                        {{ t("reviews.detail.detection") }}
                       </span>
                       <span class="shrink-0 text-xs text-muted-foreground">
                         {{ relativeTime(detection.startedAt) }}

@@ -14,7 +14,6 @@ import type { Repository } from "./types";
 export function createServerRepository(client: Nvisy): Repository {
 	return {
 		policies: client.policies,
-		pipelines: client.pipelines,
 		documents: client.documents,
 		// Notification settings live on the SDK's `workspaces` resource.
 		notificationSettings: client.workspaces,

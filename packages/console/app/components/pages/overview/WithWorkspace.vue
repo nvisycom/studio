@@ -5,11 +5,13 @@ import {
 	CircleSlash,
 	ClipboardCheck,
 	Clock,
+	EyeOff,
 	FileText,
 	Link2,
 	Loader2,
 	Mail,
 	Play,
+	ScanSearch,
 	Settings2,
 	ShieldCheck,
 	Upload,
@@ -119,7 +121,8 @@ const ACTIVITY_ICON: Record<string, Component> = {
 	connection: Link2,
 	webhook: WebhookIcon,
 	file: FileText,
-	pipeline: Play,
+	detection: ScanSearch,
+	redaction: EyeOff,
 	policy: ShieldCheck,
 };
 function activityIcon(category: string): Component {
@@ -151,9 +154,9 @@ const recentActivities = computed(() =>
 
 const recentDocuments = computed(() => (documents.value ?? []).slice(0, 5));
 
-// Most-recent pipeline detections, newest first. Each is shown by the document
+// Most-recent detections, newest first. Each is shown by the document
 // it analyzes (mirroring the Recent files card): a file-icon tile carrying a
-// small status badge in its corner, the pipeline as secondary detail, and the
+// small status badge in its corner, when it ran as secondary detail, and the
 // account that triggered it.
 const recentDetections = computed(() =>
 	[...(detections.value ?? [])]
@@ -162,7 +165,6 @@ const recentDetections = computed(() =>
 		.map((detection) => ({
 			id: detection.id,
 			status: detection.status,
-			pipelineId: detection.pipelineId,
 			startedAt: detection.startedAt,
 			triggeredBy: detection.triggeredBy,
 			// The source document; fall back to the id when the name is absent.
@@ -434,7 +436,7 @@ const quickActions = [
               </CardTitle>
               <NuxtLink
                 v-if="recentDetections.length"
-                :to="wLink('/pipelines/detections')"
+                :to="wLink('/detections')"
                 class="text-xs text-muted-foreground transition-colors hover:text-foreground"
               >
                 {{ t("overview.sections.viewAll") }}
@@ -446,7 +448,7 @@ const quickActions = [
               <NuxtLink
                 v-for="detection in recentDetections"
                 :key="detection.id"
-                :to="wLink('/pipelines/detections')"
+                :to="wLink('/detections')"
                 class="flex min-h-14 items-center gap-3 py-2.5"
               >
                 <div class="relative shrink-0">
@@ -460,7 +462,7 @@ const quickActions = [
                     />
                   </div>
                   <span
-                    :title="t(`pipelines.detections.detectionStatus.${detection.status}`)"
+                    :title="t(`detections.detectionStatus.${detection.status}`)"
                     class="absolute -bottom-1 -right-1 flex size-[18px] items-center justify-center rounded-full border border-border bg-background ring-2 ring-background"
                   >
                     <component
@@ -478,8 +480,8 @@ const quickActions = [
                   <p class="truncate text-sm font-medium text-foreground">
                     {{ detection.fileName }}
                   </p>
-                  <p class="truncate font-mono text-xs text-muted-foreground">
-                    {{ detection.pipelineId }}
+                  <p class="truncate text-xs text-muted-foreground">
+                    {{ relativeTime(detection.startedAt) }}
                   </p>
                 </div>
                 <div class="flex min-w-0 shrink items-center gap-2">

@@ -2,30 +2,17 @@ import { NvisyApiError } from "@nvisy/sdk";
 import type {
 	ArtifactSet,
 	Audit,
-	CreateWorkspaceDetection,
 	WorkspaceDetection,
 	WorkspaceDetectionsQuery,
 } from "@nvisy/sdk/datatypes";
 import type { MaybeRefOrGetter } from "vue";
 
-/** States that settle a detection — its analysis is ready at "complete". */
-const TERMINAL: WorkspaceDetection["status"][] = ["complete", "failed"];
-
-/** Detections list filter: the API's query plus a pipeline slug, which routes
- * to the pipeline-scoped list endpoint. */
-export interface DetectionsFilter extends WorkspaceDetectionsQuery {
-	pipelineId?: string;
-}
-
-/** A completed detection run: its id and the fetched analysis. */
-export interface RunDetectionResult {
-	detectionId: string;
-	audit: Audit;
-}
+/** Detections list filter: the API's query (status, document, policy). */
+export type DetectionsFilter = WorkspaceDetectionsQuery;
 
 /**
  * Composable for detection operations (workspace-scoped). Pass a reactive
- * `filter` to scope the detections list server-side (status, trigger, pipeline).
+ * `filter` to scope the detections list server-side (status, document, policy).
  */
 export function useDetections(filter?: MaybeRefOrGetter<DetectionsFilter>) {
 	const { requireContext, enabled, currentWorkspaceId } = useWorkspaceContext();
@@ -52,29 +39,22 @@ export function useDetections(filter?: MaybeRefOrGetter<DetectionsFilter>) {
 		],
 		enabled,
 		query: async () => {
-			// Local history: list the on-device runs. Status/trigger filters don't
-			// apply (every local run is a complete, user-triggered run), but pipeline
-			// and file filters still narrow the list client-side.
+			// Local history: list the on-device runs. Status filters don't apply
+			// (every local run is a complete, user-triggered run), but the file
+			// filter still narrows the list client-side.
 			if (localList.value) {
-				const { pipelineId, documentId } = activeFilter.value;
+				const { documentId } = activeFilter.value;
 				let runs = await localList.value(currentWorkspaceId.value ?? "");
-				if (pipelineId) runs = runs.filter((r) => r.pipelineId === pipelineId);
 				if (documentId)
 					runs = runs.filter((r) => r.inputDocumentId === documentId);
 				return runs;
 			}
 
 			const { client, workspaceId } = requireContext();
-			const { pipelineId, ...query } = activeFilter.value;
-			// A pipeline filter uses the pipeline-scoped endpoint (the workspace
-			// list only filters by pipelineId, which isn't exposed on summaries).
-			const result = pipelineId
-				? await client.detections.listPipelineDetections(
-						workspaceId,
-						pipelineId,
-						query,
-					)
-				: await client.detections.listDetections(workspaceId, query);
+			const result = await client.detections.listDetections(
+				workspaceId,
+				activeFilter.value,
+			);
 			return result.items;
 		},
 	});
@@ -137,83 +117,6 @@ export function useDetections(filter?: MaybeRefOrGetter<DetectionsFilter>) {
 		await saveBlob(await response.blob(), fileName);
 	}
 
-	/**
-	 * The most recent complete detection for a file (its analysis is ready), or
-	 * null if the file has never been analyzed. Used to restore a file's
-	 * detections when it's reopened. Ordering isn't guaranteed by the API, so we
-	 * sort by `startedAt` ourselves.
-	 */
-	async function findLatestForFile(
-		documentId: string,
-		pipelineId?: string,
-	): Promise<WorkspaceDetection | null> {
-		const { client, workspaceId } = requireContext();
-		const { items } = await client.detections.listDetections(workspaceId, {
-			documentId,
-			limit: 100,
-		});
-		return (
-			items
-				.filter((d) => d.status === "complete")
-				.filter((d) => !pipelineId || d.pipelineId === pipelineId)
-				.sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0] ?? null
-		);
-	}
-
-	/**
-	 * Stream a detection's status changes over SSE until it settles, then return
-	 * the final status. Yields the current status first, then each transition.
-	 * `onStatus` reports every tick so the UI can show live progress.
-	 */
-	async function waitForDetection(
-		detectionId: string,
-		onStatus?: (status: WorkspaceDetection["status"]) => void,
-	): Promise<WorkspaceDetection["status"]> {
-		const { client, workspaceId } = requireContext();
-		let last: WorkspaceDetection["status"] | null = null;
-		for await (const event of client.detections.streamEvents(
-			workspaceId,
-			detectionId,
-		)) {
-			last = event.status;
-			onStatus?.(event.status);
-			if (TERMINAL.includes(event.status)) break;
-		}
-		if (!last)
-			throw new Error("The detection stream closed before any status.");
-		return last;
-	}
-
-	/**
-	 * Run a detection end-to-end: create it for `fileId` on `pipelineId`, stream
-	 * its status until it completes, then fetch its analysis. `onStatus` reports
-	 * each transition. Throws if the detection fails.
-	 */
-	async function runDetection(
-		pipelineId: string,
-		body: CreateWorkspaceDetection,
-		onStatus?: (status: WorkspaceDetection["status"]) => void,
-	): Promise<RunDetectionResult> {
-		const { client, workspaceId } = requireContext();
-		const created = await client.detections.createDetection(
-			workspaceId,
-			pipelineId,
-			body,
-		);
-		onStatus?.(created.status);
-
-		const status = TERMINAL.includes(created.status)
-			? created.status
-			: await waitForDetection(created.id, onStatus);
-
-		if (status === "failed") {
-			throw new Error("Detection failed.");
-		}
-
-		const audit = await getAnalysis(created.id);
-		return { detectionId: created.id, audit };
-	}
-
 	return {
 		// Query state
 		detections: detectionsQuery.data,
@@ -225,7 +128,5 @@ export function useDetections(filter?: MaybeRefOrGetter<DetectionsFilter>) {
 		getAnalysis,
 		getIntermediates,
 		downloadAudit,
-		findLatestForFile,
-		runDetection,
 	};
 }

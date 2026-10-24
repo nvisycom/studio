@@ -12,7 +12,6 @@ import {
 	Upload,
 	User,
 	UserPlus,
-	Workflow,
 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import type { NavigationItem } from "#console/composables/useNavigation";
@@ -52,7 +51,6 @@ export function useCommandMenu() {
 	const { open: openHelpChat } = useHelpChat();
 	const { open: openCreateWorkspace } = useCreateWorkspace();
 	const { open: openCreatePolicy } = useCreatePolicy();
-	const { open: openCreatePipeline } = useCreatePipeline();
 	const { generateCodeAsync } = useInvites();
 
 	function open() {
@@ -117,12 +115,6 @@ export function useCommandMenu() {
 			label: t("commandMenu.actions.createPolicy"),
 			icon: ShieldCheck,
 			run: () => run(openCreatePolicy),
-		},
-		{
-			id: "create-pipeline",
-			label: t("commandMenu.actions.createPipeline"),
-			icon: Workflow,
-			run: () => run(openCreatePipeline),
 		},
 		{
 			id: "create-api-token",

@@ -10,10 +10,6 @@
 				"explore": "Erkunden",
 				"providers": "Anbieter"
 			},
-			"pipelines": {
-				"index": "Pipelines",
-				"detections": "Erkennungen"
-			},
 			"settings": {
 				"general": "Allgemein",
 				"notifications": "Benachrichtigungen",
@@ -38,14 +34,14 @@
 			"documents": "Dokumente",
 			"studio": "Studio",
 			"team": "Team",
-			"pipelines": "Pipelines",
 			"policies": "Richtlinien",
 			"integrations": "Integrationen",
 			"analytics": "Analysen",
 			"billing": "Abrechnung",
 			"settings": "Einstellungen",
 			"webhooks": "Webhooks",
-			"reviews": "Prüfungen"
+			"reviews": "Prüfungen",
+			"detections": "Erkennungen"
 		}
 	},
 	"common": {
@@ -278,15 +274,15 @@
 						"description": "Wenn die Synchronisierung einer Verbindung fehlschlägt"
 					}
 				},
-				"pipelines": {
-					"name": "Pipelines",
+				"detections": {
+					"name": "Erkennungen",
 					"detectionCompleted": {
 						"name": "Erkennung abgeschlossen",
-						"description": "Wenn eine Pipeline-Erkennung die Analyse abschließt"
+						"description": "Wenn eine Erkennung die Analyse abschließt"
 					},
 					"detectionFailed": {
 						"name": "Erkennung fehlgeschlagen",
-						"description": "Wenn eine Pipeline-Erkennung fehlschlägt"
+						"description": "Wenn eine Erkennung fehlschlägt"
 					},
 					"redactionCreated": {
 						"name": "Schwärzung bereit",
@@ -1361,7 +1357,6 @@
 		"connections": "Integrationen",
 		"explore": "Entdecken",
 		"policies": "Richtlinien",
-		"pipelines": "Pipelines",
 		"observability": "Beobachtbarkeit",
 		"analytics": "Analytik",
 		"logs": "Protokolle",
@@ -1369,7 +1364,8 @@
 		"settings": "Einstellungen",
 		"support": "Support",
 		"webhooks": "Webhooks",
-		"reviews": "Prüfungen"
+		"reviews": "Prüfungen",
+		"detections": "Erkennungen"
 	},
 	"health": {
 		"status": {
@@ -1402,7 +1398,6 @@
 			"revealInDocument": "Im Dokument anzeigen",
 			"running": "Entitäten werden erkannt…",
 			"occurrences": "{n} Vorkommen",
-			"pipelinePlaceholder": "Pipeline auswählen",
 			"run": "Erkennung ausführen",
 			"runAgain": "Erneut ausführen",
 			"runFailed": "Erkennung fehlgeschlagen. Bitte erneut versuchen.",
@@ -1491,8 +1486,7 @@
 				"hint": "Kräftige Markierungen im Dokument umschalten"
 			},
 			"locationUnavailable": "Position nicht verfügbar",
-			"locationUnavailableHint": "Die Position dieser Entität im Dokument ist ungültig und kann daher nicht angezeigt oder an Ort und Stelle redigiert werden.",
-			"noPipelines": "Noch keine Pipelines. Erstelle zuerst eine."
+			"locationUnavailableHint": "Die Position dieser Entität im Dokument ist ungültig und kann daher nicht angezeigt oder an Ort und Stelle redigiert werden."
 		},
 		"preview": {
 			"loading": "Dokument wird geladen …",
@@ -1541,14 +1535,12 @@
 		},
 		"detections": {
 			"none": "Noch keine Erkennungen",
-			"pipeline": "Pipeline",
 			"auditTab": "Audit",
 			"source": {
 				"pipeline": "Pipeline",
 				"labels": "Label",
 				"policies": "Richtlinien"
 			},
-			"adhoc": "Ad-hoc",
 			"jurisdictions": "Jurisdiktionen",
 			"languages": "Sprachen",
 			"runDetection": "Erkennung ausführen",
@@ -1569,18 +1561,15 @@
 				"deleteTitle": "Diesen Review löschen?",
 				"deleteDescription": "Dies entfernt den Review und die gesamte Diskussion dauerhaft."
 			},
-			"pipelineStatus": {
-				"draft": "Entwurf",
-				"disabled": "Deaktiviert",
-				"enabled": "Aktiviert"
-			},
-			"emptyPipelines": {
-				"title": "Noch keine Pipelines",
-				"description": "Erstelle eine Pipeline, um mit gespeicherten Richtlinien zu erkennen."
-			},
 			"emptyPolicies": {
 				"title": "Noch keine Richtlinien",
 				"description": "Erstelle eine Richtlinie oder erkenne stattdessen über Labels."
+			},
+			"ranAt": "Ausgeführt {time}",
+			"scope": {
+				"countriesPlaceholder": "Ländercode suchen oder eingeben (z. B. US)",
+				"languagesPlaceholder": "BCP-47-Tag suchen oder eingeben (z. B. en)",
+				"addValue": "Hinzufügen"
 			}
 		},
 		"fullScreen": {
@@ -1604,7 +1593,6 @@
 			"title": "Schnellaktionen",
 			"createWorkspace": "Arbeitsbereich erstellen",
 			"createPolicy": "Neue Richtlinie",
-			"createPipeline": "Neue Pipeline",
 			"createApiToken": "Neues API-Token",
 			"exploreIntegrations": "Integrationen erkunden",
 			"uploadFile": "Datei hochladen",
@@ -1889,143 +1877,6 @@
 			"derived": "Abgeleitet"
 		}
 	},
-	"pipelines": {
-		"title": "Pipelines",
-		"count": "{count} Pipeline konfiguriert | {count} Pipelines konfiguriert",
-		"detections": {
-			"status": "Status",
-			"allStatus": "Alle Status",
-			"allPipelines": "Alle Pipelines",
-			"allTriggers": "Alle Auslöser",
-			"statusHeader": "Status",
-			"pipeline": "Pipeline",
-			"file": "Datei",
-			"trigger": "Auslöser",
-			"started": "Gestartet",
-			"runsFound": "{count} Erkennung | {count} Erkennungen",
-			"noRunsFound": "Keine Erkennungen gefunden",
-			"triggerType": {
-				"user": "Manuell",
-				"system": "Automatisch"
-			},
-			"detectionStatus": {
-				"pending": "Ausstehend",
-				"executing": "Wird ausgeführt",
-				"complete": "Abgeschlossen",
-				"failed": "Fehlgeschlagen"
-			},
-			"noRunsDescription": "Erkennungen erscheinen hier, sobald dieser Arbeitsbereich Dateien verarbeitet.",
-			"triggeredBy": "Ausgelöst von",
-			"openInStudio": "In Studio öffnen",
-			"menu": "Erkennungsaktionen",
-			"downloadAuditJson": "Audit herunterladen (JSON)",
-			"downloadAuditCsv": "Audit herunterladen (CSV)",
-			"auditDownloadFailed": "Audit konnte nicht heruntergeladen werden",
-			"seeDetails": "Details anzeigen",
-			"detail": {
-				"status": "Status",
-				"trigger": "Auslöser",
-				"started": "Gestartet",
-				"completed": "Abgeschlossen",
-				"duration": "Dauer",
-				"running": "Läuft noch",
-				"detectionLoading": "Erkennungen werden geladen.",
-				"detectionUnavailable": "Erkennungen nicht verfügbar.",
-				"detections": "{count} Entitäten erkannt | {count} Entität erkannt | {count} Entitäten erkannt",
-				"input": "Eingabe",
-				"error": "Fehler",
-				"detectionId": "Erkennungs-ID",
-				"copy": "Erkennungs-ID kopieren",
-				"copied": "Erkennungs-ID kopiert",
-				"tags": "Tags",
-				"downloadJson": "JSON herunterladen",
-				"downloadCsv": "CSV herunterladen",
-				"none": "-",
-				"copyFailed": "Erkennungs-ID konnte nicht kopiert werden"
-			},
-			"openInStudioFailed": "Die Datei konnte nicht im Studio geöffnet werden."
-		},
-		"status": {
-			"draft": "Entwurf",
-			"enabled": "Aktiviert",
-			"disabled": "Deaktiviert"
-		},
-		"table": {
-			"name": "Name",
-			"creator": "Ersteller",
-			"created": "Erstellt",
-			"updated": "Aktualisiert",
-			"menu": "Aktionen",
-			"edit": "Bearbeiten"
-		},
-		"actions": {
-			"create": "Pipeline erstellen",
-			"delete": "Löschen",
-			"edit": "Bearbeiten"
-		},
-		"empty": {
-			"title": "Noch keine Pipelines",
-			"description": "Erstellen Sie Ihre erste Pipeline zur automatischen Dokumentenverarbeitung."
-		},
-		"toast": {
-			"deleted": "Pipeline gelöscht",
-			"deleteFailed": "Pipeline konnte nicht gelöscht werden",
-			"created": "Pipeline erstellt",
-			"createFailed": "Pipeline konnte nicht erstellt werden",
-			"updated": "Pipeline aktualisiert",
-			"updateFailed": "Pipeline konnte nicht aktualisiert werden",
-			"loadFailed": "Pipeline konnte nicht geladen werden"
-		},
-		"create": {
-			"title": "Pipeline erstellen",
-			"description": "Konfigurieren Sie eine Erkennungs- und Schwärzungs-Pipeline.",
-			"nameLabel": "Name",
-			"namePlaceholder": "Dokumentenschwärzung",
-			"slugLabel": "Slug",
-			"slugPlaceholder": "automatisch generiert",
-			"slugHint": "Aus dem Namen generiert. URL-sicher und dauerhaft.",
-			"descriptionLabel": "Beschreibung",
-			"descriptionPlaceholder": "Was diese Pipeline macht",
-			"cancel": "Abbrechen",
-			"submit": "Erstellen",
-			"policiesLabel": "Richtlinien",
-			"policiesHint": "Arbeitsbereichs-Richtlinien, die bei der Redaktion angewendet werden.",
-			"policiesSelect": "Richtlinien verknüpfen",
-			"policiesEmpty": "Keine Richtlinien in diesem Arbeitsbereich",
-			"advanced": "Geltungsbereich",
-			"countriesLabel": "Rechtsräume",
-			"countriesPlaceholder": "Ländercode suchen oder eingeben (z. B. US)",
-			"scopeHint": "Beschränkt rechtsraumspezifische Erkennungsregeln auf diese Länder.",
-			"languagesLabel": "Sprachen",
-			"languagesPlaceholder": "BCP-47-Tag suchen oder eingeben (z. B. en)",
-			"languagesHint": "Geben Sie die in Ihren Dokumenten vorhandenen Sprachen an.",
-			"addValue": "Hinzufügen",
-			"retention": "Aufbewahrung",
-			"retentionHint": "Überschreiben Sie, wie lange diese Pipeline Daten aufbewahrt. Nicht gesetzte Bereiche erben die Arbeitsbereich-Vorgabe.",
-			"retentionTargets": {
-				"auditLogs": "Audit-Protokolle",
-				"redactedDocuments": "Geschwärzte Dokumente"
-			},
-			"retentionModes": {
-				"inherit": "Standard übernehmen",
-				"persistent": "Für immer behalten",
-				"fixed": "Für Tage behalten",
-				"ephemeral": "Sofort löschen"
-			},
-			"retentionDays": "Tage"
-		},
-		"edit": {
-			"title": "Pipeline bearbeiten",
-			"description": "Diese Erkennungs- und Schwärzungs-Pipeline aktualisieren.",
-			"submit": "Änderungen speichern"
-		},
-		"delete": {
-			"title": "{name} löschen?",
-			"description": "Dies löscht die Pipeline dauerhaft. Diese Aktion kann nicht rückgängig gemacht werden.",
-			"confirm": "Pipeline löschen",
-			"cancel": "Abbrechen"
-		}
-	},
 	"analytics": {
 		"logs": {
 			"export": "Exportieren",
@@ -2288,21 +2139,21 @@
 				"title": "Synchronisierung fehlgeschlagen",
 				"message": "Eine Verbindung konnte nicht synchronisiert werden: {error}"
 			},
-			"pipelineDetectionCompleted": {
-				"title": "Erkennung abgeschlossen",
-				"message": "{inputFileName} wurde in {pipelineSlug} analysiert"
-			},
-			"pipelineDetectionFailed": {
-				"title": "Erkennung fehlgeschlagen",
-				"message": "{inputFileName} ist in {pipelineSlug} fehlgeschlagen: {error}"
-			},
-			"pipelineRedactionCreated": {
-				"title": "Schwärzung bereit",
-				"message": "Eine geschwärzte Kopie von {inputFileName} ist bereit"
-			},
 			"unknown": {
 				"title": "Benachrichtigung",
 				"message": "Sie haben eine neue Benachrichtigung"
+			},
+			"detectionCompleted": {
+				"title": "Erkennung abgeschlossen",
+				"message": "{inputFileName} wurde in {pipelineSlug} analysiert"
+			},
+			"detectionFailed": {
+				"title": "Erkennung fehlgeschlagen",
+				"message": "{inputFileName} ist in {pipelineSlug} fehlgeschlagen: {error}"
+			},
+			"redactionCreated": {
+				"title": "Schwärzung bereit",
+				"message": "Eine geschwärzte Kopie von {inputFileName} ist bereit"
 			}
 		}
 	},
@@ -2392,34 +2243,6 @@
 				"title": "Datei gelöscht",
 				"message": "{fileName} wurde gelöscht"
 			},
-			"pipelineCreated": {
-				"title": "Pipeline erstellt",
-				"message": "Pipeline {pipelineSlug} wurde erstellt"
-			},
-			"pipelineUpdated": {
-				"title": "Pipeline aktualisiert",
-				"message": "Pipeline {pipelineSlug} wurde aktualisiert"
-			},
-			"pipelineDeleted": {
-				"title": "Pipeline gelöscht",
-				"message": "Pipeline {pipelineSlug} wurde gelöscht"
-			},
-			"pipelineDetectionStarted": {
-				"title": "Erkennung gestartet",
-				"message": "Eine Erkennung wurde in {pipelineSlug} gestartet"
-			},
-			"pipelineDetectionCompleted": {
-				"title": "Erkennung abgeschlossen",
-				"message": "Eine Erkennung wurde in {pipelineSlug} abgeschlossen"
-			},
-			"pipelineDetectionFailed": {
-				"title": "Erkennung fehlgeschlagen",
-				"message": "Eine Erkennung ist in {pipelineSlug} fehlgeschlagen"
-			},
-			"pipelineRedactionCreated": {
-				"title": "Schwärzung erstellt",
-				"message": "Eine geschwärzte Kopie wurde in {pipelineSlug} erstellt"
-			},
 			"policyCreated": {
 				"title": "Richtlinie erstellt",
 				"message": "Eine Richtlinie wurde erstellt"
@@ -2439,6 +2262,22 @@
 			"unknown": {
 				"title": "Aktivität",
 				"message": "Eine Aktivität wurde aufgezeichnet"
+			},
+			"detectionStarted": {
+				"title": "Erkennung gestartet",
+				"message": "Eine Erkennung wurde gestartet"
+			},
+			"detectionCompleted": {
+				"title": "Erkennung abgeschlossen",
+				"message": "Eine Erkennung wurde abgeschlossen"
+			},
+			"detectionFailed": {
+				"title": "Erkennung fehlgeschlagen",
+				"message": "Eine Erkennung ist fehlgeschlagen"
+			},
+			"redactionCreated": {
+				"title": "Schwärzung erstellt",
+				"message": "Eine geschwärzte Kopie wurde erstellt"
 			}
 		},
 		"category": {
@@ -2448,9 +2287,10 @@
 			"connection": "Verbindungen",
 			"webhook": "Webhooks",
 			"file": "Dateien",
-			"pipeline": "Pipelines",
 			"policy": "Richtlinien",
-			"unknown": "Sonstiges"
+			"unknown": "Sonstiges",
+			"detection": "Erkennungen",
+			"redaction": "Schwärzungen"
 		}
 	},
 	"userMenu": {
@@ -2583,10 +2423,6 @@
 					"reopened": "hat diesen Review erneut geöffnet"
 				}
 			},
-			"triggerType": {
-				"user": "Manuelle Erkennung",
-				"system": "Automatische Erkennung"
-			},
 			"sidebar": {
 				"status": "Status",
 				"reviewers": "Prüfer",
@@ -2621,7 +2457,8 @@
 				"save": "Speichern",
 				"deleteTitle": "Kommentar löschen?",
 				"deleteDescription": "Dies entfernt den Kommentar dauerhaft aus der Diskussion."
-			}
+			},
+			"detection": "Erkennung"
 		},
 		"actions": {
 			"submit": "Zur Prüfung einreichen",
@@ -2672,5 +2509,48 @@
 			"createFailed": "Prüfung konnte nicht eröffnet werden. Bitte erneut versuchen.",
 			"deleteFailed": "Prüfung konnte nicht gelöscht werden. Bitte erneut versuchen."
 		}
+	},
+	"detections": {
+		"status": "Status",
+		"allStatus": "Alle Status",
+		"statusHeader": "Status",
+		"file": "Datei",
+		"started": "Gestartet",
+		"runsFound": "{count} Erkennung | {count} Erkennungen",
+		"noRunsFound": "Keine Erkennungen gefunden",
+		"detectionStatus": {
+			"pending": "Ausstehend",
+			"executing": "Wird ausgeführt",
+			"complete": "Abgeschlossen",
+			"failed": "Fehlgeschlagen"
+		},
+		"noRunsDescription": "Erkennungen erscheinen hier, sobald dieser Arbeitsbereich Dateien verarbeitet.",
+		"triggeredBy": "Ausgelöst von",
+		"openInStudio": "In Studio öffnen",
+		"menu": "Erkennungsaktionen",
+		"downloadAuditJson": "Audit herunterladen (JSON)",
+		"downloadAuditCsv": "Audit herunterladen (CSV)",
+		"auditDownloadFailed": "Audit konnte nicht heruntergeladen werden",
+		"seeDetails": "Details anzeigen",
+		"detail": {
+			"status": "Status",
+			"started": "Gestartet",
+			"completed": "Abgeschlossen",
+			"duration": "Dauer",
+			"running": "Läuft noch",
+			"detectionLoading": "Erkennungen werden geladen.",
+			"detectionUnavailable": "Erkennungen nicht verfügbar.",
+			"detections": "{count} Entitäten erkannt | {count} Entität erkannt | {count} Entitäten erkannt",
+			"input": "Eingabe",
+			"detectionId": "Erkennungs-ID",
+			"copy": "Erkennungs-ID kopieren",
+			"copied": "Erkennungs-ID kopiert",
+			"tags": "Tags",
+			"downloadJson": "JSON herunterladen",
+			"downloadCsv": "CSV herunterladen",
+			"none": "-",
+			"copyFailed": "Erkennungs-ID konnte nicht kopiert werden"
+		},
+		"openInStudioFailed": "Die Datei konnte nicht im Studio geöffnet werden."
 	}
 }

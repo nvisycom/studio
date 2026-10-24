@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import type {
-	WorkspacePipelineSummary,
-	WorkspacePolicySummary,
-} from "@nvisy/sdk/datatypes";
-import { Loader2, Play, ShieldCheck, Workflow } from "@lucide/vue";
+import type { WorkspacePolicySummary } from "@nvisy/sdk/datatypes";
+import { Loader2, Play, ShieldCheck } from "@lucide/vue";
 import { EmptyState } from "#console/components/shared";
 import type { StudioDetectionPhase } from "#console/composables/useStudioDetection";
 import StudioLabelChecklist from "./StudioLabelChecklist.vue";
-import { Badge } from "#console/components/ui/badge";
 import { Button } from "#console/components/ui/button";
 import { Checkbox } from "#console/components/ui/checkbox";
 import { TagCombobox } from "#console/components/ui/tag-combobox";
@@ -19,26 +15,22 @@ import {
 } from "#console/utils/locales";
 
 /**
- * The "New detection" form: one source drives a run, chosen from three peers —
- * a saved **pipeline**, built-in **labels** (minting a one-shot policy), or
- * existing **policies**. An optional per-run **scope** (jurisdictions +
- * languages) applies to whichever source is chosen. Running empties into the
- * Audit tab with the fresh result.
+ * The "New detection" form: one source drives a run, chosen from two peers —
+ * built-in **labels** (minting a derived policy, the no-setup path) or existing
+ * **policies**. An optional per-run **scope** (jurisdictions + languages) applies
+ * to whichever source is chosen. Running empties into the Audit tab with the
+ * fresh result.
  */
 const { t, locale } = useI18n();
 
 const props = defineProps<{
-	pipelines: WorkspacePipelineSummary[] | undefined;
 	policies: WorkspacePolicySummary[] | undefined;
 	phase: StudioDetectionPhase;
 	canRun: boolean;
 }>();
 
-const source = defineModel<"pipeline" | "labels" | "policies">("source", {
-	default: "pipeline",
-});
-const selectedPipeline = defineModel<string>("selectedPipeline", {
-	default: "",
+const source = defineModel<"labels" | "policies">("source", {
+	default: "labels",
 });
 const labels = defineModel<string[]>("labels", { default: () => [] });
 const policyIds = defineModel<string[]>("policyIds", { default: () => [] });
@@ -47,7 +39,7 @@ const languages = defineModel<string[]>("languages", { default: () => [] });
 
 defineEmits<{ run: [] }>();
 
-const SOURCES = ["pipeline", "labels", "policies"] as const;
+const SOURCES = ["labels", "policies"] as const;
 
 const countryOptions = computed(() =>
 	COUNTRY_CODES.map((value) => ({
@@ -96,10 +88,9 @@ function togglePolicy(id: string, checked: boolean | "indeterminate") {
         </button>
       </div>
 
-      <!-- Scope: shared across every source (for a pipeline it overrides the
-           pipeline's saved default). Fixed above the source list so it doesn't
-           drift with the source content's height. Jurisdictions + languages sit
-           side by side on a wide panel to keep the block compact. -->
+      <!-- Scope: shared across both sources. Fixed above the source list so it
+           doesn't drift with the source content's height. Jurisdictions +
+           languages sit side by side on a wide panel to keep the block compact. -->
       <div class="grid grid-cols-1 items-start gap-2.5 @md:grid-cols-2">
         <div class="space-y-1">
           <p class="text-xs text-muted-foreground">
@@ -109,8 +100,8 @@ function togglePolicy(id: string, checked: boolean | "indeterminate") {
             v-model="countries"
             :options="countryOptions"
             :normalize="toCountryCode"
-            :placeholder="t('pipelines.create.countriesPlaceholder')"
-            :add-label="t('pipelines.create.addValue')"
+            :placeholder="t('studio.detections.scope.countriesPlaceholder')"
+            :add-label="t('studio.detections.scope.addValue')"
             :remove-label="t('common.remove')"
           />
         </div>
@@ -122,8 +113,8 @@ function togglePolicy(id: string, checked: boolean | "indeterminate") {
             v-model="languages"
             :options="languageOptions"
             :normalize="toLanguageTag"
-            :placeholder="t('pipelines.create.languagesPlaceholder')"
-            :add-label="t('pipelines.create.addValue')"
+            :placeholder="t('studio.detections.scope.languagesPlaceholder')"
+            :add-label="t('studio.detections.scope.addValue')"
             :remove-label="t('common.remove')"
           />
         </div>
@@ -133,69 +124,12 @@ function togglePolicy(id: string, checked: boolean | "indeterminate") {
     <!-- Scrolling source list: the part whose height varies by source. A flex
          column so an empty state can fill and center vertically. -->
     <div class="flex min-h-0 flex-1 flex-col overflow-y-auto border-t p-3">
-      <!-- Pipeline: pick one saved pipeline. Single-select rows (not a dropdown)
-           so the choices read like the Labels and Policies lists. -->
-      <div
-        v-if="source === 'pipeline'"
-        class="flex flex-1 flex-col"
-        :class="pipelines?.length ? 'space-y-0.5' : ''"
-      >
-        <template v-if="pipelines?.length">
-          <button
-            v-for="p in pipelines"
-            :key="p.id"
-            type="button"
-            :disabled="phase === 'running'"
-            class="flex w-full items-start gap-2 rounded-sm px-1.5 py-1.5 text-left transition-colors hover:bg-muted disabled:opacity-50"
-            :class="selectedPipeline === p.id ? 'bg-muted' : ''"
-            :aria-pressed="selectedPipeline === p.id"
-            @click="selectedPipeline = p.id"
-          >
-            <span
-              class="mt-0.5 size-4 shrink-0 rounded-full border transition-colors"
-              :class="
-                selectedPipeline === p.id
-                  ? 'border-primary bg-primary ring-2 ring-inset ring-background'
-                  : 'border-input'
-              "
-            />
-            <span class="min-w-0 flex-1">
-              <span class="flex items-center gap-1.5">
-                <span class="truncate text-sm">{{ p.displayName }}</span>
-                <Badge
-                  v-if="p.status !== 'enabled'"
-                  variant="outline"
-                  class="shrink-0 px-1 py-0 text-[10px] capitalize"
-                >
-                  {{ t(`studio.detections.pipelineStatus.${p.status}`) }}
-                </Badge>
-              </span>
-              <span
-                v-if="p.description"
-                class="mt-0.5 line-clamp-2 text-xs text-muted-foreground"
-              >
-                {{ p.description }}
-              </span>
-            </span>
-          </button>
-        </template>
-        <EmptyState
-          v-else
-          compact
-          :icon="Workflow"
-          :title="t('studio.detections.emptyPipelines.title')"
-          :description="t('studio.detections.emptyPipelines.description')"
-        />
-      </div>
-
       <!-- Labels: scan the catalogue by category and tick entity types. -->
-      <div v-else-if="source === 'labels'" class="space-y-1.5">
+      <div v-if="source === 'labels'" class="space-y-1.5">
         <StudioLabelChecklist v-model="labels" />
       </div>
 
-      <!-- Policies: pick existing workspace policies (multi-select). Rows show the
-           description + a badge for one-shot policies (minted by a quick run), so
-           they're distinguishable from authored ones. -->
+      <!-- Policies: pick existing workspace policies (multi-select). -->
       <div
         v-else
         class="flex flex-1 flex-col"

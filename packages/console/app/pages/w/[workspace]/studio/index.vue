@@ -147,7 +147,7 @@ watch(
 );
 
 // Detection run + audit state for the active file (the long-running "job"),
-// shared between the detection bar (pipeline + controls), the audit panel
+// shared between the detection bar (source + controls), the audit panel
 // (results list), and the document preview (inline highlights).
 // The active document's raw bytes, from the blob already loaded for preview.
 // The on-device engine (offline) needs these; the server path ignores them.
@@ -189,18 +189,10 @@ function runNewDetection() {
 	detection.run();
 }
 
-// The full-screen audit toolbar only offers a pipeline picker, so its Run is
-// enabled on a pipeline being selected (regardless of the Detection tab's source)
-// and forces the source to `pipeline` before running — otherwise its picker and
-// the run would disagree when the inspector was left on labels/policies.
-const canRunPipeline = computed(
-	() =>
-		!!detection.selectedPipeline.value &&
-		detection.phase.value !== "running" &&
-		detection.phase.value !== "restoring",
-);
+// The full-screen audit toolbar's Run reuses whatever the Detect tab is
+// configured with (labels or policies), so it shares the inspector's run gate.
 function runFromAuditToolbar() {
-	detection.newSource.value = "pipeline";
+	panelTab.value = "audit";
 	detection.run();
 }
 
@@ -471,10 +463,8 @@ const auditProps = computed(() => ({
                 >
                   <StudioAuditToolbar
                     class="pointer-events-auto"
-                    v-model:selected-pipeline="detection.selectedPipeline.value"
-                    :pipelines="detection.pipelines.value"
                     :phase="detection.phase.value"
-                    :can-run="canRunPipeline"
+                    :can-run="detection.canRun.value"
                     :redact-phase="redaction.redactPhase.value"
                     :can-redact="redaction.canRedact.value"
                     :redact-error="redaction.redactError.value"
@@ -673,7 +663,6 @@ const auditProps = computed(() => ({
               <div class="min-w-0 flex-1">
                 <StudioDetectionSwitcher
                   :detections="detection.detections.value"
-                  :pipelines="detection.pipelines.value"
                   :selected-detection-id="detection.selectedDetectionId.value"
                   @select="detection.loadDetection"
                 />
@@ -715,19 +704,17 @@ const auditProps = computed(() => ({
             </div>
           </TabsContent>
 
-          <!-- New detection: one source (pipeline / labels / policies) + scope. -->
+          <!-- New detection: one source (labels / policies) + scope. -->
           <TabsContent
             value="new"
             class="mt-0 flex min-h-0 flex-1 flex-col overflow-hidden"
           >
             <StudioNewDetection
               v-model:source="detection.newSource.value"
-              v-model:selected-pipeline="detection.selectedPipeline.value"
               v-model:labels="detection.newLabels.value"
               v-model:policy-ids="detection.newPolicyIds.value"
               v-model:countries="detection.newCountries.value"
               v-model:languages="detection.newLanguages.value"
-              :pipelines="detection.pipelines.value"
               :policies="detection.policies.value"
               :phase="detection.phase.value"
               :can-run="detection.canRun.value"

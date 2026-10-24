@@ -52,24 +52,12 @@ export function notificationContent(
 				payload.data,
 				"/integrations?runs=1",
 			);
-		case "pipeline.detection.completed":
-			return content(
-				"pipelineDetectionCompleted",
-				payload.data,
-				"/pipelines/detections",
-			);
-		case "pipeline.detection.failed":
-			return content(
-				"pipelineDetectionFailed",
-				payload.data,
-				"/pipelines/detections",
-			);
-		case "pipeline.redaction.created":
-			return content(
-				"pipelineRedactionCreated",
-				payload.data,
-				"/pipelines/detections",
-			);
+		case "detection.completed":
+			return content("detectionCompleted", payload.data, "/documents");
+		case "detection.failed":
+			return content("detectionFailed", payload.data, "/documents");
+		case "redaction.created":
+			return content("redactionCreated", payload.data, "/documents");
 		// Version skew: a newer API can emit a `type` outside the pinned SDK
 		// union. Fall back to a generic entry so the notification still renders
 		// (no route — we can't know where an unknown event should link).

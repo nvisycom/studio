@@ -11,18 +11,18 @@ export type StudioDetectionPhase =
 	| "failed";
 
 /**
- * Owns the studio's detection lifecycle for the active file: the pipeline
- * choice, running a detection, restoring the file's most recent detection, and
- * the flattened entities the document + audit panel render. This is the studio's
- * long-running "job" — a detection can take seconds to minutes — so it's the
- * surface the desktop tray/notifications observe.
+ * Owns the studio's detection lifecycle for the active file: the detection
+ * source (policies or labels), running a detection, restoring the file's most
+ * recent detection, and the flattened entities the document + audit panel
+ * render. This is the studio's long-running "job" — a detection can take seconds
+ * to minutes — so it's the surface the desktop tray/notifications observe.
  *
  * Redaction (reviewer edits + applying them) is a separate concern; see
  * {@link useStudioRedaction}, which takes this composable's outputs as input.
  *
  * Call this once per studio page and share its result — the detection bar drives
- * the pipeline/detection controls while the audit panel and document overlay read
- * the entities, so both must observe the same state.
+ * the source controls while the audit panel and document overlay read the
+ * entities, so both must observe the same state.
  */
 export function useStudioDetection(
 	fileId: MaybeRefOrGetter<string | null>,
@@ -32,10 +32,9 @@ export function useStudioDetection(
 	documentBytes?: () => Promise<Uint8Array>,
 ) {
 	const { t } = useI18n();
-	const { pipelines } = usePipelines();
-	// Detection runs through the injected provider: the server pipeline flow, or
-	// the on-device engine when offline. The provider owns run + restore; this
-	// composable owns the pipeline selection, phases, and restore orchestration.
+	// Detection runs through the injected provider: the server flow, or the
+	// on-device engine when offline. The provider owns run + restore; this
+	// composable owns the source selection, phases, and restore orchestration.
 	const { provider } = useDetectionProvider();
 	// Native notifications for LOCAL events only. A server workspace already
 	// notifies through the server's notification stream, so firing here too would
@@ -57,35 +56,20 @@ export function useStudioDetection(
 		return p;
 	}
 
-	// The pipeline chosen for a NEW detection (pipeline mode). Defaults to the
-	// first pipeline once the list loads, so the "New detection" form has a
-	// sensible pre-selection. Switching it no longer restores anything — the file's
-	// detections are a list the reviewer picks from (below), not keyed off this.
-	const selectedPipeline = ref<string>("");
-	watch(
-		pipelines,
-		(list) => {
-			if (list?.length && !selectedPipeline.value)
-				selectedPipeline.value = list[0]!.id;
-		},
-		{ immediate: true },
-	);
-
-	// Configuring a NEW detection. One `source` drives it, chosen from three peers:
-	// a saved `pipeline`, built-in `labels` (minting a one-shot policy — the
-	// no-setup path), or existing `policies`. An optional per-run scope
-	// (jurisdictions + languages) applies to any of the three. The matching picker
-	// state (selectedPipeline above, labels / policyIds here) feeds whichever
-	// source is active.
+	// Configuring a NEW detection. One `source` drives it, chosen from two peers:
+	// built-in `labels` (minting a derived policy — the no-setup path) or existing
+	// `policies`. An optional per-run scope (jurisdictions + languages) applies to
+	// either. The matching picker state (labels / policyIds) feeds whichever source
+	// is active. `labels` is the default: it needs no prior setup.
 	const { policies } = usePolicies();
-	const newSource = ref<"pipeline" | "labels" | "policies">("pipeline");
+	const newSource = ref<"labels" | "policies">("labels");
 	const newLabels = ref<string[]>([]);
 	const newPolicyIds = ref<string[]>([]);
 	const newCountries = ref<string[]>([]);
 	const newLanguages = ref<string[]>([]);
 
 	function resetNewDetection() {
-		newSource.value = "pipeline";
+		newSource.value = "labels";
 		newLabels.value = [];
 		newPolicyIds.value = [];
 		newCountries.value = [];
@@ -221,19 +205,10 @@ export function useStudioDetection(
 	}
 
 	// The detection source for the chosen kind, or null when nothing runnable is
-	// selected yet (no pipeline / no labels / no policies). Scope rides along on
-	// the two ad-hoc kinds.
+	// selected yet (no labels / no policies). Scope rides along on either kind.
 	const activeSource = computed<DetectionSource | null>(() => {
 		const scope = newScope.value;
 		switch (newSource.value) {
-			case "pipeline":
-				return selectedPipeline.value
-					? {
-							kind: "pipeline",
-							pipelineId: selectedPipeline.value,
-							...(scope && { scope }),
-						}
-					: null;
 			case "labels":
 				return newLabels.value.length
 					? {
@@ -308,7 +283,7 @@ export function useStudioDetection(
 				(total, part) => total + (part.entities?.length ?? 0),
 				0,
 			);
-			notifyLocal("pipeline.detection.completed", {
+			notifyLocal("detection.completed", {
 				title: t("studio.notify.detectionComplete.title"),
 				body: t("studio.notify.detectionComplete.body", count, {
 					named: { count, name },
@@ -318,7 +293,7 @@ export function useStudioDetection(
 			if (token !== loadToken) return;
 			phase.value = "failed";
 			errorMessage.value = getErrorMessage(err, t("studio.audit.runFailed"));
-			notifyLocal("pipeline.detection.failed", {
+			notifyLocal("detection.failed", {
 				title: t("studio.notify.detectionFailed.title"),
 				body: t("studio.notify.detectionFailed.body", {
 					name: toValue(fileName) ?? file,
@@ -373,8 +348,6 @@ export function useStudioDetection(
 	);
 
 	return {
-		pipelines,
-		selectedPipeline,
 		policies,
 		// New-detection config: one source + its picker state + optional scope.
 		newSource,

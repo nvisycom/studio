@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import type {
-	WorkspaceDetection,
-	DetectionStatus,
-	PipelineTriggerType,
-} from "@nvisy/sdk/datatypes";
+import type { WorkspaceDetection, DetectionStatus } from "@nvisy/sdk/datatypes";
 import type { DetectionsFilter } from "#console/composables/useDetections";
 import {
 	Loader2,
@@ -15,14 +11,11 @@ import {
 } from "@lucide/vue";
 import type { RowAction } from "#console/components/pages/RowActions.vue";
 import type { VirtualColumn } from "#console/components/ui/virtual-table";
-import { EntityAvatar } from "#console/components/avatar";
 import { DocumentPicker } from "#console/components/shared";
-import { DetectionDetailSheet } from "#console/components/pages/pipelines";
+import { DetectionDetailSheet } from "#console/components/pages/detections";
 import { personLabel } from "#console/utils/naming";
 import { toast } from "vue-sonner";
-import { Button } from "#console/components/ui/button";
 import { VirtualTable } from "#console/components/ui/virtual-table";
-import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 import {
 	Select,
 	SelectContent,
@@ -45,11 +38,12 @@ function openDetails(detection: WorkspaceDetection) {
 	isDetailOpen.value = true;
 }
 
-// Open a detection's source document in the studio for review. `openDocument` fetches the
-// file into a tab; surface a failure rather than let it reject unhandled.
+// Open a detection's source document in the studio for review. `openDocument`
+// fetches the file into a tab; surface a failure rather than let it reject
+// unhandled.
 function openInStudio(fileId: string) {
 	openDocument(fileId).catch((error) => {
-		toast.error(t("pipelines.detections.openInStudioFailed"), {
+		toast.error(t("detections.openInStudioFailed"), {
 			description: getErrorMessage(error, t("common.errors.tryAgain")),
 		});
 	});
@@ -57,8 +51,8 @@ function openInStudio(fileId: string) {
 }
 
 // A stable base name for an exported audit: the source file (sans extension)
-// plus the short detection id, so multiple detections of one file don't collide. The CSV
-// export is delivered as a zip archive (entities.csv, provenance.csv,
+// plus the short detection id, so multiple detections of one file don't collide.
+// The CSV export is delivered as a zip archive (entities.csv, provenance.csv,
 // reviews.csv), so its download is named `.zip`, not `.csv`.
 function auditFileName(
 	detection: (typeof sortedDetections.value)[number],
@@ -78,7 +72,7 @@ async function downloadDetectionAudit(
 	try {
 		await downloadAudit(detection.id, format, auditFileName(detection, format));
 	} catch (error) {
-		toast.error(t("pipelines.detections.auditDownloadFailed"), {
+		toast.error(t("detections.auditDownloadFailed"), {
 			description: getErrorMessage(error, t("common.errors.tryAgain")),
 		});
 	}
@@ -90,26 +84,26 @@ function rowActions(
 	return [
 		{
 			key: "details",
-			label: t("pipelines.detections.seeDetails"),
+			label: t("detections.seeDetails"),
 			icon: PanelRightOpen,
 			select: () => openDetails(detection),
 		},
 		{
 			key: "studio",
-			label: t("pipelines.detections.openInStudio"),
+			label: t("detections.openInStudio"),
 			icon: ScanSearch,
 			select: () => openInStudio(detection.inputDocumentId),
 		},
 		{
 			key: "audit-json",
-			label: t("pipelines.detections.downloadAuditJson"),
+			label: t("detections.downloadAuditJson"),
 			icon: FileJson,
 			separatorBefore: true,
 			select: () => downloadDetectionAudit(detection, "json"),
 		},
 		{
 			key: "audit-csv",
-			label: t("pipelines.detections.downloadAuditCsv"),
+			label: t("detections.downloadAuditCsv"),
 			icon: FileSpreadsheet,
 			select: () => downloadDetectionAudit(detection, "csv"),
 		},
@@ -119,26 +113,18 @@ function rowActions(
 useHead({ title: "Detections" });
 
 definePageMeta({
-	pageCategory: "header.category.pipelines",
+	pageCategory: "header.category.detections",
 	hideCategory: true,
 });
 
-const sectionTabs = useSectionTabs();
-
-const { pipelines } = usePipelines();
-
-// Filters are applied server-side via listDetections/listPipelineDetections.
+// Filters are applied server-side via listDetections (status, document, policy).
 const ALL = "all";
 const statusFilter = ref<DetectionStatus | typeof ALL>(ALL);
-const pipelineFilter = ref<string>(ALL);
-const triggerFilter = ref<PipelineTriggerType | typeof ALL>(ALL);
 const fileFilter = ref<string | null>(null);
 
 const detectionsFilter = computed<DetectionsFilter>(() => ({
 	...(statusFilter.value !== ALL && { status: statusFilter.value }),
-	...(triggerFilter.value !== ALL && { triggerType: triggerFilter.value }),
-	...(pipelineFilter.value !== ALL && { pipelineId: pipelineFilter.value }),
-	...(fileFilter.value && { fileId: fileFilter.value }),
+	...(fileFilter.value && { documentId: fileFilter.value }),
 }));
 
 const { detections, isLoading, downloadAudit } =
@@ -151,8 +137,6 @@ const DETECTION_STATUSES: DetectionStatus[] = [
 	"failed",
 ];
 
-const TRIGGER_TYPES: PipelineTriggerType[] = ["user", "system"];
-
 // The API filters; we only ensure newest-first ordering.
 const sortedDetections = computed(() =>
 	[...(detections.value ?? [])].sort((a, b) =>
@@ -164,22 +148,17 @@ const columns = computed<
 	VirtualColumn<(typeof sortedDetections.value)[number]>[]
 >(() => [
 	{
-		key: "pipeline",
-		header: t("pipelines.detections.pipeline"),
-		cell: (r) => ({ type: "text", value: r.pipelineId ?? "—", mono: true }),
-	},
-	{
 		key: "file",
-		header: t("pipelines.detections.file"),
+		header: t("detections.file"),
 		cell: (r) => ({
 			type: "primary",
 			title: r.inputDocumentName || r.inputDocumentId,
-			maxWidth: "max-w-xs",
+			maxWidth: "max-w-sm",
 		}),
 	},
 	{
 		key: "triggeredBy",
-		header: t("pipelines.detections.triggeredBy"),
+		header: t("detections.triggeredBy"),
 		width: "180px",
 		cell: (r) => ({
 			type: "avatar",
@@ -189,17 +168,17 @@ const columns = computed<
 	},
 	{
 		key: "status",
-		header: t("pipelines.detections.statusHeader"),
+		header: t("detections.statusHeader"),
 		width: "140px",
 		cell: (r) => ({
 			type: "badge",
-			label: t(`pipelines.detections.detectionStatus.${r.status}`),
+			label: t(`detections.detectionStatus.${r.status}`),
 			variant: r.status === "failed" ? "destructive" : "secondary",
 		}),
 	},
 	{
 		key: "started",
-		header: t("pipelines.detections.started"),
+		header: t("detections.started"),
 		width: "140px",
 		cell: (r) => ({
 			type: "text",
@@ -214,70 +193,25 @@ const columns = computed<
   <!-- Fixed-height page so the table fills and scrolls (like /files). -->
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6 h-[calc(100vh-5.5rem)]">
     <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 min-h-0">
-      <!-- Section tabs in the app-header socket. -->
-      <HeaderSocket>
-        <SectionTabs :tabs="sectionTabs.pipelines.value" />
-      </HeaderSocket>
-
       <!-- Filter toolbar. -->
       <div class="flex flex-wrap items-center gap-3">
         <p class="shrink-0 text-sm text-muted-foreground">
-          {{ t("pipelines.detections.runsFound", { count: sortedDetections.length }) }}
+          {{ t("detections.runsFound", { count: sortedDetections.length }) }}
         </p>
 
         <div class="flex-1" />
 
-        <!-- Pipeline filter -->
-        <Select v-model="pipelineFilter">
-          <SelectTrigger class="h-9 w-[170px] text-sm">
-            <SelectValue :placeholder="t('pipelines.detections.pipeline')" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all" class="text-sm font-normal">
-              {{ t("pipelines.detections.allPipelines") }}
-            </SelectItem>
-            <SelectItem
-              v-for="p in pipelines ?? []"
-              :key="p.id"
-              :value="p.id"
-              class="text-sm font-normal"
-            >
-              {{ p.displayName }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-
         <!-- File filter -->
         <DocumentPicker v-model="fileFilter" class="w-[190px]" />
-
-        <!-- Trigger filter -->
-        <Select v-model="triggerFilter">
-          <SelectTrigger class="h-9 w-[150px] text-sm">
-            <SelectValue :placeholder="t('pipelines.detections.trigger')" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all" class="text-sm font-normal">
-              {{ t("pipelines.detections.allTriggers") }}
-            </SelectItem>
-            <SelectItem
-              v-for="tt in TRIGGER_TYPES"
-              :key="tt"
-              :value="tt"
-              class="text-sm font-normal"
-            >
-              {{ t(`pipelines.detections.triggerType.${tt}`) }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
 
         <!-- Status filter -->
         <Select v-model="statusFilter">
           <SelectTrigger class="h-9 w-[160px] text-sm">
-            <SelectValue :placeholder="t('pipelines.detections.status')" />
+            <SelectValue :placeholder="t('detections.status')" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all" class="text-sm font-normal">
-              {{ t("pipelines.detections.allStatus") }}
+              {{ t("detections.allStatus") }}
             </SelectItem>
             <SelectItem
               v-for="s in DETECTION_STATUSES"
@@ -285,7 +219,7 @@ const columns = computed<
               :value="s"
               class="text-sm font-normal"
             >
-              {{ t(`pipelines.detections.detectionStatus.${s}`) }}
+              {{ t(`detections.detectionStatus.${s}`) }}
             </SelectItem>
           </SelectContent>
         </Select>
@@ -305,11 +239,11 @@ const columns = computed<
           :rows="sortedDetections"
           :columns="columns"
           :row-actions="rowActions"
-          :menu-label="t('pipelines.detections.menu')"
+          :menu-label="t('detections.menu')"
           :empty="{
             icon: History,
-            title: t('pipelines.detections.noRunsFound'),
-            description: t('pipelines.detections.noRunsDescription'),
+            title: t('detections.noRunsFound'),
+            description: t('detections.noRunsDescription'),
           }"
           @row-click="openDetails"
         />

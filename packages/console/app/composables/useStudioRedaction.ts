@@ -583,7 +583,7 @@ export function useStudioRedaction(target: RedactionTarget) {
 			output.value = result;
 			redactPhase.value = "done";
 			if (currentWorkspaceIsLocal.value) {
-				native.value.emit?.("pipeline.redaction.created", {
+				native.value.emit?.("redaction.created", {
 					title: t("studio.notify.redactionCreated.title"),
 					body: t("studio.notify.redactionCreated.body", {
 						name: detectionFileName.value ?? detection,
