@@ -252,7 +252,8 @@ export const PROVIDERS: ExploreProvider[] = [
 		descriptionKey: `${ITEMS}.zapier.description`,
 		shortDescriptionKey: `${ITEMS}.zapier.shortDescription`,
 		icon: "/integration/zapier.svg",
-		status: "available",
+		// Not ready yet — hidden from the connectable list.
+		status: "unavailable",
 		kind: "recommendation",
 		category: "data-analytics",
 		tags: ["automation", "noCode", "developer"],
@@ -265,7 +266,8 @@ export const PROVIDERS: ExploreProvider[] = [
 		descriptionKey: `${ITEMS}.make.description`,
 		shortDescriptionKey: `${ITEMS}.make.shortDescription`,
 		icon: "/integration/make.svg",
-		status: "available",
+		// Not ready yet — hidden from the connectable list.
+		status: "unavailable",
 		kind: "recommendation",
 		category: "data-analytics",
 		tags: ["automation", "noCode"],
@@ -278,7 +280,8 @@ export const PROVIDERS: ExploreProvider[] = [
 		descriptionKey: `${ITEMS}.n8n.description`,
 		shortDescriptionKey: `${ITEMS}.n8n.shortDescription`,
 		icon: "/integration/n8n.svg",
-		status: "available",
+		// Not ready yet — hidden from the connectable list.
+		status: "unavailable",
 		kind: "recommendation",
 		category: "data-analytics",
 		tags: ["automation", "noCode", "developer"],
