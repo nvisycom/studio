@@ -20,14 +20,20 @@ export function useStudioReview(args: {
 		createReviewAsync,
 		linkDetectionAsync,
 		isCreating,
-		verifyReviewAsync,
+		submitReviewAsync,
+		approveReviewAsync,
+		requestChangesAsync,
 		reopenReviewAsync,
 		assignReviewerAsync,
 		unassignReviewerAsync,
 		isAssigning,
 		isUnassigning,
-		isVerifying,
+		isSubmitting,
+		isApproving,
+		isRequestingChanges,
 		isReopening,
+		deleteReviewAsync,
+		isDeleting,
 	} = useReviews();
 
 	// Which review is open. Default to the newest once the list loads; reset when
@@ -133,20 +139,27 @@ export function useStudioReview(args: {
 			toast.error(getErrorMessage(error, t("common.errors.generic")));
 		}
 	}
-	async function onVerify() {
+	// Run a lifecycle transition on the open review, then refresh so the new status
+	// shows at once.
+	async function transition(run: (reviewId: string) => Promise<unknown>) {
 		if (!selectedReviewId.value) return;
 		try {
-			await verifyReviewAsync(selectedReviewId.value);
+			await run(selectedReviewId.value);
 			await refreshReview();
 		} catch (error) {
 			toast.error(getErrorMessage(error, t("common.errors.generic")));
 		}
 	}
-	async function onReopen() {
+	const onSubmit = () => transition(submitReviewAsync);
+	const onApprove = () => transition(approveReviewAsync);
+	const onRequestChanges = () => transition(requestChangesAsync);
+	const onReopen = () => transition(reopenReviewAsync);
+
+	// Delete the open review, then select another (the list watcher handles that).
+	async function onDelete() {
 		if (!selectedReviewId.value) return;
 		try {
-			await reopenReviewAsync(selectedReviewId.value);
-			await refreshReview();
+			await deleteReviewAsync(selectedReviewId.value);
 		} catch (error) {
 			toast.error(getErrorMessage(error, t("common.errors.generic")));
 		}
@@ -191,15 +204,21 @@ export function useStudioReview(args: {
 		isCreating,
 		isAssigning,
 		isUnassigning,
-		isVerifying,
+		isSubmitting,
+		isApproving,
+		isRequestingChanges,
 		isReopening,
+		isDeleting,
 		isRenaming,
 		openReview,
 		renameReview,
 		addReviewer,
 		removeReviewer,
-		onVerify,
+		onSubmit,
+		onApprove,
+		onRequestChanges,
 		onReopen,
+		onDelete,
 		onComment,
 		onEditComment,
 		onDeleteComment,

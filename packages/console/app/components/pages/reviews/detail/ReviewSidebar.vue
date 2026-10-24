@@ -20,7 +20,9 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	verify: [];
+	submit: [];
+	approve: [];
+	requestChanges: [];
 	reopen: [];
 	assign: [accountId: string];
 	unassign: [accountId: string];
@@ -45,7 +47,9 @@ const assignedIds = computed(() => props.review.assignees.map((a) => a.id));
       <div>
         <ReviewStatusControl
           :status="review.reviewStatus"
-          @verify="emit('verify')"
+          @submit="emit('submit')"
+          @approve="emit('approve')"
+          @request-changes="emit('requestChanges')"
           @reopen="emit('reopen')"
         />
       </div>

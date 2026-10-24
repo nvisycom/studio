@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import {
-	Check,
+	CheckCircle2,
 	CircleDot,
 	FileSearch,
 	GitCommitHorizontal,
 	Loader2,
+	MessageSquareWarning,
 	MoreHorizontal,
 	Pencil,
 	RotateCcw,
-	Scissors,
+	Send,
 	Trash2,
 	UserMinus,
 	UserPlus,
@@ -63,12 +64,13 @@ const { members } = useMembers();
 const EVENT_ICONS: Record<ReviewEventKind, Component> = {
 	"review.opened": CircleDot,
 	"review.renamed": Pencil,
-	"detection.linked": FileSearch,
-	"redaction.linked": Scissors,
-	assigned: UserPlus,
-	unassigned: UserMinus,
-	verified: Check,
-	reopened: RotateCcw,
+	"review.redetected": FileSearch,
+	"review.assigned": UserPlus,
+	"review.unassigned": UserMinus,
+	"review.submitted": Send,
+	"review.changes_requested": MessageSquareWarning,
+	"review.approved": CheckCircle2,
+	"review.reopened": RotateCcw,
 };
 function eventIcon(kind: string): Component {
 	return EVENT_ICONS[kind as ReviewEventKind] ?? GitCommitHorizontal;
@@ -230,14 +232,19 @@ async function confirmDelete() {
       <Loader2 :size="20" class="animate-spin" />
     </div>
 
-    <ol v-else class="relative flex flex-col gap-3">
+    <!-- `pl-3` reserves a left gutter so a comment card (which pulls left of the
+         rail via `-ml-3` to align its header avatar with the on-rail event
+         markers) still has a gap from the container edge instead of sitting flush
+         against it. -->
+    <ol v-else class="relative flex flex-col gap-3 pl-3">
       <!-- One continuous rail behind every item, from the first marker's centre
            to the last's (markers are 24px, so ±12px). Markers sit on top with an
-           opaque ring, so the line reads as unbroken (GitHub-style). -->
+           opaque ring, so the line reads as unbroken (GitHub-style). Offset by the
+           `pl-3` gutter so it stays centered on the markers. -->
       <span
         v-if="rows.length > 1"
         aria-hidden="true"
-        class="absolute left-3 top-3 bottom-3 w-px bg-border"
+        class="absolute left-6 top-3 bottom-3 w-px bg-border"
       />
 
       <li
@@ -246,9 +253,9 @@ async function confirmDelete() {
         class="relative flex gap-3"
         :class="row.kind === 'events' ? 'items-center' : ''"
       >
-        <!-- Comment: a full card that breaks out to the left of the rail (so it
-             stands apart from the on-rail events), with the author avatar inside
-             its header. -->
+        <!-- Comment: a full card with the author avatar inside its header. It
+             pulls left of the rail (`-ml-3`) so the avatar aligns with the event
+             markers; the `pl-3` on the list keeps a gap from the container edge. -->
         <template v-if="row.kind === 'comment'">
           <div
             class="-ml-3 min-w-0 flex-1 rounded-lg border border-border/60 bg-background"

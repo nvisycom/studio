@@ -66,7 +66,9 @@ const { accountId } = useAccount();
 
 // Review actions (shared with the queue). Applied to this review by id.
 const {
-	verifyReviewAsync,
+	submitReviewAsync,
+	approveReviewAsync,
+	requestChangesAsync,
 	reopenReviewAsync,
 	assignReviewerAsync,
 	unassignReviewerAsync,
@@ -136,22 +138,18 @@ async function saveTitle() {
 
 definePageMeta({ pageCategory: "header.category.reviews" });
 
-async function verify() {
+async function runTransition(run: (reviewId: string) => Promise<unknown>) {
 	try {
-		await verifyReviewAsync(reviewId.value);
+		await run(reviewId.value);
 		await refresh();
 	} catch {
 		toast.error(t("reviews.errors.updateFailed"));
 	}
 }
-async function reopen() {
-	try {
-		await reopenReviewAsync(reviewId.value);
-		await refresh();
-	} catch {
-		toast.error(t("reviews.errors.updateFailed"));
-	}
-}
+const submit = () => runTransition(submitReviewAsync);
+const approve = () => runTransition(approveReviewAsync);
+const requestChanges = () => runTransition(requestChangesAsync);
+const reopen = () => runTransition(reopenReviewAsync);
 async function assign(accountId: string) {
 	try {
 		await assignReviewerAsync({ reviewId: reviewId.value, accountId });
@@ -458,7 +456,9 @@ function openInStudio() {
           <ReviewSidebar
             :review="review"
             :deleting="isDeleting"
-            @verify="verify"
+            @submit="submit"
+            @approve="approve"
+            @request-changes="requestChanges"
             @reopen="reopen"
             @assign="assign"
             @unassign="unassign"

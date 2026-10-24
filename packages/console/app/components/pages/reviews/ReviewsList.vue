@@ -42,7 +42,9 @@ const {
 	loadMore,
 	isLoadingMore,
 	isLoading,
-	verifyReviewAsync,
+	submitReviewAsync,
+	approveReviewAsync,
+	requestChangesAsync,
 	reopenReviewAsync,
 } = useReviews(query);
 
@@ -91,21 +93,18 @@ const columns = computed<VirtualColumn<WorkspaceReview>[]>(() => [
 	},
 ]);
 
-async function verify(reviewId: string) {
+async function runTransition(run: () => Promise<unknown>) {
 	try {
-		await verifyReviewAsync(reviewId);
+		await run();
 	} catch {
 		toast.error(t("reviews.errors.updateFailed"));
 	}
 }
-
-async function reopen(reviewId: string) {
-	try {
-		await reopenReviewAsync(reviewId);
-	} catch {
-		toast.error(t("reviews.errors.updateFailed"));
-	}
-}
+const submit = (id: string) => runTransition(() => submitReviewAsync(id));
+const approve = (id: string) => runTransition(() => approveReviewAsync(id));
+const requestChanges = (id: string) =>
+	runTransition(() => requestChangesAsync(id));
+const reopen = (id: string) => runTransition(() => reopenReviewAsync(id));
 
 // The table emits `load-more` as the viewport nears the end; only fetch when
 // there's another page and one isn't already in flight.
@@ -174,7 +173,9 @@ function openReview(review: WorkspaceReview) {
       <template #cell-status="{ row }">
         <ReviewStatusControl
           :status="row.reviewStatus"
-          @verify="verify(row.id)"
+          @submit="submit(row.id)"
+          @approve="approve(row.id)"
+          @request-changes="requestChanges(row.id)"
           @reopen="reopen(row.id)"
         />
       </template>

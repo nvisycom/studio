@@ -27,10 +27,22 @@ export function createServerRedactionProvider(
 ): RedactionProvider {
 	return {
 		async produce(input: RedactionInput): Promise<RedactionOutput> {
-			const result = await client.detections.createRedaction(
-				workspaceId(),
+			const ws = workspaceId();
+			// 0.62: reviewer edits are persisted on the detection (optimistic-locked
+			// by `editSetRev`) and layered at redact time, rather than passed to the
+			// redact call. Set the edits we have — which also clears any stale ones
+			// when the reviewer made none — then redact.
+			const detection = await client.detections.getDetection(
+				ws,
 				input.detectionId,
-				input.edits ? { edits: input.edits } : {},
+			);
+			await client.detections.editDetection(ws, input.detectionId, {
+				editSetRev: detection.editSetRev,
+				edits: input.edits,
+			});
+			const result = await client.detections.createRedaction(
+				ws,
+				input.detectionId,
 			);
 			if (!result.outputDocumentId)
 				throw new Error("The redaction produced no output file.");

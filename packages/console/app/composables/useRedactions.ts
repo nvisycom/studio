@@ -1,8 +1,4 @@
-import type {
-	Audit,
-	EditSet,
-	WorkspaceRedactionResult,
-} from "@nvisy/sdk/datatypes";
+import type { Audit, WorkspaceRedactionResult } from "@nvisy/sdk/datatypes";
 
 /**
  * Composable for redaction operations (workspace-scoped). A redaction is the
@@ -14,24 +10,6 @@ import type {
 export function useRedactions() {
 	const { requireContext } = useWorkspaceContext();
 	const { saveBlob } = useFileDownload();
-
-	/**
-	 * Redact a complete detection, producing its redacted output file. Pass
-	 * `edits` to apply reviewer changes (suppress/retag) first; omit to redact
-	 * exactly as detected. Returns a {@link RedactionResult} carrying
-	 * `outputFileId`, the redacted document to download.
-	 */
-	async function createRedaction(
-		detectionId: string,
-		edits?: EditSet,
-	): Promise<WorkspaceRedactionResult> {
-		const { client, workspaceId } = requireContext();
-		return await client.detections.createRedaction(
-			workspaceId,
-			detectionId,
-			edits ? { edits } : {},
-		);
-	}
 
 	/** The most recent redaction of a detection, or null if it has none yet. */
 	async function findLatestForDetection(
@@ -69,7 +47,6 @@ export function useRedactions() {
 	}
 
 	return {
-		createRedaction,
 		findLatestForDetection,
 		getReview,
 		downloadOutput,

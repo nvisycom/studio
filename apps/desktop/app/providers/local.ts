@@ -133,6 +133,9 @@ function runToDetection(
 		metadata: { tags: [`entities:${run.entityCount}`] },
 		workspaceId: run.workspaceId,
 		workspaceHandle,
+		// On-device runs don't persist reviewer edits server-side, so there's no
+		// accumulated edit set — revision 0.
+		editSetRev: 0,
 	};
 }
 

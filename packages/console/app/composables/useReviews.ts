@@ -98,14 +98,28 @@ export function useReviews(
 		{ invalidates: REVIEW_RESOURCES },
 	);
 
-	// Mark a review verified (→ resolved).
-	const verifyReviewMutation = workspaceMutation(
+	// Submit a draft review for review (→ in_review).
+	const submitReviewMutation = workspaceMutation(
 		({ client, workspaceId }, reviewId: string) =>
-			client.reviews.verifyReview(workspaceId, reviewId),
+			client.reviews.submitReview(workspaceId, reviewId),
 		{ invalidates: REVIEW_RESOURCES },
 	);
 
-	// Reopen a resolved review (→ back to needs_review).
+	// Approve a review (→ approved, or partially_approved while approvals are in).
+	const approveReviewMutation = workspaceMutation(
+		({ client, workspaceId }, reviewId: string) =>
+			client.reviews.approveReview(workspaceId, reviewId),
+		{ invalidates: REVIEW_RESOURCES },
+	);
+
+	// Request changes on a review (→ changes_requested).
+	const requestChangesMutation = workspaceMutation(
+		({ client, workspaceId }, reviewId: string) =>
+			client.reviews.requestChanges(workspaceId, reviewId),
+		{ invalidates: REVIEW_RESOURCES },
+	);
+
+	// Reopen a settled review (→ back to in_review).
 	const reopenReviewMutation = workspaceMutation(
 		({ client, workspaceId }, reviewId: string) =>
 			client.reviews.reopenReview(workspaceId, reviewId),
@@ -150,12 +164,22 @@ export function useReviews(
 		unassignReviewerAsync: unassignReviewerMutation.mutateAsync,
 		isUnassigning: unassignReviewerMutation.isLoading,
 
-		// Verify a review (→ resolved).
-		verifyReview: verifyReviewMutation.mutate,
-		verifyReviewAsync: verifyReviewMutation.mutateAsync,
-		isVerifying: verifyReviewMutation.isLoading,
+		// Submit a draft for review (→ in_review).
+		submitReview: submitReviewMutation.mutate,
+		submitReviewAsync: submitReviewMutation.mutateAsync,
+		isSubmitting: submitReviewMutation.isLoading,
 
-		// Reopen a resolved review.
+		// Approve a review.
+		approveReview: approveReviewMutation.mutate,
+		approveReviewAsync: approveReviewMutation.mutateAsync,
+		isApproving: approveReviewMutation.isLoading,
+
+		// Request changes on a review.
+		requestChanges: requestChangesMutation.mutate,
+		requestChangesAsync: requestChangesMutation.mutateAsync,
+		isRequestingChanges: requestChangesMutation.isLoading,
+
+		// Reopen a settled review.
 		reopenReview: reopenReviewMutation.mutate,
 		reopenReviewAsync: reopenReviewMutation.mutateAsync,
 		isReopening: reopenReviewMutation.isLoading,
