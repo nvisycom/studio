@@ -1386,8 +1386,6 @@
 			}
 		},
 		"audit": {
-			"expand": "Auf Vollbild erweitern",
-			"collapse": "Vollbild verlassen",
 			"revealInDocument": "Im Dokument anzeigen",
 			"running": "Entitäten werden erkannt…",
 			"occurrences": "{n} Vorkommen",
@@ -1551,13 +1549,19 @@
 				"reviewers": "Prüfer",
 				"createFailed": "Prüfung konnte nicht geöffnet werden",
 				"startHint": "Öffnen Sie eine Prüfung, um dieses Dokument zu besprechen und freizugeben.",
-				"defaultTitle": "Dokumentprüfung"
+				"defaultTitle": "Dokumentprüfung",
+				"select": "Review auswählen",
+				"rename": "Review umbenennen"
 			},
 			"pipelineStatus": {
 				"draft": "Entwurf",
 				"disabled": "Deaktiviert",
 				"enabled": "Aktiviert"
 			}
+		},
+		"fullScreen": {
+			"enter": "Vollbild",
+			"exit": "Vollbild beenden"
 		}
 	},
 	"commandMenu": {

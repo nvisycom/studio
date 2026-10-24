@@ -7,4 +7,5 @@ export { default as StudioAuditToolbar } from "./StudioAuditToolbar.vue";
 export { default as StudioNewDetection } from "./StudioNewDetection.vue";
 export { default as StudioDetectionSwitcher } from "./StudioDetectionSwitcher.vue";
 export { default as StudioReview } from "./StudioReview.vue";
+export { default as StudioReviewFull } from "./StudioReviewFull.vue";
 // AddEntityPopover / AddEntityHint are composed by the preview views directly.

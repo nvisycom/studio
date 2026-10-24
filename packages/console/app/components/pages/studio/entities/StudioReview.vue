@@ -33,153 +33,35 @@ const props = defineProps<{
 	detectionId: string | null;
 }>();
 
-const documentId = computed(() => props.documentId ?? "");
-const { reviews, isLoading: isLoadingReviews } = useDocumentReviews(documentId);
+// All the review logic (selection, open/link, assign/verify/reopen, comments) is
+// shared with the full-screen review via this composable.
 const {
-	createReviewAsync,
-	linkDetectionAsync,
+	reviews,
+	isLoadingReviews,
+	selectedReviewId,
+	review,
+	assignees,
+	timeline,
+	isLoadingTimeline,
+	accountId,
 	isCreating,
-	verifyReviewAsync,
-	reopenReviewAsync,
-	assignReviewerAsync,
-	unassignReviewerAsync,
 	isAssigning,
 	isUnassigning,
 	isVerifying,
 	isReopening,
-} = useReviews();
-
-// Which review is open. Default to the newest once the list loads; reset when the
-// document changes.
-const selectedReviewId = ref<string | null>(null);
-watch(
-	[reviews, () => props.documentId],
-	([list]) => {
-		if (!list.some((r) => r.id === selectedReviewId.value))
-			selectedReviewId.value = list[0]?.id ?? null;
-	},
-	{ immediate: true },
-);
-
-const activeReviewId = computed(() => selectedReviewId.value ?? "");
-const {
-	review,
-	timeline,
-	isLoadingTimeline,
-	postComment,
-	editComment,
-	deleteComment,
-	refresh: refreshReview,
-} = useReview(activeReviewId);
-const { accountId } = useAccount();
-
-async function openReview() {
-	// Capture the document (and its detection) at submission: if the user switches
-	// documents while creation is pending, the result belongs to the OLD document,
-	// so it must not be selected under — or linked to — the new one.
-	const forDocument = props.documentId;
-	const forDetection = props.detectionId;
-	if (!forDocument) return;
-	// The server requires a non-blank title (1-255), so default to the document's
-	// name (what the documents-list create flow does too).
-	const displayName =
-		(props.documentName ?? "").trim() ||
-		t("studio.detections.review.defaultTitle");
-	let created: Awaited<ReturnType<typeof createReviewAsync>>;
-	try {
-		created = await createReviewAsync({
-			documentId: forDocument,
-			review: { displayName },
-		});
-	} catch (error) {
-		toast.error(t("studio.detections.review.createFailed"), {
-			description: getErrorMessage(error, t("common.errors.tryAgain")),
-		});
-		return;
-	}
-	// Dropped if the active document changed mid-flight — the new review stays on
-	// its own document's list, reachable when the user returns to it.
-	if (props.documentId !== forDocument) return;
-	selectedReviewId.value = created.id;
-	// Attach the detection the reviewer is signing off on. Best-effort and in its
-	// own catch: the review is already open, so a link failure must not surface as
-	// "failed to open review".
-	if (forDetection)
-		linkDetectionAsync({
-			reviewId: created.id,
-			detectionId: forDetection,
-		}).catch(() => {});
-}
-
-// Which assignee avatars to show + add/remove. The assign/unassign mutations
-// invalidate the reviews LIST, but this tab reads assignees from the review
-// DETAIL query — refresh it so the avatars update without a page reload.
-const assignees = computed(() => review.value?.assignees ?? []);
-async function addReviewer(accountId: string) {
-	if (!selectedReviewId.value) return;
-	try {
-		await assignReviewerAsync({ reviewId: selectedReviewId.value, accountId });
-		await refreshReview();
-	} catch (error) {
-		toast.error(getErrorMessage(error, t("common.errors.generic")));
-	}
-}
-async function removeReviewer(accountId: string) {
-	if (!selectedReviewId.value) return;
-	try {
-		await unassignReviewerAsync({
-			reviewId: selectedReviewId.value,
-			accountId,
-		});
-		await refreshReview();
-	} catch (error) {
-		toast.error(getErrorMessage(error, t("common.errors.generic")));
-	}
-}
-
-// Rejects on failure (after toasting) so the composer keeps the user's text.
-async function onComment(body: string) {
-	try {
-		await postComment(body);
-	} catch (error) {
-		toast.error(getErrorMessage(error, t("common.errors.generic")));
-		throw error;
-	}
-}
-async function onEditComment(commentId: string, body: string) {
-	try {
-		await editComment(commentId, body);
-	} catch (error) {
-		toast.error(getErrorMessage(error, t("common.errors.generic")));
-		throw error;
-	}
-}
-async function onDeleteComment(commentId: string) {
-	try {
-		await deleteComment(commentId);
-	} catch (error) {
-		toast.error(getErrorMessage(error, t("common.errors.generic")));
-		throw error;
-	}
-}
-async function onVerify() {
-	if (!selectedReviewId.value) return;
-	try {
-		await verifyReviewAsync(selectedReviewId.value);
-		await refreshReview();
-	} catch (error) {
-		toast.error(getErrorMessage(error, t("common.errors.generic")));
-	}
-}
-async function onReopen() {
-	if (!selectedReviewId.value) return;
-	try {
-		await reopenReviewAsync(selectedReviewId.value);
-		await refreshReview();
-	} catch (error) {
-		toast.error(getErrorMessage(error, t("common.errors.generic")));
-	}
-}
+	openReview,
+	addReviewer,
+	removeReviewer,
+	onVerify,
+	onReopen,
+	onComment,
+	onEditComment,
+	onDeleteComment,
+} = useStudioReview({
+	documentId: () => props.documentId,
+	documentName: () => props.documentName,
+	detectionId: () => props.detectionId,
+});
 </script>
 
 <template>

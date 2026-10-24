@@ -17,6 +17,7 @@ import {
 	StudioNewDetection,
 	StudioDetectionSwitcher,
 	StudioReview,
+	StudioReviewFull,
 	StudioAuditToolbar,
 	EntityAuditModal,
 } from "#console/components/pages/studio";
@@ -351,7 +352,7 @@ watch(
 useEventListener(document, "keydown", (e: KeyboardEvent) => {
 	if (e.key !== "Escape") return;
 	if (auditModalEntity.value) return;
-	if (mainSurface.value === "audit") mainSurface.value = "preview";
+	if (mainSurface.value === "fullscreen") mainSurface.value = "preview";
 	else if (activeEntityId.value) clearEntity();
 });
 
@@ -371,33 +372,33 @@ function toggleInspector() {
 	else panel.collapse();
 }
 
-// Which surface fills the main (left) area: the file preview, or the wide audit
-// review. Only this pane swaps between modes — the inspector (detection bar +
-// audit) is one persistent panel throughout. Reviewing the audit big on the left
-// is what "full-screen" means here.
-const mainSurface = ref<"preview" | "audit">("preview");
-// The audit review is only reachable once a detection has completed with findings
-// — otherwise there's nothing to review. This gates the swap control and reverts
-// to the preview if the findings go away (file switch, re-run).
-const canReview = computed(
-	() => detection.phase.value === "complete" && detection.count.value > 0,
-);
-watch(canReview, (ok) => {
-	if (!ok) mainSurface.value = "preview";
-});
+// Which surface fills the main (left) area: the file preview, or — in full-screen
+// — a wide tabbed surface (Detect / Audit / Review) in its place. Only this pane
+// swaps; the inspector collapses in full-screen (the wide surface has its own
+// tabs). `fullScreenTab` is which tab the wide surface shows.
+const mainSurface = ref<"preview" | "fullscreen">("preview");
+// Full-screen shows either the audit review or the review discussion (Detect has
+// no wide form). Switched from the floating bottom panel.
+const fullScreenTab = ref<"audit" | "review">("audit");
 
-// Full-screen audit review shows the wide table on the main pane and carries its
-// own detection + redaction controls, so the inspector would only duplicate the
-// list — collapse it on entering full-screen and restore it on exit.
+// Full-screen carries its own tabs + controls, so the inspector would only
+// duplicate them — collapse it on entering full-screen, restore it on exit.
 watch(mainSurface, (surface) => {
 	const panel = inspectorPanel.value;
 	if (!panel) return;
-	if (surface === "audit") panel.collapse();
+	if (surface === "fullscreen") panel.collapse();
 	else panel.expand();
 });
 
-// Revealing an entity from the audit review steps back to the preview, focused on
-// that entity, so the reviewer sees it in the document.
+// Open full-screen on the tab the user is already looking at — but Detect has no
+// wide form, so from Detect we open on Audit.
+function enterFullScreen() {
+	fullScreenTab.value = panelTab.value === "review" ? "review" : "audit";
+	mainSurface.value = "fullscreen";
+}
+
+// Revealing an entity from the wide audit table steps back to the preview, focused
+// on that entity, so the reviewer sees it in the document.
 function revealEntity(id: string) {
 	mainSurface.value = "preview";
 	activeEntityId.value = id;
@@ -445,43 +446,57 @@ const auditProps = computed(() => ({
       <ResizablePanel :min-size="30" class="min-w-0">
         <div class="relative h-full">
           <Transition name="main-fade">
-            <!-- Full-screen audit: the wide table with a floating controls bar,
-                 since the inspector collapses here. -->
-            <div v-if="mainSurface === 'audit'" class="absolute inset-0">
-              <StudioAuditTable
-                class="absolute inset-0"
-                :phase="detection.phase.value"
-                :categorized-groups="detection.categorizedGroups.value"
-                :count="detection.count.value"
-                :error-message="detection.errorMessage.value"
-                :suppressed="redaction.suppressed.value"
-                @reveal-entity="revealEntity"
-                @toggle-suppress="redaction.toggleSuppress"
-                @view-details="auditModalEntity = $event"
-              />
-              <!-- Floating toolbar: detection + redaction controls, centered at
-                   the bottom so they float over the table without a full-width bar. -->
-              <div
-                class="pointer-events-none absolute inset-x-0 bottom-6 flex justify-center px-6"
-              >
-                <StudioAuditToolbar
-                  class="pointer-events-auto"
-                  v-model:selected-pipeline="detection.selectedPipeline.value"
-                  :pipelines="detection.pipelines.value"
+            <!-- Full-screen: a wide surface showing the Audit table or the Review
+                 discussion. Switching between the two happens on the floating
+                 bottom panel (not a top tab bar); the inspector is collapsed. -->
+            <div
+              v-if="mainSurface === 'fullscreen'"
+              class="absolute inset-0 bg-background"
+            >
+              <!-- Audit (wide): the table + floating run/redact toolbar. -->
+              <template v-if="fullScreenTab === 'audit'">
+                <StudioAuditTable
+                  class="absolute inset-0"
                   :phase="detection.phase.value"
-                  :can-run="canRunPipeline"
-                  :redact-phase="redaction.redactPhase.value"
-                  :can-redact="redaction.canRedact.value"
-                  :redact-error="redaction.redactError.value"
-                  :output="redaction.output.value"
+                  :categorized-groups="detection.categorizedGroups.value"
                   :count="detection.count.value"
-                  :effective-redact-count="redaction.effectiveRedactCount.value"
-                  @run="runFromAuditToolbar"
-                  @redact="redaction.redact"
-                  @download-output="redaction.downloadRedacted"
-                  @export-output="openExportRedacted"
+                  :error-message="detection.errorMessage.value"
+                  :suppressed="redaction.suppressed.value"
+                  @reveal-entity="revealEntity"
+                  @toggle-suppress="redaction.toggleSuppress"
+                  @view-details="auditModalEntity = $event"
                 />
-              </div>
+                <div
+                  class="pointer-events-none absolute inset-x-0 bottom-6 flex justify-center px-6"
+                >
+                  <StudioAuditToolbar
+                    class="pointer-events-auto"
+                    v-model:selected-pipeline="detection.selectedPipeline.value"
+                    :pipelines="detection.pipelines.value"
+                    :phase="detection.phase.value"
+                    :can-run="canRunPipeline"
+                    :redact-phase="redaction.redactPhase.value"
+                    :can-redact="redaction.canRedact.value"
+                    :redact-error="redaction.redactError.value"
+                    :output="redaction.output.value"
+                    :count="detection.count.value"
+                    :effective-redact-count="redaction.effectiveRedactCount.value"
+                    @run="runFromAuditToolbar"
+                    @redact="redaction.redact"
+                    @download-output="redaction.downloadRedacted"
+                    @export-output="openExportRedacted"
+                  />
+                </div>
+              </template>
+
+              <!-- Review (wide): the full-size review layout. -->
+              <StudioReviewFull
+                v-else
+                class="absolute inset-0"
+                :document-id="activeFile?.fileId ?? null"
+                :document-name="activeFile?.displayName ?? null"
+                :detection-id="detection.detectionId.value"
+              />
             </div>
             <StudioDocumentPreview
               v-else
@@ -508,29 +523,55 @@ const auditProps = computed(() => ({
             />
           </Transition>
 
-          <!-- One floating control stack at the main pane's bottom-right, over
-               WHICHEVER surface (preview or audit review): expand/exit the audit
-               review on top, show/hide the sidebar below. -->
-          <div class="absolute bottom-6 right-6 z-20 flex flex-col gap-2">
+          <!-- Floating controls, bottom-right, over whichever surface. In
+               full-screen it switches Audit / Review; otherwise it toggles the
+               inspector. Enter/exit full-screen is always available. -->
+          <div
+            v-if="activeFile"
+            class="absolute bottom-6 right-6 z-20 flex items-center gap-0.5 rounded-lg border border-neutral-200 bg-white p-0.5 shadow-lg dark:border-neutral-800 dark:bg-neutral-900"
+          >
+            <!-- Full-screen: Audit / Review switch. -->
+            <template v-if="mainSurface === 'fullscreen'">
+              <Button
+                v-for="tab in (['audit', 'review'] as const)"
+                :key="tab"
+                variant="ghost"
+                size="sm"
+                class="h-7 gap-1.5 px-3 font-normal"
+                :class="
+                  fullScreenTab === tab
+                    ? 'bg-secondary text-secondary-foreground'
+                    : 'text-muted-foreground'
+                "
+                @click="fullScreenTab = tab"
+              >
+                {{
+                  tab === "audit"
+                    ? t("studio.detections.auditTab")
+                    : t("studio.detections.reviewTab")
+                }}
+                <span
+                  v-if="tab === 'audit' && detection.detections.value.length"
+                  class="rounded-full bg-foreground/10 px-1.5 text-[10px] font-semibold leading-4 text-foreground/70"
+                >
+                  {{ detection.detections.value.length }}
+                </span>
+                <span
+                  v-else-if="tab === 'review' && documentReviews.length"
+                  class="rounded-full bg-foreground/10 px-1.5 text-[10px] font-semibold leading-4 text-foreground/70"
+                >
+                  {{ documentReviews.length }}
+                </span>
+              </Button>
+              <div class="mx-0.5 h-5 w-px bg-border" />
+            </template>
+
+            <!-- Preview: show/hide the inspector. -->
             <Button
-              v-if="canReview || mainSurface === 'audit'"
+              v-else
               variant="ghost"
-              size="sm"
-              class="h-7 w-7 rounded-md border border-neutral-200 bg-white p-0 shadow-lg dark:border-neutral-800 dark:bg-neutral-900"
-              :aria-label="
-                mainSurface === 'audit'
-                  ? t('studio.audit.collapse')
-                  : t('studio.audit.expand')
-              "
-              @click="mainSurface = mainSurface === 'audit' ? 'preview' : 'audit'"
-            >
-              <Minimize2 v-if="mainSurface === 'audit'" :size="14" />
-              <Maximize2 v-else :size="14" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              class="h-7 w-7 rounded-md border border-neutral-200 bg-white p-0 shadow-lg dark:border-neutral-800 dark:bg-neutral-900"
+              size="icon"
+              class="size-7"
               :aria-label="
                 inspectorCollapsed
                   ? t('studio.preview.showInspector')
@@ -540,6 +581,26 @@ const auditProps = computed(() => ({
             >
               <PanelRightClose v-if="!inspectorCollapsed" :size="14" />
               <PanelRightOpen v-else :size="14" />
+            </Button>
+
+            <!-- Enter / exit full-screen (always). -->
+            <Button
+              variant="ghost"
+              size="icon"
+              class="size-7"
+              :aria-label="
+                mainSurface === 'fullscreen'
+                  ? t('studio.fullScreen.exit')
+                  : t('studio.fullScreen.enter')
+              "
+              @click="
+                mainSurface === 'fullscreen'
+                  ? (mainSurface = 'preview')
+                  : enterFullScreen()
+              "
+            >
+              <Minimize2 v-if="mainSurface === 'fullscreen'" :size="14" />
+              <Maximize2 v-else :size="14" />
             </Button>
           </div>
         </div>

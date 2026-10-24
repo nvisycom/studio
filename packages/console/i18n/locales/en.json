@@ -1386,8 +1386,6 @@
 			}
 		},
 		"audit": {
-			"expand": "Expand to full screen",
-			"collapse": "Exit full screen",
 			"revealInDocument": "Reveal in document",
 			"running": "Detecting entities…",
 			"occurrences": "{n} occurrences",
@@ -1551,13 +1549,19 @@
 				"reviewers": "Reviewers",
 				"createFailed": "Failed to open review",
 				"startHint": "Open a review to discuss and sign off this document.",
-				"defaultTitle": "Document review"
+				"defaultTitle": "Document review",
+				"select": "Select a review",
+				"rename": "Rename review"
 			},
 			"pipelineStatus": {
 				"draft": "Draft",
 				"disabled": "Disabled",
 				"enabled": "Enabled"
 			}
+		},
+		"fullScreen": {
+			"enter": "Full screen",
+			"exit": "Exit full screen"
 		}
 	},
 	"commandMenu": {
