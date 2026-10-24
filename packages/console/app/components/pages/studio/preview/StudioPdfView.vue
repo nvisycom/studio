@@ -200,6 +200,12 @@ function paintHighlights() {
 			// metadata entity carries no page geometry.
 			if (entity.page !== pageNumber || !entity.rects?.length) continue;
 			for (const rect of entity.rects) {
+				// A UnitBoundingBox is normalized (0..1, top-left origin). Skip any
+				// rect that isn't — a box positioned at e.g. `-67000%` would paint far
+				// off-page and, worse, scrolling it into focus flings the viewer into
+				// blank space. Dropping it shows no highlight for that span rather than
+				// breaking the preview.
+				if (!isUnitRect(rect)) continue;
 				overlay.appendChild(
 					highlightBox(entity, {
 						left: rect.x,

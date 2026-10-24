@@ -195,6 +195,12 @@ const isLocatable = (e: StudioEntityView) =>
 const clusterLocatable = (cluster: EntityCluster<StudioEntityView>) =>
 	isLocatable(cluster.lead);
 
+// A non-locatable entity that nonetheless has a page (a PDF entity whose geometry
+// is unusable) "should" have had a position — shown as a warning icon — whereas
+// one with no position at all (a DOCX metadata target) is just metadata.
+const hasPage = (e: StudioEntityView) =>
+	e.modality === "text" && e.page != null;
+
 // A collapsed cluster reads as active when any of its occurrences is focused.
 function clusterActiveClass(cluster: EntityCluster<StudioEntityView>): string {
 	return cluster.items.some((e) => e.id === props.activeEntityId)
@@ -380,8 +386,11 @@ function clusterActiveClass(cluster: EntityCluster<StudioEntityView>): string {
                         class="block truncate font-mono text-[10px] uppercase tracking-wide text-muted-foreground"
                       >
                         {{ group.name }}
+                        <!-- Metadata-only (no position by design): a quiet inline
+                             tag. The geometry-invalid case is a persistent warning
+                             icon outside this truncating span instead. -->
                         <span
-                          v-if="!clusterLocatable(cluster)"
+                          v-if="!clusterLocatable(cluster) && !hasPage(cluster.lead)"
                           class="ml-1 rounded bg-muted-foreground/15 px-1 py-px font-medium normal-case"
                         >
                           {{ t("studio.audit.metadata") }}
@@ -427,6 +436,18 @@ function clusterActiveClass(cluster: EntityCluster<StudioEntityView>): string {
                         <CornerUpRight :size="13" />
                       </button>
                     </div>
+
+                    <!-- Location-unavailable (invalid geometry): a persistent
+                         warning icon after the details action, always visible
+                         (never truncated like an inline tag), explaining why the
+                         row can't be revealed. -->
+                    <TriangleAlert
+                      v-if="!clusterLocatable(cluster) && hasPage(cluster.lead)"
+                      :size="13"
+                      class="shrink-0 text-amber-600 dark:text-amber-500"
+                      :aria-label="t('studio.audit.locationUnavailable')"
+                      :title="t('studio.audit.locationUnavailableHint')"
+                    />
 
                     <!-- ×N (expands) for a repeated value, else the confidence. -->
                     <button

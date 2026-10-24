@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import {
-	CornerUpRight,
-	ScanSearch,
-	Loader2,
 	ChevronRight,
+	CornerUpRight,
 	Info,
+	Loader2,
+	ScanSearch,
+	TriangleAlert,
 } from "@lucide/vue";
 import type {
 	StudioCategorizedGroup,
@@ -106,6 +107,10 @@ function isLocatable(entity: StudioEntityView): boolean {
 		entity.locatable !== false
 	);
 }
+// A non-locatable entity with a page should have had a position (PDF geometry is
+// invalid) — a warning — versus one with no position at all (metadata).
+const hasPage = (e: StudioEntityView) =>
+	e.modality === "text" && e.page != null;
 </script>
 
 <template>
@@ -209,8 +214,18 @@ function isLocatable(entity: StudioEntityView): boolean {
                     >
                       {{ findingValue(cluster.lead) }}
                     </span>
+                    <!-- Geometry-invalid (has a page but unusable rects): a warning
+                         badge; true metadata (no position at all): a quiet tag. -->
                     <span
-                      v-if="!isLocatable(cluster.lead)"
+                      v-if="!isLocatable(cluster.lead) && hasPage(cluster.lead)"
+                      class="inline-flex shrink-0 items-center gap-1 rounded bg-amber-500/15 px-1 py-px text-[10px] font-medium uppercase tracking-wide text-amber-700 dark:text-amber-500"
+                      :title="t('studio.audit.locationUnavailableHint')"
+                    >
+                      <TriangleAlert :size="11" />
+                      {{ t("studio.audit.locationUnavailable") }}
+                    </span>
+                    <span
+                      v-else-if="!isLocatable(cluster.lead)"
                       class="shrink-0 rounded bg-muted-foreground/15 px-1 py-px text-[10px] font-medium uppercase tracking-wide text-muted-foreground"
                     >
                       {{ t("studio.audit.metadata") }}

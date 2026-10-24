@@ -254,6 +254,10 @@ const activeChipEl = computed<{ getBoundingClientRect(): DOMRect } | null>(
 	() => {
 		const id = props.activeEntityId;
 		if (!id) return null;
+		// No anchor for an entity the document can't place (invalid/missing geometry)
+		// — the popover is a pointer to a chip, so with none it's hidden (the audit
+		// row flags it instead).
+		if (activeEntity.value?.locatable === false) return null;
 		// The floating layer measures the anchor only on scroll/resize, not every
 		// frame, and the chip can be gone at that moment — a DOCX decoration renders
 		// only while its range is in view, so scrolling it off removes the node.

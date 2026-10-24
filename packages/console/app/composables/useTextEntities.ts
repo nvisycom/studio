@@ -194,9 +194,18 @@ export function useTextEntities(
 				// metadata-only (a DOCX hyperlink target in `.rels`). No source refs
 				// means a plain body / rendered position, so plain-text/JSON/PDF
 				// entities stay locatable regardless of fetch state.
+				//
+				// A rendered (PDF) entity also needs usable geometry: if it carries a
+				// page + rects but none are valid unit boxes (upstream sent raw points
+				// or negative coordinates), it can't be placed on the document, so it's
+				// not locatable — the audit row flags it and no highlight/popover is
+				// attempted.
+				const hasUsableGeometry =
+					loc.kind !== "rendered" || !rects?.length || rects.some(isUnitRect);
 				const locatable =
-					!sourceRefs?.length ||
-					sourceRefs.some((r) => isRenderedDocxPart(r.part));
+					hasUsableGeometry &&
+					(!sourceRefs?.length ||
+						sourceRefs.some((r) => isRenderedDocxPart(r.part)));
 				return {
 					id: e.id,
 					modality: "text",
