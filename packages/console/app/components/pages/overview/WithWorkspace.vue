@@ -20,12 +20,9 @@ import {
 	X,
 } from "@lucide/vue";
 import type { DetectionStatus } from "@nvisy/sdk/datatypes";
-import { useLocalStorage } from "@vueuse/core";
-import type { Component } from "vue";
 import {
 	Card,
 	CardContent,
-	CardDescription,
 	CardHeader,
 	CardTitle,
 } from "#console/components/ui/card";
@@ -36,81 +33,13 @@ import { getFileIcon, getFileIconForExtension } from "#console/utils/file";
 import { activityContent } from "#console/utils/activities";
 import OverviewStats from "./OverviewStats.vue";
 
-// Resolved so a setup step can render as either a link or a button via `:is`.
-const NuxtLink = resolveComponent("NuxtLink");
-
 const { t } = useI18n();
 const { wLink } = useWorkspaceLink();
 const { relativeTime } = useRelativeTime();
 const { resolveAvatarUrl } = useAvatarUrl();
-const { currentWorkspace } = useWorkspaces();
-const { members } = useMembers();
 const { documents } = useDocuments();
-const { policies } = usePolicies();
 const { activities } = useActivities({ pageSize: 8 });
 const { detections } = useDetections();
-
-// Each step's `done` flag is derived from real data. While setup is incomplete
-// (and not dismissed) a "Set up your workspace" card sits among the dashboard
-// cards; it disappears once every step is done or the user hides it.
-// A step either navigates (`href`) or runs an action (`run`) — creating a policy
-// opens the shell-wide dialog rather than routing to a page.
-interface SetupStep {
-	key: string;
-	icon: Component;
-	href?: string;
-	run?: () => void;
-	done: boolean;
-}
-const { open: openCreatePolicy } = useCreatePolicy();
-const setupSteps = computed<SetupStep[]>(() => [
-	{
-		key: "uploadFiles",
-		icon: FileText,
-		href: wLink("/documents"),
-		done: (documents.value?.length ?? 0) > 0,
-	},
-	{
-		key: "createPolicy",
-		icon: ShieldCheck,
-		run: openCreatePolicy,
-		done: (policies.value?.length ?? 0) > 0,
-	},
-	{
-		key: "inviteTeam",
-		icon: Users,
-		href: wLink("/team"),
-		// The current user already counts as a member, so "invited" means >1.
-		done: (members.value?.length ?? 0) > 1,
-	},
-]);
-
-const allSetUp = computed(() => setupSteps.value.every((s) => s.done));
-const activeStepIndex = computed(() =>
-	setupSteps.value.findIndex((s) => !s.done),
-);
-
-// Let users hide the setup card. Persisted per-workspace in localStorage so it
-// stays hidden across reloads.
-const dismissedSlugs = useLocalStorage<string[]>(
-	"overview-setup-dismissed",
-	[],
-);
-const isDismissed = computed(() =>
-	currentWorkspace.value
-		? dismissedSlugs.value.includes(currentWorkspace.value.handle)
-		: false,
-);
-function dismissSetup(): void {
-	const slug = currentWorkspace.value?.handle;
-	if (slug && !dismissedSlugs.value.includes(slug)) {
-		dismissedSlugs.value = [...dismissedSlugs.value, slug];
-	}
-}
-
-// The setup card shows while setup is unfinished and hasn't been hidden. The
-// live dashboard (activity / files / detections) always renders alongside it.
-const showSetupCard = computed(() => !allSetUp.value && !isDismissed.value);
 
 // Each activity carries a typed, optional payload; the client localizes it via
 // `activityContent`. Map the resulting category to an icon here.
@@ -210,9 +139,8 @@ const quickActions = [
     <!-- Workspace stat totals (detections, storage). -->
     <OverviewStats />
 
-    <!-- Top row: recent activity, plus the setup card while unfinished. -->
-    <div class="grid gap-6" :class="showSetupCard ? 'lg:grid-cols-2' : ''">
-      <!-- Recent activity -->
+    <!-- Recent activity -->
+    <div class="grid gap-6">
       <Card class="rounded-xl border-border/50 py-0 pt-6">
         <CardHeader>
           <div class="flex items-start justify-between">
@@ -273,84 +201,6 @@ const quickActions = [
         </CardContent>
       </Card>
 
-      <!-- Set up your workspace (dismissible, while unfinished) -->
-      <Card v-if="showSetupCard" class="rounded-xl border-border/50 py-0 pt-6">
-        <CardHeader>
-          <div class="flex items-start justify-between gap-2">
-            <div>
-              <CardTitle
-                class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
-              >
-                {{ t("overview.getStarted.title") }}
-              </CardTitle>
-              <CardDescription class="mt-1 text-sm">
-                {{ t("overview.getStarted.cardSubtitle") }}
-              </CardDescription>
-            </div>
-            <button
-              type="button"
-              class="-mr-1 -mt-1 shrink-0 rounded-md p-1 text-muted-foreground/60 transition-colors hover:bg-muted/60 hover:text-foreground"
-              :aria-label="t('overview.getStarted.skip')"
-              @click="dismissSetup"
-            >
-              <X :size="16" />
-            </button>
-          </div>
-        </CardHeader>
-        <CardContent class="pb-6">
-          <div class="-my-1 flex flex-col">
-            <component
-              :is="step.href ? NuxtLink : 'button'"
-              v-for="(step, i) in setupSteps"
-              :key="step.key"
-              :to="step.href"
-              :type="step.href ? undefined : 'button'"
-              class="group flex items-center gap-3 py-2.5 text-left"
-              @click="step.run?.()"
-            >
-              <div
-                class="flex size-7 shrink-0 items-center justify-center rounded-full border text-xs font-medium transition-colors"
-                :class="
-                  step.done
-                    ? 'border-transparent bg-foreground text-background'
-                    : i === activeStepIndex
-                      ? 'border-foreground/80 text-foreground'
-                      : 'border-border text-muted-foreground'
-                "
-              >
-                <Check v-if="step.done" :size="14" :stroke-width="2.5" />
-                <component
-                  :is="step.icon"
-                  v-else
-                  :size="14"
-                  :stroke-width="1.75"
-                />
-              </div>
-
-              <div class="min-w-0 flex-1">
-                <p
-                  class="text-sm font-medium transition-colors"
-                  :class="
-                    step.done
-                      ? 'text-muted-foreground line-through decoration-border'
-                      : 'text-foreground'
-                  "
-                >
-                  {{ t(`overview.getStarted.steps.${step.key}.title`) }}
-                </p>
-                <p v-if="!step.done" class="text-xs text-muted-foreground">
-                  {{ t(`overview.getStarted.steps.${step.key}.description`) }}
-                </p>
-              </div>
-
-              <ArrowRight
-                v-if="!step.done"
-                class="size-4 shrink-0 -translate-x-1 text-muted-foreground/50 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100"
-              />
-            </component>
-          </div>
-        </CardContent>
-      </Card>
     </div>
 
     <!-- Recent files + recent detections -->

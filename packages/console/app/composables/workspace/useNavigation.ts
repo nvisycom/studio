@@ -150,13 +150,6 @@ export function useNavigation() {
 				label: t("sidebar.automation"),
 				items: [
 					{
-						id: "detections",
-						title: t("sidebar.detections"),
-						url: wLink("/detections"),
-						icon: ScanSearch,
-						disabled: automationDisabled,
-					},
-					{
 						id: "integrations",
 						title: t("sidebar.connections"),
 						url: wLink("/integrations"),
@@ -171,6 +164,13 @@ export function useNavigation() {
 						icon: ShieldCheck,
 						disabled: automationDisabled,
 					},
+					{
+						id: "webhooks",
+						title: t("sidebar.webhooks"),
+						url: wLink("/webhooks"),
+						icon: WebhookIcon,
+						disabled: workspaceDisabled,
+					},
 				],
 			},
 			{
@@ -178,11 +178,11 @@ export function useNavigation() {
 				label: t("sidebar.observability"),
 				items: [
 					{
-						id: "webhooks",
-						title: t("sidebar.webhooks"),
-						url: wLink("/webhooks"),
-						icon: WebhookIcon,
-						disabled: workspaceDisabled,
+						id: "detections",
+						title: t("sidebar.detections"),
+						url: wLink("/detections"),
+						icon: ScanSearch,
+						disabled: automationDisabled,
 					},
 					{
 						id: "analytics",

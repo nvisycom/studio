@@ -1,7 +1,7 @@
 import {
 	Plug,
 	Bot,
-	Webhook as WebhookIcon,
+	ScanSearch,
 	Compass,
 	ShieldCheck,
 	LayoutTemplate,
@@ -82,22 +82,22 @@ export function useSectionTabs() {
 		},
 	]);
 
-	const analytics = computed<SectionTab[]>(() => [
+	const observability = computed<SectionTab[]>(() => [
 		{
-			value: "webhooks",
-			label: t("header.tabs.analytics.webhooks"),
-			icon: WebhookIcon,
-			to: "/webhooks",
+			value: "detections",
+			label: t("header.tabs.observability.detections"),
+			icon: ScanSearch,
+			to: "/detections",
 		},
 		{
 			value: "overview",
-			label: t("header.tabs.analytics.overview"),
+			label: t("header.tabs.observability.overview"),
 			icon: BarChart3,
 			to: "/analytics",
 		},
 		{
 			value: "logs",
-			label: t("header.tabs.analytics.logs"),
+			label: t("header.tabs.observability.logs"),
 			icon: FileSearch,
 			to: "/analytics/logs",
 		},
@@ -119,5 +119,5 @@ export function useSectionTabs() {
 		},
 	]);
 
-	return { policies, integrations, settings, analytics, account };
+	return { policies, integrations, settings, observability, account };
 }

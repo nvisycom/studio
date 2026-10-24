@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { WorkspaceDetection, DetectionStatus } from "@nvisy/sdk/datatypes";
-import type { DetectionsFilter } from "#console/composables/useDetections";
+import type { DetectionsFilter } from "#console/composables/studio/useDetections";
 import {
 	Loader2,
 	History,
@@ -13,6 +13,7 @@ import type { RowAction } from "#console/components/pages/RowActions.vue";
 import type { VirtualColumn } from "#console/components/ui/virtual-table";
 import { DocumentPicker } from "#console/components/shared";
 import { DetectionDetailSheet } from "#console/components/pages/detections";
+import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 import { personLabel } from "#console/utils/naming";
 import { toast } from "vue-sonner";
 import { VirtualTable } from "#console/components/ui/virtual-table";
@@ -26,6 +27,7 @@ import {
 
 const { t } = useI18n();
 const { relativeTime } = useRelativeTime();
+const sectionTabs = useSectionTabs();
 const { wLink } = useWorkspaceLink();
 const { resolveAvatarUrl } = useAvatarUrl();
 const { openDocument } = useStudioDocuments();
@@ -193,6 +195,11 @@ const columns = computed<
   <!-- Fixed-height page so the table fills and scrolls (like /files). -->
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6 h-[calc(100vh-5.5rem)]">
     <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 min-h-0">
+      <!-- Section tabs in the app-header socket. -->
+      <HeaderSocket>
+        <SectionTabs :tabs="sectionTabs.observability.value" />
+      </HeaderSocket>
+
       <!-- Filter toolbar. -->
       <div class="flex flex-wrap items-center gap-3">
         <p class="shrink-0 text-sm text-muted-foreground">

@@ -246,7 +246,7 @@ async function handleExport(format: "csv" | "json") {
     <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 min-h-0">
       <!-- Section tabs in the app-header socket. -->
       <HeaderSocket>
-        <SectionTabs :tabs="sectionTabs.analytics.value" />
+        <SectionTabs :tabs="sectionTabs.observability.value" />
       </HeaderSocket>
 
       <!-- Filters on the left, export on the right. -->
