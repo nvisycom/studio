@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { X, Loader2 } from "@lucide/vue";
-import type { OpenDocument } from "#console/composables/useStudioDocuments";
+import type { OpenDocument } from "#console/composables/studio/useStudioDocuments";
 import {
 	Tooltip,
 	TooltipContent,

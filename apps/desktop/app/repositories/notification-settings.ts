@@ -24,9 +24,9 @@ import type { Repository } from "#console/repositories/types";
 
 /** The locally-meaningful events — enabled by default, like a fresh account. */
 const LOCAL_EVENTS: NotificationEvent[] = [
-	"pipeline.detection.completed",
-	"pipeline.detection.failed",
-	"pipeline.redaction.created",
+	"detection.completed",
+	"detection.failed",
+	"redaction.created",
 ];
 
 /** The default settings for a local workspace: all local events on, email off. */

@@ -54,14 +54,21 @@ const {
 	timeline,
 	isLoadingTimeline,
 	postComment,
+	editComment,
+	deleteComment,
 	rename,
 	isRenaming,
 	refresh,
 } = useReview(reviewId);
 
+// The viewer — their own comments get edit/delete actions in the timeline.
+const { accountId } = useAccount();
+
 // Review actions (shared with the queue). Applied to this review by id.
 const {
-	verifyReviewAsync,
+	submitReviewAsync,
+	approveReviewAsync,
+	requestChangesAsync,
 	reopenReviewAsync,
 	assignReviewerAsync,
 	unassignReviewerAsync,
@@ -131,22 +138,18 @@ async function saveTitle() {
 
 definePageMeta({ pageCategory: "header.category.reviews" });
 
-async function verify() {
+async function runTransition(run: (reviewId: string) => Promise<unknown>) {
 	try {
-		await verifyReviewAsync(reviewId.value);
+		await run(reviewId.value);
 		await refresh();
 	} catch {
 		toast.error(t("reviews.errors.updateFailed"));
 	}
 }
-async function reopen() {
-	try {
-		await reopenReviewAsync(reviewId.value);
-		await refresh();
-	} catch {
-		toast.error(t("reviews.errors.updateFailed"));
-	}
-}
+const submit = () => runTransition(submitReviewAsync);
+const approve = () => runTransition(approveReviewAsync);
+const requestChanges = () => runTransition(requestChangesAsync);
+const reopen = () => runTransition(reopenReviewAsync);
 async function assign(accountId: string) {
 	try {
 		await assignReviewerAsync({ reviewId: reviewId.value, accountId });
@@ -168,6 +171,22 @@ async function unassign(accountId: string) {
 async function comment(body: string) {
 	try {
 		await postComment(body);
+	} catch (error) {
+		toast.error(t("reviews.detail.commentFailed"));
+		throw error;
+	}
+}
+async function editCommentHandler(commentId: string, body: string) {
+	try {
+		await editComment(commentId, body);
+	} catch (error) {
+		toast.error(t("reviews.detail.commentFailed"));
+		throw error;
+	}
+}
+async function deleteCommentHandler(commentId: string) {
+	try {
+		await deleteComment(commentId);
 	} catch (error) {
 		toast.error(t("reviews.detail.commentFailed"));
 		throw error;
@@ -300,9 +319,10 @@ function openInStudio() {
           </Badge>
         </header>
 
-        <!-- Two-column: main (tabs) + right rail -->
+        <!-- Two-column: main (tabs) + right rail. The main column is capped for a
+             readable thread width rather than sprawling across a wide screen. -->
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_240px]">
-          <div class="min-w-0">
+          <div class="min-w-0 lg:max-w-3xl">
             <Tabs default-value="discussion">
               <TabsList>
                 <TabsTrigger value="discussion">
@@ -320,7 +340,10 @@ function openInStudio() {
                 <ReviewTimeline
                   :entries="timeline"
                   :loading="isLoadingTimeline"
+                  :current-account-id="accountId"
                   :on-comment="comment"
+                  :on-edit-comment="editCommentHandler"
+                  :on-delete-comment="deleteCommentHandler"
                 />
               </TabsContent>
 
@@ -351,7 +374,7 @@ function openInStudio() {
                   >
                     <span class="flex min-w-0 items-baseline gap-2">
                       <span class="truncate text-foreground">
-                        {{ t(`reviews.detail.triggerType.${detection.triggerType}`) }}
+                        {{ t("reviews.detail.detection") }}
                       </span>
                       <span class="shrink-0 text-xs text-muted-foreground">
                         {{ relativeTime(detection.startedAt) }}
@@ -433,7 +456,9 @@ function openInStudio() {
           <ReviewSidebar
             :review="review"
             :deleting="isDeleting"
-            @verify="verify"
+            @submit="submit"
+            @approve="approve"
+            @request-changes="requestChanges"
             @reopen="reopen"
             @assign="assign"
             @unassign="unassign"

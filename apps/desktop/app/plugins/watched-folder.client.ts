@@ -3,7 +3,7 @@ import { listen } from "@tauri-apps/api/event";
 import { until } from "@vueuse/core";
 import { NvisyApiError } from "@nvisy/sdk";
 import type { Nvisy } from "@nvisy/sdk";
-import type { WatchedFolder } from "#console/composables/useWatchedFolder";
+import type { WatchedFolder } from "#console/composables/documents/useWatchedFolder";
 
 /**
  * Auto-upload files from the watched folder.

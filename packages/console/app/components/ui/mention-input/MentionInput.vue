@@ -290,7 +290,14 @@ defineExpose({ focus });
           @mousedown.prevent="pick(c)"
           @mouseenter="activeIndex = i"
         >
-          <Sparkles v-if="c.special" :size="16" class="shrink-0 text-primary" />
+          <!-- Match EntityAvatar size="sm" (size-6) so the name column lines up
+               whether the row shows a sparkle or a real avatar. -->
+          <span
+            v-if="c.special"
+            class="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
+          >
+            <Sparkles :size="14" />
+          </span>
           <EntityAvatar
             v-else
             size="sm"

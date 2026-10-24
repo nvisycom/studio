@@ -7,7 +7,9 @@ import type {
 import { Loader2 } from "@lucide/vue";
 import { toast } from "vue-sonner";
 import { Button } from "#console/components/ui/button";
+import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";
+import { Switch } from "#console/components/ui/switch";
 import {
 	Select,
 	SelectContent,
@@ -62,6 +64,11 @@ const raster = ref<RasterPolicy>("auto");
 // Retention state (shared model in utils/retention).
 const retention = ref(defaultRetentionForm());
 
+// Review approval policy: how many distinct reviewers must approve before a
+// review reaches `approved`, and whether the author may cast one of them.
+const minApprovals = ref(1);
+const authorCanApprove = ref(true);
+
 // Whether the form has been populated from a loaded workspace (change detection
 // stays off until then).
 const formInitialized = ref(false);
@@ -79,6 +86,11 @@ watch(
 		// SDK's own defaults (raster "auto"; retention "forever" per scope).
 		raster.value = workspace.settings.raster ?? "auto";
 		retention.value = retentionToForm(workspace.settings.retention);
+		// Review settings are optional in the SDK; fall back to the defaults (one
+		// approval required; the author may approve).
+		minApprovals.value = workspace.settings.review?.minApprovals ?? 1;
+		authorCanApprove.value =
+			workspace.settings.review?.authorCanApprove ?? true;
 		formInitialized.value = true;
 	},
 	{ immediate: true },
@@ -92,6 +104,10 @@ const editedSettings = computed<WorkspaceSettings>(() => ({
 	...currentWorkspace.value?.settings,
 	raster: raster.value,
 	retention: formToRetention(retention.value),
+	review: {
+		minApprovals: minApprovals.value,
+		authorCanApprove: authorCanApprove.value,
+	},
 }));
 
 // The Options card (raster policy) and the Retention card each enable their own
@@ -113,6 +129,15 @@ const hasRetentionChanges = computed(() => {
 	const saved = formToRetention(retentionToForm(ws.settings.retention));
 	return RETENTION_TARGETS.some(
 		(target) => !retentionEquals(edited[target], saved[target]),
+	);
+});
+const hasReviewChanges = computed(() => {
+	const ws = currentWorkspace.value;
+	if (!ws || !formInitialized.value) return false;
+	// Normalize the saved values against the same defaults the form fell back to.
+	return (
+		minApprovals.value !== (ws.settings.review?.minApprovals ?? 1) ||
+		authorCanApprove.value !== (ws.settings.review?.authorCanApprove ?? true)
 	);
 });
 
@@ -226,6 +251,75 @@ async function saveWorkspaceSettings() {
               size="sm"
               @click="saveWorkspaceSettings"
               :disabled="isUpdating || !hasRetentionChanges"
+            >
+              <Loader2 v-if="isUpdating" :size="16" class="mr-2 animate-spin" />
+              {{ t("common.save") }}
+            </Button>
+          </CardFooter>
+        </Card>
+
+        <!-- Reviews Card: the approval policy for document reviews. -->
+        <Card class="py-0 pt-6 rounded-xl border-border/50">
+          <CardHeader class="pb-4">
+            <CardTitle
+              class="text-xs font-medium tracking-wide uppercase text-muted-foreground"
+              >{{ t("settings.workspace.reviews.title") }}</CardTitle
+            >
+            <CardDescription class="text-sm">{{
+              t("settings.workspace.reviews.description")
+            }}</CardDescription>
+          </CardHeader>
+          <CardContent class="space-y-6">
+            <!-- Minimum approvals. -->
+            <div class="flex items-center justify-between gap-4">
+              <div class="space-y-0.5">
+                <Label for="min-approvals" class="text-sm">
+                  {{ t("settings.workspace.reviews.minApprovals.label") }}
+                </Label>
+                <p class="text-sm text-muted-foreground">
+                  {{ t("settings.workspace.reviews.minApprovals.description") }}
+                </p>
+              </div>
+              <Input
+                id="min-approvals"
+                v-model.number="minApprovals"
+                type="number"
+                min="1"
+                max="100"
+                class="h-9 w-20 shrink-0"
+              />
+            </div>
+            <!-- Author may approve. -->
+            <div class="flex items-center justify-between gap-4">
+              <div class="space-y-0.5">
+                <Label for="author-can-approve" class="text-sm">
+                  {{ t("settings.workspace.reviews.authorCanApprove.label") }}
+                </Label>
+                <p class="text-sm text-muted-foreground">
+                  {{
+                    t(
+                      "settings.workspace.reviews.authorCanApprove.description",
+                    )
+                  }}
+                </p>
+              </div>
+              <Switch
+                id="author-can-approve"
+                v-model="authorCanApprove"
+                class="shrink-0"
+              />
+            </div>
+          </CardContent>
+          <CardFooter
+            class="border-t border-border/50 pb-6 bg-muted/30 rounded-b-xl flex items-center justify-between"
+          >
+            <p class="text-xs text-muted-foreground">
+              {{ t("settings.workspace.reviews.footer") }}
+            </p>
+            <Button
+              size="sm"
+              @click="saveWorkspaceSettings"
+              :disabled="isUpdating || !hasReviewChanges"
             >
               <Loader2 v-if="isUpdating" :size="16" class="mr-2 animate-spin" />
               {{ t("common.save") }}

@@ -10,10 +10,6 @@
 				"explore": "Explore",
 				"providers": "Providers"
 			},
-			"pipelines": {
-				"index": "Pipelines",
-				"detections": "Detections"
-			},
 			"settings": {
 				"general": "General",
 				"notifications": "Notifications",
@@ -23,14 +19,14 @@
 				"general": "General",
 				"tokens": "Tokens"
 			},
-			"analytics": {
-				"overview": "Overview",
-				"logs": "Logs",
-				"webhooks": "Webhooks"
-			},
 			"policies": {
 				"index": "Overview",
 				"templates": "Templates"
+			},
+			"observability": {
+				"detections": "Detections",
+				"overview": "Overview",
+				"logs": "Logs"
 			}
 		},
 		"category": {
@@ -38,14 +34,14 @@
 			"documents": "Documents",
 			"studio": "Studio",
 			"team": "Team",
-			"pipelines": "Pipelines",
 			"policies": "Policies",
 			"integrations": "Integrations",
 			"analytics": "Analytics",
 			"billing": "Billing",
 			"settings": "Settings",
 			"webhooks": "Webhooks",
-			"reviews": "Reviews"
+			"reviews": "Reviews",
+			"detections": "Detections"
 		}
 	},
 	"common": {
@@ -204,6 +200,19 @@
 				"deleteFailed": "Failed to delete workspace",
 				"avatarUploadFailed": "Failed to upload workspace avatar",
 				"avatarRemoveFailed": "Failed to remove workspace avatar"
+			},
+			"reviews": {
+				"title": "Reviews",
+				"description": "How document reviews reach approval.",
+				"minApprovals": {
+					"label": "Required approvals",
+					"description": "How many reviewers must approve before a review is approved."
+				},
+				"authorCanApprove": {
+					"label": "Author can approve",
+					"description": "Allow a review's author to count as one of the approvals."
+				},
+				"footer": "Applies to new approvals across the workspace."
 			}
 		},
 		"notifications": {
@@ -265,15 +274,15 @@
 						"description": "When a connection sync fails"
 					}
 				},
-				"pipelines": {
-					"name": "Pipelines",
+				"detections": {
+					"name": "Detections",
 					"detectionCompleted": {
 						"name": "Detection Completed",
-						"description": "When a pipeline detection finishes analysis"
+						"description": "When a detection finishes analysis"
 					},
 					"detectionFailed": {
 						"name": "Detection Failed",
-						"description": "When a pipeline detection fails"
+						"description": "When a detection fails"
 					},
 					"redactionCreated": {
 						"name": "Redaction Ready",
@@ -385,26 +394,6 @@
 			"support": {
 				"description": "Get help from our team"
 			}
-		},
-		"getStarted": {
-			"title": "Let's set up your workspace",
-			"done": "You're all set",
-			"steps": {
-				"uploadFiles": {
-					"title": "Upload your first documents",
-					"description": "Add files to start detecting and redacting sensitive data."
-				},
-				"createPolicy": {
-					"title": "Create a redaction policy",
-					"description": "Define what to detect and how to redact it."
-				},
-				"inviteTeam": {
-					"title": "Invite your team",
-					"description": "Add members and assign roles to collaborate."
-				}
-			},
-			"skip": "Skip setup",
-			"cardSubtitle": "Finish these steps to get going."
 		},
 		"sections": {
 			"recentActivity": "Recent activity",
@@ -1348,7 +1337,6 @@
 		"connections": "Integrations",
 		"explore": "Explore",
 		"policies": "Policies",
-		"pipelines": "Pipelines",
 		"observability": "Observability",
 		"analytics": "Analytics",
 		"logs": "Logs",
@@ -1356,7 +1344,8 @@
 		"settings": "Settings",
 		"support": "Support",
 		"webhooks": "Webhooks",
-		"reviews": "Reviews"
+		"reviews": "Reviews",
+		"detections": "Detections"
 	},
 	"health": {
 		"status": {
@@ -1386,19 +1375,16 @@
 			}
 		},
 		"audit": {
-			"expand": "Expand to full screen",
-			"collapse": "Exit full screen",
 			"revealInDocument": "Reveal in document",
 			"running": "Detecting entities…",
 			"occurrences": "{n} occurrences",
-			"pipelinePlaceholder": "Select a pipeline",
 			"run": "Run detection",
 			"runAgain": "Run again",
 			"runFailed": "Detection failed. Please try again.",
 			"bytes": "bytes {start}–{end}",
 			"timeSpan": "{start}–{end}",
 			"idleTitle": "No detections yet",
-			"idleHint": "Pick a pipeline and run detection to find sensitive entities.",
+			"idleHint": "Run a detection to find sensitive entities.",
 			"noFile": "No document open",
 			"noFileHint": "Open a document to run detection.",
 			"emptyTitle": "No entities found",
@@ -1441,7 +1427,6 @@
 			"redactFailed": "Redaction failed. Please try again.",
 			"downloadRedacted": "Download redacted file",
 			"downloadFailed": "Could not download the redacted file",
-			"noPipelines": "No pipelines yet. Create one first.",
 			"cell": "{column} · row {row}",
 			"colN": "col {n}",
 			"detail": {
@@ -1475,7 +1460,15 @@
 			},
 			"exportRedacted": "Export redacted file",
 			"download": "Download",
-			"export": "Export"
+			"export": "Export",
+			"highlight": {
+				"label": "Highlights",
+				"hint": "Toggle bold highlight fill in the document"
+			},
+			"locationUnavailable": "Location unavailable",
+			"locationUnavailableHint": "This entity’s position in the document is invalid, so it can’t be shown or redacted in place.",
+			"nothingToRedact": "Nothing to redact",
+			"runFirst": "Run a detection first"
 		},
 		"preview": {
 			"loading": "Loading document...",
@@ -1524,17 +1517,12 @@
 		},
 		"detections": {
 			"none": "No detections yet",
-			"pipeline": "Pipeline",
 			"auditTab": "Audit",
 			"source": {
 				"pipeline": "Pipeline",
 				"labels": "Labels",
 				"policies": "Policies"
 			},
-			"adhoc": "Ad-hoc",
-			"labelsHint": "Detect these entity types with a one-off policy.",
-			"noPolicies": "No policies yet. Create one, or detect by labels.",
-			"scope": "Scope (optional)",
 			"jurisdictions": "Jurisdictions",
 			"languages": "Languages",
 			"runDetection": "Run detection",
@@ -1543,14 +1531,29 @@
 			"review": {
 				"none": "No reviews for this document",
 				"new": "New review",
-				"linked": "Linked",
-				"linkedDetection": "Detection",
 				"status": "Status",
 				"reviewers": "Reviewers",
 				"createFailed": "Failed to open review",
-				"startHint": "Open a review to discuss and sign off this document.",
-				"defaultTitle": "Document review"
-			}
+				"defaultTitle": "Document review",
+				"select": "Select a review",
+				"rename": "Rename review",
+				"addReviewer": "Add",
+				"delete": "Delete review",
+				"deleteTitle": "Delete this review?",
+				"deleteDescription": "This permanently removes the review and its entire discussion.",
+				"emptyTitle": "No reviews yet",
+				"emptyHint": "Open a review to discuss and sign off this document."
+			},
+			"emptyPolicies": {
+				"title": "No policies yet",
+				"description": "Create a policy, or detect by labels instead."
+			},
+			"scope": {
+				"countriesPlaceholder": "Search or type a country code (e.g. US)",
+				"languagesPlaceholder": "Search or type a BCP-47 tag (e.g. en)",
+				"addValue": "Add"
+			},
+			"item": "Detection"
 		}
 	},
 	"commandMenu": {
@@ -1569,7 +1572,6 @@
 			"title": "Quick Actions",
 			"createWorkspace": "Create Workspace",
 			"createPolicy": "New Policy",
-			"createPipeline": "New Pipeline",
 			"createApiToken": "New API Token",
 			"exploreIntegrations": "Explore Integrations",
 			"uploadFile": "Upload File",
@@ -1589,7 +1591,6 @@
 	},
 	"policies": {
 		"title": "Policies",
-		"count": "{count} policy | {count} policies",
 		"create": "New policy",
 		"viewTemplates": "View templates",
 		"empty": {
@@ -1603,7 +1604,9 @@
 			"updated": "Updated",
 			"menu": "Open menu",
 			"edit": "Edit",
-			"delete": "Delete"
+			"delete": "Delete",
+			"promote": "Save",
+			"kind": "Kind"
 		},
 		"editor": {
 			"save": "Save changes",
@@ -1764,7 +1767,9 @@
 			"updateFailed": "Failed to update policy",
 			"deleted": "Policy deleted",
 			"deleteFailed": "Failed to delete policy",
-			"loadFailed": "Failed to load policy"
+			"loadFailed": "Failed to load policy",
+			"promoted": "Policy saved.",
+			"promoteFailed": "Couldn't save the policy."
 		},
 		"templates": {
 			"title": "Policy templates",
@@ -1833,143 +1838,22 @@
 				}
 			},
 			"slugEmpty": "Enter a name using letters or numbers to generate a slug."
-		}
-	},
-	"pipelines": {
-		"title": "Pipelines",
-		"count": "{count} pipeline configured | {count} pipelines configured",
-		"detections": {
-			"status": "Status",
-			"allStatus": "All statuses",
-			"allPipelines": "All pipelines",
-			"allTriggers": "All triggers",
-			"statusHeader": "Status",
-			"pipeline": "Pipeline",
-			"file": "File",
-			"trigger": "Trigger",
-			"started": "Started",
-			"runsFound": "{count} detection | {count} detections",
-			"noRunsFound": "No detections found",
-			"triggerType": {
-				"user": "Manual",
-				"system": "Automatic"
-			},
-			"detectionStatus": {
-				"pending": "Pending",
-				"executing": "Executing",
-				"complete": "Complete",
-				"failed": "Failed"
-			},
-			"noRunsDescription": "Detections will appear here once this workspace processes files.",
-			"triggeredBy": "Triggered by",
-			"openInStudio": "Open in Studio",
-			"menu": "Detection actions",
-			"downloadAuditJson": "Download audit (JSON)",
-			"downloadAuditCsv": "Download audit (CSV)",
-			"auditDownloadFailed": "Couldn't download the audit",
-			"seeDetails": "See details",
-			"detail": {
-				"status": "Status",
-				"trigger": "Trigger",
-				"started": "Started",
-				"completed": "Completed",
-				"duration": "Duration",
-				"running": "Still running",
-				"detectionLoading": "Loading detections.",
-				"detectionUnavailable": "Detections unavailable.",
-				"detections": "{count} entities detected | {count} entity detected | {count} entities detected",
-				"input": "Input",
-				"error": "Error",
-				"detectionId": "Detection ID",
-				"copy": "Copy detection ID",
-				"copied": "Detection ID copied",
-				"tags": "Tags",
-				"downloadJson": "Download JSON",
-				"downloadCsv": "Download CSV",
-				"none": "-",
-				"copyFailed": "Couldn't copy the detection id"
-			},
-			"openInStudioFailed": "Couldn't open the file in the studio."
 		},
-		"status": {
-			"draft": "Draft",
-			"enabled": "Enabled",
-			"disabled": "Disabled"
+		"promote": {
+			"title": "Make this policy editable",
+			"description": "This policy was derived from labels and is read-only. Give it a name to turn it into an editable, reusable policy you can also attach to pipelines.",
+			"nameLabel": "Policy name",
+			"namePlaceholder": "e.g. Contact details",
+			"confirm": "Save"
 		},
-		"table": {
-			"name": "Name",
-			"creator": "Creator",
-			"created": "Created",
-			"updated": "Updated",
-			"menu": "Actions",
-			"edit": "Edit"
+		"kind": {
+			"authored": "Authored",
+			"derived": "Derived"
 		},
-		"actions": {
-			"create": "Create Pipeline",
-			"delete": "Delete",
-			"edit": "Edit"
-		},
-		"empty": {
-			"title": "No pipelines yet",
-			"description": "Create your first pipeline to automate document processing."
-		},
-		"toast": {
-			"deleted": "Pipeline deleted",
-			"deleteFailed": "Failed to delete pipeline",
-			"created": "Pipeline created",
-			"createFailed": "Failed to create pipeline",
-			"updated": "Pipeline updated",
-			"updateFailed": "Failed to update pipeline",
-			"loadFailed": "Failed to load pipeline"
-		},
-		"create": {
-			"title": "Create Pipeline",
-			"description": "Configure a detection and redaction pipeline.",
-			"nameLabel": "Name",
-			"namePlaceholder": "Document Redaction",
-			"slugLabel": "Slug",
-			"slugPlaceholder": "auto-generated",
-			"slugHint": "Generated from the name. URL-safe and permanent.",
-			"descriptionLabel": "Description",
-			"descriptionPlaceholder": "What this pipeline does",
-			"cancel": "Cancel",
-			"submit": "Create",
-			"policiesLabel": "Policies",
-			"policiesHint": "Workspace policies applied when this pipeline redacts.",
-			"policiesSelect": "Link policies",
-			"policiesEmpty": "No policies in this workspace",
-			"advanced": "Scope",
-			"countriesLabel": "Jurisdictions",
-			"countriesPlaceholder": "Search or type a country code (e.g. US)",
-			"scopeHint": "Restrict jurisdiction-scoped detection rules to these countries.",
-			"languagesLabel": "Languages",
-			"languagesPlaceholder": "Search or type a BCP-47 tag (e.g. en)",
-			"languagesHint": "Assert the languages present in your documents.",
-			"addValue": "Add",
-			"retention": "Retention",
-			"retentionHint": "Override how long this pipeline keeps data. Unset scopes inherit the workspace default.",
-			"retentionTargets": {
-				"auditLogs": "Audit logs",
-				"redactedDocuments": "Redacted documents"
-			},
-			"retentionModes": {
-				"inherit": "Inherit default",
-				"persistent": "Keep forever",
-				"fixed": "Keep for days",
-				"ephemeral": "Delete immediately"
-			},
-			"retentionDays": "Days"
-		},
-		"edit": {
-			"title": "Edit Pipeline",
-			"description": "Update this detection and redaction pipeline.",
-			"submit": "Save changes"
-		},
-		"delete": {
-			"title": "Delete {name}?",
-			"description": "This permanently deletes the pipeline. This action cannot be undone.",
-			"confirm": "Delete pipeline",
-			"cancel": "Cancel"
+		"filter": {
+			"all": "All",
+			"authored": "Authored",
+			"derived": "Derived"
 		}
 	},
 	"analytics": {
@@ -2234,21 +2118,21 @@
 				"title": "Sync failed",
 				"message": "A connection failed to sync: {error}"
 			},
-			"pipelineDetectionCompleted": {
-				"title": "Detection completed",
-				"message": "{inputFileName} was analyzed in {pipelineSlug}"
-			},
-			"pipelineDetectionFailed": {
-				"title": "Detection failed",
-				"message": "{inputFileName} failed in {pipelineSlug}: {error}"
-			},
-			"pipelineRedactionCreated": {
-				"title": "Redaction ready",
-				"message": "A redacted copy of {inputFileName} is ready"
-			},
 			"unknown": {
 				"title": "Notification",
 				"message": "You have a new notification"
+			},
+			"detectionCompleted": {
+				"title": "Detection completed",
+				"message": "{inputFileName} was analyzed in {pipelineSlug}"
+			},
+			"detectionFailed": {
+				"title": "Detection failed",
+				"message": "{inputFileName} failed in {pipelineSlug}: {error}"
+			},
+			"redactionCreated": {
+				"title": "Redaction ready",
+				"message": "A redacted copy of {inputFileName} is ready"
 			}
 		}
 	},
@@ -2338,34 +2222,6 @@
 				"title": "File deleted",
 				"message": "{fileName} was deleted"
 			},
-			"pipelineCreated": {
-				"title": "Pipeline created",
-				"message": "Pipeline {pipelineSlug} was created"
-			},
-			"pipelineUpdated": {
-				"title": "Pipeline updated",
-				"message": "Pipeline {pipelineSlug} was updated"
-			},
-			"pipelineDeleted": {
-				"title": "Pipeline deleted",
-				"message": "Pipeline {pipelineSlug} was deleted"
-			},
-			"pipelineDetectionStarted": {
-				"title": "Detection started",
-				"message": "A detection started in {pipelineSlug}"
-			},
-			"pipelineDetectionCompleted": {
-				"title": "Detection completed",
-				"message": "A detection finished in {pipelineSlug}"
-			},
-			"pipelineDetectionFailed": {
-				"title": "Detection failed",
-				"message": "A detection failed in {pipelineSlug}"
-			},
-			"pipelineRedactionCreated": {
-				"title": "Redaction created",
-				"message": "A redacted copy was created in {pipelineSlug}"
-			},
 			"policyCreated": {
 				"title": "Policy created",
 				"message": "A policy was created"
@@ -2385,6 +2241,22 @@
 			"unknown": {
 				"title": "Activity",
 				"message": "An activity was recorded"
+			},
+			"detectionStarted": {
+				"title": "Detection started",
+				"message": "A detection started"
+			},
+			"detectionCompleted": {
+				"title": "Detection completed",
+				"message": "A detection finished"
+			},
+			"detectionFailed": {
+				"title": "Detection failed",
+				"message": "A detection failed"
+			},
+			"redactionCreated": {
+				"title": "Redaction created",
+				"message": "A redacted copy was created"
 			}
 		},
 		"category": {
@@ -2394,9 +2266,10 @@
 			"connection": "Connections",
 			"webhook": "Webhooks",
 			"file": "Files",
-			"pipeline": "Pipelines",
 			"policy": "Policies",
-			"unknown": "Other"
+			"unknown": "Other",
+			"detection": "Detections",
+			"redaction": "Redactions"
 		}
 	},
 	"userMenu": {
@@ -2519,22 +2392,15 @@
 			"events": {
 				"review": {
 					"opened": "opened this review",
-					"renamed": "renamed this review"
-				},
-				"detection": {
-					"linked": "linked a detection"
-				},
-				"redaction": {
-					"linked": "linked a redaction"
-				},
-				"assigned": "assigned a reviewer",
-				"unassigned": "removed a reviewer",
-				"verified": "verified this review",
-				"reopened": "reopened this review"
-			},
-			"triggerType": {
-				"user": "Manual detection",
-				"system": "Automatic detection"
+					"renamed": "renamed this review",
+					"redetected": "re-ran detection",
+					"assigned": "assigned a reviewer",
+					"unassigned": "removed a reviewer",
+					"submitted": "submitted for review",
+					"changes_requested": "requested changes",
+					"approved": "approved this review",
+					"reopened": "reopened this review"
+				}
 			},
 			"sidebar": {
 				"status": "Status",
@@ -2561,11 +2427,23 @@
 			"redactionReady": "Ready",
 			"redactionPending": "Pending",
 			"redactionsFailed": "Couldn't load redactions.",
-			"assistant": "Assistant"
+			"assistant": "Assistant",
+			"commentActions": {
+				"edited": "edited",
+				"actions": "Comment actions",
+				"edit": "Edit",
+				"delete": "Delete",
+				"save": "Save",
+				"deleteTitle": "Delete comment?",
+				"deleteDescription": "This permanently removes the comment from the discussion."
+			},
+			"detection": "Detection"
 		},
 		"actions": {
-			"verify": "Mark verified",
-			"reopen": "Reopen review"
+			"submit": "Submit for review",
+			"approve": "Approve",
+			"requestChanges": "Request changes",
+			"reopen": "Reopen"
 		},
 		"table": {
 			"reviewer": "Reviewer",
@@ -2574,9 +2452,11 @@
 			"document": "Document"
 		},
 		"status": {
-			"needs_review": "Needs review",
+			"draft": "Draft",
 			"in_review": "In review",
-			"resolved": "Resolved"
+			"changes_requested": "Changes requested",
+			"partially_approved": "Partially approved",
+			"approved": "Approved"
 		},
 		"filter": {
 			"all": "All"
@@ -2608,5 +2488,48 @@
 			"createFailed": "Couldn't open the review. Please try again.",
 			"deleteFailed": "Couldn't delete the review. Please try again."
 		}
+	},
+	"detections": {
+		"status": "Status",
+		"allStatus": "All statuses",
+		"statusHeader": "Status",
+		"file": "File",
+		"started": "Started",
+		"runsFound": "{count} detection | {count} detections",
+		"noRunsFound": "No detections found",
+		"detectionStatus": {
+			"pending": "Pending",
+			"executing": "Executing",
+			"complete": "Complete",
+			"failed": "Failed"
+		},
+		"noRunsDescription": "Detections will appear here once this workspace processes files.",
+		"triggeredBy": "Triggered by",
+		"openInStudio": "Open in Studio",
+		"menu": "Detection actions",
+		"downloadAuditJson": "Download audit (JSON)",
+		"downloadAuditCsv": "Download audit (CSV)",
+		"auditDownloadFailed": "Couldn't download the audit",
+		"seeDetails": "See details",
+		"detail": {
+			"status": "Status",
+			"started": "Started",
+			"completed": "Completed",
+			"duration": "Duration",
+			"running": "Still running",
+			"detectionLoading": "Loading detections.",
+			"detectionUnavailable": "Detections unavailable.",
+			"detections": "{count} entities detected | {count} entity detected | {count} entities detected",
+			"input": "Input",
+			"detectionId": "Detection ID",
+			"copy": "Copy detection ID",
+			"copied": "Detection ID copied",
+			"tags": "Tags",
+			"downloadJson": "Download JSON",
+			"downloadCsv": "Download CSV",
+			"none": "-",
+			"copyFailed": "Couldn't copy the detection id"
+		},
+		"openInStudioFailed": "Couldn't open the file in the studio."
 	}
 }

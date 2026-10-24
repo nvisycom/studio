@@ -11,20 +11,19 @@ import {
 	WebhookSheet,
 } from "#console/components/pages/integrations";
 import { ConfirmDialog } from "#console/components/shared";
-import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 
 const { t } = useI18n();
 
 // Server-only: hidden from the nav for a local workspace; redirect out if its
 // route is reached directly (bookmark / command menu) while local.
 useServerOnlyPage();
-const sectionTabs = useSectionTabs();
 
 useHead({ title: "Webhooks" });
 
+// Webhooks is a standalone section (no sibling tabs), so the header shows its
+// category name rather than a tab row.
 definePageMeta({
-	pageCategory: "header.category.analytics",
-	hideCategory: true,
+	pageCategory: "header.category.webhooks",
 });
 
 const {
@@ -177,11 +176,6 @@ async function testWebhook(webhookId: string) {
   <!-- Fixed-height page so the table fills and scrolls (like /files). -->
   <div class="flex flex-1 flex-col gap-4 p-4 pt-4 pb-6 h-[calc(100vh-5.5rem)]">
     <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 min-h-0">
-      <!-- Section tabs in the app-header socket. -->
-      <HeaderSocket>
-        <SectionTabs :tabs="sectionTabs.analytics.value" />
-      </HeaderSocket>
-
       <!-- Action row: count on the left, create on the right. -->
       <div class="flex items-center justify-between gap-3">
         <p class="text-sm text-muted-foreground">

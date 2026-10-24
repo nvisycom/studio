@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { WorkspaceWebhook } from "@nvisy/sdk/datatypes";
-import type { WebhookFormPayload } from "#console/composables/useWebhookForm";
+import type { WebhookFormPayload } from "#console/composables/integrations/useWebhookForm";
 import { Webhook as WebhookIcon, Loader2, Plus, X } from "@lucide/vue";
 import { Input } from "#console/components/ui/input";
 import { Label } from "#console/components/ui/label";

@@ -174,3 +174,10 @@
     font-family: "JetBrains", ui-monospace, monospace;
   }
 }
+
+/* The shared studio section-label: a small, tracked, uppercase muted heading.
+   One definition so the Detect / Audit / Review tabs label their sections
+   identically. */
+@utility section-label {
+  @apply text-[11px] font-semibold uppercase tracking-wider text-muted-foreground;
+}

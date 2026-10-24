@@ -46,7 +46,9 @@ const {
 	createReviewAsync,
 	assignReviewerAsync,
 	unassignReviewerAsync,
-	verifyReviewAsync,
+	submitReviewAsync,
+	approveReviewAsync,
+	requestChangesAsync,
 	reopenReviewAsync,
 	deleteReviewAsync,
 	isCreating,
@@ -111,23 +113,19 @@ async function removeReviewer(reviewId: string, accountId: string) {
 	}
 }
 
-async function verify(reviewId: string) {
+async function runTransition(run: () => Promise<unknown>) {
 	try {
-		await verifyReviewAsync(reviewId);
+		await run();
 		await refresh();
 	} catch {
 		toast.error(t("reviews.errors.updateFailed"));
 	}
 }
-
-async function reopen(reviewId: string) {
-	try {
-		await reopenReviewAsync(reviewId);
-		await refresh();
-	} catch {
-		toast.error(t("reviews.errors.updateFailed"));
-	}
-}
+const submit = (id: string) => runTransition(() => submitReviewAsync(id));
+const approve = (id: string) => runTransition(() => approveReviewAsync(id));
+const requestChanges = (id: string) =>
+	runTransition(() => requestChangesAsync(id));
+const reopen = (id: string) => runTransition(() => reopenReviewAsync(id));
 </script>
 
 <template>
@@ -163,7 +161,9 @@ async function reopen(reviewId: string) {
                 <div class="flex shrink-0 items-center gap-1">
                   <ReviewStatusControl
                     :status="review.reviewStatus"
-                    @verify="verify(review.id)"
+                    @submit="submit(review.id)"
+                    @approve="approve(review.id)"
+                    @request-changes="requestChanges(review.id)"
                     @reopen="reopen(review.id)"
                   />
                   <Button

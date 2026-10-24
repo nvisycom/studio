@@ -1,7 +1,6 @@
 import type { Repository } from "#console/repositories/types";
 import { createDocumentsRepository } from "./documents";
 import { createNotificationSettingsRepository } from "./notification-settings";
-import { createPipelinesRepository } from "./pipelines";
 import { createPoliciesRepository } from "./policies";
 
 /*
@@ -17,7 +16,6 @@ import { createPoliciesRepository } from "./policies";
 export function createLocalRepository(): Repository {
 	return {
 		policies: createPoliciesRepository(),
-		pipelines: createPipelinesRepository(),
 		documents: createDocumentsRepository(),
 		notificationSettings: createNotificationSettingsRepository(),
 	};

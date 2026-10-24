@@ -2,5 +2,5 @@
 
 // Pulls in Vite's asset-module declarations (`declare module '*?url'`, etc.) so
 // `import workerSrc from "pkg/file?url"` typechecks in the layer. The PDF preview
-// (`StudioPdfView.vue`) uses the `?url` form to emit pdf.js's worker as an asset
+// (`PdfView.vue`) uses the `?url` form to emit pdf.js's worker as an asset
 // on our own origin.

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ExtraLabel } from "#console/composables/useLabelOptions";
+import type { ExtraLabel } from "#console/composables/studio/useLabelOptions";
 import { ChevronsUpDown } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
 import LabelOptionList from "./LabelOptionList.vue";

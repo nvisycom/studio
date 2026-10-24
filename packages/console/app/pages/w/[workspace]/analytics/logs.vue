@@ -7,12 +7,13 @@ import {
 	Calendar,
 	ChevronDown,
 	Download,
+	EyeOff,
 	FileText,
 	History,
 	Link2,
 	Loader2,
 	Mail,
-	Play,
+	ScanSearch,
 	Settings2,
 	ShieldCheck,
 	Users,
@@ -75,7 +76,8 @@ const CATEGORY_ICON: Record<string, Component> = {
 	connection: Link2,
 	webhook: WebhookIcon,
 	file: FileText,
-	pipeline: Play,
+	detection: ScanSearch,
+	redaction: EyeOff,
 	policy: ShieldCheck,
 };
 // Category -> the activity types under it (the server's `type` filter). Keys
@@ -99,15 +101,8 @@ const CATEGORY_TYPES = {
 	],
 	webhook: ["webhook.created", "webhook.updated", "webhook.deleted"],
 	file: ["document.created", "document.updated", "document.deleted"],
-	pipeline: [
-		"pipeline.created",
-		"pipeline.updated",
-		"pipeline.deleted",
-		"pipeline.detection.started",
-		"pipeline.detection.completed",
-		"pipeline.detection.failed",
-		"pipeline.redaction.created",
-	],
+	detection: ["detection.started", "detection.completed", "detection.failed"],
+	redaction: ["redaction.created"],
 	policy: ["policy.created", "policy.updated", "policy.deleted"],
 } as const satisfies Record<string, ActivityType[]>;
 const CATEGORIES = Object.keys(
@@ -251,7 +246,7 @@ async function handleExport(format: "csv" | "json") {
     <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 min-h-0">
       <!-- Section tabs in the app-header socket. -->
       <HeaderSocket>
-        <SectionTabs :tabs="sectionTabs.analytics.value" />
+        <SectionTabs :tabs="sectionTabs.observability.value" />
       </HeaderSocket>
 
       <!-- Filters on the left, export on the right. -->

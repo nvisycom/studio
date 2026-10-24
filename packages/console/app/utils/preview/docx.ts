@@ -5,7 +5,7 @@
  * into a DOCX part (usually `word/document.xml`). These helpers describe that
  * model and reconstruct an entity's matched text from the raw part bytes —
  * independent of how the document is *rendered* (SuperDoc renders the preview;
- * see StudioDocxView).
+ * see DocxView).
  */
 
 /**

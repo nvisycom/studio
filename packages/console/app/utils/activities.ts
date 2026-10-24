@@ -32,7 +32,8 @@ const KNOWN_CATEGORIES = new Set([
 	"connection",
 	"webhook",
 	"file",
-	"pipeline",
+	"detection",
+	"redaction",
 	"policy",
 ]);
 
@@ -49,7 +50,7 @@ const KNOWN_CATEGORIES = new Set([
  */
 export function activityContent(payload: ActivityPayload): ActivityContent {
 	const type = payload.type as string;
-	// The verb is the segment after the last dot (e.g. `pipeline.detection.completed`
+	// The verb is the segment after the last dot (e.g. `detection.completed`
 	// → "completed"). Drives the action badge on the activity icon.
 	const action = type.slice(type.lastIndexOf(".") + 1);
 	return { ...resolveContent(payload), action };
@@ -104,20 +105,14 @@ function resolveContent(
 			return content("fileUpdated", "file", payload.data);
 		case "document.deleted":
 			return content("fileDeleted", "file", payload.data);
-		case "pipeline.created":
-			return content("pipelineCreated", "pipeline", payload.data);
-		case "pipeline.updated":
-			return content("pipelineUpdated", "pipeline", payload.data);
-		case "pipeline.deleted":
-			return content("pipelineDeleted", "pipeline", payload.data);
-		case "pipeline.detection.started":
-			return content("pipelineDetectionStarted", "pipeline", payload.data);
-		case "pipeline.detection.completed":
-			return content("pipelineDetectionCompleted", "pipeline", payload.data);
-		case "pipeline.detection.failed":
-			return content("pipelineDetectionFailed", "pipeline", payload.data);
-		case "pipeline.redaction.created":
-			return content("pipelineRedactionCreated", "pipeline", payload.data);
+		case "detection.started":
+			return content("detectionStarted", "detection", payload.data);
+		case "detection.completed":
+			return content("detectionCompleted", "detection", payload.data);
+		case "detection.failed":
+			return content("detectionFailed", "detection", payload.data);
+		case "redaction.created":
+			return content("redactionCreated", "redaction", payload.data);
 		case "policy.created":
 			return content("policyCreated", "policy", payload.data);
 		case "policy.updated":

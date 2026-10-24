@@ -2,6 +2,7 @@ import type {
 	AccountRef,
 	CreateWorkspacePolicy,
 	CursorPagination,
+	PromoteWorkspacePolicy,
 	UpdateWorkspacePolicy,
 	WorkspacePoliciesQuery,
 	WorkspacePolicy,
@@ -145,6 +146,18 @@ export function createPoliciesRepository(): Repository["policies"] {
 			policyId: string,
 		): Promise<void> => {
 			await storeDelete("policies", policyId);
+		},
+		// Derived policies are a server-side concept (minted + deduplicated by the
+		// backend); a local workspace only holds authored ones, so there's nothing
+		// to promote here.
+		promotePolicy: async (
+			_workspaceId: string,
+			_policyId: string,
+			_promotion: PromoteWorkspacePolicy,
+		): Promise<WorkspacePolicy> => {
+			throw new Error(
+				"Promoting a policy isn't supported in a local workspace.",
+			);
 		},
 	};
 }

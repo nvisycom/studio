@@ -1,4 +1,5 @@
 export { default as ConfirmDialog } from "./ConfirmDialog.vue";
+export { default as EmptyState } from "./EmptyState.vue";
 export { default as WorkspaceLink } from "./WorkspaceLink.vue";
 export { default as PasswordInput } from "./PasswordInput.vue";
 export { default as EnabledSwitch } from "./EnabledSwitch.vue";

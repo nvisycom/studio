@@ -4,7 +4,6 @@ import AppHeader from "#console/components/layout/AppHeader.vue";
 import CommandMenu from "#console/components/layout/CommandMenu.vue";
 import CreateWorkspaceSheet from "#console/components/shared/CreateWorkspaceSheet.vue";
 import { CreatePolicyDialog } from "#console/components/pages/policies";
-import { CreatePipelineDialog } from "#console/components/pages/pipelines";
 import { Loader2 } from "@lucide/vue";
 import {
 	SidebarInset,
@@ -72,7 +71,6 @@ const showPage = computed(
   <CommandMenu />
   <CreateWorkspaceSheet v-model:open="createWorkspaceOpen" />
   <CreatePolicyDialog />
-  <CreatePipelineDialog />
 
   <ClientOnly>
     <Toaster />

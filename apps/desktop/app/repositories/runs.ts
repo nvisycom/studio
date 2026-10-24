@@ -24,8 +24,9 @@ import {
 export interface LocalRun {
 	id: string;
 	workspaceId: string;
-	/** The local pipeline that ran. */
-	pipelineId: string;
+	/** The policies this ran against, so the run can be re-redacted offline
+	 *  without re-resolving a source that no longer exists. */
+	policyIds: string[];
 	/** The document this ran over (documents are transient — we keep the name). */
 	fileId: string;
 	fileName: string;
@@ -47,9 +48,7 @@ export async function saveRun(run: LocalRun): Promise<void> {
 		id: run.id,
 		workspaceId: run.workspaceId,
 		name: run.fileName,
-		// `kind` carries the pipeline id, so the file's latest run for a pipeline
-		// can be found without parsing every body.
-		kind: run.pipelineId,
+		kind: null,
 		updatedAt: run.ranAt,
 		body: JSON.stringify(run),
 	});

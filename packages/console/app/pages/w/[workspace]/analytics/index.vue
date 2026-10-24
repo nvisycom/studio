@@ -161,7 +161,7 @@ function toRows<T>(
 const detectionsByStatus = computed<BreakdownRow[]>(() =>
 	toRows(analytics.value?.detections.byStatus ?? [], {
 		value: (e) => e.count,
-		label: (e) => t(`pipelines.detections.detectionStatus.${e.status}`),
+		label: (e) => t(`detections.detectionStatus.${e.status}`),
 		format: (e) => e.count.toLocaleString(),
 		keyOf: (e) => e.status,
 	}),
@@ -200,7 +200,7 @@ const usageByModel = computed<BreakdownRow[]>(() =>
     <div class="mx-auto flex w-full max-w-7xl flex-col gap-6">
       <!-- Section tabs in the app-header socket. -->
       <HeaderSocket>
-        <SectionTabs :tabs="sectionTabs.analytics.value" />
+        <SectionTabs :tabs="sectionTabs.observability.value" />
       </HeaderSocket>
 
       <!-- KPI tiles: the primary metric (detections) leads with the ink accent;
