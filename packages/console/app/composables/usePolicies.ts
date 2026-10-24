@@ -57,6 +57,17 @@ export function usePolicies() {
 		},
 	);
 
+	// Promote a derived (ad-hoc) policy to an authored one: it becomes editable and
+	// attachable to pipelines, keeping its id and definition, with a real name.
+	const promotePolicyMutation = repositoryMutation(
+		(
+			{ repository, workspaceId },
+			{ policyId, displayName }: { policyId: string; displayName: string },
+		) =>
+			repository.policies.promotePolicy(workspaceId, policyId, { displayName }),
+		{ invalidates: "policies" },
+	);
+
 	return {
 		policies: optimistic.items,
 		getPolicy,
@@ -78,5 +89,10 @@ export function usePolicies() {
 		deletePolicyAsync: deletePolicyMutation.mutateAsync,
 		isDeleting: deletePolicyMutation.isLoading,
 		deleteError: deletePolicyMutation.error,
+
+		promotePolicy: promotePolicyMutation.mutate,
+		promotePolicyAsync: promotePolicyMutation.mutateAsync,
+		isPromoting: promotePolicyMutation.isLoading,
+		promoteError: promotePolicyMutation.error,
 	};
 }

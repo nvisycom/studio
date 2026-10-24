@@ -76,6 +76,7 @@ export interface Repository {
 		| "createPolicy"
 		| "updatePolicy"
 		| "deletePolicy"
+		| "promotePolicy"
 	>;
 	// Pipelines are the detection-time policy set. On desktop they are local
 	// entities (a named `{ policyIds, defaultScope }`, no triggers/schedules), so

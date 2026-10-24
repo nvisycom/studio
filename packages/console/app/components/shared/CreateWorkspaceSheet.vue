@@ -24,6 +24,7 @@ import {
 } from "#console/components/ui/collapsible";
 import { Button } from "#console/components/ui/button";
 import { Input } from "#console/components/ui/input";
+import { Switch } from "#console/components/ui/switch";
 import { Label } from "#console/components/ui/label";
 import { Textarea } from "#console/components/ui/textarea";
 import {
@@ -69,6 +70,10 @@ const slug = ref("");
 const raster = ref<RasterPolicy>("auto");
 const retention = ref(defaultRetentionForm());
 
+// Review approval policy (SDK defaults: one approval; the author may approve).
+const minApprovals = ref(1);
+const authorCanApprove = ref(true);
+
 // Local-only form state
 const folder = ref<string | null>(null);
 
@@ -96,6 +101,8 @@ function resetForm() {
 	description.value = "";
 	raster.value = "auto";
 	retention.value = defaultRetentionForm();
+	minApprovals.value = 1;
+	authorCanApprove.value = true;
 	folder.value = null;
 	advancedOpen.value = false;
 	retentionOpen.value = false;
@@ -147,6 +154,10 @@ async function createWorkspace() {
 					settings: {
 						raster: raster.value,
 						retention: formToRetention(retention.value),
+						review: {
+							minApprovals: minApprovals.value,
+							authorCanApprove: authorCanApprove.value,
+						},
 					},
 				};
 
@@ -349,6 +360,28 @@ const folderDisplay = computed(() => {
                     </SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+
+              <!-- Review: required approvals -->
+              <div class="flex items-center justify-between gap-4">
+                <Label class="font-normal">{{
+                  t("settings.workspace.reviews.minApprovals.label")
+                }}</Label>
+                <Input
+                  v-model.number="minApprovals"
+                  type="number"
+                  min="1"
+                  max="100"
+                  class="h-9 w-20 shrink-0"
+                />
+              </div>
+
+              <!-- Review: author can approve -->
+              <div class="flex items-center justify-between gap-4">
+                <Label class="font-normal">{{
+                  t("settings.workspace.reviews.authorCanApprove.label")
+                }}</Label>
+                <Switch v-model="authorCanApprove" class="shrink-0" />
               </div>
             </CollapsibleContent>
           </Collapsible>

@@ -9,6 +9,7 @@ import type { VirtualColumn } from "#console/components/ui/virtual-table";
 import { EditPolicySheet } from "#console/components/pages/policies";
 import { HeaderSocket, SectionTabs } from "#console/components/layout/header";
 import {
+	ArrowUpCircle,
 	LayoutTemplate,
 	Loader2,
 	Pencil,
@@ -18,6 +19,16 @@ import {
 import { personLabel } from "#console/utils/naming";
 import { VirtualTable } from "#console/components/ui/virtual-table";
 import { Button } from "#console/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "#console/components/ui/dialog";
+import { Input } from "#console/components/ui/input";
+import { Label } from "#console/components/ui/label";
 import { ConfirmDialog } from "#console/components/shared";
 import { toast } from "vue-sonner";
 
@@ -44,9 +55,33 @@ const {
 	isUpdating,
 	deletePolicyAsync,
 	isDeleting,
+	promotePolicyAsync,
+	isPromoting,
 } = usePolicies();
 
 const policyToDelete = ref<WorkspacePolicySummary | null>(null);
+
+// Promote a derived policy: a prompt for the new name, then the promotion.
+const policyToPromote = ref<WorkspacePolicySummary | null>(null);
+const promoteName = ref("");
+function startPromote(policy: WorkspacePolicySummary) {
+	policyToPromote.value = policy;
+	promoteName.value = "";
+}
+async function confirmPromote() {
+	const policy = policyToPromote.value;
+	const displayName = promoteName.value.trim();
+	if (!policy || !displayName) return;
+	try {
+		await promotePolicyAsync({ policyId: policy.id, displayName });
+		toast.success(t("policies.toast.promoted"));
+		policyToPromote.value = null;
+	} catch (error) {
+		toast.error(t("policies.toast.promoteFailed"), {
+			description: error instanceof Error ? error.message : undefined,
+		});
+	}
+}
 
 // Creating a policy is a shell-wide capability (the dialog is mounted in the
 // layout), so the "New policy" button just raises the shared open state.
@@ -89,10 +124,17 @@ async function handleUpdate(policyId: string, updates: UpdateWorkspacePolicy) {
 	}
 }
 
+// Filter by kind. The page already fetches the whole list, so this is a cheap
+// client-side narrow (no refetch) across All / Authored / Derived.
+const kindFilter = ref<"all" | "authored" | "derived">("all");
+const KIND_FILTERS = ["all", "authored", "derived"] as const;
+
 // VirtualTable keys rows by id; policies are keyed by slug, so expose it as id.
 type PolicyRow = WorkspacePolicySummary & { id: string };
 const policyRows = computed<PolicyRow[]>(() =>
-	(policies.value ?? []).map((p) => ({ ...p, id: p.id })),
+	(policies.value ?? [])
+		.filter((p) => kindFilter.value === "all" || p.kind === kindFilter.value)
+		.map((p) => ({ ...p, id: p.id })),
 );
 
 const columns = computed<VirtualColumn<PolicyRow>[]>(() => [
@@ -104,6 +146,16 @@ const columns = computed<VirtualColumn<PolicyRow>[]>(() => [
 			title: p.displayName,
 			subtitle: p.description,
 			maxWidth: "max-w-md",
+		}),
+	},
+	{
+		key: "kind",
+		header: t("policies.table.kind"),
+		width: "120px",
+		cell: (p) => ({
+			type: "badge",
+			label: t(`policies.kind.${p.kind}`),
+			variant: p.kind === "derived" ? "secondary" : "outline",
 		}),
 	},
 	{
@@ -140,13 +192,27 @@ const columns = computed<VirtualColumn<PolicyRow>[]>(() => [
 
 /** Right-click / ⋯ actions for a policy row. */
 function rowActions(policy: PolicyRow): RowAction[] {
+	const derived = policy.kind === "derived";
 	return [
-		{
-			key: "edit",
-			label: t("policies.table.edit"),
-			icon: Pencil,
-			select: () => openEdit(policy),
-		},
+		// Derived policies are immutable (minted from labels), so promote them to an
+		// editable authored policy instead of editing in place.
+		...(derived
+			? [
+					{
+						key: "promote",
+						label: t("policies.table.promote"),
+						icon: ArrowUpCircle,
+						select: () => startPromote(policy),
+					},
+				]
+			: [
+					{
+						key: "edit",
+						label: t("policies.table.edit"),
+						icon: Pencil,
+						select: () => openEdit(policy),
+					},
+				]),
 		{
 			key: "delete",
 			label: t("policies.table.delete"),
@@ -186,9 +252,25 @@ async function confirmDelete() {
 
       <!-- Action row above the table. -->
       <div class="flex items-center justify-between gap-3">
-        <p class="text-sm text-muted-foreground">
-          {{ t("policies.count", { count: policies?.length ?? 0 }) }}
-        </p>
+        <!-- Kind filter: narrow to authored / derived (client-side). -->
+        <div
+          class="flex shrink-0 items-center gap-0.5 rounded-md border border-input p-0.5"
+        >
+          <button
+            v-for="k in KIND_FILTERS"
+            :key="k"
+            type="button"
+            class="rounded-sm px-2.5 py-1 text-sm transition-colors"
+            :class="
+              kindFilter === k
+                ? 'bg-secondary font-medium text-secondary-foreground'
+                : 'text-muted-foreground hover:text-foreground'
+            "
+            @click="kindFilter = k"
+          >
+            {{ t(`policies.filter.${k}`) }}
+          </button>
+        </div>
         <div class="flex shrink-0 items-center gap-2">
           <Button as-child variant="outline" size="sm" class="font-normal">
             <NuxtLink
@@ -251,6 +333,47 @@ async function confirmDelete() {
         :loading-policy="isLoadingPolicy"
         @update="handleUpdate"
       />
+
+      <!-- Promote a derived policy to an authored one: it needs a real name. -->
+      <Dialog
+        :open="!!policyToPromote"
+        @update:open="(v) => !v && (policyToPromote = null)"
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{{ t("policies.promote.title") }}</DialogTitle>
+            <DialogDescription>
+              {{ t("policies.promote.description") }}
+            </DialogDescription>
+          </DialogHeader>
+          <form class="space-y-2" @submit.prevent="confirmPromote">
+            <Label for="promote-name">{{ t("policies.promote.nameLabel") }}</Label>
+            <Input
+              id="promote-name"
+              v-model="promoteName"
+              autofocus
+              :maxlength="255"
+              :placeholder="t('policies.promote.namePlaceholder')"
+            />
+          </form>
+          <DialogFooter>
+            <Button variant="outline" @click="policyToPromote = null">
+              {{ t("common.cancel") }}
+            </Button>
+            <Button
+              :disabled="!promoteName.trim() || isPromoting"
+              @click="confirmPromote"
+            >
+              <Loader2
+                v-if="isPromoting"
+                :size="16"
+                class="mr-2 animate-spin"
+              />
+              {{ t("policies.promote.confirm") }}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   </div>
 </template>
