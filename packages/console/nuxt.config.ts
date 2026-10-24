@@ -15,6 +15,14 @@ export default defineNuxtConfig({
 		"#console": `${layerDir}app`,
 	},
 
+	// Auto-import composables from the layer's nested composable folders too
+	// (`composables/studio/`, `composables/workspace/`, …), not just the top
+	// level — Nuxt scans one level deep by default. The names stay globally
+	// unique, so the folders are organizational only.
+	imports: {
+		dirs: [`${layerDir}app/composables/**`],
+	},
+
 	// Brand favicon shipped by the layer (from its `public/`, merged into every
 	// app) so web and the desktop dev shell share one source of truth. The flat,
 	// solid-fill SVG is the primary; the multi-size .ico is the raster fallback

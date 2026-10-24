@@ -2,28 +2,17 @@
 import { useEventListener } from "@vueuse/core";
 import { SplitterPanel } from "reka-ui";
 import { toast } from "vue-sonner";
-import JSZip from "jszip";
+import { Highlighter, PanelRightClose, PanelRightOpen } from "@lucide/vue";
 import {
-	Highlighter,
-	Maximize2,
-	Minimize2,
-	PanelRightClose,
-	PanelRightOpen,
-} from "@lucide/vue";
-import {
-	StudioDocumentPreview,
-	StudioAuditPanel,
-	StudioAuditTable,
-	StudioNewDetection,
-	StudioDetectionSwitcher,
-	StudioReview,
-	StudioReviewFull,
-	StudioAuditToolbar,
+	DocumentPreview,
+	AuditPanel,
+	DetectForm,
+	DetectionSwitcher,
+	ReviewPanel,
 	EntityAuditModal,
 } from "#console/components/pages/studio";
 import { ExportToConnectionDialog } from "#console/components/pages/integrations";
-import type { StudioEntityView } from "#console/composables/useStudioEntities";
-import type { AudioTranscriptState } from "#console/components/pages/studio/preview/StudioAudioView.vue";
+import type { StudioEntityView } from "#console/composables/studio/useStudioEntities";
 import { rendererFor } from "#console/components/pages/studio/preview/renderers";
 import {
 	ResizablePanelGroup,
@@ -88,75 +77,27 @@ const withHeaders = ref(true);
 const { bold: highlightBold } = useStudioHighlight();
 
 // Review count for the active document, shown as a badge on the Review tab (like
-// the Audit tab's detection count). Shares its query cache with StudioReview, so
+// the Audit tab's detection count). Shares its query cache with the Review tab, so
 // the extra read is free.
 const { reviews: documentReviews } = useDocumentReviews(
 	computed(() => activeFile.value?.fileId ?? ""),
 );
 
-// The active file's flat text, read from its content blob. Shared with the
-// audit panel so it can show each detection's matched value. Only text-backed
-// files have usable content; others leave this null.
-const documentText = ref<string | null>(null);
-watch(
-	[() => activeFile.value?.contentUrl, () => detectionSource.value === "text"],
-	async ([url, isText]) => {
-		documentText.value = null;
-		if (!url || !isText) return;
-		try {
-			const text = await (await fetch(url)).text();
-			// Ignore a stale response: the file may have changed while the fetch
-			// was in flight, so only apply it if this URL is still the active one.
-			if (activeFile.value?.contentUrl === url) documentText.value = text;
-		} catch {
-			if (activeFile.value?.contentUrl === url) documentText.value = null;
-		}
-	},
-	{ immediate: true },
-);
-
-// DOCX part bytes (every zip entry), so the audit panel can slice each
-// detection's matched value from its raw-source byte spans — including parts
-// outside the visible body (e.g. hyperlink targets in `word/_rels/...`). DOCX
-// has no flat text, so `documentText` stays null for it.
-const docxParts = ref<Map<string, Uint8Array> | null>(null);
-watch(
-	[
-		() => activeFile.value?.contentUrl,
-		() => detectionSource.value === "docx-parts",
-	],
-	async ([url, isDocx]) => {
-		docxParts.value = null;
-		if (!url || !isDocx) return;
-		try {
-			const buffer = await (await fetch(url)).arrayBuffer();
-			const zip = await JSZip.loadAsync(buffer);
-			const parts = new Map<string, Uint8Array>();
-			await Promise.all(
-				Object.values(zip.files)
-					.filter((f) => !f.dir)
-					.map(async (f) => parts.set(f.name, await f.async("uint8array"))),
-			);
-			// Only apply if this URL is still the active one.
-			if (activeFile.value?.contentUrl === url) docxParts.value = parts;
-		} catch {
-			if (activeFile.value?.contentUrl === url) docxParts.value = null;
-		}
-	},
-	{ immediate: true },
+// The active file's content, derived from its preview blob in the shapes the
+// audit panel needs: flat text (text files), DOCX part bytes (docx), and the raw
+// bytes the offline engine needs.
+const {
+	documentText,
+	docxParts,
+	bytes: documentBytes,
+} = useStudioContent(
+	() => activeFile.value?.contentUrl,
+	() => detectionSource.value,
 );
 
 // Detection run + audit state for the active file (the long-running "job"),
 // shared between the detection bar (source + controls), the audit panel
 // (results list), and the document preview (inline highlights).
-// The active document's raw bytes, from the blob already loaded for preview.
-// The on-device engine (offline) needs these; the server path ignores them.
-async function documentBytes(): Promise<Uint8Array> {
-	const url = activeFile.value?.contentUrl;
-	if (!url) throw new Error("The document is not loaded yet.");
-	return new Uint8Array(await (await fetch(url)).arrayBuffer());
-}
-
 const detection = useStudioDetection(
 	() => activeFile.value?.fileId ?? null,
 	() => documentText.value,
@@ -189,13 +130,6 @@ function runNewDetection() {
 	detection.run();
 }
 
-// The full-screen audit toolbar's Run reuses whatever the Detect tab is
-// configured with (labels or policies), so it shares the inspector's run gate.
-function runFromAuditToolbar() {
-	panelTab.value = "audit";
-	detection.run();
-}
-
 // Audio transcript state for the audio view. Resolved once a detection completes
 // for an audio file, by fetching its enrichment intermediates:
 //   - hidden      — no completed detection yet (the panel isn't shown).
@@ -204,68 +138,18 @@ function runFromAuditToolbar() {
 //   - empty       — a transcript exists but has no speech segments.
 //   - ready       — the transcript, with segments.
 // The panel explains each empty case rather than silently disappearing.
-const { getIntermediates } = useDetections();
-const audioTranscriptState = ref<AudioTranscriptState>({ kind: "hidden" });
-watch(
-	[
-		() => detection.detectionId.value,
-		() => detection.phase.value,
-		() => detectionSource.value === "transcript",
-	],
-	async ([detectionId, phase, isAudio]) => {
-		audioTranscriptState.value = { kind: "hidden" };
-		if (!detectionId || phase !== "complete" || !isAudio) return;
-		try {
-			const set = await getIntermediates(detectionId);
-			// Guard against a stale response (the file/detection may have changed).
-			if (detection.detectionId.value !== detectionId) return;
-			const body = soleArtifactPart(set);
-			if (body?.modality !== "audio") {
-				// 404 -> null set, or a 200 with no audio artifact: not available.
-				audioTranscriptState.value = { kind: "unavailable" };
-				return;
-			}
-			const hasSpeech = body.artifact.segments.some(
-				(s) => s.text.trim().length > 0,
-			);
-			audioTranscriptState.value = hasSpeech
-				? { kind: "ready", transcript: body.artifact }
-				: { kind: "empty" };
-		} catch {
-			// A real error (not a 404 — that's mapped to null): treat as unavailable
-			// rather than surfacing a failure for an optional enhancement.
-			if (detection.detectionId.value === detectionId)
-				audioTranscriptState.value = { kind: "unavailable" };
-		}
-	},
-	{ immediate: true },
-);
-
-// OCR layout for the image preview's optional overlay, fetched from the same
-// intermediates endpoint once a detection completes for an image file. Optional,
-// like the audio transcript: null when there are no intermediates.
-const imageOcr = ref<ImageLayout | null>(null);
-watch(
-	[
-		() => detection.detectionId.value,
-		() => detection.phase.value,
-		() => detectionSource.value === "image-ocr",
-	],
-	async ([detectionId, phase, isImage]) => {
-		imageOcr.value = null;
-		if (!detectionId || phase !== "complete" || !isImage) return;
-		try {
-			const set = await getIntermediates(detectionId);
-			if (detection.detectionId.value !== detectionId) return;
-			const body = soleArtifactPart(set);
-			imageOcr.value =
-				body?.modality === "image" ? toImageLayout(body.artifact) : null;
-		} catch {
-			if (detection.detectionId.value === detectionId) imageOcr.value = null;
-		}
-	},
-	{ immediate: true },
-);
+// Audio transcript + image OCR: optional enrichment overlays resolved from a
+// completed detection's intermediates, each shown by its matching preview view.
+const audioTranscriptState = useAudioTranscript({
+	detectionId: () => detection.detectionId.value,
+	phase: () => detection.phase.value,
+	isAudio: () => detectionSource.value === "transcript",
+});
+const imageOcr = useImageOcr({
+	detectionId: () => detection.detectionId.value,
+	phase: () => detection.phase.value,
+	isImage: () => detectionSource.value === "image-ocr",
+});
 
 // Reviewer edits + applying redactions to the complete detection. Takes the
 // detection's state as input; resets itself whenever the detection changes.
@@ -337,15 +221,12 @@ watch(
 	},
 );
 
-// Escape steps back out one level per press, and only when there's a level to
-// close, so it doesn't swallow Escape meant for another overlay. The modal owns
-// its own Escape (the Dialog closes on it), so skip while it's open — otherwise
-// one press would both close the modal and exit the review beneath it.
+// Escape clears a focused entity, unless the detail modal is open (the Dialog
+// owns its own Escape, so one press shouldn't also clear the entity beneath it).
 useEventListener(document, "keydown", (e: KeyboardEvent) => {
 	if (e.key !== "Escape") return;
 	if (auditModalEntity.value) return;
-	if (mainSurface.value === "fullscreen") mainSurface.value = "preview";
-	else if (activeEntityId.value) clearEntity();
+	if (activeEntityId.value) clearEntity();
 });
 
 // The right-hand audit inspector is a resizable, collapsible split panel. The
@@ -364,40 +245,7 @@ function toggleInspector() {
 	else panel.collapse();
 }
 
-// Which surface fills the main (left) area: the file preview, or — in full-screen
-// — a wide tabbed surface (Detect / Audit / Review) in its place. Only this pane
-// swaps; the inspector collapses in full-screen (the wide surface has its own
-// tabs). `fullScreenTab` is which tab the wide surface shows.
-const mainSurface = ref<"preview" | "fullscreen">("preview");
-// Full-screen shows either the audit review or the review discussion (Detect has
-// no wide form). Switched from the floating bottom panel.
-const fullScreenTab = ref<"audit" | "review">("audit");
-
-// Full-screen carries its own tabs + controls, so the inspector would only
-// duplicate them — collapse it on entering full-screen, restore it on exit.
-watch(mainSurface, (surface) => {
-	const panel = inspectorPanel.value;
-	if (!panel) return;
-	if (surface === "fullscreen") panel.collapse();
-	else panel.expand();
-});
-
-// Open full-screen on the tab the user is already looking at — but Detect has no
-// wide form, so from Detect we open on Audit.
-function enterFullScreen() {
-	fullScreenTab.value = panelTab.value === "review" ? "review" : "audit";
-	mainSurface.value = "fullscreen";
-}
-
-// Revealing an entity from the wide audit table steps back to the preview, focused
-// on that entity, so the reviewer sees it in the document.
-function revealEntity(id: string) {
-	mainSurface.value = "preview";
-	activeEntityId.value = id;
-}
-
-// The audit panel's props, shared verbatim by the split-view and full-screen
-// renders so the two never drift; only `layout` and the event wiring differ.
+// The audit panel's props.
 const auditProps = computed(() => ({
 	fileId: activeFile.value?.fileId || null,
 	phase: detection.phase.value,
@@ -431,134 +279,39 @@ const auditProps = computed(() => ({
       auto-save-id="studio-inspector"
       class="h-full"
     >
-      <!-- Main area: the file preview, or — in the full audit review — the wide
-           audit table in its place. Only this pane swaps between the two modes;
-           the sidebar (right) is one persistent panel throughout, so the chat and
-           its size are never rebuilt. The content cross-fades on the swap. -->
+      <!-- Main area: the file preview. The sidebar (right) is one persistent
+           panel throughout, so the chat and its size are never rebuilt. -->
       <ResizablePanel :min-size="30" class="min-w-0">
         <div class="relative h-full">
-          <Transition name="main-fade">
-            <!-- Full-screen: a wide surface showing the Audit table or the Review
-                 discussion. Switching between the two happens on the floating
-                 bottom panel (not a top tab bar); the inspector is collapsed. -->
-            <div
-              v-if="mainSurface === 'fullscreen'"
-              class="absolute inset-0 bg-background"
-            >
-              <!-- Audit (wide): the table + floating run/redact toolbar. -->
-              <template v-if="fullScreenTab === 'audit'">
-                <StudioAuditTable
-                  class="absolute inset-0"
-                  :phase="detection.phase.value"
-                  :categorized-groups="detection.categorizedGroups.value"
-                  :count="detection.count.value"
-                  :error-message="detection.errorMessage.value"
-                  :suppressed="redaction.suppressed.value"
-                  @reveal-entity="revealEntity"
-                  @toggle-suppress="redaction.toggleSuppress"
-                  @view-details="auditModalEntity = $event"
-                />
-                <div
-                  class="pointer-events-none absolute inset-x-0 bottom-6 flex justify-center px-6"
-                >
-                  <StudioAuditToolbar
-                    class="pointer-events-auto"
-                    :phase="detection.phase.value"
-                    :can-run="detection.canRun.value"
-                    :redact-phase="redaction.redactPhase.value"
-                    :can-redact="redaction.canRedact.value"
-                    :redact-error="redaction.redactError.value"
-                    :output="redaction.output.value"
-                    :count="detection.count.value"
-                    :effective-redact-count="redaction.effectiveRedactCount.value"
-                    @run="runFromAuditToolbar"
-                    @redact="redaction.redact"
-                    @download-output="redaction.downloadRedacted"
-                    @export-output="openExportRedacted"
-                  />
-                </div>
-              </template>
+          <DocumentPreview
+            class="absolute inset-0"
+            :content-url="activeFile?.contentUrl || null"
+            :display-name="activeFile?.displayName || ''"
+            :file-extension="fileExtension"
+            :is-loading="activeFile?.isLoading || false"
+            :text-entities="redaction.highlightTextEntities.value"
+            :active-entity-id="activeEntityId"
+            :can-add="detection.phase.value === 'complete'"
+            :audio-transcript-state="audioTranscriptState"
+            :image-entities="redaction.highlightImageEntities.value"
+            :image-ocr="imageOcr"
+            :audio-entities="redaction.highlightAudioEntities.value"
+            v-model:with-headers="withHeaders"
+            @focus-entity="focusEntity"
+            @clear-entity="clearEntity"
+            @add-text-entity="redaction.addTextEntity($event)"
+            @add-image-entity="redaction.addImageEntity($event)"
+            @add-audio-entity="redaction.addAudioEntity($event)"
+            @retag-audio-span="redaction.retagAudioSpan"
+            @toggle-suppress="redaction.toggleSuppress"
+          />
 
-              <!-- Review (wide): the full-size review layout. -->
-              <StudioReviewFull
-                v-else
-                class="absolute inset-0"
-                :document-id="activeFile?.fileId ?? null"
-                :document-name="activeFile?.displayName ?? null"
-                :detection-id="detection.detectionId.value"
-              />
-            </div>
-            <StudioDocumentPreview
-              v-else
-              class="absolute inset-0"
-              :content-url="activeFile?.contentUrl || null"
-              :display-name="activeFile?.displayName || ''"
-              :file-extension="fileExtension"
-              :is-loading="activeFile?.isLoading || false"
-              :text-entities="redaction.highlightTextEntities.value"
-              :active-entity-id="activeEntityId"
-              :can-add="detection.phase.value === 'complete'"
-              :audio-transcript-state="audioTranscriptState"
-              :image-entities="redaction.highlightImageEntities.value"
-              :image-ocr="imageOcr"
-              :audio-entities="redaction.highlightAudioEntities.value"
-              v-model:with-headers="withHeaders"
-              @focus-entity="focusEntity"
-              @clear-entity="clearEntity"
-              @add-text-entity="redaction.addTextEntity($event)"
-              @add-image-entity="redaction.addImageEntity($event)"
-              @add-audio-entity="redaction.addAudioEntity($event)"
-              @retag-audio-span="redaction.retagAudioSpan"
-              @toggle-suppress="redaction.toggleSuppress"
-            />
-          </Transition>
-
-          <!-- Floating controls, bottom-right, over whichever surface. In
-               full-screen it switches Audit / Review; otherwise it toggles the
-               inspector. Enter/exit full-screen is always available. -->
+          <!-- Floating control, bottom-right: show / hide the inspector. -->
           <div
             v-if="activeFile"
             class="absolute bottom-6 right-6 z-20 flex items-center gap-0.5 rounded-lg border border-neutral-200 bg-white p-0.5 shadow-lg dark:border-neutral-800 dark:bg-neutral-900"
           >
-            <!-- Full-screen: Audit / Review switch. -->
-            <template v-if="mainSurface === 'fullscreen'">
-              <Button
-                v-for="tab in (['audit', 'review'] as const)"
-                :key="tab"
-                variant="ghost"
-                size="sm"
-                class="h-7 gap-1.5 px-3 font-normal"
-                :class="
-                  fullScreenTab === tab
-                    ? 'bg-secondary text-secondary-foreground'
-                    : 'text-muted-foreground'
-                "
-                @click="fullScreenTab = tab"
-              >
-                {{
-                  tab === "audit"
-                    ? t("studio.detections.auditTab")
-                    : t("studio.detections.reviewTab")
-                }}
-                <span
-                  v-if="tab === 'audit' && detection.detections.value.length"
-                  class="rounded-full bg-foreground/10 px-1.5 text-[10px] font-semibold leading-4 text-foreground/70"
-                >
-                  {{ detection.detections.value.length }}
-                </span>
-                <span
-                  v-else-if="tab === 'review' && documentReviews.length"
-                  class="rounded-full bg-foreground/10 px-1.5 text-[10px] font-semibold leading-4 text-foreground/70"
-                >
-                  {{ documentReviews.length }}
-                </span>
-              </Button>
-              <div class="mx-0.5 h-5 w-px bg-border" />
-            </template>
-
-            <!-- Preview: show/hide the inspector. -->
             <Button
-              v-else
               variant="ghost"
               size="icon"
               class="size-7"
@@ -571,26 +324,6 @@ const auditProps = computed(() => ({
             >
               <PanelRightClose v-if="!inspectorCollapsed" :size="14" />
               <PanelRightOpen v-else :size="14" />
-            </Button>
-
-            <!-- Enter / exit full-screen (always). -->
-            <Button
-              variant="ghost"
-              size="icon"
-              class="size-7"
-              :aria-label="
-                mainSurface === 'fullscreen'
-                  ? t('studio.fullScreen.exit')
-                  : t('studio.fullScreen.enter')
-              "
-              @click="
-                mainSurface === 'fullscreen'
-                  ? (mainSurface = 'preview')
-                  : enterFullScreen()
-              "
-            >
-              <Minimize2 v-if="mainSurface === 'fullscreen'" :size="14" />
-              <Maximize2 v-else :size="14" />
             </Button>
           </div>
         </div>
@@ -651,17 +384,21 @@ const auditProps = computed(() => ({
             </TabsTrigger>
           </TabsList>
 
-          <!-- Audit: the detection switcher + the selected detection's entities. -->
+          <!-- Audit: the detection switcher + the selected detection's entities.
+               force-mount keeps each tab's content (and its queries) alive across
+               switches, so moving between tabs doesn't tear down and refetch —
+               which otherwise flashed an empty state on the way back in. -->
           <TabsContent
             value="audit"
-            class="mt-0 flex min-h-0 flex-1 flex-col overflow-hidden"
+            force-mount
+            class="mt-0 flex min-h-0 flex-1 flex-col overflow-hidden data-[state=inactive]:hidden"
           >
             <div
               v-if="detection.detections.value.length"
               class="flex shrink-0 items-center gap-2 border-b px-2 py-1.5"
             >
               <div class="min-w-0 flex-1">
-                <StudioDetectionSwitcher
+                <DetectionSwitcher
                   :detections="detection.detections.value"
                   :selected-detection-id="detection.selectedDetectionId.value"
                   @select="detection.loadDetection"
@@ -691,7 +428,7 @@ const auditProps = computed(() => ({
               </Button>
             </div>
             <div class="min-h-0 flex-1 overflow-hidden">
-              <StudioAuditPanel
+              <AuditPanel
                 v-bind="auditProps"
                 @focus-entity="focusEntity"
                 @view-details="auditModalEntity = $event"
@@ -707,9 +444,10 @@ const auditProps = computed(() => ({
           <!-- New detection: one source (labels / policies) + scope. -->
           <TabsContent
             value="new"
-            class="mt-0 flex min-h-0 flex-1 flex-col overflow-hidden"
+            force-mount
+            class="mt-0 flex min-h-0 flex-1 flex-col overflow-hidden data-[state=inactive]:hidden"
           >
-            <StudioNewDetection
+            <DetectForm
               v-model:source="detection.newSource.value"
               v-model:labels="detection.newLabels.value"
               v-model:policy-ids="detection.newPolicyIds.value"
@@ -726,9 +464,10 @@ const auditProps = computed(() => ({
                step after Detect and Audit). -->
           <TabsContent
             value="review"
-            class="mt-0 flex min-h-0 flex-1 flex-col overflow-hidden"
+            force-mount
+            class="mt-0 flex min-h-0 flex-1 flex-col overflow-hidden data-[state=inactive]:hidden"
           >
-            <StudioReview
+            <ReviewPanel
               :document-id="activeFile?.fileId ?? null"
               :document-name="activeFile?.displayName ?? null"
               :detection-id="detection.detectionId.value"
@@ -754,23 +493,3 @@ const auditProps = computed(() => ({
     />
   </div>
 </template>
-
-<style scoped>
-/* The main area cross-fades when it swaps between the file preview and the audit
-   review. Both are absolutely positioned in the pane, so they overlap during the
-   fade rather than one collapsing the layout. */
-.main-fade-enter-active,
-.main-fade-leave-active {
-  transition: opacity 200ms ease;
-}
-.main-fade-enter-from,
-.main-fade-leave-to {
-  opacity: 0;
-}
-@media (prefers-reduced-motion: reduce) {
-  .main-fade-enter-active,
-  .main-fade-leave-active {
-    transition: opacity 80ms ease;
-  }
-}
-</style>

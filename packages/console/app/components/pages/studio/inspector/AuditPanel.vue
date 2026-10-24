@@ -9,18 +9,19 @@ import {
 	TriangleAlert,
 	X,
 } from "@lucide/vue";
-import type { StudioDetectionPhase } from "#console/composables/useStudioDetection";
+import type { StudioDetectionPhase } from "#console/composables/studio/useStudioDetection";
 import type {
 	RedactionOutput,
 	StudioRedactPhase,
-} from "#console/composables/useStudioRedaction";
-import type { EntityCluster } from "#console/composables/useEntities";
-import type { TextEntityView } from "#console/composables/useTextEntities";
+} from "#console/composables/studio/useStudioRedaction";
+import type { EntityCluster } from "#console/composables/studio/useEntities";
+import type { TextEntityView } from "#console/composables/studio/useTextEntities";
 import type {
 	StudioCategorizedGroup,
 	StudioEntityView,
-} from "#console/composables/useStudioEntities";
-import StudioRedactionFooter from "./StudioRedactionFooter.vue";
+} from "#console/composables/studio/useStudioEntities";
+import RedactionFooter from "./RedactionFooter.vue";
+import { EmptyState } from "#console/components/shared";
 import { Button } from "#console/components/ui/button";
 import { Checkbox } from "#console/components/ui/checkbox";
 import {
@@ -30,9 +31,8 @@ import {
 } from "#console/components/ui/collapsible";
 
 /**
- * The compact inspector audit list — the narrow-rail counterpart to
- * {@link StudioAuditTable} (the wide review), sharing its visual language: a
- * leading checkbox per row (checked = will be redacted, the default), a subtle
+ * The inspector audit list: a leading checkbox per row (checked = will be
+ * redacted, the default), a subtle
  * confidence, hover-revealed reveal/details actions, and identical values
  * collapsed into one row with an expandable occurrence count.
  *
@@ -93,8 +93,7 @@ const emit = defineEmits<{
 
 const { labelName } = useLabels();
 
-// The keep/redact decision model + duplicate-expand state, shared with the wide
-// StudioAuditTable so the two audit surfaces stay in exact agreement.
+// The keep/redact decision model + duplicate-expand state for the audit list.
 const {
 	willRedact,
 	setRedact,
@@ -231,35 +230,26 @@ function clusterActiveClass(cluster: EntityCluster<StudioEntityView>): string {
       </div>
 
       <!-- Idle / no file -->
-      <div
+      <EmptyState
         v-else-if="phase === 'idle'"
-        class="flex h-full flex-col items-center justify-center px-6 text-center"
-      >
-        <div
-          class="mb-3 flex size-10 items-center justify-center rounded-lg bg-muted/50"
-        >
-          <ScanSearch :size="20" class="text-muted-foreground" />
-        </div>
-        <p class="mb-1 text-sm text-foreground">
-          {{ fileId ? t("studio.audit.idleTitle") : t("studio.audit.noFile") }}
-        </p>
-        <p class="text-xs text-muted-foreground">
-          {{ fileId ? t("studio.audit.idleHint") : t("studio.audit.noFileHint") }}
-        </p>
-      </div>
+        compact
+        class="h-full"
+        :icon="ScanSearch"
+        :title="fileId ? t('studio.audit.idleTitle') : t('studio.audit.noFile')"
+        :description="
+          fileId ? t('studio.audit.idleHint') : t('studio.audit.noFileHint')
+        "
+      />
 
       <!-- Empty (complete, nothing detected and nothing added) -->
-      <div
+      <EmptyState
         v-else-if="phase === 'complete' && count === 0 && !added?.length"
-        class="flex h-full flex-col items-center justify-center px-6 text-center"
-      >
-        <p class="mb-1 text-sm text-foreground">
-          {{ t("studio.audit.emptyTitle") }}
-        </p>
-        <p class="text-xs text-muted-foreground">
-          {{ t("studio.audit.emptyHint") }}
-        </p>
-      </div>
+        compact
+        class="h-full"
+        :icon="ScanSearch"
+        :title="t('studio.audit.emptyTitle')"
+        :description="t('studio.audit.emptyHint')"
+      />
 
       <!-- Two-tier entity list: category → label group → cluster rows. Each
            category is collapsible, expanded by default. Plus a band for entities
@@ -525,11 +515,12 @@ function clusterActiveClass(cluster: EntityCluster<StudioEntityView>): string {
       </template>
     </div>
 
-    <!-- Redaction footer: apply then download/export the redacted output. Shown
-         whenever there's something to redact — detected entities, or ones the
-         reviewer added even if none were detected. -->
-    <StudioRedactionFooter
-      v-if="phase === 'complete' && (count > 0 || !!added?.length)"
+    <!-- Redaction footer: always pinned to the bottom (like the Detect tab's Run
+         and the Review tab's CTA), so the Audit tab always has its primary action
+         in the same place. It stays disabled until there's a completed detection
+         with something to redact. -->
+    <RedactionFooter
+      :phase="phase"
       :redact-phase="redactPhase"
       :can-redact="canRedact"
       :redact-error="redactError"

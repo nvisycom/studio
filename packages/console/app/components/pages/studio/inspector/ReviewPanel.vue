@@ -16,7 +16,7 @@ import type { Component } from "vue";
 import ReviewerPicker from "../../reviews/ReviewerPicker.vue";
 import ReviewTimeline from "../../reviews/detail/ReviewTimeline.vue";
 import EntityAvatar from "#console/components/avatar/EntityAvatar.vue";
-import { ConfirmDialog } from "#console/components/shared";
+import { ConfirmDialog, EmptyState } from "#console/components/shared";
 import { Badge } from "#console/components/ui/badge";
 import { Button } from "#console/components/ui/button";
 import { reviewStatusVariant } from "#console/utils/reviews";
@@ -48,7 +48,7 @@ const props = defineProps<{
 }>();
 
 // All the review logic (selection, open/link, assign/verify/reopen, comments) is
-// shared with the full-screen review via this composable.
+// provided by this shared composable.
 const {
 	reviews,
 	isLoadingReviews,
@@ -144,15 +144,14 @@ const primaryAction = computed<PrimaryAction>(() => {
 <template>
   <div class="flex h-full min-h-0 flex-col">
     <!-- No review yet: an empty state + the bottom CTA creates one. -->
-    <div
+    <EmptyState
       v-if="!reviews.length && !isLoadingReviews"
-      class="flex min-h-0 flex-1 flex-col items-center justify-center gap-1 p-6 text-center"
-    >
-      <MessagesSquare :size="22" class="text-muted-foreground/60" />
-      <p class="text-sm text-muted-foreground">
-        {{ t("studio.detections.review.startHint") }}
-      </p>
-    </div>
+      compact
+      class="min-h-0 flex-1"
+      :icon="MessagesSquare"
+      :title="t('studio.detections.review.emptyTitle')"
+      :description="t('studio.detections.review.emptyHint')"
+    />
 
     <!-- The selected review. -->
     <template v-else-if="review">

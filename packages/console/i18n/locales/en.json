@@ -19,14 +19,14 @@
 				"general": "General",
 				"tokens": "Tokens"
 			},
-			"analytics": {
-				"overview": "Overview",
-				"logs": "Logs",
-				"webhooks": "Webhooks"
-			},
 			"policies": {
 				"index": "Overview",
 				"templates": "Templates"
+			},
+			"observability": {
+				"detections": "Detections",
+				"overview": "Overview",
+				"logs": "Logs"
 			}
 		},
 		"category": {
@@ -394,26 +394,6 @@
 			"support": {
 				"description": "Get help from our team"
 			}
-		},
-		"getStarted": {
-			"title": "Let's set up your workspace",
-			"done": "You're all set",
-			"steps": {
-				"uploadFiles": {
-					"title": "Upload your first documents",
-					"description": "Add files to start detecting and redacting sensitive data."
-				},
-				"createPolicy": {
-					"title": "Create a redaction policy",
-					"description": "Define what to detect and how to redact it."
-				},
-				"inviteTeam": {
-					"title": "Invite your team",
-					"description": "Add members and assign roles to collaborate."
-				}
-			},
-			"skip": "Skip setup",
-			"cardSubtitle": "Finish these steps to get going."
 		},
 		"sections": {
 			"recentActivity": "Recent activity",
@@ -1404,7 +1384,7 @@
 			"bytes": "bytes {start}–{end}",
 			"timeSpan": "{start}–{end}",
 			"idleTitle": "No detections yet",
-			"idleHint": "Pick a pipeline and run detection to find sensitive entities.",
+			"idleHint": "Run a detection to find sensitive entities.",
 			"noFile": "No document open",
 			"noFileHint": "Open a document to run detection.",
 			"emptyTitle": "No entities found",
@@ -1486,7 +1466,9 @@
 				"hint": "Toggle bold highlight fill in the document"
 			},
 			"locationUnavailable": "Location unavailable",
-			"locationUnavailableHint": "This entity’s position in the document is invalid, so it can’t be shown or redacted in place."
+			"locationUnavailableHint": "This entity’s position in the document is invalid, so it can’t be shown or redacted in place.",
+			"nothingToRedact": "Nothing to redact",
+			"runFirst": "Run a detection first"
 		},
 		"preview": {
 			"loading": "Loading document...",
@@ -1552,29 +1534,26 @@
 				"status": "Status",
 				"reviewers": "Reviewers",
 				"createFailed": "Failed to open review",
-				"startHint": "Open a review to discuss and sign off this document.",
 				"defaultTitle": "Document review",
 				"select": "Select a review",
 				"rename": "Rename review",
 				"addReviewer": "Add",
 				"delete": "Delete review",
 				"deleteTitle": "Delete this review?",
-				"deleteDescription": "This permanently removes the review and its entire discussion."
+				"deleteDescription": "This permanently removes the review and its entire discussion.",
+				"emptyTitle": "No reviews yet",
+				"emptyHint": "Open a review to discuss and sign off this document."
 			},
 			"emptyPolicies": {
 				"title": "No policies yet",
 				"description": "Create a policy, or detect by labels instead."
 			},
-			"ranAt": "Ran {time}",
 			"scope": {
 				"countriesPlaceholder": "Search or type a country code (e.g. US)",
 				"languagesPlaceholder": "Search or type a BCP-47 tag (e.g. en)",
 				"addValue": "Add"
-			}
-		},
-		"fullScreen": {
-			"enter": "Full screen",
-			"exit": "Exit full screen"
+			},
+			"item": "Detection"
 		}
 	},
 	"commandMenu": {

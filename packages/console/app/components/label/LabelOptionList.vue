@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { LabelSection } from "#console/composables/useLabelOptions";
+import type { LabelSection } from "#console/composables/studio/useLabelOptions";
 import { Check } from "@lucide/vue";
 import {
 	ComboboxEmpty,

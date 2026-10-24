@@ -8,7 +8,7 @@
  * Adding a new format is one entry here: its extensions, its lazily-imported view
  * component (so each renderer's heavy deps stay code-split and only load when that
  * format opens), which detection source it needs, and its preview capabilities.
- * The dispatcher ({@link StudioDocumentPreview}) and the page read this registry
+ * The dispatcher ({@link DocumentPreview}) and the page read this registry
  * instead of hardcoding kinds, so nothing else changes when the list grows.
  *
  * NOTE: renderer components are self-contained and SDK-free — they take a
@@ -60,7 +60,7 @@ export interface StudioRenderer {
 	 * kind is actually opened. The dispatcher wraps this in an async component whose
 	 * load failures surface through the shared error phase (a chunk that fails to
 	 * fetch is just an `error`, like any other load failure) — see
-	 * {@link StudioDocumentPreview}.
+	 * {@link DocumentPreview}.
 	 */
 	component: () => Promise<Component | { default: Component }>;
 	/** Which content form detection needs for this kind (drives the page fetch). */
@@ -82,7 +82,7 @@ export const STUDIO_RENDERERS: readonly StudioRenderer[] = [
 	{
 		kind: "image",
 		extensions: ["png", "jpg", "jpeg", "gif", "webp", "bmp", "svg"],
-		component: () => import("./StudioImageView.vue"),
+		component: () => import("./ImageView.vue"),
 		// Detection runs server-side; the OCR layout (for the optional overlay) comes
 		// from the detection's intermediates once it completes. Entity boxes come from
 		// the audit directly. Both optional.
@@ -94,7 +94,7 @@ export const STUDIO_RENDERERS: readonly StudioRenderer[] = [
 		kind: "audio",
 		// The backend-supported, browser-playable audio formats.
 		extensions: ["wav", "mp3", "ogg"],
-		component: () => import("./StudioAudioView.vue"),
+		component: () => import("./AudioView.vue"),
 		// Detection runs server-side; the searchable content is the transcript from
 		// the detection's intermediates (fetched once detection completes). Optional:
 		// a detection may have no transcript, in which case the player has none.
@@ -106,27 +106,27 @@ export const STUDIO_RENDERERS: readonly StudioRenderer[] = [
 	{
 		kind: "csv",
 		extensions: ["csv"],
-		component: () => import("./StudioCsvView.vue"),
+		component: () => import("./CsvView.vue"),
 		detectionSource: "text",
 		wrapperClass: "flex min-h-full flex-col p-6",
 	},
 	{
 		kind: "text",
 		extensions: ["txt", "md", "log", "json", "xml", "yaml", "yml"],
-		component: () => import("./StudioTextView.vue"),
+		component: () => import("./TextView.vue"),
 		detectionSource: "text",
 		wrapperClass: "flex min-h-full flex-col p-6",
 	},
 	{
 		kind: "docx",
 		extensions: ["docx"],
-		component: () => import("./StudioDocxView.vue"),
+		component: () => import("./DocxView.vue"),
 		detectionSource: "docx-parts",
 	},
 	{
 		kind: "pdf",
 		extensions: ["pdf"],
-		component: () => import("./StudioPdfView.vue"),
+		component: () => import("./PdfView.vue"),
 		// The PDF view highlights entities by their page-local byte offsets against
 		// pdf.js's own text layer, so it needs no fetched source text to map against
 		// (unlike the text/DOCX views) — nothing to source here.

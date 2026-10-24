@@ -12,7 +12,7 @@ import {
 	Circle,
 } from "@lucide/vue";
 import type { Component } from "vue";
-import type { StudioEntityView } from "#console/composables/useStudioEntities";
+import type { StudioEntityView } from "#console/composables/studio/useStudioEntities";
 import {
 	Dialog,
 	DialogScrollContent,

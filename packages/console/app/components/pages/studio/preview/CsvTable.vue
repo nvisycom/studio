@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { TextEntityView } from "#console/composables/useTextEntities";
+import type { TextEntityView } from "#console/composables/studio/useTextEntities";
 import { byteOffsetToChar, parseCsv } from "#console/utils/preview";
 
 const props = withDefaults(

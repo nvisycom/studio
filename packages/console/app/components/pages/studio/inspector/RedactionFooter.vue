@@ -7,17 +7,22 @@ import {
 	TriangleAlert,
 } from "@lucide/vue";
 import { Button } from "#console/components/ui/button";
+import type { StudioDetectionPhase } from "#console/composables/studio/useStudioDetection";
 import type {
 	RedactionOutput,
 	StudioRedactPhase,
-} from "#console/composables/useStudioRedaction";
+} from "#console/composables/studio/useStudioRedaction";
 
 /**
- * The redaction action bar for a completed detection: apply redaction, then
- * download or export the redacted output. Shared by the inspector audit panel
- * and the full-screen audit review so the two never drift.
+ * The redaction action bar, always pinned to the bottom of the Audit tab (like
+ * the Detect tab's Run and the Review tab's CTA). Apply redaction on a completed
+ * detection, then download or export the redacted output. Until there's a
+ * completed detection with something to redact, the primary button is disabled.
  */
 const props = defineProps<{
+	/** The detection lifecycle phase, so the bar can disable itself until a
+	 *  detection has completed. */
+	phase?: StudioDetectionPhase;
 	/** Redaction lifecycle for the complete detection. */
 	redactPhase?: StudioRedactPhase;
 	/** Whether redaction can be applied right now (complete, not in flight). */
@@ -45,6 +50,20 @@ const { t } = useI18n();
 
 // How many entities the "Apply" button will redact (excludes kept ones).
 const applyCount = computed(() => props.effectiveRedactCount ?? props.count);
+
+// There's something to redact only once a detection has completed with at least
+// one entity to act on; until then the primary button stays present but disabled.
+const hasRedactable = computed(
+	() => props.phase === "complete" && applyCount.value > 0,
+);
+
+// The disabled primary's label reflects why it's not actionable: no detection yet
+// vs. a completed detection with nothing to redact.
+const idleLabel = computed(() =>
+	props.phase === "complete"
+		? t("studio.audit.nothingToRedact")
+		: t("studio.audit.runFirst"),
+);
 </script>
 
 <template>
@@ -81,12 +100,13 @@ const applyCount = computed(() => props.effectiveRedactCount ?? props.count);
     </template>
 
     <!-- Idle / redacting / failed: apply (or retry) redaction. Styled like the
-         "Run detection" primary button so the two steps read as a pair. The count
-         reflects reviewer edits — kept (suppressed) entities are excluded. -->
+         "Run detection" primary button so the two steps read as a pair, and kept
+         present-but-disabled until a detection has completed. The count reflects
+         reviewer edits — kept (suppressed) entities are excluded. -->
     <Button
       v-else
       class="w-full gap-2"
-      :disabled="!canRedact || applyCount === 0"
+      :disabled="!hasRedactable || !canRedact"
       @click="emit('redact')"
     >
       <Loader2
@@ -96,13 +116,15 @@ const applyCount = computed(() => props.effectiveRedactCount ?? props.count);
       />
       <Scissors v-else :size="16" />
       {{
-        redactPhase === "redacting"
-          ? t("studio.audit.redacting")
-          : redactPhase === "failed"
-            ? t("studio.audit.retryRedaction")
-            : applyCount < count
-              ? t("studio.audit.applyCount", { n: applyCount, total: count })
-              : t("studio.audit.apply")
+        !hasRedactable
+          ? idleLabel
+          : redactPhase === "redacting"
+            ? t("studio.audit.redacting")
+            : redactPhase === "failed"
+              ? t("studio.audit.retryRedaction")
+              : applyCount < count
+                ? t("studio.audit.applyCount", { n: applyCount, total: count })
+                : t("studio.audit.apply")
       }}
     </Button>
   </div>

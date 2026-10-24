@@ -1,5 +1,5 @@
 import type { MaybeRefOrGetter } from "vue";
-import type { TextEntityView } from "#console/composables/useTextEntities";
+import type { TextEntityView } from "#console/composables/studio/useTextEntities";
 import {
 	type FormattedText,
 	type ParsedCsv,

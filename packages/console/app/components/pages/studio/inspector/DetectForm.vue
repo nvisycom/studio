@@ -2,8 +2,8 @@
 import type { WorkspacePolicySummary } from "@nvisy/sdk/datatypes";
 import { Loader2, Play, ShieldCheck } from "@lucide/vue";
 import { EmptyState } from "#console/components/shared";
-import type { StudioDetectionPhase } from "#console/composables/useStudioDetection";
-import StudioLabelChecklist from "./StudioLabelChecklist.vue";
+import type { StudioDetectionPhase } from "#console/composables/studio/useStudioDetection";
+import LabelChecklist from "./LabelChecklist.vue";
 import { Button } from "#console/components/ui/button";
 import { Checkbox } from "#console/components/ui/checkbox";
 import { TagCombobox } from "#console/components/ui/tag-combobox";
@@ -126,7 +126,7 @@ function togglePolicy(id: string, checked: boolean | "indeterminate") {
     <div class="flex min-h-0 flex-1 flex-col overflow-y-auto border-t p-3">
       <!-- Labels: scan the catalogue by category and tick entity types. -->
       <div v-if="source === 'labels'" class="space-y-1.5">
-        <StudioLabelChecklist v-model="labels" />
+        <LabelChecklist v-model="labels" />
       </div>
 
       <!-- Policies: pick existing workspace policies (multi-select). -->

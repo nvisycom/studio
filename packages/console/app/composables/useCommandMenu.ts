@@ -14,7 +14,7 @@ import {
 	UserPlus,
 } from "@lucide/vue";
 import { toast } from "vue-sonner";
-import type { NavigationItem } from "#console/composables/useNavigation";
+import type { NavigationItem } from "#console/composables/workspace/useNavigation";
 
 /**
  * A runnable command in the palette: either a navigation link (from

@@ -2,13 +2,12 @@ import type { MaybeRefOrGetter } from "vue";
 import type {
 	CategorizedGroup,
 	EntityCluster,
-} from "#console/composables/useEntities";
-import type { StudioEntityView } from "#console/composables/useStudioEntities";
+} from "#console/composables/studio/useEntities";
+import type { StudioEntityView } from "#console/composables/studio/useStudioEntities";
 
 /**
- * The reviewer's keep/redact decision model, shared by both audit surfaces (the
- * wide review {@link StudioAuditTable} and the compact {@link StudioAuditPanel})
- * so they stay in exact agreement. A finding is "redacted" unless the reviewer
+ * The reviewer's keep/redact decision model for the audit list
+ * ({@link AuditPanel}). A finding is "redacted" unless the reviewer
  * kept (suppressed) it, so a checkbox reads as the action: checked = will redact.
  *
  * The decision state lives on the redaction composable (the `suppressed` set);

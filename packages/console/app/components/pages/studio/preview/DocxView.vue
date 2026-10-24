@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // biome-ignore-all lint/suspicious/noExplicitAny: SuperDoc's extension ctx and anchor/decoration surfaces are broadly typed; we touch a narrow, guarded slice.
-import type { TextEntityView } from "#console/composables/useTextEntities";
-import type { AddTextEntityInput } from "#console/composables/useStudioRedaction";
-import type { StudioViewPhase } from "#console/composables/useStudioView";
+import type { TextEntityView } from "#console/composables/studio/useTextEntities";
+import type { AddTextEntityInput } from "#console/composables/studio/useStudioRedaction";
+import type { StudioViewPhase } from "#console/composables/studio/useStudioView";
 
 /**
  * Read-only Word (.docx) preview with detected-entity highlighting. One of the
@@ -257,7 +257,7 @@ async function render(url: string, target: HTMLElement) {
 				// entity, only the `--active` class does, so just repaint instead of
 				// re-matching the whole document on every focus step. Scrolling the
 				// focused chip into view (only when off-screen) and anchoring its popover
-				// is the dispatcher's job (StudioDocumentPreview.focusChip); the view must
+				// is the dispatcher's job (DocumentPreview.focusChip); the view must
 				// NOT also scroll, or the two fight and re-center an already-visible entity.
 				applyActive = () => {
 					ctx.decorations.invalidate("studio.entities");

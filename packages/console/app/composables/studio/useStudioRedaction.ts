@@ -10,11 +10,11 @@ import { toast } from "vue-sonner";
 import type { RedactionOutput } from "#console/providers/redaction";
 
 export type { RedactionOutput };
-import type { TextEntityView } from "#console/composables/useTextEntities";
-import type { ImageEntityView } from "#console/composables/useImageEntities";
-import type { AudioEntityView } from "#console/composables/useAudioEntities";
-import type { StudioEntityView } from "#console/composables/useStudioEntities";
-import type { StudioDetectionPhase } from "#console/composables/useStudioDetection";
+import type { TextEntityView } from "#console/composables/studio/useTextEntities";
+import type { ImageEntityView } from "#console/composables/studio/useImageEntities";
+import type { AudioEntityView } from "#console/composables/studio/useAudioEntities";
+import type { StudioEntityView } from "#console/composables/studio/useStudioEntities";
+import type { StudioDetectionPhase } from "#console/composables/studio/useStudioDetection";
 
 /** Lifecycle of applying redactions to a complete detection. */
 export type StudioRedactPhase = "idle" | "redacting" | "done" | "failed";

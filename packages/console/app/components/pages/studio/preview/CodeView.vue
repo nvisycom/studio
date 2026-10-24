@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Segment } from "#console/composables/useDocumentSegments";
+import type { Segment } from "#console/composables/studio/useDocumentSegments";
 import type { TokenKind } from "#console/utils/preview";
 
 /**

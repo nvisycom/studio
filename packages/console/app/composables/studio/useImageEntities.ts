@@ -5,7 +5,7 @@ import {
 	type CategorizedGroup as CategorizedGroupBase,
 	categorize,
 	provenance,
-} from "#console/composables/useEntities";
+} from "#console/composables/studio/useEntities";
 
 /**
  * A detected image entity, for the image preview's bounding-box overlay + the

@@ -19,14 +19,14 @@
 				"general": "Allgemein",
 				"tokens": "Tokens"
 			},
-			"analytics": {
-				"overview": "Übersicht",
-				"logs": "Protokolle",
-				"webhooks": "Webhooks"
-			},
 			"policies": {
 				"index": "Übersicht",
 				"templates": "Vorlagen"
+			},
+			"observability": {
+				"detections": "Erkennungen",
+				"overview": "Übersicht",
+				"logs": "Protokolle"
 			}
 		},
 		"category": {
@@ -394,26 +394,6 @@
 			"support": {
 				"description": "Erhalten Sie Hilfe von unserem Team"
 			}
-		},
-		"getStarted": {
-			"title": "Richten Sie Ihren Arbeitsbereich ein",
-			"done": "Alles bereit",
-			"steps": {
-				"uploadFiles": {
-					"title": "Laden Sie Ihre ersten Dokumente hoch",
-					"description": "Fügen Sie Dateien hinzu, um sensible Daten zu erkennen und zu schwärzen."
-				},
-				"createPolicy": {
-					"title": "Erstellen Sie eine Schwärzungsrichtlinie",
-					"description": "Legen Sie fest, was erkannt und wie es geschwärzt wird."
-				},
-				"inviteTeam": {
-					"title": "Laden Sie Ihr Team ein",
-					"description": "Fügen Sie Mitglieder hinzu und weisen Sie Rollen zu."
-				}
-			},
-			"skip": "Einrichtung überspringen",
-			"cardSubtitle": "Schließen Sie diese Schritte ab, um loszulegen."
 		},
 		"sections": {
 			"recentActivity": "Letzte Aktivitäten",
@@ -1404,7 +1384,7 @@
 			"bytes": "Bytes {start}–{end}",
 			"timeSpan": "{start}–{end}",
 			"idleTitle": "Noch keine Erkennungen",
-			"idleHint": "Wähle eine Pipeline und führe die Erkennung aus, um sensible Entitäten zu finden.",
+			"idleHint": "Führe eine Erkennung aus, um sensible Daten zu finden.",
 			"noFile": "Kein Dokument geöffnet",
 			"noFileHint": "Öffne ein Dokument, um die Erkennung auszuführen.",
 			"emptyTitle": "Keine Entitäten gefunden",
@@ -1486,7 +1466,9 @@
 				"hint": "Kräftige Markierungen im Dokument umschalten"
 			},
 			"locationUnavailable": "Position nicht verfügbar",
-			"locationUnavailableHint": "Die Position dieser Entität im Dokument ist ungültig und kann daher nicht angezeigt oder an Ort und Stelle redigiert werden."
+			"locationUnavailableHint": "Die Position dieser Entität im Dokument ist ungültig und kann daher nicht angezeigt oder an Ort und Stelle redigiert werden.",
+			"nothingToRedact": "Nichts zu schwärzen",
+			"runFirst": "Zuerst eine Erkennung ausführen"
 		},
 		"preview": {
 			"loading": "Dokument wird geladen …",
@@ -1552,29 +1534,26 @@
 				"status": "Status",
 				"reviewers": "Prüfer",
 				"createFailed": "Prüfung konnte nicht geöffnet werden",
-				"startHint": "Öffnen Sie eine Prüfung, um dieses Dokument zu besprechen und freizugeben.",
 				"defaultTitle": "Dokumentprüfung",
 				"select": "Review auswählen",
 				"rename": "Review umbenennen",
 				"addReviewer": "Hinzufügen",
 				"delete": "Review löschen",
 				"deleteTitle": "Diesen Review löschen?",
-				"deleteDescription": "Dies entfernt den Review und die gesamte Diskussion dauerhaft."
+				"deleteDescription": "Dies entfernt den Review und die gesamte Diskussion dauerhaft.",
+				"emptyTitle": "Noch keine Prüfungen",
+				"emptyHint": "Öffne eine Prüfung, um dieses Dokument zu besprechen und freizugeben."
 			},
 			"emptyPolicies": {
 				"title": "Noch keine Richtlinien",
 				"description": "Erstelle eine Richtlinie oder erkenne stattdessen über Labels."
 			},
-			"ranAt": "Ausgeführt {time}",
 			"scope": {
 				"countriesPlaceholder": "Ländercode suchen oder eingeben (z. B. US)",
 				"languagesPlaceholder": "BCP-47-Tag suchen oder eingeben (z. B. en)",
 				"addValue": "Hinzufügen"
-			}
-		},
-		"fullScreen": {
-			"enter": "Vollbild",
-			"exit": "Vollbild beenden"
+			},
+			"item": "Erkennung"
 		}
 	},
 	"commandMenu": {

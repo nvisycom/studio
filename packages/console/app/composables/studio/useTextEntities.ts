@@ -5,7 +5,7 @@ import {
 	type CategorizedGroup,
 	categorize,
 	provenance,
-} from "#console/composables/useEntities";
+} from "#console/composables/studio/useEntities";
 import {
 	type DocxSourceRef,
 	byteOffsetToChar,

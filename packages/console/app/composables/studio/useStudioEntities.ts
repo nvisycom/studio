@@ -1,9 +1,9 @@
 import type { Audit } from "@nvisy/sdk/datatypes";
 import type { MaybeRefOrGetter } from "vue";
-import type { CategorizedGroup } from "#console/composables/useEntities";
-import type { TextEntityView } from "#console/composables/useTextEntities";
-import type { ImageEntityView } from "#console/composables/useImageEntities";
-import type { AudioEntityView } from "#console/composables/useAudioEntities";
+import type { CategorizedGroup } from "#console/composables/studio/useEntities";
+import type { TextEntityView } from "#console/composables/studio/useTextEntities";
+import type { ImageEntityView } from "#console/composables/studio/useImageEntities";
+import type { AudioEntityView } from "#console/composables/studio/useAudioEntities";
 
 /**
  * A detected studio entity of any modality — the union the audit list, the count,

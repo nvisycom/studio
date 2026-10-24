@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { Table, WrapText } from "@lucide/vue";
-import StudioCodeView from "./StudioCodeView.vue";
-import StudioCsvTable from "./StudioCsvTable.vue";
+import CodeView from "./CodeView.vue";
+import CsvTable from "./CsvTable.vue";
 import { Checkbox } from "#console/components/ui/checkbox";
 import { Label } from "#console/components/ui/label";
-import type { TextEntityView } from "#console/composables/useTextEntities";
-import { useDocumentSegments } from "#console/composables/useDocumentSegments";
-import type { StudioViewPhase } from "#console/composables/useStudioView";
+import type { TextEntityView } from "#console/composables/studio/useTextEntities";
+import { useDocumentSegments } from "#console/composables/studio/useDocumentSegments";
+import type { StudioViewPhase } from "#console/composables/studio/useStudioView";
 
 /**
  * CSV preview: a table (default) or the raw syntax-highlighted text, with a
@@ -15,7 +15,7 @@ import type { StudioViewPhase } from "#console/composables/useStudioView";
  * pipeline, and reports its loading `phase` to the host. Entities highlight in
  * both views.
  */
-// Local interfaces (see the note in StudioDocxView on why the view contract is
+// Local interfaces (see the note in DocxView on why the view contract is
 // declared locally rather than imported as a macro generic). Mirrors the shared
 // StudioViewProps/Emits in `useStudioView`.
 interface Props {
@@ -129,7 +129,7 @@ watch(
 
     <!-- Both views use the full width; the raw view keeps CSV rows on one line
          and scrolls horizontally, like the table, rather than wrapping. -->
-    <StudioCsvTable
+    <CsvTable
       v-if="showTable"
       :text="formatted.text"
       :with-headers="withHeaders"
@@ -137,7 +137,7 @@ watch(
       :active-entity-id="activeEntityId"
       @focus-entity="emit('focus-entity', $event)"
     />
-    <StudioCodeView
+    <CodeView
       v-else
       :lines="lines"
       :active-entity-id="activeEntityId"

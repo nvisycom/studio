@@ -2,7 +2,7 @@
  * Shared loading contract for the studio document-preview views (DOCX, CSV,
  * text/JSON, image). Each view renders one file kind but reports its progress the
  * same way — a {@link StudioViewPhase} — so the host ({@link
- * StudioDocumentPreview}) shows a single, consistent loader (with phase-aware
+ * DocumentPreview}) shows a single, consistent loader (with phase-aware
  * copy) and error, instead of every view drawing its own.
  *
  * The props/emits *shape* is declared locally in each view (Vue's

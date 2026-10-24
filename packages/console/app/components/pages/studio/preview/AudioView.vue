@@ -27,9 +27,9 @@ import type RegionsPlugin from "wavesurfer.js/dist/plugins/regions.js";
 import type { Region } from "wavesurfer.js/dist/plugins/regions.js";
 import type { Transcription } from "@nvisy/sdk/datatypes";
 import AddEntityPopover from "../entities/AddEntityPopover.vue";
-import type { AddAudioEntityInput } from "#console/composables/useStudioRedaction";
-import type { AudioEntityView } from "#console/composables/useAudioEntities";
-import type { StudioViewPhase } from "#console/composables/useStudioView";
+import type { AddAudioEntityInput } from "#console/composables/studio/useStudioRedaction";
+import type { AudioEntityView } from "#console/composables/studio/useAudioEntities";
+import type { StudioViewPhase } from "#console/composables/studio/useStudioView";
 
 /**
  * The transcript panel's state, resolved by the page once a detection settles:
@@ -60,7 +60,7 @@ export type AudioTranscriptState =
  * be added as a custom entity. The transcript panel (segment click-to-seek) shows
  * once a detection produces one.
  */
-// Local interfaces (see the note in StudioDocxView on why the view contract is
+// Local interfaces (see the note in DocxView on why the view contract is
 // declared locally rather than via the shared aliased type).
 interface Props {
 	/** Blob object URL of the audio file, or null when nothing is open. */

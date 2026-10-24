@@ -5,7 +5,7 @@ import {
 	type CategorizedGroup as CategorizedGroupBase,
 	categorize,
 	provenance,
-} from "#console/composables/useEntities";
+} from "#console/composables/studio/useEntities";
 
 /**
  * A detected audio entity, for the waveform's timeline overlay + the audit list.

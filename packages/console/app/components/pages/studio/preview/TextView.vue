@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import StudioCodeView from "./StudioCodeView.vue";
+import CodeView from "./CodeView.vue";
 import AddEntityHint from "../entities/AddEntityHint.vue";
 import AddEntityPopover from "../entities/AddEntityPopover.vue";
-import type { TextEntityView } from "#console/composables/useTextEntities";
+import type { TextEntityView } from "#console/composables/studio/useTextEntities";
 import type {
 	AddTextEntityInput,
 	PendingAdd,
-} from "#console/composables/useStudioRedaction";
-import { useDocumentSegments } from "#console/composables/useDocumentSegments";
-import { useSelectionOffset } from "#console/composables/useSelectionOffset";
-import type { StudioViewPhase } from "#console/composables/useStudioView";
+} from "#console/composables/studio/useStudioRedaction";
+import { useDocumentSegments } from "#console/composables/studio/useDocumentSegments";
+import { useSelectionOffset } from "#console/composables/studio/useSelectionOffset";
+import type { StudioViewPhase } from "#console/composables/studio/useStudioView";
 
 /**
  * Preview for non-tabular text files (plain text, JSON, …) in the code view:
@@ -22,7 +22,7 @@ import type { StudioViewPhase } from "#console/composables/useStudioView";
  * new entity to redact (a detail-style popover), emitting the byte-offset span
  * + chosen label to the parent.
  */
-// Local interfaces (see the note in StudioDocxView on why the view contract is
+// Local interfaces (see the note in DocxView on why the view contract is
 // declared locally). Mirrors the shared StudioViewProps/Emits, plus `fileKind`.
 interface Props {
 	/** Blob object URL of the file, or null when nothing is open. */
@@ -196,7 +196,7 @@ function confirmAdd() {
     ref="codeContainer"
     class="mx-auto w-full max-w-[850px]"
   >
-    <StudioCodeView
+    <CodeView
       :lines="lines"
       :active-entity-id="activeEntityId"
       @focus-entity="emit('focus-entity', $event)"

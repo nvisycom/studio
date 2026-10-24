@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Eye, EyeOff } from "@lucide/vue";
-import type { TextEntityView } from "#console/composables/useTextEntities";
+import type { TextEntityView } from "#console/composables/studio/useTextEntities";
 import {
 	Popover,
 	PopoverAnchor,

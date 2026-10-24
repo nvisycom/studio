@@ -39,13 +39,13 @@ const selected = computed(() =>
       >
         <ScanSearch :size="14" class="shrink-0 text-muted-foreground" />
         <span class="min-w-0 flex-1 truncate text-left">
-          {{
-            selected
-              ? t("studio.detections.ranAt", {
-                  time: formatRelativeTime(selected.startedAt, t),
-                })
-              : t("studio.detections.none")
-          }}
+          {{ selected ? t("studio.detections.item") : t("studio.detections.none") }}
+        </span>
+        <span
+          v-if="selected"
+          class="shrink-0 text-xs text-muted-foreground"
+        >
+          {{ formatRelativeTime(selected.startedAt, t) }}
         </span>
         <ChevronDown :size="14" class="shrink-0 text-muted-foreground" />
       </Button>
@@ -67,7 +67,10 @@ const selected = computed(() =>
         />
         <ScanSearch :size="14" class="shrink-0 text-muted-foreground" />
         <span class="min-w-0 flex-1 truncate">
-          {{ t("studio.detections.ranAt", { time: formatRelativeTime(d.startedAt, t) }) }}
+          {{ t("studio.detections.item") }}
+        </span>
+        <span class="shrink-0 text-xs text-muted-foreground">
+          {{ formatRelativeTime(d.startedAt, t) }}
         </span>
       </DropdownMenuItem>
     </DropdownMenuContent>

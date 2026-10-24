@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { TextEntityView } from "#console/composables/useTextEntities";
-import type { StudioViewPhase } from "#console/composables/useStudioView";
+import type { TextEntityView } from "#console/composables/studio/useTextEntities";
+import type { StudioViewPhase } from "#console/composables/studio/useStudioView";
 
 /**
  * Read-only PDF preview with detected-entity highlighting. One of the studio

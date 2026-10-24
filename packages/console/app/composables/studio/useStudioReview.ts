@@ -4,8 +4,7 @@ import type { MaybeRefOrGetter } from "vue";
 /**
  * The studio's review layer for one document: which review is open, opening a new
  * one (attaching the current detection), the assignee + lifecycle mutations, and
- * the comment handlers. Shared by the narrow inspector tab ({@link StudioReview})
- * and the wide full-screen review so both behave identically.
+ * the comment handlers. Drives the inspector's Review tab ({@link ReviewPanel}).
  */
 export function useStudioReview(args: {
 	documentId: MaybeRefOrGetter<string | null>;

@@ -2,10 +2,10 @@
 import { ScanText, ZoomIn } from "@lucide/vue";
 import AddEntityHint from "../entities/AddEntityHint.vue";
 import AddEntityPopover from "../entities/AddEntityPopover.vue";
-import type { ImageEntityView } from "#console/composables/useImageEntities";
-import type { ImageLayout } from "#console/composables/useImageLayout";
-import type { AddImageEntityInput } from "#console/composables/useStudioRedaction";
-import type { StudioViewPhase } from "#console/composables/useStudioView";
+import type { ImageEntityView } from "#console/composables/studio/useImageEntities";
+import type { ImageLayout } from "#console/composables/studio/useImageLayout";
+import type { AddImageEntityInput } from "#console/composables/studio/useStudioRedaction";
+import type { StudioViewPhase } from "#console/composables/studio/useStudioView";
 
 /**
  * Image preview: the file at an adjustable zoom, with detected-entity bounding
@@ -17,7 +17,7 @@ import type { StudioViewPhase } from "#console/composables/useStudioView";
  * track the image correctly as zoom resizes it (zoom drives the image `width`,
  * not a transform) without recomputing.
  */
-// Local interfaces (see the note in StudioDocxView on why the view contract is
+// Local interfaces (see the note in DocxView on why the view contract is
 // declared locally).
 interface Props {
 	/** Blob object URL of the image, or null when nothing is open. */

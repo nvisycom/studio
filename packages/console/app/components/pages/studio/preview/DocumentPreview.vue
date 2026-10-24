@@ -2,20 +2,20 @@
 import { FileText, Loader2 } from "@lucide/vue";
 import EntityDetailPopover from "../entities/EntityDetailPopover.vue";
 import { rendererFor } from "./renderers";
-import type { AudioTranscriptState } from "./StudioAudioView.vue";
-import type { TextEntityView } from "#console/composables/useTextEntities";
-import type { ImageEntityView } from "#console/composables/useImageEntities";
-import type { AudioEntityView } from "#console/composables/useAudioEntities";
-import type { ImageLayout } from "#console/composables/useImageLayout";
+import type { AudioTranscriptState } from "./AudioView.vue";
+import type { TextEntityView } from "#console/composables/studio/useTextEntities";
+import type { ImageEntityView } from "#console/composables/studio/useImageEntities";
+import type { AudioEntityView } from "#console/composables/studio/useAudioEntities";
+import type { ImageLayout } from "#console/composables/studio/useImageLayout";
 import type {
 	AddTextEntityInput,
 	AddImageEntityInput,
 	AddAudioEntityInput,
-} from "#console/composables/useStudioRedaction";
+} from "#console/composables/studio/useStudioRedaction";
 import {
 	type StudioViewPhase,
 	isViewLoading,
-} from "#console/composables/useStudioView";
+} from "#console/composables/studio/useStudioView";
 
 const props = withDefaults(
 	defineProps<{

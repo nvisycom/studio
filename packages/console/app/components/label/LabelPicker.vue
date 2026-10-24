@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ExtraLabel } from "#console/composables/useLabelOptions";
+import type { ExtraLabel } from "#console/composables/studio/useLabelOptions";
 import { X } from "@lucide/vue";
 // Bare reka-ui input (just the `<input>`): our themed `ComboboxInput` wraps the
 // field in a search-icon + bordered box built for a command palette, whose

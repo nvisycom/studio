@@ -1,5 +1,5 @@
 import type { Layout } from "@nvisy/sdk/datatypes";
-import type { ImageBox } from "#console/composables/useImageEntities";
+import type { ImageBox } from "#console/composables/studio/useImageEntities";
 
 /**
  * OCR layout for the image preview's optional overlay: the recognized blocks,
