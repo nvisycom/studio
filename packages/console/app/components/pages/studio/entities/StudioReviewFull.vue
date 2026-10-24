@@ -39,7 +39,9 @@ const {
 	renameReview,
 	addReviewer,
 	removeReviewer,
-	onVerify,
+	onSubmit,
+	onApprove,
+	onRequestChanges,
 	onReopen,
 	onComment,
 	onEditComment,
@@ -166,7 +168,9 @@ async function saveTitle() {
 				</div>
 				<ReviewSidebar
 					:review="review"
-					@verify="onVerify"
+					@submit="onSubmit"
+					@approve="onApprove"
+					@request-changes="onRequestChanges"
 					@reopen="onReopen"
 					@assign="addReviewer"
 					@unassign="removeReviewer"

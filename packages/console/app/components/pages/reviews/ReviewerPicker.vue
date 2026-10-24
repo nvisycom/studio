@@ -60,10 +60,19 @@ function choose(accountId: string) {
 <template>
   <Popover v-model:open="open">
     <PopoverTrigger as-child>
-      <Button variant="outline" size="sm" class="h-7 gap-1.5" :disabled="loading">
-        <Plus :size="14" />
-        {{ t("reviews.assign") }}
-      </Button>
+      <!-- The host can provide a custom trigger (e.g. a quiet icon button);
+           otherwise fall back to the labelled "Assign" button. -->
+      <slot name="trigger" :loading="loading">
+        <Button
+          variant="outline"
+          size="sm"
+          class="h-7 gap-1.5"
+          :disabled="loading"
+        >
+          <Plus :size="14" />
+          {{ t("reviews.assign") }}
+        </Button>
+      </slot>
     </PopoverTrigger>
     <PopoverContent class="w-64 p-0" align="end">
       <Command>

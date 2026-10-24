@@ -680,10 +680,14 @@ const auditProps = computed(() => ({
               </div>
               <!-- Highlight visibility: subtle underline vs. a bold fill. A
                    labelled toggle, not a bare icon, so it reads as a control. -->
+              <!-- Fixed variant (always `outline`) so toggling the state doesn't
+                   add/remove a border and resize the button; on/off reads from the
+                   fill + icon colour only. -->
               <Button
-                :variant="highlightBold ? 'secondary' : 'outline'"
+                variant="outline"
                 size="sm"
                 class="h-8 shrink-0 gap-1.5 px-2.5 font-normal"
+                :class="highlightBold ? 'bg-secondary' : ''"
                 :aria-pressed="highlightBold"
                 :title="t('studio.audit.highlight.hint')"
                 @click="highlightBold = !highlightBold"

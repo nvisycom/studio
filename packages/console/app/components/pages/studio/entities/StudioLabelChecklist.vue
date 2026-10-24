@@ -116,7 +116,7 @@ function toggleSection(
              tracks the panel's width, not the viewport). The grid lives on a
              plain div inside CollapsibleContent — reka's content element drives
              the expand/collapse animation and shouldn't also be the grid. -->
-        <div class="grid grid-cols-1 gap-x-2 pl-6 @md:grid-cols-2">
+        <div class="grid grid-cols-1 gap-x-2 pl-6 pt-0.5 @md:grid-cols-2">
           <label
             v-for="label in section.items"
             :key="label.id"

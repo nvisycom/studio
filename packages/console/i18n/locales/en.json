@@ -204,6 +204,19 @@
 				"deleteFailed": "Failed to delete workspace",
 				"avatarUploadFailed": "Failed to upload workspace avatar",
 				"avatarRemoveFailed": "Failed to remove workspace avatar"
+			},
+			"reviews": {
+				"title": "Reviews",
+				"description": "How document reviews reach approval.",
+				"minApprovals": {
+					"label": "Required approvals",
+					"description": "How many reviewers must approve before a review is approved."
+				},
+				"authorCanApprove": {
+					"label": "Author can approve",
+					"description": "Allow a review's author to count as one of the approvals."
+				},
+				"footer": "Applies to new approvals across the workspace."
 			}
 		},
 		"notifications": {
@@ -1439,7 +1452,6 @@
 			"redactFailed": "Redaction failed. Please try again.",
 			"downloadRedacted": "Download redacted file",
 			"downloadFailed": "Could not download the redacted file",
-			"noPipelines": "No pipelines yet. Create one first.",
 			"cell": "{column} · row {row}",
 			"colN": "col {n}",
 			"detail": {
@@ -1477,7 +1489,10 @@
 			"highlight": {
 				"label": "Highlights",
 				"hint": "Toggle bold highlight fill in the document"
-			}
+			},
+			"locationUnavailable": "Location unavailable",
+			"locationUnavailableHint": "This entity’s position in the document is invalid, so it can’t be shown or redacted in place.",
+			"noPipelines": "No pipelines yet. Create one first."
 		},
 		"preview": {
 			"loading": "Loading document...",
@@ -1534,7 +1549,6 @@
 				"policies": "Policies"
 			},
 			"adhoc": "Ad-hoc",
-			"noPolicies": "No policies yet. Create one, or detect by labels.",
 			"jurisdictions": "Jurisdictions",
 			"languages": "Languages",
 			"runDetection": "Run detection",
@@ -1543,20 +1557,30 @@
 			"review": {
 				"none": "No reviews for this document",
 				"new": "New review",
-				"linked": "Linked",
-				"linkedDetection": "Detection",
 				"status": "Status",
 				"reviewers": "Reviewers",
 				"createFailed": "Failed to open review",
 				"startHint": "Open a review to discuss and sign off this document.",
 				"defaultTitle": "Document review",
 				"select": "Select a review",
-				"rename": "Rename review"
+				"rename": "Rename review",
+				"addReviewer": "Add",
+				"delete": "Delete review",
+				"deleteTitle": "Delete this review?",
+				"deleteDescription": "This permanently removes the review and its entire discussion."
 			},
 			"pipelineStatus": {
 				"draft": "Draft",
 				"disabled": "Disabled",
 				"enabled": "Enabled"
+			},
+			"emptyPipelines": {
+				"title": "No pipelines yet",
+				"description": "Create a pipeline to detect with saved policies."
+			},
+			"emptyPolicies": {
+				"title": "No policies yet",
+				"description": "Create a policy, or detect by labels instead."
 			}
 		},
 		"fullScreen": {
@@ -1600,7 +1624,6 @@
 	},
 	"policies": {
 		"title": "Policies",
-		"count": "{count} policy | {count} policies",
 		"create": "New policy",
 		"viewTemplates": "View templates",
 		"empty": {
@@ -1614,7 +1637,9 @@
 			"updated": "Updated",
 			"menu": "Open menu",
 			"edit": "Edit",
-			"delete": "Delete"
+			"delete": "Delete",
+			"promote": "Save",
+			"kind": "Kind"
 		},
 		"editor": {
 			"save": "Save changes",
@@ -1775,7 +1800,9 @@
 			"updateFailed": "Failed to update policy",
 			"deleted": "Policy deleted",
 			"deleteFailed": "Failed to delete policy",
-			"loadFailed": "Failed to load policy"
+			"loadFailed": "Failed to load policy",
+			"promoted": "Policy saved.",
+			"promoteFailed": "Couldn't save the policy."
 		},
 		"templates": {
 			"title": "Policy templates",
@@ -1844,6 +1871,22 @@
 				}
 			},
 			"slugEmpty": "Enter a name using letters or numbers to generate a slug."
+		},
+		"promote": {
+			"title": "Make this policy editable",
+			"description": "This policy was derived from labels and is read-only. Give it a name to turn it into an editable, reusable policy you can also attach to pipelines.",
+			"nameLabel": "Policy name",
+			"namePlaceholder": "e.g. Contact details",
+			"confirm": "Save"
+		},
+		"kind": {
+			"authored": "Authored",
+			"derived": "Derived"
+		},
+		"filter": {
+			"all": "All",
+			"authored": "Authored",
+			"derived": "Derived"
 		}
 	},
 	"pipelines": {
@@ -2530,18 +2573,15 @@
 			"events": {
 				"review": {
 					"opened": "opened this review",
-					"renamed": "renamed this review"
-				},
-				"detection": {
-					"linked": "linked a detection"
-				},
-				"redaction": {
-					"linked": "linked a redaction"
-				},
-				"assigned": "assigned a reviewer",
-				"unassigned": "removed a reviewer",
-				"verified": "verified this review",
-				"reopened": "reopened this review"
+					"renamed": "renamed this review",
+					"redetected": "re-ran detection",
+					"assigned": "assigned a reviewer",
+					"unassigned": "removed a reviewer",
+					"submitted": "submitted for review",
+					"changes_requested": "requested changes",
+					"approved": "approved this review",
+					"reopened": "reopened this review"
+				}
 			},
 			"triggerType": {
 				"user": "Manual detection",
@@ -2584,8 +2624,10 @@
 			}
 		},
 		"actions": {
-			"verify": "Mark verified",
-			"reopen": "Reopen review"
+			"submit": "Submit for review",
+			"approve": "Approve",
+			"requestChanges": "Request changes",
+			"reopen": "Reopen"
 		},
 		"table": {
 			"reviewer": "Reviewer",
@@ -2594,9 +2636,11 @@
 			"document": "Document"
 		},
 		"status": {
-			"needs_review": "Needs review",
+			"draft": "Draft",
 			"in_review": "In review",
-			"resolved": "Resolved"
+			"changes_requested": "Changes requested",
+			"partially_approved": "Partially approved",
+			"approved": "Approved"
 		},
 		"filter": {
 			"all": "All"

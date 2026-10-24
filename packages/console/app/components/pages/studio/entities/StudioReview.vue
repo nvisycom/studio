@@ -1,11 +1,25 @@
 <script setup lang="ts">
-import { Check, ChevronDown, FileSearch, Plus, X } from "@lucide/vue";
-import { toast } from "vue-sonner";
-import ReviewStatusControl from "../../reviews/ReviewStatusControl.vue";
+import {
+	Check,
+	CheckCircle2,
+	ChevronDown,
+	Loader2,
+	MessageSquareWarning,
+	MessagesSquare,
+	Plus,
+	RotateCcw,
+	Send,
+	Trash2,
+	X,
+} from "@lucide/vue";
+import type { Component } from "vue";
 import ReviewerPicker from "../../reviews/ReviewerPicker.vue";
 import ReviewTimeline from "../../reviews/detail/ReviewTimeline.vue";
 import EntityAvatar from "#console/components/avatar/EntityAvatar.vue";
+import { ConfirmDialog } from "#console/components/shared";
+import { Badge } from "#console/components/ui/badge";
 import { Button } from "#console/components/ui/button";
+import { reviewStatusVariant } from "#console/utils/reviews";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -47,13 +61,19 @@ const {
 	isCreating,
 	isAssigning,
 	isUnassigning,
-	isVerifying,
+	isSubmitting,
+	isApproving,
+	isRequestingChanges,
 	isReopening,
+	isDeleting,
 	openReview,
 	addReviewer,
 	removeReviewer,
-	onVerify,
+	onSubmit,
+	onApprove,
+	onRequestChanges,
 	onReopen,
+	onDelete,
 	onComment,
 	onEditComment,
 	onDeleteComment,
@@ -62,88 +82,152 @@ const {
 	documentName: () => props.documentName,
 	detectionId: () => props.detectionId,
 });
+
+// Deleting is destructive, so it goes through a confirmation.
+const showDeleteConfirm = ref(false);
+async function confirmDelete() {
+	await onDelete();
+	showDeleteConfirm.value = false;
+}
+
+// The tab's primary (bottom) action, contextual to state: open a review when
+// there's none, otherwise the main status transition. Secondary transitions
+// (e.g. request changes) stay as the inline buttons by the status badge.
+interface PrimaryAction {
+	label: string;
+	icon: Component;
+	run: () => void;
+	loading: boolean;
+	disabled: boolean;
+}
+const primaryAction = computed<PrimaryAction>(() => {
+	const r = review.value;
+	if (!r)
+		return {
+			label: t("studio.detections.review.new"),
+			icon: Plus,
+			run: openReview,
+			loading: isCreating.value,
+			disabled: !props.documentId,
+		};
+	switch (r.reviewStatus) {
+		case "draft":
+		case "changes_requested":
+			return {
+				label: t("reviews.actions.submit"),
+				icon: Send,
+				run: onSubmit,
+				loading: isSubmitting.value,
+				disabled: false,
+			};
+		case "in_review":
+		case "partially_approved":
+			return {
+				label: t("reviews.actions.approve"),
+				icon: CheckCircle2,
+				run: onApprove,
+				loading: isApproving.value,
+				disabled: false,
+			};
+		case "approved":
+			return {
+				label: t("reviews.actions.reopen"),
+				icon: RotateCcw,
+				run: onReopen,
+				loading: isReopening.value,
+				disabled: false,
+			};
+	}
+});
 </script>
 
 <template>
   <div class="flex h-full min-h-0 flex-col">
-    <!-- Review switcher + New. Mirrors the Audit tab's detection switcher. -->
-    <div class="flex shrink-0 items-center gap-2 border-b px-2 py-1.5">
-      <DropdownMenu v-if="reviews.length">
-        <DropdownMenuTrigger as-child>
-          <Button
-            variant="ghost"
-            class="h-8 min-w-0 flex-1 justify-start gap-1.5 px-2 text-sm font-normal"
-          >
-            <span class="min-w-0 flex-1 truncate text-left">
-              {{ review?.displayName ?? t("studio.detections.review.none") }}
-            </span>
-            <ChevronDown :size="14" class="shrink-0 text-muted-foreground" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="start"
-          class="w-(--reka-dropdown-menu-trigger-width) min-w-64"
-        >
-          <DropdownMenuItem
-            v-for="r in reviews"
-            :key="r.id"
-            class="gap-2"
-            @select="selectedReviewId = r.id"
-          >
-            <Check
-              :size="14"
-              class="shrink-0"
-              :class="r.id === selectedReviewId ? 'opacity-100' : 'opacity-0'"
-            />
-            <span class="min-w-0 flex-1 truncate">{{ r.displayName }}</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <span v-else class="min-w-0 flex-1 truncate px-2 text-sm text-muted-foreground">
-        {{ t("studio.detections.review.none") }}
-      </span>
-      <Button
-        size="sm"
-        variant="outline"
-        class="h-8 shrink-0 gap-1.5 px-2.5 text-sm"
-        :disabled="!documentId || isCreating"
-        @click="openReview"
-      >
-        <Plus :size="15" />
-        {{ t("studio.detections.review.new") }}
-      </Button>
-    </div>
-
-    <!-- No review yet: a gentle prompt to open one. -->
+    <!-- No review yet: an empty state + the bottom CTA creates one. -->
     <div
       v-if="!reviews.length && !isLoadingReviews"
-      class="flex min-h-0 flex-1 items-center justify-center p-6 text-center text-sm text-muted-foreground"
+      class="flex min-h-0 flex-1 flex-col items-center justify-center gap-1 p-6 text-center"
     >
-      {{ t("studio.detections.review.startHint") }}
+      <MessagesSquare :size="22" class="text-muted-foreground/60" />
+      <p class="text-sm text-muted-foreground">
+        {{ t("studio.detections.review.startHint") }}
+      </p>
     </div>
 
-    <!-- The selected review: status + assignees + linked context + timeline. -->
+    <!-- The selected review. -->
     <template v-else-if="review">
-      <div class="shrink-0 space-y-3 border-b p-3 text-sm">
-        <!-- Status -->
-        <div class="grid grid-cols-[5rem_1fr] items-center gap-2">
-          <span class="section-label">
-            {{ t("studio.detections.review.status") }}
-          </span>
-          <ReviewStatusControl
-            class="justify-self-end"
-            :status="review.reviewStatus"
-            :loading="isVerifying || isReopening"
-            @verify="onVerify"
-            @reopen="onReopen"
-          />
+      <!-- Header: the review name (switchable) + status, with a quiet add-review
+           action; below, the reviewers and the one secondary transition. -->
+      <div class="shrink-0 space-y-2 border-b p-3">
+        <div class="flex items-center gap-2">
+          <!-- Title + switcher: the name reads as a heading; the chevron opens the
+               list to switch between the document's reviews. -->
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              class="group/switch flex min-w-0 flex-1 items-center gap-1 rounded text-left outline-none"
+            >
+              <span class="min-w-0 truncate text-sm font-medium">
+                {{ review.displayName }}
+              </span>
+              <ChevronDown
+                :size="14"
+                class="shrink-0 text-muted-foreground transition-colors group-hover/switch:text-foreground"
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" class="min-w-64">
+              <DropdownMenuItem
+                v-for="r in reviews"
+                :key="r.id"
+                class="gap-2"
+                @select="selectedReviewId = r.id"
+              >
+                <Check
+                  :size="14"
+                  class="shrink-0"
+                  :class="r.id === selectedReviewId ? 'opacity-100' : 'opacity-0'"
+                />
+                <span class="min-w-0 flex-1 truncate">{{ r.displayName }}</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Badge
+            :variant="reviewStatusVariant(review.reviewStatus)"
+            class="shrink-0 capitalize"
+          >
+            {{ t(`reviews.status.${review.reviewStatus}`) }}
+          </Badge>
+
+          <!-- Open another review (quiet icon; the bottom CTA creates the first). -->
+          <Button
+            variant="ghost"
+            size="icon"
+            class="size-7 shrink-0 text-muted-foreground"
+            :disabled="!documentId || isCreating"
+            :title="t('studio.detections.review.new')"
+            :aria-label="t('studio.detections.review.new')"
+            @click="openReview"
+          >
+            <Plus :size="16" />
+          </Button>
+          <!-- Delete the open review (with a confirm — it's easy to open one by
+               mistake). -->
+          <Button
+            variant="ghost"
+            size="icon"
+            class="size-7 shrink-0 text-muted-foreground hover:text-destructive"
+            :disabled="isDeleting"
+            :title="t('studio.detections.review.delete')"
+            :aria-label="t('studio.detections.review.delete')"
+            @click="showDeleteConfirm = true"
+          >
+            <Trash2 :size="15" />
+          </Button>
         </div>
-        <!-- Reviewers -->
-        <div class="grid grid-cols-[5rem_1fr] items-center gap-2">
-          <span class="section-label">
-            {{ t("studio.detections.review.reviewers") }}
-          </span>
-          <div class="flex flex-wrap items-center justify-end gap-1">
+
+        <!-- Reviewers (avatar stack + add) and the request-changes secondary. -->
+        <div class="flex items-center gap-2">
+          <div class="flex min-w-0 flex-1 flex-wrap items-center gap-1">
             <span
               v-for="a in assignees"
               :key="a.id"
@@ -169,23 +253,40 @@ const {
               :assigned="assignees.map((a) => a.id)"
               :loading="isAssigning"
               @select="addReviewer"
-            />
+            >
+              <template #trigger="{ loading }">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  class="h-7 gap-1 px-2 text-xs text-muted-foreground"
+                  :disabled="loading"
+                >
+                  <Plus :size="14" />
+                  {{
+                    assignees.length
+                      ? t("studio.detections.review.addReviewer")
+                      : t("reviews.assign")
+                  }}
+                </Button>
+              </template>
+            </ReviewerPicker>
           </div>
-        </div>
-        <!-- Linked context: what this review points at (read-only pointer). -->
-        <div
-          v-if="detectionId"
-          class="grid grid-cols-[5rem_1fr] items-center gap-2"
-        >
-          <span class="section-label">
-            {{ t("studio.detections.review.linked") }}
-          </span>
-          <span
-            class="inline-flex w-fit items-center gap-1 justify-self-end rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground"
+
+          <!-- Secondary transition: request changes (primary is the bottom CTA). -->
+          <Button
+            v-if="
+              review.reviewStatus === 'in_review' ||
+              review.reviewStatus === 'partially_approved'
+            "
+            variant="outline"
+            size="sm"
+            class="h-7 shrink-0 gap-1.5"
+            :disabled="isRequestingChanges"
+            @click="onRequestChanges"
           >
-            <FileSearch :size="13" />
-            {{ t("studio.detections.review.linkedDetection") }}
-          </span>
+            <MessageSquareWarning :size="14" />
+            {{ t("reviews.actions.requestChanges") }}
+          </Button>
         </div>
       </div>
 
@@ -200,5 +301,36 @@ const {
         />
       </div>
     </template>
+
+    <!-- Primary action, pinned to the bottom (like Detect's Run and Audit's
+         Apply): create a review when there's none, otherwise the main status
+         transition for the open review. -->
+    <div v-if="!isLoadingReviews" class="shrink-0 border-t p-3">
+      <Button
+        class="w-full gap-2"
+        :disabled="primaryAction.disabled || primaryAction.loading"
+        @click="primaryAction.run"
+      >
+        <Loader2
+          v-if="primaryAction.loading"
+          :size="16"
+          class="animate-spin"
+        />
+        <component :is="primaryAction.icon" v-else :size="16" />
+        {{ primaryAction.label }}
+      </Button>
+    </div>
+
+    <!-- Delete-review confirm. -->
+    <ConfirmDialog
+      :open="showDeleteConfirm"
+      :title="t('studio.detections.review.deleteTitle')"
+      :description="t('studio.detections.review.deleteDescription')"
+      :confirm-label="t('studio.detections.review.delete')"
+      :cancel-label="t('common.cancel')"
+      :is-loading="isDeleting"
+      @update:open="(v) => !v && (showDeleteConfirm = false)"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>

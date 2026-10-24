@@ -3,7 +3,8 @@ import type {
 	WorkspacePipelineSummary,
 	WorkspacePolicySummary,
 } from "@nvisy/sdk/datatypes";
-import { Loader2, Play } from "@lucide/vue";
+import { Loader2, Play, ShieldCheck, Workflow } from "@lucide/vue";
+import { EmptyState } from "#console/components/shared";
 import type { StudioDetectionPhase } from "#console/composables/useStudioDetection";
 import StudioLabelChecklist from "./StudioLabelChecklist.vue";
 import { Badge } from "#console/components/ui/badge";
@@ -129,11 +130,16 @@ function togglePolicy(id: string, checked: boolean | "indeterminate") {
       </div>
     </div>
 
-    <!-- Scrolling source list: the part whose height varies by source. -->
-    <div class="min-h-0 flex-1 overflow-y-auto border-t p-3">
+    <!-- Scrolling source list: the part whose height varies by source. A flex
+         column so an empty state can fill and center vertically. -->
+    <div class="flex min-h-0 flex-1 flex-col overflow-y-auto border-t p-3">
       <!-- Pipeline: pick one saved pipeline. Single-select rows (not a dropdown)
            so the choices read like the Labels and Policies lists. -->
-      <div v-if="source === 'pipeline'" class="space-y-0.5">
+      <div
+        v-if="source === 'pipeline'"
+        class="flex flex-1 flex-col"
+        :class="pipelines?.length ? 'space-y-0.5' : ''"
+      >
         <template v-if="pipelines?.length">
           <button
             v-for="p in pipelines"
@@ -173,9 +179,13 @@ function togglePolicy(id: string, checked: boolean | "indeterminate") {
             </span>
           </button>
         </template>
-        <p v-else class="text-xs text-muted-foreground">
-          {{ t("studio.audit.noPipelines") }}
-        </p>
+        <EmptyState
+          v-else
+          compact
+          :icon="Workflow"
+          :title="t('studio.detections.emptyPipelines.title')"
+          :description="t('studio.detections.emptyPipelines.description')"
+        />
       </div>
 
       <!-- Labels: scan the catalogue by category and tick entity types. -->
@@ -186,7 +196,11 @@ function togglePolicy(id: string, checked: boolean | "indeterminate") {
       <!-- Policies: pick existing workspace policies (multi-select). Rows show the
            description + a badge for one-shot policies (minted by a quick run), so
            they're distinguishable from authored ones. -->
-      <div v-else class="space-y-0.5">
+      <div
+        v-else
+        class="flex flex-1 flex-col"
+        :class="props.policies?.length ? 'space-y-0.5' : ''"
+      >
         <template v-if="props.policies?.length">
           <label
             v-for="p in props.policies"
@@ -209,9 +223,13 @@ function togglePolicy(id: string, checked: boolean | "indeterminate") {
             </span>
           </label>
         </template>
-        <p v-else class="text-xs text-muted-foreground">
-          {{ t("studio.detections.noPolicies") }}
-        </p>
+        <EmptyState
+          v-else
+          compact
+          :icon="ShieldCheck"
+          :title="t('studio.detections.emptyPolicies.title')"
+          :description="t('studio.detections.emptyPolicies.description')"
+        />
       </div>
     </div>
 

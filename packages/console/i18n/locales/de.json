@@ -204,6 +204,19 @@
 				"deleteFailed": "Fehler beim Löschen des Arbeitsbereichs",
 				"avatarUploadFailed": "Fehler beim Hochladen des Arbeitsbereich-Avatars",
 				"avatarRemoveFailed": "Fehler beim Entfernen des Arbeitsbereich-Avatars"
+			},
+			"reviews": {
+				"title": "Reviews",
+				"description": "Wie Dokument-Reviews genehmigt werden.",
+				"minApprovals": {
+					"label": "Erforderliche Genehmigungen",
+					"description": "Wie viele Prüfer genehmigen müssen, bevor ein Review genehmigt ist."
+				},
+				"authorCanApprove": {
+					"label": "Autor darf genehmigen",
+					"description": "Dem Autor eines Reviews erlauben, als eine der Genehmigungen zu zählen."
+				},
+				"footer": "Gilt für neue Genehmigungen im gesamten Workspace."
 			}
 		},
 		"notifications": {
@@ -1439,7 +1452,6 @@
 			"redactFailed": "Schwärzung fehlgeschlagen. Bitte erneut versuchen.",
 			"downloadRedacted": "Geschwärzte Datei herunterladen",
 			"downloadFailed": "Die redigierte Datei konnte nicht heruntergeladen werden",
-			"noPipelines": "Noch keine Pipelines. Erstellen Sie zuerst eine.",
 			"cell": "{column} · Zeile {row}",
 			"colN": "Sp. {n}",
 			"detail": {
@@ -1477,7 +1489,10 @@
 			"highlight": {
 				"label": "Markierungen",
 				"hint": "Kräftige Markierungen im Dokument umschalten"
-			}
+			},
+			"locationUnavailable": "Position nicht verfügbar",
+			"locationUnavailableHint": "Die Position dieser Entität im Dokument ist ungültig und kann daher nicht angezeigt oder an Ort und Stelle redigiert werden.",
+			"noPipelines": "Noch keine Pipelines. Erstelle zuerst eine."
 		},
 		"preview": {
 			"loading": "Dokument wird geladen …",
@@ -1534,7 +1549,6 @@
 				"policies": "Richtlinien"
 			},
 			"adhoc": "Ad-hoc",
-			"noPolicies": "Noch keine Richtlinien. Erstellen Sie eine oder erkennen Sie per Label.",
 			"jurisdictions": "Jurisdiktionen",
 			"languages": "Sprachen",
 			"runDetection": "Erkennung ausführen",
@@ -1543,20 +1557,30 @@
 			"review": {
 				"none": "Keine Prüfungen für dieses Dokument",
 				"new": "Neue Prüfung",
-				"linked": "Verknüpft",
-				"linkedDetection": "Erkennung",
 				"status": "Status",
 				"reviewers": "Prüfer",
 				"createFailed": "Prüfung konnte nicht geöffnet werden",
 				"startHint": "Öffnen Sie eine Prüfung, um dieses Dokument zu besprechen und freizugeben.",
 				"defaultTitle": "Dokumentprüfung",
 				"select": "Review auswählen",
-				"rename": "Review umbenennen"
+				"rename": "Review umbenennen",
+				"addReviewer": "Hinzufügen",
+				"delete": "Review löschen",
+				"deleteTitle": "Diesen Review löschen?",
+				"deleteDescription": "Dies entfernt den Review und die gesamte Diskussion dauerhaft."
 			},
 			"pipelineStatus": {
 				"draft": "Entwurf",
 				"disabled": "Deaktiviert",
 				"enabled": "Aktiviert"
+			},
+			"emptyPipelines": {
+				"title": "Noch keine Pipelines",
+				"description": "Erstelle eine Pipeline, um mit gespeicherten Richtlinien zu erkennen."
+			},
+			"emptyPolicies": {
+				"title": "Noch keine Richtlinien",
+				"description": "Erstelle eine Richtlinie oder erkenne stattdessen über Labels."
 			}
 		},
 		"fullScreen": {
@@ -1600,7 +1624,6 @@
 	},
 	"policies": {
 		"title": "Richtlinien",
-		"count": "{count} Richtlinie | {count} Richtlinien",
 		"create": "Neue Richtlinie",
 		"viewTemplates": "Vorlagen ansehen",
 		"empty": {
@@ -1614,7 +1637,9 @@
 			"updated": "Aktualisiert",
 			"menu": "Menü öffnen",
 			"edit": "Bearbeiten",
-			"delete": "Löschen"
+			"delete": "Löschen",
+			"promote": "Speichern",
+			"kind": "Art"
 		},
 		"editor": {
 			"save": "Änderungen speichern",
@@ -1775,7 +1800,9 @@
 			"updateFailed": "Richtlinie konnte nicht aktualisiert werden",
 			"deleted": "Richtlinie gelöscht",
 			"deleteFailed": "Richtlinie konnte nicht gelöscht werden",
-			"loadFailed": "Richtlinie konnte nicht geladen werden"
+			"loadFailed": "Richtlinie konnte nicht geladen werden",
+			"promoted": "Richtlinie gespeichert.",
+			"promoteFailed": "Richtlinie konnte nicht gespeichert werden."
 		},
 		"templates": {
 			"title": "Richtlinienvorlagen",
@@ -1844,6 +1871,22 @@
 				}
 			},
 			"slugEmpty": "Geben Sie einen Namen mit Buchstaben oder Zahlen ein, um einen Slug zu erzeugen."
+		},
+		"promote": {
+			"title": "Diese Richtlinie bearbeitbar machen",
+			"description": "Diese Richtlinie wurde aus Labels abgeleitet und ist schreibgeschützt. Gib ihr einen Namen, um sie in eine bearbeitbare, wiederverwendbare Richtlinie umzuwandeln, die du auch an Pipelines anhängen kannst.",
+			"nameLabel": "Richtlinienname",
+			"namePlaceholder": "z. B. Kontaktdaten",
+			"confirm": "Speichern"
+		},
+		"kind": {
+			"authored": "Erstellt",
+			"derived": "Abgeleitet"
+		},
+		"filter": {
+			"all": "Alle",
+			"authored": "Erstellt",
+			"derived": "Abgeleitet"
 		}
 	},
 	"pipelines": {
@@ -2529,19 +2572,16 @@
 			},
 			"events": {
 				"review": {
-					"opened": "hat diese Prüfung eröffnet",
-					"renamed": "hat diese Prüfung umbenannt"
-				},
-				"detection": {
-					"linked": "hat eine Erkennung verknüpft"
-				},
-				"redaction": {
-					"linked": "hat eine Schwärzung verknüpft"
-				},
-				"assigned": "hat einen Prüfer zugewiesen",
-				"unassigned": "hat einen Prüfer entfernt",
-				"verified": "hat diese Prüfung bestätigt",
-				"reopened": "hat diese Prüfung wieder eröffnet"
+					"opened": "hat diesen Review eröffnet",
+					"renamed": "hat diesen Review umbenannt",
+					"redetected": "hat die Erkennung erneut ausgeführt",
+					"assigned": "hat einen Prüfer zugewiesen",
+					"unassigned": "hat einen Prüfer entfernt",
+					"submitted": "zur Prüfung eingereicht",
+					"changes_requested": "hat Änderungen angefordert",
+					"approved": "hat diesen Review genehmigt",
+					"reopened": "hat diesen Review erneut geöffnet"
+				}
 			},
 			"triggerType": {
 				"user": "Manuelle Erkennung",
@@ -2584,8 +2624,10 @@
 			}
 		},
 		"actions": {
-			"verify": "Als geprüft markieren",
-			"reopen": "Prüfung wieder öffnen"
+			"submit": "Zur Prüfung einreichen",
+			"approve": "Genehmigen",
+			"requestChanges": "Änderungen anfordern",
+			"reopen": "Erneut öffnen"
 		},
 		"table": {
 			"reviewer": "Prüfer",
@@ -2594,9 +2636,11 @@
 			"document": "Dokument"
 		},
 		"status": {
-			"needs_review": "Zu prüfen",
+			"draft": "Entwurf",
 			"in_review": "In Prüfung",
-			"resolved": "Erledigt"
+			"changes_requested": "Änderungen angefordert",
+			"partially_approved": "Teilweise genehmigt",
+			"approved": "Genehmigt"
 		},
 		"filter": {
 			"all": "Alle"
