@@ -28,7 +28,7 @@
 		"ci:cargo": "cd tauri && cargo +nightly fmt --all -- --check && cargo clippy --all-features --all-targets -- -D warnings && cargo machete && cargo deny check all"
 	},
 	"dependencies": {
-		"@lucide/vue": "^1.59.0",
+		"@lucide/vue": "^1.61.0",
 		"@nvisy/console": "*",
 		"@nvisy/sdk": "^0.63.0",
 		"@tauri-apps/api": "^2.12.4",
@@ -40,6 +40,6 @@
 		"vue-router": "^5.3.1"
 	},
 	"devDependencies": {
-		"@tauri-apps/cli": "^2.12.3"
+		"@tauri-apps/cli": "^2.12.4"
 	}
 }
