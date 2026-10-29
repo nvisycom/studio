@@ -1,9 +1,4 @@
 {
-  "1240992": {
-    "active": true,
-    "notes": "braces <=3.0.3 stack-exhaustion DoS (GHSA-vfj7-8cjw-p6xm). No patched release exists — the latest version is still flagged. Reached only transitively through Nuxt's build tooling (micromatch/fast-glob/globby), a dev dependency. Remove when braces ships a fix.",
-    "expiry": "2027-04-20"
-  },
   "1240912": {
     "active": true,
     "notes": "node-forge <=1.4.0 RSA PKCS#1 v1.5 signature-verification (GHSA-86w9-cpqp-85rv). No patched release exists — the latest version is still flagged. Reached only transitively through Nuxt devtools, a dev dependency. Remove when node-forge ships a fix.",
