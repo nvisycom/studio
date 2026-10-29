@@ -110,7 +110,17 @@ async function render(url: string, target: HTMLElement) {
 			// each page — highlighting is by geometry (the entities' page-normalized
 			// `rects`), but the text layer is what lets the reviewer select and copy
 			// the PDF's text.
-			modules: { pdf: { pdfLib, setWorker: false, textLayer: true } },
+			modules: {
+				pdf: {
+					pdfLib: {
+						...pdfLib,
+						// SuperDoc passes a data URL; PDF.js 6 requires an options object.
+						getDocument: (url: string) => pdfLib.getDocument({ url }),
+					},
+					setWorker: false,
+					textLayer: true,
+				},
+			},
 			// Disable SuperDoc's built-in loading overlay — the parent preview shows a
 			// single loader and keeps it up until we signal ready.
 			ui: { loading: false },

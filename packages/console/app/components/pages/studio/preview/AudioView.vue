@@ -107,7 +107,7 @@ const waveform = ref<HTMLElement | null>(null);
 // region (typed via the type-only imports; created lazily in `build`). Reactive
 // transport state below is what the controls bind to.
 let ws: WaveSurfer | null = null;
-let regions: RegionsPlugin | null = null;
+let regions: ReturnType<typeof RegionsPlugin.create> | null = null;
 let selection: Region | null = null;
 
 const isPlaying = ref(false);

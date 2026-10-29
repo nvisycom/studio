@@ -36,7 +36,7 @@
 		"audit": "better-npm-audit audit --level moderate"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.5.15",
+		"@biomejs/biome": "^2.6.2",
 		"@types/node": "^26.6.5",
 		"better-npm-audit": "^3.11.0",
 		"cross-env": "^10.1.0",
@@ -50,6 +50,6 @@
 		"nuxt": {
 			"undici": "^8.12.3"
 		},
-		"pdfjs-dist": "5.5.207"
+		"pdfjs-dist": "6.4.299"
 	}
 }
