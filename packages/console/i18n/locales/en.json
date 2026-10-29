@@ -2449,11 +2449,13 @@
 			"approved": "Approved"
 		},
 		"filter": {
-			"all": "All"
+			"all": "All",
+			"assignee": "Filter by assignee",
+			"allAssignees": "All assignees"
 		},
 		"empty": {
 			"title": "No reviews",
-			"hint": "Documents assigned to you for review will show up here."
+			"hint": "Workspace reviews matching your filters will show up here."
 		},
 		"picker": {
 			"search": "Search members…",

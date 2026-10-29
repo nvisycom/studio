@@ -52,10 +52,8 @@ export interface NavigationGroup {
  * rather than rendered disabled. Everything else (overview, documents, studio,
  * detections, policies, settings) runs through a local seam and stays.
  *
- * `reviews` is server-only: the reviewer queue is about assigning reviews to
- * workspace accounts/members, which a local folder-workspace has none of (the
- * studio's own review-an-audit flow is separate and stays). It was mis-kept as
- * local before, which hung the page on a never-arriving account id offline.
+ * `reviews` is server-only: workspace reviews and their assignees live on the
+ * server. A local folder-workspace has no workspace accounts or review queue.
  */
 const SERVER_ONLY_ITEMS = new Set([
 	"team",
