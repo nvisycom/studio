@@ -3,25 +3,20 @@ import { ClipboardCheck, FileText, Loader2 } from "@lucide/vue";
 import type { ReviewStatus, WorkspaceReview } from "@nvisy/sdk/datatypes";
 import type { VirtualColumn } from "#console/components/ui/virtual-table";
 import { VirtualTable } from "#console/components/ui/virtual-table";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "#console/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "#console/components/ui/tabs";
 import { personLabel } from "#console/utils/naming";
 import { toast } from "vue-sonner";
 import ReviewStatusControl from "./ReviewStatusControl.vue";
 import { REVIEW_STATUSES } from "#console/utils/reviews";
 
-/**
- * The reviewer's queue as a table: document reviews assigned to a reviewer,
- * filtered by status, each row opening the document in the studio and carrying
- * an inline verify/reopen control. Used by the Reviews page.
- *
- * `assignee` is the account id whose reviews to show (the current user's, for
- * the "my reviews" queue).
- */
-const props = defineProps<{
-	/** Account id whose review queue to show. */
-	assignee: string;
-}>();
-
+/** Workspace reviews, filtered by status and optionally by assignee. */
 const { t } = useI18n();
 const { wLink } = useWorkspaceLink();
 const { resolveAvatarUrl } = useAvatarUrl();
@@ -29,9 +24,11 @@ const { relativeTime } = useRelativeTime();
 
 // Status filter as a tab value: "all" or one of the review statuses.
 const activeTab = ref<"all" | ReviewStatus>("all");
+const assignee = ref("all");
+const { members } = useMembers();
 
 const query = computed(() => ({
-	assignee: props.assignee,
+	...(assignee.value !== "all" ? { assignee: assignee.value } : {}),
 	...(activeTab.value !== "all" ? { reviewStatus: activeTab.value } : {}),
 	limit: 50,
 }));
@@ -120,19 +117,32 @@ function openReview(review: WorkspaceReview) {
 
 <template>
   <div class="flex flex-col gap-4">
-    <!-- Status filter -->
-    <Tabs v-model="activeTab">
-      <TabsList>
-        <TabsTrigger value="all">{{ t("reviews.filter.all") }}</TabsTrigger>
-        <TabsTrigger
-          v-for="status in REVIEW_STATUSES"
-          :key="status"
-          :value="status"
-        >
-          {{ t(`reviews.status.${status}`) }}
-        </TabsTrigger>
-      </TabsList>
-    </Tabs>
+    <div class="flex flex-wrap items-center gap-3">
+      <!-- Status filter -->
+      <Tabs v-model="activeTab">
+        <TabsList>
+          <TabsTrigger value="all">{{ t("reviews.filter.all") }}</TabsTrigger>
+          <TabsTrigger
+            v-for="status in REVIEW_STATUSES"
+            :key="status"
+            :value="status"
+          >
+            {{ t(`reviews.status.${status}`) }}
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+      <Select v-model="assignee">
+        <SelectTrigger class="w-52" :aria-label="t('reviews.filter.assignee')">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">{{ t("reviews.filter.allAssignees") }}</SelectItem>
+          <SelectItem v-for="member in members" :key="member.id" :value="member.id">
+            {{ personLabel(member) }}
+          </SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
 
     <!-- Loading (first page) -->
     <div

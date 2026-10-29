@@ -2449,11 +2449,13 @@
 			"approved": "Genehmigt"
 		},
 		"filter": {
-			"all": "Alle"
+			"all": "Alle",
+			"assignee": "Nach zugewiesener Person filtern",
+			"allAssignees": "Alle zugewiesenen Personen"
 		},
 		"empty": {
 			"title": "Keine Prüfungen",
-			"hint": "Ihnen zur Prüfung zugewiesene Dokumente erscheinen hier."
+			"hint": "Prüfungen dieses Arbeitsbereichs, die Ihren Filtern entsprechen, erscheinen hier."
 		},
 		"picker": {
 			"search": "Mitglieder suchen…",
