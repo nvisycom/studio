@@ -34,12 +34,12 @@ An npm workspace split into deployable **apps** and the shared **packages** they
 build on. The shared layer provides the whole dashboard; each app adds only its
 own shell.
 
-| Package | Path | Role |
-| --- | --- | --- |
+| Package              | Path                                    | Role                                                                                                                                              |
+| -------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **`@nvisy/console`** | [`packages/console`](packages/console/) | Nuxt layer with the whole dashboard surface: design system (shadcn-vue), feature views, composables, the `@nvisy/sdk` data layer, theme, and i18n |
-| **`@nvisy/config`** | [`packages/config`](packages/config/) | Shared configuration and constants, a platform-neutral ESM library (tsdown) |
-| **`@nvisy/webapp`** | [`apps/web`](apps/web/) | Web shell: a Nuxt 4 SPA served at [app.nvisy.com](https://app.nvisy.com) |
-| **`@nvisy/desktop`** | [`apps/desktop`](apps/desktop/) | Desktop shell: the same frontend in a Tauri 2 (Rust) window; the Rust shell lives in `apps/desktop/tauri/` |
+| **`@nvisy/config`**  | [`packages/config`](packages/config/)   | Shared configuration and constants, a platform-neutral ESM library (tsdown)                                                                       |
+| **`@nvisy/webapp`**  | [`apps/web`](apps/web/)                 | Web shell: a Nuxt 4 SPA served at [app.nvisy.com](https://app.nvisy.com)                                                                          |
+| **`@nvisy/desktop`** | [`apps/desktop`](apps/desktop/)         | Desktop shell: the same frontend in a Tauri 2 (Rust) window; the Rust shell lives in `apps/desktop/tauri/`                                        |
 
 ## Requirements
 
