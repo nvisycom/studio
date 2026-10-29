@@ -49,10 +49,10 @@ const canConnect = computed(
 const isUnconfigured = computed(
 	() => props.provider.availability === "unconfigured",
 );
+// Coming-soon applies to both a connectable not built yet AND an external
+// recommendation that isn't ready (no outbound link until it is).
 const isComingSoon = computed(
-	() =>
-		props.provider.kind === "connectable" &&
-		props.provider.availability === "comingSoon",
+	() => props.provider.availability === "comingSoon",
 );
 // Both non-connectable states gray the icon (nothing to connect right now).
 const dimmed = computed(() => isUnconfigured.value || isComingSoon.value);

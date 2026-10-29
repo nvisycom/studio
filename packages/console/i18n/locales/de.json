@@ -930,16 +930,6 @@
 					"description": "Dateien aus Microsoft Teams redigieren und teilen",
 					"shortDescription": "In Teams geteilte Dateien redigieren"
 				},
-				"notion": {
-					"name": "Notion",
-					"description": "Seiten und Dateien aus Notion redigieren",
-					"shortDescription": "Notion-Seiten und -Dateien redigieren"
-				},
-				"discord": {
-					"name": "Discord",
-					"description": "Dateien aus Discord redigieren und teilen",
-					"shortDescription": "In Discord geteilte Dateien redigieren"
-				},
 				"zapier": {
 					"name": "Zapier",
 					"description": "Nvisy mit über 6.000 Apps über Zapier verbinden",

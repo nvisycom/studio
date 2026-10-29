@@ -930,16 +930,6 @@
 					"description": "Redact and share files from Microsoft Teams",
 					"shortDescription": "Redact files shared in Teams"
 				},
-				"notion": {
-					"name": "Notion",
-					"description": "Redact pages and files from Notion",
-					"shortDescription": "Redact Notion pages and files"
-				},
-				"discord": {
-					"name": "Discord",
-					"description": "Redact and share files from Discord",
-					"shortDescription": "Redact files shared in Discord"
-				},
 				"zapier": {
 					"name": "Zapier",
 					"description": "Wire Nvisy into 6,000+ apps with Zapier",

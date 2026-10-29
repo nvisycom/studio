@@ -189,28 +189,6 @@ export const PROVIDERS: ExploreProvider[] = [
 		category: "productivity",
 		tags: ["notifications", "messaging", "collaboration", "enterprise"],
 	},
-	{
-		id: "notion",
-		nameKey: `${ITEMS}.notion.name`,
-		descriptionKey: `${ITEMS}.notion.description`,
-		shortDescriptionKey: `${ITEMS}.notion.shortDescription`,
-		icon: "/integration/notion.svg",
-		status: "unavailable",
-		kind: "connectable",
-		category: "productivity",
-		tags: ["notes", "collaboration", "export"],
-	},
-	{
-		id: "discord",
-		nameKey: `${ITEMS}.discord.name`,
-		descriptionKey: `${ITEMS}.discord.description`,
-		shortDescriptionKey: `${ITEMS}.discord.shortDescription`,
-		icon: "/integration/discord.svg",
-		status: "unavailable",
-		kind: "connectable",
-		category: "productivity",
-		tags: ["notifications", "messaging", "collaboration"],
-	},
 	// AI models
 	{
 		id: "chatgpt",
